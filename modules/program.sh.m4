@@ -25,10 +25,6 @@
 # USA
 # 
 
-#PAGE
-
-function mbfl_exit_program_not_found () { exit 20; }
-
 #page
 function mbfl_program_check () {
     local item= path=
@@ -43,14 +39,6 @@ function mbfl_program_check () {
     done
     return 0
 }
-function mbfl_program_exec () {
-    if mbfl_option_test ; then
-        echo "${@}" >&2
-        return 0
-    else
-        eval "${@}"
-    fi
-}
 function mbfl_program_find () {
     local PROGRAM=${1:?"missing program parameter to ${FUNCNAME}"}
     local program=
@@ -62,6 +50,14 @@ function mbfl_program_find () {
         fi
     done
     return 0
+}
+function mbfl_program_exec () {
+    if mbfl_option_test || mbfl_option_show_program ; then
+        echo "${@}" >&2
+    fi
+    if ! mbfl_option_test ; then
+        eval "${@}"
+    fi
 }
 #page
 if test "${mbfl_INTERACTIVE}" != 'yes'; then

@@ -282,6 +282,47 @@ function mbfl_exec_rm () {
     fi
 }
 #page
+function mbfl_file_enable_copy () {
+    mbfl_declare_program cp
+}
+function mbfl_file_copy () {
+    mandatory_parameter(SOURCE, 1, source pathname)
+    mandatory_parameter(TARGET, 2, target pathname)
+    shift 2
+
+    if test ! mbfl_option_test ; then
+        if test ! -f "${SOURCE}" ; then
+            mbfl_message_error "pathname is not a file '${SOURCE}'"
+            return 1
+        fi
+    fi
+    mbfl_exec_cp "${SOURCE}" "${TARGET}" "$@"
+}
+function mbfl_file_copy_recursively () {
+    mandatory_parameter(SOURCE, 1, source pathname)
+    mandatory_parameter(TARGET, 2, target pathname)
+    shift 2
+
+    if test ! mbfl_option_test ; then
+        if test ! -f "${SOURCE}" ; then
+            mbfl_message_error "pathname is not a file '${SOURCE}'"
+            return 1
+        fi
+    fi
+    mbfl_exec_cp "${SOURCE}" "${TARGET}" --recursive "$@"
+}
+function mbfl_exec_cp () {
+    mandatory_parameter(SOURCE, 1, source pathname)
+    mandatory_parameter(TARGET, 2, target pathname)
+    shift 2
+    local CP=`mbfl_program_found cp` FLAGS
+
+    if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
+    if ! mbfl_program_exec ${CP} ${FLAGS} "$@" -- "${SOURCE}" "${TARGET}" ; then
+        return 1
+    fi
+}
+#page
 function mbfl_file_remove_directory () {
     local PATHNAME=${1:?"missing pathname parameter in ${FUNCNAME}"}
     local REMOVE_SILENTLY="$2" FLAGS=

@@ -77,6 +77,8 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\tsilent execution
 \t--verbose-program
 \t\tverbose execution for external program (if supported)
+\t--show-program
+\t\tprint then command line of executed external programs
 \t--null
 \t\tuse the null character as terminator
 \t--debug
@@ -196,6 +198,7 @@ function mbfl_getopts_parse () {
 
     for ((i=0; $i < $ARGC1; ++i)); do
         argument="${ARGV1[$i]}"
+
         if test "$found_end_of_options_delimiter" = 1 ; then
             ARGV[$ARGC]="${argument}"
             let ++ARGC
@@ -237,6 +240,9 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	    ;;
 	verbose-program)
             mbfl_set_option_verbose_program
+	    ;;
+	show-program)
+            mbfl_set_option_show_program
 	    ;;
 	debug)
             mbfl_set_option_verbose
@@ -283,7 +289,9 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	    exit 0
 	    ;;
 	h|help|usage)
-	    echo -e "${script_USAGE}\noptions:"
+	    echo -e "${script_USAGE}"
+            test -n "${script_DESCRIPTION}" && echo -e "${script_DESCRIPTION}"
+            echo 'options:'
             mbfl_getopts_p_build_and_print_options_usage
             echo -e "${mbfl_message_DEFAULT_OPTIONS}"
 	    exit 0

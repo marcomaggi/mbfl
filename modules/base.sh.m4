@@ -62,12 +62,19 @@ function mbfl_create_option_procedures () {
 
 mbfl_create_option_procedures test
 mbfl_create_option_procedures verbose_program
+mbfl_create_option_procedures show_program
 mbfl_create_option_procedures verbose
 mbfl_create_option_procedures debug
 mbfl_create_option_procedures null
 mbfl_create_option_procedures interactive
 mbfl_create_option_procedures encoded_args
 
+#page
+## ------------------------------------------------------------
+## Exit functions.
+## ------------------------------------------------------------
+
+function mbfl_exit_program_not_found () { exit 20; }
 
 ### end of file
 # Local Variables:

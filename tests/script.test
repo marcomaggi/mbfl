@@ -33,7 +33,7 @@
 source setup.sh
 
 function script () {
-    $BASH ../examples/template.sh "$@"
+    MBFL_LIBRARY=${builddir}/libmbfl.sh $BASH ../examples/template.sh "$@"
 }
 
 
@@ -61,19 +61,25 @@ function script-1.6 () {
 #PAGE
 
 function script-2.1 () {
-    script --beta=123 | dotest-output "option beta: 123"
+    script --beta=123 | dotest-output "option beta: 123\narguments: 0, ''"
 }
 function script-2.2 () {
-    script --beta=123\\ | dotest-output "option beta: 123\\"
+    script --beta=123\\ | dotest-output "option beta: 123\\\narguments: 0, ''"
 }
 function script-2.3 () {
-    script --beta="1 2" | dotest-output "option beta: 1 2"
+    script --beta="1 2" | dotest-output "option beta: 1 2\narguments: 0, ''"
 }
 function script-2.4 () {
-    script --beta=123\\\\ | dotest-output "option beta: 123\\\\"
+    script --beta=123\\\\ | dotest-output "option beta: 123\\\\\narguments: 0, ''"
 }
 function script-2.5 () {
-    script --alpha | dotest-output "option alpha"
+    script --alpha | dotest-output "option alpha\narguments: 0, ''"
+}
+
+#page
+
+function script-3.1 () {
+    script a b c | dotest-output "arguments: 3, 'a b c'"
 }
 
 #PAGE

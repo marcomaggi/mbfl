@@ -1,7 +1,6 @@
 # @configure_input@
 # 
 
-
 #page
 ## ------------------------------------------------------------
 ## Package variables.
@@ -267,6 +266,7 @@ test_FILES	= $(wildcard $(testdir)/*.test)
 test_TARGETS	= test-all
 
 test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
+test_ENV	+= builddir=$(builddir) top_srcdir=$(top_srcdir)
 test_CMD	= $(test_ENV) /bin/bash
 
 .PHONY: test-all test-all-verbose
@@ -463,7 +463,6 @@ echo-variable:
 	@echo $($(VARIABLE))
 
 .NOEXPORT:
-
 
 
 

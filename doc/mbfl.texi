@@ -290,29 +290,39 @@ declare its own variables, so they are to be declared before the
 inclusion of the @mbfl{} code in the script.
 
 
-@table @code
-@item script_PROGNAME
+@defvar script_PROGNAME
 Declares the name of the script.
+@end defvar
 
-@item script_AUTHOR
+@defvar script_AUTHOR
 Declares the name of the script author(s).
+@end defvar
 
-@item script_COPYRIGHT_YEARS
+@defvar script_COPYRIGHT_YEARS
 Should be a comma separated list of years of copyright.
+@end defvar
 
-@item script_VERSION
+@defvar script_VERSION
 Must be the version number of the script.
+@end defvar
 
-@item script_LICENSE
+@defvar script_LICENSE
 Must be the identifier of the license under which the script is
 released. Accepted values are: @code{GPL}, @code{LGPL}, @code{BSD}. It
 is used to select the appropriate value to be displayed when the user of
 the script selects the @code{--license} option (@ref{Getopts Options},
 for details).
+@end defvar
 
-@item script_USAGE
+@defvar script_USAGE
 Must be a string describing the usage of the program.
-@end table
+@end defvar
+
+@defvar script_DESCRIPTION
+One line string providing a brief description of the program. It is used
+in the help screen (the one echoed when the @option{--help} option is
+used).
+@end defvar
 
 
 @unnumberedsec Example
@@ -328,9 +338,8 @@ script_COPYRIGHT_YEARS="2002, 2003, 2004"
 script_VERSION="1.0"
 script_LICENSE=GPL
 script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
+script_DESCRIPTION='Does this and that.'
 @end example
-
-
 
 @c ------------------------------------------------------------
 @node Base
@@ -536,6 +545,7 @@ otherwise.
 @menu
 * File Commands Listing::       Retrieving informations.
 * File Commands Mkdir::         Creating directories.
+* File Commands Copy::          Copying files.
 * File Commands Removing::      Removing files and directories.
 * File Commands Tar::           Manipulating tar archives.
 @end menu
@@ -595,6 +605,37 @@ directories (@ref{Program Declaring}). The programs are: @command{mkdir}.
 Creates a directory named @var{pathname}; all the unexistent parents are
 created, too. If @var{permissions} is present: it is the specification
 of directory permissions in octal mode.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node File Commands Copy
+@unnumberedsubsec Copying files
+
+
+@deffn Function mbfl_file_enable_copy
+Declares to the program module the commands required to copy files and
+directories (@ref{Program Declaring}). The programs are: @command{cp}.
+@end deffn
+
+
+@deffn Function mbfl_file_copy @var{source} @var{target} ?@dots{}?
+Copies the @var{source}, a file, to @var{target}, a file
+pathname. Additional arguments are handed to the command unchanged.
+
+If @var{source} does not exist, or if it is not a file, an error is
+generated and the return value is 1. No test is done upon @var{target}.
+@end deffn
+
+
+@deffn Function mbfl_file_copy_recursively @var{source} @var{target} ?@dots{}?
+Copies the @var{source}, a directory, to @var{target}, a directory
+pathname. Additional arguments are handed to the command unchanged. This
+function is like @code{mbfl_file_copy}, but it adds @code{--recursive}
+to the command line of @command{cp}.
+
+If @var{source} does not exist, or if it is not a file, an error is
+generated and the return value is 1. No test is done upon @var{target}.
 @end deffn
 
 
@@ -959,6 +1000,9 @@ external programs that support it. The fuction
 @code{mbfl_option_verbose_program} returns true or false depending on
 the state of this option.
 
+@item --show-program
+Prints the command line of executed external programs.
+
 @item --debug
 Turns on debugging messages (@ref{Message}, for details).
 
@@ -1041,6 +1085,15 @@ This option, of course, is supported only for programs that are known by
 @mbfl{} (like @command{rm}): if a program is executed with
 @code{mbfl_program_exec}, it is responsibility of the caller to use the
 option.
+@end deffn
+
+
+@deffn Function mbfl_option_show_program
+@deffnx Function mbfl_set_option_show_program
+@deffnx Function mbfl_unset_option_show_program
+Prints the command line of executed external program. This does not
+disable program execution, it just prints the command line before
+executing it.
 @end deffn
 
 
@@ -1472,8 +1525,13 @@ found.
 
 
 @deffn Function mbfl_program_exec @var{arg} ...
-Evaluates a command line. If the function @code{mbfl_option_test}
-returns true: instead of evaluation, the command line is sent to stderr.
+Evaluates a command line.
+
+If the function @code{mbfl_option_test} returns true: instead of
+evaluation, the command line is sent to stderr.
+
+If the function @code{mbfl_option_show_program} returns true: the
+command line is sent to stderr, then it is executed.
 @end deffn
 
 

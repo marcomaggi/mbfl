@@ -38,6 +38,7 @@ script_COPYRIGHT_YEARS=2004
 script_AUTHOR="Marco Maggi and Marco Maggi"
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
+script_DESCRIPTION='This is an example script.'
 
 mbfl_INTERACTIVE='no'
 source "${MBFL_LIBRARY:=`mbfl-config`}"
@@ -69,10 +70,12 @@ function script_option_update_beta () {
 function script_option_update_alpha () {
     echo "option alpha"
 }
+function main () {
+    echo "arguments: $ARGC, '${ARGV[@]}'"
+}
 mbfl_main
 
 ### end of file
 # Local Variables:
 # mode: sh
-# page-delimiter: "^#page$"
 # End:

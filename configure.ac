@@ -8,15 +8,15 @@
 ## Initialisation.
 ## ------------------------------------------------------------
 
-AC_INIT([mbfl], [1.0.2], [marcomaggi@tiscalinet.it])
+AC_INIT([mbfl], [1.0.3], [marcomaggi@tiscalinet.it])
 AC_PREREQ(2.57)
 AC_COPYRIGHT([Copyright (C) 2003, 2004 by Marco Maggi])
 AC_REVISION([$Revision: 1.1.1.131 $])
 AC_CONFIG_SRCDIR([./lib/libmbfl.sh.m4])
 AC_CONFIG_AUX_DIR([infrastructure])
 
-AC_SUBST([PACKAGE_XVERSION], [1.0.2])
-AC_DEFINE([PACKAGE_XVERSION], ["1.0.2"], [full version])
+AC_SUBST([PACKAGE_XVERSION], [1.0.3])
+AC_DEFINE([PACKAGE_XVERSION], ["1.0.3"], [full version])
 AC_SUBST([PACKAGE_NODOT_VERSION], [10])
 AC_SUBST([PACKAGE_NAME_UPPERCASE], [MBFL])
 AC_SUBST([PACKAGE_NAME_LOWERCASE], [mbfl])
@@ -24,7 +24,7 @@ AC_SUBST([PACKAGE_NAME_LOWERCASE], [mbfl])
 AC_SUBST([PACKAGE_VERSION_MAJMIN], [1.0])
 AC_SUBST([PACKAGE_VERSION_MAJOR], [1])
 AC_SUBST([PACKAGE_VERSION_MINOR], [0])
-AC_SUBST([PACKAGE_VERSION_PATCH], [2])
+AC_SUBST([PACKAGE_VERSION_PATCH], [3])
 
 
 #PAGE
