@@ -596,6 +596,11 @@ Signals to the script that it @strong{does} have to query the user
 before doing dangerous operations, like overwriting files. The global
 variable @code{mbfl_option_INTERACTIVE} is set to @code{yes}.
 
+@item --validate-programs
+Validates the existence of all the programs needed by the script; then
+exits. The exit code is zero if all the programs were found, one
+otherwise.
+
 @item --version
 Prints to the standard output of the script the contents of the global
 variable @code{mbfl_message_VERSION}, then exits with code zero. The
@@ -914,11 +919,7 @@ are declared.
 Checks the availability of programs. This function assumes that the
 program pathnames do not contain blank characters. All the pathnames on
 the command line are checked: if one is not executable an error message
-is printed.
-
-Returns true if a program can't be found, false otherwise.
-
-Requires the message module (@ref{Message} for details).
+is printed.  Returns true if a program can't be found, false otherwise.
 @end deffn
 
 
@@ -927,6 +928,21 @@ Evaluates a command line. If the variable @code{mbfl_program_TEST} is
 set to @code{yes}: instead of evaluation, the command line is sent to
 stderr.
 @end deffn
+
+
+@deffn Function mbfl_declare_program @var{program}
+Registers @var{program} as the name of a program required by the
+script. The return value is always zero.
+@end deffn
+
+
+@deffn Function mbfl_program_validate_declared
+Validates the existence of all the declared programs. This function is
+invoked by @code{mbfl_getopts_parse} when the @code{--validate-programs}
+option is used on the command line. The return value is zero if all the
+programs were found, one otherwise.
+@end deffn
+
 
 @c ------------------------------------------------------------
 @node Signal

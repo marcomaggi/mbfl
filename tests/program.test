@@ -63,7 +63,7 @@ namespace eval ::test {
 
 ::tcltest::test program-1.2 "fake program execution" {
     -body	{
-	bash "mbfl_program_TEST=yes; mbfl_program_exec echo 123 2>&1"
+	bash "mbfl_set_option_test; mbfl_program_exec echo 123 2>&1"
     }
     -result "echo 123"
 }
@@ -97,6 +97,22 @@ namespace eval ::test {
     }
     -result	"* error: cannot find executable \"1234567asdfads\""
     -match	glob
+}
+
+#page
+
+::tcltest::test program-3.1 "checking unexistent program" {
+    -body	{
+	bash "mbfl_set_option_verbose; mbfl_message_set_channel 1; mbfl_message_set_progname test; mbfl_declare_program ls; mbfl_program_validate_declared"
+    }
+    -result "test: found \"ls\": \"[auto_execok ls]\""
+}
+
+::tcltest::test program-3.2 "checking unexistent program" {
+    -body	{
+	bash "mbfl_set_option_verbose; mbfl_message_set_channel 1; mbfl_message_set_progname test; mbfl_declare_program unexistent; mbfl_program_validate_declared"
+    }
+    -result "test: error: cannot find executable \"unexistent\""
 }
 
 #PAGE

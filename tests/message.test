@@ -1,0 +1,125 @@
+# message.test --
+# 
+# Part of: Marco's BASH function libraries
+# Contents: tests for the message library
+# Date: Mon Sep 13, 2004
+# 
+# Abstract
+# 
+#	This file must be executes through "all.tcl": from the build
+#	directory:
+#
+#		$ make all test TESTFLAGS="-match message-*"
+# 
+#	will select these tests.
+# 
+# Copyright (c) 2004 Marco Maggi
+# 
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 2, or (at your  option) any later
+# version.
+# 
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# General Public License for more details.
+# 
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
+# 
+
+#PAGE
+## ------------------------------------------------------------
+## Setup.
+## ------------------------------------------------------------
+
+source [file join [file dirname [info script]] setup.tcl]
+
+#PAGE
+## ---------------------------------------------------------
+## Test namespace.
+## ---------------------------------------------------------
+
+namespace eval ::test {
+
+    variable	libstring [file join $libpath message.sh]
+
+    variable	precmd ". %s"
+    set precmd [format $precmd $libstring]
+
+    proc script { string } {
+	append s \
+	    "mbfl_message_set_progname test; mbfl_message_set_channel 1;" \
+	    $string
+	bash [format $s $string]
+    }
+
+#PAGE
+
+::tcltest::test message-1.1 "string chars" {
+    -body	{
+	script "mbfl_message_string abcde"
+    }
+    -result abcde
+}
+
+#page
+
+::tcltest::test message-2.1 "verbose" {
+    -body	{
+	script "mbfl_message_verbose abcde"
+    }
+    -result {}
+}
+
+::tcltest::test message-2.2 "verbose" {
+    -body	{
+	script "mbfl_set_option_verbose; mbfl_message_verbose abcde"
+    }
+    -result "test: abcde"
+}
+
+#page
+
+::tcltest::test message-3.1 "debug" {
+    -body	{
+	script "mbfl_message_debug abcde"
+    }
+    -result {}
+}
+
+#page
+
+::tcltest::test message-4.1 "warning" {
+    -body	{
+	script "mbfl_message_warning abcde"
+    }
+    -result "test: warning: abcde"
+}
+
+#page
+
+::tcltest::test message-5.1 "error" {
+    -body	{
+	script "mbfl_message_error abcde"
+    }
+    -result "test: error: abcde"
+}
+#PAGE
+## ---------------------------------------------------------
+## End of "::test" namespace.
+## ---------------------------------------------------------
+
+::tcltest::cleanupTests
+}
+namespace delete ::test
+
+
+### end of file
+# Local Variables:
+# mode: tcl
+# page-delimiter: "^#PAGE"
+# End:

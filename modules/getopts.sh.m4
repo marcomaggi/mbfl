@@ -77,6 +77,8 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\tprint debug messages
 \t--test
 \t\ttests execution
+\t--validate-programs
+\t\tchecks the existence of all the required external programs
 \t--version
 \t\tprint version informations and exit
 \t--version-only
@@ -230,6 +232,10 @@ function mbfl_getopts_p_option () {
         i|interactive)
 	    mbfl_option_INTERACTIVE="yes"
 	    ;;
+        validate-programs)
+            mbfl_program_validate_declared
+            exit $?
+            ;;
 	version)
 	    echo -e "${mbfl_message_VERSION}"
 	    exit 0

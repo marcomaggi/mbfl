@@ -44,6 +44,12 @@ function mbfl_message_set_channel () {
 }
 function mbfl_option_verbose () { return 1; }
 function mbfl_option_debug () { return 1; }
+function mbfl_set_option_verbose () {
+    function mbfl_option_verbose () { return 0; }
+}
+function mbfl_unset_option_verbose () {
+    function mbfl_option_verbose () { return 1; }
+}
 #PAGE
 function mbfl_message_p_print () {
     echo -ne "${2:?${1} error: missing argument}" >&${mbfl_message_CHANNEL}
