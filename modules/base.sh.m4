@@ -50,24 +50,20 @@ function mbfl_read_maybe_null () {
 ## Global option creation functions.
 ## ------------------------------------------------------------
 
-function mbfl_create_option_procedures () {
-    local NAME=${1:?"missing option name parameter to ${FUNCNAME}"}
+m4_define([[mbfl_create_option_procedures]], [[
+    function mbfl_set_option_$1 ()   { function mbfl_option_$1 () { true;  }; }
+    function mbfl_unset_option_$1 () { function mbfl_option_$1 () { false; }; }
+    mbfl_unset_option_$1
+]])
 
-    eval function mbfl_set_option_${NAME} \(\) \{ \
-        eval function mbfl_option_${NAME} \\\(\\\) \\{ return 0\\\; \\\}\; \}
-    eval function mbfl_unset_option_${NAME} \(\) \{ \
-        eval function mbfl_option_${NAME} \\\(\\\) \\{ return 1\\\; \\\}\; \}
-    mbfl_unset_option_${NAME}
-}
-
-mbfl_create_option_procedures test
-mbfl_create_option_procedures verbose_program
-mbfl_create_option_procedures show_program
-mbfl_create_option_procedures verbose
-mbfl_create_option_procedures debug
-mbfl_create_option_procedures null
-mbfl_create_option_procedures interactive
-mbfl_create_option_procedures encoded_args
+mbfl_create_option_procedures(test)
+mbfl_create_option_procedures(verbose_program)
+mbfl_create_option_procedures(show_program)
+mbfl_create_option_procedures(verbose)
+mbfl_create_option_procedures(debug)
+mbfl_create_option_procedures(null)
+mbfl_create_option_procedures(interactive)
+mbfl_create_option_procedures(encoded_args)
 
 #page
 ## ------------------------------------------------------------

@@ -222,7 +222,7 @@ function mbfl_sprintf () {
     local OUTPUT=
     shift 2
     
-    OUTPUT=`printf "${FORMAT}" "$@"`
+    OUTPUT=$(printf "${FORMAT}" "$@")
     eval "${VARNAME}"=\'"${OUTPUT}"\'
 }
 #page

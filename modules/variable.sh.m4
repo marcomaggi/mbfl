@@ -38,7 +38,7 @@ function mbfl_variable_find_in_array () {
 }
 function mbfl_variable_element_is_in_array () {
     local pos
-    pos=`mbfl_variable_find_in_array "$@"`
+    pos=$(mbfl_variable_find_in_array "$@")
 }
 #page
 function mbfl_variable_colon_variable_to_array () {

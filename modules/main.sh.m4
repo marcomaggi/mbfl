@@ -150,8 +150,8 @@ function mbfl_main () {
     fi
 }
 function mbfl_invoke_script_function () {
-    local item="${1:?${FUNCNAME} error: missing function name}"
-    if test "`type -t ${item}`" = "function"; then ${item}; else return 0; fi
+    mandatory_parameter(item, 1, function name)
+    if test "$(type -t ${item})" = "function"; then ${item}; else return 0; fi
 }
 
 ### end of file

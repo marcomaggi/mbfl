@@ -120,7 +120,7 @@ function mbfl_declare_option () {
 
 
     mbfl_p_declare_option_test_length $keyword keyword $index
-    mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=`mbfl_string_toupper "$keyword"`
+    mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=$(mbfl_string_toupper "$keyword")
     mbfl_getopts_BRIEFS[$mbfl_getopts_INDEX]=$brief
     mbfl_getopts_LONGS[$mbfl_getopts_INDEX]=$long
 
@@ -146,7 +146,7 @@ function mbfl_declare_option () {
     mbfl_getopts_INDEX=$index
 
     # Creates the global option variable
-    eval script_option_`mbfl_string_toupper $keyword`=\'"${default}"\'
+    eval script_option_$(mbfl_string_toupper ${keyword})=\'"${default}"\'
 }
 function mbfl_p_declare_option_test_length () {
     local value="${1}"
@@ -179,7 +179,7 @@ function mbfl_getopts_p_process_script_option () {
         then
             if test "$hasarg" = "witharg"; then
                 if mbfl_option_encoded_args; then
-                    value=`mbfl_decode_hex "${OPTARG}"`
+                    value=$(mbfl_decode_hex "${OPTARG}")
                 else
                     value="$OPTARG"
                 fi
@@ -187,8 +187,8 @@ function mbfl_getopts_p_process_script_option () {
                 value="yes"
             fi
             
-            procedure=script_option_update_`mbfl_string_tolower $keyword`
-            variable=script_option_`mbfl_string_toupper $keyword`
+            procedure=script_option_update_$(mbfl_string_tolower ${keyword})
+            variable=script_option_$(mbfl_string_toupper ${keyword})
             eval $variable=\'"${value}"\'
             mbfl_invoke_script_function $procedure
             return 0
@@ -404,7 +404,7 @@ function mbfl_getopts_islong_with () {
 
     # The min length of a long option with is 5 (example: --o=1).
     test $len -lt 5 && return 1
-    equal_position=`mbfl_string_first "${ARGUMENT}" =`
+    equal_position=$(mbfl_string_first "${ARGUMENT}" =)
     test -z "$equal_position" -o $(($equal_position + 1)) = $len && return 1
 
     mbfl_getopts_islong "${ARGUMENT:0:$equal_position}" || return 1
@@ -448,7 +448,7 @@ function mbfl_getopts_isbrief_with () {
         "${COMMAND_LINE_ARGUMENT:1:1}" && return 1
 
     mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${COMMAND_LINE_ARGUMENT:1:1}"
-    local QUOTED_VALUE=`mbfl_string_quote "${COMMAND_LINE_ARGUMENT:2}"`
+    local QUOTED_VALUE=$(mbfl_string_quote "${COMMAND_LINE_ARGUMENT:2}")
     mbfl_set_maybe "${VALUE_VARIABLE_NAME}" "${QUOTED_VALUE}"
     return 0
 }
@@ -464,7 +464,7 @@ function mbfl_getopts_p_decode_hex () {
 
     mbfl_option_encoded_args && {
         for ((i=0; $i < $ARGC; ++i))
-          do ARGV[$i]=`mbfl_decode_hex "${ARGV[$i]}"`
+          do ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
         done
     }
     return 0
@@ -498,7 +498,7 @@ function mbfl_argv_all_files () {
 
 
     for ((i=0; $i < $ARGC; ++i)) ; do
-	file=`mbfl_file_normalise "${ARGV[$i]}"`
+	file=$(mbfl_file_normalise "${ARGV[$i]}")
 	if test ! -f "${file}" ; then
 	    mbfl_message_error "unexistent file '${file}'"
 	    return 1

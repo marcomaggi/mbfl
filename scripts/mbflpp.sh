@@ -32,31 +32,52 @@
 ## ------------------------------------------------------------
 
 script_PROGNAME=mbflpp.sh
-script_VERSION='@PACKAGE_XVERSION@'
+script_VERSION='__PACKAGE_VERSION__'
 script_COPYRIGHT_YEARS=2005
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] <INFILE >OUTFILE"
 script_DESCRIPTION='Script preprocessor for MBFL.'
 
-source "${MBFL_LIBRARY:=`mbfl-config`}"
+source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
 # keyword default-value brief-option long-option has-argument description
-mbfl_declare_option ALPHA no a alpha noarg "selects action alpha"
-mbfl_declare_option BETA "" b beta  witharg "selects option beta"
-mbfl_declare_option VALUE 0 "" value witharg "selects a value"
-mbfl_declare_option FILE 0 f file witharg "selects a file"
-mbfl_declare_option ENABLE no e enable noarg "enables a feature"
-mbfl_declare_option DISABLE no d disable noarg "disables a feature"
+mbfl_declare_option PRESERVE_COMMENTS \
+    no "" preserve-comments noarg "do not filter out comments"
+mbfl_declare_option DEFINE \
+    "" "" define witharg "define a new symbols (m4 syntax)"
+mbfl_declare_option INCLUDE \
+    "" "" include witharg "add a search path for files"
+mbfl_declare_option LIBRARY \
+    "" "" library witharg "include an M4 library"
 
 mbfl_declare_program m4
+mbfl_declare_program grep
+mbfl_declare_program sed
 
 #page
 ## ------------------------------------------------------------
 ## Global variables.
 ## ------------------------------------------------------------
 
-hidden_option_DATADIR='@datadir@/@PACKAGE_NAME@_@PACKAGE_XVERSION@'
+hidden_option_DATADIR='__PKGDATADIR__'
+
+declare symbols libraries includes
+
+#page
+## ------------------------------------------------------------
+## Option update functions.
+## ------------------------------------------------------------
+
+function script_option_update_define () {
+    symbols="${symbols} --define=${script_option_DEFINE}"
+}
+function script_option_update_library () {
+    libraries="${libraries} ${script_option_LIBRARY}"
+}
+function script_option_update_include () {
+    includes="${includes} --include=${script_option_INCLUDE}"
+}
 
 #page
 ## ------------------------------------------------------------
@@ -67,9 +88,28 @@ function main () {
     local M4_FLAGS='--prefix-builtins'
     local libfile=${hidden_option_DATADIR}/preprocessor.m4
 
-    M4_FLAGS="${M4_FLAGS} --include=${libfile}"
-set -x
-    program_m4 ${M4_FLAGS}
+    
+    M4_FLAGS="${M4_FLAGS} ${includes} ${symbols}"
+    mbfl_file_is_readable "${libfile}" && M4_FLAGS="${M4_FLAGS} ${libfile}"
+    M4_FLAGS="${M4_FLAGS} ${libraries}"    
+
+    if test "${script_option_PRESERVE_COMMENTS}" = "yes"; then
+        function filter_drop_comments () {
+            while read line; do echo "$line" ; done;
+        }
+    fi
+
+    program_m4 ${M4_FLAGS} - | filter_drop_comments
+}
+
+#page
+## ------------------------------------------------------------
+## Stream filters.
+## ------------------------------------------------------------
+
+function filter_drop_comments () {
+    program_grep --invert-match -e '^[ \t]*#' -e '^$' | \
+        program_sed -e 's/^[[:blank:]]\+//'
 }
 
 #page
@@ -78,8 +118,16 @@ set -x
 ## ------------------------------------------------------------
 
 function program_m4 () {
-    local M4=`mbfl_program_found m4`
+    local M4=$(mbfl_program_found m4)
     mbfl_program_exec ${M4} "$@"
+}
+function program_grep () {
+    local GREP=$(mbfl_program_found grep)
+    mbfl_program_exec ${GREP} "$@"
+}
+function program_sed () {
+    local SED=$(mbfl_program_found sed)
+    mbfl_program_exec ${SED} "$@"
 }
 
 #page

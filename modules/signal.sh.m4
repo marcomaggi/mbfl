@@ -46,7 +46,7 @@ function mbfl_signal_map_signame_to_signum () {
 
 
     for ((i=0; $i < $mbfl_signal_MAX_SIGNUM; ++i)) ; do
-        test "SIG`kill -l $i`" = "${SIGSPEC}" && {
+        test "SIG$(kill -l $i)" = "${SIGSPEC}" && {
             echo $i
             return 0
         }
@@ -59,7 +59,7 @@ function mbfl_signal_attach () {
     local signum
 
 
-    signum=`mbfl_signal_map_signame_to_signum "${SIGSPEC}"` || return 1
+    signum=$(mbfl_signal_map_signame_to_signum "${SIGSPEC}") || return 1
     if test -z ${mbfl_signal_HANDLERS[${signum}]} ; then
         mbfl_signal_HANDLERS[${signum}]=${HANDLER}
     else
@@ -73,7 +73,7 @@ function mbfl_signal_invoke_handlers () {
     mandatory_parameter(SIGNUM, 1, signal number)
     local handler ORGIFS="$IFS"
 
-    mbfl_message_debug "received signal 'SIG`kill -l ${SIGNUM}`'"
+    mbfl_message_debug "received signal 'SIG$(kill -l ${SIGNUM})'"
     IFS=:
     for handler in ${mbfl_signal_HANDLERS[$SIGNUM]} ; do
         IFS="$ORGIFS"

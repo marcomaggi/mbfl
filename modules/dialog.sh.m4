@@ -47,7 +47,7 @@ function mbfl_dialog_yes_or_no () {
 function mbfl_dialog_ask_password () {
     mandatory_parameter(PROMPT, 1, prompt)
     local PASSWORD=
-    local STTY=`mbfl_program_found stty`
+    local STTY=$(mbfl_program_found stty)
 
     echo -n "${prompt}: " >&2
     ${STTY} cbreak -echo </dev/tty >/dev/tty 2>&1

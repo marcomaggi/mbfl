@@ -130,7 +130,7 @@ reconfigure:
 
 #PAGE
 ## ------------------------------------------------------------
-## Search paths.
+## Search paths and programs.
 ## ------------------------------------------------------------
 
 vpath	%.m4		$(top_srcdir)/macros
@@ -143,8 +143,13 @@ ds-files-from-dir	= $(filter-out %~, $(wildcard $(1)/*))
 ds-make-dir		= $(shell test ! -d $(1) && $(MKDIR) $(1))
 ds-replace-dir		= $(addprefix $(1)/, $(notdir $(2)))
 
-M4FLAGS		= --include=$(top_srcdir)/macros \
-		  --include=$(builddir)/lib
+MBFLPP	= $(BASH) $(top_srcdir)/scripts/mbflpp.sh			\
+		--include=$(top_srcdir)/macros				\
+		--include=$(builddir)/lib				\
+		--library=preprocessor.m4	 			\
+		--define=__PKGDATADIR__=$(pkgdatadir)			\
+		--define=__PACKAGE_NAME__=$(PACKAGE_NAME)		\
+		--define=__PACKAGE_VERSION__=$(PACKAGE_XVERSION)
 
 #PAGE
 ## ------------------------------------------------------------
@@ -190,13 +195,11 @@ endif
 
 
 
-$(library_SOURCES): $(library_BUILDDIR)/%.sh: preprocessor.m4 $(library_SRCDIR)/%.sh.m4
-	$(M4) $(M4FLAGS) $(^) | \
-	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
+$(library_SOURCES): $(library_BUILDDIR)/%.sh: $(library_SRCDIR)/%.sh.m4 preprocessor.m4
+	$(MBFLPP) <$(<) >$(@)
 
 $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(library_SOURCES)
-	$(M4) $(M4FLAGS) preprocessor.m4 $(<) >$(@)
-
+	$(MBFLPP) --show-program --preserve-comments <$(<) >$(@)
 
 bin:		library-all
 bin-clean:	library-clean
@@ -208,10 +211,11 @@ bin-install:	library-install
 ## Script rules.
 ## ------------------------------------------------------------
 
+libexec_TARGETS		= mbflpp.sh
 libexec_INSTLST		= mbfl-config mbflpp.sh
 libexec_INSTDIR		= $(pkglibexecdir)
 
-libexec_CLEANFILES	= $(script_TARGETS)
+libexec_CLEANFILES	= $(libexec_TARGETS)
 libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
 
 .PHONY: script-all script-clean script-realclean script-install
@@ -241,6 +245,9 @@ endif
 	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfl-config mbfl-config
 	cd $(INSTALL_ROOT)$(bindir) && \
 	$(SYMLINK) ../libexec/$(PKG_DIR)/mbflpp.sh mbflpp.sh
+
+mbflpp.sh: $(top_srcdir)/scripts/mbflpp.sh
+	$(MBFLPP) --preserve-comments <$(<) >$(@)
 
 bin:		script-all
 bin-clean:	script-clean

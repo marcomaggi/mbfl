@@ -31,7 +31,7 @@ function mbfl_program_check () {
 
 
     for item in "${@}"; do
-        path=`mbfl_program_find "${item}"`
+        path=$(mbfl_program_find "${item}")
         if test ! -x "${path}" ; then
             mbfl_message_error "cannot find executable '${item}'"
             return 1
@@ -43,7 +43,7 @@ function mbfl_program_find () {
     local PROGRAM=${1:?"missing program parameter to ${FUNCNAME}"}
     local program=
 
-    for program in `type -ap "${PROGRAM}"`; do
+    for program in $(type -ap "${PROGRAM}"); do
         if test -n "${program}" -a -x "${program}"; then
             echo "${program}"
             return 0
@@ -69,7 +69,7 @@ function mbfl_declare_program () {
     local i=$mbfl_program_INDEX
 
     mbfl_program_NAMES[$i]="${PROGRAM}"
-    mbfl_program_PATHS[$i]=`mbfl_program_find "${PROGRAM}"`
+    mbfl_program_PATHS[$i]=$(mbfl_program_find "${PROGRAM}")
     mbfl_program_INDEX=$(($i + 1))
     return 0
 }
