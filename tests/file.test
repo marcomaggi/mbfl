@@ -241,7 +241,7 @@ function file-remove-1.2 () {
 }
 function file-remove-1.3 () {
     dotest-mktmpdir
-    local name=$(dotest-mkfile dir.d)
+    local name=$(dotest-mkfile file.ext)
 
     mbfl_file_enable_remove
     mbfl_file_remove "$name"

@@ -16,9 +16,12 @@ ds-files-from-dir	= $(filter-out %~, $(wildcard $(1)/*))
 ds-make-dir		= $(shell test ! -d $(1) && $(MKDIR) $(1))
 ds-replace-dir		= $(addprefix $(1)/, $(notdir $(2)))
 
+library_SRCDIR		= $(top_srcdir)/modules
+library_BUILDDIR	= $(builddir)/modules
+
 MBFLPP	= $(BASH) $(top_srcdir)/scripts/mbflpp.sh			\
 		--include=$(top_srcdir)/macros				\
-		--include=$(builddir)/lib				\
+		--include=$(library_BUILDDIR)				\
 		--library=preprocessor.m4	 			\
 		--define=__PKGDATADIR__=$(pkgdatadir)			\
 		--define=__PACKAGE_NAME__=$(PACKAGE_NAME)		\
@@ -28,9 +31,6 @@ MBFLPP	= $(BASH) $(top_srcdir)/scripts/mbflpp.sh			\
 ## ------------------------------------------------------------
 ## Library rules.
 ## ------------------------------------------------------------
-
-library_SRCDIR		= $(top_srcdir)/modules
-library_BUILDDIR	= $(builddir)/lib
 
 MODULES			= base encode file getopts message program signal \
 			  string dialog main variable

@@ -94,12 +94,10 @@ function main () {
     M4_FLAGS="${M4_FLAGS} ${libraries}"    
 
     if test "${script_option_PRESERVE_COMMENTS}" = "yes"; then
-        function filter_drop_comments () {
-            while read line; do echo "$line" ; done;
-        }
+        program_m4 ${M4_FLAGS} -
+    else
+        program_m4 ${M4_FLAGS} - | filter_drop_comments
     fi
-
-    program_m4 ${M4_FLAGS} - | filter_drop_comments
 }
 
 #page

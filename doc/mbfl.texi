@@ -795,6 +795,10 @@ argument value must be @code{print_error}.
 
 @unnumberedsubsec File functions
 
+@deffn Function mbfl_file_exists @var{pathname}
+Returns true if @var{pathname} exists.
+@end deffn
+
 @deffn Function mbfl_file_is_file @var{filename} ?@var{PRINT_ERROR}?
 Returns true if @var{filename} is not the empty string and is a file.
 @end deffn

@@ -263,7 +263,7 @@ function mbfl_file_remove () {
     local FLAGS="--force --recursive"
 
     if ! mbfl_option_test ; then
-        if test -e "${PATHNAME}" ; then
+        if ! mbfl_file_exists "${PATHNAME}" ; then
             mbfl_message_error "pathname does not exist '${PATHNAME}'"
             return 1
         fi
@@ -425,6 +425,9 @@ function mbfl_p_file_print_error_return_result () {
 
 # ------------------------------------------------------------
 
+function mbfl_file_exists () {
+    test -e "${1}"
+}
 function mbfl_file_pathname_is_readable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}

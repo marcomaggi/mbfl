@@ -1,4 +1,4 @@
-# libMBFL.m4 --
+# libmbfl.m4 --
 # 
 # Part of: Marco's BASH Functions Library
 # Contents: library file
