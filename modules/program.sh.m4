@@ -56,7 +56,7 @@ function mbfl_program_exec () {
         echo "${@}" >&2
     fi
     if ! mbfl_option_test ; then
-        eval "${@}"
+        "${@}"
     fi
 }
 #page

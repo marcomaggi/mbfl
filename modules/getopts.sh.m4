@@ -327,7 +327,7 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
 }
 #page
 function mbfl_getopts_p_build_and_print_options_usage () {
-    local i=0
+    local i=0 item
     local brief= long= description= long_hasarg= long_hasarg=
 
 
@@ -347,7 +347,19 @@ function mbfl_getopts_p_build_and_print_options_usage () {
         test -n "$long" && echo -e "\t--${long}${long_hasarg}"
 
         description="${mbfl_getopts_DESCRIPTION[$i]}"
-        test -n && echo -e "\t\t$description"
+
+        if test -z "${description}" ; then
+            description='undocumented option'
+        fi
+        if test "${mbfl_getopts_HASARG[$i]}" = 'witharg' ; then
+            item="${mbfl_getopts_DEFAULTS[$i]}"
+            if test -n "${item}" ; then
+                description="${description}\n\t\t(default: '${item}')"
+            else
+                description="${description}\n\t\t(default: empty)"
+            fi
+        fi
+        echo -e "\t\t$description"
     done
 }
 #PAGE
