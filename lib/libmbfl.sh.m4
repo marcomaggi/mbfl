@@ -27,6 +27,7 @@
 # USA
 # 
 
+mbfl_LOADED='yes'
 m4_include(macros.m4)
 m4_include(base.sh)
 m4_include(string.sh)
@@ -36,6 +37,7 @@ m4_include(getopts.sh)
 m4_include(message.sh)
 m4_include(program.sh)
 m4_include(signal.sh)
+m4_include(variable.sh)
 m4_include(dialog.sh)
 m4_include(main.sh)
 

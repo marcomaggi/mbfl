@@ -1,4 +1,4 @@
-# test.sh --
+# libmbfltest.sh --
 # 
 # Part of: Marco's BASH Functions Library
 # Contents: test functions
@@ -122,11 +122,9 @@ function dotest () {
     local FUNCTIONS; declare -a FUNCTIONS
     local name= item= result=
     local ORGPWD="$PWD"
-    local ENVIRONMENT ENV=$(type -ap env)
 
 
     PATTERN="${TESTMATCH:-${PATTERN}}"
-
     dotest-p-report-start-from-environment
     dotest-p-report-success-from-environment
 

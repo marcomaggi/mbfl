@@ -31,11 +31,13 @@
 ## Global variables.
 ## ------------------------------------------------------------
 
-declare -a mbfl_signal_HANDLERS
+if test "${mbfl_INTERACTIVE}" != 'yes'; then
+    declare -a mbfl_signal_HANDLERS
 
-i=0
-{ while kill -l $i ; do let ++i; done; } &>/dev/null
-declare -i mbfl_signal_MAX_SIGNUM=$i
+    i=0
+    { while kill -l $i ; do let ++i; done; } &>/dev/null
+    declare -i mbfl_signal_MAX_SIGNUM=$i
+fi
 
 #PAGE
 function mbfl_signal_map_signame_to_signum () {

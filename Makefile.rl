@@ -55,13 +55,15 @@ M4FLAGS		= --include=$(top_srcdir)/lib \
 ## ------------------------------------------------------------
 
 MODULES			= base encode file getopts message program signal \
-			  string dialog main
+			  string dialog main variable
 LIBNAME			= libmbfl.sh
+LIBRARIES		= $(append $(top_srcdir)/lib/, \
+			    libmbfltest.sh libmbfluser.sh)
 
 library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(foreach m, $(MODULES), $(m).sh)
 library_TARGETS		= $(LIBNAME)
-library_INSTLST		= $(library_TARGETS) $(top_srcdir)/lib/mbfltest.sh
+library_INSTLST		= $(library_TARGETS) $(LIBRARIES)
 library_INSTDIR		= $(pkgdatadir)
 
 library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES)
@@ -143,18 +145,16 @@ doc-install:	template-install
 ## Test rules.
 ## ------------------------------------------------------------
 
-test_MODULES	= string file encode getopts message program script signal
 testdir		= $(top_srcdir)/tests
-test_FILES	= $(foreach f, $(test_MODULES), $(testdir)/$(f).test)
+test_FILES	= $(wildcard $(testdir)/*.test)
 test_TARGETS	= test-modules
 
 test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
-test_ENV	+= TESTMATCH=$(TESTMATCH)
 test_CMD	= $(test_ENV) $(BASHPROG)
 
 test-modules:
 ifneq ($(strip $(test_FILES)),)
-	$(foreach f, $(test_FILES), \
+	@$(foreach f, $(test_FILES), \
 	top_srcdir=$(top_srcdir); $(test_CMD) $(f);)
 endif
 

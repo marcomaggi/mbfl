@@ -52,9 +52,10 @@ function mbfl_program_find () {
     type -ap "${1:?${FUNCNAME} error: missing program name}"
 }
 #page
-declare -a mbfl_program_NAMES mbfl_program_PATHS
-declare -i mbfl_program_INDEX=0
-
+if test "${mbfl_INTERACTIVE}" != 'yes'; then
+    declare -a mbfl_program_NAMES mbfl_program_PATHS
+    declare -i mbfl_program_INDEX=0
+fi
 function mbfl_declare_program () {
     local PROGRAM="${1:?${FUNCNAME} error: missing program name}"
     local i=$mbfl_program_INDEX

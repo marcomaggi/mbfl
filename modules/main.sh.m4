@@ -33,18 +33,22 @@
 ## Generic variables.
 ## ------------------------------------------------------------
 
-mbfl_option_TMPDIR="${TMPDIR:-/tmp}"
-mbfl_ORG_PWD="${PWD}"
-
-mbfl_main_SCRIPT_FUNCTION=main
+if test "${mbfl_INTERACTIVE}" != 'yes'; then
+    mbfl_option_TMPDIR="${TMPDIR:-/tmp}"
+    mbfl_ORG_PWD="${PWD}"
+    mbfl_main_SCRIPT_FUNCTION=main
+fi
 
 function mbfl_main_set_main () {
     mbfl_main_SCRIPT_FUNCTION="${1:?}"    
 }
+
 #PAGE
 ## ------------------------------------------------------------
 ## License message variables.
 ## ------------------------------------------------------------
+
+if test "${mbfl_INTERACTIVE}" != 'yes'; then
 
 mbfl_message_LICENSE_GPL="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
@@ -105,10 +109,14 @@ AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 "
 
+fi
+
 #PAGE
 ## ------------------------------------------------------------
 ## Version message variables.
 ## ------------------------------------------------------------
+
+if test "${mbfl_INTERACTIVE}" != 'yes'; then
 
 mbfl_message_VERSION="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
@@ -117,6 +125,8 @@ This is  free software; see the  source or use the  --license option for
 copying conditions.  There is NO warranty; not  even for MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.
 "
+
+fi
 
 #PAGE
 function mbfl_main () {
@@ -140,5 +150,4 @@ function mbfl_invoke_script_function () {
 ### end of file
 # Local Variables:
 # mode: sh
-# page-delimiter: "^#PAGE$"
 # End:

@@ -35,26 +35,30 @@
 ## Global variables.
 ## ------------------------------------------------------------
 
-declare -i ARGC=0
-declare -a ARGV ARGV1
+if test "${mbfl_INTERACTIVE}" != 'yes'; then
+    declare -i ARGC=0
+    declare -a ARGV ARGV1
 
-for ((ARGC1=0; $# > 0; ++ARGC1)); do
-    ARGV1[$ARGC1]="$1"
-    shift
-done
+    for ((ARGC1=0; $# > 0; ++ARGC1)); do
+        ARGV1[$ARGC1]="$1"
+        shift
+    done
 
-mbfl_getopts_INDEX=0
-declare -a mbfl_getopts_KEYWORDS
-declare -a mbfl_getopts_DEFAULTS
-declare -a mbfl_getopts_BRIEFS
-declare -a mbfl_getopts_LONGS
-declare -a mbfl_getopts_HASARGS
-declare -a mbfl_getopts_DESCRIPTION
+    mbfl_getopts_INDEX=0
+    declare -a mbfl_getopts_KEYWORDS
+    declare -a mbfl_getopts_DEFAULTS
+    declare -a mbfl_getopts_BRIEFS
+    declare -a mbfl_getopts_LONGS
+    declare -a mbfl_getopts_HASARGS
+    declare -a mbfl_getopts_DESCRIPTION
+fi
 
 #page
 ## ------------------------------------------------------------
 ## Default options description.
 ## ------------------------------------------------------------
+
+if test "${mbfl_INTERACTIVE}" != 'yes'; then
 
 mbfl_message_DEFAULT_OPTIONS="
 \t-i
@@ -90,6 +94,8 @@ mbfl_message_DEFAULT_OPTIONS="
 \t--usage
 \t\tprint usage informations and exit
 "
+
+fi
 
 #page
 function mbfl_declare_option () {

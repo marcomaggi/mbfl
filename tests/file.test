@@ -35,8 +35,7 @@
 ## Setup.
 ## ------------------------------------------------------------
 
-source mbfltest.sh
-source libmbfl.sh
+source setup.sh
 
 testfile="$TMPDIR/proof.txt"
 

@@ -33,9 +33,7 @@
 ## Setup.
 ## ------------------------------------------------------------
 
-for item in mbfltest.sh libmbfl.sh
-    do source $item
-done
+source setup.sh
 
 #PAGE
 

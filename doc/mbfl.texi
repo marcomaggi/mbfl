@@ -13,6 +13,10 @@
 @acronym{MBFL}
 @end macro
 
+@macro copyrightyears{}
+2003, 2004
+@end macro
+
 
 @c ------------------------------------------------------------
 @titlepage
@@ -22,7 +26,7 @@
 @page
 @vskip 0pt plus 1filll
 @noindent
-Copyright @copyright{}  2003, 2004  by Marco Maggi.
+Copyright @copyright{}  @copyrightyears{} by Marco Maggi.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
@@ -51,7 +55,7 @@ Documentation License''.
 This file documents version @version{} or @mbfl{}, a collection
 of @acronym{GNU} @command{bash} shell functions.
 
-Copyright @copyright{}  2003, 2004  by Marco Maggi.
+Copyright @copyright{}  @copyrightyears{}  by Marco Maggi.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
@@ -72,6 +76,7 @@ Documentation License''.
 * Signal::                      Catching signals.
 * String::                      Manipulating strings.
 * Dialog::                      Interacting with the user.
+* Variables::                   Manipulating variables.
 * Main::                        Main function.
 * Testing::                     Building test suites.
 
@@ -128,6 +133,7 @@ file @file{libmbfl.sh} in the script; this is possible by installing
 @mbfl{} on the system and using this code in the scripts:
 
 @example
+mbfl_INTERACTIVE='no'
 source "$@{MBFL_LIBRARY:=`mbfl-config`@}"
 @end example
 
@@ -213,6 +219,31 @@ Some functions take a variable name as argument and store in the
 referenced variable some value; to avoid name collision: select a name
 that starts with @code{p_}. It is guaranteed that @mbfl{} never use
 variables with name starting with such a prefix.
+
+@item
+It is possible to source the library in an interactive shell: though
+some modules must be disabled. To do this execute the following code in
+the shell before sourcing the library:
+
+@example
+mbfl_INTERACTIVE='yes'
+@end example
+
+@noindent
+whitout exporting the variable. The ``dangerous'' blocks of code in the
+library are surrounded by:
+
+@example
+if test "$@{mbfl_INTERACTIVE@}" != 'yes'; then
+...
+fi
+@end example
+
+@noindent
+so they are not executed. Disabled modules are: main, getopts, signal;
+``disabled'' does not mean that the functions are not there: only the
+global variable declarations are excluded; this is a little dirty, but,
+at present, it works.
 @end itemize
 
 
@@ -1684,11 +1715,70 @@ If the initial value of the offset corresponds to a char equal to
 @unnumbered Interacting with the user
 
 
-@deffn Function mbfl_dialog_yes_or_no @var{string}
+@deffn Function mbfl_dialog_yes_or_no @var{string} ?@var{progname}?
 Prints the question @var{string} on the standard output and waits for
 the user to type @code{yes} or @code{no} in the standard input. Returns
 true if the user has typed @code{yes}, false if the user has typed
 @code{no}.
+
+The optional parameter @var{progname} is used as prefix for the prompt;
+if not given: defaults to the value of @var{script_PROGNAME}
+(@ref{Service Variables} for details).
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node Variables
+@unnumbered Manipulating variables
+
+
+@menu
+* Variables Arrays::
+* Variables Colon::
+@end menu
+
+@c ------------------------------------------------------------
+@node Variables Arrays
+@unnumberedsec Manipulating arrays
+
+
+@deffn Function mbfl_variable_find_in_array @var{element}
+Searches the array @code{mbfl_FIELDS} for a value equal to
+@var{element}. If it is found: prints the index and returns true; else
+prints nothing and returns false.
+
+@code{mbfl_FIELDS} must be filled with elements having subsequent
+indexes starting at zero.
+@end deffn
+
+
+@deffn Function mbfl_variable_element_is_in_array @var{element}
+A wrapper for @code{mbfl_variable_find_in_array} that does not print
+anything.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node Variables Colon
+@unnumberedsec Manipulating colon variables
+
+
+@deffn Function mbfl_variable_colon_variable_to_array @var{varname}
+Reads @var{varname}'s value, a colon separated list of string, and
+stores each string in the array @code{mbfl_FIELDS}, starting with a base
+index of zero.
+@end deffn
+
+
+@deffn Function mbfl_variable_array_to_colon_variable @var{varname}
+Stores each value in the array @code{mbfl_FIELDS} in @var{varname} as a
+colon separated list of strings.
+@end deffn
+
+
+@deffn Function mbfl_variable_colon_variable_drop_duplicate @var{varname}
+Reads @var{varname}'s value, a colon separated list of string, and
+removes duplicates.
 @end deffn
 
 

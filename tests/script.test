@@ -30,7 +30,8 @@
 ## Setup.
 ## ------------------------------------------------------------
 
-source mbfltest.sh
+source setup.sh
+
 function script () {
     $BASH ../examples/template.sh "$@"
 }

@@ -28,19 +28,16 @@
 # 
 
 function mbfl_dialog_yes_or_no () {
-    local STRING="${1:?}"
-    local PROMPT="${script_PROGNAME}: ${STRING}? (yes/no) "
+    mandatory_parameter(STRING, 1, prompt string)
+    optional_parameter(PROGNAME, 2, ${script_PROGNAME})
+    local PROMPT="${PROGNAME}: ${STRING}? (yes/no) "
     local ANS=
 
-
-    read -e -p "${PROMPT}" ANS
-    while test "$ANS" != 'yes' -a "$ANS" != 'no'; do
-        echo 'Please answer yes or no.'
-        read -e -p "${PROMPT}" ANS
-    done
     
-    test "$ANS" = yes && return 0
-    return 1
+    while read -e -p "${PROMPT}" ANS && test "$ANS" != 'yes' -a "$ANS" != 'no'; do
+        echo "${PROGNAME}: please answer yes or no."
+    done
+    if test "$ANS" = yes ; then return 0; else return 1; fi
 }
 
 ### end of file

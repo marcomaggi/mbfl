@@ -27,25 +27,19 @@
 # 
 
 function mbfl_decode_hex () {
-    local in="${1:?}"
-    local len="${#in}"
-    local i=0
+    mandatory_parameter(INPUT, 1, input string)
 
-    while test $i -lt $len ; do
-        echo -en "\\x${in:$i:2}"
-        i=$(($i + 2))
+    for ((i=0; $i < ${#INPUT}; i=$(($i + 2)))) ; do
+        echo -en "\\x${INPUT:$i:2}"
     done
     echo;# to end the line and let "read" acquire the stuff from a pipeline
 }
 
 function mbfl_decode_oct () {
-    local in="${1:?}"
-    local len="${#in}"
-    local i=0
+    mandatory_parameter(INPUT, 1, input string)
 
-    while test $i -lt $len ; do
-        echo -en "\\${in:$i:3}"
-        i=$(($i + 3))
+    for ((i=0; $i < ${#INPUT}; i=$(($i + 3)))) ; do
+        echo -en "\\${INPUT:$i:3}"
     done
     echo;# to end the line and let "read" acquire the stuff from a pipeline
 }

@@ -45,6 +45,7 @@ Marco's BASH Functions Library configuration script
 options:
    --library        prints the full pathname of the library
    --testlib        prints the full pathname of the testing library
+   --userlib        prints the full pathname of the user library
    --full-version   prints the full version number (with release state)
    --version        prints the full version number (with patch level)
    --base-version   prints the full version number (only major.minor)
@@ -60,7 +61,10 @@ case "${OPTION}" in
 	echo "${pkgdatadir}/libmbfl.sh"	
 	;;
     --testlib)
-	echo "${pkgdatadir}/mbfltest.sh"
+	echo "${pkgdatadir}/libmbfltest.sh"
+	;;
+    --userlib)
+	echo "${pkgdatadir}/libmbfluser.sh"
 	;;
     --full-version)
 	echo "${FULL_VERSION}"

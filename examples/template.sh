@@ -39,6 +39,7 @@ script_AUTHOR="Marco Maggi and Marco Maggi"
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
 
+mbfl_INTERACTIVE='no'
 source "${MBFL_LIBRARY:=`mbfl-config`}"
 
 # keyword default-value brief-option long-option has-argument description

@@ -33,8 +33,7 @@
 ## Setup.
 ## ------------------------------------------------------------
 
-source mbfltest.sh
-source encode.sh
+source setup.sh
 
 #PAGE
 
