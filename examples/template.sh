@@ -7,7 +7,7 @@
 # Abstract
 # 
 #	This script shows how an MBFL script should be organised
-#	to use the "mbfl.m4" autocomposition macro file.
+#	to use MBFL.
 # 
 # Copyright (c) 2004 Marco Maggi
 # 

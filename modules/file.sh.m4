@@ -248,66 +248,80 @@ function mbfl_file_enable_remove () {
     mbfl_declare_program rmdir
 }
 function mbfl_file_remove () {
-    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
-    local RM=`mbfl_program_found rm`
-    local RM_FLAGS="--force --recursive"
+    local PATHNAME=${1:?"missing pathname parameter in ${FUNCNAME}"}
+    local FLAGS="--force --recursive"
 
-    test -e "${PATHNAME}" || {
-        mbfl_message_error "pathname does not exist '${PATHNAME}'"
-        return 1
-    }
-    mbfl_option_verbose && RM_FLAGS="${RM_FLAGS} --verbose"
-    mbfl_program_exec $RM $RM_FLAGS "${PATHNAME}" || return 1
+    if test ! mbfl_option_test ; then
+        if test -e "${PATHNAME}" ; then
+            mbfl_message_error "pathname does not exist '${PATHNAME}'"
+            return 1
+        fi
+    fi
+    mbfl_exec_rm "${PATHNAME}" ${FLAGS}
 }
 function mbfl_file_remove_file () {
-    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
-    local RM=`mbfl_program_found rm`
-    local RM_FLAGS="--force"
+    local PATHNAME=${1:?"missing pathname parameter in ${FUNCNAME}"}
+    local FLAGS="--force"
 
-    mbfl_file_is_file "${PATHNAME}" || {
-        mbfl_message_error "pathname is not a file '${PATHNAME}'"
-        return 1
-    }
-    mbfl_option_verbose && RM_FLAGS="${RM_FLAGS} --verbose"
-    mbfl_program_exec $RM $RM_FLAGS "${PATHNAME}" || return 1
+    if test ! mbfl_option_test ; then
+        if ! mbfl_file_is_file "${PATHNAME}" ; then
+            mbfl_message_error "pathname is not a file '${PATHNAME}'"
+            return 1
+        fi
+    fi
+    mbfl_exec_rm "${PATHNAME}" ${FLAGS}    
 }
-function mbfl_file_remove_directory () {
-    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
-    local REMOVE_SILENTLY="$2"
-    local RMDIR_FLAGS=
+function mbfl_exec_rm () {
+    local PATHNAME=${1:?"missing pathname parameter in ${FUNCNAME}"}
+    shift
+    local RM=`mbfl_program_found rm` FLAGS
 
-    mbfl_file_is_directory "${PATHNAME}" || {
+    if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
+    if ! mbfl_program_exec $RM ${FLAGS} "$@" -- "${PATHNAME}" ; then
+        return 1
+    fi
+}
+#page
+function mbfl_file_remove_directory () {
+    local PATHNAME=${1:?"missing pathname parameter in ${FUNCNAME}"}
+    local REMOVE_SILENTLY="$2" FLAGS=
+
+    if ! mbfl_file_is_directory "${PATHNAME}" ; then
         mbfl_message_error "pathname is not a directory '${PATHNAME}'"
         return 1
-    }
-
-    test "${REMOVE_SILENTLY}" = "yes" && \
-        RMDIR_FLAGS="${RMDIR_FLAGS} --ignore-fail-on-non-empty"
-    mbfl_option_verbose && \
-        RMDIR_FLAGS="${RMDIR_FLAGS} --verbose"
-
-    local RMDIR=`mbfl_program_found rmdir`
-    mbfl_program_exec $RMDIR $RMDIR_FLAGS "${PATHNAME}" || return 1
+    fi
+    if test "${REMOVE_SILENTLY}" = "yes" ; then
+        FLAGS="${FLAGS} --ignore-fail-on-non-empty"
+    fi
+    mbfl_exec_rmdir "${PATHNAME}" ${FLAGS}
 }
 function mbfl_file_remove_directory_silently () {
     mbfl_file_remove_directory "$1" yes
+}
+function mbfl_exec_rmdir () {
+    local PATHNAME=${1:?"missing pathname parameter to ${FUNCNAME}"}
+    shift
+    local RMDIR=`mbfl_program_found rmdir` FLAGS
+
+    if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
+    if ! mbfl_program_exec $RMDIR $FLAGS "$@" "${PATHNAME}" ; then
+        return 1
+    fi
 }
 #page
 function mbfl_file_enable_make_directory () {
     mbfl_declare_program mkdir
 }
 function mbfl_file_make_directory () {
-    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
-    local PERMISSIONS="${2}"
-    local MKDIR=`mbfl_program_found mkdir`
-    local MKDIR_FLAGS="--parents"
+    local PATHNAME=${1:?"missing pathname in ${FUNCNAME}"}
+    local PERMISSIONS=${2}
+    local MKDIR=`mbfl_program_found mkdir` FLAGS="--parents"
 
-    test -z "${PERMISSIONS}" && PERMISSIONS=0775
-    MKDIR_FLAGS="${MKDIR_FLAGS} --mode=${PERMISSIONS}"
-    
-    test -d "${PATHNAME}" && return
-    mbfl_option_verbose && MKDIR_FLAGS="${MKDIR_FLAGS} --verbose"
-    mbfl_program_exec $MKDIR $MKDIR_FLAGS "${PATHNAME}" || return 1    
+    if test -z "${PERMISSIONS}" ; then PERMISSIONS=0775 ; fi
+    FLAGS="${FLAGS} --mode=${PERMISSIONS}"
+    if test -d "${PATHNAME}" ; then return 0; fi
+    if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
+    mbfl_program_exec $MKDIR $FLAGS "${PATHNAME}" || return 1    
 }
 #page
 function mbfl_file_enable_listing () {
@@ -393,42 +407,54 @@ function mbfl_file_enable_tar () {
     mbfl_declare_program tar
 }
 function mbfl_tar_create_to_stdout () {
-    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
+    local DIRECTORY=${1:?"missing directory parameter in ${FUNCNAME}"}
     shift
 
-    mbfl_tar_exec ${TAR} --directory="${DIRECTORY}" \
-        --create --file=- "$@" . || return 1
+    if ! mbfl_tar_exec --directory="${DIRECTORY}" --create --file=- "$@" . ; then
+        return 1
+    fi
 }
 function mbfl_tar_extract_from_stdin () {
     local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
     shift
 
-    mbfl_tar_exec --directory="${DIRECTORY}" \
-        --extract --file=- "$@" || return 1
+    if ! mbfl_tar_exec --directory="${DIRECTORY}" --extract --file=- "$@" ; then
+        return 1
+    fi
 }
 function mbfl_tar_create_to_file () {
     local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
     local ARCHIVE_FILENAME="${2:?missing archive pathname parameter in ${FUNCNAME}}"
-    local TAR=`mbfl_program_found tar`
     shift 2
 
-    mbfl_tar_exec --directory="${DIRECTORY}" \
-	--create --file="${ARCHIVE_FILENAME}" "$@" . || return 1
+    if ! mbfl_tar_exec --directory="${DIRECTORY}" --create --file="${ARCHIVE_FILENAME}" "$@" . ; then return 1 ; fi
+}
+function mbfl_tar_archive_directory_to_file () {
+    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
+    local ARCHIVE_FILENAME="${2:?missing archive pathname parameter in ${FUNCNAME}}"
+    shift 2
+    local PARENT=`mbfl_file_dirname "${DIRECTORY}"`
+    local DIRNAME=`mbfl_file_tail "${DIRECTORY}"`
+
+    if ! mbfl_tar_exec --directory="${PARENT}" --create --file="${ARCHIVE_FILENAME}" "$@" "${DIRNAME}" ; then return 1 ; fi
 }
 function mbfl_tar_list () {
     local ARCHIVE_FILENAME="${1:?missing archive pathname parameter in ${FUNCNAME}}"
     shift
 
-    mbfl_tar_exec --list --file="${ARCHIVE_FILENAME}" "$@" || return 1
+    if ! mbfl_tar_exec --list --file="${ARCHIVE_FILENAME}" "$@" ; then
+         return 1
+    fi
 }
 function mbfl_tar_exec () {
     local TAR=`mbfl_program_found tar`
-    mbfl_program_exec ${TAR} "$@"    
+    local FLAGS
+
+    if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
+    mbfl_program_exec ${TAR} ${FLAGS} "$@"
 }
 
 ### end of file
 # Local Variables:
 # mode: sh
-# page-delimiter: "^#page$"
-# indent-tabs-mode: nil
 # End:

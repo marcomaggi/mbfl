@@ -27,6 +27,11 @@
 # 
 #
 
+#page
+## ------------------------------------------------------------
+## Miscellaneous functions.
+## ------------------------------------------------------------
+
 function mbfl_set_maybe () {
     test -n "${1}" && eval ${1}=\'"${2}"\'
 }
@@ -39,6 +44,30 @@ function mbfl_read_maybe_null () {
 	read $VARNAME
     fi
 }
+
+#page
+## ------------------------------------------------------------
+## Global option creation functions.
+## ------------------------------------------------------------
+
+function mbfl_create_option_procedures () {
+    local NAME=${1:?"missing option name parameter to ${FUNCNAME}"}
+
+    eval function mbfl_set_option_${NAME} \(\) \{ \
+        eval function mbfl_option_${NAME} \\\(\\\) \\{ return 0\\\; \\\}\; \}
+    eval function mbfl_unset_option_${NAME} \(\) \{ \
+        eval function mbfl_option_${NAME} \\\(\\\) \\{ return 1\\\; \\\}\; \}
+    mbfl_unset_option_${NAME}
+}
+
+mbfl_create_option_procedures test
+mbfl_create_option_procedures verbose_program
+mbfl_create_option_procedures verbose
+mbfl_create_option_procedures debug
+mbfl_create_option_procedures null
+mbfl_create_option_procedures interactive
+mbfl_create_option_procedures encoded_args
+
 
 ### end of file
 # Local Variables:

@@ -75,6 +75,8 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\tverbose execution
 \t--silent
 \t\tsilent execution
+\t--verbose-program
+\t\tverbose execution for external program (if supported)
 \t--null
 \t\tuse the null character as terminator
 \t--debug
@@ -114,25 +116,28 @@ function mbfl_declare_option () {
     mbfl_getopts_LONGS[$mbfl_getopts_INDEX]=$long
 
     mbfl_p_declare_option_test_length $hasarg hasarg $index
-    test "$hasarg" != "witharg" -a "$hasarg" != "noarg" && {
+    if test "$hasarg" != "witharg" -a "$hasarg" != "noarg" ; then
         mbfl_message_error \
-            "wrong value '$hasarg' to hasarg field in option declaration number ${index}"
+  "wrong value '$hasarg' to hasarg field in option declaration number ${index}"
         exit 2
-    }
+    fi
     mbfl_getopts_HASARG[$mbfl_getopts_INDEX]=$hasarg
 
-    test "$hasarg" = "noarg" && {
-        test "$default" != "yes" -a "$default" != "no" && {
+    if test "$hasarg" = "noarg" ; then
+        if test "$default" != "yes" -a "$default" != "no" ; then
             mbfl_message_error \
-                "wrong value '$default' as default for option with no argument number ${index}"
-        }
-    }
+  "wrong value '$default' as default for option with no argument number ${index}"
+        fi
+    fi
     mbfl_getopts_DEFAULTS[$mbfl_getopts_INDEX]=$default
 
     mbfl_p_declare_option_test_length $description description $index
     mbfl_getopts_DESCRIPTION[$mbfl_getopts_INDEX]=$description
 
     mbfl_getopts_INDEX=$index
+
+    # Creates the global option variable
+    eval script_option_`mbfl_string_toupper $keyword`=\'"${default}"\'
 }
 function mbfl_p_declare_option_test_length () {
     local value="${1}"
@@ -222,31 +227,31 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 
     case "${OPT}" in
 	encoded-args)
-	    mbfl_option_ENCODED_ARGS="yes"
+            mbfl_set_option_encoded_args
 	    ;;
 	v|verbose)
-	    mbfl_option_VERBOSE="yes"
-	    mbfl_message_VERBOSE="yes"
+            mbfl_set_option_verbose
 	    ;;
 	silent)
-	    mbfl_option_VERBOSE="no"
-	    mbfl_message_VERBOSE="no"
+            mbfl_unset_option_verbose
+	    ;;
+	verbose-program)
+            mbfl_set_option_verbose_program
 	    ;;
 	debug)
-	    mbfl_option_DEBUG="yes"
-	    mbfl_message_DEBUG="yes"
+            mbfl_set_option_verbose
 	    ;;
 	test)
-	    mbfl_program_TEST="yes"
+            mbfl_set_option_test
 	    ;;
 	null)
-	    mbfl_option_NULL="yes"
+            mbfl_set_option_null
 	    ;;
         f|force)
-	    mbfl_option_INTERACTIVE="no"
+            mbfl_unset_option_interactive
 	    ;;
         i|interactive)
-	    mbfl_option_INTERACTIVE="yes"
+            mbfl_set_option_interactive
 	    ;;
         validate-programs)
             mbfl_program_validate_declared || mbfl_exit_program_not_found
@@ -467,28 +472,8 @@ function mbfl_getopts_p_test_option () {
     test "${!1}" = "yes" && return 0
     return 1
 }
-function mbfl_option_encoded_args () {
-    mbfl_getopts_p_test_option mbfl_option_ENCODED_ARGS
-}
-function mbfl_option_verbose () {
-    mbfl_getopts_p_test_option mbfl_option_VERBOSE
-}
-function mbfl_option_test () {
-    mbfl_getopts_p_test_option mbfl_option_TEST
-}
-function mbfl_option_null () {
-    mbfl_getopts_p_test_option mbfl_option_NULL
-}
-function mbfl_option_debug () {
-    mbfl_getopts_p_test_option mbfl_option_DEBUGGING
-}
-function mbfl_option_interactive () {
-    mbfl_getopts_p_test_option mbfl_option_INTERACTIVE
-}
 
 ### end of file
 # Local Variables:
 # mode: sh
-# page-delimiter: "^#PAGE$"
-# indent-tabs-mode: nil
 # End:

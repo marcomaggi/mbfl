@@ -26,10 +26,9 @@
 # 
 
 #PAGE
-function mbfl_set_option_test ()   { function mbfl_option_test () { return 0; }; }
-function mbfl_unset_option_test () { function mbfl_option_test () { return 1; }; }
-mbfl_unset_option_test
+
 function mbfl_exit_program_not_found () { exit 20; }
+
 #page
 function mbfl_program_check () {
     local item= path=
@@ -45,11 +44,24 @@ function mbfl_program_check () {
     return 0
 }
 function mbfl_program_exec () {
-    mbfl_option_test && { echo "${@}" >&2; return 0; }
-    eval "${@}"
+    if mbfl_option_test ; then
+        echo "${@}" >&2
+        return 0
+    else
+        eval "${@}"
+    fi
 }
 function mbfl_program_find () {
-    type -ap "${1:?${FUNCNAME} error: missing program name}"
+    local PROGRAM=${1:?"missing program parameter to ${FUNCNAME}"}
+    local program=
+
+    for program in `type -ap "${PROGRAM}"`; do
+        if test -n "${program}" -a -x "${program}"; then
+            echo "${program}"
+            return 0
+        fi
+    done
+    return 0
 }
 #page
 if test "${mbfl_INTERACTIVE}" != 'yes'; then
@@ -102,6 +114,4 @@ function mbfl_program_found () {
 ### end of file
 # Local Variables:
 # mode: sh
-# page-delimiter: "^#page$"
-# indent-tabs-mode: nil
 # End:

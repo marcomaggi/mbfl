@@ -3,11 +3,42 @@
 @setfilename mbfl.info
 @settitle Marco's BASH Functions Library
 @c %**end of header
+@c mbfl.texi --
+@c 
+@c Part of: Marco's BASH Functions Library
+@c Contents: package documentation
+@c Date: Tue Oct 26, 2004
+@c 
+@c Abstract
+@c 
+@c 
+@c 
+@c Copyright (c) 2004 Marco Maggi
+@c 
+@c This is free software; you  can redistribute it and/or modify it under
+@c the terms of the GNU Lesser General Public License as published by the
+@c Free Software  Foundation; either version  2.1 of the License,  or (at
+@c your option) any later version.
+@c 
+@c This library  is distributed in the  hope that it will  be useful, but
+@c WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+@c MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+@c Lesser General Public License for more details.
+@c 
+@c You  should have  received a  copy of  the GNU  Lesser  General Public
+@c License along  with this library; if  not, write to  the Free Software
+@c Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+@c USA.
+@c 
 
 @include version.texiinc
 @syncodeindex fn cp
 
 @c ------------------------------------------------------------
+
+@macro bash{}
+@command{bash}
+@end macro
 
 @macro mbfl{}
 @acronym{MBFL}
@@ -21,7 +52,7 @@
 @c ------------------------------------------------------------
 @titlepage
 @title Marco's BASH Functions Library
-@subtitle @version.texi
+@subtitle @version{}
 @author Marco Maggi
 @page
 @vskip 0pt plus 1filll
@@ -577,6 +608,11 @@ Files removal is forced: the @code{--force} option to @command{rm} is
 always used. It is responsibility of the caller to validate the
 operation before invoking these functions.
 
+Some functions test the existence of the pathname before attempting to
+remove it: this is done only if test execution is disabled; if test
+execution is enabled the command line is echoed to stderr to make it
+easier to debug scripts.
+
 
 @deffn Function mbfl_file_enable_remove
 Declares to the program module the commands required to remove files and
@@ -607,6 +643,13 @@ not exist or an error occurs: returns 1.
 @c ------------------------------------------------------------
 @node File Commands Tar
 @unnumberedsubsec Manipulating tar archives
+
+
+@noindent
+Remember that when we execute a script with the @option{--test} option:
+the external commands are not executed: a command line is echoed to
+stdout. It is recommended to use this mode to fine tune the command line
+options required by @command{tar}.
 
 
 @deffn Function mbfl_file_enable_tar
@@ -642,6 +685,12 @@ Creates an archive named @var{archive} holding the contents of
 current directory to @var{directory} and selects the files with the
 pattern @code{.}. @command{tar} flags may be appended to the invocation
 to this function. In case of error returns 1.
+@end deffn
+
+
+@deffn mbfl_tar_archive_directory_to_file @var{directory} @var{archive} ?...?
+Like @code{mbfl_tar_create_to_file} but archives all the contents of
+@var{directory}, including the directory itself (not its parents).
 @end deffn
 
 
@@ -888,23 +937,23 @@ If this option is used: the values are decoded by
 @code{mbfl_getopts_parse} before storing them in the @code{ARGV} array
 and before being stored in the option's specific global variables.
 
-The fuction @code{mbfl_option_encoded_args} returns true.
-
 @item -v
 @itemx --verbose
 Turns on verbose messages. The fuction @code{mbfl_option_verbose}
-returns true;  the global variable @code{mbfl_message_VERBOSE} is set to
-@code{yes} (@ref{Message}, for details).
+returns true (@ref{Message}, for details).
 
 @item --silent
 Turns off verbose messages. The fuction @code{mbfl_option_verbose}
-returns false; the global variable @code{mbfl_message_VERBOSE} is set to
-@code{no}.
+returns false.
+
+@item --verbose-program
+If used the @option{--verbose} option is added to the command line of
+external programs that support it. The fuction
+@code{mbfl_option_verbose_program} returns true or false depending on
+the state of this option.
 
 @item --debug
-Turns on debugging messages. The global variable
-@code{mbfl_message_DEBUGGING} is set to @code{yes} (@ref{Message}, for
-details).
+Turns on debugging messages (@ref{Message}, for details).
 
 @item --test
 Turns on test execution (@ref{Program Testing}, for details).
@@ -956,6 +1005,64 @@ newline; an automatically generated string describing the options
 declared with @code{mbfl_declare_option}; a string describing the
 @mbfl{} default options. Then exits with code zero.
 @end table
+
+
+The following options may be used to set, unset and query the state of
+the predefined options.
+
+
+@deffn mbfl_option_encoded_args
+@deffnx mbfl_set_option_encoded_args
+@deffnx mbfl_unset_option_encoded_args
+Query/sets/unsets the encoded arguments option.
+@end deffn
+
+
+@deffn mbfl_option_encoded_args
+@deffnx mbfl_set_option_encoded_args
+@deffnx mbfl_unset_option_encoded_args
+Query/sets/unsets the verbose messages option.
+@end deffn
+
+
+@deffn mbfl_option_verbose_program
+@deffnx mbfl_set_option_verbose_program
+@deffnx mbfl_unset_option_verbose_program
+Query/sets/unsets verbose execution for external programs.
+
+This option, of course, is supported only for programs that are known by
+@mbfl{} (like @command{rm}): if a program is executed with
+@code{mbfl_program_exec}, it is responsibility of the caller to use the
+option.
+@end deffn
+
+
+@deffn mbfl_option_test
+@deffnx mbfl_set_option_test
+@deffnx mbfl_unset_option_test
+Query/sets/unsets the test execution option.
+@end deffn
+
+
+@deffn mbfl_option_debug
+@deffnx mbfl_set_option_debug
+@deffnx mbfl_unset_option_debug
+Query/sets/unsets the debug messages option.
+@end deffn
+
+
+@deffn mbfl_option_null
+@deffnx mbfl_set_option_null
+@deffnx mbfl_unset_option_null
+Query/sets/unsets the null list separator option.
+@end deffn
+
+
+@deffn mbfl_option_interactive
+@deffnx mbfl_set_option_interactive
+@deffnx mbfl_unset_option_interactive
+Query/sets/unsets the interactive excution option.
+@end deffn
 
 
 @c ------------------------------------------------------------
