@@ -679,7 +679,14 @@ to this function. In case of error returns 1.
 @end deffn
 
 
-@deffn function mbfl_tar_create_to_file @var{directory} @var{archive} ?...?
+@deffn Function mbfl_tar_extract_from_stdin @var{directory} @var{archive} ?...?
+Reads an archive from a file and extracts it under
+@var{directory}. @command{tar} flags may be appended to the invocation
+to this function. In case of error returns 1.
+@end deffn
+
+
+@deffn Function mbfl_tar_create_to_file @var{directory} @var{archive} ?...?
 Creates an archive named @var{archive} holding the contents of
 @var{directory}. Before creating the archive, the process changes the
 current directory to @var{directory} and selects the files with the
@@ -688,7 +695,7 @@ to this function. In case of error returns 1.
 @end deffn
 
 
-@deffn mbfl_tar_archive_directory_to_file @var{directory} @var{archive} ?...?
+@deffn Function mbfl_tar_archive_directory_to_file @var{directory} @var{archive} ?...?
 Like @code{mbfl_tar_create_to_file} but archives all the contents of
 @var{directory}, including the directory itself (not its parents).
 @end deffn
@@ -1011,23 +1018,23 @@ The following options may be used to set, unset and query the state of
 the predefined options.
 
 
-@deffn mbfl_option_encoded_args
-@deffnx mbfl_set_option_encoded_args
-@deffnx mbfl_unset_option_encoded_args
+@deffn Function mbfl_option_encoded_args
+@deffnx Function mbfl_set_option_encoded_args
+@deffnx Function mbfl_unset_option_encoded_args
 Query/sets/unsets the encoded arguments option.
 @end deffn
 
 
-@deffn mbfl_option_encoded_args
-@deffnx mbfl_set_option_encoded_args
-@deffnx mbfl_unset_option_encoded_args
+@deffn Function mbfl_option_encoded_args
+@deffnx Function mbfl_set_option_encoded_args
+@deffnx Function mbfl_unset_option_encoded_args
 Query/sets/unsets the verbose messages option.
 @end deffn
 
 
-@deffn mbfl_option_verbose_program
-@deffnx mbfl_set_option_verbose_program
-@deffnx mbfl_unset_option_verbose_program
+@deffn Function mbfl_option_verbose_program
+@deffnx Function mbfl_set_option_verbose_program
+@deffnx Function mbfl_unset_option_verbose_program
 Query/sets/unsets verbose execution for external programs.
 
 This option, of course, is supported only for programs that are known by
@@ -1037,30 +1044,30 @@ option.
 @end deffn
 
 
-@deffn mbfl_option_test
-@deffnx mbfl_set_option_test
-@deffnx mbfl_unset_option_test
+@deffn Function mbfl_option_test
+@deffnx Function mbfl_set_option_test
+@deffnx Function mbfl_unset_option_test
 Query/sets/unsets the test execution option.
 @end deffn
 
 
-@deffn mbfl_option_debug
-@deffnx mbfl_set_option_debug
-@deffnx mbfl_unset_option_debug
+@deffn Function mbfl_option_debug
+@deffnx Function mbfl_set_option_debug
+@deffnx Function mbfl_unset_option_debug
 Query/sets/unsets the debug messages option.
 @end deffn
 
 
-@deffn mbfl_option_null
-@deffnx mbfl_set_option_null
-@deffnx mbfl_unset_option_null
+@deffn Function mbfl_option_null
+@deffnx Function mbfl_set_option_null
+@deffnx Function mbfl_unset_option_null
 Query/sets/unsets the null list separator option.
 @end deffn
 
 
-@deffn mbfl_option_interactive
-@deffnx mbfl_set_option_interactive
-@deffnx mbfl_unset_option_interactive
+@deffn Function mbfl_option_interactive
+@deffnx Function mbfl_set_option_interactive
+@deffnx Function mbfl_unset_option_interactive
 Query/sets/unsets the interactive excution option.
 @end deffn
 
@@ -1506,10 +1513,11 @@ script. The return value is always zero.
 
 
 @deffn Function mbfl_program_validate_declared
-Validates the existence of all the declared programs. This function is
-invoked by @code{mbfl_getopts_parse} when the @code{--validate-programs}
-option is used on the command line. The return value is zero if all the
-programs are found, one otherwise.
+Validates the existence of all the declared programs. The return value
+is zero if all the programs are found, one otherwise.
+
+This function is invoked by @code{mbfl_getopts_parse} when the
+@code{--validate-programs} option is used on the command line.
 
 It is a good idea to invoke this function at the beginning of a script,
 just before starting to do stuff, example:
@@ -1517,6 +1525,10 @@ just before starting to do stuff, example:
 @example
 mbfl_program_validate_declared || mbfl_exit_program_not_found
 @end example
+
+If verbose messages are enabled: a brief summary is echoed to stderr;
+from the command line the option @option{--verbose} must be used before
+@option{--validate-programs}.
 @end deffn
 
 

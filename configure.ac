@@ -1,31 +1,6 @@
 # configure.ds --
-# 
-# Part of: Marco's BASH Functions Library
-# Contents: configuration script
-# Date: Sat Apr 19, 2003
-# 
-# Abstract
-# 
-#	Configuration script. This template must be parsed by GNU
-#	autoconf to build the "configure" executable script.
-# 
-# Copyright (c) 2003, 2004 Marco Maggi
-# 
-# This is free software; you  can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  2.1 of the License,  or (at
-# your option) any later version.
-# 
-# This library  is distributed in the  hope that it will  be useful, but
-# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# Lesser General Public License for more details.
-# 
-# You  should have  received a  copy of  the GNU  Lesser  General Public
-# License along  with this library; if  not, write to  the Free Software
-# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA
-# 
+#
+
 
 
 #PAGE
@@ -33,17 +8,15 @@
 ## Initialisation.
 ## ------------------------------------------------------------
 
-AC_INIT([mbfl], [1.0.1], [marcomaggi@tiscalinet.it])
+AC_INIT([mbfl], [1.0.2], [marcomaggi@tiscalinet.it])
 AC_PREREQ(2.57)
 AC_COPYRIGHT([Copyright (C) 2003, 2004 by Marco Maggi])
 AC_REVISION([$Revision: 1.1.1.131 $])
-
 AC_CONFIG_SRCDIR([./lib/libmbfl.sh.m4])
-AC_CONFIG_AUX_DIR([gnuconfig])
-AC_SUBST([CONFIGDIR], ["\$(top_srcdir)/gnuconfig"])
+AC_CONFIG_AUX_DIR([infrastructure])
 
-AC_SUBST([PACKAGE_XVERSION], [1.0.1])
-AC_DEFINE([PACKAGE_XVERSION], ["1.0.1"], [full version])
+AC_SUBST([PACKAGE_XVERSION], [1.0.2])
+AC_DEFINE([PACKAGE_XVERSION], ["1.0.2"], [full version])
 AC_SUBST([PACKAGE_NODOT_VERSION], [10])
 AC_SUBST([PACKAGE_NAME_UPPERCASE], [MBFL])
 AC_SUBST([PACKAGE_NAME_LOWERCASE], [mbfl])
@@ -51,7 +24,8 @@ AC_SUBST([PACKAGE_NAME_LOWERCASE], [mbfl])
 AC_SUBST([PACKAGE_VERSION_MAJMIN], [1.0])
 AC_SUBST([PACKAGE_VERSION_MAJOR], [1])
 AC_SUBST([PACKAGE_VERSION_MINOR], [0])
-AC_SUBST([PACKAGE_VERSION_PATCH], [1])
+AC_SUBST([PACKAGE_VERSION_PATCH], [2])
+
 
 #PAGE
 ## ------------------------------------------------------------
@@ -61,44 +35,53 @@ AC_SUBST([PACKAGE_VERSION_PATCH], [1])
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
-AC_PATH_PROG([BASHPROG], [bash], [bash], :)
-AC_ARG_VAR([BASHPROG], [the GNU bash shell])
 
-AC_CHECK_PROG([RM], [rm], [rm -f -r], :)
-AC_ARG_VAR([RM], [program used to delete files and directories recursively])
+AC_PATH_PROG([BASH], [bash], :)
+AC_ARG_VAR([BASH], [the GNU bash shell])
 
-AC_CHECK_PROG([SYMLINK], [ln], [ln -sv], :)
+AC_PATH_PROG([RM], [rm], :)
+AC_ARG_VAR([RM], [deletes files and directories recursively])
+
+AC_PATH_PROG([CAT], [cat], :)
+AC_ARG_VAR([CAT], [the GNU cat program])
+
+AC_PATH_PROG([SED], [sed], :)
+AC_ARG_VAR([SED], [the GNU sed program])
+
+AC_PATH_PROG([GREP], [grep], :)
+AC_ARG_VAR([GREP], [the GNU grep program])
+
+AC_PATH_PROG([GZIP], [gzip], :)
+AC_ARG_VAR([GZIP], [the gzip compressor program])
+
+AC_PATH_PROG([BZIP], [bzip2], :)
+AC_ARG_VAR([BZIP], [the bzip2 compressor program])
+
+AC_PATH_PROG([TAR], [tar], :)
+AC_ARG_VAR([TAR], [the GNU tar program])
+
+AC_PATH_PROG([SYMLINK], [ln], :)
 AC_ARG_VAR([SYMLINK], [program used create symbolic links])
 
-AC_CHECK_PROG([MKDIR], [mkdir], [mkdir -p], :)
-AC_ARG_VAR([MKDIR], [program used to create directories recursively])
+AC_PATH_PROG([MKDIR], [mkdir], :)
+AC_ARG_VAR([MKDIR], [creates directories recursively])
 
-AC_CHECK_PROG([DPKG], [dpkg], [dpkg], :)
-AC_ARG_VAR([DPKG], [program used to build .deb packages])
-
-AC_CHECK_PROG([M4], [m4], [m4], :)
+AC_PATH_PROG([M4], [m4], :)
 AC_ARG_VAR([M4], [the GNU m4 preprocessor])
 
 AC_PATH_PROG([TCLSH], [tclsh], :)
-AC_ARG_VAR([TCLSH], [the TCL shell used to run tests and scripts, full pathname])
+AC_ARG_VAR([TCLSH], [the TCL shell])
 
-AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo], :)
-AC_ARG_VAR([MAKEINFO], [program that builds documentation from Texinfo source])
+AC_PATH_PROG([MAKEINFO], [makeinfo], :)
+AC_ARG_VAR([MAKEINFO], [builds docs from Texinfo source])
 
-AC_CHECK_PROG([DATE], [date], [date], :)
-AC_ARG_VAR([DATE], [the standard date program])
-
-AC_CHECK_PROG([SED], [sed], [sed], :)
-AC_CHECK_PROG([GREP], [grep], [grep], :)
-
-AC_CHECK_PROG([SPKG], [spkg.sh], [spkg.sh], :)
+AC_PATH_PROG([DATE], [date], :)
+AC_ARG_VAR([DATE], [a program that prints the current date])
 
 CURRENT_DATE=$($DATE)
 AC_SUBST(CURRENT_DATE)
 
 
-AC_CHECK_PROG([SED], [sed], [sed], :)
-AC_CHECK_PROG([GREP], [grep], [grep], :)
 AC_CONFIG_FILES(mbfl-config:scripts/mbfl-config)
 
 #PAGE
@@ -107,16 +90,13 @@ AC_CONFIG_FILES(mbfl-config:scripts/mbfl-config)
 ## ------------------------------------------------------------
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([meta/DESCRIPTION.txt])
-
-AC_CONFIG_FILES([debian/dev/control])
-AC_CONFIG_FILES([debian/doc/control])
-
 AC_OUTPUT
+
+
+
 
 
 ### end of file
 # Local Variables:
 # mode: sh
-# page-delimiter: "^#PAGE"
 # End:

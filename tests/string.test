@@ -276,30 +276,30 @@ function string-index-1.4 () {
 
 #PAGE
 
-function string-is-1.1 () { mbfl-string-is-alpha abcd; }
-function string-is-1.2 () { ! mbfl-string-is-alpha 123 ; }
-function string-is-1.3 () { ! mbfl-string-is-alpha ab12; }
+function string-is-1.1 () { mbfl_string_is_alpha abcd; }
+function string-is-1.2 () { ! mbfl_string_is_alpha 123 ; }
+function string-is-1.3 () { ! mbfl_string_is_alpha ab12; }
 
-function string-is-2.1 () { mbfl-string-is-digit 123; }
-function string-is-2.2 () { ! mbfl-string-is-digit abcd; }
-function string-is-2.3 () { ! mbfl-string-is-digit 12ab; }
+function string-is-2.1 () { mbfl_string_is_digit 123; }
+function string-is-2.2 () { ! mbfl_string_is_digit abcd; }
+function string-is-2.3 () { ! mbfl_string_is_digit 12ab; }
 
-function string-is-3.1 () { mbfl-string-is-alnum abcd; }
-function string-is-3.2 () { mbfl-string-is-alnum 123; }
-function string-is-3.3 () { mbfl-string-is-alnum ab12; }
+function string-is-3.1 () { mbfl_string_is_alnum abcd; }
+function string-is-3.2 () { mbfl_string_is_alnum 123; }
+function string-is-3.3 () { mbfl_string_is_alnum ab12; }
 
-function string-is-4.1 () { mbfl-string-is-noblank abcd; }
-function string-is-4.2 () { ! mbfl-string-is-noblank $'\n'; }
-function string-is-4.3 () { ! mbfl-string-is-noblank $'\t'; }
-function string-is-4.4 () { ! mbfl-string-is-noblank $'\r'; }
-function string-is-4.5 () { ! mbfl-string-is-noblank " "; }
-function string-is-4.6 () { ! mbfl-string-is-noblank $'ab\ncd'; }
+function string-is-4.1 () { mbfl_string_is_noblank abcd; }
+function string-is-4.2 () { ! mbfl_string_is_noblank $'\n'; }
+function string-is-4.3 () { ! mbfl_string_is_noblank $'\t'; }
+function string-is-4.4 () { ! mbfl_string_is_noblank $'\r'; }
+function string-is-4.5 () { ! mbfl_string_is_noblank " "; }
+function string-is-4.6 () { ! mbfl_string_is_noblank $'ab\ncd'; }
 
-function string-is-5.1 () { mbfl-string-is-name abcd; }
-function string-is-5.2 () { mbfl-string-is-name ab_cd; }
-function string-is-5.3 () { mbfl-string-is-name _abcd123; }
-function string-is-5.4 () { ! mbfl-string-is-name 1abcd3 ; }
-function string-is-5.5 () { ! mbfl-string-is-name "\n"; }
+function string-is-5.1 () { mbfl_string_is_name abcd; }
+function string-is-5.2 () { mbfl_string_is_name ab_cd; }
+function string-is-5.3 () { mbfl_string_is_name _abcd123; }
+function string-is-5.4 () { ! mbfl_string_is_name 1abcd3 ; }
+function string-is-5.5 () { ! mbfl_string_is_name "\n"; }
 
 #PAGE
 

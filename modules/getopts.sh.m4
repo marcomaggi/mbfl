@@ -324,10 +324,10 @@ function mbfl_getopts_p_build_and_print_options_usage () {
 
 
     for ((i=0; $i < $mbfl_getopts_INDEX; ++i)); do
-        test "${mbfl_getopts_HASARG[$i]}" = 1 && {
+        if test "${mbfl_getopts_HASARG[$i]}" = 1 ; then
             brief_hasarg="VALUE"
             long_hasarg="=VALUE"
-        }
+        fi
 
         brief="${mbfl_getopts_BRIEFS[$i]}"
         test -n "$brief" && echo -e "\t-${brief}${brief_hasarg}"
@@ -337,7 +337,6 @@ function mbfl_getopts_p_build_and_print_options_usage () {
 
         description="${mbfl_getopts_DESCRIPTION[$i]}"
         test -n && echo -e "\t\t$description"
-        i=$(($i + 1))
     done
 }
 #PAGE

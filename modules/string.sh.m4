@@ -119,40 +119,40 @@ function mbfl_string_index () {
     echo "${STRING:$INDEX:1}"
 }
 #PAGE
-function mbfl-string-is-alpha-char () {
+function mbfl_string_is_alpha_char () {
     ! test \( "$1" \< A -o Z \< "$1" \) -a \( "$1" \< a -o z \< "$1" \)
 }
-function mbfl-string-is-digit-char () {
+function mbfl_string_is_digit_char () {
     ! test "$1" \< 0 -o 9 \< "$1"
 }
-function mbfl-string-is-alnum-char () {
-    mbfl-string-is-alpha-char "$1" || mbfl-string-is-digit-char "$1"
+function mbfl_string_is_alnum_char () {
+    mbfl_string_is_alpha_char "$1" || mbfl_string_is_digit_char "$1"
 }
-function mbfl-string-is-name-char () {
-    mbfl-string-is-alnum-char "$1" || test "$1" = _
+function mbfl_string_is_name_char () {
+    mbfl_string_is_alnum_char "$1" || test "$1" = _
 }
-function mbfl-string-is-noblank-char () {
+function mbfl_string_is_noblank_char () {
     test \( "$1" != " " \) -a \
 	\( "$1" != $'\n' \) -a \( "$1" != $'\r' \) -a \
 	\( "$1" != $'\t' \) -a \( "$1" != $'\f' \)
 }
 for class in alpha digit alnum noblank ; do
-    alias "mbfl-string-is-${class}"="mbfl-p-string-is $class"
+    alias "mbfl_string_is_${class}"="mbfl_p_string_is $class"
 done    
-function mbfl-p-string-is () {
+function mbfl_p_string_is () {
     mandatory_parameter(CLASS, 1, class)
     mandatory_parameter(STRING, 2, string)
     local i
 
     test "${#STRING}" = 0 && return 1
     for ((i=0; $i < ${#STRING}; ++i));  do
-	"mbfl-string-is-${CLASS}-char" "${STRING:$i:1}" || return 1
+	"mbfl_string_is_${CLASS}_char" "${STRING:$i:1}" || return 1
     done
     return 0
 }
-function mbfl-string-is-name () {
+function mbfl_string_is_name () {
     mandatory_parameter(STRING, 1, string)
-    mbfl-p-string-is name "${STRING}" && ! mbfl-string-is-digit "${STRING:0:1}"
+    mbfl_p_string_is name "${STRING}" && ! mbfl_string_is_digit "${STRING:0:1}"
 }
 #PAGE
 function mbfl_string_range () {

@@ -1,32 +1,8 @@
 # @configure_input@
 # 
-# Part of: mbfl
-# Contents: makefile template
-# Date: Mon Dec 15, 2003
-# 
-# Abstract
-# 
-#	This file is a template for the project Makefile.
-# 
-# Copyright (c) 2003, 2004 Marco Maggi
-# 
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
-# version.
-# 
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
-# 
 
-#PAGE
+
+#page
 ## ------------------------------------------------------------
 ## Package variables.
 ## ------------------------------------------------------------
@@ -37,7 +13,7 @@ PACKAGE_VERSION_MAJMIN	= @PACKAGE_VERSION_MAJMIN@
 PACKAGE_XVERSION	= @PACKAGE_XVERSION@
 PKG_DIR			= $(PACKAGE_NAME)_$(PACKAGE_XVERSION)
 
-#PAGE
+#page
 ## ------------------------------------------------------------
 ## Directory variables.
 ## ------------------------------------------------------------
@@ -87,18 +63,19 @@ pkglibdir	= $(libdir)/$(PKG_DIR)
 pkglibexecdir	= $(libexecdir)/$(PKG_DIR)
 pkgsysconfdir	= $(sysconfdir)/$(PKG_DIR)
 
-#PAGE
+#page
 ## ------------------------------------------------------------
 ## Common programs.
 ## ------------------------------------------------------------
 
-BASHPROG		= @BASHPROG@
+BASH			= @BASH@
+BASHPROG		= @BASH@
 SHELL			= @SHELL@
 @SET_MAKE@
 
-RM			= @RM@
-MKDIR			= @MKDIR@
-SYMLINK			= @SYMLINK@
+RM			= @RM@ --force --recursive --
+MKDIR			= @MKDIR@ --parents
+SYMLINK			= @SYMLINK@ --symbolic
 M4			= @M4@
 
 SED			= @SED@
@@ -115,7 +92,7 @@ INSTALL_DIR		= $(INSTALL) -m $(INSTALL_DIR_MODE) -d
 INSTALL_BIN		= $(INSTALL) -m $(INSTALL_BIN_MODE)
 INSTALL_DATA		= $(INSTALL) -m $(INSTALL_DATA_MODE)
 
-#PAGE
+#page
 ## ------------------------------------------------------------
 ## Main rules.
 ## ------------------------------------------------------------
@@ -132,87 +109,7 @@ realclean:	bin-realclean dev-realclean doc-realclean sta-realclean
 install:	bin-install dev-install doc-install sta-install
 
 
-#page
-## ------------------------------------------------------------
-## spkg rules.
-## ------------------------------------------------------------
-
-SPKG_INSTALL	= spkg.sh --install --prefix=$(prefix) -f -v
-SPKG_UPGRADE	= spkg.sh --upgrade --prefix=$(prefix) -f -v
-SPKG_PKG	= $(PACKAGE_NAME)_$(PACKAGE_XVERSION)
-
-SPKG_PKG_BIN	= $(SPKG_PKG)_bin.tar.gz
-SPKG_PKG_DEV	= $(SPKG_PKG)_dev.tar.gz
-SPKG_PKG_DOC	= $(SPKG_PKG)_doc.tar.gz
-SPKG_PKG_STA	= $(SPKG_PKG)_sta.tar.gz
-
-.PHONY: spkg-upgrade spkg-install
-.PHONY: $(foreach a, bin dev doc sta, spkg-upgrade-$(a) spkg-install-$(a))
-
-spkg-upgrade: $(foreach a, bin dev doc sta, spkg-upgrade-$(a)) bindist
-
-spkg-upgrade-bin:
-	-test -f $(SPKG_PKG_BIN) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_BIN)
-spkg-upgrade-dev:
-	-test -f $(SPKG_PKG_DEV) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_DEV)
-spkg-upgrade-doc:
-	-test -f $(SPKG_PKG_DOC) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_DOC)
-spkg-upgrade-sta:
-	-test -f $(SPKG_PKG_STA) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_STA)
-
-spkg-install: $(foreach a, bin dev doc sta, spkg-install-$(a)) bindist
-spkg-install-bin:
-	-test -f $(SPKG_PKG_BIN) && $(SPKG_INSTALL) --file=$(SPKG_PKG_BIN)
-spkg-install-dev:
-	-test -f $(SPKG_PKG_DEV) && $(SPKG_INSTALL) --file=$(SPKG_PKG_DEV)
-spkg-install-doc:
-	-test -f $(SPKG_PKG_DOC) && $(SPKG_INSTALL) --file=$(SPKG_PKG_DOC)
-spkg-install-sta:
-	-test -f $(SPKG_PKG_STA) && $(SPKG_INSTALL) --file=$(SPKG_PKG_STA)
-
-#page
-## ------------------------------------------------------------
-## Configuration inspection scripts.
-## ------------------------------------------------------------
-
-ds_CONFIG_SCRIPT_SRC	= $(builddir)/$(notdir $(CONFIGDIR))/package-config
-ds_CONFIG_SCRIPT_DST	= $(INSTALL_ROOT)$(bindir)/config-$(PKG_DIR)
-
-install-config-script:
-	-@test -f $(ds_CONFIG_SCRIPT) && \
-	$(INSTALL_BIN) $(ds_CONFIG_SCRIPT_SRC) $(ds_CONFIG_SCRIPT_DST)
-
-bin-install: install-config-script
-
-
-# Makefile.rl --
-#
-# Part of: Marco's BASH Functions Library
-# Contents: project rules
-# Date: Sat Apr 19, 2003
-#
-# Abstract
-#
-#	This Makefile must be processed by the "automake.sh" script
-#	and by GNU Autoconf: read the README and INSTALL files for
-#	more details.
-#
-# Copyright (C)  2003, 2004  by Marco Maggi
-#
-# This library is free software;  you can redistribute it and/or modify
-# it  under the  terms  of the  GNU  Lesser General  Public License  as
-# published by the Free Software  Foundation; either version 2.1 of the
-# License, or (at your option) any later version.
-# 
-# This library is  distributed in the hope that it  will be useful, but
-# WITHOUT  ANY   WARRANTY;  without   even  the  implied   warranty  of
-# MERCHANTABILITY  or FITNESS FOR  A PARTICULAR  PURPOSE.  See  the GNU
-# Lesser General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU Lesser  General Public
-# License along with  this library; if not, write  to the Free Software
-# Foundation, Inc.,  59 Temple Place, Suite 330,  Boston, MA 02111-1307
-# USA
+# Makefile.ds --
 #
 
 #PAGE
@@ -298,8 +195,8 @@ bin-install:	library-install
 libexec_INSTLST		= mbfl-config
 libexec_INSTDIR		= $(pkglibexecdir)
 
-binscript_INSTLST	= mbfl-config
-binscript_INSTDIR	= $(bindir)
+# binscript_INSTLST	= mbfl-config
+# binscript_INSTDIR	= $(bindir)
 
 libexec_CLEANFILES	= $(script_TARGETS)
 libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
@@ -323,16 +220,13 @@ else
 	$(warning *** empty install list)
 endif
 
-
-	@echo -en "Installing binscript files... "
-ifneq	(,$(binscript_INSTLST))
-	@$(INSTALL_DIR) $(INSTALL_ROOT)$(binscript_INSTDIR)
-	@$(INSTALL_BIN) $(binscript_INSTLST) $(INSTALL_ROOT)$(binscript_INSTDIR)
+	@echo -en "Installing directory $(bindir)... "
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(bindir)
 	@echo "done"
-else
-	$(warning *** empty install list)
-endif
 
+	cd $(INSTALL_ROOT)$(bindir) && \
+	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfl-config mbfl-config
+#AM_INSTALL_BIN(binscript)
 
 bin:		script-all
 bin-clean:	script-clean
@@ -373,7 +267,7 @@ test_FILES	= $(wildcard $(testdir)/*.test)
 test_TARGETS	= test-all
 
 test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
-test_CMD	= $(test_ENV) $(BASHPROG)
+test_CMD	= $(test_ENV) /bin/bash
 
 .PHONY: test-all test-all-verbose
 
@@ -394,7 +288,7 @@ endif
 # mode: makefile
 # End:
 
-#PAGE
+#page
 ## ------------------------------------------------------------
 ## Shell scripts rules.
 ## ------------------------------------------------------------
@@ -408,7 +302,7 @@ M4FLAGS		+= --prefix-builtins
 	$(SED) -e "s/^ \\+//" >$(@)
 
 
-#PAGE
+#page
 ## ------------------------------------------------------------
 ## Test rules.
 ## ------------------------------------------------------------
@@ -427,10 +321,7 @@ test-clean tests-clean:
 test-realclean tests-realclean:
 	-$(RM) $(test_CLEANFILES) $(test_REALCLEANFILES)
 
-aux-clean:	test-clean
-aux-realclean:	test-realclean
-
-#PAGE
+#page
 ## ------------------------------------------------------------
 ## Generic package documentation.
 ## ------------------------------------------------------------
@@ -439,10 +330,10 @@ aux-realclean:	test-realclean
 # doc_generic_CLEANFILES	=
 # doc_generic_REALCLEANFILES	=
 
-doc_generic_INSTLST		?= $(wildcard $(addprefix $(top_srcdir)/, \
+doc_generic_INSTLST		?= $(filter-out %~, \
+				  $(wildcard $(addprefix $(top_srcdir)/, \
 				  README* COPYING license.terms INSTALL BUGS \
-				  NEWS ChangeLog)) \
-				  $(wildcard $(builddir)/meta/DESCRIPTION.txt)
+				  NEWS ChangeLog DESCRIPTION.txt TODO)))
 doc_generic_INSTDIR		= $(pkgdocdir)
 
 .PHONY: doc-generic-all doc-generic-clean doc-generic-realclean
@@ -466,13 +357,12 @@ else
 endif
 
 
-
 doc:		doc-generic-all
 doc-clean:	doc-generic-clean
 doc-realclean:	doc-generic-realclean
 doc-install:	doc-generic-install
 
-#PAGE
+#page
 ## ------------------------------------------------------------
 ## Package documentation in Texinfo format.
 ## ------------------------------------------------------------
@@ -545,14 +435,14 @@ doc-clean:	doc-texinfo-clean
 doc-realclean:	doc-texinfo-realclean
 doc-install:	doc-texinfo-install
 
-#PAGE
+#page
 ## ------------------------------------------------------------
 ## Auto configuration rules.
 ## ------------------------------------------------------------
 
-config_CLEANFILES	= config.log config.status config.cache Makefile
+ds_config_CLEANFILES	= config.log config.status config.cache Makefile
 
-.PHONY: config-clean reconfig
+.PHONY: config-clean
 
 Makefile: $(srcdir)/Makefile.in $(srcdir)/configure $(builddir)/config.status
 	$(builddir)/config.status
@@ -561,31 +451,9 @@ config.status: $(srcdir)/configure
 	$(builddir)/config.status --recheck
 
 config-clean:
-	-$(RM) $(config_CLEANFILES)
+	-$(RM) $(ds_config_CLEANFILES)
 
-reconfig:
-	@echo "reconfiguring from top source dir: \"$(top_srcdir)\""
-	@cd $(top_srcdir) && \
-	{ test -d gnuconfig && { gnuconfig/automake.sh && gnuconfig/autoconf.sh; }; } || \
-	{ test -d tclconfig && { tclconfig/automake.sh && tclconfig/autoconf.sh; }; }
-
-#PAGE
-## ------------------------------------------------------------
-## Distribution targets.
-## ------------------------------------------------------------
-
-.PHONY: dist bindist bindist-bin bindist-dev bindist-doc bindist-sta
-
-dist bindist bindist-bin bindist-dev bindist-doc bindist-sta:
-	$(CONFIGDIR)/do.sh --$(@) --verbose
-
-.PHONY: debian debian-bin debian-doc debian-dev debian-sta
-
-debian debian-bin debian-doc debian-dev debian-sta:
-	$(CONFIGDIR)/do.sh --$(@) --verbose
-
-
-#PAGE
+#page
 ## ------------------------------------------------------------
 ## End of makefile.
 ## ------------------------------------------------------------
@@ -598,7 +466,9 @@ echo-variable:
 
 
 
+
 ### end of file
 # Local Variables:
 # mode: makefile
 # End:
+

@@ -36,10 +36,10 @@ function mbfl_program_check () {
 
     for item in "${@}"; do
         path=`mbfl_program_find ${item}`
-        test -x "${path}" || {
+        if test ! -x "${path}" ; then
             mbfl_message_error "cannot find executable '${item}'"
             return 1
-        }
+        fi
     done
     return 0
 }
@@ -97,15 +97,14 @@ function mbfl_program_found () {
     local PROGRAM="${1:?${FUNCNAME} error: missing program name}"
     local i=
 
-    for ((i=0; $i < $mbfl_program_INDEX; ++i)); do
-        test "${mbfl_program_NAMES[$i]}" = "${PROGRAM}" && {
-            test "${mbfl_program_NAMES[$i]}" != : && {
+    if test "${PROGRAM}" != ':' ; then
+        for ((i=0; $i < $mbfl_program_INDEX; ++i)); do
+            if test "${mbfl_program_NAMES[$i]}" = "${PROGRAM}" ; then
                 echo "${mbfl_program_PATHS[$i]}"
                 return 0
-            }
-            break
-        }
-    done
+            fi
+        done
+    fi
 
     mbfl_message_error "executable not found \"${PROGRAM}\""
     mbfl_exit_program_not_found

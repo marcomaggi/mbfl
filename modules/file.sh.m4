@@ -315,7 +315,8 @@ function mbfl_file_enable_make_directory () {
 function mbfl_file_make_directory () {
     local PATHNAME=${1:?"missing pathname in ${FUNCNAME}"}
     local PERMISSIONS=${2}
-    local MKDIR=`mbfl_program_found mkdir` FLAGS="--parents"
+    local MKDIR=`mbfl_program_found mkdir`
+    local FLAGS="--parents"
 
     if test -z "${PERMISSIONS}" ; then PERMISSIONS=0775 ; fi
     FLAGS="${FLAGS} --mode=${PERMISSIONS}"
@@ -419,6 +420,15 @@ function mbfl_tar_extract_from_stdin () {
     shift
 
     if ! mbfl_tar_exec --directory="${DIRECTORY}" --extract --file=- "$@" ; then
+        return 1
+    fi
+}
+function mbfl_tar_extract_from_file () {
+    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
+    local ARCHIVE_FILENAME="${2:?missing archive pathname parameter in ${FUNCNAME}}"
+    shift
+
+    if ! mbfl_tar_exec --directory="${DIRECTORY}" --extract --file="${ARCHIVE_FILENAME}" "$@" ; then
         return 1
     fi
 }

@@ -1,0 +1,37 @@
+# configure.ds --
+#
+
+ds_gnuarch_package
+ds_author_name(Marco Maggi)
+ds_author_email(marcomaggi@tiscalinet.it)
+ds_copyright_years({2003, 2004})
+ds_package_license(GPL)
+ds_package_title({Marco\'s Bash Functions Library})
+ds_package_distribution_url({http://web.tiscali.it/marcomaggi})
+ds_package_line_description({library of bash functions})
+ds_package_long_description({ MBFL is a library of GNU Bash functions.
+})
+ds_source_file(./lib/libmbfl.sh.m4)
+
+ds_init
+AC_CONFIG_FILES(mbfl-config:scripts/mbfl-config)
+ds_output
+
+ds_make_template({
+DS_PACKAGE_VARIABLES
+DS_DIRECTORIES
+DS_COMMON_PROGRAMS
+DS_MAIN_RULES
+DS_PROJECT_RULES
+DS_SHELL_SCRIPTS_RULES
+DS_TESTS
+DS_GENERIC_DOCUMENTATION
+DS_TEXINFO_DOCUMENTATION
+DS_AUTO_CONFIGURATION
+DS_END_OF_MAKEFILE
+})
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:
