@@ -38,6 +38,9 @@ mbfl_ORG_PWD="${PWD}"
 
 mbfl_main_SCRIPT_FUNCTION=main
 
+function mbfl_main_set_main () {
+    mbfl_main_SCRIPT_FUNCTION="${1:?}"    
+}
 #PAGE
 ## ------------------------------------------------------------
 ## License message variables.

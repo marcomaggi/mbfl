@@ -1,6 +1,6 @@
 # @configure_input@
 # 
-# Part of: DevelStuff
+# Part of: mbfl
 # Contents: makefile template
 # Date: Mon Dec 15, 2003
 # 
@@ -8,7 +8,7 @@
 # 
 #	This file is a template for the project Makefile.
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -25,7 +25,6 @@
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
 # 
-# $Id: Makefile.ds,v 1.1.1.1 2003/12/18 14:40:14 marco Exp $
 
 #PAGE
 ## ------------------------------------------------------------
@@ -36,7 +35,7 @@ PACKAGE_NAME		= @PACKAGE_NAME@
 PACKAGE_VERSION		= @PACKAGE_VERSION@
 PACKAGE_VERSION_MAJMIN	= @PACKAGE_VERSION_MAJMIN@
 PACKAGE_XVERSION	= @PACKAGE_XVERSION@
-PKG_DIR			= $(PACKAGE_NAME)_$(PACKAGE_VERSION_MAJMIN)
+PKG_DIR			= $(PACKAGE_NAME)_$(PACKAGE_XVERSION)
 
 #PAGE
 ## ------------------------------------------------------------
@@ -93,7 +92,7 @@ pkgsysconfdir	= $(sysconfdir)/$(PKG_DIR)
 ## Common programs.
 ## ------------------------------------------------------------
 
-BASH			= @BASH@
+BASHPROG		= @BASHPROG@
 SHELL			= @SHELL@
 @SET_MAKE@
 
@@ -142,25 +141,49 @@ SPKG_INSTALL	= spkg.sh --install --prefix=$(prefix) -f -v
 SPKG_UPGRADE	= spkg.sh --upgrade --prefix=$(prefix) -f -v
 SPKG_PKG	= $(PACKAGE_NAME)_$(PACKAGE_XVERSION)
 
+SPKG_PKG_BIN	= $(SPKG_PKG)_bin.tar.gz
+SPKG_PKG_DEV	= $(SPKG_PKG)_dev.tar.gz
+SPKG_PKG_DOC	= $(SPKG_PKG)_doc.tar.gz
+SPKG_PKG_STA	= $(SPKG_PKG)_sta.tar.gz
+
+.PHONY: spkg-upgrade spkg-install
 .PHONY: $(foreach a, bin dev doc sta, spkg-upgrade-$(a) spkg-install-$(a))
 
-spkg-upgrade-bin:
-	$(SPKG_UPGRADE) --file=$(SPKG_PKG)_bin.tar.gz
-spkg-upgrade-dev:
-	$(SPKG_UPGRADE) --file=$(SPKG_PKG)_dev.tar.gz
-spkg-upgrade-doc:
-	$(SPKG_UPGRADE) --file=$(SPKG_PKG)_dob.tar.gz
-spkg-upgrade-sta:
-	$(SPKG_UPGRADE) --file=$(SPKG_PKG)_sta.tar.gz
+spkg-upgrade: $(foreach a, bin dev doc sta, spkg-upgrade-$(a)) bindist
 
+spkg-upgrade-bin:
+	-test -f $(SPKG_PKG_BIN) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_BIN)
+spkg-upgrade-dev:
+	-test -f $(SPKG_PKG_DEV) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_DEV)
+spkg-upgrade-doc:
+	-test -f $(SPKG_PKG_DOC) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_DOC)
+spkg-upgrade-sta:
+	-test -f $(SPKG_PKG_STA) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_STA)
+
+spkg-install: $(foreach a, bin dev doc sta, spkg-install-$(a)) bindist
 spkg-install-bin:
-	$(SPKG_INSTALL) --file=$(SPKG_PKG)_bin.tar.gz
+	-test -f $(SPKG_PKG_BIN) && $(SPKG_INSTALL) --file=$(SPKG_PKG_BIN)
 spkg-install-dev:
-	$(SPKG_INSTALL) --file=$(SPKG_PKG)_dev.tar.gz
+	-test -f $(SPKG_PKG_DEV) && $(SPKG_INSTALL) --file=$(SPKG_PKG_DEV)
 spkg-install-doc:
-	$(SPKG_INSTALL) --file=$(SPKG_PKG)_dob.tar.gz
+	-test -f $(SPKG_PKG_DOC) && $(SPKG_INSTALL) --file=$(SPKG_PKG_DOC)
 spkg-install-sta:
-	$(SPKG_INSTALL) --file=$(SPKG_PKG)_sta.tar.gz
+	-test -f $(SPKG_PKG_STA) && $(SPKG_INSTALL) --file=$(SPKG_PKG_STA)
+
+#page
+## ------------------------------------------------------------
+## Configuration inspection scripts.
+## ------------------------------------------------------------
+
+ds_CONFIG_SCRIPT_SRC	= $(builddir)/$(notdir $(CONFIGDIR))/package-config
+ds_CONFIG_SCRIPT_DST	= $(INSTALL_ROOT)$(bindir)/config-$(PKG_DIR)
+
+install-config-script:
+	-@test -f $(ds_CONFIG_SCRIPT) && \
+	$(INSTALL_BIN) $(ds_CONFIG_SCRIPT_SRC) $(ds_CONFIG_SCRIPT_DST)
+
+bin-install: install-config-script
+
 
 # Makefile.rl --
 #
@@ -197,7 +220,7 @@ spkg-install-sta:
 ## Search paths.
 ## ------------------------------------------------------------
 
-vpath	%.m4		$(top_srcdir)/modules:$(top_srcdir)/macros
+vpath	%.m4		$(top_srcdir)/macros
 vpath	%.sh.m4		$(top_srcdir)/modules
 vpath	%.sh.m4		$(top_srcdir)/lib
 vpath	%.sh.m4		$(top_srcdir)/examples
@@ -218,7 +241,7 @@ M4FLAGS		= --include=$(top_srcdir)/lib \
 ## Library rules.
 ## ------------------------------------------------------------
 
-MODULES			= encode file getopts message programs signal \
+MODULES			= base encode file getopts message program signal \
 			  string dialog main
 LIBNAME			= libmbfl.sh
 
@@ -256,8 +279,8 @@ $(library_SOURCES): %.sh: macros.m4 %.sh.m4
 	$(M4) $(M4FLAGS) $(^) | \
 	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
 
-$(LIBNAME): $(library_SOURCES)
-	$(M4) $(M4FLAGS) libmbfl.sh.m4 >$(@)
+$(LIBNAME): libmbfl.sh.m4 $(library_SOURCES)
+	$(M4) $(M4FLAGS) $(<) >$(@)
 
 
 bin:		library-all
@@ -304,7 +327,7 @@ endif
 	$(SYMLINK) $(subst $(prefix),..,$(pkglibexecdir)/mbfl-config) mbfl-config
 
 mbfl-config:
-	@echo -e "#!$(BASH)\necho $(pkgdatadir)/libmbfl.sh\n###end of file\n" >$(@)
+	@echo -e "#!$(BASHPROG)\necho $(pkgdatadir)/libmbfl.sh\n###end of file\n" >$(@)
 
 bin:		script-all
 bin-clean:	script-clean
@@ -335,13 +358,31 @@ endif
 
 doc-install:	template-install
 
+#page
+## ------------------------------------------------------------
+## Test rules.
+## ------------------------------------------------------------
+
+test_MODULES	= string file encode getopts message program script signal
+testdir		= $(top_srcdir)/tests
+test_FILES	= $(foreach f, $(test_MODULES), $(testdir)/$(f).test)
+test_TARGETS	= test-modules
+
+test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
+test_ENV	+= TESTMATCH=$(TESTMATCH)
+test_CMD	= $(test_ENV) $(BASHPROG)
+
+test-modules:
+ifneq ($(strip $(test_FILES)),)
+	$(foreach f, $(test_FILES), \
+	top_srcdir=$(top_srcdir); $(test_CMD) $(f);)
+endif
 
 ### end of file
 # Local Variables:
 # mode: makefile
-# page-delimiter: "^#PAGE"
+# page-delimiter: "^#page"
 # End:
-
 
 #PAGE
 ## ------------------------------------------------------------
@@ -359,27 +400,16 @@ M4FLAGS		+= --prefix-builtins
 
 #PAGE
 ## ------------------------------------------------------------
-## TCL test rules.
+## Test rules.
 ## ------------------------------------------------------------
 
-TCLSH			= @TCLSH@
-TCLTESTMAIN		= /home/devel/src/shell/mbfl/beta--0.7/tests/all.tcl
-
+test_SRCDIR		= /home/devel/src/shell/mbfl/beta--0.7/tests
 #test_TARGETS		=
+
 #test_CLEANFILES	=
 #test_REALCLEANFILES	=
 
 .PHONY: test tests test-clean tests-clean test-realclean tests-realclean
-
-test tests:
-	if test -f $(TCLTESTMAIN); then \
-	  export TMPDIR=$(TMPDIR);			\
-	  export top_srcdir=$(top_srcdir);		\
-	  export srcdir=$(top_srcdir);			\
-	  export top_builddir=$(top_builddir);		\
-	  export builddir=$(builddir);			\
-	  $(TCLSH) $(TCLTESTMAIN) $(TESTFLAGS); \
-	fi
 
 test tests: $(test_TARGETS)
 test-clean tests-clean:
@@ -387,8 +417,8 @@ test-clean tests-clean:
 test-realclean tests-realclean:
 	-$(RM) $(test_CLEANFILES) $(test_REALCLEANFILES)
 
-clean: test-clean
-realclean: test-realclean
+aux-clean:	test-clean
+aux-realclean:	test-realclean
 
 #PAGE
 ## ------------------------------------------------------------

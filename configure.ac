@@ -33,7 +33,7 @@
 ## Initialisation.
 ## ------------------------------------------------------------
 
-AC_INIT([mbfl], [0.7.4], [marcomaggi@tiscalinet.it])
+AC_INIT([mbfl], [0.7.5], [marcomaggi@tiscalinet.it])
 AC_PREREQ(2.57)
 AC_COPYRIGHT([Copyright (C) 2003, 2004 by Marco Maggi])
 AC_REVISION([$Revision: 1.1.1.131 $])
@@ -42,8 +42,8 @@ AC_CONFIG_SRCDIR([./lib/libmbfl.sh.m4])
 AC_CONFIG_AUX_DIR([gnuconfig])
 AC_SUBST([CONFIGDIR], ["\$(top_srcdir)/gnuconfig"])
 
-AC_SUBST([PACKAGE_XVERSION], [0.7b4])
-AC_DEFINE([PACKAGE_XVERSION], ["0.7b4"], [full version])
+AC_SUBST([PACKAGE_XVERSION], [0.7b5])
+AC_DEFINE([PACKAGE_XVERSION], ["0.7b5"], [full version])
 AC_SUBST([PACKAGE_NODOT_VERSION], [07])
 AC_SUBST([PACKAGE_NAME_UPPERCASE], [MBFL])
 AC_SUBST([PACKAGE_NAME_LOWERCASE], [mbfl])
@@ -51,7 +51,7 @@ AC_SUBST([PACKAGE_NAME_LOWERCASE], [mbfl])
 AC_SUBST([PACKAGE_VERSION_MAJMIN], [0.7])
 AC_SUBST([PACKAGE_VERSION_MAJOR], [0])
 AC_SUBST([PACKAGE_VERSION_MINOR], [7])
-AC_SUBST([PACKAGE_VERSION_PATCH], [4])
+AC_SUBST([PACKAGE_VERSION_PATCH], [5])
 
 #PAGE
 ## ------------------------------------------------------------
@@ -61,8 +61,8 @@ AC_SUBST([PACKAGE_VERSION_PATCH], [4])
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
-AC_CHECK_PROG([BASH], [bash], [bash], :)
-AC_ARG_VAR([BASH], [the GNU bash shell])
+AC_PATH_PROG([BASHPROG], [bash], [bash], :)
+AC_ARG_VAR([BASHPROG], [the GNU bash shell])
 
 AC_CHECK_PROG([RM], [rm], [rm -f -r], :)
 AC_ARG_VAR([RM], [program used to delete files and directories recursively])

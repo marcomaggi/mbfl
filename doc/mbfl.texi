@@ -63,15 +63,17 @@ Documentation License''.
 @menu
 * Overview::                    Overview of the library. 
 * Service Variables::           Required user defined variables.
+* Base::                        Some base functions.
 * Encoding::                    Encoding and decoding strings.
 * File::                        Manipulating files and pathnames.
-* Getopts::                      Parsing command line options.
+* Getopts::                     Parsing command line options.
 * Message::                     Printing messages to the console.
 * Program::                     Using external programs.
 * Signal::                      Catching signals.
 * String::                      Manipulating strings.
 * Dialog::                      Interacting with the user.
 * Main::                        Main function.
+* Testing::                     Building test suites.
 
 Appendices
 
@@ -116,9 +118,6 @@ script to the smallest dimension; if we follow another schema, @mbfl{}
 modules may be indequate. This is especially true for the options
 parsing module.
 
-At present: a module in the library is not working at all: the signal
-one. Ignore completely the functions whose name begin with
-@code{mbfl_signal}.
 
 
 @unnumberedsec Using the library
@@ -205,6 +204,18 @@ script.sh: script.sh.m4 realscript.sh
 @file{realscript.sh} can be processed as explained above.
 
 
+@unnumberedsec Notes
+
+
+@itemize
+@item
+Some functions take a variable name as argument and store in the
+referenced variable some value; to avoid name collision: select a name
+that starts with @code{p_}. It is guaranteed that @mbfl{} never use
+variables with name starting with such a prefix.
+@end itemize
+
+
 @c ------------------------------------------------------------
 @node Service Variables
 @unnumbered Required user defined variables
@@ -256,6 +267,31 @@ script_VERSION="1.0"
 script_LICENSE=GPL
 script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
 @end example
+
+
+
+@c ------------------------------------------------------------
+@node Base
+@unnumbered Some base functions
+
+
+
+@deffn Function mbfl_set_maybe @var{name} @var{value}
+Sets a variable named @var{name} to @var{value}, but only if @var{name}
+is not the empty string.
+@end deffn
+
+
+@deffn Function mbfl_read_maybe_null @var{varname}
+Reads a line from its stdin and stores it in a variable named
+@var{varname}. If @code{mbfl_option_null} returns true: the null
+character is used as terminator, like in:
+
+@example
+read -d $'\x00'
+@end example
+@end deffn
+
 @c ------------------------------------------------------------
 @node Encoding
 @unnumbered Encoding and decoding strings
@@ -297,8 +333,9 @@ mbfl_decode_hex 414243
 
 
 @menu
-* File Names::
-* File Commands::
+* File Names::                  Manipulating file names.
+* File Commands::               Manipulating files with external commands.
+* File Testing::                Testing file existence and the like.
 @end menu
 
 
@@ -307,11 +344,26 @@ mbfl_decode_hex 414243
 @unnumberedsec File names
 
 
+@menu
+* File Name Parts::             Splitting a file name into its components.
+* File Name Path::              Handling relative pathnames.
+* File Name System::            Finding pathnames on the system.
+@end menu
+
+
+
+@c ------------------------------------------------------------
+@node File Name Parts
+@unnumberedsubsec Splitting a file name into its components
+
+
+
 @deffn Function mbfl_file_extension @var{pathname}
 Extracts the extension from a file name.  Searches the last dot
-character in the argument string and echoes to stdout the range of
-characters from the dot to the end, not including the dot.  If a slash
-character is found first, echoes to stdout the empty string.
+(@code{.}) character in the argument string and echoes to stdout the
+range of characters from the dot to the end, not including the dot.  If
+a slash (@code{/}) character is found first, echoes to stdout the empty
+string.
 @end deffn
 
 
@@ -329,13 +381,6 @@ slash.
 @end deffn
 
 
-@deffn Function mbfl_file_normalise @var{pathname}
-Normalises a file name.  If the input string is a relative name, the
-current process working directory is prepended to it.  Echoes to stdout
-the normalised file name.
-@end deffn
-
-
 @deffn Function mbfl_file_rootname @var{pathname}
 Extracts the root portion of a file name.  Searches the last dot
 character in the argument string and echoes to stdout the range of
@@ -346,28 +391,68 @@ the first character, echoes to stdout the empty string.
 @end deffn
 
 
-@deffn Function mbfl_file_split @var{pathname}
-Separates a file name into its components.
-Replaces all the slash characters in the input string
-with a newline and echoes the substrings.
-
-The correct way to use the fields is:
-
-@example
-mbfl_file_split "$file" | while read field
-do
-   ... $field ...
-done
-@end example
-@end deffn
-
-
 @deffn Function mbfl_file_tail @var{pathnbame}
 Extracts the file portion from a fully qualified file name.  Searches
 the last slash character in the input string and echoes to stdout the
 range of characters from the slash to the end, not including the slash.
 If no slash is found: echoes the whole string.
 @end deffn
+
+
+@deffn Function mbfl_file_split @var{pathname}
+Separates a file name into its components. One or more contiguous
+occurrences of the slash character are used as separator. The components
+are stored in an array named @code{SPLITPATH}, that may be declared
+@code{local} in the scope of the caller; the base index is zero.  The
+number of elements in the array is stored in a variable named
+@code{SPLITCOUNT}. Returns true.
+@end deffn
+
+@c ------------------------------------------------------------
+@node File Name Path
+@unnumberedsubsec Handling relative pathnames
+
+
+@deffn Function mbfl_file_normalise @var{pathname} ?@var{prefix}?
+Normalises a file name: removes all the occurrences of @code{.} and
+@code{..}.
+
+If @var{pathname} is relative (according to
+@code{mbfl_file_is_absolute}) and @var{prefix} is not present or it is
+the empty string: the current process working directory is prepended to
+@var{pathname}.
+
+If @var{prefix} is present and non empty, and @var{pathname} is relative
+ (according to @code{mbfl_file_is_absolute}): @var{prefix} is prepended
+to @var{pathname} and normalised, too.
+
+Echoes to stdout the normalised file name; returns true.
+@end deffn
+
+
+@deffn Function mbfl_file_is_absolute @var{pathname}
+Returns true if the first character in @var{pathname} is a slash
+(@code{/}); else returns false.
+@end deffn
+
+
+@deffn Function mbfl_file_is_absolute_dirname @var{pathname}
+Returns true if @var{pathname} is a directory according to
+@code{mbfl_file_is_directory} and an absolute pathname according to
+@code{mbfl_file_is_absolute}.
+@end deffn
+
+
+@deffn Function mbfl_file_is_absolute_filename @var{pathname}
+Returns true if @var{pathname} is a file according to
+@code{mbfl_file_is_file} and an absolute pathname according to
+@code{mbfl_file_is_absolute}.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node File Name System
+@unnumberedsubsec Finding pathnames on the system
 
 
 @deffn Function mbfl_file_find_tmpdir ?@var{PATHNAME}?
@@ -380,6 +465,7 @@ otherwise.
 @end deffn
 
 
+
 @c ------------------------------------------------------------
 @node File Commands
 @unnumberedsec File Commands
@@ -389,6 +475,7 @@ otherwise.
 * File Commands Listing::       Retrieving informations.
 * File Commands Mkdir::         Creating directories.
 * File Commands Removing::      Removing files and directories.
+* File Commands Tar::           Manipulating tar archives.
 @end menu
 
 
@@ -418,6 +505,19 @@ Prints the group of the file.
 Prints the size of the file.
 @end deffn
 
+
+@deffn Function mbfl_file_normalise_link @var{pathname}
+Makes use of the @command{readlink} to normalise the pathname of a
+symbolic link (remember that a symbolic link references a file, never a
+directory). Echoes to stdout the normalised pathname.
+
+The command line of @command{readlink} is:
+
+@example
+readlink -fn $@var{pathname}
+@end example
+@end deffn
+
 @c ------------------------------------------------------------
 @node File Commands Mkdir
 @unnumberedsubsec Creating directories
@@ -429,9 +529,10 @@ directories (@ref{Program Declaring}). The programs are: @command{mkdir}.
 @end deffn
 
 
-@deffn Function mbfl_file_make_directory @var{pathname}
+@deffn Function mbfl_file_make_directory @var{pathname} ?@var{permissions}?
 Creates a directory named @var{pathname}; all the unexistent parents are
-created, too.
+created, too. If @var{permissions} is present: it is the specification
+of directory permissions in octal mode.
 @end deffn
 
 
@@ -469,6 +570,100 @@ or it is not a file or an error occurs: returns 1.
 @deffn Function mbfl_file_remove_directory @var{pathname}
 Removes the directory selected by @var{pathname}. If the directory does
 not exist or an error occurs: returns 1.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node File Commands Tar
+@unnumberedsubsec Manipulating tar archives
+
+
+@deffn Function mbfl_file_enable_tar
+Declares to the program module the @command{tar} command (@ref{Program
+Declaring}).
+@end deffn
+
+
+@deffn Function mbfl_tar_exec ?...?
+Executes @command{tar} with whatever arguments are used. Returns the
+return code of @command{tar}.
+@end deffn
+
+
+@deffn Function mbfl_tar_create_to_stdout @var{directory} ?...?
+Creates an archive and sends it to stdout. The root of the archive is
+the @var{directory}. Files are selected with the @code{.}
+pattern. @command{tar} flags may be appended to the invocation to this
+function. In case of error returns 1.
+@end deffn
+
+
+@deffn Function mbfl_tar_extract_from_stdin @var{directory} ?...?
+Reads an archive from stdin and extracts it under
+@var{directory}. @command{tar} flags may be appended to the invocation
+to this function. In case of error returns 1.
+@end deffn
+
+
+@deffn function mbfl_tar_create_to_file @var{directory} @var{archive} ?...?
+Creates an archive named @var{archive} holding the contents of
+@var{directory}. Before creating the archive, the process changes the
+current directory to @var{directory} and selects the files with the
+pattern @code{.}. @command{tar} flags may be appended to the invocation
+to this function. In case of error returns 1.
+@end deffn
+
+
+@deffn Function mbfl_tar_list @var{archive} ?...?
+Prints to stdout the list of files in @var{archive}. @command{tar} flags
+may be appended to the invocation to this function. In case of error
+returns 1.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node File Testing
+@unnumberedsec Testing file existence and the like
+
+
+@deffn Function mbfl_file_is_file @var{filename}
+Returns true if @var{filename} is not the empty string and is a file.
+@end deffn
+
+
+@deffn Function mbfl_file_is_readable @var{filename}
+Returns true if @var{filename} is not the empty string, is a file and is
+readable.
+@end deffn
+
+
+@deffn Function mbfl_file_is_writable @var{filename}
+Returns true if @var{filename} is not the empty string, is a file and is
+writable.
+@end deffn
+
+
+@deffn Function mbfl_file_is_directory @var{directory}
+Returns true if @var{directory} is not the empty string and is a
+directory.
+@end deffn
+
+
+@deffn Function mbfl_file_directory_is_readable @var{directory}
+Returns true if @var{directory} is not the empty string, is a directory
+and is readable.
+@end deffn
+
+
+@deffn Function mbfl_file_directory_is_writable @var{directory}
+Returns true if @var{directory} is not the empty string, is a directory
+and is writable.
+@end deffn
+
+
+@deffn Function mbfl_file_is_symlink @var{pathname}
+Returns true if @var{pathname} is not the empty string and is a symbolic
+link.
 @end deffn
 
 
@@ -1210,47 +1405,75 @@ redefined to execute arbitrary code and then exit.
 
 
 @noindent
-This module is under development.
+@mbfl{} provides an interface to the @code{trap} builtin that allows the
+execution of more than one function when a signal is received; this may
+sound useless, but that is it.
+
+
+@deffn Function mbfl_signal_map_signame_to_signum @var{sigspec}
+Converts @var{sigspec} to the corresponding signal number, then prints
+the number.
+@end deffn
+
+
+@deffn Function mbfl_signal_attach @var{sigspec} @var{handler}
+Append @var{handler} to the list of functions that are executed whenever
+@var{sigspec} is received.
+@end deffn
+
+
+@deffn Function mbfl_signal_invoke_handlers @var{signum}
+Invokes all the handlers registered for @var{signum}. This function is
+not meant to be used during normal scripts execution, but it may be
+useful to debug a script.
+@end deffn
+
 
 @c ------------------------------------------------------------
 @node String
 @unnumbered Manipulating strings
 
 
-@deffn Function mbfl_string_chars @var{string}
-Splits a string into characters.  Echoes to stdout the characters one
-per line.
+@menu
+* String Quote::                Quoted characters.
+* String Inspection::           Inspecting a string.
+* String Splitting::            Splitting a string.
+* String Case::                 Converting between upper and lower case.
+* String Class::                Matching a string with a class.
+* String Misc::                 Miscellaneous functions.
+@end menu
 
-The correct way to use the fields is:
 
-@example
-mbfl_string_chars $string $sep | while read ch
-do
-   ... $ch ...
-done
-@end example
+@c ------------------------------------------------------------
+@node String Quote
+@unnumberedsec Quoted characters
+
+
+@deffn Function mbfl_string_is_quoted_char @var{string} @var{position}
+Returns true if the character at @var{position} in @var{string} is
+quoted; else returns false. A character is considered quoted if it is
+preceeded by an odd number of backslashes (@code{\}). @var{position} is
+a zero--based index.
 @end deffn
 
 
-@deffn Function mbfl_string_first @var{string} @var{char} @var{begin}
-Searches characters in a string. Arguments:
-
-@table @var
-@item string
-the target string;
-
-@item char
-the character to look for;
-
-@item begin
-optional, the index of the character in the target string from which the
-search begins; defaults to zero.
-@end table
-
-Echoes to stdout an integer representing the index of the first
-occurrence of @var{char} in @var{string}. If the character is not found:
-nothing is sent to stdout.
+@deffn Function mbfl_string_is_equal_unquoted_char @var{string} @var{position} @var{char}
+Returns true if the character at @var{position} in @var{string} is equal
+to @var{char} and is not quoted (according to
+@code{mbfl_string_is_quoted_char}); else returns false. @var{position}
+is a zero--based index.
 @end deffn
+
+@deffn Function mbfl_string_quote @var{string}
+Prints @var{string} with quoted characters. All the occurrences of the
+backslash character, @code{\}, are substituted with a quoted backslash,
+@code{\\}. Returns true.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node String Inspection
+@unnumberedsec Inspecting a string
 
 
 @deffn Function mbfl_string_index @var{string} @var{index}
@@ -1260,96 +1483,103 @@ stdout.
 @end deffn
 
 
-@deffn Function mbfl_string_is @var{class} @var{string}
-Tests a string agains a character class. Supported classes are:
+@deffn Function mbfl_string_first @var{string} @var{char} ?@var{begin}?
+Searches characters in a string. Arguments: @var{string}, the target
+string; @var{char}, the character to look for; @var{begin}, optional,
+the index of the character in the target string from which the search
+begins (defaults to zero).
 
-@table @code
-@item alpha
-characters in the range @code{A-Z} and @code{a-Z};
-
-@item digit
-characters in the range @code{0-9};
-
-@item alnum
-character of the classes @code{alpha} and @code{digit};
-
-@item noblank
-all the characters excluding @code{ \n\t\r\f};
-
-@item name
-a string of characters numbers and underscores, with the first character
-not being a number.
-@end table
-
-@var{class} is the class name, @var{string} is the source string, a null
-string is of no class.
-
-Returns with code 0 if the string is of the selected class, else returns
-with code 1.
+Prints an integer representing the index of the first occurrence of
+@var{char} in @var{string}. If the character is not found: nothing is
+sent to stdout.
 @end deffn
 
 
-@deffn Function mbfl_string_last @var{string} @var{char} @var{begin}
+@deffn Function mbfl_string_last @var{string} @var{char} ?@var{begin}?
 Searches characters in a string starting from the end. Arguments:
+@var{string}, the target string; @var{char}, the character to look for;
+@var{begin}, optional, the index of the character in the target string
+from which the search begins (defaults to zero).
 
-@table @var
-@item string
-the target string;
-
-@item char
-the character to look for;
-
-@item begin
-optional, the index of the character in the target string from which the
-search begins; defaults to zero.
-@end table
-
-Echoes to stdout an integer representing the index of the last
-occurrence of @code{sring} in @code{char}. If the character is not
-found: nothing is sent to stdout.
+Prints an integer representing the index of the last occurrence of
+@var{char} in @var{string}. If the character is not found: nothing is
+sent to stdout.
 @end deffn
 
 
 @deffn Function mbfl_string_range @var{string} @var{begin} @var{end}
-Extracts a range of characters from a string. Arguments:
-
-@table @var
-@item string
-the source string;
-
-@item begin
-the index of the first character in the range;
-
-@item end
-optional, the index of the character next to the last in the range, this
-character is not extracted; defaults to the last character in the
-string; if equal to @code{end}: the end of the range is the end of the
-string.
-@end table
-
-Echoes to stdout the selected range of characters.
+Extracts a range of characters from a string. Arguments: @var{string},
+the source string; @var{begin}, the index of the first character in the
+range; @var{end}, optional, the index of the character next to the last
+in the range, this character is not extracted. @var{end} defaults to the
+last character in the string; if equal to @code{end}: the end of the
+range is the end of the string.  Echoes to stdout the selected range of
+characters.
 @end deffn
 
 
-@deffn Function mbfl_string_split @var{string} @var{split}
-Splits a string into fields. This is done replacing each character from
-a selected set with a newline. If the source string contains newlines
-the splitting operation can lead to unexpected results.
+@deffn Function mbfl_string_equal_substring @var{string} @var{position} @var{pattern}
+Returns true if the substring starting at @var{position} in @var{string}
+is equal to @var{pattern}; else returns false. If @var{position} plus
+the length of @var{pattern} is greater than the length of @var{string}:
+the return value is false, always.
+@end deffn
 
-@var{string} is the source string, @var{split} is the string made up of
-characters to be used as field separators.
 
-Echoes to stdout the fields one per line.
+@c ------------------------------------------------------------
+@node String Splitting
+@unnumberedsec Splitting a string
 
-The correct way to use the fields is:
+
+
+@deffn Function mbfl_string_chars @var{string}
+Splits a string into characters. Fills an array named @code{SPLITFIELD}
+with the characters from the string; the number of elements in the array
+is stored in a variable named @code{SPLITCOUNT}. Both @code{SPLITFIELD}
+and @code{SPLITCOUNT} may be declared @code{local} in the scope of the
+caller.
+
+The difference between this function and using: @code{$@{STRING:$i:1@}},
+is that this function detects backslash characters, @code{\}, and treats
+them as part of the following character. So, for example, the sequence
+@code{\n} is treated as a single char.
+@end deffn
+
+
+Example of usage for @code{mbfl_string_chars}:
 
 @example
-mbfl_string_split $string $sep | while read field
-do
-   ... $field ...
-done
+string="abcde\nfghilm"
+mbfl_string_chars "$@{string@}"
+# Now:
+# "$@{#string@}" = $SPLITCOUNT
+#  a = "$@{SPLITFIELD[0]@}"
+#  b = "$@{SPLITFIELD[1]@}"
+#  c = "$@{SPLITFIELD[2]@}"
+#  d = "$@{SPLITFIELD[3]@}"
+#  e = "$@{SPLITFIELD[4]@}"
+#  \n = "$@{SPLITFIELD[5]@}"
+#  f = "$@{SPLITFIELD[6]@}"
+#  g = "$@{SPLITFIELD[7]@}"
+#  h = "$@{SPLITFIELD[8]@}"
+#  i = "$@{SPLITFIELD[9]@}"
+#  l = "$@{SPLITFIELD[10]@}"
+#  m = "$@{SPLITFIELD[11]@}"
 @end example
+
+
+@deffn Function mbfl_string_split @var{string} @var{separator}
+Splits @var{string} into fields using @var{seprator}.  Fills an array
+named @code{SPLITFIELD} with the characters from the string; the number
+of elements in the array is stored in a variable named
+@code{SPLITCOUNT}. Both @code{SPLITFIELD} and @code{SPLITCOUNT} may be
+declared @code{local} in the scope of the caller.
 @end deffn
+
+
+@c ------------------------------------------------------------
+@node String Case
+@unnumberedsec Converting between upper and lower case
 
 
 @deffn Function mbfl_string_toupper @var{string}
@@ -1361,6 +1591,90 @@ Outputs @var{string} with all the occurrencies of lower case
 @deffn Function mbfl_string_tolower @var{string}
 Outputs @var{string} with all the occurrencies of upper case
 @acronym{ASCII} characters (no accents) turned into lower case.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node String Class
+@unnumberedsec Matching a string with a class
+
+
+@deffn Function mbfl-string-is-alpha-char @var{char}
+Returns true if @var{char} is in one of the ranges: @code{a-z},
+@code{A-Z}.
+@end deffn
+
+
+@deffn Function mbfl-string-is-digit-char @var{char}
+Returns true if @var{char} is in one of the ranges: @code{0-9}.
+@end deffn
+
+
+@deffn Function mbfl-string-is-alnum-char @var{char}
+Returns true if @code{mbfl-string-is-alpha-char} ||
+@code{mbfl-string-is-digit-char} returns true when acting on @var{char}.
+@end deffn
+
+
+@deffn Function mbfl-string-is-noblank-char @var{char}
+Returns true if @var{char} is in none of the characters: @code{ },
+@code{\n}, @code{\r}, @code{\f}, @code{\t}. @var{char} is meant to be
+the unquoted version of the non--blank characters: the one obtained
+with:
+
+@example
+$'char'
+@end example
+@end deffn
+
+
+@deffn Function mbfl-string-is-name-char @var{char}
+Returns true if @code{mbfl-string-is-alnum-char} returns true when
+acting upon @var{char} or @var{char} is an underscore, @code{_}.
+@end deffn
+
+
+@deffn Function mbfl-string-is-alpha @var{string}
+@deffnx Function mbfl-string-is-digit @var{string}
+@deffnx Function mbfl-string-is-alnum @var{string}
+@deffnx Function mbfl-string-is-noblank @var{string}
+@deffnx Function mbfl-string-is-name @var{string}
+Return true if the associated char function returns true for each
+character in @var{string}. As an additional constraint:
+@code{mbfl-string-is-name} returns false if @code{mbfl-string-is-digit}
+returns true when acting upon the first character of @var{string}.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node String Misc
+@unnumberedsec Miscellaneous functions
+
+
+
+@deffn Function mbfl_string_replace @var{string} @var{pattern} ?@var{subst}?
+Replaces all the occurrences of @var{pattern} in @var{string} with
+@var{subst}; prints the result. If not used, @var{subst} defaults to the
+empty string.
+@end deffn
+
+
+@deffn Function mbfl_sprintf @var{varname} @var{format} ...
+Makes use of @code{printf} to format the string @var{format} with the
+additional arguments, then stores the result in @var{varname}: if this
+name is local in the scope of the caller, this has the effect of filling
+the variable in that scope.
+@end deffn
+
+
+@deffn Function mbfl_string_skip @var{string} @var{varname} @var{char}
+Skips all the characters in a string equal to @var{char}.  @var{varname}
+is the name of a variable in the scope of the caller: its value is the
+offset of the first character to test in @var{string}. The offset is
+incremented until a char different from @var{char} is found, then the
+value of @var{varname} is update to the position of the different char.
+If the initial value of the offset corresponds to a char equal to
+@var{char}, the variable is left untouched.  Returns true.
 @end deffn
 
 
@@ -1420,7 +1734,7 @@ Exits the script with the return code of the action function or zero.
 @end deffn
 
 
-@deffn Function mbfl_invoke_script_function @var{FUNCNAME}
+@deffn Function mbfl_invoke_script_function @var{funcname}
 If @var{funcname} is the name of an existing function: it is invoked
 with no arguments; the return value is the one of the function.
 The existence test is performed with:
@@ -1429,6 +1743,388 @@ The existence test is performed with:
 type -t @var{FUNCNAME} = function
 @end example
 @end deffn
+
+
+@deffn Function mbfl_main_set_main @var{funcname}
+Selects the main function storing @var{funcname} into
+@code{mbfl_main_SCRIPT_FUNCTION}.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node Testing
+@unnumbered Building test suites
+
+
+@noindent
+@mbfl{} comes with a little library of functions that may be used to
+build test suites; its aim is at building tests for @command{bash}
+functions/commands/scripts.
+
+The ideas at the base of this library are taken from the @code{tcltest}
+package distributed with the @acronym{TCL} core @footnote{@acronym{TCL}
+stands for @emph{Tool Command Language} and it is a scripting language
+originally written by John Ousterhout, see: @url{http://www.tcl.tk/}.};
+this package had contributions from the following people/entities: Sun
+Microsystems, Inc.; Scriptics Corporation; Ajuba Solutions; Don Porter,
+@acronym{NIST}; probably many many others.
+
+The library tries to do as much as possible using functions and aliases,
+not variables; this is an attempt to let the user redefine functions to
+his taste.
+
+
+@menu
+* Testing Intro::               A way to organise a test suite.
+* Testing Config::              Configuring the package.
+* Testing Running::             Running tests.
+* Testing Compare::             Validating results by comparing.
+* Testing Output::              Validating results by output.
+* Testing Messages::            Printing messages from test functions.
+* Testing Files::               Handling files in tests.
+@end menu
+
+
+@c ------------------------------------------------------------
+@node Testing Intro
+@unnumberedsec A way to organise a test suite
+
+
+@noindent
+A useful way to organise a test suite is to split it into a set of
+files: one for each module to be tested.
+
+The file @file{mbfltest.sh} must be sourced at the beginning of each
+test file.
+
+The function @code{dotest} should be invoked at the end of each module
+in the test suite; each module should define functions starting with the
+same prefix. A module should be stored in a file, and should look like
+the following:
+
+@example
+# mymodule.test --
+
+source mbfltest.sh
+source module.sh
+
+function module-featureA-1.1 () @{ ... @}
+function module-featureA-1.2 () @{ ... @}
+function module-featureA-2.1 () @{ ... @}
+function module-featureB-1.1 () @{ ... @}
+function module-featureB-1.2 () @{ ... @}
+
+dotest module-
+
+### end of file
+@end example
+
+@noindent
+the file should be executed with:
+
+@example
+$ bash mymodule.test
+@end example
+
+To test just "feature A":
+
+@example
+$ TESTMATCH=module-featureA bash mymodule.test
+@end example
+
+Remember that the @code{source} builtin will look for files in the
+directories selected by the @env{PATH} environment variables, so we may
+want to do:
+
+@example
+$ PATH="path/to/modules:$@{PATH@}" \
+TESTMATCH=module-featureA bash mymodule.test
+@end example
+
+It is better to put such stuff in a @file{Makefile}, with @acronym{GNU}
+@command{make}:
+
+@example
+top_srcdir      = ...
+builddir        = ...
+BASHPROG        = bash
+MODULES         = moduleA moduleB
+
+testdir         = $(top_srcdir)/tests
+test_FILES      = $(foreach f, $(MODULES), $(testdir)/$(f).test)
+test_TARGETS    = test-modules
+
+test_ENV        = PATH=$(builddir):$(testdir):$(PATH) TESTMATCH=$(TESTMATCH)
+test_CMD        = $(test_ENV) $(BASHPROG)
+
+.PHONY: test-modules
+
+test-modules:
+ifneq ($(strip $(test_FILES)),)
+        @@$(foreach f, $(test_FILES), $(test_CMD) $(f);)
+endif
+@end example
+
+@c ------------------------------------------------------------
+@node Testing Config
+@unnumberedsec Configuring the package
+
+
+@deffn Function dotest-set-verbose
+@deffnx Function dotest-unset-verbose
+Set or unset verbose execution. If verbose mode is on: some commands
+output messages on stderr describing what is going on. Examples: files
+and directories creation/removal.
+@end deffn
+
+@deffn Function dotest-option-verbose
+Returns true if verbose mode is on, false otherwise.
+@end deffn
+
+
+@deffn Function dotest-set-test
+@deffnx Function dotest-unset-test
+Set or unset test execution. If test mode is on: external commands (like
+@command{rm} and @command{mkdir}) are not executed, the command line is
+sent to stderr. Test mode is meant to be used to debug the test library
+functions.
+@end deffn
+
+@deffn Function dotest-option-test
+Returns true if test mode is on, false otherwise.
+@end deffn
+
+
+@deffn Function dotest-set-report-start
+@deffnx Function dotest-unset-report-start
+Set or unset printing a message upon starting a function.
+@end deffn
+
+@deffn Function dotest-option-report-start
+Returns true if start function reporting is on; otherwise returns false.
+@end deffn
+
+
+@deffn Function dotest-set-report-success
+@deffnx Function dotest-unset-report-success
+Set or unset printing a message when a function execution
+succeeds. Failed tests always cause a message to be printed.
+@end deffn
+
+@deffn Function dotest-option-report-success
+Returns true if success function reporting is on; otherwise returns
+false.
+@end deffn
+
+
+
+@c ------------------------------------------------------------
+@node Testing Running
+@unnumberedsec Running test functions
+
+
+
+@deffn Funciton dotest @var{pattern}
+Run all the functions matching @var{pattern}. Usually @var{pattern} is
+the first part of the name of the functions to be executed. The value
+selected with @var{pattern} may be overridden from the command line by
+setting the environment variable @env{TESTMATCH}
+
+Before running a test function: the current process working directory is
+saved, and it is restored after the execution is terminated; that way
+the functions do not have to care about changing directory.
+
+Messages are printed before and after the execution of each function,
+according to the mode selected with: @code{dotest-set-report-success},
+@code{dotest-set-report-start}, @dots{} (@ref{Testing Config} for
+details).
+@end deffn
+
+
+The return value of the test functions is used as result of the test:
+true, the test succeeded; false, the test failed. Remembering that the
+return value of a function is the return value of its last executed
+command, the functions @code{dotest-equal} and @code{dotest-output}, and
+of course the @command{test} command, may be used to return the correct
+value.
+
+There's no constraint on function names, but they must be one--word
+names.
+
+@c ------------------------------------------------------------
+@node Testing Compare
+@unnumberedsec Validating results by comparing
+
+
+
+@deffn Function dotest-equal @var{expected} @var{got}
+Compares the two parameters and returns true if they are equal; returns
+false otherwise. In the latter case prints a message showing the
+expected value and the wrong one. Must be used as last command in a
+function, so that its return value is equal to that of the function.
+@end deffn
+
+
+Example:
+
+@example
+function my-func () @{
+    echo $(($1 + $2))
+@}
+function mytest-1.1 () @{
+    dotest-result 5 `my-func 2 3`
+@}
+dotest mytest-
+@end example
+
+@noindent
+another example:
+
+@example
+function my-func () @{
+    echo $(($1 + $2))
+@}
+function mytest-1.1 () @{
+    dotest-result 5 `my-func 2 3` && \
+      dotest-result 5 `my-func 1 4` && \
+      dotest-result 5 `my-func 3 2` && \
+@}
+dotest mytest-
+@end example
+
+@c ------------------------------------------------------------
+@node Testing Output
+@unnumberedsec Validating results by output
+
+
+@deffn Function dotest-output ?@var{string}?
+Reads all the available lines from stdin accumulating them into a local
+variable, separated by @code{\n}; then compares the input with
+@var{string}, or the empty string if @var{string} is not present, and
+returns true if they are equal, false otherwise.
+@end deffn
+
+
+Example of test for a function that echoes its three parameters:
+
+@example
+function my-lib-function () @{
+    echo $1 $2 $3
+@}
+function mytest-1.1 () @{
+    my-lib-function a b c | dotest-output a b c
+@}
+dotest mytest
+@end example
+
+Example of test for a function that is supposed to print nothing:
+
+@example
+function my-lib-function () @{
+    test "$1" != "$2" && echo error
+@}
+function mytest-1.1 () @{
+    my-lib-function a a | dotest-output
+@}
+dotest mytest
+@end example
+
+@c ------------------------------------------------------------
+@node Testing Messages
+@unnumberedsec Printing messages from test functions
+
+
+@deffn Alias dotest-echo @var{string} ?...?
+@deffnx Alias dotest-debug @var{string} ?...?
+Print the parameters on stderr. @code{dotest-debug} prints some @code{*}
+to make the message more visible.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node Testing Files
+@unnumberedsec Handling files in tests
+
+
+@noindent
+In this section are described functions to be used to create temporary
+files; it is a common task to write scripts to manipulate files and
+directories. All the files should be created under a temporary directory
+that must be removed after each test function is invoked; the library
+automatically invokes @code{dotest-clean-files} when exiting (using
+@code{trap}), but it is safer to invoke it at the end of each function
+that creates files.
+
+
+@deffn Function dotest-echo-tmpdir
+Printd the value of the temporary directory in which all the files and
+directories will be created. The value is prefixed with the value of the
+environment variable @env{TMPDIR}, or @file{/tmp} if not set.
+@end deffn
+
+
+@deffn Function dotest-cd-tmpdir 
+Change the working directory to eh temporary directory.
+@end deffn
+
+
+@deffn Function dotest-cd @var{directory}
+Change the working directory. This is just a wrapper for @command{cd};
+if verbose mode is on: prints a message.
+@end deffn
+
+
+@deffn Function dotest-mktmpdir
+Creates the temporary directory. This is automatically invoked by
+@code{dotest-mkfile} before creating files; @code{dotest-mkdir} creates
+the temporary directory automatically by using the @code{--parents}
+option of @command{mkdir}.
+@end deffn
+
+
+@deffn Function dotest-mkdir @var{directory} ?@var{prefix}?
+Creates @var{directory} under the temporary directory; @var{directory}
+must be a relative pathname (that is: it must not begin with a
+slash). The optional @var{prefix} is a relative pathname that is
+prepended to @var{directory}: it is useful to prepend the name of a
+parent directory. Prints to stdout the full pathname of the directory.
+@end deffn
+
+
+@deffn Function dotest-mkfile @var{pathname} ?@var{prefix}?
+Creates an empty file.  The optional @var{prefix} is a relative pathname
+that is prepended to @var{pathname}: it is useful to prepend the name of
+a parent directory. Prints to stdout the full pathname of the file.
+@end deffn
+
+
+@deffn Function dotest-clean-files
+Removes the temporary directory and all its children. Should be invoked
+at the end of each function that creates temporary files or
+directories.
+
+Returns the value of the last command executed before the invocation,
+that way it can be used right after @code{dotest-output} and
+@code{dotest-equal} without loosing the return value of the function.
+@end deffn
+
+
+Example of usage of @code{dotest-clean-files}:
+
+@example
+function mytest-1.1 () @{
+    local dir=$(dotest-mkdir a/b)
+    local result=
+
+    ...
+    result=...
+    dotest-equal 123 $result
+    dotest-clean-files
+@}
+
+dotest mytest-
+@end example
+
 
 @c ------------------------------------------------------------
 

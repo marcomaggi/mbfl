@@ -6,12 +6,6 @@
 # 
 # Abstract
 # 
-#	This file must be executes through "all.tcl": from the build
-#	directory:
-#
-#		$ make all test TESTFLAGS="-match signal-*"
-# 
-#	will select these tests.
 # 
 # Copyright (c) 2003, 2004 Marco Maggi
 # 
@@ -36,70 +30,53 @@
 ## Setup.
 ## ------------------------------------------------------------
 
-source [file join [file dirname [info script]] setup.tcl]
+source mbfltest.sh
+source libmbfl.sh
 
-#PAGE
-## ---------------------------------------------------------
-## Test namespace.
-## ---------------------------------------------------------
-
-namespace eval ::test {
-
-    variable	signal [file join $libpath signal.sh]
-    variable	maintest \
-	    [file join [::tcltest::configure -testdir] maintest.sh]
-    variable	testscript \
-	    [file join [::tcltest::configure -testdir] testscript.sh]
-
-    variable	precmd ". %s"
-    set precmd [format $precmd $signal]
-
-#PAGE
-
-::tcltest::test signal-1.1 "signal chars" {
-    -setup	{
-	::tcltest::makeFile "
-	bash $testscript >&2 &
-	sleep 2
-	kill -10 %1
-	exit 0
-	" $maintest
-	::tcltest::makeFile "
-	source $signal
-	function handler () {
-	    echo here
-	    exit
-	}
-	ID=`mbfl_signal_attach SIGUSR1 handler`
-	sleep 4
-	exit 0
-	" $testscript
-    }
-    -body	{
-	exec bash $maintest >@stdout 2>@stderr
-    }
-    -result {}
-    -cleanup	{
-	::tcltest::removeFile $maintest
-	::tcltest::removeFile $testscript
-    }
+function debug-wait () {
+    local i
+    for ((i=0; $i < $(($1 * 1000)); ++i)); do :; done    
 }
 
+function signaltest () {
+    local SIGSPEC="$1"
+    local i pid
+    local tmpfile="$(dotest-mkfile result.txt)"
 
-#PAGE
 
-#PAGE
-## ---------------------------------------------------------
-## End of "::test" namespace.
-## ---------------------------------------------------------
+    dotest-debug "executing test script"
+    PATH="$PATH" $BASH signaltest.sh >"${tmpfile}" &
+    pid=$!
 
-::tcltest::cleanupTests
+    # Let the process start and register its signal handlers.
+    debug-wait 30
+    dotest-debug "sending signal to pid '$pid'"
+    kill -${SIGSPEC} $pid
+
+    dotest-debug "waiting for pid '$pid'"
+    wait $pid
+    dotest-debug "received finalisation of pid '$pid'"
+    dotest-equal \
+ 	"exiting after interruption ($SIGSPEC, 2 handlers)" "$(<${tmpfile})"
+    dotest-clean-files
 }
-namespace delete ::test
 
+#PAGE
+
+#dotest-set-debug
+
+function signal-1.1 () {
+    signaltest "SIGUSR1"
+}
+function signal-1.2 () {
+    signaltest "SIGUSR2"
+}
+
+#PAGE
+
+dotest signal-
 
 ### end of file
 # Local Variables:
-# mode: tcl
-# page-delimiter: "^#PAGE"
+# mode: sh
 # End:

@@ -1,4 +1,4 @@
-# programs.sh.m4 --
+# program.sh.m4 --
 # 
 # Part of: Marco's BASH Functions Library
 # Contents: program variables
@@ -73,7 +73,7 @@ function mbfl_program_validate_declared () {
         path="${mbfl_program_PATHS[$i]}"
 
         if mbfl_program_check "${item}"; then
-            mbfl_message_verbose "found \"${item}\": \"${path}\""
+            mbfl_message_verbose "found '${item}': '${path}'\n"
         else
             retval=1
         fi

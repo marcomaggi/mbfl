@@ -6,14 +6,11 @@
 # 
 # Abstract
 # 
-#	This file must be executes through "all.tcl": from the build
-#	directory:
+#	To select the tests in this file:
 #
-#		$ make all test TESTFLAGS="-match encode-*"
+#		$ make all test TESTMATCH=encode-
 # 
-#	will select these tests.
-# 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -30,66 +27,36 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: encode.test,v 1.1.1.8 2003/12/17 12:45:31 marco Exp $
-#
 
 #PAGE
 ## ------------------------------------------------------------
 ## Setup.
 ## ------------------------------------------------------------
 
-source [file join [file dirname [info script]] setup.tcl]
-
-#PAGE
-## ---------------------------------------------------------
-## Test namespace.
-## ---------------------------------------------------------
-
-namespace eval ::test {
-
-    variable	libname [file join $libpath encode.sh]
-
-    variable	precmd ". %s"
-    set precmd [format $precmd $libname]
-
+source mbfltest.sh
+source encode.sh
 
 #PAGE
 
-#  ::tcltest::test encode-1.1 "encoding" {
-#      -body	{
-#  	bash "_encode_hex ABC"
-#      }
-#      -result 414243
-#  }
+# function encode-hex-1.1 () {
+#     mbfl_encode_hex ABC | dotest-output 414243
+# }
 
 #PAGE
 
-::tcltest::test encode-2.1 "decoding hex" {
-    -body	{
-	bash "mbfl_decode_hex 414243"
-    }
-    -result ABC
+function decode-hex-2.1 () {
+    mbfl_decode_hex 414243 | dotest-output ABC
 }
 
-::tcltest::test encode-2.2 "decoding oct" {
-    -body	{
-	bash "mbfl_decode_oct 101102103"
-    }
-    -result ABC
+function decode-oct-1.1 () {
+    mbfl_decode_oct 101102103 | dotest-output ABC
 }
 
 #PAGE
-## ---------------------------------------------------------
-## End of "::test" namespace.
-## ---------------------------------------------------------
 
-::tcltest::cleanupTests
-}
-namespace delete ::test
-
+dotest encode-
 
 ### end of file
 # Local Variables:
-# mode: tcl
-# page-delimiter: "^#PAGE"
+# mode: sh
 # End:

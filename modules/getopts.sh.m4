@@ -35,7 +35,7 @@
 ## Global variables.
 ## ------------------------------------------------------------
 
-ARGC=0
+declare -i ARGC=0
 declare -a ARGV ARGV1
 
 for ((ARGC1=0; $# > 0; ++ARGC1)); do
@@ -103,7 +103,7 @@ function mbfl_declare_option () {
 
 
     mbfl_p_declare_option_test_length $keyword keyword $index
-    mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=`mbfl_string_toupper $keyword`
+    mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=`mbfl_string_toupper "$keyword"`
     mbfl_getopts_BRIEFS[$mbfl_getopts_INDEX]=$brief
     mbfl_getopts_LONGS[$mbfl_getopts_INDEX]=$long
 
@@ -141,8 +141,8 @@ function mbfl_p_declare_option_test_length () {
 }
 #page
 function mbfl_getopts_p_process_script_option () {
-    local OPT="${1:?${FUNCNAME} error: missing option name}"
-    local OPTARG="$2"
+    mandatory_parameter(OPT, 1, option name)
+    optional_parameter(OPTARG, 2)
     local i=0
     local value=
     local brief= long= hasarg= keyword= procedure= variable=
@@ -169,36 +169,39 @@ function mbfl_getopts_p_process_script_option () {
             
             procedure=script_option_update_`mbfl_string_tolower $keyword`
             variable=script_option_`mbfl_string_toupper $keyword`
-            eval $variable='${value}'
+            eval $variable=\'"${value}"\'
             mbfl_invoke_script_function $procedure
+            return 0
         fi
     done
-    return 0
+    return 1
 }
 #PAGE
 function mbfl_getopts_parse () {
-    local OPT= OPTARG=
-    local arg= i=0
+    local p_OPT= p_OPTARG=
+    local argument= i=0
     local found_end_of_options_delimiter=0
 
 
     for ((i=0; $i < $ARGC1; ++i)); do
-        arg="${ARGV1[$i]}"
+        argument="${ARGV1[$i]}"
         if test "$found_end_of_options_delimiter" = 1 ; then
-            ARGV[$ARGC]="${arg}"
+            ARGV[$ARGC]="${argument}"
             let ++ARGC
-        elif test "${arg}" = "--" ; then
+        elif test "${argument}" = '--' ; then
             found_end_of_options_delimiter=1
-        elif mbfl_getopts_isbrief "${arg}" OPT || \
-             mbfl_getopts_islong "${arg}" OPT
-        then mbfl_getopts_p_process_predefined_option_no_arg "${OPT}"
+        elif mbfl_getopts_isbrief "${argument}" p_OPT || \
+             mbfl_getopts_islong "${argument}" p_OPT
+        then
+            mbfl_getopts_p_process_predefined_option_no_arg "${p_OPT}"
         elif \
-            mbfl_getopts_isbrief_with "${arg}" OPT OPTARG || \
-            mbfl_getopts_islong_with  "${arg}" OPT OPTARG
-        then mbfl_getopts_p_process_predefined_option_with_arg "${OPT}" "${OPTARG}"
+            mbfl_getopts_isbrief_with "${argument}" p_OPT p_OPTARG || \
+            mbfl_getopts_islong_with  "${argument}" p_OPT p_OPTARG
+        then
+            mbfl_getopts_p_process_predefined_option_with_arg "${p_OPT}" "${p_OPTARG}"
         else
-            ARGV[$ARGC]="${arg}"
-            ARGC=$(($ARGC + 1))
+            ARGV[$ARGC]="${argument}"
+            let ++ARGC
         fi
     done
 
@@ -276,7 +279,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	    ;;
 	*)
             mbfl_getopts_p_process_script_option "${OPT}" || {
-                mbfl_message_error "unknown option: \"${OPT}\""
+                mbfl_message_error "unknown option: '${OPT}'"
                 exit 2
             }
 	    ;;
@@ -327,359 +330,130 @@ function mbfl_getopts_p_build_and_print_options_usage () {
     done
 }
 #PAGE
-# mbfl_getopts_islong --
-#
-#       Verifies if a string is a long option without argument.
-#
-#  Arguments:
-#
-#       $1 -    the string to validate
-#       $2 -    optional name of a variable that's set to
-#               the option name, without the leading dashes
-#
-#  Results:
-#
-#       Returns with code zero if the string is a long option
-#       without argument, else returns with code one.
-#
-#         An option must be of the form "--option", only characters
-#       in the ranges "A-Z", "a-z", "0-9" and the characters "-" and
-#       "_" are allowed in the option name.  
-#
-
 function mbfl_getopts_islong () {
-    local arg="${1:?missing argument to mbfl_getopts_islong()}"
-    local optvar="${2}"
+    mandatory_parameter(ARGUMENT, 1, argument)
+    optional_parameter(OPTION_VARIABLE_NAME, 2)
+    local len="${#ARGUMENT}" i ch
 
-    local len="${#arg}"
 
-    if test $len -lt 3
-    then return 1
-    fi
-
-    if test "${arg:0:1}" = "-" -a "${arg:1:1}" = "-"
-    then
-        local i=2
-        local ch=
-
-        while test $i -lt $len
-        do
-            ch="${arg:$i:1}"
-            if test \
-                \( "$ch" \< A -o Z \< "$ch" \) -a \
-                \( "$ch" \< a -o z \< "$ch" \) -a \
-                \( "$ch" \< 0 -o 9 \< "$ch" \) -a \
-                "$ch" != _ -a "$ch" != -
-            then return 1
-            fi
-            i=$(($i + 1))
-        done
-
-        if test -n "${optvar}"
-        then eval ${optvar}="${arg:2}"
-        fi
-        return 0
-    fi
-    return 1
+    test $len -lt 3 -o "${ARGUMENT:0:2}" != "--"  && return 1
+    for ((i=2; $i < $len; ++i)); do
+        ch="${ARGUMENT:$i:1}"
+        mbfl_p_getopts_not_char_in_long_option_name "$ch" && return 1
+    done
+    mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${ARGUMENT:2}"
+    return 0
 }
-#PAGE
-# mbfl_getopts_islong_with --
-#
-#       Verifies if a string is a long option with argument.
-#
-#  Arguments:
-#
-#       $1 -    the string to validate
-#       $2 -    optional name of a variable that's set to
-#               the option name, without the leading dashes
-#       $3 -    optional name of a variable that's set to
-#               the option value
-#
-#  Results:
-#
-#       Returns with code zero if the string is a long option
-#       with argument, else returns with code one.
-#
-#         An option must be of the form "--option", only characters
-#       in the ranges "A-Z", "a-z", "0-9" and the characters "-" and
-#       "_" are allowed in the option name.  
-#
-#         If the argument is not an option with value, the variable
-#       names are ignored.
-#
-
 function mbfl_getopts_islong_with () {
-    local arg="${1:?missing argument to mbfl_getopts_islong_with()}"
-    local optvar="${2}"
-    local valvar="${3}"
-
-    local len="${#arg}" str=
+    mandatory_parameter(ARGUMENT, 1, argument)
+    optional_parameter(OPTION_VARIABLE_NAME, 2)
+    optional_parameter(VALUE_VARIABLE_NAME, 3)
+    local len="${#ARGUMENT}" equal_position
 
 
     # The min length of a long option with is 5 (example: --o=1).
-    if test $len -lt 5 -o "${arg:0:1}" != "-" -o "${arg:1:1}" != "-"
-        then return 1
-    fi
+    test $len -lt 5 && return 1
+    equal_position=`mbfl_string_first "${ARGUMENT}" =`
+    test -z "$equal_position" -o $(($equal_position + 1)) = $len && return 1
 
-    local j=0
-    while test $j -lt $len
-      do
-      ch="${arg:$j:1}"
-      if test "$ch" = "="
-          then
-          if test $(($j + 1)) = $len
-              then return 1
-          fi
-          if mbfl_getopts_islong "${arg:0:$j}"
-              then
-              if test -n "${optvar}"
-                  then eval ${optvar}="${arg:2:$(($j - 2))}"
-              fi
-              if test -n "${valvar}"
-                  then
-                  str=$(mbfl_getopts_quote_string "${arg:$(($j + 1))}")
-                  eval "${valvar}=\"${str}\""
-              fi
-              return 0
-          else return 1
-          fi
-      fi
-      j=$(($j + 1))
-    done
-    return 1
+    mbfl_getopts_islong "${ARGUMENT:0:$equal_position}" || return 1
+    mbfl_set_maybe "${OPTION_VARIABLE_NAME}" \
+        "${ARGUMENT:2:$(($equal_position - 2))}"
+    mbfl_set_maybe "${VALUE_VARIABLE_NAME}" \
+        "${ARGUMENT:$(($equal_position + 1))}"
+    return 0
+}
+function mbfl_p_getopts_not_char_in_long_option_name () {
+    test \
+        \( "$1" \< A -o Z \< "$1" \) -a \
+        \( "$1" \< a -o z \< "$1" \) -a \
+        \( "$1" \< 0 -o 9 \< "$1" \) -a \
+        "$1" != _ -a "$1" != -
 }
 #PAGE
-# mbfl_getopts_isbrief --
-#
-#       Verifies if a string is a brief option without argument.
-#
-#  Arguments:
-#
-#       $1 -    the string to validate
-#       $2 -    optional name of a variable that's set to
-#               the option name, without the leading dash
-#
-#  Results:
-#
-#       Returns with code zero if the argument is a brief option
-#       without argument, else returns with code one.
-#
-#         A brief option must be of the form "-a", only characters
-#       in the ranges "A-Z", "a-z", "0-9" are allowed as option
-#       letters.
-#
-
 function mbfl_getopts_isbrief () {
-    local arg="${1:?missing argument to mbfl_getopts_isbrief()}"
-    local optvar="${2}"
+    mandatory_parameter(COMMAND_LINE_ARGUMENT, 1, command line argument)
+    optional_parameter(OPTION_VARIABLE_NAME, 2)
+    local ch
 
-    local ch="${arg:1:1}"
+    test "${#COMMAND_LINE_ARGUMENT}" = 2 -a \
+        "${COMMAND_LINE_ARGUMENT:0:1}" = "-" || return 1
 
-    if test "${#arg}" = 2 -a "${arg:0:1}" = "-"
-    then
-        if test \( "$ch" \< A -o Z \< "$ch" \) -a \
-                \( "$ch" \< a -o z \< "$ch" \) -a \
-                \( "$ch" \< 0 -o 9 \< "$ch" \)
-        then return 1
-        else
-            if test -n "${optvar}"
-            then eval ${optvar}="${arg:1}"
-            fi
-            return 0
-        fi
-    else return 1
-    fi
+    mbfl_p_getopts_not_char_in_brief_option_name \
+        "${COMMAND_LINE_ARGUMENT:1:1}" && return 1
+
+    mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${COMMAND_LINE_ARGUMENT:1}"
+    return 0
 }
-#PAGE
-# mbfl_getopts_isbrief_with --
-#
-#       Verifies if a string is a brief option without argument.
-#
-#  Arguments:
-#
-#       $1 -    the string to validate
-#       $2 -    optional name of a variable that's set to
-#               the option name, without the leading dashes
-#       $3 -    optional name of a variable that's set to
-#               the option value
-#
-#  Results:
-#
-#       Returns with code zero if the argument is a brief option
-#       without argument, else returns with code one.
-#
-#         A brief option must be of the form "-a", only characters
-#       in the ranges "A-Z", "a-z", "0-9" are allowed as option
-#       letters.
-#
-
 function mbfl_getopts_isbrief_with () {
-    local arg="${1:?missing argument to mbfl_getopts_isbrief_with()}"
-    local optvar="${2}"
-    local valvar="${3}"
+    mandatory_parameter(COMMAND_LINE_ARGUMENT, 1, command line argument)
+    optional_parameter(OPTION_VARIABLE_NAME, 2)
+    optional_parameter(VALUE_VARIABLE_NAME, 3)
 
-    local ch="${arg:1:1}" str=
+    test "${#COMMAND_LINE_ARGUMENT}" -gt 2 -a \
+        "${COMMAND_LINE_ARGUMENT:0:1}" = "-" || return 1
 
-    if test "${#arg}" -gt 2 -a "${arg:0:1}" = "-" -a "${arg:1:1}" != "-"
-    then
-        if test \( "$ch" \< A -a z \< "$ch" \) -a \
-                \( "$ch" \< 0 -a 9 \< "$ch" \)
-        then return 1
-        else
-            if test -n "${optvar}"
-            then eval ${optvar}="${arg:1:1}"
-            fi
-            if test -n "${valvar}"
-            then
-                str=$(mbfl_getopts_quote_string "${arg:2}")
-                eval "${valvar}=\"${str}\""
-            fi
-            return 0
-        fi
-    else return 1
-    fi
+    mbfl_p_getopts_not_char_in_brief_option_name \
+        "${COMMAND_LINE_ARGUMENT:1:1}" && return 1
+
+    mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${COMMAND_LINE_ARGUMENT:1:1}"
+    local QUOTED_VALUE=`mbfl_string_quote "${COMMAND_LINE_ARGUMENT:2}"`
+    mbfl_set_maybe "${VALUE_VARIABLE_NAME}" "${QUOTED_VALUE}"
+    return 0
+}
+function mbfl_p_getopts_not_char_in_brief_option_name () {
+    test \
+        \( "$1" \< A -o Z \< "$1" \) -a \
+        \( "$1" \< a -o z \< "$1" \) -a \
+        \( "$1" \< 0 -o 9 \< "$1" \)
 }
 #PAGE
 function mbfl_getopts_p_decode_hex () {
     local i=0
 
-
-    if test "${mbfl_option_ENCODED_ARGS}" = "yes"; then
-        while test $i -lt $ARGC
-          do
-          ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
-          i=$(($i + 1))
+    mbfl_option_encoded_args && {
+        for ((i=0; $i < $ARGC; ++i))
+          do ARGV[$i]=`mbfl_decode_hex "${ARGV[$i]}"`
         done
-    fi
+    }
     return 0
 }
 #PAGE
-# mbfl_wrong_num_args --
-#
-#       Validates the number of arguments.
-#
-#  Arguments:
-#
-#       $1 -            the required number of arguments
-#       $2 -            the given number of arguments
-#
-#  Results:
-#
-#       If the number of arguments is different from the
-#       required one: prints an error message and returns with
-#       code one; else returns with code zero.
-#
-#  Side effects:
-#
-#       None.
-#
-
 function mbfl_wrong_num_args () {
-    local required="${1:?missing required number of args in mbfl_wrong_num_args()}"
-    local argc="${2:?missing given number of args in mbfl_wrong_num_args()}"
+    mandatory_parameter(required, 1, required number of args)
+    mandatory_parameter(argc, 2, given number of args)
 
-    if test $required = $argc
-    then
-        return 0
-    else
-        mbfl_message_error "$required argument(s) required"
+    test $required != $argc && {
+        mbfl_message_error "number of arguments required: $required"
         return 1
-    fi
-}
-
-#PAGE
-# mbfl_getopts_quote_string --
-#
-#       Quotes a string.
-#
-#  Arguments:
-#
-#       $1 -            the string to quote
-#
-#  Results:
-#
-#       Echoes the quoted string to stdout. Returns with code zero.
-#
-#  Side effects:
-#
-#       None.
-#
-
-function mbfl_getopts_quote_string () {
-    local STR="${1:?missing string to mbfl_getopts_quote_string()}"
-    local OUT=
-    local len="${#STR}" i=0 ch=
-    
-
-    while test $i -lt $len
-    do
-        ch="${STR:$i:1}"
-        if test "$ch" = \\
-        then ch=\\\\
-        fi
-        OUT="${OUT}$ch"
-        i=$(($i + 1))
-    done
-
-    echo "$OUT"
+    }
     return 0
 }
 #PAGE
-# mbfl_argv_from_stdin --
-#
-#	If no command line arguments: fill "ARGV" with lines from stdin.
-#
-#  Arguments:
-#
-#	None.
-#
-#  Results:
-#
-#	Returns with code zero.
-#
-
 function mbfl_argv_from_stdin () {
     local file=
 
 
-    if test $ARGC -eq 0
-    then
-	if test "${mbfl_option_NULL}" = "yes"; then
-	    while read -d $'\x00' file
-	      do
-	      ARGV[$ARGC]="${file}"
-	      ARGC=$(($ARGC + 1))
-	    done
-	else
-	    while read file
-	      do
-	      ARGV[$ARGC]="${file}"
-	      ARGC=$(($ARGC + 1))
-	    done
-	fi
-    fi
-
+    test $ARGC -eq 0 || {
+        while mbfl_read_maybe_null file ; do
+            ARGV[$ARGC]="${file}"
+            let ++ARGC
+        done
+    }
     return 0
 }
-#PAGE
 function mbfl_argv_all_files () {
-    local i=0
-    local file=
+    local i file
 
 
-    while test $i -lt $ARGC
-    do
-	file="${ARGV[$i]}"
-	file=$(mbfl_file_normalise "${file}")
-	if test ! -f "${file}"
-	then
-	    mbfl_message_error "unexistent file \"${file}\""
+    for ((i=0; $i < $ARGC; ++i)) ; do
+	file=`mbfl_file_normalise "${ARGV[$i]}"`
+	if test ! -f "${file}" ; then
+	    mbfl_message_error "unexistent file '${file}'"
 	    return 1
 	fi
 	ARGV[$i]="${file}"
-	i=$(($i + 1))
     done
-
     return 0
 }
 #page

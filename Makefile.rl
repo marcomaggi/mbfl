@@ -33,7 +33,7 @@
 ## Search paths.
 ## ------------------------------------------------------------
 
-vpath	%.m4		$(top_srcdir)/modules:$(top_srcdir)/macros
+vpath	%.m4		$(top_srcdir)/macros
 vpath	%.sh.m4		$(top_srcdir)/modules
 vpath	%.sh.m4		$(top_srcdir)/lib
 vpath	%.sh.m4		$(top_srcdir)/examples
@@ -54,7 +54,7 @@ M4FLAGS		= --include=$(top_srcdir)/lib \
 ## Library rules.
 ## ------------------------------------------------------------
 
-MODULES			= encode file getopts message programs signal \
+MODULES			= base encode file getopts message program signal \
 			  string dialog main
 LIBNAME			= libmbfl.sh
 
@@ -83,8 +83,8 @@ $(library_SOURCES): %.sh: macros.m4 %.sh.m4
 	$(M4) $(M4FLAGS) $(^) | \
 	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
 
-$(LIBNAME): $(library_SOURCES)
-	$(M4) $(M4FLAGS) libmbfl.sh.m4 >$(@)
+$(LIBNAME): libmbfl.sh.m4 $(library_SOURCES)
+	$(M4) $(M4FLAGS) $(<) >$(@)
 
 
 bin:		library-all
@@ -119,7 +119,7 @@ AM_INSTALL_DIR($(bindir))
 	$(SYMLINK) $(subst $(prefix),..,$(pkglibexecdir)/mbfl-config) mbfl-config
 
 mbfl-config:
-	@echo -e "#!$(BASH)\necho $(pkgdatadir)/libmbfl.sh\n###end of file\n" >$(@)
+	@echo -e "#!$(BASHPROG)\necho $(pkgdatadir)/libmbfl.sh\n###end of file\n" >$(@)
 
 bin:		script-all
 bin-clean:	script-clean
@@ -141,10 +141,28 @@ AM_INSTALL_DATA([template])
 
 doc-install:	template-install
 
+#page
+## ------------------------------------------------------------
+## Test rules.
+## ------------------------------------------------------------
+
+test_MODULES	= string file encode getopts message program script signal
+testdir		= $(top_srcdir)/tests
+test_FILES	= $(foreach f, $(test_MODULES), $(testdir)/$(f).test)
+test_TARGETS	= test-modules
+
+test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
+test_ENV	+= TESTMATCH=$(TESTMATCH)
+test_CMD	= $(test_ENV) $(BASHPROG)
+
+test-modules:
+ifneq ($(strip $(test_FILES)),)
+	$(foreach f, $(test_FILES), \
+	top_srcdir=$(top_srcdir); $(test_CMD) $(f);)
+endif
 
 ### end of file
 # Local Variables:
 # mode: makefile
-# page-delimiter: "^#PAGE"
+# page-delimiter: "^#page"
 # End:
-

@@ -26,94 +26,50 @@
 # USA
 # 
 
+#page
+function mbfl_cd () {
+    cd "$@" &>/dev/null
+    mbfl_message_debug "current directory: '$PWD'"
+}
 #PAGE
-# mbfl_file_extension --
-#
-#       Extracts the extension from a file name.
-#
-#  Arguments:
-#
-#       $1 -    the file name
-#
-#  Results:
-#
-#       Searches the last dot character in the argument string and
-#       echoes to stdout the range of characters from the dot to
-#       the end, not including the dot.
-#
-#         If a slash character is found first, echoes to stdout
-#       the empty string.
-#
-#  Side effects:
-#
-#       None.
-#
-
 function mbfl_file_extension () {
-    local file="${1:?}"
+    local file="${1:?missing file parameter to ${FUNCNAME}}"
+    local len="${#file}"
     local i=
     local ch=
-
-    for ((i="${#file}"; $i >= 0; --i)); do
+    
+    for ((i=$len; $i >= 0; --i)); do
         ch="${file:$i:1}"
-        if test "$ch" = "/" ; then
-            return
-        elif test "$ch" = "." ; then
-            i=$(($i + 1))
+        test "$ch" = "/" && return
+        mbfl_string_is_equal_unquoted_char "$file" $i '.' && {
+            let ++i
             echo "${file:$i}"
             return
-        fi
+        }
     done
 }
 #PAGE
-# mbfl_file_dirname --
-#
-#       Extracts the directory part from a fully qualified
-#       file name.
-#
-#  Arguments:
-#
-#       $1 -    the fully qualified file name
-#
-#  Results:
-#
-#       Searches the last slash character in the input string
-#       and echoes to stdout the range of characters from
-#       the first to the slash, not including the slash.
-#
-#         If no slash is found: echoes a single dot (the
-#       current directory).
-#
-#         If the input string has the form "/..." or "//..."
-#       with no slash characters after the first ones, the
-#       string echoed to stdout is a single slash.
-#
-#  Side effects:
-#
-#       None.
-#
-
 function mbfl_file_dirname () {
     local file="${1:?}"
+    local i=
 
-    local i="${#file}"
 
-    while test $i -ge 0
-    do
-        if test "${file:$i:1}" = "/"
-        then
+    # Do not change "${file:$i:1}" with "$ch"!! We need to extract the
+    # char at each loop iteration.
+
+    for ((i="${#file}"; $i >= 0; --i)); do
+        test "${file:$i:1}" = "/" && {
             while test \( $i -gt 0 \) -a \( "${file:$i:1}" = "/" \)
-              do i=$(($i - 1))
+              do let --i
             done
             if test $i = 0
                 then echo "${file:$i:1}"
             else
-                i=$(($i + 1))
+                let ++i
                 echo "${file:0:$i}"
             fi
             return 0
-        fi
-        i=$(($i - 1))
+        }
     done
 
     echo "."
@@ -121,209 +77,141 @@ function mbfl_file_dirname () {
 }
 
 #PAGE
-# mbfl_file_normalise --
-#
-#       Normalises a file name.
-#
-#  Arguments:
-#
-#       $1 -    The pathname to be normalised.
-#       $2 -    Optional directory to which the name must be
-#               normalised; defaults to the current working
-#               directory.
-#
-#  Results:
-#
-#       If the input string is a relative name, the current
-#       process working directory is prepended to it.
-#
-#         Echoes to stdout the normalised file name.
-#
-
 function mbfl_file_normalise () {
     local pathname="${1:?}"
     local prefix="${2}"
+    local dirname=
+    local tailname=
+    local ORGDIR="${PWD}"
 
-    if test -z "${prefix}"; then
-        prefix="${PWD}"
-    fi
-
-    if test "${pathname:0:1}" = "/"; then
-        echo "${pathname}"
-    elif test -d "${prefix}"; then
-        cd "${prefix}" >/dev/null
-        if test -d "${pathname}"; then
-            cd "${pathname}" >/dev/null
-            echo "${PWD}"
-            cd - >/dev/null
-        else
-            local tailname=$(mbfl_file_tail "${pathname}")
-            local dirname=$(mbfl_file_dirname "${pathname}")
-
-            if test -d "${dirname}"; then
-                cd "${dirname}" >/dev/null
-                echo "${PWD}/${tailname}"
-                cd - >/dev/null
-            else
-                echo "${prefix}/${pathname}"
-            fi
-        fi
-    else
+    if mbfl_file_is_absolute "${pathname}" ; then
+        mbfl_p_file_normalise1 "${pathname}"
+    elif mbfl_file_is_directory "${prefix}" ; then
+        pathname="${prefix}/${pathname}"
+        mbfl_p_file_normalise1 "${pathname}"
+    elif test -n "${prefix}" ; then
+        prefix=`mbfl_p_file_remove_dots_from_pathname "${prefix}"`
+        pathname=`mbfl_p_file_remove_dots_from_pathname "${pathname}"`
         echo "${prefix}/${pathname}"
+    else
+        mbfl_p_file_normalise1 "${pathname}"
     fi
 
+    mbfl_cd "${ORGDIR}"
     return 0
 }
-#PAGE
-# mbfl_file_rootname --
-#
-#       Extracts the root portion of a file name.
-#
-#  Arguments:
-#
-#       $1 -    the file name
-#
-#  Results:
-#
-#       Searches the last dot character in the argument string and
-#       echoes to stdout the range of characters from the beginning
-#       to the dot, not including the dot.
-#
-#         If a slash character is found first, or no dot is found,
-#       or the dot is the first character, echoes to stdout the empty
-#       string.
-#
-#  Side effects:
-#
-#       None.
-#
+function mbfl_p_file_normalise1 () {
+    if mbfl_file_is_directory "${pathname}"; then
+        mbfl_p_file_normalise2 "${pathname}"
+    else
+        local tailname=`mbfl_file_tail "${pathname}"`
+        local dirname=`mbfl_file_dirname "${pathname}"`
 
+        if mbfl_file_is_directory "${dirname}"; then
+            mbfl_p_file_normalise2 "${dirname}" "${tailname}"
+        else
+            echo "${pathname}"
+        fi
+    fi
+}
+function mbfl_p_file_normalise2 () {
+    mbfl_cd "$1"
+    if test -n "$2" ; then echo "${PWD}/$2"; else echo "${PWD}"; fi
+    mbfl_cd -
+}
+#page
+function mbfl_p_file_remove_dots_from_pathname () {
+    local PATHNAME="${1:?missing pathname parameter in ${FUNCNAME}}"
+    local item i
+    local SPLITPATH SPLITCOUNT; declare -a SPLITPATH
+    local output output_counter=0; declare -a output
+    local input_counter=0 
+
+    mbfl_file_split "${PATHNAME}"
+
+    for ((input_counter=0; $input_counter < $SPLITCOUNT; ++input_counter)) ; do
+        case "${SPLITPATH[$input_counter]}" in
+            .)
+                ;;
+            ..)
+                let --output_counter
+                ;;
+            *)
+                output[$output_counter]="${SPLITPATH[$input_counter]}"
+                let ++output_counter
+                ;;
+        esac
+    done
+
+    PATHNAME="${output[0]}"
+    for ((i=1; $i < $output_counter; ++i)) ; do
+        PATHNAME="${PATHNAME}/${output[$i]}"
+    done
+
+    echo "${PATHNAME}"
+}
+#PAGE
 function mbfl_file_rootname () {
     local file="${1:?}"
-
     local i="${#file}"
 
-    if test $i = 1
-    then
-        echo "${file}"
-        return 0
-    fi
+    test $i = 1 && { echo "${file}"; return 0; }
 
-    while test $i -ge 0
-    do
+    for ((i="${#file}"; $i >= 0; --i)) ; do
         ch="${file:$i:1}"
         if test "$ch" = "."
         then
-            if test $i -gt 0
-            then
+            if test $i -gt 0 ; then
                 echo "${file:0:$i}"
                 break
             else
                 echo "${file}"
             fi
-        elif test "$ch" = "/"
-        then
+        elif test "$ch" = "/" ; then
             echo "${file}"
             break
         fi
-        i=$(($i - 1))
     done
     return 0
 }
 
 #PAGE
-# mbfl_file_split --
-#
-#       Separates a file name into its components.
-#
-#  Arguments:
-#
-#       $1 -    the file name
-#
-#  Results:
-#
-#       Replaces all the slash characters in the input string
-#       with a newline and echoes the substrings.
-#
-#  Side effects:
-#
-#       The correct way to use the fields is:
-#
-#               mbfl_file_split "$file" | while read field
-#               do
-#                  ... $field ...
-#               done
-#
-
 function mbfl_file_split () {
-    local file="${1:?}"
+    local PATHNAME="${1:?missing pathname parameter to ${FUNCNAME}}"
+    local i=0 last_found=0
 
-    echo -e "${file//\//\\n}"
+    mbfl_string_skip "${PATHNAME}" i /
+    last_found=$i
+
+    for ((SPLITCOUNT=0; $i < "${#PATHNAME}"; ++i)) ; do
+        test "${PATHNAME:$i:1}" = / && {
+            SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found:$(($i-$last_found))}"
+            let ++SPLITCOUNT; let ++i
+            mbfl_string_skip "${PATHNAME}" i /
+            last_found=$i
+        }
+    done
+    SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found}"
+    let ++SPLITCOUNT
     return 0
 }
-
 #PAGE
-# mbfl_file_tail --
-#
-#       Extracts the file portion from a fully qualified
-#       file name.
-#
-#  Arguments:
-#
-#       $1 -    the file name
-#
-#  Results:
-#
-#       Searches the last slash character in the input string
-#       and echoes to stdout the range of characters from
-#       the slash to the end, not including the slash.
-#
-#         If no slash is found: echoes the whole string.
-#
-#  Side effects:
-#
-#       None.
-#
-
 function mbfl_file_tail () {
-    local file="${1:?}"
+    local file="${1:?missing pathname parameter to ${FUNCNAME}}"
+    local i=
 
-    local i="${#file}"
-
-    while test $i -ge 0
-    do
-        ch="${file:$i:1}"
-        if test "$ch" = "/"
-        then
-            i=$(($i + 1))
+    for ((i="${#file}"; $i >= 0; --i)) ; do
+        test "${file:$i:1}" = "/" && {
+            let ++i
             echo "${file:$i}"
             return 0
-        fi
-        i=$(($i - 1))
+        }
     done
 
     echo "${file}"
     return 0
 }
 #PAGE
-# mbfl_file_find_tmpdir --
-#
-#       Finds a value for the directory of temporary files.
-#
-#  Arguments:
-#
-#       $1 -            value provided  by the script
-#
-#  Results:
-#
-#       Returns zero if a value is found, else returns 1. Echoes
-#       to stdout the pathname.
-#
-#  Side effects:
-#
-#       None.
-#
-
 function mbfl_file_find_tmpdir () {
     local TMPDIR="${1}"
 
@@ -376,7 +264,7 @@ function mbfl_file_remove_file () {
     local RM=`mbfl_program_found rm`
     local RM_FLAGS="--force"
 
-    test -f "${PATHNAME}" || {
+    mbfl_file_is_file "${PATHNAME}" || {
         mbfl_message_error "pathname is not a file '${PATHNAME}'"
         return 1
     }
@@ -388,7 +276,7 @@ function mbfl_file_remove_directory () {
     local REMOVE_SILENTLY="$2"
     local RMDIR_FLAGS=
 
-    test -d "${PATHNAME}" || {
+    mbfl_file_is_directory "${PATHNAME}" || {
         mbfl_message_error "pathname is not a directory '${PATHNAME}'"
         return 1
     }
@@ -410,16 +298,20 @@ function mbfl_file_enable_make_directory () {
 }
 function mbfl_file_make_directory () {
     local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    local PERMISSIONS="${2}"
     local MKDIR=`mbfl_program_found mkdir`
     local MKDIR_FLAGS="--parents"
 
+    test -z "${PERMISSIONS}" && PERMISSIONS=0775
+    MKDIR_FLAGS="${MKDIR_FLAGS} --mode=${PERMISSIONS}"
+    
     test -d "${PATHNAME}" && return
-    mbfl_option_verbose && RM_FLAGS="${MKDIR_FLAGS} --verbose"
+    mbfl_option_verbose && MKDIR_FLAGS="${MKDIR_FLAGS} --verbose"
     mbfl_program_exec $MKDIR $MKDIR_FLAGS "${PATHNAME}" || return 1    
 }
 #page
 function mbfl_file_enable_listing () {
-    mbfl_declare_program ls
+    mbfl_declare_program ls readlink
 }
 function mbfl_file_get_owner () {
     local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
@@ -444,6 +336,94 @@ function mbfl_file_get_size () {
 function mbfl_file_p_invoke_ls () {
     local LS=`mbfl_program_found ls`
     mbfl_program_exec $LS $LS_FLAGS "${PATHNAME}"
+}
+function mbfl_file_normalise_link () {
+    local READLINK=`mbfl_program_found readlink`
+    mbfl_program_exec $READLINK -fn $1
+}
+#page
+function mbfl_file_is_file () {
+    local FILENAME="${1}"
+    test -n "${FILENAME}" -a -f "${FILENAME}"
+}
+function mbfl_file_is_readable () {
+    local FILENAME="${1:?missing file name parameter to ${FUNCNAME}}"
+    mbfl_file_is_file "${FILENAME}" && test -r "${FILENAME}"
+}
+function mbfl_file_is_writable () {
+    local FILENAME="${1:?missing file name parameter to ${FUNCNAME}}"
+    mbfl_file_is_file "${FILENAME}" && test -w "${FILENAME}"
+}
+
+function mbfl_file_is_directory () {
+    local DIRECTORY="${1}"
+    test -n "${DIRECTORY}" -a -d "${DIRECTORY}"
+}
+function mbfl_file_directory_is_readable () {
+    local DIRECTORY="${1:?missing directory name parameter to ${FUNCNAME}}"
+    mbfl_file_is_directory "${DIRECTORY}" && test -r "${DIRECTORY}"
+}
+function mbfl_file_directory_is_writable () {
+    local DIRECTORY="${1:?missing directory name parameter to ${FUNCNAME}}"
+    mbfl_file_is_directory "${DIRECTORY}" && test -w "${DIRECTORY}"
+}
+
+
+function mbfl_file_is_absolute () {
+    local NAME="${1:?missing pathname parameter to ${FUNCNAME}}"
+    test "${NAME:0:1}" = /
+}
+function mbfl_file_is_absolute_dirname () {
+    local NAME="${1:?missing directory name parameter to ${FUNCNAME}}"
+    mbfl_file_is_directory "${NAME}" && mbfl_file_is_absolute "${NAME}"
+}
+function mbfl_file_is_absolute_filename () {
+    local NAME="${1:?missing file name parameter to ${FUNCNAME}}"
+    mbfl_file_is_file "${NAME}" && mbfl_file_is_absolute "${NAME}"
+}
+
+
+function mbfl_file_is_symlink () {
+    local PATHNAME="${1}"
+    test -n "${PATHNAME}" -a -L "${PATHNAME}"
+}
+
+#page
+function mbfl_file_enable_tar () {
+    mbfl_declare_program tar
+}
+function mbfl_tar_create_to_stdout () {
+    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
+    shift
+
+    mbfl_tar_exec ${TAR} --directory="${DIRECTORY}" \
+        --create --file=- "$@" . || return 1
+}
+function mbfl_tar_extract_from_stdin () {
+    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
+    shift
+
+    mbfl_tar_exec --directory="${DIRECTORY}" \
+        --extract --file=- "$@" || return 1
+}
+function mbfl_tar_create_to_file () {
+    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
+    local ARCHIVE_FILENAME="${2:?missing archive pathname parameter in ${FUNCNAME}}"
+    local TAR=`mbfl_program_found tar`
+    shift 2
+
+    mbfl_tar_exec --directory="${DIRECTORY}" \
+	--create --file="${ARCHIVE_FILENAME}" "$@" . || return 1
+}
+function mbfl_tar_list () {
+    local ARCHIVE_FILENAME="${1:?missing archive pathname parameter in ${FUNCNAME}}"
+    shift
+
+    mbfl_tar_exec --list --file="${ARCHIVE_FILENAME}" "$@" || return 1
+}
+function mbfl_tar_exec () {
+    local TAR=`mbfl_program_found tar`
+    mbfl_program_exec ${TAR} "$@"    
 }
 
 ### end of file

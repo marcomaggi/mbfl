@@ -8,7 +8,7 @@
 # 
 # 
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -25,22 +25,17 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: encode.sh.m4,v 1.1.1.9 2003/12/21 07:45:03 marco Exp $
-#
-
-m4_include(macros.m4)
 
 function mbfl_decode_hex () {
     local in="${1:?}"
     local len="${#in}"
     local i=0
 
-    while test $i -lt $len
-    do
+    while test $i -lt $len ; do
         echo -en "\\x${in:$i:2}"
         i=$(($i + 2))
     done
-    return 0
+    echo;# to end the line and let "read" acquire the stuff from a pipeline
 }
 
 function mbfl_decode_oct () {
@@ -48,12 +43,11 @@ function mbfl_decode_oct () {
     local len="${#in}"
     local i=0
 
-    while test $i -lt $len
-    do
+    while test $i -lt $len ; do
         echo -en "\\${in:$i:3}"
         i=$(($i + 3))
     done
-    return 0
+    echo;# to end the line and let "read" acquire the stuff from a pipeline
 }
 
 

@@ -29,6 +29,9 @@ m4_divert(-1)m4_dnl
 
 m4_changequote([[, ]])
 
+m4_define([[mandatory_parameter]],
+	[[local $1="${$2:?missing $3 parameter to ${FUNCNAME}}"]])
+m4_define([[optional_parameter]], [[local $1="${$2:-$3}"]])
 
 ### end of file
 # Local Variables:

@@ -1,15 +1,14 @@
-# libMBFL.m4 --
+# base.sh.m4 --
 # 
 # Part of: Marco's BASH Functions Library
-# Contents: library file
-# Date: Fri Nov 28, 2003
+# Contents: base functions
+# Date: Wed Oct  6, 2004
 # 
 # Abstract
 # 
-#	This is the library file of MBFL. It must be sourced in shell
-#	scripts at the beginning of evaluation.
 # 
-# Copyright (c) 2003, 2004 Marco Maggi
+# 
+# Copyright (c) 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -24,20 +23,24 @@
 # You  should have  received a  copy of  the GNU  Lesser  General Public
 # License along  with this library; if  not, write to  the Free Software
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA
+# USA.
 # 
+#
 
-m4_include(macros.m4)
-m4_include(base.sh)
-m4_include(string.sh)
-m4_include(encode.sh)
-m4_include(file.sh)
-m4_include(getopts.sh)
-m4_include(message.sh)
-m4_include(program.sh)
-m4_include(signal.sh)
-m4_include(dialog.sh)
-m4_include(main.sh)
+shopt -s expand_aliases
+
+function mbfl_set_maybe () {
+    test -n "${1}" && eval ${1}=\'"${2}"\'
+}
+function mbfl_read_maybe_null () {
+    mandatory_parameter(VARNAME, 1, variable name)
+
+    if mbfl_option_null ; then
+	read -d $'\x00' $VARNAME
+    else
+	read $VARNAME
+    fi
+}
 
 ### end of file
 # Local Variables:

@@ -50,6 +50,12 @@ function mbfl_set_option_verbose () {
 function mbfl_unset_option_verbose () {
     function mbfl_option_verbose () { return 1; }
 }
+function mbfl_set_option_debug () {
+    function mbfl_option_debug () { return 0; }
+}
+function mbfl_unset_option_debug () {
+    function mbfl_option_debug () { return 1; }
+}
 #PAGE
 function mbfl_message_p_print () {
     echo -ne "${2:?${1} error: missing argument}" >&${mbfl_message_CHANNEL}
@@ -70,7 +76,7 @@ function mbfl_message_verbose_end () {
     return 0
 }
 function mbfl_message_debug () {
-    mbfl_option_debug && mbfl_message_p_print_prefix ${FUNCNAME} "$1\n"
+    mbfl_option_debug && mbfl_message_p_print_prefix ${FUNCNAME} "debug: $1\n"
     return 0
 }
 function mbfl_message_warning () {
