@@ -1,0 +1,8 @@
+# vc-print-archive-default --
+
+exec vc-program-gnu-arch-my-default-archive
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

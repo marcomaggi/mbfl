@@ -1,0 +1,12 @@
+# user-remove-tilde --
+
+declare FIND=`user-find-executable find` || exit 1
+declare FIND_FLAGS= DIR=${1:-.} DEPTH=${2:-0}
+
+test "${DEPTH}" = 0 && FIND_FLAGS="${FIND_FLAGS} -maxdepth 1"
+exec ${FIND} "${DIR}" -name '*~' $FIND_FLAGS -exec /bin/rm -v '{}' ';'
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,8 @@
+# user-program-mv --
+
+exec user-program-wrapper mv "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,8 @@
+# vc-tree-import --
+
+vc-program-gnu-arch-import && vc-log-make
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

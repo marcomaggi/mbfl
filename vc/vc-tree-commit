@@ -1,0 +1,9 @@
+# vc-tree-commit --
+
+{ vc-log-file-exists || vc-log-edit; } || exit 1
+vc-program-gnu-arch-commit && vc-log-make
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

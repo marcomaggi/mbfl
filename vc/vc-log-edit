@@ -1,0 +1,10 @@
+# vc-log-edit --
+
+declare LOGFILE=`vc-print-log-file-name` || exit 1
+vc-log-make || exit 1
+exit vc-editor "${LOGFILE}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

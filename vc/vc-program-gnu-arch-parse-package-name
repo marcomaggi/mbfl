@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-parse-package-name --
+
+exec vc-program-gnu-arch parse-package-name "${@}";
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

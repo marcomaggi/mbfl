@@ -1,0 +1,16 @@
+# admin-partition-mount-rw --
+
+local MOUNT_POINT="${1:?missing mount point parameter to ${FUNCNAME}}"
+
+    user-validate-directory "${MOUNT_POINT}" || return 1
+    program-sudo-mount -o remount,rw "${MOUNT_POINT}" || {
+	user-message-error \
+	    "remounting read-write partition '${MOUNT_POINT}'"
+	return 1
+    }
+
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,12 @@
+# vc-print-archive-location-list --
+
+declare LINE LOCATION
+
+vc-program-gnu-arch-archives | while read LINE && read LOCATION; do
+    printf '%-40s%s\n' "${LINE}" "${LOCATION}"
+done
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

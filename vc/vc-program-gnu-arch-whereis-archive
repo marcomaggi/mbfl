@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-whereis-archive --
+
+exec vc-program-gnu-arch whereis-archive "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

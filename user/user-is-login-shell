@@ -1,0 +1,8 @@
+# user-is-login-shell --
+
+test "$SHLVL" = 2
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

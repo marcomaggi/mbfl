@@ -1,0 +1,8 @@
+# user-program-date --
+
+exec user-program-wrapper date "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

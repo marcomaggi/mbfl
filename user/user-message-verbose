@@ -1,0 +1,8 @@
+# user-message-verbose --
+
+echo "${@}" >&2;
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

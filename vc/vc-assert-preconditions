@@ -1,0 +1,8 @@
+# vc-assert-preconditions --
+
+exec user-find-executable &>/dev/null
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

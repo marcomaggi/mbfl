@@ -1,0 +1,27 @@
+# vc-print-unregistered-sources -- --
+
+declare ROOTDIR=`vc-print-tree-root-directory` || exit 1
+declare item DIRNAME TAILNAME IDNAME
+
+source `mbfl-config`
+
+{ user-validate-directory-readable "${ROOTDIR}" && \
+    user-pathname-executable "${ROOTDIR}"; } || exit 1
+
+(cd "${ROOTDIR}"; vc-program-gnu-arch-inventory-source-both-names | \
+    while read item; do
+        if test -f "${item}" ; then
+            DIRNAME=`mbfl_file_dirname "${item}"`
+            TAILNAME=`mbfl_file_tail "${item}"`
+            test "${DIRNAME:0:1}" = "=" && continue
+            test "${TAILNAME:0:1}" = "=" && continue
+            test -f "${DIRNAME}/.arch-ids/${TAILNAME}.id" || echo "${item}"
+        elif test -d "${item}" ; then
+            test -d "${item}/.arch-ids" || echo "${item}"
+        fi
+done)
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,8 @@
+# user-message-warning --
+
+echo "warning: ${1}" >&2;
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,8 @@
+# vc-program-gnu-arch --
+
+declare TLA=`user-find-executable tla` && exec "${TLA}" "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

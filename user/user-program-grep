@@ -1,0 +1,8 @@
+# user-program-grep --
+
+exec user-program-wrapper grep "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

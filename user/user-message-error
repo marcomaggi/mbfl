@@ -1,0 +1,8 @@
+# user-message-error --
+
+echo "error: ${1}" >&2;
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

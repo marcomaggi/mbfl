@@ -1,0 +1,8 @@
+# vc-print-tree-archive --
+
+exec vc-p-print-with-tree-version --arch
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

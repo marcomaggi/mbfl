@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-set-tree-version --
+
+exec vc-program-gnu-arch set-tree-version "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

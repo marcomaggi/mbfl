@@ -1,0 +1,24 @@
+# user-validate-file --
+
+# this script tests if the parameter is the empty string
+declare PATHNAME=${1}
+
+if test -z "${PATHNAME}" ; then
+    user-message-error "null pathname"
+    exit 1
+elif test ! -f "${PATHNAME}" ; then
+    if test -d "${PATHNAME}" ; then
+        user-message-error "pathname is a directory not a file '${PATHNAME}'"
+    elif test ! -e "${PATHNAME}" ; then
+        user-message-error "unexistent pathname '${PATHNAME}'"
+    else
+        user-message-error "pathname is not a file '${PATHNAME}'"
+    fi
+    exit 1
+fi
+exit 0
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

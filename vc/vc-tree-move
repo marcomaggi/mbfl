@@ -1,0 +1,12 @@
+# vc-tree-move --
+
+declare FROM=${1:?missing from pathname parameter}
+declare TO=${2:?missing to pathname parameter}
+
+vc-program-gnu-arch-move "${FROM}" "${TO}" && \
+    vc-log-add-sentence "moved '${FROM}' to '${TO}'"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

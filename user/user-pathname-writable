@@ -1,0 +1,8 @@
+# user-pathname-writable --
+
+exec user-p-pathname-test '-w' 'writable' "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

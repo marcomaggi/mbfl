@@ -1,0 +1,9 @@
+# vc-p-print-with-tree-version --
+
+declare VERSION="`vc-print-tree-version`" || exit 1
+exec vc-program-gnu-arch-parse-package-name "$@" "${VERSION}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

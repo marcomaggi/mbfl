@@ -1,0 +1,11 @@
+# user-validate-directory-readable --
+
+# this script tests if the parameter is the empty string
+declare PATHNAME=${1}
+
+user-validate-directory "${PATHNAME}" && user-pathname-readable "${PATHNAME}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,9 @@
+# vc-print-archive-location --
+
+declare ARCHIVE=${1:?missing archive name parameter}
+exec vc-program-gnu-arch-whereis-archive "${ARCHIVE}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -36,53 +36,102 @@
 
 #page
 ## ------------------------------------------------------------
-## Setup.
-## ------------------------------------------------------------
-
-mbfl_LOADED_VCLIB='yes'
-
-if test "${mbfl_LOADED_USERLIB}" != 'yes' ; then
-    source "`mbfl-config --userlib`" || {
-	echo 'unable to load the user functions library' >&2
-	exit 2
-    }
-fi
-
-#page
-## ------------------------------------------------------------
 ## GNU Arch interface.
 ## ------------------------------------------------------------
 
-function program-gnu-arch () {
-    local TLA="`user-find-executable tla`" && "$TLA" "$@"
-}
-function gnu-arch-parse-package-name () {
-    program-gnu-arch parse-package-name "$@"
+function vc-program-gnu-arch () {
+    declare TLA=`user-find-executable tla` && exec "${TLA}" "${@}"
 }
 function vc-assert-preconditions () {
-    user-find-executable tla || return 1
+    exec user-find-executable tla
+}
+function vc-program-gnu-arch-parse-package-name () {
+    exec vc-program-gnu-arch parse-package-name "${@}";
+}
+function vc-program-gnu-arch-my-default-archive () {
+    exec vc-program-gnu-arch my-default-archive "${@}"    
+}
+function vc-program-gnu-arch-archives-names () {
+    exec vc-program-gnu-arch archives --names "${@}"
+}
+function vc-program-gnu-arch-archives ()         {
+    exec vc-program-gnu-arch archives "${@}"
+}
+function vc-program-gnu-arch-whereis-archive () {
+    exec vc-program-gnu-arch whereis-archive "${@}"
+}
+function vc-program-gnu-arch-archive-setup () {
+    exec vc-program-gnu-arch archive-setup "${@}"
+}
+function vc-program-gnu-arch-add-log-version () {
+    exec vc-program-gnu-arch add-log-version "${@}"
+}
+function vc-program-gnu-arch-set-tree-version () {
+    exec vc-program-gnu-arch set-tree-version "${@}"
+}
+function vc-program-gnu-arch-init-tree () {
+    exec vc-program-gnu-arch init-tree "${@}"
+}
+function vc-program-gnu-arch-tree-lint () {
+    exec vc-program-gnu-arch tree-lint "${@}"
+}
+function vc-program-gnu-arch-import () {
+    exec vc-program-gnu-arch import "${@}"
+}
+function vc-program-gnu-arch-commit () {
+    exec vc-program-gnu-arch commit "${@}"
+}
+function vc-program-gnu-arch-add () {
+    exec vc-program-gnu-arch add "${@}"
+}
+function vc-program-gnu-arch-delete () {
+    exec vc-program-gnu-arch delete "${@}"
+}
+function vc-program-gnu-arch-delete () {
+    exec vc-program-gnu-arch move "${@}"
+}
+function vc-program-gnu-arch-tree-root () {
+    exec vc-program-gnu-arch tree-root "${@}"
+}
+function vc-program-gnu-arch-tree-version () {
+    exec vc-program-gnu-arch tree-version "${@}"
+}
+function vc-program-gnu-arch-versions () {
+    exec vc-program-gnu-arch versions "${@}"
+}
+function vc-program-gnu-arch-revisions () {
+    exec vc-program-gnu-arch revisions "${@}"
+}
+function vc-program-gnu-arch-inventory-source-both () {
+    exec vc-program-gnu-arch inventory --source --both "$@"
+}
+function vc-program-gnu-arch-inventory-source-both-names () {
+    exec vc-program-gnu-arch inventory --source --both --names "$@"
+}
+function vc-program-gnu-arch-make-log () {
+    exec vc-program-gnu-arch make-log "${@}"
 }
 #page
 ## ------------------------------------------------------------
 ## Package name and version.
 ## ------------------------------------------------------------
 
-function vc-print-tree-root-directory () { program-gnu-arch tree-root; }
-function vc-print-tree-version        () { program-gnu-arch tree-version; }
-function vc-print-tree-version-list   () { program-gnu-arch versions; }
+function vc-print-tree-root-directory () { vc-program-gnu-arch-tree-root; }
+function vc-print-tree-version        () { vc-program-gnu-arch-tree-version; }
+function vc-print-tree-version-list   () { vc-program-gnu-arch-versions; }
 function vc-print-tree-revision () {
 # It should be this:
 #
 #    vc-p-print-with-tree-version --lvl
 #
 # but for some reason an error is raised; so we do:
-    local TAIL=`user-find-executable tail` || return 1
-    vc-print-tree-revision-list | ${TAIL} -1
+TAIL=`user-find-executable tail` || exit 1
+vc-print-tree-revision-list | ${TAIL} -1
 }
-function vc-print-tree-revision-list  () { program-gnu-arch revisions; }
+function vc-print-tree-revision-list  () { vc-program-gnu-arch-revisions; }
 function vc-p-print-with-tree-version () {
-    local VERSION="`vc-print-tree-version`" || return 1
-    gnu-arch-parse-package-name "$@" "${VERSION}"
+VERSION="`vc-print-tree-version`" || exit 1
+vc-program-gnu-arch-parse-package-name "$@" "${VERSION}"
 }
 function vc-print-tree-package () { vc-p-print-with-tree-version --package-version; }
 function vc-print-tree-archive () { vc-p-print-with-tree-version --arch; }
@@ -100,19 +149,19 @@ explicit
 untagged-source precious
 exclude ^(.arch-ids|\{arch\}|\.arch-inventory)$
 junk ^(,.*|autom4te\.cache)$
-precious ^(\+.*|\.gdbinit|\.#ckpts-lock|=build\.*|=install\.*|CVS|CVS\.adm|RCS|RCSLOG|SCCS|TAGS|=emacs\.desktop)$
+precious ^(\+.*|\.gdbinit|\.#ckpts-lock|=build\.*|=install\.*|CVS|CVS\.adm|RCS|RCSLOG|SCCS|TAGS|=emacs\.desktop|=auto)$
 backup ^.*(~|\.~[0-9]+~|\.bak|\.swp|\.orig|\.rej|\.original|\.modified|\.reject)$
 unrecognized ^(.*\.(o|a|so|core|so(\.[[:digit:]]+)*)|core)$
 source ^[_=a-zA-Z0-9].*$
 ### end of file'
 }
 function vc-tree-fix-tagging-method () {
-    local rootdir=`vc-print-tree-root-directory` || return 1
-    local archdir="${rootdir}/{arch}"
+ROOTDIR=`vc-print-tree-root-directory` || exit 1
+ARCHDIR="${ROOTDIR}/{arch}"
 
-    { user-validate-directory-writable "${rootdir}" && \
-	user-validate-directory-writable "${archdir}"; } || return 1
-    vc-p-tree-echo-tagging-method >"${archdir}/=tagging-method"
+    { user-validate-directory-writable "${ROOTDIR}" && \
+	user-validate-directory-writable "${ARCHDIR}"; } || exit 1
+    vc-p-tree-echo-tagging-method >"${ARCHDIR}/=tagging-method"
 }
 
 #page
@@ -121,56 +170,64 @@ function vc-tree-fix-tagging-method () {
 ## ------------------------------------------------------------
 
 function vc-print-registered-sources () {
-    local rootdir=`vc-print-tree-root-directory` || return 1
+ROOTDIR=`vc-print-tree-root-directory` || exit 1
 
-    { user-validate-directory-readable "${rootdir}" && \
-	user-pathname-executable "${rootdir}"; } || return 1
-    (cd "${rootdir}" && program-gnu-arch inventory --source --both)
+{ user-validate-directory-readable "${ROOTDIR}" && \
+    user-pathname-executable "${ROOTDIR}"; } || exit 1
+(cd "${ROOTDIR}" && vc-program-gnu-arch-inventory-source-both)
 }
 function vc-print-unregistered-sources () {
-    local rootdir=`vc-print-tree-root-directory` || return 1
-    local item dirname tailname idname
+ROOTDIR=`vc-print-tree-root-directory` || exit 1
+item=
+dirname=
+tailname=
+idname=
 
-    { user-validate-directory-readable "${rootdir}" && \
-	user-pathname-executable "${rootdir}"; } || return 1
+source `mbfl-config`
 
-    (cd "${rootdir}"; program-gnu-arch inventory --source --both --names | \
-	while read item; do
-	    if test -f "${item}" ; then
-		dirname=`mbfl_file_dirname "${item}"`
-		tailname=`mbfl_file_tail "${item}"`
-		test "${dirname:0:1}" = "=" && continue
-		test "${tailname:0:1}" = "=" && continue
-		test -f "${dirname}/.arch-ids/${tailname}.id" || echo "${item}"
-	    elif test -d "${item}" ; then
-		test -d "${item}/.arch-ids" || echo "${item}"
-	    fi
-    done)
+{ user-validate-directory-readable "${ROOTDIR}" && \
+    user-pathname-executable "${ROOTDIR}"; } || exit 1
+
+(cd "${ROOTDIR}"; vc-program-gnu-arch-inventory-source-both-names | \
+    while read item; do
+        if test -f "${item}" ; then
+            dirname=`mbfl_file_dirname "${item}"`
+            tailname=`mbfl_file_tail "${item}"`
+            test "${dirname:0:1}" = "=" && continue
+            test "${tailname:0:1}" = "=" && continue
+            test -f "${dirname}/.arch-ids/${tailname}.id" || echo "${item}"
+        elif test -d "${item}" ; then
+            test -d "${item}/.arch-ids" || echo "${item}"
+        fi
+done)
 }
 function vc-tree-register-sources () {
-    local rootdir=`vc-print-tree-root-directory` || return 1
-    local item=
+ROOTDIR=`vc-print-tree-root-directory` || exit 1
+item=
 
-    { user-validate-directory-readable "${rootdir}" && \
-	user-pathname-executable "${rootdir}"; } || return 1
+{ user-validate-directory-readable "${ROOTDIR}" && \
+    user-pathname-executable "${ROOTDIR}"; } || exit 1
 
-    (cd "${rootdir}" && vc-print-unregistered-sources | while read item; do
+(cd "${ROOTDIR}" && vc-print-unregistered-sources | while read item; do
 	user-message-verbose "adding '${item}'"
-	program-gnu-arch add "${item}"
-    done)
-    vc-tree-lint
+	vc-program-gnu-arch-add "${item}"
+done)
+vc-tree-lint
 }
 function vc-tree-delete () {
-    local PATHNAME="${1:?missing pathname parameter to ${FUNCNAME}}"
-    program-gnu-arch delete "${PATHNAME}" && \
-	vc-log-add-sentence "deleted '${PATHNAME}'"
+item=
+
+for item in "${@}" ; do
+    { vc-program-gnu-arch-delete "${item}" && \
+        vc-log-add-sentence "deleted '${item}'"; } || exit 1
+done
 }
 function vc-tree-move () {
-    local FROM="${1:?missing from pathname parameter to ${FUNCNAME}}"
-    local TO="${2:?missing to pathname parameter to ${FUNCNAME}}"
+FROM="${1:?missing from pathname parameter}"
+TO="${2:?missing to pathname parameter}"
 
-    program-gnu-arch move "${FROM}" "${TO}" && \
-	vc-log-add-sentence "moved '${FROM}' to '${TO}'"
+vc-program-gnu-arch-move "${FROM}" "${TO}" && \
+    vc-log-add-sentence "moved '${FROM}' to '${TO}'"
 }
 #page
 ## ------------------------------------------------------------
@@ -178,31 +235,31 @@ function vc-tree-move () {
 ## ------------------------------------------------------------
 
 function vc-print-log-file-name () {
-    local DIR=`vc-print-tree-root-directory` || return 1
-    local PKG=`vc-print-tree-package` || return 1
-    local ARCH=`vc-print-tree-archive` || return 1
+DIR=`vc-print-tree-root-directory` || exit 1
+PKG=`vc-print-tree-package` || exit 1
+ARCH=`vc-print-tree-archive` || exit 1
 
     echo "${DIR}/++log.${PKG}--${ARCH}"
 }
 function vc-log-edit () {
-    local LOGFILE=`vc-print-log-file-name` || return 1
-    vc-log-make || return 1
-    emacsclient "${LOGFILE}"
+LOGFILE=`vc-print-log-file-name` || exit 1
+vc-log-make || exit 1
+emacsclient "${LOGFILE}"
 }
 function vc-log-make () {
-    vc-log-file-exists || program-gnu-arch make-log
+vc-log-file-exists || vc-program-gnu-arch-make-log
 }
 function vc-log-file-exists () {
-    local logfile=`vc-print-log-file-name` || return 1
-    user-validate-file "${logfile}"
+logfile=`vc-print-log-file-name` || exit 1
+user-validate-file "${logfile}"
 }
 function vc-log-add-sentence () {
-    local SENTENCE="${1:?missing sentence parameter to ${FUNCNAME}}"
-    local logfile=`vc-print-log-file-name` || return 1
-    local DATE=`user-print-short-time` || return 1
+SENTENCE="${1:?missing sentence parameter to ${FUNCNAME}}"
+logfile=`vc-print-log-file-name` || exit 1
+DATE=`user-print-short-time` || exit 1
     
-    { vc-log-make && user-make-backup-file "${logfile}"; } || return 1
-    echo -e "\n* ${DATE}: ${SENTENCE}\n" | user-fold-sentence >>"${logfile}"
+{ vc-log-make && user-make-backup-file "${logfile}"; } || exit 1
+echo -e "\n* ${DATE}: ${SENTENCE}\n" | user-fold-sentence >>"${logfile}"
 }
 #page
 ## ------------------------------------------------------------
@@ -210,29 +267,27 @@ function vc-log-add-sentence () {
 ## ------------------------------------------------------------
 
 function vc-archive-select () {
-    local ARCHIVE="${1:?missing archive name parameter to ${FUNCNAME}}"
-    program-gnu-arch my-default-archive "${ARCHIVE}"
-    vc-print-archive-default
+ARCHIVE="${1:?missing archive name parameter to ${FUNCNAME}}"
+vc-program-gnu-arch-my-default-archive "${ARCHIVE}"
+vc-print-archive-default
 }
 function vc-print-archive-default () {
-    program-gnu-arch my-default-archive
+vc-program-gnu-arch-my-default-archive
 }
 function vc-print-archive-list () {
-    local LINE=
-    local FLAG=0
-
-    program-gnu-arch archives | while read LINE; do
-	if test $FLAG = 0; then echo "$LINE" && FLAG=1; else FLAG=0; fi
-    done
+vc-program-gnu-arch-archives-names
 }
-function vc-print-archive-locations () {
-    local LINE=
-    local LOCA=
-    local FLAG=0
+function vc-print-archive-location-list () {
+line=
+location=
 
-    program-gnu-arch archives | while read LINE && read LOCA; do
-	printf '%-40s%s\n' "$LINE" "$LOCA"
-    done
+vc-program-gnu-arch-archives | while read line && read location; do
+    printf '%-40s%s\n' "${line}" "${location}"
+done
+}
+function vc-print-archive-location () {
+ARCHIVE="${1:?missing archive name parameter to ${FUNCNAME}}"
+vc-program-gnu-arch-whereis-archive "${ARCHIVE}"
 }
 #page
 ## ------------------------------------------------------------
@@ -240,28 +295,28 @@ function vc-print-archive-locations () {
 ## ------------------------------------------------------------
 
 function vc-tree-create-new () {
-    local CATEGORY="${1:?missing category parameter to ${FUNCNAME}}"
+CATEGORY="${1:?missing category parameter to ${FUNCNAME}}"
 
-    program-gnu-arch init-tree
-    vc-tree-make-branch-from-branch "${CATEGORY}"
+vc-program-gnu-arch-init-tree
+vc-tree-make-branch-from-branch "${CATEGORY}"
 }
 function vc-tree-make-branch-from-branch () {
-    local PACKAGE="${1:?missing package parameter to ${FUNCNAME}}"
+PACKAGE="${1:?missing package parameter to ${FUNCNAME}}"
 
-    program-gnu-arch archive-setup "${PACKAGE}"	&& \
-    program-gnu-arch add-log-version "${PACKAGE}"	&& \
-    program-gnu-arch set-tree-version "${PACKAGE}"	&& \
+vc-program-gnu-arch-archive-setup "${PACKAGE}"	&& \
+    vc-program-gnu-arch-add-log-version "${PACKAGE}"	&& \
+    vc-program-gnu-arch-set-tree-version "${PACKAGE}"	&& \
     vc-log-make
 }
 function vc-tree-import () {
-    program-gnu-arch import && vc-log-make
+vc-program-gnu-arch-import && vc-log-make
 }
 function vc-tree-commit () {
-    { vc-log-file-exists || vc-log-edit; } || return 1
-    program-gnu-arch commit && vc-log-make
+{ vc-log-file-exists || vc-log-edit; } || exit 1
+vc-program-gnu-arch-commit && vc-log-make
 }
 function vc-tree-lint () {
-    program-gnu-arch tree-lint
+vc-program-gnu-arch-tree-lint
 }
 
 ### end of file

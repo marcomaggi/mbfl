@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-add --
+
+exec vc-program-gnu-arch add "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

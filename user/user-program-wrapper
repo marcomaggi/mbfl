@@ -1,0 +1,11 @@
+# user-program-wrapper --
+
+declare PROGRAM=${1:?missing program parameter}
+PROGRAM=`user-find-executable "${PROGRAM}"` || exit 1
+shift
+exec "${PROGRAM}" "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

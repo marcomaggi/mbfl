@@ -1,0 +1,11 @@
+# vc-archive-select --
+
+declare ARCHIVE=${1:?missing archive name parameter}
+
+vc-program-gnu-arch-my-default-archive "${ARCHIVE}"
+vc-print-archive-default
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

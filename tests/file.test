@@ -36,7 +36,6 @@
 ## ------------------------------------------------------------
 
 source setup.sh
-
 testfile="$TMPDIR/proof.txt"
 
 #PAGE

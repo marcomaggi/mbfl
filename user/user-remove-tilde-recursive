@@ -1,0 +1,8 @@
+# user-remove-tilde-recursive --
+
+exec user-remove-tilde "${1:-.}" 1
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

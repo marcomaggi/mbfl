@@ -1,0 +1,8 @@
+# vc-print-tree-version-list --
+
+exec vc-program-gnu-arch-versions
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,8 @@
+# user-program-rm --
+
+exec user-program-wrapper rm "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

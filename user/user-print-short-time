@@ -1,0 +1,8 @@
+# user-print-short-time --
+
+exec user-program-date '+%b %d %Y, %T'
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,8 @@
+# vc-print-tree-branch --
+
+exec vc-p-print-with-tree-version --branch
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,13 @@
+# vc-log-add-sentence --
+
+declare SENTENCE=${1:?missing sentence parameter}
+declare LOGFILE=`vc-print-log-file-name` || exit 1
+declare DATE=`user-print-short-time` || exit 1
+    
+{ vc-log-make && user-make-backup-file "${LOGFILE}"; } || exit 1
+echo -e "\n* ${DATE}: ${SENTENCE}\n" | user-fold-sentence >>"${LOGFILE}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

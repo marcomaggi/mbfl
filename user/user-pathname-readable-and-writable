@@ -1,0 +1,10 @@
+# user-pathname-readable-and-writable --
+
+declare PATHNAME=${1:?missing pathname parameter}
+
+user-pathname-readable "${PATHNAME}" && user-pathname-writable "${PATHNAME}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -38,7 +38,11 @@ OPTION="${1:-${DEFAULT_OPTION}}"
 FULL_VERSION='@PACKAGE_XVERSION@'
 VERSION='@PACKAGE_VERSION@'
 BASE_VERSION='@PACKAGE_VERSION_MAJMIN@'
+
 pkgdatadir='@datadir@/@PACKAGE_NAME@_@PACKAGE_XVERSION@'
+userpath='@libexecdir@/@PACKAGE_NAME@user_@PACKAGE_XVERSION@'
+vcpath='@libexecdir@/@PACKAGE_NAME@vc_@PACKAGE_XVERSION@'
+adminpath='@libexecdir@/@PACKAGE_NAME@admin_@PACKAGE_XVERSION@'
 
 USAGE="usage: mbfl-config [option]
 Marco's BASH Functions Library configuration script
@@ -47,6 +51,9 @@ options:
    --testlib        prints the full pathname of the testing library
    --userlib        prints the full pathname of the user library
    --vclib          prints the full pathname of the version control library
+   --userpath       prints the full pathname of the user scripts directory
+   --vcpath         prints the full pathname of the vc scripts directory
+   --adminpath      prints the full pathname of the admin scripts directory
    --full-version   prints the full version number (with release state)
    --version        prints the full version number (with patch level)
    --base-version   prints the full version number (only major.minor)
@@ -68,6 +75,18 @@ case "${OPTION}" in
     --userlib)
 	echo "${pkgdatadir}/libmbfluser.sh"
 	;;
+    --vclib)
+	echo "${pkgdatadir}/libmbflvc.sh"
+	;;
+    --userpath)
+        echo "${userpath}"
+        ;;
+    --vcpath)
+        echo "${vcpath}"
+        ;;
+    --adminpath)
+        echo "${adminpath}"
+        ;;
     --full-version)
 	echo "${FULL_VERSION}"
 	;;

@@ -39,39 +39,39 @@ vpath	%.sh.m4		$(top_srcdir)/lib
 vpath	%.sh.m4		$(top_srcdir)/examples
 vpath	%.sh.m4		$(builddir)
 
-#PAGE
-## ------------------------------------------------------------
-## Variables.
-## ------------------------------------------------------------
+ds-files-from-dir	= $(filter-out %~, $(wildcard $(1)/*))
+ds-make-dir		= $(shell test ! -d $(1) && $(MKDIR) $(1))
+ds-replace-dir		= $(addprefix $(1)/, $(notdir $(2)))
 
-M4FLAGS		= --include=$(top_srcdir)/lib \
-		  --include=$(top_srcdir)/modules \
-		  --include=$(top_srcdir)/macros \
-		  --include=$(builddir)
+M4FLAGS		= --include=$(top_srcdir)/macros \
+		  --include=$(builddir)/lib
 
 #PAGE
 ## ------------------------------------------------------------
 ## Library rules.
 ## ------------------------------------------------------------
 
+library_SRCDIR		= $(top_srcdir)/modules
+library_BUILDDIR	= $(builddir)/lib
+
 MODULES			= base encode file getopts message program signal \
 			  string dialog main variable
 LIBNAME			= libmbfl.sh
-LIBRARIES		= $(addprefix $(top_srcdir)/lib/, \
-			    libmbfltest.sh libmbfluser.sh libmbflvc.sh)
+LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
 
 library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
-library_SOURCES		= $(foreach m, $(MODULES), $(m).sh)
+library_SOURCES		= $(addprefix $(library_BUILDDIR)/, \
+				$(foreach m, $(MODULES), $(m).sh))
 library_TARGETS		= $(LIBNAME)
 library_INSTLST		= $(library_TARGETS) $(LIBRARIES)
 library_INSTDIR		= $(pkgdatadir)
 
-library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES)
+library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES) $(library_BUILDDIR)
 library_REALCLEANFILES	= $(library_CLEANFILES)
 
 .PHONY: library-all library-clean library-realclean library-install
 
-library-all: $(library_TARGETS)
+library-all: $(call ds-make-dir, $(library_BUILDDIR)) $(library_TARGETS)
 library-clean:
 	-$(RM) $(library_CLEANFILES)
 library-realclean:
@@ -81,7 +81,7 @@ library-install:
 AM_INSTALL_DATA(library)
 
 
-$(library_SOURCES): %.sh: macros.m4 %.sh.m4
+$(library_SOURCES): $(library_BUILDDIR)/%.sh: macros.m4 $(library_SRCDIR)/%.sh.m4
 	$(M4) $(M4FLAGS) $(^) | \
 	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
 
@@ -124,6 +124,111 @@ bin:		script-all
 bin-clean:	script-clean
 bin-realclean:	script-realclean
 bin-install:	script-install
+
+#page
+## ------------------------------------------------------------
+## User scripts rules.
+## ------------------------------------------------------------
+
+user_SRCDIR	= $(top_srcdir)/user
+user_BUILDDIR	= $(builddir)/user
+
+user_SOURCES	= $(call ds-files-from-dir, $(user_SRCDIR))
+user_TARGETS	= $(call ds-replace-dir, $(user_BUILDDIR), $(user_SOURCES))
+user_INSTLST	= $(user_TARGETS)
+user_INSTDIR	= $(libexecdir)/mbfluser_$(PACKAGE_XVERSION)
+
+user_CLEANFILES		= $(user_TARGETS) $(user_BUILDDIR)
+user_REALCLEANFILES	= $(user_CLEANFILES)
+
+.PHONY: user-all user-clean user-realclean user-install 
+
+user-all: $(call ds-make-dir, $(user_BUILDDIR)) $(user_TARGETS)
+user-clean: 
+	-$(RM) $(user_CLEANFILES)
+user-realclean: 
+	-$(RM) $(user_REALCLEANFILES)
+user-install: 
+AM_INSTALL_BIN(user)
+
+$(user_TARGETS): $(user_BUILDDIR)/% : $(user_SRCDIR)/%
+	{ echo "#!/bin/bash" && cat $(<) ; } >$(@)
+	chmod 0700 $(@)
+
+bin:		user-all
+bin-clean:	user-clean
+bin-realclean:	user-realclean
+bin-install:	user-install
+
+#page
+## ------------------------------------------------------------
+## Vc scripts rules.
+## ------------------------------------------------------------
+
+vc_SRCDIR	= $(top_srcdir)/vc
+vc_BUILDDIR	= $(builddir)/vc
+
+vc_SOURCES	= $(call ds-files-from-dir, $(vc_SRCDIR))
+vc_TARGETS	= $(call ds-replace-dir, $(vc_BUILDDIR), $(vc_SOURCES))
+vc_INSTLST	= $(vc_TARGETS)
+vc_INSTDIR	= $(libexecdir)/mbflvc_$(PACKAGE_XVERSION)
+
+vc_CLEANFILES		= $(vc_TARGETS) $(vc_BUILDDIR)
+vc_REALCLEANFILES	= $(vc_CLEANFILES)
+
+.PHONY: vc-all vc-clean vc-realclean vc-install 
+
+vc-all: $(call ds-make-dir, $(vc_BUILDDIR)) $(vc_TARGETS)
+vc-clean: 
+	-$(RM) $(vc_CLEANFILES)
+vc-realclean: 
+	-$(RM) $(vc_REALCLEANFILES)
+vc-install: 
+AM_INSTALL_BIN(vc)
+
+$(vc_TARGETS): $(vc_BUILDDIR)/% : $(vc_SRCDIR)/%
+	{ echo "#!/bin/bash" && cat $(<) ; } >$(@)
+	chmod 0700 $(@)
+
+bin:		vc-all
+bin-clean:	vc-clean
+bin-realclean:	vc-realclean
+bin-install:	vc-install
+
+#page
+## ------------------------------------------------------------
+## Admin scripts rules.
+## ------------------------------------------------------------
+
+admin_SRCDIR	= $(top_srcdir)/admin
+admin_BUILDDIR	= $(builddir)/admin
+
+admin_SOURCES	= $(call ds-files-from-dir, $(admin_SRCDIR))
+admin_TARGETS	= $(call ds-replace-dir, $(admin_BUILDDIR), $(admin_SOURCES))
+admin_INSTLST	= $(admin_TARGETS)
+admin_INSTDIR	= $(libexecdir)/mbfladmin_$(PACKAGE_XVERSION)
+
+admin_CLEANFILES		= $(admin_TARGETS) $(admin_BUILDDIR)
+admin_REALCLEANFILES	= $(admin_CLEANFILES)
+
+.PHONY: admin-all admin-clean admin-realclean admin-install 
+
+admin-all: $(call ds-make-dir, $(admin_BUILDDIR)) $(admin_TARGETS)
+admin-clean: 
+	-$(RM) $(admin_CLEANFILES)
+admin-realclean: 
+	-$(RM) $(admin_REALCLEANFILES)
+admin-install: 
+AM_INSTALL_BIN(admin)
+
+$(admin_TARGETS): $(admin_BUILDDIR)/% : $(admin_SRCDIR)/%
+	{ echo "#!/bin/bash" && cat $(<) ; } >$(@)
+	chmod 0700 $(@)
+
+bin:		admin-all
+bin-clean:	admin-clean
+bin-realclean:	admin-realclean
+bin-install:	admin-install
 
 #PAGE
 ## ------------------------------------------------------------

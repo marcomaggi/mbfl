@@ -1,0 +1,8 @@
+# vc-log-make --
+
+vc-log-file-exists || vc-program-gnu-arch-make-log
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

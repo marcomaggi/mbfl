@@ -1,0 +1,13 @@
+# vc-tree-make-branch-from-branch --
+
+declare PACKAGE=${1:?missing package parameter}
+
+vc-program-gnu-arch-archive-setup "${PACKAGE}"	&& \
+    vc-program-gnu-arch-add-log-version "${PACKAGE}"	&& \
+    vc-program-gnu-arch-set-tree-version "${PACKAGE}"	&& \
+    vc-log-make
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

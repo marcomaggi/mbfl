@@ -1,0 +1,17 @@
+# user-p-pathname-test --
+
+declare MODE=${1:?missing test mode parameter}
+declare MODE_DESCR=${2:?missing test mode description}
+declare PATHNAME=${3:?missing pathname parameter}
+
+if test ! ${MODE} "${PATHNAME}" ; then
+    user-message-error "not ${MODE_DESCR} '${PATHNAME}'"
+    exit 1
+else
+    exit 0
+fi
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

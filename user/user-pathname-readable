@@ -1,0 +1,8 @@
+# user-pathname-readable --
+
+exec user-p-pathname-test '-r' 'readable' "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

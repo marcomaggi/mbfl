@@ -46,7 +46,7 @@ if test "${mbfl_LOADED_MBFL}" != 'yes' ; then
 fi
 
 function user-is-login-shell () {
-    test "$SHLVL" = 1
+    test "$SHLVL" = 2
 }
 
 #page
@@ -197,6 +197,7 @@ function user-fix-path-variable () {
     done
     mbfl_FIELDS=("${FIELDS[@]}")
     mbfl_variable_array_to_colon_variable PATH
+    echo "${PATH}"
     return 0
 }
 
@@ -205,6 +206,8 @@ function user-fix-path-variable () {
 ## Executable files.
 ## ------------------------------------------------------------
 
+
+function user-find-executable () {
 # If an alias exists for a program, "type -p $program" will
 # return the empty string; that is why we have to use
 # "type -ap $program", which will return the correct file
@@ -214,7 +217,6 @@ function user-fix-path-variable () {
 # return more than one line of output, one for each executable
 # file found.
 
-function user-find-executable () {
     local PROGRAM="${1:?missing program parameter to ${FUNCNAME}}"
     local program=
 
@@ -286,7 +288,7 @@ function user-source-file () {
 ## Backup files.
 ## ------------------------------------------------------------
 
-function rmtilde () {
+function user-remove-tilde () {
     local FIND=`user-find-executable find` || return 1
     local FIND_FLAGS=
     local DIR="${1:-.}"
@@ -295,8 +297,8 @@ function rmtilde () {
     test $DEPTH = 0 && FIND_FLAGS="${FIND_FLAGS} -maxdepth 1"
     ${FIND} "${DIR}" -name '*~' $FIND_FLAGS -exec /bin/rm -v '{}' ';'
 }
-function rmtilde-recursive () {
-    rmtilde "${1:-.}" 1
+function user-remove-tilde-recursive () {
+    user-remove-tilde "${1:-.}" 1
 }
 
 #page
@@ -304,10 +306,11 @@ function rmtilde-recursive () {
 ## Shows console colors.
 ## ------------------------------------------------------------
 
+
+function user-console-colors () {
 # Note from the author: this function is not mine; but
 # unfortunately I have lost the reference to the source.
 
-function user-console-colors () {
     local line1=
     local line2=
     local fore=
@@ -358,15 +361,15 @@ function program-sudo-mount () {
     local SUDO=`user-find-executable sudo` || return 1
     ${SUDO} ${MOUNT} "$@"
 }
-function program-wrapper () {
+function user-program-wrapper () {
     local program=`user-find-executable ${1}` && { shift && ${program} "$@"; }
 }
-function program-grep () { program-wrapper grep "$@"; }
-function program-date () { program-wrapper date "$@"; }
-function program-fold () { program-wrapper fold "$@"; }
-function program-rm   () { program-wrapper rm "$@"; }
-function program-mv   () { program-wrapper mv "$@"; }
-function program-cp   () { program-wrapper cp "$@"; }
+function user-program-grep () { user-program-wrapper grep "$@"; }
+function user-program-date () { user-program-wrapper date "$@"; }
+function user-program-fold () { user-program-wrapper fold "$@"; }
+function user-program-rm   () { user-program-wrapper rm "$@"; }
+function user-program-mv   () { user-program-wrapper mv "$@"; }
+function user-program-cp   () { user-program-wrapper cp "$@"; }
 
 #page
 ## ------------------------------------------------------------

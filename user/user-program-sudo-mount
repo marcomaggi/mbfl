@@ -1,0 +1,11 @@
+# program-sudo-mount --
+
+declare MOUNT=`user-find-executable mount` || exit 1
+declare SUDO=`user-find-executable sudo` || exit 1
+
+exec ${SUDO} ${MOUNT} "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

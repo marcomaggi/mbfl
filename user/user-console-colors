@@ -1,0 +1,30 @@
+# user-console-colors --
+
+# Note from the author: this function is not mine; but
+# unfortunately I have lost the reference to the source.
+
+declare LINE1 LINE2 fore back ESC="\033["    
+
+echo -e "This shell script shows all standard colour combinations on the\n\
+current console. If no colours appear, your console does not\n\
+support ANSI colour selections."
+
+echo -n " _ _ _ _ _40 _ _ _ 41_ _ _ _42 _ _ _ 43"
+echo "_ _ _ 44_ _ _ _45 _ _ _ 46_ _ _ _47 _"
+for fore in 30 31 32 33 34 35 36 37; do
+    LINE1="$fore  "
+    LINE2="    "
+    for back in 40 41 42 43 44 45 46 47; do
+        LINE1="${LINE1}${ESC}${back};${fore}m Normal  ${ESC}0m"
+        LINE2="${LINE2}${ESC}${back};${fore};1m Bold    ${ESC}0m"
+    done
+    echo -e "${LINE1}\n${LINE2}"
+done
+echo 'The whole ANSI selection sequence is then: \033 [ 3 7 ; 4 4 ; 1 m'
+
+exit 0
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,8 @@
+# user-pathname-executable --
+
+exec user-p-pathname-test '-x' 'executable' "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

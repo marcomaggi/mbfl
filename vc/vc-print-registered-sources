@@ -1,0 +1,12 @@
+# vc-print-registered-sources --
+
+declare ROOTDIR=`vc-print-tree-root-directory` || exit 1
+
+{ user-validate-directory-readable "${ROOTDIR}" && \
+    user-pathname-executable "${ROOTDIR}"; } || exit 1
+(cd "${ROOTDIR}" && vc-program-gnu-arch-inventory-source-both)
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

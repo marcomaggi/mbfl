@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-archive-setup --
+
+exec vc-program-gnu-arch archive-setup "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

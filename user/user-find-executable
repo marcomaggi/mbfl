@@ -1,0 +1,35 @@
+# user-find-executable --
+
+# If an alias exists for a program, "type -p $program" will
+# return the empty string; that is why we have to use
+# "type -ap $program", which will return the correct file
+# pathname. Unfortunately: if PATH holds the same directory
+# more than once, or there exist programs with the same name
+# in more than one PATH elements: "type -ap $program" will
+# return more than one line of output, one for each executable
+# file found.
+
+declare PROGRAM="${1:?missing program parameter to ${FUNCNAME}}"
+declare program=
+
+for program in `type -ap "${PROGRAM}"`; do
+    if test -n "${program}" -a -x "${program}"; then
+        echo "${program}"
+        exit 0
+    fi
+done
+#     type -ap "${PROGRAM}" | while read -t 1 program; do
+# 	if test -n "${program}" -a -x "${program}"; then
+# 	    echo "${program}"
+# 	    while read -t 1; do :; done
+# 	    exit 0
+# 	fi
+#     done
+
+user-message-missing-executable "${PROGRAM}"
+exit 1
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

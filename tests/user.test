@@ -1,4 +1,4 @@
-#  user.test --
+# user.test --
 # 
 # Part of: Marco's BASH Functions Library
 # Contents: tests for the user library
@@ -32,7 +32,7 @@
 ## ------------------------------------------------------------
 
 source setup.sh
-source libmbfluser.sh
+export PATH=${PATH}:./user
 
 #page
 
@@ -236,16 +236,16 @@ function libuser-file-2.3 () {
 #page
 
 function libuser-env-1.1 () {
-    local PATH='/bin:/bin:/usr/bin:/usr/local/bin:/usr/bin'
+    local PATH="/bin:/bin:/usr/bin:/usr/local/bin:/usr/bin:./user"
 
-    user-fix-path-variable
-    dotest-equal '/bin:/usr/bin:/usr/local/bin' $PATH
+    PATH=`user-fix-path-variable`
+    dotest-equal '/bin:/usr/bin:/usr/local/bin:./user' $PATH
 }
 function libuser-env-1.2 () {
-    local PATH='/bin:/usr/bin:/usr/local/bin'
+    local PATH="/bin:/bin:/usr/bin:/usr/local/bin:/usr/bin:./user"
 
-    user-fix-path-variable
-    dotest-equal '/bin:/usr/bin:/usr/local/bin' $PATH
+    PATH=`user-fix-path-variable`
+    dotest-equal '/bin:/usr/bin:/usr/local/bin:./user' $PATH
 }
 
 #page

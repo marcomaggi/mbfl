@@ -1,0 +1,12 @@
+# vc-print-log-file-name --
+
+declare DIR=`vc-print-tree-root-directory` || exit 1
+declare PKG=`vc-print-tree-package` || exit 1
+declare ARCH=`vc-print-tree-archive` || exit 1
+
+echo "${DIR}/++log.${PKG}--${ARCH}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

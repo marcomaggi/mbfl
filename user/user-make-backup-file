@@ -1,0 +1,9 @@
+# user-make-backup-file --
+
+declare FILENAME=${1:?missing file name parameter}
+exec user-program-cp --force --backup=numbered "${FILENAME}" "${FILENAME}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,23 @@
+# user-make-temporary-user-directory --
+
+declare MKDIR=`user-find-executable mkdir ` || exit 1
+declare mode=0700
+
+if test -z "${USER}" ; then
+    user-message-warning "null variable 'USER'"
+    TMPDIR='/tmp'
+else
+    TMPDIR="/tmp/${USER}"
+fi
+
+if test ! -d "${TMPDIR}" ; then
+    user-message-verbose "creating temporary directory '${TMPDIR}'"
+    ${MKDIR} --parents --mode=${mode} "${TMPDIR}"
+fi
+echo "${TMPDIR}"
+exit 0
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

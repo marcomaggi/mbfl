@@ -1,0 +1,8 @@
+# vc-print-tree-root-directory --
+
+exec vc-program-gnu-arch-tree-root
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

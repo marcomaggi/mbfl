@@ -1,0 +1,17 @@
+# vc-p-tree-echo-tagging-method --
+
+echo '# <tree-root>/{arch}/=tagging-method --
+explicit
+untagged-source precious
+exclude ^(.arch-ids|\{arch\}|\.arch-inventory)$
+junk ^(,.*|autom4te\.cache)$
+precious ^(\+.*|\.gdbinit|\.#ckpts-lock|=build\.*|=install\.*|CVS|CVS\.adm|RCS|RCSLOG|SCCS|TAGS|=emacs\.desktop|=auto)$
+backup ^.*(~|\.~[0-9]+~|\.bak|\.swp|\.orig|\.rej|\.original|\.modified|\.reject)$
+unrecognized ^(.*\.(o|a|so|core|so(\.[[:digit:]]+)*)|core)$
+source ^[_=a-zA-Z0-9].*$
+### end of file'
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-versions --
+
+exec vc-program-gnu-arch versions "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-delete --
+
+exec vc-program-gnu-arch move "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,11 @@
+# vc-tree-create-new --
+
+declare CATEGORY=${1:?missing category parameter}
+
+vc-program-gnu-arch-init-tree
+vc-tree-make-branch-from-branch "${CATEGORY}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

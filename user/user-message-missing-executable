@@ -1,0 +1,8 @@
+# user-message-missing-executable --
+
+exec user-message-error "cannot find executable '${1}'"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

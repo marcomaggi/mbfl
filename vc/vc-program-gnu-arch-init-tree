@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-init-tree --
+
+exec vc-program-gnu-arch init-tree "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

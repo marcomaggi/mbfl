@@ -1,0 +1,8 @@
+# user-fold-sentence --
+
+exec user-program-fold --width=72
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

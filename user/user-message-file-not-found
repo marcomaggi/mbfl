@@ -1,0 +1,8 @@
+# user-message-file-not-found --
+
+exec user-message-error "file not found '${1}'"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

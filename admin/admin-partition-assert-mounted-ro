@@ -1,0 +1,10 @@
+# admin-partition-assert-mounted-ro --
+
+local rex='%s.\+ro,'
+    admin-partition-p-assert-mounted-mode "$@"
+
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

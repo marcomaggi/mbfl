@@ -1,0 +1,15 @@
+# vc-tree-delete --
+
+declare item
+
+for item in "${@}" ; do
+    { vc-program-gnu-arch-delete "${item}" && \
+        vc-log-add-sentence "deleted '${item}'"; } || exit 1
+done
+
+exit 0
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

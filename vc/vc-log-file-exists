@@ -1,0 +1,9 @@
+# vc-log-file-exists --
+
+LOGFILE=`vc-print-log-file-name` || exit 1
+user-validate-file "${LOGFILE}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,15 @@
+# vc-print-tree-revision --
+
+# It should be this:
+#
+#    vc-p-print-with-tree-version --lvl
+#
+# but for some reason an error is raised; so we do:
+
+declare TAIL=`user-find-executable tail` || exit 1
+vc-print-tree-revision-list | ${TAIL} -1
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

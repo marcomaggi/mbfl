@@ -1,0 +1,18 @@
+# vc-tree-register-sources --
+
+declare ROOTDIR=`vc-print-tree-root-directory` || exit 1
+declare item
+
+{ user-validate-directory-readable "${ROOTDIR}" && \
+    user-pathname-executable "${ROOTDIR}"; } || exit 1
+
+(cd "${ROOTDIR}" && vc-print-unregistered-sources | while read item; do
+	user-message-verbose "adding '${item}'"
+	vc-program-gnu-arch-add "${item}"
+done)
+vc-tree-lint
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

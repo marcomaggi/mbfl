@@ -34,12 +34,12 @@
 ## ------------------------------------------------------------
 
 source setup.sh
-source libmbflvc.sh
+export PATH=${PATH}:./user:./vc
 
 #PAGE
 
 function libvc-tla-1.1 () {
-    program-gnu-arch --version | dotest-output 'tla lord*'
+    vc-program-gnu-arch --version | dotest-output 'tla lord*'
 }
 
 #PAGE

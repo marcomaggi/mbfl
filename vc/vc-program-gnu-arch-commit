@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-commit --
+
+exec vc-program-gnu-arch commit "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

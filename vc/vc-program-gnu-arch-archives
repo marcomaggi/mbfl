@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-archives --
+
+exec vc-program-gnu-arch archives "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

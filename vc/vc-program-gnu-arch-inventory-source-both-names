@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-inventory-source-both-names --
+
+exec vc-program-gnu-arch inventory --source --both --names "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

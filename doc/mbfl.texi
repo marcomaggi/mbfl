@@ -1727,6 +1727,13 @@ if not given: defaults to the value of @var{script_PROGNAME}
 @end deffn
 
 
+@deffn Function mbfl_dialog_ask_password @var{prompt}
+Prints @var{prompts} followed by a colon and a space, then reads a
+password from the terminal. Prints the password.
+@end deffn
+
+
+
 @c ------------------------------------------------------------
 @node Variables
 @unnumbered Manipulating variables

@@ -1,0 +1,8 @@
+# vc-program-gnu-arch-tree-lint --
+
+exec vc-program-gnu-arch tree-lint "${@}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

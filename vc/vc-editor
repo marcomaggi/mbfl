@@ -1,0 +1,10 @@
+# vc-editor --
+
+EMACSCLIENT=`user-find-executable emacsclient` || exit 1
+
+exec ${EMACSCLIENT} "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

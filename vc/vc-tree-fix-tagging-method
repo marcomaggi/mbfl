@@ -1,0 +1,13 @@
+# vc-tree-fix-tagging-method --
+
+declare ROOTDIR=`vc-print-tree-root-directory` || exit 1
+declare ARCHDIR="${ROOTDIR}/{arch}"
+
+{ user-validate-directory-writable "${ROOTDIR}" && \
+    user-validate-directory-writable "${ARCHDIR}"; } || exit 1
+vc-p-tree-echo-tagging-method >"${ARCHDIR}/=tagging-method"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

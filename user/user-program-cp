@@ -1,0 +1,8 @@
+# user-program-cp --
+
+exec user-program-wrapper cp "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

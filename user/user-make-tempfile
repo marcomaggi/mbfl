@@ -1,0 +1,12 @@
+# user-make-tempfile --
+
+declare TEMPFILE=`user-find-executable tempfile` || exit 1
+declare DIR=${TMPDIR:-/tmp/${USER}}
+
+test ! -d "${DIR}" -o ! -w "${DIR}" -o ! -O "${DIR}" && DIR='/tmp'
+${TEMPFILE} --directory="${DIR}"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

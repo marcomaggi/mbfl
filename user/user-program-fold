@@ -1,0 +1,8 @@
+# user-program-fold --
+
+exec user-program-wrapper fold "$@"
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:
