@@ -50,6 +50,10 @@ function mbfl_program_check () {
     local PROGRAMS=${*}
 
 
+    if test -z "${PROGRAMS}"; then
+        mbfl_message_error "null list of required executables"
+        return 1
+    fi
     for item in ${PROGRAMS}
     do
         if test ! -x "${item}"
