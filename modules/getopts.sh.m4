@@ -97,9 +97,13 @@ mbfl_message_DEFAULT_OPTIONS="
 \t--help
 \t--usage
 \t\tprint usage informations and exit
+\t-H
 \t--brief-help
+\t--brief-usage
 \t\tprint usage informations and the list of script specific
 \t\toptions, then exit
+\t--print-options
+\t\tprint a list of long option switches
 "
 
 fi
@@ -306,6 +310,10 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
             mbfl_getopts_p_build_and_print_options_usage
 	    exit 0
 	    ;;
+        print-options)
+            mbfl_getopts_print_long_switches
+            exit 0
+            ;;
 	*)
             mbfl_getopts_p_process_script_option "${OPT}" || {
                 mbfl_message_error "unknown option: '${OPT}'"
