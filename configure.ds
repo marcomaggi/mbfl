@@ -9,7 +9,7 @@
 #	Configuration script. This template must be parsed by GNU
 #	autoconf to build the "configure" executable script.
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -26,14 +26,13 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: configure.ds,v 1.1.1.35 2004/02/04 14:39:28 marco Exp $
 
-ds_package_name(MBFL)
-ds_package_version(0, 5, 1, stable)
+ds_package_name(mbfl)
+ds_package_version(0, 6, 0, stable)
 ds_author_name(Marco Maggi)
 ds_author_email(marcomaggi@tiscalinet.it)
 ds_copyright_years({2003, 2004})
-ds_source_file(./src/lib/libMBFL.sh.m4)
+ds_source_file(./lib/libmbfl.sh.m4)
 
 ds_init
 AC_CHECK_PROG([SED], [sed], [sed], :)

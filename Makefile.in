@@ -98,6 +98,7 @@ SHELL			= @SHELL@
 
 RM			= @RM@
 MKDIR			= @MKDIR@
+SYMLINK			= @SYMLINK@
 M4			= @M4@
 
 SED			= @SED@
@@ -143,7 +144,7 @@ install:	bin-install dev-install doc-install sta-install
 #	and by GNU Autoconf: read the README and INSTALL files for
 #	more details.
 #
-# Copyright (C) 2003  by Marco Maggi
+# Copyright (C)  2003, 2004  by Marco Maggi
 #
 # This library is free software;  you can redistribute it and/or modify
 # it  under the  terms  of the  GNU  Lesser General  Public License  as
@@ -160,17 +161,16 @@ install:	bin-install dev-install doc-install sta-install
 # Foundation, Inc.,  59 Temple Place, Suite 330,  Boston, MA 02111-1307
 # USA
 #
-# $Id: Makefile.rl,v 1.33 2003/12/21 07:48:39 marco Exp $
 
 #PAGE
 ## ------------------------------------------------------------
 ## Search paths.
 ## ------------------------------------------------------------
 
-vpath	%.m4		$(top_srcdir)/src/mod
-vpath	%.sh.m4		$(top_srcdir)/src/mod
-vpath	%.sh.m4		$(top_srcdir)/src/lib
-vpath	%.sh.m4		$(top_srcdir)/src/examples
+vpath	%.m4		$(top_srcdir)/mod
+vpath	%.sh.m4		$(top_srcdir)/mod
+vpath	%.sh.m4		$(top_srcdir)/lib
+vpath	%.sh.m4		$(top_srcdir)/examples
 vpath	%.sh.m4		$(builddir)
 
 #PAGE
@@ -178,8 +178,8 @@ vpath	%.sh.m4		$(builddir)
 ## Variables.
 ## ------------------------------------------------------------
 
-M4FLAGS		= --include=$(top_srcdir)/src/lib \
-		  --include=$(top_srcdir)/src/mod \
+M4FLAGS		= --include=$(top_srcdir)/lib \
+		  --include=$(top_srcdir)/mod \
 		  --include=$(builddir)
 
 #PAGE
@@ -188,8 +188,8 @@ M4FLAGS		= --include=$(top_srcdir)/src/lib \
 ## ------------------------------------------------------------
 
 MODULES			= encode file getopts message programs signal \
-			  string dialog
-LIBNAME			= libMBFL.sh
+			  string dialog main
+LIBNAME			= libmbfl.sh
 
 library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(foreach m, $(MODULES), $(m).sh)
@@ -225,7 +225,7 @@ $(library_SOURCES): %.sh: %.sh.m4 macros.m4
 	grep --invert-match -e '^#' -e '^$$' | sed -e "s/^ \\+//" >$(@)
 
 $(LIBNAME): $(library_SOURCES)
-	$(M4) $(M4FLAGS) libMBFL.sh.m4 >$(@)
+	$(M4) $(M4FLAGS) libmbfl.sh.m4 >$(@)
 
 
 dev:		library-all
@@ -240,7 +240,7 @@ dev-install:	library-install
 
 template_SOURCES	= 
 template_TARGETS	= template.sh
-template_INSTLST	= $(top_srcdir)/src/examples/template.sh.m4
+template_INSTLST	= $(top_srcdir)/examples/template.sh.m4
 template_INSTDIR	= $(pkgdatadir)
 
 .PHONY: template-all template-clean template-realclean template-install
@@ -299,7 +299,7 @@ M4FLAGS		+= --prefix-builtins
 ## ------------------------------------------------------------
 
 TCLSH			= @TCLSH@
-TCLTESTMAIN		= $(top_srcdir)/src/tests/all.tcl
+TCLTESTMAIN		= /home/devel/src/shell/mbfl/main--0.5/tests/all.tcl
 
 #test_TARGETS		=
 #test_CLEANFILES	=
@@ -373,22 +373,22 @@ doc-install:	doc-generic-install
 ## Package documentation in Texinfo format.
 ## ------------------------------------------------------------
 
-doc_texinfo_NAME	?= $(PACKAGE_NAME)
-doc_texinfo_SRCDIR	= $(top_srcdir)/src/doc
+doc_texinfo_SRCDIR	= /home/devel/src/shell/mbfl/main--0.5/doc
+doc_texinfo_SOURCES	= $(wildcard $(doc_texinfo_SRCDIR)/*.texi)
 
 vpath	%.texi		$(doc_texinfo_SRCDIR)
 vpath	%.texiinc	$(doc_texinfo_SRCDIR)
 
-doc_texi2html_TARGETS	= $(doc_texinfo_NAME).html
-doc_texi2html_INSTLST	= $(wildcard $(doc_texinfo_NAME).html)
+doc_texi2html_TARGETS	= $(notdir $(doc_texinfo_SOURCES:.texi=.html))
+doc_texi2html_INSTLST	= $(wildcard $(doc_texi2html_TARGETS))
 doc_texi2html_INSTDIR	= $(pkghtmldir)
 
-doc_texi2info_TARGETS	= $(doc_texinfo_NAME).info
-doc_texi2info_INSTLST	= $(wildcard $(doc_texinfo_NAME).info*)
+doc_texi2info_TARGETS	= $(notdir $(doc_texinfo_SOURCES:.texi=.info))
+doc_texi2info_INSTLST	= $(wildcard $(foreach f, $(doc_texi2info_TARGETS), $(f)*))
 doc_texi2info_INSTDIR	= $(infodir)
 
 doc_texinfo_CLEANFILES	 = $(doc_texi2info_INSTLST) $(doc_texi2html_INSTLST)
-doc_texinfo_REALCLEANFILES = $(doc_texinfo_CLEANFILES) version.texi
+doc_texinfo_REALCLEANFILES = $(doc_texinfo_CLEANFILES) version.texiinc
 
 MAKEINFO		= @MAKEINFO@
 DS_TEXI2INFO_FLAGS	= -I $(doc_texinfo_SRCDIR) -I $(builddir)
@@ -427,13 +427,13 @@ else
 endif
 
 
-$(doc_texinfo_NAME).info: $(doc_texinfo_NAME).texi version.texi
+$(doc_texi2info_TARGETS): %.info : %.texi version.texiinc
 	$(MAKEINFO) $(DS_TEXI2INFO_FLAGS) $(<) -o $(@)
 
-$(doc_texinfo_NAME).html: $(doc_texinfo_NAME).texi version.texi
+$(doc_texi2html_TARGETS): %.html : %.texi version.texiinc
 	$(MAKEINFO) $(DS_TEXI2HTML_FLAGS) $(<) -o $(@)
 
-version.texi: Makefile
+version.texiinc: Makefile
 	echo -e "@macro version{}\n$(PACKAGE_VERSION)\n@end macro\n" >$(@)
 
 doc:		doc-texinfo-all
@@ -468,6 +468,12 @@ config-clean:
 
 dist bindist bindist-bin bindist-dev bindist-doc bindist-sta:
 	$(CONFIGDIR)/do.sh --$(@) --verbose
+
+.PHONY: debian
+
+debian debian-bin debian-doc debian-dev debian-sta:
+	$(CONFIGDIR)/do.sh --$(@) --verbose
+
 
 #PAGE
 ## ------------------------------------------------------------

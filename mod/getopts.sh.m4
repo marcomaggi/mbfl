@@ -12,7 +12,7 @@
 #         Support for encoded argument values is provided and requires
 #       the "encode.sh" file to be included in the script.
 #
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -29,8 +29,6 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: getopts.sh.m4,v 1.1.1.24 2004/02/05 08:08:45 marco Exp $
-#
 
 m4_include(macros.m4)
 
@@ -72,10 +70,6 @@ done
 #         Non-option arguments are left in the global array "ARGV", the
 #       global variable "ARGC" holds the number of elements in "ARGV".
 #
-#  Side effects:
-#
-#       None.
-#
 
 function mbfl_getopts_parse () {
     local OPT= OPTARG=
@@ -107,7 +101,139 @@ function mbfl_getopts_parse () {
 
     return 0
 }
+#PAGE
+# mbfl_getopts_option --
+#
+#	Callback function required by "mbfl_getopts_parse()". It's
+#	invoked whenever an option without argument is found on the
+#	command line.
+#
+#  Arguments:
+#
+#	$1 -		the option without the leading dash(es)
+#
+#  Results:
+#
+#	Recognises the option and updates the value of the
+#	appropriated "mbfl_option_*" global variable.
+#
+#         If the option is not a MBFL one: invokes the function
+#       named: "script_option" with the option name as argument.
+#
 
+function mbfl_getopts_option () {
+    local OPT="${1:?}"
+    local i=0
+
+
+    case "${OPT}" in
+	encoded-args)
+	    mbfl_option_ENCODED_ARGS="yes"
+	    ;;
+	v|verbose)
+	    mbfl_option_VERBOSE="yes"
+	    mbfl_message_VERBOSE="yes"
+	    ;;
+	silent)
+	    mbfl_option_VERBOSE="no"
+	    mbfl_message_VERBOSE="no"
+	    ;;
+	debug)
+	    mbfl_option_DEBUG="yes"
+	    mbfl_message_DEBUG="yes"
+	    ;;
+	test)
+	    mbfl_program_TEST="yes"
+	    ;;
+	null)
+	    mbfl_option_NULL="yes"
+	    ;;
+        f|force)
+	    mbfl_option_INTERACTIVE="no"
+	    ;;
+        i|interactive)
+	    mbfl_option_INTERACTIVE="yes"
+	    ;;
+	version)
+	    echo -e "${mbfl_message_VERSION}"
+	    exit 0
+	    ;;
+	version-only)
+	    echo -e "${script_VERSION}"
+	    exit 0
+	    ;;
+	license)
+            case "${script_LICENSE}" in
+                GPL)
+                    echo -e "${mbfl_message_LICENSE_GPL}"
+                    ;;
+                LGPL)
+                    echo -e "${mbfl_message_LICENSE_GPLL}"
+                    ;;
+                BSD)
+                    echo -e "${mbfl_message_LICENSE_BSD}"
+                    ;;
+                *)
+                    mbfl_message_error "unknown license: \"${script_LICENSE}\""
+                    exit 2
+                    ;;
+            esac
+	    exit 0
+	    ;;
+	h|help|usage)
+	    echo -e "${script_USAGE}"
+	    exit 0
+	    ;;
+	*)
+            if ! script_option "${OPT}"; then
+                mbfl_message_error "unknown option: \"${OPT}\""
+                exit 2
+            fi
+	    ;;
+    esac
+    return 0
+}
+#PAGE
+# mbfl_getopts_option_with --
+#
+#	Callback function required by "mbfl_getopts_parse()". It's
+#	invoked whenever an option with argument is found on the
+#	command line.
+#
+#  Arguments:
+#
+#	$1 -		the option without the leading dash(es)
+#	$2 -		the option argument
+#
+#  Results:
+#
+#	Recognises the option and updates the value of the
+#	appropriated "mbfl_option_*" global variable.
+#
+#         If the option is not a MBFL one: invokes the function
+#       named: "script_option_with" with the option name and value
+#       as arguments.
+#
+
+function mbfl_getopts_option_with () {
+    local OPT="${1:?}"
+    local OPTARG="${2:?}"
+
+
+    if test "${mbfl_option_ENCODED_ARGS}" = "yes"; then
+        OPTARG=$(mbfl_decode_hex "${OPTARG}")
+    fi
+
+    case "${OPT}" in
+	*)
+	    if ! script_option_with "${OPT}" "${OPTARG}"; then
+                mbfl_message_error "unknown option \"${OPT}\""
+                exit 2
+            fi
+	    ;;
+    esac
+    return 0
+}
 #PAGE
 # mbfl_getopts_islong --
 #
@@ -127,10 +253,6 @@ function mbfl_getopts_parse () {
 #         An option must be of the form "--option", only characters
 #       in the ranges "A-Z", "a-z", "0-9" and the characters "-" and
 #       "_" are allowed in the option name.  
-#
-#  Side effects:
-#
-#       None.
 #
 
 function mbfl_getopts_islong () {
@@ -168,7 +290,6 @@ function mbfl_getopts_islong () {
     fi
     return 1
 }
-
 #PAGE
 # mbfl_getopts_islong_with --
 #
@@ -193,10 +314,6 @@ function mbfl_getopts_islong () {
 #
 #         If the argument is not an option with value, the variable
 #       names are ignored.
-#
-#  Side effects:
-#
-#       None.
 #
 
 function mbfl_getopts_islong_with () {
@@ -239,7 +356,6 @@ function mbfl_getopts_islong_with () {
     done
     return 1
 }
-
 #PAGE
 # mbfl_getopts_isbrief --
 #
@@ -259,10 +375,6 @@ function mbfl_getopts_islong_with () {
 #         A brief option must be of the form "-a", only characters
 #       in the ranges "A-Z", "a-z", "0-9" are allowed as option
 #       letters.
-#
-#  Side effects:
-#
-#       None.
 #
 
 function mbfl_getopts_isbrief () {
@@ -286,7 +398,6 @@ function mbfl_getopts_isbrief () {
     else return 1
     fi
 }
-
 #PAGE
 # mbfl_getopts_isbrief_with --
 #
@@ -308,10 +419,6 @@ function mbfl_getopts_isbrief () {
 #         A brief option must be of the form "-a", only characters
 #       in the ranges "A-Z", "a-z", "0-9" are allowed as option
 #       letters.
-#
-#  Side effects:
-#
-#       None.
 #
 
 function mbfl_getopts_isbrief_with () {
@@ -340,7 +447,6 @@ function mbfl_getopts_isbrief_with () {
     else return 1
     fi
 }
-
 #PAGE
 # mbfl_getopts_decode_hex --
 #
@@ -358,10 +464,6 @@ function mbfl_getopts_isbrief_with () {
 #       can be invoked if the command line arguments have been
 #       encoded 
 #
-#  Side effects:
-#
-#       None.
-#
 
 function mbfl_getopts_decode_hex () {
     local i=0
@@ -373,7 +475,6 @@ function mbfl_getopts_decode_hex () {
     done
     return 0
 }
-
 #PAGE
 # mbfl_wrong_num_args --
 #

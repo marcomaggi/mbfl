@@ -9,7 +9,7 @@
 #	Configuration script. This template must be parsed by GNU
 #	autoconf to build the "configure" executable script.
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -26,7 +26,6 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: configure.ds,v 1.1.1.35 2004/02/04 14:39:28 marco Exp $
 
 
 #PAGE
@@ -34,20 +33,24 @@
 ## Initialisation.
 ## ------------------------------------------------------------
 
-AC_INIT([MBFL], [0.5.1], [marcomaggi@tiscalinet.it])
+AC_INIT([mbfl], [0.6.0], [marcomaggi@tiscalinet.it])
 AC_PREREQ(2.57)
 AC_COPYRIGHT([Copyright (C) 2003, 2004 by Marco Maggi])
 AC_REVISION([$Revision: 1.1.1.131 $])
 
-AC_CONFIG_SRCDIR([./src/lib/libMBFL.sh.m4])
+AC_CONFIG_SRCDIR([./lib/libmbfl.sh.m4])
 AC_CONFIG_AUX_DIR([gnuconfig])
 AC_SUBST([CONFIGDIR], ["\$(top_srcdir)/gnuconfig"])
 
-AC_SUBST([PACKAGE_XVERSION], [0.5.1])
-AC_DEFINE([PACKAGE_XVERSION], ["0.5.1"], [full version])
-AC_SUBST([PACKAGE_NODOT_VERSION], [05])
+AC_SUBST([PACKAGE_XVERSION], [0.6.0])
+AC_DEFINE([PACKAGE_XVERSION], ["0.6.0"], [full version])
+AC_SUBST([PACKAGE_NODOT_VERSION], [06])
 AC_SUBST([PACKAGE_NAME_UPPERCASE], [MBFL])
 AC_SUBST([PACKAGE_NAME_LOWERCASE], [mbfl])
+
+AC_SUBST([PACKAGE_VERSION_MAJOR], [0])
+AC_SUBST([PACKAGE_VERSION_MINOR], [6])
+AC_SUBST([PACKAGE_VERSION_PATCH], [0])
 
 #PAGE
 ## ------------------------------------------------------------
@@ -62,6 +65,9 @@ AC_ARG_VAR([BASH], [the GNU bash shell])
 
 AC_CHECK_PROG([RM], [rm], [rm -f -r], :)
 AC_ARG_VAR([RM], [program used to delete files and directories recursively])
+
+AC_CHECK_PROG([SYMLINK], [ln], [ln -sv], :)
+AC_ARG_VAR([SYMLINK], [program used create symbolic links])
 
 AC_CHECK_PROG([MKDIR], [mkdir], [mkdir -p], :)
 AC_ARG_VAR([MKDIR], [program used to create directories recursively])
@@ -98,8 +104,9 @@ AC_CHECK_PROG([GREP], [grep], [grep], :)
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([meta/DESCRIPTION.txt])
-AC_CONFIG_FILES([meta/debian/dev/control])
-AC_CONFIG_FILES([meta/debian/doc/control])
+
+AC_CONFIG_FILES([debian/dev/control])
+AC_CONFIG_FILES([debian/doc/control])
 
 AC_OUTPUT
 

@@ -1,3 +1,4 @@
+
 	       Marco's BASH Functions Library
 	       ==============================
 
@@ -60,8 +61,7 @@ directory, then  I just include  them in the  script source.
 The GNU m4 preprocessor is a  good tool to do that: I put in
 the source script some macro invocation like the following:
 
-     m4_include(libmessage.sh)
-     m4_include(libstring.sh)
+     m4_include(libmbfl.sh)
 
 and  preprocess  the  script  with  a  make  rule  like  the
 following:
@@ -103,15 +103,14 @@ The GNU Project software can be found here:
 
 		   <http://www.gnu.org/>
 
-the latest version of <package> should be found here:
+the latest version of MBFL should be found here:
 
 	    <http://web.tiscali.it/marcomaggi/>
 
-follow the "Software Projects" link.
+follow the "Software" link.
 
 
 ### end of file
-# $Id: README,v 1.1.1.4 2004/02/04 14:38:46 marco Exp $
 # Local Variables:
 # mode: text
 # End:

@@ -1,4 +1,4 @@
-# $Id: Makefile.rl,v 1.34 2004/02/05 09:53:52 marco Exp $
+# Makefile.rl --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: project rules
@@ -10,7 +10,7 @@
 #	and by GNU Autoconf: read the README and INSTALL files for
 #	more details.
 #
-# Copyright (C) 2003  by Marco Maggi
+# Copyright (C)  2003, 2004  by Marco Maggi
 #
 # This library is free software;  you can redistribute it and/or modify
 # it  under the  terms  of the  GNU  Lesser General  Public License  as
@@ -33,10 +33,10 @@
 ## Search paths.
 ## ------------------------------------------------------------
 
-vpath	%.m4		$(top_srcdir)/src/mod
-vpath	%.sh.m4		$(top_srcdir)/src/mod
-vpath	%.sh.m4		$(top_srcdir)/src/lib
-vpath	%.sh.m4		$(top_srcdir)/src/examples
+vpath	%.m4		$(top_srcdir)/mod
+vpath	%.sh.m4		$(top_srcdir)/mod
+vpath	%.sh.m4		$(top_srcdir)/lib
+vpath	%.sh.m4		$(top_srcdir)/examples
 vpath	%.sh.m4		$(builddir)
 
 #PAGE
@@ -44,8 +44,8 @@ vpath	%.sh.m4		$(builddir)
 ## Variables.
 ## ------------------------------------------------------------
 
-M4FLAGS		= --include=$(top_srcdir)/src/lib \
-		  --include=$(top_srcdir)/src/mod \
+M4FLAGS		= --include=$(top_srcdir)/lib \
+		  --include=$(top_srcdir)/mod \
 		  --include=$(builddir)
 
 #PAGE
@@ -54,8 +54,8 @@ M4FLAGS		= --include=$(top_srcdir)/src/lib \
 ## ------------------------------------------------------------
 
 MODULES			= encode file getopts message programs signal \
-			  string dialog
-LIBNAME			= libMBFL.sh
+			  string dialog main
+LIBNAME			= libmbfl.sh
 
 library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(foreach m, $(MODULES), $(m).sh)
@@ -82,7 +82,7 @@ $(library_SOURCES): %.sh: %.sh.m4 macros.m4
 	grep --invert-match -e '^#' -e '^$$' | sed -e "s/^ \\+//" >$(@)
 
 $(LIBNAME): $(library_SOURCES)
-	$(M4) $(M4FLAGS) libMBFL.sh.m4 >$(@)
+	$(M4) $(M4FLAGS) libmbfl.sh.m4 >$(@)
 
 
 dev:		library-all
@@ -97,7 +97,7 @@ dev-install:	library-install
 
 template_SOURCES	= 
 template_TARGETS	= template.sh
-template_INSTLST	= $(top_srcdir)/src/examples/template.sh.m4
+template_INSTLST	= $(top_srcdir)/examples/template.sh.m4
 template_INSTDIR	= $(pkgdatadir)
 
 .PHONY: template-all template-clean template-realclean template-install

@@ -8,7 +8,7 @@
 # 
 # 
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -25,8 +25,6 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: libMBFL.sh.m4,v 1.1.1.4 2003/12/21 07:43:22 marco Exp $
-#
 
 m4_include(macros.m4)
 m4_include(encode.sh)
@@ -37,9 +35,10 @@ m4_include(programs.sh)
 m4_include(signal.sh)
 m4_include(string.sh)
 m4_include(dialog.sh)
+m4_include(main.sh)
 
 ### end of file
 # Local Variables:
-# mode: m4
+# mode: sh
 # page-delimiter: "^#PAGE$"
 # End:

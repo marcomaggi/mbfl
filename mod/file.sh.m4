@@ -8,7 +8,7 @@
 # 
 #       This is a collection of file functions for the GNU BASH shell.
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -25,8 +25,6 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: file.sh.m4,v 1.1.1.20 2003/12/21 07:45:13 marco Exp $
-#
 
 m4_include(macros.m4)
 
@@ -151,36 +149,31 @@ function mbfl_file_dirname () {
 #
 #         Echoes to stdout the normalised file name.
 #
-#  Side effects:
-#
-#       None.
-#
 
 function mbfl_file_normalise () {
     local pathname="${1:?}"
     local prefix="${2}"
-    local pwd="${PWD}"
 
     if test -z "${prefix}"; then
         prefix="${PWD}"
     fi
-    
+
     if test "${pathname:0:1}" = "/"; then
         echo "${pathname}"
     elif test -d "${prefix}"; then
-        cd "${prefix}"
+        cd "${prefix}" >/dev/null
         if test -d "${pathname}"; then
-            cd "${pathname}"
+            cd "${pathname}" >/dev/null
             echo "${PWD}"
-            cd "${pwd}"
+            cd - >/dev/null
         else
             local tailname=$(mbfl_file_tail "${pathname}")
             local dirname=$(mbfl_file_dirname "${pathname}")
 
             if test -d "${dirname}"; then
-                cd "${dirname}"
+                cd "${dirname}" >/dev/null
                 echo "${PWD}/${tailname}"
-                cd "${pwd}"
+                cd - >/dev/null
             else
                 echo "${prefix}/${pathname}"
             fi
@@ -191,20 +184,6 @@ function mbfl_file_normalise () {
 
     return 0
 }
-
-# function mbfl_file_normalise () {
-#     local file="${1:?}"
-
-#     if test "${file:0:1}" != "/"
-#     then
-#       echo "${PWD}/${file}"
-#     else
-#       echo "${file}"
-#     fi
-
-#     return 0
-# }
-
 #PAGE
 # mbfl_file_rootname --
 #

@@ -13,7 +13,7 @@
 # 
 #	will select these tests.
 #
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -30,8 +30,6 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: file.test,v 1.1.1.19 2003/12/17 14:30:25 marco Exp $
-#
 
 #PAGE
 ## ------------------------------------------------------------

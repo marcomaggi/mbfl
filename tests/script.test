@@ -13,7 +13,7 @@
 # 
 #	will select these tests.
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -30,8 +30,6 @@
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
 # 
-# $Id: script.test,v 1.1.1.6 2003/12/17 12:46:56 marco Exp $
-#
 
 #PAGE
 ## ------------------------------------------------------------
@@ -94,7 +92,7 @@ namespace eval ::test {
     -body	{
 	script --license
     }
-    -result "... version: *"
+    -result "... version *"
     -match glob
 }
 
@@ -102,7 +100,7 @@ namespace eval ::test {
     -body	{
 	script --version
     }
-    -result "... version: *"
+    -result "... version *"
     -match glob
 }
 
@@ -110,45 +108,45 @@ namespace eval ::test {
     -body	{
 	script --version-only
     }
-    -result {[0-9]+.[0-9]+.[0-9]+.[0-9]+}
+    -result {[0-9]+\.[0-9]+(\.[0-9]+(\.[0-9]+)?)?}
     -match regexp
 }
 
 #PAGE
 
-::tcltest::test script-2.1 "one argument" {
+::tcltest::test script-2.1 "beta argument" {
     -body	{
-	script --one=123
+	script --beta=123
     }
-    -result "argument: 123"
+    -result "option beta: 123"
 }
 
-::tcltest::test script-2.2 "one argument" {
+::tcltest::test script-2.2 "beta argument" {
     -body	{
-	script --one=123\\
+	script --beta=123\\
     }
-    -result "argument: 123\\"
+    -result "option beta: 123\\"
 }
 
-::tcltest::test script-2.3 "one argument" {
+::tcltest::test script-2.3 "beta argument" {
     -body	{
-	script "--one=1 2"
+	script "--beta=1 2"
     }
-    -result "argument: 1 2"
+    -result "option beta: 1 2"
 }
 
-::tcltest::test script-2.4 "one argument" {
+::tcltest::test script-2.4 "beta argument" {
     -body	{
-	script --one=123\\\\
+	script --beta=123\\\\
     }
-    -result "argument: 123\\\\"
+    -result "option beta: 123\\\\"
 }
 
-::tcltest::test script-2.5 "one argument" {
+::tcltest::test script-2.5 "beta argument" {
     -body	{
-	script --four
+	script --alpha
     }
-    -result "action four"
+    -result "action alpha"
 }
 
 #PAGE
