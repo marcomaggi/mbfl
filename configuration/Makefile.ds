@@ -1,0 +1,162 @@
+# Makefile.ds --
+#
+
+#PAGE
+## ------------------------------------------------------------
+## Search paths.
+## ------------------------------------------------------------
+
+vpath	%.m4		$(top_srcdir)/macros
+vpath	%.sh.m4		$(top_srcdir)/modules
+vpath	%.sh.m4		$(top_srcdir)/lib
+vpath	%.sh.m4		$(top_srcdir)/examples
+vpath	%.sh.m4		$(builddir)
+
+ds-files-from-dir	= $(filter-out %~, $(wildcard $(1)/*))
+ds-make-dir		= $(shell test ! -d $(1) && $(MKDIR) $(1))
+ds-replace-dir		= $(addprefix $(1)/, $(notdir $(2)))
+
+M4FLAGS		= --include=$(top_srcdir)/macros \
+		  --include=$(builddir)/lib
+
+#PAGE
+## ------------------------------------------------------------
+## Library rules.
+## ------------------------------------------------------------
+
+library_SRCDIR		= $(top_srcdir)/modules
+library_BUILDDIR	= $(builddir)/lib
+
+MODULES			= base encode file getopts message program signal \
+			  string dialog main variable
+LIBNAME			= libmbfl.sh
+LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
+
+library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
+library_SOURCES		= $(addprefix $(library_BUILDDIR)/, \
+				$(foreach m, $(MODULES), $(m).sh))
+library_TARGETS		= $(LIBNAME)
+library_INSTLST		= $(library_TARGETS) $(LIBRARIES)
+library_INSTDIR		= $(pkgdatadir)
+
+library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES) $(library_BUILDDIR)
+library_REALCLEANFILES	= $(library_CLEANFILES)
+
+.PHONY: library-all library-clean library-realclean library-install
+
+library-all: $(call ds-make-dir, $(library_BUILDDIR)) $(library_TARGETS)
+library-clean:
+	-$(RM) $(library_CLEANFILES)
+library-realclean:
+	-$(RM) $(library_REALCLEANFILES)
+
+library-install:
+AM_INSTALL_DATA(library)
+
+
+$(library_SOURCES): $(library_BUILDDIR)/%.sh: preprocessor.m4 $(library_SRCDIR)/%.sh.m4
+	$(M4) $(M4FLAGS) $(^) | \
+	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
+
+$(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(library_SOURCES)
+	$(M4) $(M4FLAGS) preprocessor.m4 $(<) >$(@)
+
+
+bin:		library-all
+bin-clean:	library-clean
+bin-realclean:	library-realclean
+bin-install:	library-install
+
+#page
+## ------------------------------------------------------------
+## Script rules.
+## ------------------------------------------------------------
+
+libexec_INSTLST		= mbfl-config mbflpp.sh
+libexec_INSTDIR		= $(pkglibexecdir)
+
+libexec_CLEANFILES	= $(script_TARGETS)
+libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
+
+.PHONY: script-all script-clean script-realclean script-install
+
+script-all: $(libexec_TARGETS)
+script-clean:
+	-$(RM) $(libexec_CLEANFILES)
+script-realclean:
+	-$(RM) $(libexec_REALCLEANFILES)
+
+script-install:
+AM_INSTALL_BIN(libexec)
+AM_INSTALL_DIR($(bindir))
+	cd $(INSTALL_ROOT)$(bindir) && \
+	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfl-config mbfl-config
+	cd $(INSTALL_ROOT)$(bindir) && \
+	$(SYMLINK) ../libexec/$(PKG_DIR)/mbflpp.sh mbflpp.sh
+
+bin:		script-all
+bin-clean:	script-clean
+bin-realclean:	script-realclean
+bin-install:	script-install
+
+#page
+## ------------------------------------------------------------
+## Preprocessor macros rules.
+## ------------------------------------------------------------
+
+macros_INSTLST		= $(top_srcdir)/macros/preprocessor.m4
+macros_INSTDIR		= $(pkgdatadir)
+
+.PHONY: macros-install
+
+macros-install:
+AM_INSTALL_DATA(macros)
+
+bin-install:	macros-install
+
+#PAGE
+## ------------------------------------------------------------
+## Template rules.
+## ------------------------------------------------------------
+
+template_INSTLST	= $(top_srcdir)/examples/template.sh
+template_INSTDIR	= $(pkgexampledir)
+
+.PHONY: template-install
+
+template-install:
+AM_INSTALL_DATA([template])
+
+doc-install:	template-install
+
+#page
+## ------------------------------------------------------------
+## Test rules.
+## ------------------------------------------------------------
+
+testdir		= $(top_srcdir)/tests
+test_FILES	= $(wildcard $(testdir)/*.test)
+test_TARGETS	= test-all
+
+test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
+test_ENV	+= builddir=$(builddir) top_srcdir=$(top_srcdir)
+test_CMD	= $(test_ENV) /bin/bash
+
+.PHONY: test-all test-all-verbose
+
+test-all:
+ifneq ($(strip $(test_FILES)),)
+	@$(foreach f, $(test_FILES), \
+	top_srcdir=$(top_srcdir); $(test_CMD) $(f);)
+endif
+
+test-all-verbose:
+ifneq ($(strip $(test_FILES)),)
+	@$(foreach f, $(test_FILES), top_srcdir=$(top_srcdir); \
+	TESTSUCCESS='yes' TESTSTART='yes' $(test_CMD) $(f);)
+endif
+
+### end of file
+# Local Variables:
+# mode: makefile
+# End:
