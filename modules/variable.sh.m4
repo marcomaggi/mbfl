@@ -32,7 +32,7 @@ function mbfl_variable_find_in_array () {
     declare -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
     
     for ((i=0; $i < ${ARRAY_DIM}; ++i)) ; do
-	test "${mbfl_FIELDS[$i]}" = "${ELEMENT}" && { echo $i; return 0; }
+	test "${mbfl_FIELDS[$i]}" = "${ELEMENT}" && { printf "$i\n"; return 0; }
     done
     return 1
 }

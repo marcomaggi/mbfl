@@ -120,7 +120,7 @@ function getopts-7.1 () {
     mbfl_declare_option A yes o option noarg 'an option'
     mbfl_declare_option B yes a another noarg 'an option'
     mbfl_getopts_print_long_switches | dotest-output \
-        'option another'
+        '--option --another'
 }
 
 #page
@@ -130,5 +130,4 @@ dotest getopts-
 ### end of file
 # Local Variables:
 # mode: sh
-# page-delimiter: "^#PAGE"
 # End:

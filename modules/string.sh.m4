@@ -94,7 +94,7 @@ function mbfl_string_first () {
 
     for ((i=$BEGIN; $i < ${#STRING}; ++i)) ; do
         test "${STRING:$i:1}" = "$CHAR" && {
-            echo $i
+            printf "$i\n"
             return 0
         }
     done
@@ -107,7 +107,7 @@ function mbfl_string_last () {
 
     for ((; $i >= 0; --i)) ; do
         test "${STRING:$i:1}" = "$CHAR" && {
-            echo $i
+            printf "$i\n"
             return 0
         }
     done
@@ -116,7 +116,7 @@ function mbfl_string_last () {
 function mbfl_string_index () {
     mandatory_parameter(STRING, 1, string)
     mandatory_parameter(INDEX, 2, index)
-    echo "${STRING:$INDEX:1}"
+    printf "${STRING:$INDEX:1}\n"
 }
 #PAGE
 function mbfl_string_is_alpha_char () {
@@ -161,8 +161,8 @@ function mbfl_string_range () {
     optional_parameter(END, 3)
 
     if test -z "$END" -o "$END" = "end" -o "$END" = "END"
-    then echo "${STRING:$BEGIN}"
-    else echo "${STRING:$BEGIN:$END}"
+    then printf "${STRING:$BEGIN}\n"
+    else printf "${STRING:$BEGIN:$END}\n"
     fi
 }
 function mbfl_string_replace () {
@@ -170,7 +170,7 @@ function mbfl_string_replace () {
     mandatory_parameter(PATTERN, 2, pattern)
     optional_parameter(SUBST, 3)
 
-    echo "${STRING//$PATTERN/$SUBST}"
+    printf "${STRING//$PATTERN/$SUBST}\n"
 }
 function mbfl_string_skip () {
     mandatory_parameter(STRING, 1, string)
@@ -212,7 +212,7 @@ function mbfl_p_string_uplo () {
           flag=0
       fi
     done
-    echo "${STRING}"
+    printf "${STRING}\n"
     return 0
 }
 #page
@@ -250,15 +250,15 @@ function mbfl_string_is_quoted_char () {
 }
 function mbfl_string_quote () {
     mandatory_parameter(STRING, 1, string)
-    local QUOTED_STRING i quote ch
+    local i ch
     
 
     for ((i=0; $i < "${#STRING}"; ++i)) ; do
         ch="${STRING:$i:1}"
         test "$ch" = \\ && ch=\\\\
-        QUOTED_STRING="${QUOTED_STRING}$ch"
+        printf '%s' "$ch"
     done
-    echo "${QUOTED_STRING}"
+    printf '\n'
     return 0
 }
 

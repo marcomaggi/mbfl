@@ -515,7 +515,7 @@ function mbfl_getopts_p_test_option () {
 function mbfl_getopts_print_long_switches () {
     for ((i=0; $i < ${#mbfl_getopts_LONGS[@]}; ++i)); do
         if test -n "${mbfl_getopts_LONGS[$i]}" ; then
-            echo -n "${mbfl_getopts_LONGS[$i]}"
+            echo -n "--${mbfl_getopts_LONGS[$i]}"
         else
             continue
         fi

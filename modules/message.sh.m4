@@ -44,7 +44,7 @@ function mbfl_message_set_channel () {
 }
 #PAGE
 function mbfl_message_p_print () {
-    echo -ne "${2:?${1} error: missing argument}" >&${mbfl_message_CHANNEL}
+    printf "${2:?${1} error: missing argument}" >&${mbfl_message_CHANNEL}
 }
 function mbfl_message_p_print_prefix () {
     mbfl_message_p_print ${1} "${mbfl_message_PROGNAME}: ${2}"
