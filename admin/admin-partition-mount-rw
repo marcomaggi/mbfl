@@ -1,14 +1,20 @@
 # admin-partition-mount-rw --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
 
-local MOUNT_POINT="${1:?missing mount point parameter to ${FUNCNAME}}"
 
-    user-validate-directory "${MOUNT_POINT}" || return 1
-    program-sudo-mount -o remount,rw "${MOUNT_POINT}" || {
-	user-message-error \
-	    "remounting read-write partition '${MOUNT_POINT}'"
-	return 1
-    }
+MOUNT_POINT=${1:?missing mount point parameter}
 
+user-validate-directory "${MOUNT_POINT}" || return 1
+if user-program-sudo-mount -o remount,rw "${MOUNT_POINT}" ; then
+    exit 0
+else
+    user-message-error "remounting read-write partition '${MOUNT_POINT}'"
+    exit 1
+fi
 
 ### end of file
 # Local Variables:

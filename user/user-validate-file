@@ -1,4 +1,10 @@
 # user-validate-file --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
+
 
 # this script tests if the parameter is the empty string
 declare PATHNAME=${1}

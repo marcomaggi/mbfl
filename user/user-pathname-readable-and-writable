@@ -1,4 +1,10 @@
 # user-pathname-readable-and-writable --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
+
 
 declare PATHNAME=${1:?missing pathname parameter}
 

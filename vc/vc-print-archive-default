@@ -1,4 +1,10 @@
 # vc-print-archive-default --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
+
 
 exec vc-program-gnu-arch-my-default-archive
 

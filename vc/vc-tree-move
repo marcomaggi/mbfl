@@ -1,4 +1,10 @@
 # vc-tree-move --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
+
 
 declare FROM=${1:?missing from pathname parameter}
 declare TO=${2:?missing to pathname parameter}

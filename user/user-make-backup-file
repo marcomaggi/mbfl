@@ -1,4 +1,10 @@
 # user-make-backup-file --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
+
 
 declare FILENAME=${1:?missing file name parameter}
 exec user-program-cp --force --backup=numbered "${FILENAME}" "${FILENAME}"

@@ -1,4 +1,10 @@
-# program-sudo-mount --
+# user-program-sudo-mount --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
+
 
 declare MOUNT=`user-find-executable mount` || exit 1
 declare SUDO=`user-find-executable sudo` || exit 1

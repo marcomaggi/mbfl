@@ -1,4 +1,10 @@
 # user-p-pathname-test --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
+
 
 declare MODE=${1:?missing test mode parameter}
 declare MODE_DESCR=${2:?missing test mode description}

@@ -1,4 +1,10 @@
 # user-make-tempfile --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
+
 
 declare TEMPFILE=`user-find-executable tempfile` || exit 1
 declare DIR=${TMPDIR:-/tmp/${USER}}

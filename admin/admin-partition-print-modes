@@ -1,4 +1,4 @@
-# vc-tree-lint --
+# admin-partition-print-modes --
 #
 # Copyright (C) 2004 Marco Maggi
 #
@@ -6,7 +6,13 @@
 # See the COPYING file in the distribution for details.
 
 
-exec vc-program-gnu-arch-tree-lint
+set -e
+declare LINE
+
+admin-partition-print | while read LINE ; do
+    set -- ${LINE}
+    echo "$3"; echo "${6:1:2}"
+done
 
 ### end of file
 # Local Variables:
