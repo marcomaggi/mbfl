@@ -77,6 +77,24 @@ function mbfl_file_dirname () {
 }
 
 #PAGE
+function mbfl_file_subpathname () {
+    local pathname=${1:?"missing pathname parameter in '${FUNCNAME}'"}
+    local basedir=${2:?"missing base directory parameter in '${FUNCNAME}'"}
+
+    if test "${basedir:$((${#basedir}-1))}" = '/'; then
+        basedir="${basedir:0:$((${#basedir}-1))}"
+    fi
+    if test "${pathname}" = "${basedir}" ; then
+        echo ./
+        return 0
+    elif test "${pathname:0:${#basedir}}" = "${basedir}"; then
+        echo ./"${pathname:$((${#basedir}+1))}"
+        return 0
+    else
+        return 1
+    fi
+}
+#page
 function mbfl_file_normalise () {
     local pathname="${1:?}"
     local prefix="${2}"
@@ -97,7 +115,7 @@ function mbfl_file_normalise () {
         mbfl_p_file_normalise1 "${pathname}"
     fi
 
-    mbfl_cd "${ORGDIR}"
+    cd "${ORGDIR}" >/dev/null
     return 0
 }
 function mbfl_p_file_normalise1 () {
@@ -115,13 +133,13 @@ function mbfl_p_file_normalise1 () {
     fi
 }
 function mbfl_p_file_normalise2 () {
-    mbfl_cd "$1"
+    cd "$1" >/dev/null
     if test -n "$2" ; then echo "${PWD}/$2"; else echo "${PWD}"; fi
-    mbfl_cd -
+    cd - >/dev/null
 }
 #page
 function mbfl_p_file_remove_dots_from_pathname () {
-    local PATHNAME="${1:?missing pathname parameter in ${FUNCNAME}}"
+    local PATHNAME=${1:?"missing pathname parameter in '${FUNCNAME}'"}
     local item i
     local SPLITPATH SPLITCOUNT; declare -a SPLITPATH
     local output output_counter=0; declare -a output

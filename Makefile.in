@@ -112,6 +112,16 @@ clean:		bin-clean dev-clean doc-clean sta-clean
 realclean:	bin-realclean dev-realclean doc-realclean sta-realclean
 install:	bin-install dev-install doc-install sta-install
 
+.PHONY: dist bindist reconfigure
+
+dist bindist dist-test:
+	develstuff.sh --$(@)
+
+reconfigure:
+	$(MAKE) clean
+	$(MAKE) realclean
+	develstuff.sh --autoconf --verbose
+	./config.status
 
 # Makefile.ds --
 #

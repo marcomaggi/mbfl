@@ -501,6 +501,23 @@ Echoes to stdout the normalised file name; returns true.
 @end deffn
 
 
+@deffn Function mbfl_file_subpathname @var{pathname} @var{basedir}
+If @var{pathname} is a subdirectory or file under @var{basedir}, this
+function prints to stdout the subpathname portion; example:
+
+@example
+mbfl_file_subpathname /a/b/c /a
+-> ./b/c
+@end example
+
+Both @var{pathname} and @var{basedir} must be full (normalised)
+pathnames for this function to work.
+
+If @var{pathname} is recognised  as subpathname of @var{basedir}: the
+return code is zero; else the return code is one.
+@end deffn
+
+
 @deffn Function mbfl_file_is_absolute @var{pathname}
 Returns true if the first character in @var{pathname} is a slash
 (@code{/}); else returns false.

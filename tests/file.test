@@ -144,6 +144,23 @@ function file-normalise-2.6 () {
 	dotest-output abc/def/lmn/opq/rst/X/Y
 }
 
+#page
+
+function file-subpathname-1.1 () {
+    mbfl_file_subpathname /a /a | dotest-output ./
+}
+
+function file-subpathname-2.1 () {
+    mbfl_file_subpathname /a/b/c /a/ | dotest-output ./b/c
+}
+function file-subpathname-2.2 () {
+    mbfl_file_subpathname /a/b/c /a | dotest-output ./b/c
+}
+
+function file-subpathname-3.1 () {
+    mbfl_file_subpathname /a/b/c /d || true
+}
+
 #PAGE
 
 function file-rootname-1.1 () {
