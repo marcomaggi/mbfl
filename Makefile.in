@@ -248,7 +248,7 @@ LIBNAME			= libmbfl.sh
 library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(foreach m, $(MODULES), $(m).sh)
 library_TARGETS		= $(LIBNAME)
-library_INSTLST		= $(library_TARGETS)
+library_INSTLST		= $(library_TARGETS) $(top_srcdir)/lib/mbfltest.sh
 library_INSTDIR		= $(pkgdatadir)
 
 library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES)
@@ -293,41 +293,44 @@ bin-install:	library-install
 ## Script rules.
 ## ------------------------------------------------------------
 
-script_TARGETS		= mbfl-config
-script_INSTLST		= mbfl-config
-script_INSTDIR		= $(pkglibexecdir)
+libexec_INSTLST		= mbfl-config
+libexec_INSTDIR		= $(pkglibexecdir)
 
-script_CLEANFILES	= $(script_TARGETS)
-script_REALCLEANFILES	= $(script_CLEANFILES)
+binscript_INSTLST	= mbfl-config
+binscript_INSTDIR	= $(bindir)
+
+libexec_CLEANFILES	= $(script_TARGETS)
+libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
 
 .PHONY: script-all script-clean script-realclean script-install
 
-script-all: $(script_TARGETS)
+script-all: $(libexec_TARGETS)
 script-clean:
-	-$(RM) $(script_CLEANFILES)
+	-$(RM) $(libexec_CLEANFILES)
 script-realclean:
-	-$(RM) $(script_REALCLEANFILES)
+	-$(RM) $(libexec_REALCLEANFILES)
 
 script-install:
 
-	@echo -en "Installing script files... "
-ifneq	(,$(script_INSTLST))
-	@$(INSTALL_DIR) $(INSTALL_ROOT)$(script_INSTDIR)
-	@$(INSTALL_BIN) $(script_INSTLST) $(INSTALL_ROOT)$(script_INSTDIR)
+	@echo -en "Installing libexec files... "
+ifneq	(,$(libexec_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(libexec_INSTDIR)
+	@$(INSTALL_BIN) $(libexec_INSTLST) $(INSTALL_ROOT)$(libexec_INSTDIR)
 	@echo "done"
 else
 	$(warning *** empty install list)
 endif
 
-	@echo -en "Installing directory $(bindir)... "
-	@$(INSTALL_DIR) $(INSTALL_ROOT)$(bindir)
+
+	@echo -en "Installing binscript files... "
+ifneq	(,$(binscript_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(binscript_INSTDIR)
+	@$(INSTALL_BIN) $(binscript_INSTLST) $(INSTALL_ROOT)$(binscript_INSTDIR)
 	@echo "done"
+else
+	$(warning *** empty install list)
+endif
 
-	cd $(INSTALL_ROOT)$(bindir) && \
-	$(SYMLINK) $(subst $(prefix),..,$(pkglibexecdir)/mbfl-config) mbfl-config
-
-mbfl-config:
-	@echo -e "#!$(BASHPROG)\necho $(pkgdatadir)/libmbfl.sh\n###end of file\n" >$(@)
 
 bin:		script-all
 bin-clean:	script-clean

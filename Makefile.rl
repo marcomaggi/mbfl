@@ -61,7 +61,7 @@ LIBNAME			= libmbfl.sh
 library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(foreach m, $(MODULES), $(m).sh)
 library_TARGETS		= $(LIBNAME)
-library_INSTLST		= $(library_TARGETS)
+library_INSTLST		= $(library_TARGETS) $(top_srcdir)/lib/mbfltest.sh
 library_INSTDIR		= $(pkgdatadir)
 
 library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES)
@@ -97,29 +97,26 @@ bin-install:	library-install
 ## Script rules.
 ## ------------------------------------------------------------
 
-script_TARGETS		= mbfl-config
-script_INSTLST		= mbfl-config
-script_INSTDIR		= $(pkglibexecdir)
+libexec_INSTLST		= mbfl-config
+libexec_INSTDIR		= $(pkglibexecdir)
 
-script_CLEANFILES	= $(script_TARGETS)
-script_REALCLEANFILES	= $(script_CLEANFILES)
+binscript_INSTLST	= mbfl-config
+binscript_INSTDIR	= $(bindir)
+
+libexec_CLEANFILES	= $(script_TARGETS)
+libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
 
 .PHONY: script-all script-clean script-realclean script-install
 
-script-all: $(script_TARGETS)
+script-all: $(libexec_TARGETS)
 script-clean:
-	-$(RM) $(script_CLEANFILES)
+	-$(RM) $(libexec_CLEANFILES)
 script-realclean:
-	-$(RM) $(script_REALCLEANFILES)
+	-$(RM) $(libexec_REALCLEANFILES)
 
 script-install:
-AM_INSTALL_BIN(script)
-AM_INSTALL_DIR($(bindir))
-	cd $(INSTALL_ROOT)$(bindir) && \
-	$(SYMLINK) $(subst $(prefix),..,$(pkglibexecdir)/mbfl-config) mbfl-config
-
-mbfl-config:
-	@echo -e "#!$(BASHPROG)\necho $(pkgdatadir)/libmbfl.sh\n###end of file\n" >$(@)
+AM_INSTALL_BIN(libexec)
+AM_INSTALL_BIN(binscript)
 
 bin:		script-all
 bin-clean:	script-clean

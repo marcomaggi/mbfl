@@ -1926,20 +1926,18 @@ false.
 
 @deffn Funciton dotest @var{pattern}
 Run all the functions matching @var{pattern}. Usually @var{pattern} is
-the first part of the name of the functions to be executed. The value
-selected with @var{pattern} may be overridden from the command line by
-setting the environment variable @env{TESTMATCH}
+the first part of the name of the functions to be executed; the function
+names are selected with the following code:
+
+@example
+compgen -A function "$@var{pattern}"
+@end example
+
+There's no constraint on function names, but they must be one--word
+names.
 
 Before running a test function: the current process working directory is
-saved, and it is restored after the execution is terminated; that way
-the functions do not have to care about changing directory.
-
-Messages are printed before and after the execution of each function,
-according to the mode selected with: @code{dotest-set-report-success},
-@code{dotest-set-report-start}, @dots{} (@ref{Testing Config} for
-details).
-@end deffn
-
+saved, and it is restored after the execution is terminated.
 
 The return value of the test functions is used as result of the test:
 true, the test succeeded; false, the test failed. Remembering that the
@@ -1947,9 +1945,31 @@ return value of a function is the return value of its last executed
 command, the functions @code{dotest-equal} and @code{dotest-output}, and
 of course the @command{test} command, may be used to return the correct
 value.
+@end deffn
 
-There's no constraint on function names, but they must be one--word
-names.
+Messages are printed before and after the execution of each function,
+according to the mode selected with: @code{dotest-set-report-success},
+@code{dotest-set-report-start}, @dots{} (@ref{Testing Config} for
+details).
+
+The following environment variables may configure the behaviour of
+@code{dotest}.
+
+@table @env
+@item TESTMATCH
+Overrides the value selected with @var{pattern}.
+
+@item TESTSTART
+If @code{yes}: it is equivalent to invoking
+@code{dotest-set-report-start}; if @code{no}: it is equivalent to
+invoking @code{dotest-unset-report-start}.
+
+@item TESTSUCCESS
+If @code{yes}: it is equivalent to invoking
+@code{dotest-set-report-success}; if @code{no}: it is equivalent to
+invoking @code{dotest-unset-report-success}.
+@end table
+
 
 @c ------------------------------------------------------------
 @node Testing Compare

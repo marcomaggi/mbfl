@@ -36,6 +36,7 @@ ds_source_file(./lib/libmbfl.sh.m4)
 ds_init
 AC_CHECK_PROG([SED], [sed], [sed], :)
 AC_CHECK_PROG([GREP], [grep], [grep], :)
+AC_CONFIG_FILES(mbfl-config:scripts/mbfl-config)
 ds_output
 
 ### end of file

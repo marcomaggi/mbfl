@@ -74,7 +74,7 @@ function dotest-set-report-success () {
 function dotest-unset-report-success () {
     function dotest-option-report-success () { false; }
 }
-dotest-set-report-success
+dotest-unset-report-success
 #page
 function dotest-output () {
     local expected_output="$1"
@@ -121,11 +121,14 @@ function dotest () {
     local PATTERN="${1:?missing test function pattern parameter to ${FUNCNAME}}"
     local FUNCTIONS; declare -a FUNCTIONS
     local name= item= result=
-    local i=0
     local ORGPWD="$PWD"
+    local ENVIRONMENT ENV=$(type -ap env)
 
 
     PATTERN="${TESTMATCH:-${PATTERN}}"
+
+    dotest-p-report-start-from-environment
+    dotest-p-report-success-from-environment
 
     for item in `compgen -A function "${PATTERN}"` ; do
         # When a single test function name is selected, "$item" is equal
@@ -154,6 +157,26 @@ function dotest () {
     done
 
     return 0
+}
+function dotest-p-report-start-from-environment () {
+    case "${TESTSTART}" in
+	yes)
+	    dotest-set-report-start
+	    ;;
+	no)
+	    dotest-unset-report-start
+	    ;;
+    esac
+}
+function dotest-p-report-success-from-environment () {
+    case "${TESTSUCCESS}" in
+	yes)
+	    dotest-set-report-success
+	    ;;
+	no)
+	    dotest-unset-report-success
+	    ;;
+    esac
 }
 #page
 function dotest-equal () {
