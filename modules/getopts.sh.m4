@@ -104,17 +104,24 @@ function mbfl_declare_option () {
 
     mbfl_p_declare_option_test_length $keyword keyword $index
     mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=`mbfl_string_toupper $keyword`
-    mbfl_getopts_DEFAULTS[$mbfl_getopts_INDEX]=$default
     mbfl_getopts_BRIEFS[$mbfl_getopts_INDEX]=$brief
     mbfl_getopts_LONGS[$mbfl_getopts_INDEX]=$long
 
     mbfl_p_declare_option_test_length $hasarg hasarg $index
-    if test "$hasarg" != "witharg" -a "$hasarg" != "noarg"; then
+    test "$hasarg" != "witharg" -a "$hasarg" != "noarg" && {
         mbfl_message_error \
-            "wrong value \"$hasarg\" to hasarg field in option declaration number ${index}"
+            "wrong value '$hasarg' to hasarg field in option declaration number ${index}"
         exit 2
-    fi
+    }
     mbfl_getopts_HASARG[$mbfl_getopts_INDEX]=$hasarg
+
+    test "$hasarg" = "noarg" && {
+        test "$default" != "yes" -a "$default" != "no" && {
+            mbfl_message_error \
+                "wrong value '$default' as default for option with no argument number ${index}"
+        }
+    }
+    mbfl_getopts_DEFAULTS[$mbfl_getopts_INDEX]=$default
 
     mbfl_p_declare_option_test_length $description description $index
     mbfl_getopts_DESCRIPTION[$mbfl_getopts_INDEX]=$description
@@ -126,14 +133,14 @@ function mbfl_p_declare_option_test_length () {
     local value_name="${2}"
     local option_number=${3}
 
-    if test -z "$value"; then
+    test -z "$value" && {
         mbfl_message_error \
             "null ${value_name} in declared option number ${option_number}"
         exit 2
-    fi
+    }
 }
 #page
-function mbfl_getopts_p_script_option () {
+function mbfl_getopts_p_process_script_option () {
     local OPT="${1:?${FUNCNAME} error: missing option name}"
     local OPTARG="$2"
     local i=0
@@ -157,7 +164,7 @@ function mbfl_getopts_p_script_option () {
                     value="$OPTARG"
                 fi
             else
-                value=1
+                value="yes"
             fi
             
             procedure=script_option_update_`mbfl_string_tolower $keyword`
@@ -171,24 +178,24 @@ function mbfl_getopts_p_script_option () {
 #PAGE
 function mbfl_getopts_parse () {
     local OPT= OPTARG=
-    local arg= end=0 i=0
+    local arg= i=0
+    local found_end_of_options_delimiter=0
 
 
     for ((i=0; $i < $ARGC1; ++i)); do
         arg="${ARGV1[$i]}"
-        if test "$end" = 1
-        then
+        if test "$found_end_of_options_delimiter" = 1 ; then
             ARGV[$ARGC]="${arg}"
             let ++ARGC
-        elif test "${arg}" = "--"
-        then end=1
+        elif test "${arg}" = "--" ; then
+            found_end_of_options_delimiter=1
         elif mbfl_getopts_isbrief "${arg}" OPT || \
              mbfl_getopts_islong "${arg}" OPT
-        then mbfl_getopts_p_option "${OPT}"
+        then mbfl_getopts_p_process_predefined_option_no_arg "${OPT}"
         elif \
             mbfl_getopts_isbrief_with "${arg}" OPT OPTARG || \
             mbfl_getopts_islong_with  "${arg}" OPT OPTARG
-        then mbfl_getopts_p_option_with "${OPT}" "${OPTARG}"
+        then mbfl_getopts_p_process_predefined_option_with_arg "${OPT}" "${OPTARG}"
         else
             ARGV[$ARGC]="${arg}"
             ARGC=$(($ARGC + 1))
@@ -199,7 +206,7 @@ function mbfl_getopts_parse () {
     return 0
 }
 #PAGE
-function mbfl_getopts_p_option () {
+function mbfl_getopts_p_process_predefined_option_no_arg () {
     local OPT="${1:?}"
     local i=0
 
@@ -264,30 +271,50 @@ function mbfl_getopts_p_option () {
 	    ;;
 	h|help|usage)
 	    echo -e "${script_USAGE}\noptions:"
-            mbfl_getopts_p_print_options
+            mbfl_getopts_p_build_and_print_options_usage
             echo -e "${mbfl_message_DEFAULT_OPTIONS}"
 	    exit 0
 	    ;;
 	*)
-            if ! mbfl_getopts_p_script_option "${OPT}"; then
+            mbfl_getopts_p_process_script_option "${OPT}" || {
                 mbfl_message_error "unknown option: \"${OPT}\""
                 exit 2
-            fi
+            }
+	    ;;
+    esac
+    return 0
+}
+#PAGE
+function mbfl_getopts_p_process_predefined_option_with_arg () {
+    local OPT="${1:?}"
+    local OPTARG="${2:?}"
+
+
+    mbfl_option_encoded_args && OPTARG=$(mbfl_decode_hex "${OPTARG}")
+
+    # at present no options with argument are declared by MBFL
+
+    case "${OPT}" in
+	*)
+	    mbfl_getopts_p_process_script_option "${OPT}" "${OPTARG}" || {
+                mbfl_message_error "unknown option \"${OPT}\""
+                exit 2
+            }
 	    ;;
     esac
     return 0
 }
 #page
-function mbfl_getopts_p_print_options () {
+function mbfl_getopts_p_build_and_print_options_usage () {
     local i=0
     local brief= long= description= long_hasarg= long_hasarg=
 
 
     for ((i=0; $i < $mbfl_getopts_INDEX; ++i)); do
-        if test "${mbfl_getopts_HASARG[$i]}" = 1; then
+        test "${mbfl_getopts_HASARG[$i]}" = 1 && {
             brief_hasarg="VALUE"
             long_hasarg="=VALUE"
-        fi
+        }
 
         brief="${mbfl_getopts_BRIEFS[$i]}"
         test -n "$brief" && echo -e "\t-${brief}${brief_hasarg}"
@@ -299,26 +326,6 @@ function mbfl_getopts_p_print_options () {
         test -n && echo -e "\t\t$description"
         i=$(($i + 1))
     done
-}
-#PAGE
-function mbfl_getopts_p_option_with () {
-    local OPT="${1:?}"
-    local OPTARG="${2:?}"
-
-
-    if test "${mbfl_option_ENCODED_ARGS}" = "yes"; then
-        OPTARG=$(mbfl_decode_hex "${OPTARG}")
-    fi
-
-    case "${OPT}" in
-	*)
-	    if ! mbfl_getopts_p_script_option "${OPT}" "${OPTARG}"; then
-                mbfl_message_error "unknown option \"${OPT}\""
-                exit 2
-            fi
-	    ;;
-    esac
-    return 0
 }
 #PAGE
 # mbfl_getopts_islong --

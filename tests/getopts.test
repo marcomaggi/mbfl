@@ -13,7 +13,7 @@
 # 
 #	will select these tests.
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -30,9 +30,6 @@
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
 # 
-# $Id: getopts.test,v 1.1.1.13 2003/12/17 12:47:04 marco Exp $
-#
-
 #PAGE
 ## ------------------------------------------------------------
 ## Setup.
@@ -48,9 +45,11 @@ source [file join [file dirname [info script]] setup.tcl]
 namespace eval ::test {
 
     variable	libname [file join $libpath getopts.sh]
+    variable	libname_string [file join $libpath string.sh]
+    variable	libname_message [file join $libpath message.sh]
 
-    variable	precmd ". %s"
-    set precmd [format $precmd $libname]
+    variable	precmd ". %s; . %s; . %s"
+    set precmd [format $precmd $libname $libname_string $libname_message]
 
 
 #PAGE
@@ -235,6 +234,46 @@ namespace eval ::test {
     }
     -result {A=123}
 }
+
+#page
+
+::tcltest::test getopts-5.1 "option declaration, no arg" {
+    -body	{
+	bash "mbfl_declare_option A yes o option noarg 'an option'"
+    }
+    -result {}
+}
+
+::tcltest::test getopts-5.2 "option declaration, no arg" {
+    -body	{
+	bash "mbfl_declare_option A no o option noarg 'an option'"
+    }
+    -result {}
+}
+
+::tcltest::test getopts-5.3 "option declaration, with arg" {
+    -body	{
+	bash "mbfl_declare_option A a o option witharg 'an option'"
+    }
+    -result {}
+}
+
+::tcltest::test getopts-6.1 "option declaration, wrong arg/noarg" {
+    -body	{
+	bash "mbfl_declare_option A a o option wappa 'an option'"
+    }
+    -match glob
+    -errorOutput {*: wrong value 'wappa' to hasarg field in option declaration number 1*}
+}
+
+::tcltest::test getopts-6.2 "option declaration, wrong default" {
+    -body	{
+	bash "mbfl_declare_option A a o option noarg 'an option'"
+    }
+    -match glob
+    -errorOutput {*: wrong value 'a' as default for option with no argument number 1*}
+}
+
 #PAGE
 ## ---------------------------------------------------------
 ## End of "::test" namespace.

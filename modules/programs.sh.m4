@@ -87,6 +87,23 @@ function mbfl_program_validate_declared () {
     done
     return $retval
 }
+function mbfl_program_found () {
+    local PROGRAM="${1:?${FUNCNAME} error: missing program name}"
+    local i=
+
+    for ((i=0; $i < $mbfl_program_INDEX; ++i)); do
+        test "${mbfl_program_NAMES[$i]}" = "${PROGRAM}" && {
+            test "${mbfl_program_NAMES[$i]}" != : && {
+                echo "${mbfl_program_PATHS[$i]}"
+                return 0
+            }
+            break
+        }
+    done
+
+    mbfl_message_error "executable not found \"${PROGRAM}\""
+    exit 3
+}
 
 ### end of file
 # Local Variables:

@@ -473,7 +473,7 @@ and invoke a script function for each option on the command line.
 Example of option declaration:
 
 @example
-mbfl_declare_option ALPHA 0 a alpha 0 "enable alpha option"
+mbfl_declare_option ALPHA no a alpha noarg "enable alpha option"
 @end example
 
 @noindent
@@ -482,7 +482,7 @@ this code declares an option with no argument and properties:
 @itemize
 @item
 global variable @code{script_option_ALPHA}, which will be set to
-@code{0} by default and to @code{1} if the option is used;
+@code{no} by default and to @code{yes} if the option is used;
 
 @item
 brief flag @code{-a};
@@ -496,7 +496,8 @@ description @code{enable alpha option}, to be shown in the usage output.
 
 If the option is used: the function @code{script_option_update_alpha} is
 invoked (if it exists) with no arguments, after the variable
-@code{script_option_ALPHA} is set to 1. Valid option usages are:
+@code{script_option_ALPHA} has been set to @code{yes}. Valid option
+usages are:
 
 @example
 $ script.sh -a
@@ -506,7 +507,7 @@ $ script.sh --alpha
 Another example:
 
 @example
-mbfl_declare_option BETA 123 b beta 1 "select beta value"
+mbfl_declare_option BETA 123 b beta witharg "select beta value"
 @end example
 
 @noindent
@@ -530,8 +531,8 @@ description @code{select beta value}, to be shown in the usage output.
 
 If the option is used: the function @code{script_option_update_beta} is
 invoked (if it exists) with no arguments, after the variable
-@code{script_option_BETA} is set to the selected value. Valid option
-usages are:
+@code{script_option_BETA} has been set to the selected value. Valid
+option usages are:
 
 @example
 $ script.sh -b456
@@ -631,6 +632,39 @@ declared with @code{mbfl_declare_option}; a string describing the
 @c ------------------------------------------------------------
 @node Getopts Interface
 @unnumberedsec Interface functions
+
+
+@deffn Function mbfl_declare_option @var{keyword} @var{default} @var{brief} @var{long} @var{hasarg} @var{description}
+Declares a new option. Arguments description follows.
+
+@table @var
+@item keyword
+A string identifying the option; internally it is used to build a
+function name and a variable name. It is safer to limit this string to
+the letters in the range @code{a-z} and underscores.
+
+@item default
+The default value for the option. For an option with argument it can be
+anything; for an option with no argument: it must be @code{yes} or
+@code{no}.
+
+@item brief
+The brief option selector: a single character. It is safer to choose a
+single letter (lower or upper case) in the @acronym{ASCII} standard.
+
+@item long
+The long option selector: a string. It is safer to choose a sequence of
+letters in the @acronym{ASCII} standard, separated by underscores or
+dashes.
+
+@item hasarg
+Either @code{witharg} or @code{noarg}: declares if the option requires
+an argument or not.
+
+@item description
+A one--line string describing the option briefly.
+@end table
+@end deffn
 
 
 @deffn Function mbfl_getopts_parse
@@ -943,6 +977,12 @@ option is used on the command line. The return value is zero if all the
 programs were found, one otherwise.
 @end deffn
 
+
+@deffn Function mbfl_program_found @var{program}
+Prints the pathname of the previously declared @var{program}. Returns
+zero if the program was found, otherwise prints an error message and
+exits the script with exit code three.
+@end deffn
 
 @c ------------------------------------------------------------
 @node Signal

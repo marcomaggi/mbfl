@@ -13,7 +13,7 @@
 # 
 #	will select these tests.
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -30,8 +30,6 @@
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
 # 
-# $Id: signal.test,v 1.1.1.7 2003/12/17 12:46:42 marco Exp $
-#
 
 #PAGE
 ## ------------------------------------------------------------
@@ -56,17 +54,14 @@ namespace eval ::test {
     variable	precmd ". %s"
     set precmd [format $precmd $signal]
 
-
 #PAGE
 
 ::tcltest::test signal-1.1 "signal chars" {
     -setup	{
 	::tcltest::makeFile "
-	set -x
 	bash $testscript >&2 &
-	sleep 1
-	echo jobs: `jobs`
-	kill -10 %%
+	sleep 2
+	kill -10 %1
 	exit 0
 	" $maintest
 	::tcltest::makeFile "
@@ -75,7 +70,7 @@ namespace eval ::test {
 	    echo here
 	    exit
 	}
-	mbfl_signal_attach SIGUSR1 handler
+	ID=`mbfl_signal_attach SIGUSR1 handler`
 	sleep 4
 	exit 0
 	" $testscript

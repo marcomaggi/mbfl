@@ -132,6 +132,36 @@ clean:		bin-clean dev-clean doc-clean sta-clean
 realclean:	bin-realclean dev-realclean doc-realclean sta-realclean
 install:	bin-install dev-install doc-install sta-install
 
+
+#page
+## ------------------------------------------------------------
+## spkg rules.
+## ------------------------------------------------------------
+
+SPKG_INSTALL	= spkg.sh --install --prefix=$(prefix) -f -v
+SPKG_UPGRADE	= spkg.sh --upgrade --prefix=$(prefix) -f -v
+SPKG_PKG	= $(PACKAGE_NAME)_$(PACKAGE_XVERSION)
+
+.PHONY: $(foreach a, bin dev doc sta, spkg-upgrade-$(a) spkg-install-$(a))
+
+spkg-upgrade-bin:
+	$(SPKG_UPGRADE) --file=$(SPKG_PKG)_bin.tar.gz
+spkg-upgrade-dev:
+	$(SPKG_UPGRADE) --file=$(SPKG_PKG)_dev.tar.gz
+spkg-upgrade-doc:
+	$(SPKG_UPGRADE) --file=$(SPKG_PKG)_dob.tar.gz
+spkg-upgrade-sta:
+	$(SPKG_UPGRADE) --file=$(SPKG_PKG)_sta.tar.gz
+
+spkg-install-bin:
+	$(SPKG_INSTALL) --file=$(SPKG_PKG)_bin.tar.gz
+spkg-install-dev:
+	$(SPKG_INSTALL) --file=$(SPKG_PKG)_dev.tar.gz
+spkg-install-doc:
+	$(SPKG_INSTALL) --file=$(SPKG_PKG)_dob.tar.gz
+spkg-install-sta:
+	$(SPKG_INSTALL) --file=$(SPKG_PKG)_sta.tar.gz
+
 # Makefile.rl --
 #
 # Part of: Marco's BASH Functions Library
@@ -485,7 +515,7 @@ config_CLEANFILES	= config.log config.status config.cache Makefile
 .PHONY: config-clean reconfig
 
 Makefile: $(srcdir)/Makefile.in $(srcdir)/configure $(builddir)/config.status
-	CONFIG_FILES=Makefile CONFIG_HEADERS= $(builddir)/config.status
+	$(builddir)/config.status
 
 config.status: $(srcdir)/configure
 	$(builddir)/config.status --recheck

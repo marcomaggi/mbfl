@@ -55,7 +55,7 @@ namespace eval ::test {
 	set command [format "%s; %s; exit 0" $precmd $command]
 
 	if { [catch {
-	    set result [exec $bash -c $command 2>@stderr]
+	    set result [exec $bash -c $command]
 	} res] } {
 	    puts stderr $res
 	    return

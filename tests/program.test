@@ -115,6 +115,20 @@ namespace eval ::test {
     -result "test: error: cannot find executable \"unexistent\""
 }
 
+::tcltest::test program-3.3 "checking existent program" {
+    -body	{
+	bash "mbfl_declare_program ls; mbfl_program_found ls"
+    }
+    -result "[auto_execok ls]"
+}
+
+::tcltest::test program-3.4 "checking existent program" {
+    -body	{
+	bash "mbfl_declare_program unexistent; mbfl_program_found unexistent"
+    }
+    -result {}
+}
+
 #PAGE
 ## ---------------------------------------------------------
 ## End of "::test" namespace.

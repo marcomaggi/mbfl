@@ -8,7 +8,7 @@
 # 
 # 
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -25,8 +25,6 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: signal.sh.m4,v 1.1.1.7 2003/12/21 07:45:55 marco Exp $
-#
 
 m4_include(macros.m4)
 
@@ -164,7 +162,7 @@ function mbfl_signal_register_handler () {
 #  Results:
 #
 #       Prints to the standard output the identifier of the
-#       registered handler; this id may used to detach the handler
+#       registered handler; this id may be used to detach the handler
 #       from the signal with "mbfl_signal_detach()".
 #
 #         Returns with code zero.
@@ -183,8 +181,8 @@ function mbfl_signal_attach () {
     declare -i signum=0 hannum=0
 
 
-#     signum=$(mbfl_signal_map_signame_to_signum "${SIGSPEC}")
-#     hannum=$(mbfl_signal_register_handler      "${HANDLER}")
+    signum=`mbfl_signal_map_signame_to_signum "${SIGSPEC}"`
+    hannum=`mbfl_signal_register_handler      "${HANDLER}"`
 
     # Append  the handler  number  to the  list  of registered  handlers
     # associated to the signal number.
@@ -313,7 +311,7 @@ function mbfl_signal_inspect () {
             then break
             fi
 
-            echo "Signal \"${SIGSPEC}\": ${HANDLER} "
+#            echo "Signal \"${SIGSPEC}\": ${HANDLER} "
         done
 
         signum=${signum}+1

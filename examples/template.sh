@@ -42,12 +42,12 @@ script_USAGE="usage: ${script_PROGNAME} [options] ..."
 source "${MBFL_LIBRARY:=`mbfl-config`}"
 
 # keyword default-value brief-option long-option has-argument description
-mbfl_declare_option ALPHA "" a alpha noarg "selects action alpha"
+mbfl_declare_option ALPHA no a alpha noarg "selects action alpha"
 mbfl_declare_option BETA "" b beta  witharg "selects option beta"
 mbfl_declare_option VALUE 0 "" value witharg "selects a value"
 mbfl_declare_option FILE 0 f file witharg "selects a file"
-mbfl_declare_option ENABLE 0 e enable noarg "enables a feature"
-mbfl_declare_option DISABLE 0 d disable noarg "disables a feature"
+mbfl_declare_option ENABLE no e enable noarg "enables a feature"
+mbfl_declare_option DISABLE no d disable noarg "disables a feature"
 
 #page
 function script_before_parsing_options () {
