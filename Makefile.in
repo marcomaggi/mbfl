@@ -17,7 +17,6 @@ PKG_DIR			= $(PACKAGE_NAME)_$(PACKAGE_XVERSION)
 ## Directory variables.
 ## ------------------------------------------------------------
 
-CONFIGDIR	= @CONFIGDIR@
 INSTALL_ROOT	=
 
 # If there is not a value for "TMPDIR" from the environment
@@ -67,20 +66,26 @@ pkgsysconfdir	= $(sysconfdir)/$(PKG_DIR)
 ## Common programs.
 ## ------------------------------------------------------------
 
-BASH			= @BASH@
-BASHPROG		= @BASH@
-SHELL			= @SHELL@
+BASH		= @BASH@
+BASHPROG	= @BASH@
+SHELL		= @SHELL@
 @SET_MAKE@
 
-RM			= @RM@ --force --recursive --
-MKDIR			= @MKDIR@ --parents
-SYMLINK			= @SYMLINK@ --symbolic
-M4			= @M4@
-
-SED			= @SED@
-GREP			= @GREP@
-
-GDB			= @GDB@
+BZIP		= @BZIP@
+CAT		= @CAT@
+CP		= @CP@
+DATE		= @DATE@
+GREP		= @GREP@
+GAWK		= @GAWK@
+GZIP		= @GZIP@
+M4		= @M4@
+MAKEINFO	= @MAKEINFO@
+MKDIR		= @MKDIR@ --parents
+RM		= @RM@ --force --recursive --
+SED		= @SED@
+SYMLINK		= @SYMLINK@ --symbolic
+TAR		= @TAR@
+TCLSH		= @TCLSH@
 
 INSTALL_DIR_MODE	= 0755
 INSTALL_BIN_MODE	= 0555

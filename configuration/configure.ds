@@ -6,7 +6,7 @@ ds_author_name(Marco Maggi)
 ds_author_email(marcomaggi@tiscalinet.it)
 ds_copyright_years({2003, 2004})
 ds_package_license(GPL)
-ds_package_title({Marco\'s Bash Functions Library})
+ds_package_title(Marco Bash Functions Library)
 ds_package_distribution_url({http://web.tiscali.it/marcomaggi})
 ds_package_line_description({library of bash functions})
 ds_package_long_description({ MBFL is a library of GNU Bash functions.

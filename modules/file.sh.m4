@@ -28,8 +28,8 @@
 
 #page
 function mbfl_cd () {
-    cd "$@" &>/dev/null
-    mbfl_message_debug "current directory: '$PWD'"
+    mbfl_program_exec cd "$@" >/dev/null
+    mbfl_message_verbose "entering directory: '$PWD'\n"
 }
 #PAGE
 function mbfl_file_extension () {
@@ -467,7 +467,7 @@ function mbfl_tar_extract_from_stdin () {
 function mbfl_tar_extract_from_file () {
     local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
     local ARCHIVE_FILENAME="${2:?missing archive pathname parameter in ${FUNCNAME}}"
-    shift
+    shift 2
 
     if ! mbfl_tar_exec --directory="${DIRECTORY}" --extract --file="${ARCHIVE_FILENAME}" "$@" ; then
         return 1

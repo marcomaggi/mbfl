@@ -49,7 +49,7 @@ if test "${mbfl_INTERACTIVE}" != 'yes'; then
     declare -a mbfl_getopts_DEFAULTS
     declare -a mbfl_getopts_BRIEFS
     declare -a mbfl_getopts_LONGS
-    declare -a mbfl_getopts_HASARGS
+    declare -a mbfl_getopts_HASARG
     declare -a mbfl_getopts_DESCRIPTION
 fi
 
@@ -332,9 +332,12 @@ function mbfl_getopts_p_build_and_print_options_usage () {
 
 
     for ((i=0; $i < $mbfl_getopts_INDEX; ++i)); do
-        if test "${mbfl_getopts_HASARG[$i]}" = 1 ; then
+        if test "${mbfl_getopts_HASARG[$i]}" = 'witharg' ; then
             brief_hasarg="VALUE"
             long_hasarg="=VALUE"
+        else
+            brief_hasarg=
+            long_hasarg=
         fi
 
         brief="${mbfl_getopts_BRIEFS[$i]}"

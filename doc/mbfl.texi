@@ -138,8 +138,8 @@ and invoking them in the main script, but this is not always the best
 solution.
 
 A set of modules implementing common operations and a script template
-are provided by the package and the author has used them with success in
-implementing non--small scripts.
+are provided by this package and the author has used them with success
+in implementing non--small scripts.
 
 The philosophy of @mbfl{} is to do the work as much as possible
 without external commands. For example: string manipulation is done
@@ -149,10 +149,10 @@ no use is done of utilities like @command{sed}, @command{grep} and
 
 The library is better used if our script is developed on the template
 provided in the package (@file{examples/template.sh}). This is because
-with @mbfl{} some choices has been made to reduce the custom part of the
-script to the smallest dimension; if we follow another schema, @mbfl{}
-modules may be indequate. This is especially true for the options
-parsing module.
+with @mbfl{} some choices have been made to reduce the application
+dependent part of the script to the smallest dimension; if we follow
+another schema, @mbfl{} modules may be indequate. This is especially
+true for the options parsing module.
 
 
 
@@ -407,6 +407,7 @@ mbfl_decode_hex 414243
 * File Names::                  Manipulating file names.
 * File Commands::               Manipulating files with external commands.
 * File Testing::                Testing file existence and the like.
+* File Misc::                   Miscellaneous commands.
 @end menu
 
 
@@ -420,7 +421,6 @@ mbfl_decode_hex 414243
 * File Name Path::              Handling relative pathnames.
 * File Name System::            Finding pathnames on the system.
 @end menu
-
 
 
 @c ------------------------------------------------------------
@@ -720,7 +720,7 @@ to this function. In case of error returns 1.
 @end deffn
 
 
-@deffn Function mbfl_tar_extract_from_stdin @var{directory} @var{archive} ?...?
+@deffn Function mbfl_tar_extract_from_file @var{directory} @var{archive} ?...?
 Reads an archive from a file and extracts it under
 @var{directory}. @command{tar} flags may be appended to the invocation
 to this function. In case of error returns 1.
@@ -792,6 +792,17 @@ and is writable.
 @deffn Function mbfl_file_is_symlink @var{pathname}
 Returns true if @var{pathname} is not the empty string and is a symbolic
 link.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node File Misc
+@unnumberedsec Miscellaneous commands
+
+
+@deffn Function mbfl_cd @var{dirname} ?...?
+Changes directory to @var{dirname}. Optional flags to @command{cd} may
+be appended.
 @end deffn
 
 
