@@ -1,11 +1,15 @@
-# vc-program-gnu-arch-parse-package-name --
+# vc-tree-add --
 #
 # Copyright (C) 2004 Marco Maggi
 #
 # This is free software licensed under the GNU Lesser General Public License.
 # See the COPYING file in the distribution for details.
 
-exec vc-program-gnu-arch parse-package-name "${@}"
+set -e
+declare PATHNAME=${1:?'missing pathname parameter'}
+
+vc-program-gnu-arch-add "${pathname}"
+vc-log-add-sentence "added '${PATHNAME}'"
 
 ### end of file
 # Local Variables:

@@ -5,11 +5,12 @@
 # This is free software licensed under the GNU Lesser General Public License.
 # See the COPYING file in the distribution for details.
 
-
-declare CATEGORY=${1:?missing category parameter}
+set -e
+declare CATEGORY=${1:?'missing CATEGORY--BRANCH--VERSION parameter'}
 
 vc-program-gnu-arch-init-tree
-vc-tree-make-branch-from-branch "${CATEGORY}"
+vc-tree-make-branch-from-tree "${CATEGORY}"
+exit 0
 
 ### end of file
 # Local Variables:

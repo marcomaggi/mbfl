@@ -5,9 +5,11 @@
 # This is free software licensed under the GNU Lesser General Public License.
 # See the COPYING file in the distribution for details.
 
+set -e
+declare MKDIR=`user-find-executable mkdir`
+declare MODE=0700
+declare MKDIR_FLAGS="--parents --mode=${MODE}"
 
-declare MKDIR=`user-find-executable mkdir ` || exit 1
-declare mode=0700
 
 if test -z "${USER}" ; then
     user-message-warning "null variable 'USER'"
@@ -18,7 +20,7 @@ fi
 
 if test ! -d "${TMPDIR}" ; then
     user-message-verbose "creating temporary directory '${TMPDIR}'"
-    ${MKDIR} --parents --mode=${mode} "${TMPDIR}"
+    ${MKDIR} ${MKDIR_FLAGS} "${TMPDIR}"
 fi
 echo "${TMPDIR}"
 exit 0

@@ -5,8 +5,7 @@
 # This is free software licensed under the GNU Lesser General Public License.
 # See the COPYING file in the distribution for details.
 
-
-exec vc-program-gnu-arch move "${@}"
+exec vc-program-gnu-arch delete "${@}"
 
 ### end of file
 # Local Variables:

@@ -5,13 +5,15 @@
 # This is free software licensed under the GNU Lesser General Public License.
 # See the COPYING file in the distribution for details.
 
+set -e
+declare CATEGORY=${1:?'missing original CATEGORY-BRANCH-VERSION parameter'}
+declare NEWBRANCH=${2:?'missing new BRANCH-VERSION parameter'}
+declare NAME=`vc-program-gnu-arch-parse-package-name-print-category "${CATEGORY}"`
 
-declare PACKAGE=${1:?missing package parameter}
-
-vc-program-gnu-arch-archive-setup "${PACKAGE}"	&& \
-    vc-program-gnu-arch-add-log-version "${PACKAGE}"	&& \
-    vc-program-gnu-arch-set-tree-version "${PACKAGE}"	&& \
-    vc-log-make
+vc-program-gnu-arch-get "${CATEGORY}" "${NEWBRANCH}"
+cd "${NEWBRANCH}"
+vc-tree-make-branch-from-tree "${NAME}--${NEWBRANCH}"
+exit 0
 
 ### end of file
 # Local Variables:
