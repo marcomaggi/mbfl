@@ -95,7 +95,15 @@ namespace eval ::test {
     -body	{
 	bash "mbfl_program_check 1234567asdfads 2>&1 || true"
     }
-    -result	"* error: cannot find executable \"1234567asdfads\""
+    -result	"* error: cannot find executable '1234567asdfads'"
+    -match	glob
+}
+
+::tcltest::test program-2.3 "checking unexistent program" {
+    -body	{
+	bash "mbfl_program_check '1234567 asdfads' 2>&1 || true"
+    }
+    -result	"* error: cannot find executable '1234567 asdfads'"
     -match	glob
 }
 
@@ -112,7 +120,7 @@ namespace eval ::test {
     -body	{
 	bash "mbfl_set_option_verbose; mbfl_message_set_channel 1; mbfl_message_set_progname test; mbfl_declare_program unexistent; mbfl_program_validate_declared"
     }
-    -result "test: error: cannot find executable \"unexistent\""
+    -result "test: error: cannot find executable 'unexistent'"
 }
 
 ::tcltest::test program-3.3 "checking existent program" {

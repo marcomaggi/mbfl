@@ -240,8 +240,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	    mbfl_option_INTERACTIVE="yes"
 	    ;;
         validate-programs)
-            mbfl_program_validate_declared
-            exit $?
+            mbfl_program_validate_declared || mbfl_exit_program_not_found
             ;;
 	version)
 	    echo -e "${mbfl_message_VERSION}"

@@ -46,9 +46,12 @@ source [file join [file dirname [info script]] setup.tcl]
 namespace eval ::test {
 
     variable	libname	[file join $libpath file.sh]
-    variable	precmd ". %s"
-    set precmd [format $precmd $libname]
+    variable	libname_program [file join $libpath programs.sh]
+    variable	libname_message [file join $libpath message.sh]
+    variable	precmd ". %s; . %s; . %s"
+    set precmd [format $precmd $libname $libname_program $libname_message]
 
+    variable	testfile [file join $tmpdir proof.txt]
 #PAGE
 
 ::tcltest::test file-1.1 "file extension" {
@@ -363,6 +366,112 @@ namespace eval ::test {
 	bash "mbfl_file_tail file.ext"
     }
     -result "file.ext"
+}
+
+#page
+
+::tcltest::test file-7.1 "file remove" {
+    -setup	{
+	::tcltest::makeDirectory $tmpdir
+	::tcltest::makeFile {abcd} $testfile
+    }
+    -body	{
+	bash "mbfl_file_enable_remove; mbfl_file_remove_file $testfile"
+	file isfile $testfile
+    }
+    -result 0
+    -cleanup	{
+	::tcltest::removeFile $testfile
+    }
+}
+
+::tcltest::test file-7.2 "directory remove" {
+    -setup	{
+	::tcltest::makeDirectory $tmpdir
+	::tcltest::makeDirectory $testfile
+    }
+    -body	{
+	bash "mbfl_file_enable_remove; mbfl_file_remove_directory $testfile"
+	file isdirectory $testfile
+    }
+    -result 0
+    -cleanup	{
+	::tcltest::removeDirectory $testfile
+    }
+}
+
+::tcltest::test file-7.3 "remove" {
+    -setup	{
+	::tcltest::makeDirectory $tmpdir
+	::tcltest::makeFile {abcd} $testfile
+    }
+    -body	{
+	bash "mbfl_file_enable_remove; mbfl_file_remove $testfile"
+	file isfile $testfile
+    }
+    -result 0
+    -cleanup	{
+	::tcltest::removeFile $testfile
+    }
+}
+
+::tcltest::test file-7.4 "remove" {
+    -setup	{
+	::tcltest::makeDirectory $tmpdir
+	::tcltest::makeDirectory $testfile
+    }
+    -body	{
+	bash "mbfl_file_enable_remove; mbfl_file_remove $testfile"
+	file isdirectory $testfile
+    }
+    -result 0
+    -cleanup	{
+	::tcltest::removeDirectory $testfile
+    }
+}
+
+#page
+
+::tcltest::test file-8.1 "make directory" {
+    -body	{
+	bash "mbfl_file_enable_make_directory; mbfl_file_make_directory $testfile"
+	file isdirectory $testfile
+    }
+    -result 1
+    -cleanup	{
+	::tcltest::removeDirectory $testfile
+    }
+}
+
+#page
+
+::tcltest::test file-9.1 "get owner" {
+    -setup	{
+	::tcltest::makeDirectory $tmpdir
+	::tcltest::makeFile {abcd} $testfile
+    }
+    -body	{
+	bash "mbfl_file_enable_listing; mbfl_file_get_owner $testfile"
+    }
+    -result $tcl_platform(user)
+    -cleanup	{
+	::tcltest::removeFile $testfile
+    }
+}
+
+::tcltest::test file-9.2 "get size" {
+    -setup	{
+	::tcltest::makeDirectory $tmpdir
+	::tcltest::makeFile {abcd} $testfile
+    }
+    -body	{
+	bash "mbfl_file_enable_listing; mbfl_file_get_size $testfile"
+    }
+    -match regexp
+    -result {[0-9]+}
+    -cleanup	{
+	::tcltest::removeFile $testfile
+    }
 }
 
 

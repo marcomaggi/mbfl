@@ -26,28 +26,21 @@
 # 
 
 #PAGE
-function mbfl_option_test () { return 1; }
-function mbfl_set_option_test () {
-    function mbfl_option_test () { return 0; }
-}
-function mbfl_unset_option_test () {
-    function mbfl_option_test () { return 1; }
-}
+function mbfl_set_option_test ()   { function mbfl_option_test () { return 0; }; }
+function mbfl_unset_option_test () { function mbfl_option_test () { return 1; }; }
+mbfl_unset_option_test
+function mbfl_exit_program_not_found () { exit 20; }
+#page
 function mbfl_program_check () {
-    local PROGRAMS="${@}"
     local item= path=
 
 
-    if test -z "${PROGRAMS}"; then
-        mbfl_message_error "null list of required executables"
-        return 1
-    fi
-    for item in ${PROGRAMS}; do
-        path=`type -ap "${item}"`
-        if test ! -x "${path}"; then
-            mbfl_message_error "cannot find executable \"${item}\""
+    for item in "${@}"; do
+        path=`mbfl_program_find ${item}`
+        test -x "${path}" || {
+            mbfl_message_error "cannot find executable '${item}'"
             return 1
-        fi
+        }
     done
     return 0
 }
@@ -56,7 +49,7 @@ function mbfl_program_exec () {
     eval "${@}"
 }
 function mbfl_program_find () {
-    echo $(type -ap "${1:?${FUNCNAME} error: missing program name}")
+    type -ap "${1:?${FUNCNAME} error: missing program name}"
 }
 #page
 declare -a mbfl_program_NAMES mbfl_program_PATHS
@@ -102,7 +95,7 @@ function mbfl_program_found () {
     done
 
     mbfl_message_error "executable not found \"${PROGRAM}\""
-    exit 3
+    mbfl_exit_program_not_found
 }
 
 ### end of file

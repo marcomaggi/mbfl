@@ -26,8 +26,6 @@
 # USA
 # 
 
-m4_include(macros.m4)
-
 #PAGE
 # mbfl_file_extension --
 #
@@ -53,28 +51,20 @@ m4_include(macros.m4)
 
 function mbfl_file_extension () {
     local file="${1:?}"
-
-    local i="${#file}"
+    local i=
     local ch=
 
-    while test $i -ge 0
-    do
+    for ((i="${#file}"; $i >= 0; --i)); do
         ch="${file:$i:1}"
-        if test "$ch" = "/"
-        then
-            break
-        elif test "$ch" = "."
-        then
+        if test "$ch" = "/" ; then
+            return
+        elif test "$ch" = "." ; then
             i=$(($i + 1))
             echo "${file:$i}"
-            break
+            return
         fi
-        i=$(($i - 1))
     done
-
-    return 0
 }
-
 #PAGE
 # mbfl_file_dirname --
 #
@@ -364,12 +354,101 @@ function mbfl_file_find_tmpdir () {
     mbfl_message_error "cannot find usable value for TMPDIR"
     return 1
 }
+#page
+function mbfl_file_enable_remove () {
+    mbfl_declare_program rm
+    mbfl_declare_program rmdir
+}
+function mbfl_file_remove () {
+    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    local RM=`mbfl_program_found rm`
+    local RM_FLAGS="--force --recursive"
 
+    test -e "${PATHNAME}" || {
+        mbfl_message_error "pathname does not exist '${PATHNAME}'"
+        return 1
+    }
+    mbfl_option_verbose && RM_FLAGS="${RM_FLAGS} --verbose"
+    mbfl_program_exec $RM $RM_FLAGS "${PATHNAME}" || return 1
+}
+function mbfl_file_remove_file () {
+    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    local RM=`mbfl_program_found rm`
+    local RM_FLAGS="--force"
 
+    test -f "${PATHNAME}" || {
+        mbfl_message_error "pathname is not a file '${PATHNAME}'"
+        return 1
+    }
+    mbfl_option_verbose && RM_FLAGS="${RM_FLAGS} --verbose"
+    mbfl_program_exec $RM $RM_FLAGS "${PATHNAME}" || return 1
+}
+function mbfl_file_remove_directory () {
+    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    local REMOVE_SILENTLY="$2"
+    local RMDIR_FLAGS=
+
+    test -d "${PATHNAME}" || {
+        mbfl_message_error "pathname is not a directory '${PATHNAME}'"
+        return 1
+    }
+
+    test "${REMOVE_SILENTLY}" = "yes" && \
+        RMDIR_FLAGS="${RMDIR_FLAGS} --ignore-fail-on-non-empty"
+    mbfl_option_verbose && \
+        RMDIR_FLAGS="${RMDIR_FLAGS} --verbose"
+
+    local RMDIR=`mbfl_program_found rmdir`
+    mbfl_program_exec $RMDIR $RMDIR_FLAGS "${PATHNAME}" || return 1
+}
+function mbfl_file_remove_directory_silently () {
+    mbfl_file_remove_directory "$1" yes
+}
+#page
+function mbfl_file_enable_make_directory () {
+    mbfl_declare_program mkdir
+}
+function mbfl_file_make_directory () {
+    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    local MKDIR=`mbfl_program_found mkdir`
+    local MKDIR_FLAGS="--parents"
+
+    test -d "${PATHNAME}" && return
+    mbfl_option_verbose && RM_FLAGS="${MKDIR_FLAGS} --verbose"
+    mbfl_program_exec $MKDIR $MKDIR_FLAGS "${PATHNAME}" || return 1    
+}
+#page
+function mbfl_file_enable_listing () {
+    mbfl_declare_program ls
+}
+function mbfl_file_get_owner () {
+    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    local LS_FLAGS="-l"
+
+    set -- `mbfl_file_p_invoke_ls || return 1`
+    echo "$3"
+}
+function mbfl_file_get_group () {
+    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    local LS_FLAGS="-l"
+    
+    set -- `mbfl_file_p_invoke_ls || return 1`
+    echo "$4"
+}
+function mbfl_file_get_size () {
+    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    local LS_FLAGS="--block-size=1 --size"
+    set -- `mbfl_file_p_invoke_ls || return 1`
+    echo "$1"
+}
+function mbfl_file_p_invoke_ls () {
+    local LS=`mbfl_program_found ls`
+    mbfl_program_exec $LS $LS_FLAGS "${PATHNAME}"
+}
 
 ### end of file
 # Local Variables:
 # mode: sh
-# page-delimiter: "^#PAGE$"
+# page-delimiter: "^#page$"
 # indent-tabs-mode: nil
 # End:

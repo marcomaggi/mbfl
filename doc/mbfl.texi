@@ -296,6 +296,17 @@ mbfl_decode_hex 414243
 @unnumbered Manipulating files and pathnames
 
 
+@menu
+* File Names::
+* File Commands::
+@end menu
+
+
+@c ------------------------------------------------------------
+@node File Names
+@unnumberedsec File names
+
+
 @deffn Function mbfl_file_extension @var{pathname}
 Extracts the extension from a file name.  Searches the last dot
 character in the argument string and echoes to stdout the range of
@@ -367,6 +378,99 @@ tried; finally the value @file{/tmp} is tried. When a value is accepted
 it's echoed to stdout. Returns true if a value is found, false
 otherwise.
 @end deffn
+
+
+@c ------------------------------------------------------------
+@node File Commands
+@unnumberedsec File Commands
+
+
+@menu
+* File Commands Listing::       Retrieving informations.
+* File Commands Mkdir::         Creating directories.
+* File Commands Removing::      Removing files and directories.
+@end menu
+
+
+@c ------------------------------------------------------------
+@node File Commands Listing
+@unnumberedsubsec Retrieving informations
+
+
+@deffn Function mbfl_file_enable_listing
+Declares to the program module the commands required to retrieve
+informations about files and directories (@ref{Program Declaring}). The
+programs are: @command{ls}.
+@end deffn
+
+
+@deffn Function mbfl_file_get_owner @var{pathname}
+Prints the owner of the file.
+@end deffn
+
+
+@deffn Function mbfl_file_get_group @var{pathname}
+Prints the group of the file.
+@end deffn
+
+
+@deffn Function mbfl_file_get_size @var{pathname}
+Prints the size of the file.
+@end deffn
+
+@c ------------------------------------------------------------
+@node File Commands Mkdir
+@unnumberedsubsec Creating directories
+
+
+@deffn Function mbfl_file_enable_make_directory
+Declares to the program module the commands required to create
+directories (@ref{Program Declaring}). The programs are: @command{mkdir}.
+@end deffn
+
+
+@deffn Function mbfl_file_make_directory @var{pathname}
+Creates a directory named @var{pathname}; all the unexistent parents are
+created, too.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node File Commands Removing
+@unnumberedsubsec Removing files and directories
+
+
+@noindent
+Files removal is forced: the @code{--force} option to @command{rm} is
+always used. It is responsibility of the caller to validate the
+operation before invoking these functions.
+
+
+@deffn Function mbfl_file_enable_remove
+Declares to the program module the commands required to remove files and
+directories (@ref{Program Declaring}). The programs are: @command{rm}
+and @command{rmdir}.
+@end deffn
+
+
+@deffn Function mbfl_file_remove @var{pathname}
+Removes @var{pathname}, no matter if it is a file or directory. If it is
+a directory: descends the sublevels removing all of them. If an error
+occurs returns 1.
+@end deffn
+
+
+@deffn Function mbfl_file_remove_file @var{pathname}
+Removes the file selected by @var{pathname}. If the file does not exist
+or it is not a file or an error occurs: returns 1.
+@end deffn
+
+
+@deffn Function mbfl_file_remove_directory @var{pathname}
+Removes the directory selected by @var{pathname}. If the directory does
+not exist or an error occurs: returns 1.
+@end deffn
+
 
 @c ------------------------------------------------------------
 @node Getopts
@@ -577,8 +681,7 @@ Turns on debugging messages. The global variable
 details).
 
 @item --test
-Turns on test execution. The global variable @code{mbfl_program_TEST} is
-set to @code{yes} (@ref{Program}, for details).
+Turns on test execution (@ref{Program Testing}, for details).
 
 @item --null
 Signals to the script that it has to use the null character to separate
@@ -945,23 +1048,122 @@ allowed in the message.
 
 @noindent
 This module declares a set of global variables all prefixed with
-@code{program_}. We have to look at the module's code to see which one
-are declared.
+@code{mbfl_program_}. We have to look at the module's code to see which
+one are declared.
+
+
+@menu
+* Program Testing::             Testing a script and running programs.
+* Program Checking::            Checking programs existence.
+* Program Executing::           Executing a program.
+* Program Declaring::           Declaring the intention to use a program.
+@end menu
+
+
+@c ------------------------------------------------------------
+@node Program Testing
+@unnumberedsec Testing a script and running programs
+
+
+@noindent
+@mbfl{} allows a script to execute a ``dry run'', that is: do not
+perform any operation on the system, just print messages describing what
+will happen if the script is executed with the selected options. This
+implies, in the @mbfl{} model, that no external program is executed.
+
+When this feature is turned on: @code{mbfl_program_exec} does not
+execute the program, instead it prints the command line on standard
+error and returns true.
+
+
+@deffn Function mbfl_set_option_test
+Enables the script test option. After this a script should not do
+anything on the system, just print messages describing the
+operations. This function is invoked when the predefined option
+@option{--test} is used on the command line.
+@end deffn
+
+
+@deffn Function mbfl_unset_option_test
+Disables the script test option. After this a script should perform
+normal operations.
+@end deffn
+
+
+@deffn Function mbfl_option_test
+Returns true if test execution is enabled, else returns false.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node Program Checking
+@unnumberedsec Checking programs existence
+
+
+@noindent
+The simpler way to test the availability of a program is to look for it
+just before it is used. The following function should be used at the
+beginning of a function that makes use of external programs.
 
 
 @deffn Function mbfl_program_check @var{program} ?@var{program} ...?
-Checks the availability of programs. This function assumes that the
-program pathnames do not contain blank characters. All the pathnames on
-the command line are checked: if one is not executable an error message
-is printed.  Returns true if a program can't be found, false otherwise.
+Checks the availability of programs. All the pathnames on the command
+line are checked: if one is not executable an error message is printed
+on stderr.  Returns false if a program can't be found, true otherwise.
 @end deffn
+
+
+@deffn Function mbfl_program_find @var{program}
+A wrapper for:
+
+@example
+type -ap @var{program}
+@end example
+
+@noindent
+that looks for a program in the current search path: prints the full
+pathname of the program found, or prints an empty string if nothing is
+found.
+@end deffn
+
+@c ------------------------------------------------------------
+@node Program Executing
+@unnumberedsec Executing a program
 
 
 @deffn Function mbfl_program_exec @var{arg} ...
-Evaluates a command line. If the variable @code{mbfl_program_TEST} is
-set to @code{yes}: instead of evaluation, the command line is sent to
-stderr.
+Evaluates a command line. If the function @code{mbfl_option_test}
+returns true: instead of evaluation, the command line is sent to stderr.
 @end deffn
+
+
+@c ------------------------------------------------------------
+@node Program Declaring
+@unnumberedsec Declaring the intention to use a program
+
+
+@noindent
+To make a script model simpler, we assume that the unavailability of a
+program at the time of its execution is a fatal error. So if we need to
+execute a program and the executable is not there, the script must be
+aborted on the spot.
+
+Functions are available to test the availability of a program, so we can
+try to locate an alternative or terminate the process under the script
+control.  On a system where executables may vanish from one moment to
+another, no matter how we test a program existence, there's always the
+possibility that the program is not ``there'' when we invoke it.
+
+If we just use @code{mbfl_program_exec} to invoke an external program,
+the function will try and fail if the executable is unavailable: the
+return code will be false.
+
+The vanishing of a program is a rare event: if it's there when we look
+for it, probably it will be there also a few moments later when we
+invoke it. For this reason, @mbfl{} proposes a set of functions with
+which we can declare the intention of a script to use a set of programs;
+a command line option is predefined to let the user test the
+availability of all the declared programs before invoking the script.
 
 
 @deffn Function mbfl_declare_program @var{program}
@@ -974,15 +1176,33 @@ script. The return value is always zero.
 Validates the existence of all the declared programs. This function is
 invoked by @code{mbfl_getopts_parse} when the @code{--validate-programs}
 option is used on the command line. The return value is zero if all the
-programs were found, one otherwise.
+programs are found, one otherwise.
+
+It is a good idea to invoke this function at the beginning of a script,
+just before starting to do stuff, example:
+
+@example
+mbfl_program_validate_declared || mbfl_exit_program_not_found
+@end example
 @end deffn
 
 
 @deffn Function mbfl_program_found @var{program}
 Prints the pathname of the previously declared @var{program}. Returns
 zero if the program was found, otherwise prints an error message and
-exits the script with exit code three.
+exits the script by invoking @code{mbfl_exit_program_not_found}.
+
+This function should be used to retrieve the pathname of the program to
+be used as first argument to @code{mbfl_program_exec}.
 @end deffn
+
+
+@deffn Function mbfl_exit_program_not_found
+Terminates the script with exit code 20. This function may be redefined
+by a script to make use of a different exit code; it may even be
+redefined to execute arbitrary code and then exit.
+@end deffn
+
 
 @c ------------------------------------------------------------
 @node Signal

@@ -54,29 +54,17 @@ Read the INSTALL file.
 4. Usage
 --------
 
-Each library file is self-documenting: read the source.
+Read the documentation in Texinfo format. Briefely: the best
+way to use the library  is to include at runtime the library
+file  "libmbfl.sh"  in  the  script;  this  is  possible  by
+installing MBFL  on the  system and using  this code  in the
+scripts:
 
-  Usually  I  install  the   libraries  on  a  "well  known"
-directory, then  I just include  them in the  script source.
-The GNU m4 preprocessor is a  good tool to do that: I put in
-the source script some macro invocation like the following:
+  source "${MBFL_LIBRARY:=`mbfl-config`}"
 
-     m4_include(libmbfl.sh)
-
-and  preprocess  the  script  with  a  make  rule  like  the
-following:
-
-     M4PROG	= m4
-     M4FLAGS	= --prefix-builtins --include=$(LIBSHDIR)
-
-     LIBSHDIR	= ...
-
-     %.sh: %.sh.m4
-		$(M4PROG) $(M4FLAGS) $(<) >$(@)
-
-obviously I  use GNU Autoconf to  preprocess the "Makefile",
-so  I  search the  library  directory  from the  "configure"
-script.
+the output of the  "mbfl-config" script is the full pathname
+of the library file. The value can be overridden setting the
+environment variable "MBFL_LIBRARY".
 
 
 A. Credits
