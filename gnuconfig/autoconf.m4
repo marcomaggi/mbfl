@@ -1,0 +1,1 @@
+/usr/local/share/develstuff/gnuconfig/autoconf.m4
