@@ -335,7 +335,7 @@ function mbfl_file_tail () {
 #
 
 function mbfl_file_find_tmpdir () {
-    local TMPDIR="${1:?}"
+    local TMPDIR="${1}"
 
 
     if test -n "${TMPDIR}" -a -d "${TMPDIR}" -a -w "${TMPDIR}"

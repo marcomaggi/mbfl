@@ -123,6 +123,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 #PAGE
 function mbfl_main () {
     local exit_code=0
+    local action_func=
 
 
     mbfl_message_set_progname "${script_PROGNAME}"
@@ -139,14 +140,26 @@ function mbfl_main () {
 	mbfl_message_string "test execution\n"
     fi
 
-    script_begin || exit $?
+    if test "$(type -t script_begin)" = "function"; then
+	script_begin || exit $?
+    fi
 
-    if test -n "${mbfl_option_ACTION}"; then
-	script_action_"${mbfl_option_ACTION}"
+    
+    action_func=script_action_"${mbfl_option_ACTION}"
+    if test \
+	\( -n "${mbfl_option_ACTION}" \)               -a \
+        \( "$(type -t ${action_func})" = "function" \)
+    then
+	$action_func
+	exit_code=$?
+    elif test "$(type -t main)" = "function"
+	main
 	exit_code=$?
     fi
 
-    script_end || exit $?
+    if test "$(type -t script_end)" = "function"; then
+	script_end || exit $?
+    fi
     exit $exit_code
 }
 

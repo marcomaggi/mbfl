@@ -299,7 +299,7 @@ M4FLAGS		+= --prefix-builtins
 ## ------------------------------------------------------------
 
 TCLSH			= @TCLSH@
-TCLTESTMAIN		= /home/devel/src/shell/mbfl/main--0.5/tests/all.tcl
+TCLTESTMAIN		= /home/devel/src/shell/mbfl/main/tests/all.tcl
 
 #test_TARGETS		=
 #test_CLEANFILES	=
@@ -373,7 +373,7 @@ doc-install:	doc-generic-install
 ## Package documentation in Texinfo format.
 ## ------------------------------------------------------------
 
-doc_texinfo_SRCDIR	= /home/devel/src/shell/mbfl/main--0.5/doc
+doc_texinfo_SRCDIR	= /home/devel/src/shell/mbfl/main/doc
 doc_texinfo_SOURCES	= $(wildcard $(doc_texinfo_SRCDIR)/*.texi)
 
 vpath	%.texi		$(doc_texinfo_SRCDIR)

@@ -83,6 +83,7 @@ function mbfl_program_exec () {
         return 0
     else
         eval "${@}"
+        return $?
     fi
 }
 
