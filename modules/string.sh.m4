@@ -37,10 +37,10 @@ function mbfl_string_chars () {
 
     for ((i=0, j=0; $i < "${#STRING}"; ++i, ++j)) ; do
         ch=
-        test "${STRING:$i:1}" = \\ && {
+        if test "${STRING:$i:1}" = \\ ; then
             test $i != "${#STRING}" && ch=\\
             let ++i
-        }
+        fi
         SPLITFIELD[$j]="${ch}${STRING:$i:1}"
         ch=
     done

@@ -8,7 +8,7 @@
 # 
 #       This is a collection of file functions for the GNU BASH shell.
 # 
-# Copyright (c) 2003, 2004 Marco Maggi
+# Copyright (c) 2003, 2004, 2005 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -33,62 +33,57 @@ function mbfl_cd () {
 }
 #PAGE
 function mbfl_file_extension () {
-    local file="${1:?missing file parameter to ${FUNCNAME}}"
-    local len="${#file}"
+    mandatory_parameter(PATHNAME, 1, pathname)
     local i=
-    local ch=
     
-    for ((i=$len; $i >= 0; --i)); do
-        ch="${file:$i:1}"
-        test "$ch" = "/" && return
-        mbfl_string_is_equal_unquoted_char "$file" $i '.' && {
+    for ((i="${#PATHNAME}"; $i >= 0; --i)); do
+        test "${PATHNAME:$i:1}" = '/' && return
+        if mbfl_string_is_equal_unquoted_char "${PATHNAME}" $i '.' ; then
             let ++i
-            echo "${file:$i}"
+            printf '%s\n' "${PATHNAME:$i}"
             return
-        }
+        fi
     done
 }
 #PAGE
 function mbfl_file_dirname () {
-    local file="${1:?}"
+    optional_parameter(PATHNAME, 1, '')
     local i=
 
-
-    # Do not change "${file:$i:1}" with "$ch"!! We need to extract the
+    # Do not change "${PATHNAME:$i:1}" with "$ch"!! We need to extract the
     # char at each loop iteration.
 
-    for ((i="${#file}"; $i >= 0; --i)); do
-        test "${file:$i:1}" = "/" && {
-            while test \( $i -gt 0 \) -a \( "${file:$i:1}" = "/" \)
-              do let --i
+    for ((i="${#PATHNAME}"; $i >= 0; --i)); do
+        if test "${PATHNAME:$i:1}" = "/" ; then
+            while test \( $i -gt 0 \) -a \( "${PATHNAME:$i:1}" = "/" \) ; do
+                let --i
             done
-            if test $i = 0
-                then echo "${file:$i:1}"
+            if test $i = 0 ; then
+                printf '%s\n' "${PATHNAME:$i:1}"
             else
                 let ++i
-                echo "${file:0:$i}"
+                printf '%s\n' "${PATHNAME:0:$i}"
             fi
             return 0
-        }
+        fi
     done
 
-    echo "."
+    printf '.\n'
     return 0
 }
-
 #PAGE
 function mbfl_file_subpathname () {
-    local pathname=${1:?"missing pathname parameter in '${FUNCNAME}'"}
-    local basedir=${2:?"missing base directory parameter in '${FUNCNAME}'"}
+    mandatory_parameter(PATHNAME, 1, pathname)
+    mandatory_parameter(BASEDIR, 2, base directory)
 
-    if test "${basedir:$((${#basedir}-1))}" = '/'; then
-        basedir="${basedir:0:$((${#basedir}-1))}"
+    if test "${BASEDIR:$((${#BASEDIR}-1))}" = '/'; then
+        BASEDIR="${BASEDIR:0:$((${#BASEDIR}-1))}"
     fi
-    if test "${pathname}" = "${basedir}" ; then
-        echo ./
+    if test "${PATHNAME}" = "${BASEDIR}" ; then
+        printf './\n'
         return 0
-    elif test "${pathname:0:${#basedir}}" = "${basedir}"; then
-        echo ./"${pathname:$((${#basedir}+1))}"
+    elif test "${PATHNAME:0:${#BASEDIR}}" = "${BASEDIR}"; then
+        printf  './%s\n' "${PATHNAME:$((${#BASEDIR}+1))}"
         return 0
     else
         return 1
@@ -139,7 +134,7 @@ function mbfl_p_file_normalise2 () {
 }
 #page
 function mbfl_p_file_remove_dots_from_pathname () {
-    local PATHNAME=${1:?"missing pathname parameter in '${FUNCNAME}'"}
+    mandatory_parameter(PATHNAME, 1, pathname)
     local item i
     local SPLITPATH SPLITCOUNT; declare -a SPLITPATH
     local output output_counter=0; declare -a output
@@ -166,27 +161,26 @@ function mbfl_p_file_remove_dots_from_pathname () {
         PATHNAME="${PATHNAME}/${output[$i]}"
     done
 
-    echo "${PATHNAME}"
+    printf '%s\n' "${PATHNAME}"
 }
 #PAGE
 function mbfl_file_rootname () {
-    local file="${1:?}"
-    local i="${#file}"
+    mandatory_parameter(PATHNAME, 1, pathname)
+    local i="${#PATHNAME}"
 
-    test $i = 1 && { echo "${file}"; return 0; }
+    test $i = 1 && { printf '%s\n' "${PATHNAME}"; return 0; }
 
-    for ((i="${#file}"; $i >= 0; --i)) ; do
-        ch="${file:$i:1}"
-        if test "$ch" = "."
-        then
+    for ((i="${#PATHNAME}"; $i >= 0; --i)) ; do
+        ch="${PATHNAME:$i:1}"
+        if test "$ch" = "." ; then
             if test $i -gt 0 ; then
-                echo "${file:0:$i}"
+                printf '%s\n' "${PATHNAME:0:$i}"
                 break
             else
-                echo "${file}"
+                printf '%s\n' "${PATHNAME}"
             fi
         elif test "$ch" = "/" ; then
-            echo "${file}"
+            printf '%s\n' "${PATHNAME}"
             break
         fi
     done
@@ -195,7 +189,7 @@ function mbfl_file_rootname () {
 
 #PAGE
 function mbfl_file_split () {
-    local PATHNAME="${1:?missing pathname parameter to ${FUNCNAME}}"
+    mandatory_parameter(PATHNAME, 1, pathname)
     local i=0 last_found=0
 
     mbfl_string_skip "${PATHNAME}" i /
@@ -215,18 +209,18 @@ function mbfl_file_split () {
 }
 #PAGE
 function mbfl_file_tail () {
-    local file="${1:?missing pathname parameter to ${FUNCNAME}}"
+    mandatory_parameter(PATHNAME, 1, pathname)
     local i=
 
-    for ((i="${#file}"; $i >= 0; --i)) ; do
-        test "${file:$i:1}" = "/" && {
+    for ((i="${#PATHNAME}"; $i >= 0; --i)) ; do
+        if test "${PATHNAME:$i:1}" = "/" ; then
             let ++i
-            echo "${file:$i}"
+            printf '%s\n' "${PATHNAME:$i}"
             return 0
-        }
+        fi
     done
 
-    echo "${file}"
+    printf '%s\n' "${PATHNAME}"
     return 0
 }
 #PAGE
@@ -257,7 +251,7 @@ function mbfl_file_find_tmpdir () {
         return 0
     fi
 
-    mbfl_message_error "cannot find usable value for TMPDIR"
+    mbfl_message_error "cannot find usable value for 'TMPDIR'"
     return 1
 }
 #page
@@ -266,7 +260,7 @@ function mbfl_file_enable_remove () {
     mbfl_declare_program rmdir
 }
 function mbfl_file_remove () {
-    local PATHNAME=${1:?"missing pathname parameter in ${FUNCNAME}"}
+    mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force --recursive"
 
     if test ! mbfl_option_test ; then
@@ -278,7 +272,7 @@ function mbfl_file_remove () {
     mbfl_exec_rm "${PATHNAME}" ${FLAGS}
 }
 function mbfl_file_remove_file () {
-    local PATHNAME=${1:?"missing pathname parameter in ${FUNCNAME}"}
+    mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force"
 
     if test ! mbfl_option_test ; then
@@ -290,12 +284,12 @@ function mbfl_file_remove_file () {
     mbfl_exec_rm "${PATHNAME}" ${FLAGS}    
 }
 function mbfl_exec_rm () {
-    local PATHNAME=${1:?"missing pathname parameter in ${FUNCNAME}"}
+    mandatory_parameter(PATHNAME, 1, pathname)
     shift
     local RM=`mbfl_program_found rm` FLAGS
 
     if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
-    if ! mbfl_program_exec $RM ${FLAGS} "$@" -- "${PATHNAME}" ; then
+    if ! mbfl_program_exec "${RM}" ${FLAGS} "$@" -- "${PATHNAME}" ; then
         return 1
     fi
 }
@@ -342,14 +336,15 @@ function mbfl_exec_cp () {
 }
 #page
 function mbfl_file_remove_directory () {
-    local PATHNAME=${1:?"missing pathname parameter in ${FUNCNAME}"}
-    local REMOVE_SILENTLY="$2" FLAGS=
+    mandatory_parameter(PATHNAME, 1, pathname)
+    optional_parameter(REMOVE_SILENTLY, 2, no)
+    local FLAGS=
 
     if ! mbfl_file_is_directory "${PATHNAME}" ; then
         mbfl_message_error "pathname is not a directory '${PATHNAME}'"
         return 1
     fi
-    if test "${REMOVE_SILENTLY}" = "yes" ; then
+    if test "${REMOVE_SILENTLY}" = 'yes' ; then
         FLAGS="${FLAGS} --ignore-fail-on-non-empty"
     fi
     mbfl_exec_rmdir "${PATHNAME}" ${FLAGS}
@@ -358,12 +353,12 @@ function mbfl_file_remove_directory_silently () {
     mbfl_file_remove_directory "$1" yes
 }
 function mbfl_exec_rmdir () {
-    local PATHNAME=${1:?"missing pathname parameter to ${FUNCNAME}"}
+    mandatory_parameter(PATHNAME, 1, pathname)
     shift
     local RMDIR=`mbfl_program_found rmdir` FLAGS
 
     if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
-    if ! mbfl_program_exec $RMDIR $FLAGS "$@" "${PATHNAME}" ; then
+    if ! mbfl_program_exec "${RMDIR}" $FLAGS "$@" "${PATHNAME}" ; then
         return 1
     fi
 }
@@ -372,40 +367,39 @@ function mbfl_file_enable_make_directory () {
     mbfl_declare_program mkdir
 }
 function mbfl_file_make_directory () {
-    local PATHNAME=${1:?"missing pathname in ${FUNCNAME}"}
-    local PERMISSIONS=${2}
+    mandatory_parameter(PATHNAME, 1, pathname)
+    optional_parameter(PERMISSIONS, 2, 0775)
     local MKDIR=`mbfl_program_found mkdir`
     local FLAGS="--parents"
 
-    if test -z "${PERMISSIONS}" ; then PERMISSIONS=0775 ; fi
     FLAGS="${FLAGS} --mode=${PERMISSIONS}"
     if test -d "${PATHNAME}" ; then return 0; fi
     if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
-    mbfl_program_exec $MKDIR $FLAGS "${PATHNAME}" || return 1    
+    mbfl_program_exec "${MKDIR}" $FLAGS "${PATHNAME}" || return 1    
 }
 #page
 function mbfl_file_enable_listing () {
     mbfl_declare_program ls readlink
 }
 function mbfl_file_get_owner () {
-    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    mandatory_parameter(PATHNAME, 1, pathname)
     local LS_FLAGS="-l"
 
     set -- `mbfl_file_p_invoke_ls || return 1`
-    echo "$3"
+    printf '%s\n' "$3"
 }
 function mbfl_file_get_group () {
-    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    mandatory_parameter(PATHNAME, 1, pathname)
     local LS_FLAGS="-l"
     
     set -- `mbfl_file_p_invoke_ls || return 1`
-    echo "$4"
+    printf '%s\n' "$4"
 }
 function mbfl_file_get_size () {
-    local PATHNAME="${1:?missing pathname in ${FUNCNAME}}"
+    mandatory_parameter(PATHNAME, 1, pathname)
     local LS_FLAGS="--block-size=1 --size"
     set -- `mbfl_file_p_invoke_ls || return 1`
-    echo "$1"
+    printf '%s\n' "$1"
 }
 function mbfl_file_p_invoke_ls () {
     local LS=`mbfl_program_found ls`
@@ -416,50 +410,119 @@ function mbfl_file_normalise_link () {
     mbfl_program_exec $READLINK -fn $1
 }
 #page
+function mbfl_p_file_print_error_return_result () {
+    local RESULT=$?
+
+    if test ${RESULT} != 0 -a "${PRINT_ERROR}" = 'print_error' ; then
+        mbfl_message_error "${ERROR_MESSAGE}"
+    fi
+    return $RESULT
+}
+
+# ------------------------------------------------------------
+
+function mbfl_file_pathname_is_readable () {
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}
+    local ERROR_MESSAGE="not readable pathname '${PATHNAME}'"
+    test -n "${PATHNAME}" -a -r "${PATHNAME}"
+    mbfl_p_file_print_error_return_result
+}
+function mbfl_file_pathname_is_writable () {
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}
+    local ERROR_MESSAGE="not writable pathname '${PATHNAME}'"
+    test -n "${PATHNAME}" -a -w "${PATHNAME}"
+    mbfl_p_file_print_error_return_result
+}
+function mbfl_file_pathname_is_executable () {
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}    
+    local ERROR_MESSAGE="not executable pathname '${PATHNAME}'"
+    test -n "${PATHNAME}" -a -x "${PATHNAME}"
+    mbfl_p_file_print_error_return_result
+}
+
+# ------------------------------------------------------------
+
 function mbfl_file_is_file () {
-    local FILENAME="${1}"
-    test -n "${FILENAME}" -a -f "${FILENAME}"
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}    
+    local ERROR_MESSAGE="unexistent file '${PATHNAME}'"
+    test -n "${PATHNAME}" -a -f "${PATHNAME}"
+    mbfl_p_file_print_error_return_result
 }
 function mbfl_file_is_readable () {
-    local FILENAME="${1:?missing file name parameter to ${FUNCNAME}}"
-    mbfl_file_is_file "${FILENAME}" && test -r "${FILENAME}"
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}
+
+    mbfl_file_is_file "${PATHNAME}" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_readable "${PATHNAME}" "${PRINT_ERROR}"
 }
 function mbfl_file_is_writable () {
-    local FILENAME="${1:?missing file name parameter to ${FUNCNAME}}"
-    mbfl_file_is_file "${FILENAME}" && test -w "${FILENAME}"
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}
+    mbfl_file_is_file "${PATHNAME}" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_writable "${PATHNAME}" "${PRINT_ERROR}"
 }
+function mbfl_file_is_executable () {
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}
+    mbfl_file_is_file "${PATHNAME}" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_executable "${PATHNAME}" "${PRINT_ERROR}"
+}
+
+# ------------------------------------------------------------
 
 function mbfl_file_is_directory () {
-    local DIRECTORY="${1}"
-    test -n "${DIRECTORY}" -a -d "${DIRECTORY}"
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}
+    local ERROR_MESSAGE="unexistent directory '${PATHNAME}'"
+    test -n "${PATHNAME}" -a -d "${PATHNAME}"
+    mbfl_p_file_print_error_return_result
 }
 function mbfl_file_directory_is_readable () {
-    local DIRECTORY="${1:?missing directory name parameter to ${FUNCNAME}}"
-    mbfl_file_is_directory "${DIRECTORY}" && test -r "${DIRECTORY}"
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}
+    mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_readable "${PATHNAME}" "${PRINT_ERROR}"    
 }
 function mbfl_file_directory_is_writable () {
-    local DIRECTORY="${1:?missing directory name parameter to ${FUNCNAME}}"
-    mbfl_file_is_directory "${DIRECTORY}" && test -w "${DIRECTORY}"
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}
+    mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_writable "${PATHNAME}" "${PRINT_ERROR}"    
+}
+function mbfl_file_directory_is_executable () {
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}
+    mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_executable "${PATHNAME}" "${PRINT_ERROR}"    
 }
 
+#page
 
 function mbfl_file_is_absolute () {
-    local NAME="${1:?missing pathname parameter to ${FUNCNAME}}"
-    test "${NAME:0:1}" = /
+    mandatory_parameter(PATHNAME, 1, pathname)
+    test "${PATHNAME:0:1}" = /
 }
 function mbfl_file_is_absolute_dirname () {
-    local NAME="${1:?missing directory name parameter to ${FUNCNAME}}"
-    mbfl_file_is_directory "${NAME}" && mbfl_file_is_absolute "${NAME}"
+    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_file_is_directory "${PATHNAME}" && mbfl_file_is_absolute "${PATHNAME}"
 }
 function mbfl_file_is_absolute_filename () {
-    local NAME="${1:?missing file name parameter to ${FUNCNAME}}"
-    mbfl_file_is_file "${NAME}" && mbfl_file_is_absolute "${NAME}"
+    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_file_is_file "${PATHNAME}" && mbfl_file_is_absolute "${PATHNAME}"
 }
 
+#page
 
 function mbfl_file_is_symlink () {
-    local PATHNAME="${1}"
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}    
+    local ERROR_MESSAGE="not a symbolic link pathname '${PATHNAME}'"
     test -n "${PATHNAME}" -a -L "${PATHNAME}"
+    mbfl_p_file_print_error_return_result
 }
 
 #page
@@ -467,7 +530,7 @@ function mbfl_file_enable_tar () {
     mbfl_declare_program tar
 }
 function mbfl_tar_create_to_stdout () {
-    local DIRECTORY=${1:?"missing directory parameter in ${FUNCNAME}"}
+    mandatory_parameter(DIRECTORY, 1, directory name)
     shift
 
     if ! mbfl_tar_exec --directory="${DIRECTORY}" --create --file=- "$@" . ; then
@@ -475,7 +538,7 @@ function mbfl_tar_create_to_stdout () {
     fi
 }
 function mbfl_tar_extract_from_stdin () {
-    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
+    mandatory_parameter(DIRECTORY, 1, directory name)
     shift
 
     if ! mbfl_tar_exec --directory="${DIRECTORY}" --extract --file=- "$@" ; then
@@ -483,8 +546,8 @@ function mbfl_tar_extract_from_stdin () {
     fi
 }
 function mbfl_tar_extract_from_file () {
-    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
-    local ARCHIVE_FILENAME="${2:?missing archive pathname parameter in ${FUNCNAME}}"
+    mandatory_parameter(DIRECTORY, 1, directory name)
+    mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
 
     if ! mbfl_tar_exec --directory="${DIRECTORY}" --extract --file="${ARCHIVE_FILENAME}" "$@" ; then
@@ -492,15 +555,15 @@ function mbfl_tar_extract_from_file () {
     fi
 }
 function mbfl_tar_create_to_file () {
-    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
-    local ARCHIVE_FILENAME="${2:?missing archive pathname parameter in ${FUNCNAME}}"
+    mandatory_parameter(DIRECTORY, 1, directory name)
+    mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
 
     if ! mbfl_tar_exec --directory="${DIRECTORY}" --create --file="${ARCHIVE_FILENAME}" "$@" . ; then return 1 ; fi
 }
 function mbfl_tar_archive_directory_to_file () {
-    local DIRECTORY="${1:?missing directory parameter in ${FUNCNAME}}"
-    local ARCHIVE_FILENAME="${2:?missing archive pathname parameter in ${FUNCNAME}}"
+    mandatory_parameter(DIRECTORY, 1, directory name)
+    mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
     local PARENT=`mbfl_file_dirname "${DIRECTORY}"`
     local DIRNAME=`mbfl_file_tail "${DIRECTORY}"`
@@ -508,7 +571,7 @@ function mbfl_tar_archive_directory_to_file () {
     if ! mbfl_tar_exec --directory="${PARENT}" --create --file="${ARCHIVE_FILENAME}" "$@" "${DIRNAME}" ; then return 1 ; fi
 }
 function mbfl_tar_list () {
-    local ARCHIVE_FILENAME="${1:?missing archive pathname parameter in ${FUNCNAME}}"
+    mandatory_parameter(ARCHIVE_FILENAME, 1, archive pathname)
     shift
 
     if ! mbfl_tar_exec --list --file="${ARCHIVE_FILENAME}" "$@" ; then
@@ -520,7 +583,7 @@ function mbfl_tar_exec () {
     local FLAGS
 
     if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
-    mbfl_program_exec ${TAR} ${FLAGS} "$@"
+    mbfl_program_exec "${TAR}" ${FLAGS} "$@"
 }
 
 ### end of file

@@ -9,7 +9,7 @@ m4_divert(-1)m4_dnl
 # 
 # 
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004, 2005 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -30,7 +30,7 @@ m4_divert(-1)m4_dnl
 m4_changequote([[, ]])
 
 m4_define([[mandatory_parameter]],
-	[[local $1="${$2:?missing $3 parameter to ${FUNCNAME}}"]])
+	[[local $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])
 m4_define([[optional_parameter]], [[local $1="${$2:-$3}"]])
 
 ### end of file

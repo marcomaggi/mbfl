@@ -771,46 +771,79 @@ returns 1.
 @unnumberedsec Testing file existence and the like
 
 
-@deffn Function mbfl_file_is_file @var{filename}
+@noindent
+The optional argument @var{PRINT_ERROR} will cause an error message to
+be printed with @code{mbfl_message_error} if the test fails; the
+argument value must be @code{print_error}.
+
+
+@unnumberedsubsec File functions
+
+@deffn Function mbfl_file_is_file @var{filename} ?@var{PRINT_ERROR}?
 Returns true if @var{filename} is not the empty string and is a file.
 @end deffn
 
-
-@deffn Function mbfl_file_is_readable @var{filename}
+@deffn Function mbfl_file_is_readable @var{filename} ?@var{PRINT_ERROR}?
 Returns true if @var{filename} is not the empty string, is a file and is
 readable.
 @end deffn
 
-
-@deffn Function mbfl_file_is_writable @var{filename}
+@deffn Function mbfl_file_is_writable @var{filename} ?@var{PRINT_ERROR}?
 Returns true if @var{filename} is not the empty string, is a file and is
 writable.
 @end deffn
 
+@deffn Function mbfl_file_is_executable @var{filename} ?@var{PRINT_ERROR}?
+Returns true if @var{filename} is not the empty string, is a file and is
+executable.
+@end deffn
 
-@deffn Function mbfl_file_is_directory @var{directory}
+
+@unnumberedsubsec Directory functions
+
+@deffn Function mbfl_file_is_directory @var{directory} ?@var{PRINT_ERROR}?
 Returns true if @var{directory} is not the empty string and is a
 directory.
 @end deffn
 
-
-@deffn Function mbfl_file_directory_is_readable @var{directory}
+@deffn Function mbfl_file_directory_is_readable @var{directory} ?@var{PRINT_ERROR}?
 Returns true if @var{directory} is not the empty string, is a directory
 and is readable.
 @end deffn
 
-
-@deffn Function mbfl_file_directory_is_writable @var{directory}
+@deffn Function mbfl_file_directory_is_writable @var{directory} ?@var{PRINT_ERROR}?
 Returns true if @var{directory} is not the empty string, is a directory
 and is writable.
 @end deffn
 
+@deffn Function mbfl_file_directory_is_executable @var{directory} ?@var{PRINT_ERROR}?
+Returns true if @var{directory} is not the empty string, is a directory
+and is executable.
+@end deffn
 
-@deffn Function mbfl_file_is_symlink @var{pathname}
+
+@unnumberedsubsec Symbolic link functions
+
+@deffn Function mbfl_file_is_symlink @var{pathname} ?@var{PRINT_ERROR}?
 Returns true if @var{pathname} is not the empty string and is a symbolic
 link.
 @end deffn
 
+
+@unnumberedsubsec Generic pathname functions
+
+@deffn Function mbfl_file_pathname_is_readable @var{pathname} ?@var{PRINT_ERROR}?
+Returns true if @var{pathname} is not the empty string and is readable.
+@end deffn
+
+@deffn Function mbfl_file_pathname_is_writable @var{pathname} ?@var{PRINT_ERROR}?
+Returns true if @var{pathname} is not the empty string and is writable.
+@end deffn
+
+@deffn Function mbfl_file_pathname_is_executable @var{pathname} ?@var{PRINT_ERROR}?
+Returns true if @var{pathname} is not the empty string and is
+executable.
+@end deffn
 
 @c ------------------------------------------------------------
 @node File Misc
