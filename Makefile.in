@@ -244,8 +244,8 @@ M4FLAGS		= --include=$(top_srcdir)/lib \
 MODULES			= base encode file getopts message program signal \
 			  string dialog main variable
 LIBNAME			= libmbfl.sh
-LIBRARIES		= $(append $(top_srcdir)/lib/, \
-			    libmbfltest.sh libmbfluser.sh)
+LIBRARIES		= $(addprefix $(top_srcdir)/lib/, \
+			    libmbfltest.sh libmbfluser.sh libmbflvc.sh)
 
 library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(foreach m, $(MODULES), $(m).sh)
@@ -370,15 +370,23 @@ doc-install:	template-install
 
 testdir		= $(top_srcdir)/tests
 test_FILES	= $(wildcard $(testdir)/*.test)
-test_TARGETS	= test-modules
+test_TARGETS	= test-all
 
 test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
 test_CMD	= $(test_ENV) $(BASHPROG)
 
-test-modules:
+.PHONY: test-all test-all-verbose
+
+test-all:
 ifneq ($(strip $(test_FILES)),)
 	@$(foreach f, $(test_FILES), \
 	top_srcdir=$(top_srcdir); $(test_CMD) $(f);)
+endif
+
+test-all-verbose:
+ifneq ($(strip $(test_FILES)),)
+	@$(foreach f, $(test_FILES), top_srcdir=$(top_srcdir); \
+	TESTSUCCESS='yes' TESTSTART='yes' $(test_CMD) $(f);)
 endif
 
 ### end of file

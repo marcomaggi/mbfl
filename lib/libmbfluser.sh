@@ -6,7 +6,12 @@
 # 
 # Abstract
 # 
-# 
+#	This file declares a set of functions providing and interface
+#	to GNU Arch: a revision control system. There is a single
+#	executable file named "tla" (dunno why).
+#
+#	This library requires "libmbfl.sh" and "libmbfluser.sh", so
+#	loads them through the "mbfl-config" interface.
 # 
 # Copyright (c) 2004 Marco Maggi
 # 
@@ -31,10 +36,18 @@
 ## Setup.
 ## ------------------------------------------------------------
 
-mbfl_INTERACTIVE='yes'
-if test ! "${mbfl_LOADED}" ; then
-    source "${MBFL_PATH:-`mbfl-config`}"
+mbfl_LOADED_USERLIB='yes'
+
+if test "${mbfl_LOADED_MBFL}" != 'yes' ; then
+    source "${MBFL_PATH:-`mbfl-config`}" || {
+	echo 'unable to load the MBFL functions library' >&2
+	exit 2
+    }
 fi
+
+function user-is-login-shell () {
+    test "$SHLVL" = 1
+}
 
 #page
 ## ------------------------------------------------------------
@@ -57,24 +70,26 @@ function user-message-file-not-found () {
 ## Pathname functions.
 ## ------------------------------------------------------------
 
-function user-pathname-readable () {
-    local PATHNAME="${1:?missing pathname parameter to ${FUNCNAME}}"
+function user-p-pathname-test () {
+    local MODE="${1:?missing test mode to ${FUNCNAME}}"
+    local MODE_DESCR="${2:?missing test mode description to ${FUNCNAME}}"
+    local PATHNAME="${3:?missing pathname parameter to ${FUNCNAME}}"
 
-    if test ! -r "${PATHNAME}" ; then
-	user-message-error "not readable '${PATHNAME}'"
+    if test ! ${MODE} "${PATHNAME}" ; then
+	user-message-error "not ${MODE_DESCR} '${PATHNAME}'"
 	return 1
     else
 	return 0
     fi
 }
+function user-pathname-readable () {
+    user-p-pathname-test '-r' 'readable' "$@"
+}
 function user-pathname-writable () {
-    local PATHNAME="${1:?missing pathname parameter to ${FUNCNAME}}"
-
-    if test ! -w "${PATHNAME}" ; then
-	user-message-error "not writable '${PATHNAME}'"
-	return 1
-    fi
-    return 0
+    user-p-pathname-test '-w' 'writable' "$@"
+}
+function user-pathname-executable () {
+    user-p-pathname-test '-x' 'executable' "$@"
 }
 function user-pathname-readable-and-writable () {
     local PATHNAME="${1:?missing pathname parameter to ${FUNCNAME}}"
@@ -203,19 +218,19 @@ function user-find-executable () {
     local PROGRAM="${1:?missing program parameter to ${FUNCNAME}}"
     local program=
 
-#     for program in `type -ap "${PROGRAM}"`; do
-# 	if test -n "${program}" -a -x "${program}"; then
-# 	    echo "${program}"
-# 	    return 0
-# 	fi
-#     done
-    type -ap "${PROGRAM}" | while read -t 1 program; do
+    for program in `type -ap "${PROGRAM}"`; do
 	if test -n "${program}" -a -x "${program}"; then
 	    echo "${program}"
-	    while read -t 1; do :; done
 	    return 0
 	fi
     done
+#     type -ap "${PROGRAM}" | while read -t 1 program; do
+# 	if test -n "${program}" -a -x "${program}"; then
+# 	    echo "${program}"
+# 	    while read -t 1; do :; done
+# 	    return 0
+# 	fi
+#     done
 
     user-message-missing-executable "${PROGRAM}"
     return 1
@@ -321,6 +336,20 @@ support ANSI colour selections."
 
 #page
 ## ------------------------------------------------------------
+## Specific program jobs.
+## ------------------------------------------------------------
+
+function user-print-short-date () { program-date '+%b %d %Y'; }
+function user-print-short-time () { program-date '+%b %d %Y, %T'; }
+
+function user-fold-sentence () { program-fold --width=72; }
+
+function user-make-backup-file () {
+    local FILENAME="${1:?missing file name parameter to ${FUNCNAME}}"
+    program-cp --force --backup=numbered "${FILENAME}" "${FILENAME}"
+}
+#page
+## ------------------------------------------------------------
 ## Specific programs and programs combinations.
 ## ------------------------------------------------------------
 
@@ -329,10 +358,15 @@ function program-sudo-mount () {
     local SUDO=`user-find-executable sudo` || return 1
     ${SUDO} ${MOUNT} "$@"
 }
-function program-grep () {
-    local GREP=`user-find-executable grep` || return 1
-    ${GREP} "$@"
+function program-wrapper () {
+    local program=`user-find-executable ${1}` && { shift && ${program} "$@"; }
 }
+function program-grep () { program-wrapper grep "$@"; }
+function program-date () { program-wrapper date "$@"; }
+function program-fold () { program-wrapper fold "$@"; }
+function program-rm   () { program-wrapper rm "$@"; }
+function program-mv   () { program-wrapper mv "$@"; }
+function program-cp   () { program-wrapper cp "$@"; }
 
 #page
 ## ------------------------------------------------------------

@@ -27,7 +27,10 @@
 # USA
 # 
 
-mbfl_LOADED='yes'
+mbfl_LOADED_MBFL='yes'
+
+shopt -s expand_aliases
+
 m4_include(macros.m4)
 m4_include(base.sh)
 m4_include(string.sh)

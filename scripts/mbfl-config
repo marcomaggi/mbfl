@@ -46,9 +46,11 @@ options:
    --library        prints the full pathname of the library
    --testlib        prints the full pathname of the testing library
    --userlib        prints the full pathname of the user library
+   --vclib          prints the full pathname of the version control library
    --full-version   prints the full version number (with release state)
    --version        prints the full version number (with patch level)
    --base-version   prints the full version number (only major.minor)
+   --help           prints the help screen
 "
  
 #page

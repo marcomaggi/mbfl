@@ -118,6 +118,23 @@ function libuser-pathname-3.3 () {
     dotest-clean-files
 }
 
+function libuser-pathname-4.1 () {
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a+x "$tmpfile"
+    user-pathname-executable "$tmpfile"
+    dotest-clean-files
+}
+function libuser-pathname-4.1 () {
+    umask 0
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a-x "$tmpfile"
+    user-pathname-executable "$tmpfile" 2>&1 | \
+	dotest-output "error: not executable '$tmpfile'"
+    dotest-clean-files
+}
+
 #page
 
 function libuser-directory-1.1 () {

@@ -1,12 +1,14 @@
-# base.sh.m4 --
+# vc.test --
 # 
 # Part of: Marco's BASH Functions Library
-# Contents: base functions
-# Date: Wed Oct  6, 2004
+# Contents: tests for the libmbflvc.sh functions
+# Date: Fri Oct  8, 2004
 # 
 # Abstract
 # 
-# 
+#	To select the tests in this file:
+#
+#		$ make all test TESTMATCH=libvc
 # 
 # Copyright (c) 2004 Marco Maggi
 # 
@@ -23,22 +25,26 @@
 # You  should have  received a  copy of  the GNU  Lesser  General Public
 # License along  with this library; if  not, write to  the Free Software
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA.
+# USA
 # 
-#
 
-function mbfl_set_maybe () {
-    test -n "${1}" && eval ${1}=\'"${2}"\'
-}
-function mbfl_read_maybe_null () {
-    mandatory_parameter(VARNAME, 1, variable name)
+#PAGE
+## ------------------------------------------------------------
+## Setup.
+## ------------------------------------------------------------
 
-    if mbfl_option_null ; then
-	read -d $'\x00' $VARNAME
-    else
-	read $VARNAME
-    fi
+source setup.sh
+source libmbflvc.sh
+
+#PAGE
+
+function libvc-tla-1.1 () {
+    program-gnu-arch --version | dotest-output 'tla lord*'
 }
+
+#PAGE
+
+dotest libvc-
 
 ### end of file
 # Local Variables:
