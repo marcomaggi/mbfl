@@ -27,8 +27,7 @@
 # USA
 # 
 
-ds_package_name(mbfl)
-ds_package_version(0, 6, 3, stable)
+ds_gnuarch_package
 ds_author_name(Marco Maggi)
 ds_author_email(marcomaggi@tiscalinet.it)
 ds_copyright_years({2003, 2004})

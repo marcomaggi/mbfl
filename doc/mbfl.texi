@@ -1092,11 +1092,19 @@ same code.
 @item
 If the global variable @code{mbfl_option_ACTION} is non--empty: executes
 a function whose name is composed of: @code{script_action_} and the
-value of @code{mbfl_option_ACTION}. The return code of such a function
-is registered for later use. We refer to this function as the
-@emph{action function}. If a function with this name does not exist, a
-function named @code{main} is executed. If neither the action function
-nor to @code{main} function exist: nothing happens at this step.
+value of @code{mbfl_option_ACTION}:
+
+@example
+script_action_$@{mbfl_option_ACTION@}
+@end example
+
+@noindent
+The return code  of such a function is  registered for later
+use.  We   refer  to  this  function   as  the  @emph{action
+function}. If  a function with  this name does not  exist, a
+function  named  @code{main}  is  executed. If  neither  the
+action function  nor to @code{main}  function exist: nothing
+happens at this step.
 
 @item
 Invokes the function @code{script_end()}, if it exists, with no
@@ -1242,6 +1250,7 @@ By Brian Fox and Chet Ramey. The authoritative source for @command{bash}
 behaviour.
 
 @end table
+
 @c ------------------------------------------------------------
 @node Concept Index
 @appendix An entry for each concept

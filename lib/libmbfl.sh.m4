@@ -1,12 +1,13 @@
 # libMBFL.m4 --
 # 
 # Part of: Marco's BASH Functions Library
-# Contents: main library file
+# Contents: library file
 # Date: Fri Nov 28, 2003
 # 
 # Abstract
 # 
-# 
+#	This is the library file of MBFL. It must be sourced in shell
+#	scripts at the beginning of evaluation.
 # 
 # Copyright (c) 2003, 2004 Marco Maggi
 # 
@@ -40,5 +41,4 @@ m4_include(main.sh)
 ### end of file
 # Local Variables:
 # mode: sh
-# page-delimiter: "^#PAGE$"
 # End:

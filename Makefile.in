@@ -34,8 +34,9 @@
 
 PACKAGE_NAME		= @PACKAGE_NAME@
 PACKAGE_VERSION		= @PACKAGE_VERSION@
+PACKAGE_VERSION_MAJMIN	= @PACKAGE_VERSION_MAJMIN@
 PACKAGE_XVERSION	= @PACKAGE_XVERSION@
-PKG_DIR			= $(PACKAGE_NAME)_$(PACKAGE_VERSION)
+PKG_DIR			= $(PACKAGE_NAME)_$(PACKAGE_VERSION_MAJMIN)
 
 #PAGE
 ## ------------------------------------------------------------
@@ -121,16 +122,15 @@ INSTALL_DATA		= $(INSTALL) -m $(INSTALL_DATA_MODE)
 ## ------------------------------------------------------------
 
 .PHONY: all clean realclean install
+.PHONY: bin bin-clean bin-realclean bin-install
+.PHONY: dev dev-clean dev-realclean dev-install
+.PHONY: sta sta-clean sta-realclean sta-install
+.PHONY: doc doc-clean doc-realclean doc-install
 
 all:		bin dev doc sta
 clean:		bin-clean dev-clean doc-clean sta-clean
 realclean:	bin-realclean dev-realclean doc-realclean sta-realclean
 install:	bin-install dev-install doc-install sta-install
-
-.PHONY: bin bin-clean bin-realclean bin-install
-.PHONY: dev dev-clean dev-realclean dev-install
-.PHONY: sta sta-clean sta-realclean sta-install
-.PHONY: doc doc-clean doc-realclean doc-install
 
 # Makefile.rl --
 #
@@ -195,7 +195,7 @@ library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(foreach m, $(MODULES), $(m).sh)
 library_TARGETS		= $(LIBNAME)
 library_INSTLST		= $(library_TARGETS)
-library_INSTDIR		= $(pkglibdir)
+library_INSTDIR		= $(pkgdatadir)
 
 library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES)
 library_REALCLEANFILES	= $(library_CLEANFILES)
@@ -223,16 +223,86 @@ endif
 
 $(library_SOURCES): %.sh: %.sh.m4 macros.m4
 	$(M4) $(M4FLAGS) $(<) | \
-	grep --invert-match -e '^#' -e '^$$' | sed -e "s/^ \\+//" >$(@)
+	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
 
 $(LIBNAME): $(library_SOURCES)
 	$(M4) $(M4FLAGS) libmbfl.sh.m4 >$(@)
 
 
-dev:		library-all
-dev-clean:	library-clean
-dev-realclean:	library-realclean
-dev-install:	library-install
+bin:		library-all
+bin-clean:	library-clean
+bin-realclean:	library-realclean
+bin-install:	library-install
+
+#page
+## ------------------------------------------------------------
+## Script rules.
+## ------------------------------------------------------------
+
+script_TARGETS		= mbfl.sh
+script_INSTLST		= mbfl.sh
+script_INSTDIR		= $(pkglibexecdir)
+
+script_CLEANFILES	= $(script_TARGETS)
+script_REALCLEANFILES	= $(script_TARGETS)
+
+.PHONY: script-all script-clean script-realclean script-install
+
+script-all: $(script_TARGETS)
+script-clean:
+	-$(RM) $(script_CLEANFILES)
+script-realclean:
+	-$(RM) $(script_REALCLEANFILES)
+
+script-install:
+
+	@echo -en "Installing script files... "
+ifneq	(,$(script_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(script_INSTDIR)
+	@$(INSTALL_BIN) $(script_INSTLST) $(INSTALL_ROOT)$(script_INSTDIR)
+	@echo "done"
+else
+	$(warning *** empty install list)
+endif
+
+	@echo -en "Installing directory $(bindir)... "
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(bindir)
+	@echo "done"
+
+	cd $(INSTALL_ROOT)$(bindir) && \
+	$(SYMLINK) $(libexecdir)/mbfl.sh
+
+mbfl.sh:
+	@echo -e "#!$(BASH)\necho $(pkgdatadir)/libmbfl.sh\n###end of file\n" >$(@)
+
+bin:		script-all
+bin-clean:	script-clean
+bin-realclean:	script-realclean
+bin-install:	script-install
+
+#page
+## ------------------------------------------------------------
+## Macro files.
+## ------------------------------------------------------------
+
+macro_INSTLST	= $(top_srcdir)/macros/mbfl.m4
+macro_INSTDIR	= $(pkgdatadir)
+
+.PHONY: macro-install
+
+macro-install:
+
+	@echo "Installing macro files... "
+ifneq	(,$(macro_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(macro_INSTDIR)
+	@$(INSTALL_DATA) $(macro_INSTLST) $(INSTALL_ROOT)$(macro_INSTDIR)
+	@echo "Done."
+else
+	$(warning *** empty install list)
+endif
+
+
+dev-install: macro-install
 
 #PAGE
 ## ------------------------------------------------------------
@@ -244,11 +314,14 @@ template_TARGETS	= template.sh
 template_INSTLST	= $(top_srcdir)/examples/template.sh.m4
 template_INSTDIR	= $(pkgdatadir)
 
+template_CLEANFILES	= $(template_TARGETS)
+template_REALCLEANFILES	= $(template_TARGETS)
+
 .PHONY: template-all template-clean template-realclean template-install
 
 template-all: $(template_TARGETS)
 template-clean:
-	-$(RM) $(template_TARGETS)
+	-$(RM) $(template_CLEANFILES)
 template-realclean:
 	-$(RM) $(template_REALCLEANFILES)
 
@@ -266,6 +339,10 @@ endif
 
 
 $(template_TARGETS): $(library_TARGETS)
+template.sh : template.sh.m4 $(top_srcdir)/macros/mbfl.m4
+	$(M4) $(M4FLAGS) $(top_srcdir)/macros/mbfl.m4 $(<) | \
+	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
+
 
 dev:		template-all
 dev-clean:	template-clean
@@ -435,7 +512,7 @@ $(doc_texi2html_TARGETS): %.html : %.texi version.texiinc
 	$(MAKEINFO) $(DS_TEXI2HTML_FLAGS) $(<) -o $(@)
 
 version.texiinc: Makefile
-	echo -e "@macro version{}\n$(PACKAGE_VERSION)\n@end macro\n" >$(@)
+	echo -e "@macro version{}\n$(PACKAGE_XVERSION)\n@end macro\n" >$(@)
 
 doc:		doc-texinfo-all
 doc-clean:	doc-texinfo-clean
@@ -449,7 +526,7 @@ doc-install:	doc-texinfo-install
 
 config_CLEANFILES	= config.log config.status config.cache Makefile
 
-.PHONY: config-clean
+.PHONY: config-clean reconfig
 
 Makefile: $(srcdir)/Makefile.in $(srcdir)/configure $(builddir)/config.status
 	CONFIG_FILES=Makefile CONFIG_HEADERS= $(builddir)/config.status
@@ -459,6 +536,12 @@ config.status: $(srcdir)/configure
 
 config-clean:
 	-$(RM) $(config_CLEANFILES)
+
+reconfig:
+	@echo "reconfiguring from top source dir: \"$(top_srcdir)\""
+	@cd $(top_srcdir) && \
+	{ test -d gnuconfig && { gnuconfig/automake.sh && gnuconfig/autoconf.sh; }; } || \
+	{ test -d tclconfig && { tclconfig/automake.sh && tclconfig/autoconf.sh; }; }
 
 #PAGE
 ## ------------------------------------------------------------
@@ -470,7 +553,7 @@ config-clean:
 dist bindist bindist-bin bindist-dev bindist-doc bindist-sta:
 	$(CONFIGDIR)/do.sh --$(@) --verbose
 
-.PHONY: debian
+.PHONY: debian debian-bin debian-doc debian-dev debian-sta
 
 debian debian-bin debian-doc debian-dev debian-sta:
 	$(CONFIGDIR)/do.sh --$(@) --verbose

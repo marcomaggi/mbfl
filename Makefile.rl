@@ -61,7 +61,7 @@ library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(foreach m, $(MODULES), $(m).sh)
 library_TARGETS		= $(LIBNAME)
 library_INSTLST		= $(library_TARGETS)
-library_INSTDIR		= $(pkglibdir)
+library_INSTDIR		= $(pkgdatadir)
 
 library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES)
 library_REALCLEANFILES	= $(library_CLEANFILES)
@@ -80,16 +80,65 @@ AM_INSTALL_DATA(library)
 
 $(library_SOURCES): %.sh: %.sh.m4 macros.m4
 	$(M4) $(M4FLAGS) $(<) | \
-	grep --invert-match -e '^#' -e '^$$' | sed -e "s/^ \\+//" >$(@)
+	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
 
 $(LIBNAME): $(library_SOURCES)
 	$(M4) $(M4FLAGS) libmbfl.sh.m4 >$(@)
 
 
-dev:		library-all
-dev-clean:	library-clean
-dev-realclean:	library-realclean
-dev-install:	library-install
+bin:		library-all
+bin-clean:	library-clean
+bin-realclean:	library-realclean
+bin-install:	library-install
+
+#page
+## ------------------------------------------------------------
+## Script rules.
+## ------------------------------------------------------------
+
+script_TARGETS		= mbfl.sh
+script_INSTLST		= mbfl.sh
+script_INSTDIR		= $(pkglibexecdir)
+
+script_CLEANFILES	= $(script_TARGETS)
+script_REALCLEANFILES	= $(script_TARGETS)
+
+.PHONY: script-all script-clean script-realclean script-install
+
+script-all: $(script_TARGETS)
+script-clean:
+	-$(RM) $(script_CLEANFILES)
+script-realclean:
+	-$(RM) $(script_REALCLEANFILES)
+
+script-install:
+AM_INSTALL_BIN(script)
+AM_INSTALL_DIR($(bindir))
+	cd $(INSTALL_ROOT)$(bindir) && \
+	$(SYMLINK) $(libexecdir)/mbfl.sh
+
+mbfl.sh:
+	@echo -e "#!$(BASH)\necho $(pkgdatadir)/libmbfl.sh\n###end of file\n" >$(@)
+
+bin:		script-all
+bin-clean:	script-clean
+bin-realclean:	script-realclean
+bin-install:	script-install
+
+#page
+## ------------------------------------------------------------
+## Macro files.
+## ------------------------------------------------------------
+
+macro_INSTLST	= $(top_srcdir)/macros/mbfl.m4
+macro_INSTDIR	= $(pkgdatadir)
+
+.PHONY: macro-install
+
+macro-install:
+AM_INSTALL_DATA(macro)
+
+dev-install: macro-install
 
 #PAGE
 ## ------------------------------------------------------------
@@ -101,11 +150,14 @@ template_TARGETS	= template.sh
 template_INSTLST	= $(top_srcdir)/examples/template.sh.m4
 template_INSTDIR	= $(pkgdatadir)
 
+template_CLEANFILES	= $(template_TARGETS)
+template_REALCLEANFILES	= $(template_TARGETS)
+
 .PHONY: template-all template-clean template-realclean template-install
 
 template-all: $(template_TARGETS)
 template-clean:
-	-$(RM) $(template_TARGETS)
+	-$(RM) $(template_CLEANFILES)
 template-realclean:
 	-$(RM) $(template_REALCLEANFILES)
 
@@ -114,6 +166,10 @@ AM_INSTALL_DATA([template])
 
 
 $(template_TARGETS): $(library_TARGETS)
+template.sh : template.sh.m4 $(top_srcdir)/macros/mbfl.m4
+	$(M4) $(M4FLAGS) $(top_srcdir)/macros/mbfl.m4 $(<) | \
+	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
+
 
 dev:		template-all
 dev-clean:	template-clean
