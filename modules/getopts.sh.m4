@@ -30,98 +30,174 @@
 # USA
 # 
 
-m4_include(macros.m4)
-
 #PAGE
 ## ------------------------------------------------------------
 ## Global variables.
 ## ------------------------------------------------------------
 
 ARGC=0
-ARGC1=0
 declare -a ARGV ARGV1
 
-while test $# -gt 0
-do
+for ((ARGC1=0; $# > 0; ++ARGC1)); do
     ARGV1[$ARGC1]="$1"
-    ARGC1=$(($ARGC1 + 1))
     shift
 done
 
-#PAGE
-# mbfl_getopts_parse --
-#
-#       Parses a set of command line options. The options are handed
-#       to user defined functions.
-#
-#  Arguments:
-#
-#       The array ARGV1 and the variable ARGC1 are supposed to hold the
-#       command line arguments and the number of command line arguments.
-#
-#  Results:
-#
-#       When an option without argument is found: "mbfl_getopts_option()"
-#       is called with the option name, without dashes, as first argument;
-#       when an option with argument is found: "mbfl_getopts_option_with()"
-#       is called with the option name, without dashes, as first
-#       argument and the option value as second argument.
-#
-#         Non-option arguments are left in the global array "ARGV", the
-#       global variable "ARGC" holds the number of elements in "ARGV".
-#
+mbfl_getopts_INDEX=0
+declare -a mbfl_getopts_KEYWORDS
+declare -a mbfl_getopts_DEFAULTS
+declare -a mbfl_getopts_BRIEFS
+declare -a mbfl_getopts_LONGS
+declare -a mbfl_getopts_HASARGS
+declare -a mbfl_getopts_DESCRIPTION
 
+#page
+## ------------------------------------------------------------
+## Default options description.
+## ------------------------------------------------------------
+
+mbfl_message_DEFAULT_OPTIONS="
+\t-i
+\t--interactive
+\t\task before doing dangerous operations
+\t-f
+\t--force
+\t\tdo not ask before dangerous operations
+\t--encoded-args
+\t\tdecode arguments following this option
+\t\tfrom the hex format (example: 414243 -> ABC)
+\t-v
+\t--verbose
+\t\tverbose execution
+\t--silent
+\t\tsilent execution
+\t--null
+\t\tuse the null character as terminator
+\t--debug
+\t\tprint debug messages
+\t--test
+\t\ttests execution
+\t--version
+\t\tprint version informations and exit
+\t--version-only
+\t\tprint version number and exit
+\t--license
+\t\tprint license informations and exit
+\t-h
+\t--help
+\t--usage
+\t\tprint usage informations and exit
+"
+
+#page
+function mbfl_declare_option () {
+    local keyword="$1"
+    local default="$2"
+    local brief="$3"
+    local long="$4"
+    local hasarg="$5"
+    local description="$6"
+    local index=$(($mbfl_getopts_INDEX + 1))
+
+
+    mbfl_p_declare_option_test_length $keyword keyword $index
+    mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=`mbfl_string_toupper $keyword`
+    mbfl_getopts_DEFAULTS[$mbfl_getopts_INDEX]=$default
+    mbfl_getopts_BRIEFS[$mbfl_getopts_INDEX]=$brief
+    mbfl_getopts_LONGS[$mbfl_getopts_INDEX]=$long
+
+    mbfl_p_declare_option_test_length $hasarg hasarg $index
+    if test "$hasarg" != "witharg" -a "$hasarg" != "noarg"; then
+        mbfl_message_error \
+            "wrong value \"$hasarg\" to hasarg field in option declaration number ${index}"
+        exit 2
+    fi
+    mbfl_getopts_HASARG[$mbfl_getopts_INDEX]=$hasarg
+
+    mbfl_p_declare_option_test_length $description description $index
+    mbfl_getopts_DESCRIPTION[$mbfl_getopts_INDEX]=$description
+
+    mbfl_getopts_INDEX=$index
+}
+function mbfl_p_declare_option_test_length () {
+    local value="${1}"
+    local value_name="${2}"
+    local option_number=${3}
+
+    if test -z "$value"; then
+        mbfl_message_error \
+            "null ${value_name} in declared option number ${option_number}"
+        exit 2
+    fi
+}
+#page
+function mbfl_getopts_p_script_option () {
+    local OPT="${1:?${FUNCNAME} error: missing option name}"
+    local OPTARG="$2"
+    local i=0
+    local value=
+    local brief= long= hasarg= keyword= procedure= variable=
+
+
+    for ((i=0; $i < $mbfl_getopts_INDEX; ++i)); do
+        keyword="${mbfl_getopts_KEYWORDS[$i]}"
+        brief="${mbfl_getopts_BRIEFS[$i]}"
+        long="${mbfl_getopts_LONGS[$i]}"
+        hasarg="${mbfl_getopts_HASARG[$i]}"
+        if test \
+            \( -n "$OPT" \) -a \( \( -n "$brief" -a "$brief" = "$OPT" \) -o \
+                                \( -n "$long"  -a "$long"  = "$OPT" \) \)
+        then
+            if test "$hasarg" = "witharg"; then
+                if mbfl_option_encoded_args; then
+                    value=`mbfl_decode_hex "${OPTARG}"`
+                else
+                    value="$OPTARG"
+                fi
+            else
+                value=1
+            fi
+            
+            procedure=script_option_update_`mbfl_string_tolower $keyword`
+            variable=script_option_`mbfl_string_toupper $keyword`
+            eval $variable='${value}'
+            mbfl_invoke_script_function $procedure
+        fi
+    done
+    return 0
+}
+#PAGE
 function mbfl_getopts_parse () {
     local OPT= OPTARG=
     local arg= end=0 i=0
 
 
-    while test $i -lt $ARGC1
-    do
+    for ((i=0; $i < $ARGC1; ++i)); do
         arg="${ARGV1[$i]}"
         if test "$end" = 1
         then
             ARGV[$ARGC]="${arg}"
-            ARGC=$(($ARGC + 1))
+            let ++ARGC
         elif test "${arg}" = "--"
         then end=1
         elif mbfl_getopts_isbrief "${arg}" OPT || \
              mbfl_getopts_islong "${arg}" OPT
-        then mbfl_getopts_option "${OPT}"
+        then mbfl_getopts_p_option "${OPT}"
         elif \
             mbfl_getopts_isbrief_with "${arg}" OPT OPTARG || \
             mbfl_getopts_islong_with  "${arg}" OPT OPTARG
-        then mbfl_getopts_option_with "${OPT}" "${OPTARG}"
+        then mbfl_getopts_p_option_with "${OPT}" "${OPTARG}"
         else
             ARGV[$ARGC]="${arg}"
             ARGC=$(($ARGC + 1))
         fi
-        i=$(($i + 1))
     done
 
+    mbfl_getopts_p_decode_hex
     return 0
 }
 #PAGE
-# mbfl_getopts_option --
-#
-#	Callback function required by "mbfl_getopts_parse()". It's
-#	invoked whenever an option without argument is found on the
-#	command line.
-#
-#  Arguments:
-#
-#	$1 -		the option without the leading dash(es)
-#
-#  Results:
-#
-#	Recognises the option and updates the value of the
-#	appropriated "mbfl_option_*" global variable.
-#
-#         If the option is not a MBFL one: invokes the function
-#       named: "script_option" with the option name as argument.
-#
-
-function mbfl_getopts_option () {
+function mbfl_getopts_p_option () {
     local OPT="${1:?}"
     local i=0
 
@@ -168,7 +244,7 @@ function mbfl_getopts_option () {
                     echo -e "${mbfl_message_LICENSE_GPL}"
                     ;;
                 LGPL)
-                    echo -e "${mbfl_message_LICENSE_GPLL}"
+                    echo -e "${mbfl_message_LICENSE_LGPL}"
                     ;;
                 BSD)
                     echo -e "${mbfl_message_LICENSE_BSD}"
@@ -181,11 +257,13 @@ function mbfl_getopts_option () {
 	    exit 0
 	    ;;
 	h|help|usage)
-	    echo -e "${script_USAGE}"
+	    echo -e "${script_USAGE}\noptions:"
+            mbfl_getopts_p_print_options
+            echo -e "${mbfl_message_DEFAULT_OPTIONS}"
 	    exit 0
 	    ;;
 	*)
-            if ! script_option "${OPT}"; then
+            if ! mbfl_getopts_p_script_option "${OPT}"; then
                 mbfl_message_error "unknown option: \"${OPT}\""
                 exit 2
             fi
@@ -193,29 +271,31 @@ function mbfl_getopts_option () {
     esac
     return 0
 }
-#PAGE
-# mbfl_getopts_option_with --
-#
-#	Callback function required by "mbfl_getopts_parse()". It's
-#	invoked whenever an option with argument is found on the
-#	command line.
-#
-#  Arguments:
-#
-#	$1 -		the option without the leading dash(es)
-#	$2 -		the option argument
-#
-#  Results:
-#
-#	Recognises the option and updates the value of the
-#	appropriated "mbfl_option_*" global variable.
-#
-#         If the option is not a MBFL one: invokes the function
-#       named: "script_option_with" with the option name and value
-#       as arguments.
-#
+#page
+function mbfl_getopts_p_print_options () {
+    local i=0
+    local brief= long= description= long_hasarg= long_hasarg=
 
-function mbfl_getopts_option_with () {
+
+    for ((i=0; $i < $mbfl_getopts_INDEX; ++i)); do
+        if test "${mbfl_getopts_HASARG[$i]}" = 1; then
+            brief_hasarg="VALUE"
+            long_hasarg="=VALUE"
+        fi
+
+        brief="${mbfl_getopts_BRIEFS[$i]}"
+        test -n "$brief" && echo -e "\t-${brief}${brief_hasarg}"
+
+        long="${mbfl_getopts_LONGS[$i]}"
+        test -n "$long" && echo -e "\t--${long}${long_hasarg}"
+
+        description="${mbfl_getopts_DESCRIPTION[$i]}"
+        test -n && echo -e "\t\t$description"
+        i=$(($i + 1))
+    done
+}
+#PAGE
+function mbfl_getopts_p_option_with () {
     local OPT="${1:?}"
     local OPTARG="${2:?}"
 
@@ -226,7 +306,7 @@ function mbfl_getopts_option_with () {
 
     case "${OPT}" in
 	*)
-	    if ! script_option_with "${OPT}" "${OPTARG}"; then
+	    if ! mbfl_getopts_p_script_option "${OPT}" "${OPTARG}"; then
                 mbfl_message_error "unknown option \"${OPT}\""
                 exit 2
             fi
@@ -448,31 +528,17 @@ function mbfl_getopts_isbrief_with () {
     fi
 }
 #PAGE
-# mbfl_getopts_decode_hex --
-#
-#       Decodes non-option arguments. Requires "mbfl_decode_hex()".
-#       In hex-coding, each byte in the argument is replaced by
-#       its representation in hex number.
-#
-#  Arguments:
-#
-#       None.
-#
-#  Results:
-#
-#       Decodes hex-coded arguments in the "ARGV" array. This
-#       can be invoked if the command line arguments have been
-#       encoded 
-#
-
-function mbfl_getopts_decode_hex () {
+function mbfl_getopts_p_decode_hex () {
     local i=0
 
-    while test $i -lt $ARGC
-    do
-        ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
-        i=$(($i + 1))
-    done
+
+    if test "${mbfl_option_ENCODED_ARGS}" = "yes"; then
+        while test $i -lt $ARGC
+          do
+          ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
+          i=$(($i + 1))
+        done
+    fi
     return 0
 }
 #PAGE
@@ -584,21 +650,6 @@ function mbfl_argv_from_stdin () {
     return 0
 }
 #PAGE
-# mbfl_argv_all_files --
-#
-#	Checks that all the arguments in ARGV are file names of
-#	existent file.
-#
-#  Arguments:
-#
-#	None.
-#
-#  Results:
-#
-#	Returns with code zero if no errors, else prints an error
-#	message and returns with code 1.
-#
-
 function mbfl_argv_all_files () {
     local i=0
     local file=
@@ -619,7 +670,29 @@ function mbfl_argv_all_files () {
 
     return 0
 }
-
+#page
+function mbfl_getopts_p_test_option () {
+    test "${!1}" = "yes" && return 0
+    return 1
+}
+function mbfl_option_encoded_args () {
+    mbfl_getopts_p_test_option mbfl_option_ENCODED_ARGS
+}
+function mbfl_option_verbose () {
+    mbfl_getopts_p_test_option mbfl_option_VERBOSE
+}
+function mbfl_option_test () {
+    mbfl_getopts_p_test_option mbfl_option_TEST
+}
+function mbfl_option_null () {
+    mbfl_getopts_p_test_option mbfl_option_NULL
+}
+function mbfl_option_debug () {
+    mbfl_getopts_p_test_option mbfl_option_DEBUGGING
+}
+function mbfl_option_interactive () {
+    mbfl_getopts_p_test_option mbfl_option_INTERACTIVE
+}
 
 ### end of file
 # Local Variables:

@@ -29,7 +29,6 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: string.sh.m4,v 1.1.1.10 2003/12/21 07:46:05 marco Exp $
 
 m4_include(macros.m4)
 
@@ -399,7 +398,56 @@ function mbfl_string_split () {
     echo -e "$string"
     return 0
 }
+#page
+function mbfl_string_toupper () {
+    local ch=
+    local lower=
+    local upper=
+    local flag=0
+    local STRING="${1}"
 
+    test "${#STRING}" = 0 && return 0
+
+    for ch in \
+        a A b B c C d D e E f F g G h H i I j J k K l L m M \
+        n N o O p P q Q r R s S t T u U v V w W x X y Y z Z ; do
+      if test $flag = 0; then
+          lower=$ch
+          flag=1
+      else
+          upper=$ch
+          STRING="${STRING//$lower/$upper}"
+          flag=0
+      fi
+    done
+    echo "${STRING}"
+    return 0
+}
+#page
+function mbfl_string_tolower () {
+    local ch=
+    local lower=
+    local upper=
+    local flag=0
+    local STRING="${1}"
+
+    test "${#STRING}" = 0 && return 0
+
+    for ch in \
+        a A b B c C d D e E f F g G h H i I j J k K l L m M \
+        n N o O p P q Q r R s S t T u U v V w W x X y Y z Z ; do
+      if test $flag = 0; then
+          lower=$ch
+          flag=1
+      else
+          upper=$ch
+          STRING="${STRING//$upper/$lower}"
+          flag=0
+      fi
+    done
+    echo "${STRING}"
+    return 0
+}
 
 ### end of file
 # Local Variables:

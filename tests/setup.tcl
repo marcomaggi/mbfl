@@ -8,7 +8,7 @@
 # 
 # 
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -25,9 +25,6 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: setup.tcl,v 1.1.1.3 2003/12/17 12:43:50 marco Exp $
-#
-
 
 package require Tcl 8.4
 package require tcltest 2.2
@@ -55,7 +52,7 @@ namespace eval ::test {
 	variable	bash
 	variable	precmd
 
-	set command [format "%s; %s" $precmd $command]
+	set command [format "%s; %s; exit 0" $precmd $command]
 
 	if { [catch {
 	    set result [exec $bash -c $command 2>@stderr]

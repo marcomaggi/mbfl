@@ -27,21 +27,16 @@
 # 
 #
 
+
 #PAGE
 ## ------------------------------------------------------------
 ## Generic variables.
 ## ------------------------------------------------------------
 
-mbfl_option_VERBOSE="no"
-mbfl_option_DEBUG="no"
-mbfl_option_TEST="no"
-mbfl_option_INTERACTIVE="no"
-mbfl_option_ENCODED_ARGS="no"
 mbfl_option_TMPDIR="${TMPDIR:-/tmp}"
-
-mbfl_option_ACTION=
-
 mbfl_ORG_PWD="${PWD}"
+
+mbfl_main_SCRIPT_FUNCTION=main
 
 #PAGE
 ## ------------------------------------------------------------
@@ -124,41 +119,19 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 function mbfl_main () {
     local exit_code=0
     local action_func=
+    local item=
 
 
     mbfl_message_set_progname "${script_PROGNAME}"
+
+    mbfl_invoke_script_function script_before_parsing_options
     mbfl_getopts_parse
-
-    if test "${mbfl_option_ENCODED_ARGS}" = "yes"; then
-	mbfl_getopts_decode_hex
-    fi
-
-    mbfl_message_set_verbosity "${mbfl_option_VERBOSE}"
-    mbfl_message_set_debugging "${mbfl_option_DEBUG}"
-
-    if test "${mbfl_option_TEST}" = "yes"; then
-	mbfl_message_string "test execution\n"
-    fi
-
-    if test "$(type -t script_begin)" = "function"; then
-	script_begin || exit $?
-    fi
-
-    
-    action_func=script_action_"${mbfl_option_ACTION}"
-    if test \( -n "${mbfl_option_ACTION}" \) -a \
-            \( "$(type -t ${action_func})" = "function" \); then
-	$action_func
-	exit_code=$?
-    elif test "$(type -t main)" = "function"; then
-	main
-	exit_code=$?
-    fi
-
-    if test "$(type -t script_end)" = "function"; then
-	script_end || exit $?
-    fi
-    exit $exit_code
+    mbfl_invoke_script_function script_after_parsing_options
+    mbfl_invoke_script_function ${mbfl_main_SCRIPT_FUNCTION}
+}
+function mbfl_invoke_script_function () {
+    local item="${1:?${FUNCNAME} error: missing function name}"
+    if test "`type -t ${item}`" = "function"; then ${item}; else return 0; fi
 }
 
 ### end of file

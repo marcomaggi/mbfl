@@ -65,14 +65,13 @@ Documentation License''.
 * Service Variables::           Required user defined variables.
 * Encoding::                    Encoding and decoding strings.
 * File::                        Manipulating files and pathnames.
-* Getopt::                      Parsing command line options.
+* Getopts::                      Parsing command line options.
 * Message::                     Printing messages to the console.
 * Program::                     Using external programs.
 * Signal::                      Catching signals.
 * String::                      Manipulating strings.
 * Dialog::                      Interacting with the user.
 * Main::                        Main function.
-* Example::                     A script example.
 
 Appendices
 
@@ -111,11 +110,11 @@ no use is done of utilities like @command{sed}, @command{grep} and
 @command{ed}.
 
 The library is better used if our script is developed on the template
-provided in the package (@file{examples/template.sh.m4}). This is
-because with @mbfl{} some choices has been made to reduce the custom
-part of the script to the smallest dimension; if we follow another
-schema, @mbfl{} modules may be indequate. This is especially true for
-the options parsing module.
+provided in the package (@file{examples/template.sh}). This is because
+with @mbfl{} some choices has been made to reduce the custom part of the
+script to the smallest dimension; if we follow another schema, @mbfl{}
+modules may be indequate. This is especially true for the options
+parsing module.
 
 At present: a module in the library is not working at all: the signal
 one. Ignore completely the functions whose name begin with
@@ -125,10 +124,24 @@ one. Ignore completely the functions whose name begin with
 @unnumberedsec Using the library
 
 @noindent
-The best way to use the library is to include the single file
-@file{libmbfl.sh} directly in the script. This is easy if we preprocess
-our scripts with @acronym{GNU} @command{m4}; as we can see in the
-template file (subdirectory @file{examples} of the source tree):
+The best way to use the library is to include at runtime the library
+file @file{libmbfl.sh} in the script; this is possible by installing
+@mbfl{} on the system and using this code in the scripts:
+
+@example
+source "$@{MBFL_LIBRARY:=`mbfl-config`@}"
+@end example
+
+@noindent
+after the service variables have been declared (@ref{Service Variables}
+for details). This code will read the full pathname of the library from
+the environment variable @env{MBFL_LIBRARY}; if this variable is not
+set: the script @command{mbfl-config} is invoked with no arguments to
+acquire the pathname of the library. @command{mbfl-config} is installed
+in the @file{bin} directory with the library.
+
+Another solution is to include the library directly in the script; this
+is easy if we preprocess our scripts with @acronym{GNU} @command{m4}:
 
 @example
 m4_changequote([[, ]])
@@ -221,7 +234,7 @@ Must be the version number of the script.
 Must be the identifier of the license under which the script is
 released. Accepted values are: @code{GPL}, @code{LGPL}, @code{BSD}. It
 is used to select the appropriate value to be displayed when the user of
-the script selects the @code{--license} option (@ref{Getopt Options},
+the script selects the @code{--license} option (@ref{Getopts Options},
 for details).
 
 @item script_USAGE
@@ -237,32 +250,11 @@ The following example shows how to declare the variables.
 
 @example
 script_PROGNAME="myscript.sh"
-script_AUTHOR="Marco Maggi"
+script_AUTHOR="Marco Maggi and Marco Maggi"
 script_COPYRIGHT_YEARS="2002, 2003, 2004"
-
 script_VERSION="1.0"
 script_LICENSE=GPL
-
-script_USAGE="usage: $@{script_PROGNAME@} [options] ...
-A script template.
-Options:
-\t-a --alpha             alpha action
-\t-bVALUE
-\t   --beta=VALUE        sets option beta\n
-\t-i --interactive       ask before doing dangerous operations
-\t-f --force             do not ask before dangerous operations
-\t   --encoded-args      decode arguments following this option
-\t                       from the hex format (example: 414243 -> ABC)
-\t-v --verbose           verbose execution
-\t   --silent            silent execution
-\t   --null              use the null character as terminator
-\t   --debug             print debug messages
-\t   --test              tests execution
-\t   --version           print version informations and exit
-\t   --version-only      print version number and exit
-\t   --license           print license informations and exit
-\t-h --help --usage      print usage informations and exit
-"
+script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
 @end example
 @c ------------------------------------------------------------
 @node Encoding
@@ -377,7 +369,7 @@ otherwise.
 @end deffn
 
 @c ------------------------------------------------------------
-@node Getopt
+@node Getopts
 @unnumbered Parsing command line options
 
 
@@ -399,17 +391,19 @@ long option @code{bianco} with no value;
 long option @code{color} with value @code{bianco}.
 @end table
 
+Requires the message module (@ref{Message} for details).
 
 @menu
-* Arguments: Getopt Arguments.
-* Using the module: Getopt Usage.
-* Predefined options: Getopt Options.
-* Interface functions: Getopt Interface.
+* Arguments: Getopts Arguments.
+* Using the module: Getopts Usage.
+* Predefined options: Getopts Options.
+* Interface functions: Getopts Interface.
+* Querying Options: Getopts Values.
 @end menu
 
 
 @c ------------------------------------------------------------
-@node Getopt Arguments
+@node Getopts Arguments
 @unnumberedsec Arguments
 
 
@@ -419,13 +413,10 @@ following:
 
 @example
 ARGC=0
-ARGC1=0
 declare -a ARGV ARGV1
 
-while test $# -gt 0
-do
-    ARGV1[$ARGC1]=$1
-    ARGC1=$(($ARGC1 + 1))
+for ((ARGC1=0; $# > 0; ++ARGC1)); do
+    ARGV1[$ARGC1]="$1"
     shift
 done
 @end example
@@ -454,61 +445,101 @@ them.
 We can access the non--option arguments with the following code:
 
 @example
-i=0
-while test $i -lt $ARGC; do
+for ((i=0; $i < $ARGC; ++i)); do
     # do something with $@{ARGV[$i]@}
-    i=$(($i + 1))
 done
 @end example
 @c ------------------------------------------------------------
-@node Getopt Usage
+@node Getopts Usage
 @unnumberedsec Using the module
 
 
 @noindent
-To use this module we have invoke:
+To use this module we have to declare a set of script options; we
+declare a new script option with the function
+@code{mbfl_declare_option}. Options declaration should be done at the
+beginning of the script, before doing anything; for example: right after
+the @mbfl{} library code.
+
+In the main block of the script: options are parsed by invoking
+@code{mbfl_getopts_parse}: this function will update a global variable
+and invoke a script function for each option on the command line.
+
+
+@unnumberedsubsec Examples
+
+
+@noindent
+Example of option declaration:
 
 @example
-mbfl_getopts_parse
+mbfl_declare_option ALPHA 0 a alpha 0 "enable alpha option"
 @end example
 
 @noindent
-and declare two functions: @code{script_option()} and
-@code{script_option_with()}.  They are invoked by
-@code{mbfl_getopts_parse} to register command line options presence and
-to store somewhere the option's values.
+this code declares an option with no argument and properties:
 
+@itemize
+@item
+global variable @code{script_option_ALPHA}, which will be set to
+@code{0} by default and to @code{1} if the option is used;
 
-@deffn {User Function} script_option @var{option}
-Invoked to register the presence, on the command line, of an option with
-no argument. @var{option} is the option string with no leading dashes.
-@end deffn
+@item
+brief flag @code{-a};
 
+@item
+long flag @code{--alpha};
 
-@deffn {User Function} script_option_with @var{option} @var{value}
-Invoked to register the presence, on the command line, of an option with
-argument. @var{option} is the option string with no leading dashes,
-@var{value} is the value assigned to the option.
-@end deffn
+@item
+description @code{enable alpha option}, to be shown in the usage output.
+@end itemize
 
-
-Example: if the option @code{--update} is used on the command line,
-@code{script_option()} is invoked in this way:
+If the option is used: the function @code{script_option_update_alpha} is
+invoked (if it exists) with no arguments, after the variable
+@code{script_option_ALPHA} is set to 1. Valid option usages are:
 
 @example
-script_option update
+$ script.sh -a
+$ script.sh --alpha
+@end example
+
+Another example:
+
+@example
+mbfl_declare_option BETA 123 b beta 1 "select beta value"
 @end example
 
 @noindent
-if the option @code{--two-colors="verde bianco"} is used on the command line,
-@code{script_option_with()} is invoked in this way:
+this code declares an option with argument and properties:
+
+@itemize
+@item
+global variable @code{script_option_BETA}, which will be set to
+@code{123} by default and to the value selected on the command line if
+the option is used;
+
+@item
+brief flag @code{-b};
+
+@item
+long flag @code{--beta};
+
+@item
+description @code{select beta value}, to be shown in the usage output.
+@end itemize
+
+If the option is used: the function @code{script_option_update_beta} is
+invoked (if it exists) with no arguments, after the variable
+@code{script_option_BETA} is set to the selected value. Valid option
+usages are:
 
 @example
-script_option_with two-colors "verde bianco"
+$ script.sh -b456
+$ script.sh --beta=456
 @end example
 
 @c ------------------------------------------------------------
-@node Getopt Options
+@node Getopts Options
 @unnumberedsec Predefined options
 
 
@@ -519,20 +550,25 @@ to the user defined functions.
 @table @option
 @item --encoded-args
 Signals to the library that the non--option arguments and the option
-values are encoded in hexadecimal strings. In this case they are decoded
-before storing them in the @code{ARGV} array and before being used as
-arguments to @code{script_option_with()}.  Encoding is useful to avoid
+values are encoded in hexadecimal strings. Encoding is useful to avoid
 quoting problems when invoking a script from another one.
+
+If this option is used: the values are decoded by
+@code{mbfl_getopts_parse} before storing them in the @code{ARGV} array
+and before being stored in the option's specific global variables.
+
+The fuction @code{mbfl_option_encoded_args} returns true.
 
 @item -v
 @itemx --verbose
-Turns on verbose messages. The global variable
-@code{mbfl_message_VERBOSE} is set to @code{yes} (@ref{Message}, for
-details).
+Turns on verbose messages. The fuction @code{mbfl_option_verbose}
+returns true;  the global variable @code{mbfl_message_VERBOSE} is set to
+@code{yes} (@ref{Message}, for details).
 
 @item --silent
-Turns off verbose messages. The global variable
-@code{mbfl_message_VERBOSE} is set to @code{no}.
+Turns off verbose messages. The fuction @code{mbfl_option_verbose}
+returns false; the global variable @code{mbfl_message_VERBOSE} is set to
+@code{no}.
 
 @item --debug
 Turns on debugging messages. The global variable
@@ -579,60 +615,28 @@ Variables}, for details).
 @item -h
 @itemx --help
 @itemx --usage
-Prints to the standard output of the script the contents of the global
-variable @code{script_USAGE}, then exits with code zero.
+Prints to the standard output of the script: the contents of the global
+variable @code{script_USAGE}; a newline; the string @code{options:}; a
+newline; an automatically generated string describing the options
+declared with @code{mbfl_declare_option}; a string describing the
+@mbfl{} default options. Then exits with code zero.
 @end table
 
 
 @c ------------------------------------------------------------
-@node Getopt Interface
+@node Getopts Interface
 @unnumberedsec Interface functions
 
 
 @deffn Function mbfl_getopts_parse
 Parses a set of command line options. The options are handed to user
-defined functions.
-
-The global array @code{ARGV1} and the global variable @code{ARGC1} are
-supposed to hold the command line arguments and the number of command
-line arguments.
-
-When an option without argument is found: @code{mbfl_getopts_option()}
-is called with the option name, without dashes, as first argument; when
-an option with argument is found: @code{mbfl_getopts_option_with()} is
-called with the option name, without dashes, as first argument and the
-option value as second argument.
-
-Non--option arguments are left in the global array @code{ARGV}, the
-global variable @code{ARGC} holds the number of elements in @code{ARGV}.
+defined functions.  The global array @code{ARGV1} and the global
+variable @code{ARGC1} are supposed to hold the command line arguments
+and the number of command line arguments.  Non--option arguments are
+left in the global array @code{ARGV}, the global variable @code{ARGC}
+holds the number of elements in @code{ARGV}.
 @end deffn
 
-
-@deffn Function mbfl_getopts_option @var{option}
-Callback function required by @code{mbfl_getopts_parse()}. It's invoked
-whenever an option without argument is found on the command line.
-@var{option} must be the option without the leading dash(es).
-
-Recognises the option and updates the value of the appropriated
-@code{mbfl_*} global variable.  If the option is not a @mbfl{} one:
-invokes the function named: @code{script_option()} with the option name
-as argument.
-@end deffn
-
-
-@deffn Function mbfl_getopts_option_with @var{option} @var{value}
-Callback function required by @code{mbfl_getopts_parse()}. It's invoked
-whenever an option with argument is found on the command line.
-
-@var{option} is the option without the leading dash(es), @var{value} is
-the option argument.
-
-Recognises the option and updates the value of the appropriated
-@code{mbfl_*} global variable.
-
-If the option is not a @mbfl{} one: invokes the function named:
-@code{script_option_with()} with the option name and value as arguments.
-@end deffn
 
 
 @deffn Function mbfl_getopts_islong @var{string} @var{varname}
@@ -647,6 +651,7 @@ An option must be of the form @code{--option}, only characters in the
 ranges @code{A-Z}, @code{a-z}, @code{0-9} and the characters @code{-}
 and @code{_} are allowed in the option name.
 @end deffn
+
 
 
 @deffn Function mbfl_getopts_islong_with @var{string} @var{optname} @var{varname}
@@ -713,25 +718,12 @@ A brief option must be of the form @code{-aV} (@code{a} is the option,
 @end deffn
 
 
-@deffn Function mbfl_getopts_decode_hex
-Decodes non--option arguments. Requires @code{mbfl_decode_hex()}.  In
-hex--coding, each byte in the argument is replaced by its representation
-in hex number.
-
-Decodes hex--coded arguments in the @code{ARGV} array. This function can
-be invoked if the command line arguments have been encoded.
-@end deffn
-
-
 @deffn Function mbfl_wrong_num_args @var{required} @var{present}
 Validates the number of arguments.  @var{required} is the required
 number of arguments, @var{present} is the given number of arguments on
-the command line.
-
-If the number of arguments is different from the required one: prints an
-error message and returns with code one; else returns with code zero.
-
-Requires the message module (@ref{Message} for details).
+the command line.  If the number of arguments is different from the
+required one: prints an error message and returns with code one; else
+returns with code zero.
 @end deffn
 
 
@@ -754,6 +746,54 @@ and returns with code 1.
 
 
 @c ------------------------------------------------------------
+@node Getopts Values
+@unnumberedsec Querying Options
+
+
+@noindent
+Some feature and behaviour of the library is configured by the return
+value of the following set of functions. All of these functions are
+defined by the Getopts module, but they can be redefined by the script.
+
+
+@deffn Function mbfl_option_encoded_args
+Returns true if the option @code{--encoded-args} was used on the command
+line.
+@end deffn
+
+
+@deffn Function mbfl_option_verbose
+Returns true if the option @code{--verbose} was used on the command line
+after all the occurrences of @code{--silent}. Returns false if the
+option @code{--silent} was used on the command line after all the
+occurrences of @code{--verbose}.
+@end deffn
+
+
+@deffn Function mbfl_option_test
+Returns true if the option @code{--test} was used on the command line.
+@end deffn
+
+
+@deffn Function mbfl_option_debug
+Returns true if the option @code{--debug} was used on the command line.
+@end deffn
+
+
+@deffn Function mbfl_option_null
+Returns true if the option @code{--null} was used on the command line.
+@end deffn
+
+
+@deffn Function mbfl_option_interactive
+Returns true if the option @code{--interactive} was used on the command
+line after all the occurrences of @code{--force}. Returns false if the
+option @code{--force} was used on the command line after all the
+occurrences of @code{--interactive}.
+@end deffn
+
+
+@c ------------------------------------------------------------
 @node Message
 @unnumbered Printing messages to the console
 
@@ -767,7 +807,7 @@ messages will have the forms:
 
 @example
 <progname>: <message>
-<progname> [error|warning]: <message>
+<progname>: [error|warning]: <message>
 @end example
 
 The following global variables are declared:
@@ -779,12 +819,6 @@ the beginning of each message;
 
 @item mbfl_message_VERBOSE
 @code{yes} if verbose messages should be displayed, else @code{no};
-
-@item mbfl_message_DEBUGGING
-@code{yes} if debugging messages should be displayed, else @code{no};
-
-@item mbfl_message_STDERR
-the channel used to output messages.
 @end table
 
 
@@ -793,18 +827,7 @@ Sets the script official name to put at the beginning of messages.
 @end deffn
 
 
-@deffn Function mbfl_message_set_verbosity @var{value}
-Stores a value in @code{mbfl_message_VERBOSE}.
-@end deffn
-
-
-@deffn Function mbfl_message_set_debugging @var{string}
-If @var{string} is @code{yes} debug message are enabled, if it's
-@code{no} are disabled.
-@end deffn
-
-
-@deffn Function mbfl_message_set_stderr @var{channel}
+@deffn Function mbfl_message_set_channel @var{channel}
 Selects the channel to be used to output messages.
 @end deffn
 
@@ -820,8 +843,8 @@ are allowed in the message.
 
 
 @deffn Function mbfl_message_verbose @var{string}
-Outputs a message to the selected channel, but only if the global
-variable @code{mbfl_message_VERBOSE} is set to @code{yes}.
+Outputs a message to the selected channel, but only if the evaluation of
+the function/alias @code{mbfl_option_verbose} returns true.
 
 Echoes a string composed of: the content of the
 @code{mbfl_message_PROGNAME} global variable; a colon; a space; the
@@ -833,8 +856,8 @@ are allowed in the message.
 
 
 @deffn Function mbfl_message_verbose_end @var{string}
-Outputs a message to the selected channel, but only if the global
-variable @code{mbfl_message_VERBOSE} is set to @code{yes}.
+Outputs a message to the selected channel, but only if the evaluation of
+the function/alias @code{mbfl_option_verbose} returns true.
 
 Echoes the string. A newline character is NOT appended to the
 message. Escape characters are allowed in the message.
@@ -842,8 +865,8 @@ message. Escape characters are allowed in the message.
 
 
 @deffn Function mbfl_message_debug @var{string}
-Outputs a message to the selected channel, but only if the global
-variable @code{mbfl_message_DEBUGGING} is set to @code{yes}.
+Outputs a message to the selected channel, but only if the evaluation of
+the function/alias @code{mbfl_option_debug} returns true.
 
 Echoes a string composed of: the content of the
 @code{mbfl_message_PROGNAME} global variable; a colon; a space; the
@@ -857,8 +880,8 @@ are allowed in the message.
 @deffn Function mbfl_message_warning @var{string}
 Outputs a warning message to the selected channel.  Echoes a string
 composed of: the content of the @code{mbfl_message_PROGNAME} global
-variable; a space; the string @code{warning}; a colon; a space; the
-provided message.
+variable; a colon; a space; the string @code{warning}; a colon; a space;
+the provided message.
 
 A newline character IS appended to the message. Escape characters are
 allowed in the message.
@@ -868,8 +891,8 @@ allowed in the message.
 @deffn Function mbfl_message_error @var{string}
 Outputs a error message to the selected channel.  Echoes a string
 composed of: the content of the @code{mbfl_message_PROGNAME} global
-variable; a space; the string @code{error}; a colon; a space; the
-provided message.
+variable; a colon; a space; the string @code{error}; a colon; a space;
+the provided message.
 
 A newline character IS appended to the message. Escape characters are
 allowed in the message.
@@ -1053,6 +1076,19 @@ done
 @end deffn
 
 
+@deffn Function mbfl_string_toupper @var{string}
+Outputs @var{string} with all the occurrencies of lower case
+@acronym{ASCII} characters (no accents) turned into upper case.
+@end deffn
+
+
+@deffn Function mbfl_string_tolower @var{string}
+Outputs @var{string} with all the occurrencies of upper case
+@acronym{ASCII} characters (no accents) turned into lower case.
+@end deffn
+
+
+
 @c ------------------------------------------------------------
 @node Dialog
 @unnumbered Interacting with the user
@@ -1074,165 +1110,49 @@ true if the user has typed @code{yes}, false if the user has typed
 @noindent
 @mbfl{} declares a function to drive the execution of the script; its
 purpose is to make use of the other modules to reduce the size of
-scripts depending on @mbfl{}.
+scripts depending on @mbfl{}.  All the code blocks in the script, with
+the exception of global variables declaration, should be enclosed in
+functions.
 
 
 @deffn Function mbfl_main
-Does the follwoing.
+Must be the last line of code in the script. Does the following.
 
 @enumerate
 @item
-Parses command line options.
+Registers the value of the variable @code{script_PROGNAME} in the
+message module using the function @code{mbfl_message_set_progname}.
 
 @item
-Invokes the function @code{script_begin()}, if it exists, with no
-arguments; if its return value is non--zero: exits the script with the
-same code.
+If it exists: invokes the function @code{script_before_parsing_options}.
 
 @item
-If the global variable @code{mbfl_option_ACTION} is non--empty: executes
-a function whose name is composed of: @code{script_action_} and the
-value of @code{mbfl_option_ACTION}:
-
-@example
-script_action_$@{mbfl_option_ACTION@}
-@end example
-
-@noindent
-The return code  of such a function is  registered for later
-use.  We   refer  to  this  function   as  the  @emph{action
-function}. If  a function with  this name does not  exist, a
-function  named  @code{main}  is  executed. If  neither  the
-action function  nor to @code{main}  function exist: nothing
-happens at this step.
+Parses command line options with @code{mbfl_getopts_parse}.
 
 @item
-Invokes the function @code{script_end()}, if it exists, with no
-arguments; if its return value is non--zero: exits the script with the
-same code.
+If it exists: invokes the function @code{script_after_parsing_options}.
+
+@item
+Invokes the function whose name is stored in the global variable
+@code{mbfl_main_SCRIPT_FUNCTION}, if it exists, with no arguments; if
+its return value is non--zero: exits the script with the same code. The
+default value is @code{main}.
 
 @item
 Exits the script with the return code of the action function or zero.
 @end enumerate
 @end deffn
 
-It is responsibility of the functions used to register command line
-options to store a value in @code{mbfl_option_ACTION}. A default value
-may be explicitly set by the script before invoking @code{mbfl_main()}.
 
-@c ------------------------------------------------------------
-@node Example
-@unnumbered A script example
-
+@deffn Function mbfl_invoke_script_function @var{FUNCNAME}
+If @var{funcname} is the name of an existing function: it is invoked
+with no arguments; the return value is the one of the function.
+The existence test is performed with:
 
 @example
-# script.sh --
-
-#set -e
-#set -x
-
-m4_changequote([[, ]])
-
-#PAGE
-## ------------------------------------------------------------
-## Service variables required by MBFL.
-## ------------------------------------------------------------
-
-script_PROGNAME="script.sh"
-script_AUTHOR="Marco Maggi"
-script_COPYRIGHT_YEARS="2004"
-
-script_VERSION="1.0"
-script_LICENSE=GPL
-
-script_USAGE="usage: $@{script_PROGNAME@} [options] ...
-A script template.
-Options:
-\t-a --alpha             alpha action
-\t-bVALUE
-\t   --beta=VALUE        sets option beta\n
-\t-i --interactive       ask before doing dangerous operations
-\t-f --force             do not ask before dangerous operations
-\t   --encoded-args      decode arguments following this option
-\t                       from the hex format (example: 414243 -> ABC)
-\t-v --verbose           verbose execution
-\t   --silent            silent execution
-\t   --null              use the null character as terminator
-\t   --debug             print debug messages
-\t   --test              tests execution
-\t   --version           print version informations and exit
-\t   --version-only      print version number and exit
-\t   --license           print license informations and exit
-\t-h --help --usage      print usage informations and exit
-"
-
-#PAGE
-## ------------------------------------------------------------
-## Global variables.
-## ------------------------------------------------------------
-
-...
-
-#PAGE
-## ------------------------------------------------------------
-## Libraries.
-## ------------------------------------------------------------
-
-m4_include(libmbfl.sh)
-
-#PAGE
-function script_begin () @{
-    return 0
-@}
-function script_end () @{
-    return 0
-@}
-function script_option () @{
-    local OPTNAME="$@{1@}"
-
-
-    case "$@{OPTNAME@}" in
-        a|alpha)
-            mbfl_option_ACTION=alpha
-            ;;
-        *)
-            return 2
-            ;;
-    esac
-    return 0
-@}
-function script_option_with () @{
-    local OPTNAME="$@{1@}"
-    local OPTVAL="$@{2@}"
-
-
-    case "$@{OPTNAME@}" in
-        b|beta)
-            echo "option beta: $@{OPTVAL@}"
-            ;;
-        *)
-            return 2
-            ;;
-    esac
-    return 0
-@}
-function script_action_alpha () @{
-    echo "action alpha"
-    return 0
-@}
-#PAGE
-## ------------------------------------------------------------
-## Main script.
-## ------------------------------------------------------------
-
-mbfl_main
-
-### end of file
-# Local Variables:
-# mode: sh
-# page-delimiter: "^#PAGE$"
-# End:
+type -t @var{FUNCNAME} = function
 @end example
+@end deffn
 
 @c ------------------------------------------------------------
 
@@ -1261,7 +1181,7 @@ behaviour.
 @bye
 
 @c end of file
-@c Local Variables:
-@c mode: texinfo
+@c Local Variables::
+@c mode: Texinfo
 @c page-separator: "^@c -+$"
-@c End:
+@c End::

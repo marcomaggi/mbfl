@@ -26,8 +26,6 @@ m4_divert(-1)m4_dnl
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: macros.m4,v 1.1.1.4 2003/05/19 15:21:08 marco Exp $
-#
 
 m4_changequote([[, ]])
 
