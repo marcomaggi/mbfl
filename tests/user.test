@@ -1,0 +1,268 @@
+# user.test --
+# 
+# Part of: Marco's BASH Functions Library
+# Contents: tests for the user library
+# Date: Fri Oct  8, 2004
+# 
+# Abstract
+# 
+# 
+# 
+# Copyright (c) 2004 Marco Maggi
+# 
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  2.1 of the License,  or (at
+# your option) any later version.
+# 
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# Lesser General Public License for more details.
+# 
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
+# 
+
+#page
+## ------------------------------------------------------------
+## Setup.
+## ------------------------------------------------------------
+
+source setup.sh
+export PATH=${PATH}:./user
+
+#page
+
+function libuser-message-1.1 () {
+    user-message-error 'error message' 2>&1 | \
+	dotest-output "error: error message"
+}
+function libuser-message-1.2 () {
+    user-message-warning 'error message' 2>&1 | \
+	dotest-output "warning: error message"
+}
+function libuser-message-1.3 () {
+    user-message-verbose 'error message' 2>&1 | dotest-output "error message"
+}
+
+function libuser-message-2.1 () {
+    user-message-missing-executable ls 2>&1 | \
+	dotest-output "error: cannot find executable 'ls'"
+}
+function libuser-message-2.2 () {
+    user-message-file-not-found ls 2>&1 | \
+	dotest-output "error: file not found 'ls'"
+}
+
+#page
+
+function libuser-pathname-1.1 () {
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a+r "$tmpfile"
+    user-pathname-readable "$tmpfile"
+    dotest-clean-files
+}
+function libuser-pathname-1.2 () {
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a-r "$tmpfile"
+    user-pathname-readable "$tmpfile" 2>&1 | \
+	dotest-output "error: not readable '$tmpfile'"
+    dotest-clean-files
+}
+
+function libuser-pathname-2.1 () {
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a+w "$tmpfile"
+    user-pathname-writable "$tmpfile"
+    dotest-clean-files
+}
+function libuser-pathname-2.1 () {
+    umask 0
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a-w "$tmpfile"
+    user-pathname-writable "$tmpfile" 2>&1 | \
+	dotest-output "error: not writable '$tmpfile'"
+    dotest-clean-files
+}
+
+function libuser-pathname-3.1 () {
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a+w "$tmpfile"
+    user-pathname-readable-and-writable "$tmpfile"
+    dotest-clean-files
+}
+function libuser-pathname-3.2 () {
+    umask 0
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a+r-w "$tmpfile"
+    user-pathname-readable-and-writable "$tmpfile" 2>&1 | \
+	dotest-output "error: not writable '$tmpfile'"
+    dotest-clean-files
+}
+function libuser-pathname-3.3 () {
+    umask 0
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a-r+w "$tmpfile"
+    user-pathname-readable-and-writable "$tmpfile" 2>&1 | \
+	dotest-output "error: not readable '$tmpfile'"
+    dotest-clean-files
+}
+
+function libuser-pathname-4.1 () {
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a+x "$tmpfile"
+    user-pathname-executable "$tmpfile"
+    dotest-clean-files
+}
+function libuser-pathname-4.1 () {
+    umask 0
+    local tmpfile=`dotest-mkfile file.txt`
+
+    chmod a-x "$tmpfile"
+    user-pathname-executable "$tmpfile" 2>&1 | \
+	dotest-output "error: not executable '$tmpfile'"
+    dotest-clean-files
+}
+
+#page
+
+function libuser-directory-1.1 () {
+    local item=`dotest-mkdir dir`
+
+    chmod a+r "$item"
+    user-validate-directory "$item" 2>&1 | dotest-output
+    dotest-clean-files
+}
+function libuser-directory-1.2 () {
+    local item=
+
+    user-validate-directory "$item" 2>&1 | dotest-output 'error: null pathname'
+    dotest-clean-files
+}
+function libuser-directory-1.3 () {
+    local item=`dotest-mkfile file.txt`
+
+    user-validate-directory "$item" 2>&1 | \
+	dotest-output "error: pathname is a file not a directory '$item'"
+    dotest-clean-files
+}
+function libuser-directory-1.4 () {
+    local item=file.txt
+
+    user-validate-directory "$item" 2>&1 | \
+	dotest-output "error: unexistent pathname '$item'"
+    dotest-clean-files
+}
+
+function libuser-directory-2.1 () {
+    local item=`dotest-mkdir dir`
+
+    user-validate-directory-readable "$item" 2>&1 | dotest-output
+    dotest-clean-files
+}
+function libuser-directory-2.2 () {
+    local item=`dotest-mkdir dir`
+
+    user-validate-directory-writable "$item" 2>&1 | dotest-output
+    dotest-clean-files
+}
+function libuser-directory-2.3 () {
+    local item=`dotest-mkdir dir`
+
+    user-validate-directory-readable-and-writable "$item" 2>&1 | dotest-output
+    dotest-clean-files
+}
+
+#page
+
+function libuser-file-1.1 () {
+    local item=`dotest-mkfile dir`
+
+    chmod a+r "$item"
+    user-validate-file "$item" 2>&1 | dotest-output
+    dotest-clean-files
+}
+function libuser-file-1.2 () {
+    local item=
+
+    user-validate-file "$item" 2>&1 | dotest-output 'error: null pathname'
+    dotest-clean-files
+}
+function libuser-file-1.3 () {
+    local item=`dotest-mkdir dir`
+
+    user-validate-file "$item" 2>&1 | \
+	dotest-output "error: pathname is a directory not a file '$item'"
+    dotest-clean-files
+}
+function libuser-file-1.4 () {
+    local item=file.txt
+
+    user-validate-file "$item" 2>&1 | \
+	dotest-output "error: unexistent pathname '$item'"
+    dotest-clean-files
+}
+
+function libuser-file-2.1 () {
+    local item=`dotest-mkfile dir`
+
+    user-validate-file-readable "$item" 2>&1 | dotest-output
+    dotest-clean-files
+}
+function libuser-file-2.2 () {
+    local item=`dotest-mkfile dir`
+
+    user-validate-file-writable "$item" 2>&1 | dotest-output
+    dotest-clean-files
+}
+function libuser-file-2.3 () {
+    local item=`dotest-mkfile dir`
+
+    user-validate-file-readable-and-writable "$item" 2>&1 | dotest-output
+    dotest-clean-files
+}
+
+#page
+
+function libuser-env-1.1 () {
+    local PATH="/bin:/bin:/usr/bin:/usr/local/bin:/usr/bin:./user"
+
+    PATH=`user-fix-path-variable`
+    dotest-equal '/bin:/usr/bin:/usr/local/bin:./user' $PATH
+}
+function libuser-env-1.2 () {
+    local PATH="/bin:/bin:/usr/bin:/usr/local/bin:/usr/bin:./user"
+
+    PATH=`user-fix-path-variable`
+    dotest-equal '/bin:/usr/bin:/usr/local/bin:./user' $PATH
+}
+
+#page
+
+function libuser-executable-1.1 () {
+    user-find-executable ls  | dotest-output /bin/ls
+}
+function libuser-executable-1.2 () {
+    user-find-executable unexistent 2>&1 | \
+	dotest-output "error: cannot find executable 'unexistent'"
+}
+
+#page
+
+dotest libuser-
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,436 @@
+# string.test --
+# 
+# Part of: Marco's BASH function libraries
+# Contents: tests for the string library
+# Date: Fri Apr 18, 2003
+# 
+# Abstract
+# 
+#	This file must be executed with:
+#
+#		$ make all test TESTMATCH=string-
+# 
+#	will select these tests.
+# 
+# Copyright (c) 2004 Marco Maggi
+# 
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 2, or (at your  option) any later
+# version.
+# 
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# General Public License for more details.
+# 
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
+# 
+
+#PAGE
+## ------------------------------------------------------------
+## Setup.
+## ------------------------------------------------------------
+
+source setup.sh
+
+#page
+
+function string-chars-1.1 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string=abcdefghilm
+    mbfl_string_chars $string
+    dotest-equal "${#string}" $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal d "${SPLITFIELD[3]}" && \
+	dotest-equal e "${SPLITFIELD[4]}" && \
+	dotest-equal f "${SPLITFIELD[5]}" && \
+	dotest-equal g "${SPLITFIELD[6]}" && \
+	dotest-equal h "${SPLITFIELD[7]}" && \
+	dotest-equal i "${SPLITFIELD[8]}" && \
+	dotest-equal l "${SPLITFIELD[9]}"
+}
+function string-chars-1.2 {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string="abcde fghilm"
+    mbfl_string_chars "${string}"
+    dotest-equal "${#string}" $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal d "${SPLITFIELD[3]}" && \
+	dotest-equal e "${SPLITFIELD[4]}" && \
+	dotest-equal " " "${SPLITFIELD[5]}" && \
+	dotest-equal f "${SPLITFIELD[6]}" && \
+	dotest-equal g "${SPLITFIELD[7]}" && \
+	dotest-equal h "${SPLITFIELD[8]}" && \
+	dotest-equal i "${SPLITFIELD[9]}" && \
+	dotest-equal l "${SPLITFIELD[10]}"
+}
+function string-chars-1.3 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string="abcde\nfghilm"
+    mbfl_string_chars "${string}"
+    dotest-equal $((${#string} - 1)) $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal d "${SPLITFIELD[3]}" && \
+	dotest-equal e "${SPLITFIELD[4]}" && \
+	dotest-equal "\n" "${SPLITFIELD[5]}" && \
+	dotest-equal f "${SPLITFIELD[6]}" && \
+	dotest-equal g "${SPLITFIELD[7]}" && \
+	dotest-equal h "${SPLITFIELD[8]}" && \
+	dotest-equal i "${SPLITFIELD[9]}" && \
+	dotest-equal l "${SPLITFIELD[10]}"
+}
+function string-chars-1.4 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string="abcde\rfghilm"
+    mbfl_string_chars "${string}"
+    dotest-equal $((${#string} - 1)) $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal d "${SPLITFIELD[3]}" && \
+	dotest-equal e "${SPLITFIELD[4]}" && \
+	dotest-equal "\r" "${SPLITFIELD[5]}" && \
+	dotest-equal f "${SPLITFIELD[6]}" && \
+	dotest-equal g "${SPLITFIELD[7]}" && \
+	dotest-equal h "${SPLITFIELD[8]}" && \
+	dotest-equal i "${SPLITFIELD[9]}" && \
+	dotest-equal l "${SPLITFIELD[10]}" && \
+	dotest-equal m "${SPLITFIELD[11]}"
+}
+function string-chars-1.5 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string="abc\\"
+    mbfl_string_chars "${string}"
+    dotest-equal 4 $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal \\ "${SPLITFIELD[3]}"
+}
+
+#page
+
+function string-equal-substring-1.1 () {
+    ! mbfl_string_equal_substring abcdefghi 0 123
+}
+function string-equal-substring-1.2 () {
+    mbfl_string_equal_substring abcdefghi 0 abc
+}
+function string-equal-substring-1.3 () {
+    mbfl_string_equal_substring abcdefghi 2 cde
+}
+function string-equal-substring-1.4 () {
+    ! mbfl_string_equal_substring abcdefghi 6 ghilm
+}
+function string-equal-substring-1.5 () {
+    mbfl_string_equal_substring abcdefghi 6 ghi
+}
+function string-equal-substring-1.6 () {
+    ! mbfl_string_equal_substring abcdefghi 4 123
+}
+
+#page
+
+function string-split-1.1 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string=abc:def:ghi:lmn:opq:rs
+    mbfl_string_split "$string" :
+    dotest-equal 6 $SPLITCOUNT && \
+	dotest-equal abc "${SPLITFIELD[0]}" && \
+	dotest-equal def "${SPLITFIELD[1]}" && \
+	dotest-equal ghi "${SPLITFIELD[2]}" && \
+	dotest-equal lmn "${SPLITFIELD[3]}" && \
+	dotest-equal opq "${SPLITFIELD[4]}" && \
+	dotest-equal rs  "${SPLITFIELD[5]}"
+}
+function string-split-1.2 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string=abc:::def:::ghi:::lmn:::opq:::rs
+    mbfl_string_split "$string" :::
+    dotest-equal 6 $SPLITCOUNT && \
+	dotest-equal abc "${SPLITFIELD[0]}" && \
+	dotest-equal def "${SPLITFIELD[1]}" && \
+	dotest-equal ghi "${SPLITFIELD[2]}" && \
+	dotest-equal lmn "${SPLITFIELD[3]}" && \
+	dotest-equal opq "${SPLITFIELD[4]}" && \
+	dotest-equal rs  "${SPLITFIELD[5]}"
+}
+function string-split-1.3 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string=abc:def:ghi:lmn:opq:rs
+    mbfl_string_split "$string" _
+    dotest-equal 1 $SPLITCOUNT && dotest-equal $string "${SPLITFIELD[0]}"
+}
+function string-split-1.4 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string=:abc:def
+    mbfl_string_split "$string" :
+
+    dotest-equal "" "${SPLITFIELD[0]}" && \
+	dotest-equal abc "${SPLITFIELD[1]}" && \
+	dotest-equal def "${SPLITFIELD[2]}" && \
+	dotest-equal 3 $SPLITCOUNT
+}
+function string-split-1.5 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string=abc::def:ghi
+    mbfl_string_split "$string" :
+
+    dotest-equal abc "${SPLITFIELD[0]}" && \
+	dotest-equal ""  "${SPLITFIELD[1]}" && \
+	dotest-equal def "${SPLITFIELD[2]}" && \
+	dotest-equal ghi "${SPLITFIELD[3]}" && \
+	dotest-equal 4 $SPLITCOUNT
+}
+function string-split-1.6 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string=abc::::def::ghi
+    mbfl_string_split "$string" ::
+
+    dotest-equal abc "${SPLITFIELD[0]}" && \
+	dotest-equal ""  "${SPLITFIELD[1]}" && \
+	dotest-equal def "${SPLITFIELD[2]}" && \
+	dotest-equal ghi "${SPLITFIELD[3]}" && \
+	dotest-equal 4 $SPLITCOUNT
+}
+
+#PAGE
+
+function string-first-1.1 () {
+    mbfl_string_first abcdefghilm d | dotest-output 3
+}
+
+function string-first-1.2 () {
+    mbfl_string_first abcdefghilm a | dotest-output 0
+}
+
+function string-first-1.3 () {
+    mbfl_string_first abcdefghilm m | dotest-output 10
+}
+
+function string-first-1.4 () {
+    mbfl_string_first abcdefghilm X | dotest-output
+}
+
+function string-first-1.5 () {
+    mbfl_string_first abcdeabcde a 3 | dotest-output 5
+}
+
+function string-first-1.6 () {
+    mbfl_string_first abcdeabcde e 5 | dotest-output 9
+}
+
+function string-first-1.7 () {
+    mbfl_string_first abcdeabcde e 4 | dotest-output 4
+}
+
+#PAGE
+
+function string-index-1.1 () {
+    mbfl_string_index abcdefghilm 0 | dotest-output a
+}
+
+function string-index-1.2 () {
+    mbfl_string_index abcdefghilm 4 | dotest-output e
+}
+
+function string-index-1.3 () {
+    mbfl_string_index abcdefghilm 10 | dotest-output m
+}
+
+function string-index-1.4 () {
+    mbfl_string_index abcdefghilm 11 | dotest-output
+}
+
+#PAGE
+
+function string-is-1.1 () { mbfl-string-is-alpha abcd; }
+function string-is-1.2 () { ! mbfl-string-is-alpha 123 ; }
+function string-is-1.3 () { ! mbfl-string-is-alpha ab12; }
+
+function string-is-2.1 () { mbfl-string-is-digit 123; }
+function string-is-2.2 () { ! mbfl-string-is-digit abcd; }
+function string-is-2.3 () { ! mbfl-string-is-digit 12ab; }
+
+function string-is-3.1 () { mbfl-string-is-alnum abcd; }
+function string-is-3.2 () { mbfl-string-is-alnum 123; }
+function string-is-3.3 () { mbfl-string-is-alnum ab12; }
+
+function string-is-4.1 () { mbfl-string-is-noblank abcd; }
+function string-is-4.2 () { ! mbfl-string-is-noblank $'\n'; }
+function string-is-4.3 () { ! mbfl-string-is-noblank $'\t'; }
+function string-is-4.4 () { ! mbfl-string-is-noblank $'\r'; }
+function string-is-4.5 () { ! mbfl-string-is-noblank " "; }
+function string-is-4.6 () { ! mbfl-string-is-noblank $'ab\ncd'; }
+
+function string-is-5.1 () { mbfl-string-is-name abcd; }
+function string-is-5.2 () { mbfl-string-is-name ab_cd; }
+function string-is-5.3 () { mbfl-string-is-name _abcd123; }
+function string-is-5.4 () { ! mbfl-string-is-name 1abcd3 ; }
+function string-is-5.5 () { ! mbfl-string-is-name "\n"; }
+
+#PAGE
+
+function string-last-1.1 () {
+    mbfl_string_last abcdefghilm d | dotest-output 3
+}
+function string-last-1.2 () {
+    mbfl_string_last abcdefghilm a | dotest-output 0
+}
+function string-last-1.3 () {
+    mbfl_string_last abcdefghilm m | dotest-output 10
+}
+function string-last-1.4 () {
+    mbfl_string_last abcdefghilm X | dotest-output
+}
+function string-last-1.5 () {
+    mbfl_string_last abcdefghilm a 3 | dotest-output 0
+}
+function string-last-1.6 () {
+    mbfl_string_last abcdeabcde a 7 | dotest-output 5
+}
+function string-last-1.7 () {
+    mbfl_string_last abcdeabcde e 7 | dotest-output 4
+}
+function string-last-1.8 () {
+    mbfl_string_last abcdeabcde e 4 | dotest-output 4
+}
+
+#PAGE
+
+function string-range-1.1 () {
+    mbfl_string_range abcdefghilm 0 end | dotest-output abcdefghilm
+}
+
+function string-range-1.2 () {
+    mbfl_string_range abcdefghilm 0 | dotest-output abcdefghilm
+}
+
+function string-range-1.3 () {
+    mbfl_string_range abcdefghilm 0 4 | dotest-output abcd
+}
+
+function string-range-1.4 () {
+    mbfl_string_range abcdefghilm 4 end | dotest-output efghilm
+}
+
+#page
+
+function string-toupper-1.1 () {
+    mbfl_string_toupper abcdefghilm | dotest-output ABCDEFGHILM
+}
+function string-toupper-1.2 () {
+    mbfl_string_toupper ABCDEFGHILM | dotest-output ABCDEFGHILM
+}
+function string-toupper-1.3 () {
+    mbfl_string_toupper "" | dotest-output ""
+}
+
+function string-tolower-1.1 () {
+    mbfl_string_tolower ABCDEFGHILM | dotest-output abcdefghilm
+}
+function string-tolower-1.2 () {
+    mbfl_string_tolower abcdefghilm | dotest-output abcdefghilm
+}
+function string-tolower-1.3 () {
+    mbfl_string_tolower "" | dotest-output ""
+}
+
+#page
+
+function string-sprintf-1.1 () {
+    local var=1
+
+    mbfl_sprintf var "pre-%s-post" woah
+    test "$var" = "pre-woah-post"
+}
+
+#page
+
+function string-quoted-char-1.1 () {
+    ! mbfl_string_is_quoted_char abcdefg 3
+}
+function string-quoted-char-1.2 () {
+    mbfl_string_is_quoted_char 'ab\cdefg' 3
+}
+function string-quoted-char-1.3 () {
+    mbfl_string_is_quoted_char 'ab\ndefg' 3
+}
+
+function string-equal-unquoted-1.1 () {
+    mbfl_string_is_equal_unquoted_char abcdefg 3 d
+}
+function string-equal-unquoted-1.2 () {
+    ! mbfl_string_is_equal_unquoted_char 'abc\defg' 3 d
+}
+
+function string-quote-1.1 () {
+    mbfl_string_quote \\a\\b\\c | dotest-output \\\\a\\\\b\\\\c
+}
+function string-quote-2.1 () {
+    mbfl_string_quote abc | dotest-output abc
+}
+#page
+
+function string-skip-1.1 () {
+    local i=3
+    local string=abcdefg
+
+    mbfl_string_skip $string i z
+    dotest-equal 3 $i
+}
+function string-skip-1.2 () {
+    local i=3
+    local string=aaaaaaa
+
+    mbfl_string_skip $string i a
+    dotest-equal ${#string} $i
+}
+function string-skip-1.3 () {
+    local i=3
+    local string=abcccccdefg
+
+    mbfl_string_skip $string i c
+    dotest-equal 7 $i
+}
+
+#page
+
+dotest string-
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,737 @@
+# @configure_input@
+# 
+# Part of: mbfl
+# Contents: makefile template
+# Date: Mon Dec 15, 2003
+# 
+# Abstract
+# 
+#	This file is a template for the project Makefile.
+# 
+# Copyright (c) 2003, 2004 Marco Maggi
+# 
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 2, or (at your  option) any later
+# version.
+# 
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# General Public License for more details.
+# 
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
+# 
+
+#PAGE
+## ------------------------------------------------------------
+## Package variables.
+## ------------------------------------------------------------
+
+PACKAGE_NAME		= @PACKAGE_NAME@
+PACKAGE_VERSION		= @PACKAGE_VERSION@
+PACKAGE_VERSION_MAJMIN	= @PACKAGE_VERSION_MAJMIN@
+PACKAGE_XVERSION	= @PACKAGE_XVERSION@
+PKG_DIR			= $(PACKAGE_NAME)_$(PACKAGE_XVERSION)
+
+#PAGE
+## ------------------------------------------------------------
+## Directory variables.
+## ------------------------------------------------------------
+
+CONFIGDIR	= @CONFIGDIR@
+INSTALL_ROOT	=
+
+# If there is not a value for "TMPDIR" from the environment
+# we select a common default.
+TMPDIR		?= /tmp
+
+top_builddir	= @top_builddir@
+ifeq	(,$(top_builddir))
+top_builddir	= .
+endif
+
+builddir	= @builddir@
+ifeq	(,$(builddir))
+builddir	= .
+endif
+
+top_srcdir	= @top_srcdir@
+srcdir		= @srcdir@
+
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+
+bindir		= @bindir@
+datadir		= @datadir@
+docdir		= $(prefix)/doc
+includedir	= @includedir@
+infodir		= @infodir@
+libdir		= @libdir@
+libexecdir	= @libexecdir@
+localstatedir	= @localstatedir@
+mandir		= @mandir@
+sbindir		= @sbindir@
+sharedstatedir	= @sharedstatedir@
+sysconfdir	= @sysconfdir@
+
+pkgdatadir	= $(datadir)/$(PKG_DIR)
+pkgdocdir	= $(docdir)/$(PKG_DIR)
+pkgexampledir	= $(pkgdocdir)/examples
+pkghtmldir	= $(pkgdocdir)/HTML
+pkgincludedir	= $(includedir)/$(PKG_DIR)
+pkglibdir	= $(libdir)/$(PKG_DIR)
+pkglibexecdir	= $(libexecdir)/$(PKG_DIR)
+pkgsysconfdir	= $(sysconfdir)/$(PKG_DIR)
+
+#PAGE
+## ------------------------------------------------------------
+## Common programs.
+## ------------------------------------------------------------
+
+BASHPROG		= @BASHPROG@
+SHELL			= @SHELL@
+@SET_MAKE@
+
+RM			= @RM@
+MKDIR			= @MKDIR@
+SYMLINK			= @SYMLINK@
+M4			= @M4@
+
+SED			= @SED@
+GREP			= @GREP@
+
+GDB			= @GDB@
+
+INSTALL_DIR_MODE	= 0755
+INSTALL_BIN_MODE	= 0555
+INSTALL_DATA_MODE	= 0444
+
+INSTALL			= @INSTALL@
+INSTALL_DIR		= $(INSTALL) -m $(INSTALL_DIR_MODE) -d
+INSTALL_BIN		= $(INSTALL) -m $(INSTALL_BIN_MODE)
+INSTALL_DATA		= $(INSTALL) -m $(INSTALL_DATA_MODE)
+
+#PAGE
+## ------------------------------------------------------------
+## Main rules.
+## ------------------------------------------------------------
+
+.PHONY: all clean realclean install
+.PHONY: bin bin-clean bin-realclean bin-install
+.PHONY: dev dev-clean dev-realclean dev-install
+.PHONY: sta sta-clean sta-realclean sta-install
+.PHONY: doc doc-clean doc-realclean doc-install
+
+all:		bin dev doc sta
+clean:		bin-clean dev-clean doc-clean sta-clean
+realclean:	bin-realclean dev-realclean doc-realclean sta-realclean
+install:	bin-install dev-install doc-install sta-install
+
+
+#page
+## ------------------------------------------------------------
+## spkg rules.
+## ------------------------------------------------------------
+
+SPKG_INSTALL	= spkg.sh --install --prefix=$(prefix) -f -v
+SPKG_UPGRADE	= spkg.sh --upgrade --prefix=$(prefix) -f -v
+SPKG_PKG	= $(PACKAGE_NAME)_$(PACKAGE_XVERSION)
+
+SPKG_PKG_BIN	= $(SPKG_PKG)_bin.tar.gz
+SPKG_PKG_DEV	= $(SPKG_PKG)_dev.tar.gz
+SPKG_PKG_DOC	= $(SPKG_PKG)_doc.tar.gz
+SPKG_PKG_STA	= $(SPKG_PKG)_sta.tar.gz
+
+.PHONY: spkg-upgrade spkg-install
+.PHONY: $(foreach a, bin dev doc sta, spkg-upgrade-$(a) spkg-install-$(a))
+
+spkg-upgrade: $(foreach a, bin dev doc sta, spkg-upgrade-$(a)) bindist
+
+spkg-upgrade-bin:
+	-test -f $(SPKG_PKG_BIN) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_BIN)
+spkg-upgrade-dev:
+	-test -f $(SPKG_PKG_DEV) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_DEV)
+spkg-upgrade-doc:
+	-test -f $(SPKG_PKG_DOC) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_DOC)
+spkg-upgrade-sta:
+	-test -f $(SPKG_PKG_STA) && $(SPKG_UPGRADE) --file=$(SPKG_PKG_STA)
+
+spkg-install: $(foreach a, bin dev doc sta, spkg-install-$(a)) bindist
+spkg-install-bin:
+	-test -f $(SPKG_PKG_BIN) && $(SPKG_INSTALL) --file=$(SPKG_PKG_BIN)
+spkg-install-dev:
+	-test -f $(SPKG_PKG_DEV) && $(SPKG_INSTALL) --file=$(SPKG_PKG_DEV)
+spkg-install-doc:
+	-test -f $(SPKG_PKG_DOC) && $(SPKG_INSTALL) --file=$(SPKG_PKG_DOC)
+spkg-install-sta:
+	-test -f $(SPKG_PKG_STA) && $(SPKG_INSTALL) --file=$(SPKG_PKG_STA)
+
+#page
+## ------------------------------------------------------------
+## Configuration inspection scripts.
+## ------------------------------------------------------------
+
+ds_CONFIG_SCRIPT_SRC	= $(builddir)/$(notdir $(CONFIGDIR))/package-config
+ds_CONFIG_SCRIPT_DST	= $(INSTALL_ROOT)$(bindir)/config-$(PKG_DIR)
+
+install-config-script:
+	-@test -f $(ds_CONFIG_SCRIPT) && \
+	$(INSTALL_BIN) $(ds_CONFIG_SCRIPT_SRC) $(ds_CONFIG_SCRIPT_DST)
+
+bin-install: install-config-script
+
+
+# Makefile.rl --
+#
+# Part of: Marco's BASH Functions Library
+# Contents: project rules
+# Date: Sat Apr 19, 2003
+#
+# Abstract
+#
+#	This Makefile must be processed by the "automake.sh" script
+#	and by GNU Autoconf: read the README and INSTALL files for
+#	more details.
+#
+# Copyright (C)  2003, 2004  by Marco Maggi
+#
+# This library is free software;  you can redistribute it and/or modify
+# it  under the  terms  of the  GNU  Lesser General  Public License  as
+# published by the Free Software  Foundation; either version 2.1 of the
+# License, or (at your option) any later version.
+# 
+# This library is  distributed in the hope that it  will be useful, but
+# WITHOUT  ANY   WARRANTY;  without   even  the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS FOR  A PARTICULAR  PURPOSE.  See  the GNU
+# Lesser General Public License for more details.
+# 
+# You  should have received  a copy  of the  GNU Lesser  General Public
+# License along with  this library; if not, write  to the Free Software
+# Foundation, Inc.,  59 Temple Place, Suite 330,  Boston, MA 02111-1307
+# USA
+#
+
+#PAGE
+## ------------------------------------------------------------
+## Search paths.
+## ------------------------------------------------------------
+
+vpath	%.m4		$(top_srcdir)/macros
+vpath	%.sh.m4		$(top_srcdir)/modules
+vpath	%.sh.m4		$(top_srcdir)/lib
+vpath	%.sh.m4		$(top_srcdir)/examples
+vpath	%.sh.m4		$(builddir)
+
+ds-files-from-dir	= $(filter-out %~, $(wildcard $(1)/*))
+ds-make-dir		= $(shell test ! -d $(1) && $(MKDIR) $(1))
+ds-replace-dir		= $(addprefix $(1)/, $(notdir $(2)))
+
+M4FLAGS		= --include=$(top_srcdir)/macros \
+		  --include=$(builddir)/lib
+
+#PAGE
+## ------------------------------------------------------------
+## Library rules.
+## ------------------------------------------------------------
+
+library_SRCDIR		= $(top_srcdir)/modules
+library_BUILDDIR	= $(builddir)/lib
+
+MODULES			= base encode file getopts message program signal \
+			  string dialog main variable
+LIBNAME			= libmbfl.sh
+LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
+
+library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
+library_SOURCES		= $(addprefix $(library_BUILDDIR)/, \
+				$(foreach m, $(MODULES), $(m).sh))
+library_TARGETS		= $(LIBNAME)
+library_INSTLST		= $(library_TARGETS) $(LIBRARIES)
+library_INSTDIR		= $(pkgdatadir)
+
+library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES) $(library_BUILDDIR)
+library_REALCLEANFILES	= $(library_CLEANFILES)
+
+.PHONY: library-all library-clean library-realclean library-install
+
+library-all: $(call ds-make-dir, $(library_BUILDDIR)) $(library_TARGETS)
+library-clean:
+	-$(RM) $(library_CLEANFILES)
+library-realclean:
+	-$(RM) $(library_REALCLEANFILES)
+
+library-install:
+
+	@echo "Installing library files... "
+ifneq	(,$(library_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(library_INSTDIR)
+	@$(INSTALL_DATA) $(library_INSTLST) $(INSTALL_ROOT)$(library_INSTDIR)
+	@echo "Done."
+else
+	$(warning *** empty install list)
+endif
+
+
+
+$(library_SOURCES): $(library_BUILDDIR)/%.sh: macros.m4 $(library_SRCDIR)/%.sh.m4
+	$(M4) $(M4FLAGS) $(^) | \
+	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
+
+$(LIBNAME): libmbfl.sh.m4 $(library_SOURCES)
+	$(M4) $(M4FLAGS) $(<) >$(@)
+
+
+bin:		library-all
+bin-clean:	library-clean
+bin-realclean:	library-realclean
+bin-install:	library-install
+
+#page
+## ------------------------------------------------------------
+## Script rules.
+## ------------------------------------------------------------
+
+libexec_INSTLST		= mbfl-config
+libexec_INSTDIR		= $(pkglibexecdir)
+
+binscript_INSTLST	= mbfl-config
+binscript_INSTDIR	= $(bindir)
+
+libexec_CLEANFILES	= $(script_TARGETS)
+libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
+
+.PHONY: script-all script-clean script-realclean script-install
+
+script-all: $(libexec_TARGETS)
+script-clean:
+	-$(RM) $(libexec_CLEANFILES)
+script-realclean:
+	-$(RM) $(libexec_REALCLEANFILES)
+
+script-install:
+
+	@echo -en "Installing libexec files... "
+ifneq	(,$(libexec_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(libexec_INSTDIR)
+	@$(INSTALL_BIN) $(libexec_INSTLST) $(INSTALL_ROOT)$(libexec_INSTDIR)
+	@echo "done"
+else
+	$(warning *** empty install list)
+endif
+
+
+	@echo -en "Installing binscript files... "
+ifneq	(,$(binscript_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(binscript_INSTDIR)
+	@$(INSTALL_BIN) $(binscript_INSTLST) $(INSTALL_ROOT)$(binscript_INSTDIR)
+	@echo "done"
+else
+	$(warning *** empty install list)
+endif
+
+
+bin:		script-all
+bin-clean:	script-clean
+bin-realclean:	script-realclean
+bin-install:	script-install
+
+#page
+## ------------------------------------------------------------
+## User scripts rules.
+## ------------------------------------------------------------
+
+user_SRCDIR	= $(top_srcdir)/user
+user_BUILDDIR	= $(builddir)/user
+
+user_SOURCES	= $(call ds-files-from-dir, $(user_SRCDIR))
+user_TARGETS	= $(call ds-replace-dir, $(user_BUILDDIR), $(user_SOURCES))
+user_INSTLST	= $(user_TARGETS)
+user_INSTDIR	= $(libexecdir)/mbfluser_$(PACKAGE_XVERSION)
+
+user_CLEANFILES		= $(user_TARGETS) $(user_BUILDDIR)
+user_REALCLEANFILES	= $(user_CLEANFILES)
+
+.PHONY: user-all user-clean user-realclean user-install 
+
+user-all: $(call ds-make-dir, $(user_BUILDDIR)) $(user_TARGETS)
+user-clean: 
+	-$(RM) $(user_CLEANFILES)
+user-realclean: 
+	-$(RM) $(user_REALCLEANFILES)
+user-install: 
+
+	@echo -en "Installing user files... "
+ifneq	(,$(user_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(user_INSTDIR)
+	@$(INSTALL_BIN) $(user_INSTLST) $(INSTALL_ROOT)$(user_INSTDIR)
+	@echo "done"
+else
+	$(warning *** empty install list)
+endif
+
+
+$(user_TARGETS): $(user_BUILDDIR)/% : $(user_SRCDIR)/%
+	{ echo "#!/bin/bash" && cat $(<) ; } >$(@)
+	chmod 0700 $(@)
+
+bin:		user-all
+bin-clean:	user-clean
+bin-realclean:	user-realclean
+bin-install:	user-install
+
+#page
+## ------------------------------------------------------------
+## Vc scripts rules.
+## ------------------------------------------------------------
+
+vc_SRCDIR	= $(top_srcdir)/vc
+vc_BUILDDIR	= $(builddir)/vc
+
+vc_SOURCES	= $(call ds-files-from-dir, $(vc_SRCDIR))
+vc_TARGETS	= $(call ds-replace-dir, $(vc_BUILDDIR), $(vc_SOURCES))
+vc_INSTLST	= $(vc_TARGETS)
+vc_INSTDIR	= $(libexecdir)/mbflvc_$(PACKAGE_XVERSION)
+
+vc_CLEANFILES		= $(vc_TARGETS) $(vc_BUILDDIR)
+vc_REALCLEANFILES	= $(vc_CLEANFILES)
+
+.PHONY: vc-all vc-clean vc-realclean vc-install 
+
+vc-all: $(call ds-make-dir, $(vc_BUILDDIR)) $(vc_TARGETS)
+vc-clean: 
+	-$(RM) $(vc_CLEANFILES)
+vc-realclean: 
+	-$(RM) $(vc_REALCLEANFILES)
+vc-install: 
+
+	@echo -en "Installing vc files... "
+ifneq	(,$(vc_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(vc_INSTDIR)
+	@$(INSTALL_BIN) $(vc_INSTLST) $(INSTALL_ROOT)$(vc_INSTDIR)
+	@echo "done"
+else
+	$(warning *** empty install list)
+endif
+
+
+$(vc_TARGETS): $(vc_BUILDDIR)/% : $(vc_SRCDIR)/%
+	{ echo "#!/bin/bash" && cat $(<) ; } >$(@)
+	chmod 0700 $(@)
+
+bin:		vc-all
+bin-clean:	vc-clean
+bin-realclean:	vc-realclean
+bin-install:	vc-install
+
+#page
+## ------------------------------------------------------------
+## Admin scripts rules.
+## ------------------------------------------------------------
+
+admin_SRCDIR	= $(top_srcdir)/admin
+admin_BUILDDIR	= $(builddir)/admin
+
+admin_SOURCES	= $(call ds-files-from-dir, $(admin_SRCDIR))
+admin_TARGETS	= $(call ds-replace-dir, $(admin_BUILDDIR), $(admin_SOURCES))
+admin_INSTLST	= $(admin_TARGETS)
+admin_INSTDIR	= $(libexecdir)/mbfladmin_$(PACKAGE_XVERSION)
+
+admin_CLEANFILES		= $(admin_TARGETS) $(admin_BUILDDIR)
+admin_REALCLEANFILES	= $(admin_CLEANFILES)
+
+.PHONY: admin-all admin-clean admin-realclean admin-install 
+
+admin-all: $(call ds-make-dir, $(admin_BUILDDIR)) $(admin_TARGETS)
+admin-clean: 
+	-$(RM) $(admin_CLEANFILES)
+admin-realclean: 
+	-$(RM) $(admin_REALCLEANFILES)
+admin-install: 
+
+	@echo -en "Installing admin files... "
+ifneq	(,$(admin_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(admin_INSTDIR)
+	@$(INSTALL_BIN) $(admin_INSTLST) $(INSTALL_ROOT)$(admin_INSTDIR)
+	@echo "done"
+else
+	$(warning *** empty install list)
+endif
+
+
+$(admin_TARGETS): $(admin_BUILDDIR)/% : $(admin_SRCDIR)/%
+	{ echo "#!/bin/bash" && cat $(<) ; } >$(@)
+	chmod 0700 $(@)
+
+bin:		admin-all
+bin-clean:	admin-clean
+bin-realclean:	admin-realclean
+bin-install:	admin-install
+
+#PAGE
+## ------------------------------------------------------------
+## Template rules.
+## ------------------------------------------------------------
+
+template_INSTLST	= $(top_srcdir)/examples/template.sh
+template_INSTDIR	= $(pkgexampledir)
+
+.PHONY: template-install
+
+template-install:
+
+	@echo "Installing template files... "
+ifneq	(,$(template_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(template_INSTDIR)
+	@$(INSTALL_DATA) $(template_INSTLST) $(INSTALL_ROOT)$(template_INSTDIR)
+	@echo "Done."
+else
+	$(warning *** empty install list)
+endif
+
+
+doc-install:	template-install
+
+#page
+## ------------------------------------------------------------
+## Test rules.
+## ------------------------------------------------------------
+
+testdir		= $(top_srcdir)/tests
+test_FILES	= $(wildcard $(testdir)/*.test)
+test_TARGETS	= test-all
+
+test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
+test_CMD	= $(test_ENV) $(BASHPROG)
+
+.PHONY: test-all test-all-verbose
+
+test-all:
+ifneq ($(strip $(test_FILES)),)
+	@$(foreach f, $(test_FILES), \
+	top_srcdir=$(top_srcdir); $(test_CMD) $(f);)
+endif
+
+test-all-verbose:
+ifneq ($(strip $(test_FILES)),)
+	@$(foreach f, $(test_FILES), top_srcdir=$(top_srcdir); \
+	TESTSUCCESS='yes' TESTSTART='yes' $(test_CMD) $(f);)
+endif
+
+### end of file
+# Local Variables:
+# mode: makefile
+# page-delimiter: "^#page"
+# End:
+
+#PAGE
+## ------------------------------------------------------------
+## Shell scripts rules.
+## ------------------------------------------------------------
+
+M4		= @M4@
+M4FLAGS		+= --prefix-builtins
+
+%.sh: %.sh.m4
+	$(M4) $(M4FLAGS) $(<) | \
+	$(GREP) --invert-match -e '^#' -e '^$$' | \
+	$(SED) -e "s/^ \\+//" >$(@)
+
+
+#PAGE
+## ------------------------------------------------------------
+## Test rules.
+## ------------------------------------------------------------
+
+test_SRCDIR		= /home/devel/src/shell/mbfl/beta--0.7/tests
+#test_TARGETS		=
+
+#test_CLEANFILES	=
+#test_REALCLEANFILES	=
+
+.PHONY: test tests test-clean tests-clean test-realclean tests-realclean
+
+test tests: $(test_TARGETS)
+test-clean tests-clean:
+	-$(RM) $(test_CLEANFILES)
+test-realclean tests-realclean:
+	-$(RM) $(test_CLEANFILES) $(test_REALCLEANFILES)
+
+aux-clean:	test-clean
+aux-realclean:	test-realclean
+
+#PAGE
+## ------------------------------------------------------------
+## Generic package documentation.
+## ------------------------------------------------------------
+
+# doc_generic_TARGETS		= 
+# doc_generic_CLEANFILES	=
+# doc_generic_REALCLEANFILES	=
+
+doc_generic_INSTLST		?= $(wildcard $(addprefix $(top_srcdir)/, \
+				  README* COPYING license.terms INSTALL BUGS \
+				  NEWS ChangeLog)) \
+				  $(wildcard $(builddir)/meta/DESCRIPTION.txt)
+doc_generic_INSTDIR		= $(pkgdocdir)
+
+.PHONY: doc-generic-all doc-generic-clean doc-generic-realclean
+.PHONY: doc-generic-install
+
+doc-generic-all: $(doc_generic_TARGETS)
+doc-generic-clean:
+	-$(RM) $(doc_generic_CLEANFILES)
+doc-generic-realclean:
+	-$(RM) $(doc_generic_REALCLEANFILES)
+
+doc-generic-install:
+
+	@echo "Installing doc_generic files... "
+ifneq	(,$(doc_generic_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(doc_generic_INSTDIR)
+	@$(INSTALL_DATA) $(doc_generic_INSTLST) $(INSTALL_ROOT)$(doc_generic_INSTDIR)
+	@echo "Done."
+else
+	$(warning *** empty install list)
+endif
+
+
+
+doc:		doc-generic-all
+doc-clean:	doc-generic-clean
+doc-realclean:	doc-generic-realclean
+doc-install:	doc-generic-install
+
+#PAGE
+## ------------------------------------------------------------
+## Package documentation in Texinfo format.
+## ------------------------------------------------------------
+
+doc_texinfo_SRCDIR	= /home/devel/src/shell/mbfl/beta--0.7/doc
+doc_texinfo_SOURCES	= $(wildcard $(doc_texinfo_SRCDIR)/*.texi)
+
+vpath	%.texi		$(doc_texinfo_SRCDIR)
+vpath	%.texiinc	$(doc_texinfo_SRCDIR)
+
+doc_texi2html_TARGETS	= $(notdir $(doc_texinfo_SOURCES:.texi=.html))
+doc_texi2html_INSTLST	= $(wildcard $(doc_texi2html_TARGETS))
+doc_texi2html_INSTDIR	= $(pkghtmldir)
+
+doc_texi2info_TARGETS	= $(notdir $(doc_texinfo_SOURCES:.texi=.info))
+doc_texi2info_INSTLST	= $(wildcard $(foreach f, $(doc_texi2info_TARGETS), $(f)*))
+doc_texi2info_INSTDIR	= $(infodir)
+
+doc_texinfo_CLEANFILES	 = $(doc_texi2info_INSTLST) $(doc_texi2html_INSTLST)
+doc_texinfo_REALCLEANFILES = $(doc_texinfo_CLEANFILES) version.texiinc
+
+MAKEINFO		= @MAKEINFO@
+DS_TEXI2INFO_FLAGS	= -I $(doc_texinfo_SRCDIR) -I $(builddir)
+DS_TEXI2HTML_FLAGS	= -I $(doc_texinfo_SRCDIR) -I $(builddir) --html --no-split
+
+.PHONY: doc-texinfo-all doc-texinfo-clean doc-texinfo-realclean
+.PHONY: doc-texinfo-install
+
+doc-texinfo-all: $(doc_texi2info_TARGETS) $(doc_texi2html_TARGETS)
+doc-texinfo-clean:
+	-$(RM) $(doc_texinfo_CLEANFILES)
+doc-texinfo-realclean:
+	-$(RM) $(doc_texinfo_REALCLEANFILES)
+
+doc-texinfo-install:
+	@echo "Installing documentation in Info format."
+
+	@echo "Installing doc_texi2info files... "
+ifneq	(,$(doc_texi2info_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(doc_texi2info_INSTDIR)
+	@$(INSTALL_DATA) $(doc_texi2info_INSTLST) $(INSTALL_ROOT)$(doc_texi2info_INSTDIR)
+	@echo "Done."
+else
+	$(warning *** empty install list)
+endif
+
+	@echo "Installing documentation in HTML format."
+
+	@echo "Installing doc_texi2html files... "
+ifneq	(,$(doc_texi2html_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(doc_texi2html_INSTDIR)
+	@$(INSTALL_DATA) $(doc_texi2html_INSTLST) $(INSTALL_ROOT)$(doc_texi2html_INSTDIR)
+	@echo "Done."
+else
+	$(warning *** empty install list)
+endif
+
+
+$(doc_texi2info_TARGETS): %.info : %.texi version.texiinc
+	$(MAKEINFO) $(DS_TEXI2INFO_FLAGS) $(<) -o $(@)
+
+$(doc_texi2html_TARGETS): %.html : %.texi version.texiinc
+	$(MAKEINFO) $(DS_TEXI2HTML_FLAGS) $(<) -o $(@)
+
+version.texiinc: Makefile
+	echo -e "@macro version{}\n$(PACKAGE_XVERSION)\n@end macro\n" >$(@)
+
+doc:		doc-texinfo-all
+doc-clean:	doc-texinfo-clean
+doc-realclean:	doc-texinfo-realclean
+doc-install:	doc-texinfo-install
+
+#PAGE
+## ------------------------------------------------------------
+## Auto configuration rules.
+## ------------------------------------------------------------
+
+config_CLEANFILES	= config.log config.status config.cache Makefile
+
+.PHONY: config-clean reconfig
+
+Makefile: $(srcdir)/Makefile.in $(srcdir)/configure $(builddir)/config.status
+	$(builddir)/config.status
+
+config.status: $(srcdir)/configure
+	$(builddir)/config.status --recheck
+
+config-clean:
+	-$(RM) $(config_CLEANFILES)
+
+reconfig:
+	@echo "reconfiguring from top source dir: \"$(top_srcdir)\""
+	@cd $(top_srcdir) && \
+	{ test -d gnuconfig && { gnuconfig/automake.sh && gnuconfig/autoconf.sh; }; } || \
+	{ test -d tclconfig && { tclconfig/automake.sh && tclconfig/autoconf.sh; }; }
+
+#PAGE
+## ------------------------------------------------------------
+## Distribution targets.
+## ------------------------------------------------------------
+
+.PHONY: dist bindist bindist-bin bindist-dev bindist-doc bindist-sta
+
+dist bindist bindist-bin bindist-dev bindist-doc bindist-sta:
+	$(CONFIGDIR)/do.sh --$(@) --verbose
+
+.PHONY: debian debian-bin debian-doc debian-dev debian-sta
+
+debian debian-bin debian-doc debian-dev debian-sta:
+	$(CONFIGDIR)/do.sh --$(@) --verbose
+
+
+#PAGE
+## ------------------------------------------------------------
+## End of makefile.
+## ------------------------------------------------------------
+
+.PHONY: echo-variable
+echo-variable:
+	@echo $($(VARIABLE))
+
+.NOEXPORT:
+
+
+
+### end of file
+# Local Variables:
+# mode: makefile
+# End:

@@ -1,0 +1,109 @@
+#!/bin/bash
+# mbfl-config --
+# 
+# Part of: Marco's BASH Functions Library
+# Contents: configuration script
+# Date: Thu Oct  7, 2004
+# 
+# Abstract
+# 
+# 
+# 
+# Copyright (c) 2004 Marco Maggi
+# 
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  2.1 of the License,  or (at
+# your option) any later version.
+# 
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# Lesser General Public License for more details.
+# 
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
+# 
+
+#page
+## ------------------------------------------------------------
+## Global variables.
+## ------------------------------------------------------------
+
+DEFAULT_OPTION='--library'
+OPTION="${1:-${DEFAULT_OPTION}}"
+
+FULL_VERSION='@PACKAGE_XVERSION@'
+VERSION='@PACKAGE_VERSION@'
+BASE_VERSION='@PACKAGE_VERSION_MAJMIN@'
+
+pkgdatadir='@datadir@/@PACKAGE_NAME@_@PACKAGE_XVERSION@'
+userpath='@libexecdir@/@PACKAGE_NAME@user_@PACKAGE_XVERSION@'
+vcpath='@libexecdir@/@PACKAGE_NAME@vc_@PACKAGE_XVERSION@'
+adminpath='@libexecdir@/@PACKAGE_NAME@admin_@PACKAGE_XVERSION@'
+
+USAGE="usage: mbfl-config [option]
+Marco's BASH Functions Library configuration script
+options:
+   --library        prints the full pathname of the library
+   --testlib        prints the full pathname of the testing library
+   --userlib        prints the full pathname of the user library
+   --vclib          prints the full pathname of the version control library
+   --userpath       prints the full pathname of the user scripts directory
+   --vcpath         prints the full pathname of the vc scripts directory
+   --adminpath      prints the full pathname of the admin scripts directory
+   --full-version   prints the full version number (with release state)
+   --version        prints the full version number (with patch level)
+   --base-version   prints the full version number (only major.minor)
+   --help           prints the help screen
+"
+ 
+#page
+## ------------------------------------------------------------
+## Main script.
+## ------------------------------------------------------------
+
+case "${OPTION}" in
+    --library)
+	echo "${pkgdatadir}/libmbfl.sh"	
+	;;
+    --testlib)
+	echo "${pkgdatadir}/libmbfltest.sh"
+	;;
+    --userlib)
+	echo "${pkgdatadir}/libmbfluser.sh"
+	;;
+    --vclib)
+	echo "${pkgdatadir}/libmbflvc.sh"
+	;;
+    --userpath)
+        echo "${userpath}"
+        ;;
+    --vcpath)
+        echo "${vcpath}"
+        ;;
+    --adminpath)
+        echo "${adminpath}"
+        ;;
+    --full-version)
+	echo "${FULL_VERSION}"
+	;;
+    --version)
+	echo "${VERSION}"
+	;;
+    --base-version)
+	echo "${BASE_VERSION}"
+	;;
+    *)
+	echo "${USAGE}"
+	;;
+esac
+
+exit 0
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

@@ -1,0 +1,48 @@
+# admin-partition-assert-mounted-mode --
+#
+# Copyright (C) 2004 Marco Maggi
+#
+# This is free software licensed under the GNU Lesser General Public License.
+# See the COPYING file in the distribution for details.
+
+
+set -e
+
+MOUNT_MODE=${1:?"missing mount mode parameter ('rw' or 'ro')"}
+MOUNT_POINT=${2:?"missing mount point parameter"}
+
+case "${MOUNT_MODE}" in
+    rw|ro)
+        true
+        ;;
+    *)
+        user-message-error \
+            "unknown mount mode '${MOUNT_MODE}', must be: 'ro' or 'rw'"
+        exit 1
+        ;;
+esac
+
+user-validate-directory "${MOUNT_POINT}"
+
+declare OUTPUT LINE
+
+# This may seem strange but when reading lines from a pipe with "while"
+# it appears that bash enters a subshell: calling "exit" only terminates
+# the subshell, not the upper shell process.
+
+admin-partition-print-modes | \
+    while read -t 1 NEXT_MOUNT_POINT && read -t 1 NEXT_MOUNT_MODE ; do
+    if test "${NEXT_MOUNT_POINT}" = "${MOUNT_POINT}" ; then
+        if test "${NEXT_MOUNT_MODE}"  = "${MOUNT_MODE}"
+            then exit 0
+        fi
+        exit 1
+    fi
+done && exit 0
+
+exit 1
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

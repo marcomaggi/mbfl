@@ -1,0 +1,104 @@
+
+	       Marco's BASH Functions Library
+	       ==============================
+
+
+Topics
+------
+
+  1. Introduction
+  2. License
+  3. Install
+  4. Usage
+  A. Credits
+  B. Bugs
+  C. Resources
+
+
+1. Introduction
+---------------
+
+The  MBFL is a  collection of  shell functions.  I've tested
+them only  with the  GNU BASH shell,  so I do  not guarantee
+that they can work with other shells. 
+
+
+2. License
+----------
+
+Copyright (c) 2003, 2004 Marco Maggi. 
+
+This is free software; you can redistribute it and/or modify
+it under the terms of  the GNU Lesser General Public License
+as published by the Free Software Foundation; either version
+2.1 of the License, or (at your option) any later version.
+
+This  library is  distributed in  the hope  that it  will be
+useful, but  WITHOUT ANY WARRANTY; without  even the implied
+warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
+PURPOSE.  See the GNU Lesser General Public License for more
+details.
+
+You should  have received a  copy of the GNU  Lesser General
+Public License along with this library; if not, write to the
+Free Software Foundation, Inc.,  59 Temple Place, Suite 330,
+Boston, MA 02111-1307 USA
+
+
+3. Install
+----------
+
+Read the INSTALL file.
+
+
+4. Usage
+--------
+
+Read the documentation in Texinfo format. Briefely: the best
+way to use the library  is to include at runtime the library
+file  "libmbfl.sh"  in  the  script;  this  is  possible  by
+installing MBFL  on the  system and using  this code  in the
+scripts:
+
+  source "${MBFL_LIBRARY:=`mbfl-config`}"
+
+the output of the  "mbfl-config" script is the full pathname
+of the library file. The value can be overridden setting the
+environment variable "MBFL_LIBRARY".
+
+
+A. Credits
+----------
+
+The  stuff was  written  by Marco  Maggi.   If this  package
+exists it's because of the  great GNU software tools that he
+uses all the time.
+
+
+B. Bugs
+-------
+
+Bug reports  are appreciated: send them to  me by electronic
+mail.   Take   the  mail  hostname  of  my   ISP,  which  is
+"tiscalinet.it", and join it with my mail username, which is
+"marcomaggi".
+
+
+C. Resources
+------------
+
+The GNU Project software can be found here:
+
+		   <http://www.gnu.org/>
+
+the latest version of MBFL should be found here:
+
+	    <http://web.tiscali.it/marcomaggi/>
+
+follow the "Software" link.
+
+
+### end of file
+# Local Variables:
+# mode: text
+# End:
