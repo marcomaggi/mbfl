@@ -1,0 +1,116 @@
+
+	       Marco's BASH Functions Library
+	       ==============================
+
+
+Topics
+------
+
+  1. Introduction
+  2. License
+  3. Install
+  4. Usage
+  A. Credits
+  B. Bugs
+  C. Resources
+
+
+1. Introduction
+---------------
+
+The  MBFL is a  collection of  shell functions.  I've tested
+them only  with the  GNU BASH shell,  so I do  not guarantee
+that they can work with other shells. 
+
+
+2. License
+----------
+
+Copyright (c) 2003, 2004 Marco Maggi. 
+
+This is free software; you can redistribute it and/or modify
+it under the terms of  the GNU Lesser General Public License
+as published by the Free Software Foundation; either version
+2.1 of the License, or (at your option) any later version.
+
+This  library is  distributed in  the hope  that it  will be
+useful, but  WITHOUT ANY WARRANTY; without  even the implied
+warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
+PURPOSE.  See the GNU Lesser General Public License for more
+details.
+
+You should  have received a  copy of the GNU  Lesser General
+Public License along with this library; if not, write to the
+Free Software Foundation, Inc.,  59 Temple Place, Suite 330,
+Boston, MA 02111-1307 USA
+
+
+3. Install
+----------
+
+Read the INSTALL file.
+
+
+4. Usage
+--------
+
+Each library file is self-documenting: read the source.
+
+  Usually  I  install  the   libraries  on  a  "well  known"
+directory, then  I just include  them in the  script source.
+The GNU m4 preprocessor is a  good tool to do that: I put in
+the source script some macro invocation like the following:
+
+     m4_include(libmbfl.sh)
+
+and  preprocess  the  script  with  a  make  rule  like  the
+following:
+
+     M4PROG	= m4
+     M4FLAGS	= --prefix-builtins --include=$(LIBSHDIR)
+
+     LIBSHDIR	= ...
+
+     %.sh: %.sh.m4
+		$(M4PROG) $(M4FLAGS) $(<) >$(@)
+
+obviously I  use GNU Autoconf to  preprocess the "Makefile",
+so  I  search the  library  directory  from the  "configure"
+script.
+
+
+A. Credits
+----------
+
+The  stuff was  written  by Marco  Maggi.   If this  package
+exists it's because of the  great GNU software tools that he
+uses all the time.
+
+
+B. Bugs
+-------
+
+Bug reports  are appreciated: send them to  me by electronic
+mail.   Take   the  mail  hostname  of  my   ISP,  which  is
+"tiscalinet.it", and join it with my mail username, which is
+"marcomaggi".
+
+
+C. Resources
+------------
+
+The GNU Project software can be found here:
+
+		   <http://www.gnu.org/>
+
+the latest version of MBFL should be found here:
+
+	    <http://web.tiscali.it/marcomaggi/>
+
+follow the "Software" link.
+
+
+### end of file
+# Local Variables:
+# mode: text
+# End:

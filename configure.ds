@@ -1,0 +1,45 @@
+# configure.ds --
+# 
+# Part of: Marco's BASH Functions Library
+# Contents: configuration script
+# Date: Sat Apr 19, 2003
+# 
+# Abstract
+# 
+#	Configuration script. This template must be parsed by GNU
+#	autoconf to build the "configure" executable script.
+# 
+# Copyright (c) 2003, 2004 Marco Maggi
+# 
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  2.1 of the License,  or (at
+# your option) any later version.
+# 
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# Lesser General Public License for more details.
+# 
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA
+# 
+
+ds_gnuarch_package
+ds_author_name(Marco Maggi)
+ds_author_email(marcomaggi@tiscalinet.it)
+ds_copyright_years({2003, 2004})
+ds_source_file(./lib/libmbfl.sh.m4)
+
+ds_init
+AC_CHECK_PROG([SED], [sed], [sed], :)
+AC_CHECK_PROG([GREP], [grep], [grep], :)
+ds_output
+
+### end of file
+# Local Variables:
+# mode: sh
+# page-delimiter: "^#PAGE"
+# End:

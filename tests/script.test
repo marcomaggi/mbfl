@@ -1,0 +1,167 @@
+# script.test --
+# 
+# Part of: Azzurra Package Manager
+# Contents: template tests
+# Date: Fri Aug  8, 2003
+# 
+# Abstract
+# 
+#	This file must be executes through "all.tcl": from the build
+#	directory:
+#
+#		$ make all test TESTFLAGS="-match script-*"
+# 
+#	will select these tests.
+# 
+# Copyright (c) 2003, 2004 Marco Maggi
+# 
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 2, or (at your  option) any later
+# version.
+# 
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# General Public License for more details.
+# 
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
+# 
+
+#PAGE
+## ------------------------------------------------------------
+## Setup.
+## ------------------------------------------------------------
+
+source [file join [file dirname [info script]] setup.tcl]
+
+#PAGE
+## ---------------------------------------------------------
+## Test namespace.
+## ---------------------------------------------------------
+
+namespace eval ::test {
+
+    set env(MBFL_LIBRARY) [file join $env(builddir) libmbfl.sh]
+    variable	script [file join $env(builddir) template.sh]
+    variable	bash [auto_execok bash]
+
+    proc script { args } {
+	variable	script
+	variable	bash
+	set result {}
+
+
+	if { [catch {
+	    set result [eval {exec $bash $script} $args]
+	} res] } {
+	    return $res
+	}
+	return $result
+    }
+
+#PAGE
+
+::tcltest::test script-1.1 "usage message" {
+    -body	{
+	script --usage
+    }
+    -result "usage: template.sh *"
+    -match glob
+}
+
+::tcltest::test script-1.2 "help message" {
+    -body	{
+	script --help
+    }
+    -result "usage: template.sh *"
+    -match glob
+}
+
+::tcltest::test script-1.3 "h message" {
+    -body	{
+	script -h
+    }
+    -result "usage: template.sh *"
+    -match glob
+}
+
+::tcltest::test script-1.4 "license message" {
+    -body	{
+	script --license
+    }
+    -result "template.sh version *"
+    -match glob
+}
+
+::tcltest::test script-1.5 "version message" {
+    -body	{
+	script --version
+    }
+    -result "template.sh version *"
+    -match glob
+}
+
+::tcltest::test script-1.6 "version only message" {
+    -body	{
+	script --version-only
+    }
+    -result {[0-9]+\.[0-9]+(\.[0-9]+(\.[0-9]+)?)?}
+    -match regexp
+}
+
+#PAGE
+
+::tcltest::test script-2.1 "beta argument" {
+    -body	{
+	script --beta=123
+    }
+    -result "option beta: 123"
+}
+
+::tcltest::test script-2.2 "beta argument" {
+    -body	{
+	script --beta=123\\
+    }
+    -result "option beta: 123\\"
+}
+
+::tcltest::test script-2.3 "beta argument" {
+    -body	{
+	script "--beta=1 2"
+    }
+    -result "option beta: 1 2"
+}
+
+::tcltest::test script-2.4 "beta argument" {
+    -body	{
+	script --beta=123\\\\
+    }
+    -result "option beta: 123\\\\"
+}
+
+::tcltest::test script-2.5 "beta argument" {
+    -body	{
+	script --alpha
+    }
+    -result "action alpha"
+}
+
+#PAGE
+## ---------------------------------------------------------
+## End of "::test" namespace.
+## ---------------------------------------------------------
+
+::tcltest::cleanupTests
+}
+namespace delete ::test
+
+
+### end of file
+# Local Variables:
+# mode: tcl
+# page-delimiter: "^#PAGE"
+# End:

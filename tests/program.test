@@ -1,0 +1,116 @@
+# program.test --
+# 
+# Part of: Marco's BASH Functions Library
+# Contents: tests for the program.sh functions
+# Date: Wed Feb  4, 2004
+# 
+# Abstract
+# 
+#	This file must be executes through "all.tcl": from the build
+#	directory:
+#
+#		$ make all test TESTFLAGS="-match program-*"
+# 
+#	will select these tests.
+# 
+# Copyright (c) 2004 Marco Maggi
+# 
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  2.1 of the License,  or (at
+# your option) any later version.
+# 
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# Lesser General Public License for more details.
+# 
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA
+# 
+
+#PAGE
+## ------------------------------------------------------------
+## Setup.
+## ------------------------------------------------------------
+
+source [file join [file dirname [info script]] setup.tcl]
+
+#PAGE
+## ---------------------------------------------------------
+## Test namespace.
+## ---------------------------------------------------------
+
+namespace eval ::test {
+
+    variable	libname		[file join $libpath programs.sh]
+    variable	msglibname	[file join $libpath message.sh]
+
+    variable	precmd ". %s; . %s"
+    set precmd [format $precmd $libname $msglibname]
+
+
+#PAGE
+
+::tcltest::test program-1.1 "executing program" {
+    -body	{
+	bash "mbfl_program_exec echo 123"
+    }
+    -result 123
+}
+
+::tcltest::test program-1.2 "fake program execution" {
+    -body	{
+	bash "mbfl_program_TEST=yes; mbfl_program_exec echo 123 2>&1"
+    }
+    -result "echo 123"
+}
+
+::tcltest::test program-1.3 "return value, true" {
+    -body	{
+	bash "mbfl_program_exec true; echo \$?"
+    }
+    -result 0
+}
+
+::tcltest::test program-1.4 "return value, false" {
+    -body	{
+	bash "mbfl_program_exec false; echo \$?"
+    }
+    -result 1
+}
+
+#PAGE
+
+::tcltest::test program-2.1 "checking existent" {
+    -body	{
+	bash "mbfl_program_check [info nameofexecutable]"
+    }
+    -result {}
+}
+
+::tcltest::test program-2.2 "checking unexistent program" {
+    -body	{
+	bash "mbfl_program_check 1234567asdfads 2>&1 || true"
+    }
+    -result	"* error: cannot find executable \"1234567asdfads\""
+    -match	glob
+}
+
+#PAGE
+## ---------------------------------------------------------
+## End of "::test" namespace.
+## ---------------------------------------------------------
+
+::tcltest::cleanupTests
+}
+namespace delete ::test
+
+
+### end of file
+# Local Variables:
+# mode: tcl
+# page-delimiter: "^#PAGE"
+# End:

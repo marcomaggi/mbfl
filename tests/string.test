@@ -1,0 +1,473 @@
+# string.test --
+# 
+# Part of: Marco's BASH function libraries
+# Contents: tests for the string library
+# Date: Fri Apr 18, 2003
+# 
+# Abstract
+# 
+#	This file must be executes through "all.tcl": from the build
+#	directory:
+#
+#		$ make all test TESTFLAGS="-match string-*"
+# 
+#	will select these tests.
+# 
+# Copyright (c) 2003 Marco Maggi
+# 
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 2, or (at your  option) any later
+# version.
+# 
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# General Public License for more details.
+# 
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
+# 
+# $Id: string.test,v 1.1.1.3 2003/12/17 12:46:31 marco Exp $
+#
+
+#PAGE
+## ------------------------------------------------------------
+## Setup.
+## ------------------------------------------------------------
+
+source [file join [file dirname [info script]] setup.tcl]
+
+#PAGE
+## ---------------------------------------------------------
+## Test namespace.
+## ---------------------------------------------------------
+
+namespace eval ::test {
+
+    variable	libstring [file join $libpath string.sh]
+
+    variable	precmd ". %s"
+    set precmd [format $precmd $libstring]
+
+
+#PAGE
+
+::tcltest::test libstring-1.1 "string chars" {
+    -body	{
+	bash "mbfl_string_chars abcdefghilm"
+    }
+    -result {a
+b
+c
+d
+e
+f
+g
+h
+i
+l
+m}
+}
+
+::tcltest::test libstring-1.2 "string chars" {
+    -body	{
+	bash {mbfl_string_chars "abcde fghilm"}
+    }
+    -result {a
+b
+c
+d
+e
+
+f
+g
+h
+i
+l
+m}
+}
+
+::tcltest::test libstring-1.3 "string chars" {
+    -body	{
+	bash "mbfl_string_chars \"abcdef\nghilm\""
+    }
+    -result {a
+b
+c
+d
+e
+f
+
+g
+h
+i
+l
+m}
+}
+
+#PAGE
+
+::tcltest::test libstring-2.1 "string first" {
+    -body	{
+	bash "mbfl_string_first abcdefghilm d"
+    }
+    -result 3
+}
+
+::tcltest::test libstring-2.2 "string first" {
+    -body	{
+	bash "mbfl_string_first abcdefghilm a"
+    }
+    -result 0
+}
+
+::tcltest::test libstring-2.3 "string first" {
+    -body	{
+	bash "mbfl_string_first abcdefghilm m"
+    }
+    -result 10
+}
+
+::tcltest::test libstring-2.4 "string first" {
+    -body	{
+	bash "mbfl_string_first abcdefghilm X"
+    }
+    -result {}
+}
+
+::tcltest::test libstring-2.5 "string first" {
+    -body	{
+	bash "mbfl_string_first abcdeabcde a 3"
+    }
+    -result 5
+}
+
+::tcltest::test libstring-2.6 "string first" {
+    -body	{
+	bash "mbfl_string_first abcdeabcde e 5"
+    }
+    -result 9
+}
+
+::tcltest::test libstring-2.7 "string first" {
+    -body	{
+	bash "mbfl_string_first abcdeabcde e 4"
+    }
+    -result 4
+}
+
+
+#PAGE
+
+::tcltest::test libstring-3.1 "string index" {
+    -body	{
+	bash "mbfl_string_index abcdefghilm 0"
+    }
+    -result a
+}
+
+::tcltest::test libstring-3.2 "string index" {
+    -body	{
+	bash "mbfl_string_index abcdefghilm 4"
+    }
+    -result e
+}
+
+::tcltest::test libstring-3.3 "string index" {
+    -body	{
+	bash "mbfl_string_index abcdefghilm 10"
+    }
+    -result m
+}
+
+::tcltest::test libstring-3.4 "string index" {
+    -body	{
+	bash "mbfl_string_index abcdefghilm 11"
+    }
+    -result {}
+}
+
+#PAGE
+
+::tcltest::test libstring-4.1 "string is" {
+    -body	{
+	bash "if mbfl_string_is alpha abcd ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.2 "string is" {
+    -body	{
+	bash "if mbfl_string_is alpha 123  ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.3 "string is" {
+    -body	{
+	bash "if mbfl_string_is alpha ab12 ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.4 "string is" {
+    -body	{
+	bash "if mbfl_string_is digit 123  ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.5 "string is" {
+    -body	{
+	bash "if mbfl_string_is digit abcd ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.6 "string is" {
+    -body	{
+	bash "if mbfl_string_is digit 12ab ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.7 "string is" {
+    -body	{
+	bash "if mbfl_string_is alnum abcd ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.8 "string is" {
+    -body	{
+	bash "if mbfl_string_is alnum 123 ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.9 "string is" {
+    -body	{
+	bash "if mbfl_string_is alnum ab12 ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.10 "string is" {
+    -body	{
+	bash "if mbfl_string_is noblank abcd ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.11 "string is" {
+    -body	{
+	bash "if mbfl_string_is noblank \"\n\" ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.12 "string is" {
+    -body	{
+	bash "if mbfl_string_is noblank \"\t\" ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.13 "string is" {
+    -body	{
+	bash "if mbfl_string_is noblank \"\r\" ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.14 "string is" {
+    -body	{
+	bash "if mbfl_string_is noblank \" \" ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.15 "string is" {
+    -body	{
+	bash "if mbfl_string_is noblank \"abcd\" ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.16 "string is" {
+    -body	{
+	bash "if mbfl_string_is noblank \"ab\ncd\" ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.17 "string is" {
+    -body	{
+	bash "if mbfl_string_is name \"abcd\" ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.18 "string is" {
+    -body	{
+	bash "if mbfl_string_is name \"ab_cd\" ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.19 "string is" {
+    -body	{
+	bash "if mbfl_string_is name \"_abcd123\" ; then echo yes; else echo no; fi"
+    }
+    -result yes
+}
+
+::tcltest::test libstring-4.20 "string is" {
+    -body	{
+	bash "if mbfl_string_is name \"1abcd3\" ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+::tcltest::test libstring-4.21 "string is" {
+    -body	{
+	bash "if mbfl_string_is name \"\n\" ; then echo yes; else echo no; fi"
+    }
+    -result no
+}
+
+#PAGE
+
+::tcltest::test libstring-5.1 "string last" {
+    -body	{
+	bash "mbfl_string_last abcdefghilm d"
+    }
+    -result 3
+}
+
+::tcltest::test libstring-5.2 "string last" {
+    -body	{
+	bash "mbfl_string_last abcdefghilm a"
+    }
+    -result 0
+}
+
+::tcltest::test libstring-5.3 "string last" {
+    -body	{
+	bash "mbfl_string_last abcdefghilm m"
+    }
+    -result 10
+}
+
+::tcltest::test libstring-5.4 "string last" {
+    -body	{
+	bash "mbfl_string_last abcdefghilm X"
+    }
+    -result {}
+}
+
+::tcltest::test libstring-5.5 "string last" {
+    -body	{
+	bash "mbfl_string_last abcdefghilm a 3"
+    }
+    -result 0
+}
+
+::tcltest::test libstring-5.6 "string last" {
+    -body	{
+	bash "mbfl_string_last abcdeabcde a 7"
+    }
+    -result 5
+}
+
+::tcltest::test libstring-5.7 "string last" {
+    -body	{
+	bash "mbfl_string_last abcdeabcde e 7"
+    }
+    -result 4
+}
+
+::tcltest::test libstring-5.8 "string last" {
+    -body	{
+	bash "mbfl_string_last abcdeabcde e 4"
+    }
+    -result 4
+}
+
+#PAGE
+
+::tcltest::test libstring-6.1 "string range" {
+    -body	{
+	bash "mbfl_string_range abcdefghilm 0 end"
+    }
+    -result abcdefghilm
+}
+
+::tcltest::test libstring-6.2 "string range" {
+    -body	{
+	bash "mbfl_string_range abcdefghilm 0"
+    }
+    -result abcdefghilm
+}
+
+::tcltest::test libstring-6.3 "string range" {
+    -body	{
+	bash "mbfl_string_range abcdefghilm 0 4"
+    }
+    -result abcd
+}
+
+::tcltest::test libstring-6.4 "string range" {
+    -body	{
+	bash "mbfl_string_range abcdefghilm 4 end"
+    }
+    -result efghilm
+}
+
+#PAGE
+
+::tcltest::test libstring-7.1 "string split" {
+    -body	{
+	bash "mbfl_string_split abc:def:ghi:lm :"
+    }
+    -result {abc
+def
+ghi
+lm}
+}
+
+::tcltest::test libstring-7.2 "string split" {
+    -body	{
+	bash "mbfl_string_split abc:def_ghi:lm \":_\""
+    }
+    -result {abc
+def
+ghi
+lm}
+}
+
+::tcltest::test libstring-7.3 "string split" {
+    -body	{
+	bash "mbfl_string_split abcdefghilm :"
+    }
+    -result {abcdefghilm}
+}
+
+#PAGE
+## ---------------------------------------------------------
+## End of "::test" namespace.
+## ---------------------------------------------------------
+
+::tcltest::cleanupTests
+}
+namespace delete ::test
+
+
+### end of file
+# Local Variables:
+# mode: tcl
+# page-delimiter: "^#PAGE"
+# End:

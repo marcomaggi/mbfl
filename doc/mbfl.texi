@@ -1,0 +1,1267 @@
+\input texinfo.tex
+@c %**start of header
+@setfilename mbfl.info
+@settitle Marco's BASH Functions Library
+@c %**end of header
+
+@include version.texiinc
+@syncodeindex fn cp
+
+@c ------------------------------------------------------------
+
+@macro mbfl{}
+@acronym{MBFL}
+@end macro
+
+
+@c ------------------------------------------------------------
+@titlepage
+@title Marco's BASH Functions Library
+@subtitle @version.texi
+@author Marco Maggi
+@page
+@vskip 0pt plus 1filll
+@noindent
+Copyright @copyright{}  2003, 2004  by Marco Maggi.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front--Cover Texts, and no Back--Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''.
+@end titlepage
+
+
+@c ------------------------------------------------------------
+@ifinfo
+@dircategory Development
+@direntry
+* MBFL: (MBFL).                 Marco's BASH Functions Library. 
+@end direntry
+@end ifinfo
+
+
+@c ------------------------------------------------------------
+@ifnottex
+@node Top
+@top Marco's BASH Functions Library
+
+@noindent
+This file documents version @version{} or @mbfl{}, a collection
+of @acronym{GNU} @command{bash} shell functions.
+
+Copyright @copyright{}  2003, 2004  by Marco Maggi.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front--Cover Texts, and no Back--Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''.
+     
+@menu
+* Overview::                    Overview of the library. 
+* Service Variables::           Required user defined variables.
+* Encoding::                    Encoding and decoding strings.
+* File::                        Manipulating files and pathnames.
+* Getopt::                      Parsing command line options.
+* Message::                     Printing messages to the console.
+* Program::                     Using external programs.
+* Signal::                      Catching signals.
+* String::                      Manipulating strings.
+* Dialog::                      Interacting with the user.
+* Main::                        Main function.
+* Example::                     A script example.
+
+Appendices
+
+* Package License::             GNU Lesser General Public License.
+* Documentation License::       GNU Free Documentation License.
+* References::                  Bibliography and references.
+
+Indexes
+
+* Concept Index::               An entry for each concept. 
+@end menu
+@end ifnottex
+
+
+@c ------------------------------------------------------------
+@node Overview
+@unnumbered Overview of the library
+
+
+@noindent
+This package is an attempt to make @acronym{GNU} @command{bash} a viable
+solution for medium sized scripts. A problem with bash is that it
+doesn't provide encapsulation of any sort, beside the feature of
+providing functions. This problem is partly solved by writing subscripts
+and invoking them in the main script, but this is not always the best
+solution.
+
+A set of modules implementing common operations and a script template
+are provided by the package and the author has used them with success in
+implementing non--small scripts.
+
+The philosophy of @mbfl{} is to do the work as much as possible
+without external commands. For example: string manipulation is done
+using the special variable substitution provided by @command{bash}, and
+no use is done of utilities like @command{sed}, @command{grep} and
+@command{ed}.
+
+The library is better used if our script is developed on the template
+provided in the package (@file{examples/template.sh.m4}). This is
+because with @mbfl{} some choices has been made to reduce the custom
+part of the script to the smallest dimension; if we follow another
+schema, @mbfl{} modules may be indequate. This is especially true for
+the options parsing module.
+
+At present: a module in the library is not working at all: the signal
+one. Ignore completely the functions whose name begin with
+@code{mbfl_signal}.
+
+
+@unnumberedsec Using the library
+
+@noindent
+The best way to use the library is to include the single file
+@file{libmbfl.sh} directly in the script. This is easy if we preprocess
+our scripts with @acronym{GNU} @command{m4}; as we can see in the
+template file (subdirectory @file{examples} of the source tree):
+
+@example
+m4_changequote([[, ]])
+m4_include(libmbfl.sh)
+@end example
+
+@noindent
+is all we need to do. We can preprocess the script with:
+
+@example
+$ m4 --prefix-builtins --include=/path/to/library \
+         script.sh.m4 >script.sh
+@end example
+
+@noindent
+easy to do in a @file{Makefile}; we can take the @mbfl{}'s
+@file{Makefile} as example of this method.
+
+It is also interesting to process the script with the following rule:
+
+@example
+M4      = ...
+M4FLAGS = --prefix-builtins --include=/path/to/library
+
+%.sh: %.sh.m4
+        $(M4) $(M4FLAGS) $(<) | \
+        grep --invert-match -e '^#' -e '^$$' | \
+        sed -e "s/^ \\+//" >$(@@)
+@end example
+
+@noindent
+this will remove all the comments and blank lines, decreasing the size
+of the script significantly if one makes use of verbose comments; note
+that this will wipe out the @code{#!/bin/bash} first line also.
+
+Usually we want the script to begin with @code{#!/bin/bash} followed by
+a comment describing the license terms. We can do it by preparing a
+script like the following:
+
+@example
+#!/bin/bash
+# ... license ...
+
+m4_include(realscript.sh)
+
+### end of file
+@end example
+
+@noindent
+and processing it with the following make rule:
+
+@example
+M4      = ...
+M4FLAGS = --prefix-builtins --include=/path/to/library
+
+script.sh: script.sh.m4 realscript.sh
+        $(M4) $(M4FLAGS) $(<) >$(@@)
+@end example
+
+@noindent
+@file{realscript.sh} can be processed as explained above.
+
+
+@c ------------------------------------------------------------
+@node Service Variables
+@unnumbered Required user defined variables
+
+
+@noindent
+The following variables are expected to be defined before the @mbfl{}
+code is parsed by @command{bash}. The variables are used by @mbfl{} to
+declare its own variables, so they are to be declared before the
+inclusion of the @mbfl{} code in the script.
+
+
+@table @code
+@item script_PROGNAME
+Declares the name of the script.
+
+@item script_AUTHOR
+Declares the name of the script author(s).
+
+@item script_COPYRIGHT_YEARS
+Should be a comma separated list of years of copyright.
+
+@item script_VERSION
+Must be the version number of the script.
+
+@item script_LICENSE
+Must be the identifier of the license under which the script is
+released. Accepted values are: @code{GPL}, @code{LGPL}, @code{BSD}. It
+is used to select the appropriate value to be displayed when the user of
+the script selects the @code{--license} option (@ref{Getopt Options},
+for details).
+
+@item script_USAGE
+Must be a string describing the usage of the program.
+@end table
+
+
+@unnumberedsec Example
+
+@noindent
+The following example shows how to declare the variables.
+
+
+@example
+script_PROGNAME="myscript.sh"
+script_AUTHOR="Marco Maggi"
+script_COPYRIGHT_YEARS="2002, 2003, 2004"
+
+script_VERSION="1.0"
+script_LICENSE=GPL
+
+script_USAGE="usage: $@{script_PROGNAME@} [options] ...
+A script template.
+Options:
+\t-a --alpha             alpha action
+\t-bVALUE
+\t   --beta=VALUE        sets option beta\n
+\t-i --interactive       ask before doing dangerous operations
+\t-f --force             do not ask before dangerous operations
+\t   --encoded-args      decode arguments following this option
+\t                       from the hex format (example: 414243 -> ABC)
+\t-v --verbose           verbose execution
+\t   --silent            silent execution
+\t   --null              use the null character as terminator
+\t   --debug             print debug messages
+\t   --test              tests execution
+\t   --version           print version informations and exit
+\t   --version-only      print version number and exit
+\t   --license           print license informations and exit
+\t-h --help --usage      print usage informations and exit
+"
+@end example
+@c ------------------------------------------------------------
+@node Encoding
+@unnumbered Encoding and decoding strings
+
+
+@noindent
+The purpose of this module is to let an external process invoke a
+@command{bash} script with @emph{damn}command line arguments: strings
+including blanks or strange characters that may trigger quoting rules.
+
+This problem can arise when using scripting languages with some sort of
+@code{eval} command.
+
+The solution is to encode the argument string in hexadecimal or octal
+format strings, so that all the damn characters are converted to
+``good'' ones. The the @command{bash} script can convert them back.
+
+
+@deffn Function mbfl_decode_hex @var{string}
+Decodes a hex string and outputs it on stdout.
+@end deffn
+
+
+@deffn Function mbfl_decode_oct @var{string}
+Decodes a oct string and outputs it on stdout.
+@end deffn
+
+
+Example:
+
+@example
+mbfl_decode_hex 414243
+-> ABC
+@end example
+
+@c ------------------------------------------------------------
+@node File
+@unnumbered Manipulating files and pathnames
+
+
+@deffn Function mbfl_file_extension @var{pathname}
+Extracts the extension from a file name.  Searches the last dot
+character in the argument string and echoes to stdout the range of
+characters from the dot to the end, not including the dot.  If a slash
+character is found first, echoes to stdout the empty string.
+@end deffn
+
+
+@deffn Function mbfl_file_dirname @var{pathname}
+Extracts the directory part from a fully qualified file name.  Searches
+the last slash character in the input string and echoes to stdout the
+range of characters from the first to the slash, not including the
+slash.
+
+If no slash is found: echoes a single dot (the current directory).
+
+If the input string begins with @code{/} or @code{//} with no slash
+characters after the first ones, the string echoed to stdout is a single
+slash.
+@end deffn
+
+
+@deffn Function mbfl_file_normalise @var{pathname}
+Normalises a file name.  If the input string is a relative name, the
+current process working directory is prepended to it.  Echoes to stdout
+the normalised file name.
+@end deffn
+
+
+@deffn Function mbfl_file_rootname @var{pathname}
+Extracts the root portion of a file name.  Searches the last dot
+character in the argument string and echoes to stdout the range of
+characters from the beginning to the dot, not including the dot.
+
+If a slash character is found first, or no dot is found, or the dot is
+the first character, echoes to stdout the empty string.
+@end deffn
+
+
+@deffn Function mbfl_file_split @var{pathname}
+Separates a file name into its components.
+Replaces all the slash characters in the input string
+with a newline and echoes the substrings.
+
+The correct way to use the fields is:
+
+@example
+mbfl_file_split "$file" | while read field
+do
+   ... $field ...
+done
+@end example
+@end deffn
+
+
+@deffn Function mbfl_file_tail @var{pathnbame}
+Extracts the file portion from a fully qualified file name.  Searches
+the last slash character in the input string and echoes to stdout the
+range of characters from the slash to the end, not including the slash.
+If no slash is found: echoes the whole string.
+@end deffn
+
+
+@deffn Function mbfl_file_find_tmpdir ?@var{PATHNAME}?
+Finds a value for a temporary directory. If @var{PATHNAME} is not null
+and is a directory and is writable it is accepted; else the value
+@file{/tmp/$USER}, where @env{USER} is the environment variable, is
+tried; finally the value @file{/tmp} is tried. When a value is accepted
+it's echoed to stdout. Returns true if a value is found, false
+otherwise.
+@end deffn
+
+@c ------------------------------------------------------------
+@node Getopt
+@unnumbered Parsing command line options
+
+
+@noindent
+The getopt module defines a set of procedures to be used to process
+command line arguments with the following format:
+
+@table @code
+@item -a
+brief option @code{a} with no value;
+
+@item -a123
+brief option @code{a} with value @code{123};
+
+@item --bianco
+long option @code{bianco} with no value;
+
+@item --color=bianco
+long option @code{color} with value @code{bianco}.
+@end table
+
+
+@menu
+* Arguments: Getopt Arguments.
+* Using the module: Getopt Usage.
+* Predefined options: Getopt Options.
+* Interface functions: Getopt Interface.
+@end menu
+
+
+@c ------------------------------------------------------------
+@node Getopt Arguments
+@unnumberedsec Arguments
+
+
+@noindent
+The module contains, at the root level, a block of code like the
+following:
+
+@example
+ARGC=0
+ARGC1=0
+declare -a ARGV ARGV1
+
+while test $# -gt 0
+do
+    ARGV1[$ARGC1]=$1
+    ARGC1=$(($ARGC1 + 1))
+    shift
+done
+@end example
+
+@noindent
+this block is executed when the script is evaluated. Its purpose is to
+store command line arguments in the global array @code{ARGV1} and the
+number of command line arguments in the global variable @code{ARGC1}.
+
+The global array @code{ARGV} and the global variable @code{ARGC} are
+predefined and should be used by the @code{mbfl_getopts} functions to
+store non--option command line arguments.
+
+Example:
+
+@example
+$ script --gulp wo --gasp=123 wa
+@end example
+
+@noindent
+if the script makes use of the library, the strings @code{wo} and
+@code{wa} will go into @code{ARGV} and @code{ARGC} will be set to 2. The
+option arguments are processed and some action is performed to register
+them.
+
+We can access the non--option arguments with the following code:
+
+@example
+i=0
+while test $i -lt $ARGC; do
+    # do something with $@{ARGV[$i]@}
+    i=$(($i + 1))
+done
+@end example
+@c ------------------------------------------------------------
+@node Getopt Usage
+@unnumberedsec Using the module
+
+
+@noindent
+To use this module we have invoke:
+
+@example
+mbfl_getopts_parse
+@end example
+
+@noindent
+and declare two functions: @code{script_option()} and
+@code{script_option_with()}.  They are invoked by
+@code{mbfl_getopts_parse} to register command line options presence and
+to store somewhere the option's values.
+
+
+@deffn {User Function} script_option @var{option}
+Invoked to register the presence, on the command line, of an option with
+no argument. @var{option} is the option string with no leading dashes.
+@end deffn
+
+
+@deffn {User Function} script_option_with @var{option} @var{value}
+Invoked to register the presence, on the command line, of an option with
+argument. @var{option} is the option string with no leading dashes,
+@var{value} is the value assigned to the option.
+@end deffn
+
+
+Example: if the option @code{--update} is used on the command line,
+@code{script_option()} is invoked in this way:
+
+@example
+script_option update
+@end example
+
+@noindent
+if the option @code{--two-colors="verde bianco"} is used on the command line,
+@code{script_option_with()} is invoked in this way:
+
+@example
+script_option_with two-colors "verde bianco"
+@end example
+
+@c ------------------------------------------------------------
+@node Getopt Options
+@unnumberedsec Predefined options
+
+
+@noindent
+A set of predefined options is recognised by the library and not handed
+to the user defined functions.
+
+@table @option
+@item --encoded-args
+Signals to the library that the non--option arguments and the option
+values are encoded in hexadecimal strings. In this case they are decoded
+before storing them in the @code{ARGV} array and before being used as
+arguments to @code{script_option_with()}.  Encoding is useful to avoid
+quoting problems when invoking a script from another one.
+
+@item -v
+@itemx --verbose
+Turns on verbose messages. The global variable
+@code{mbfl_message_VERBOSE} is set to @code{yes} (@ref{Message}, for
+details).
+
+@item --silent
+Turns off verbose messages. The global variable
+@code{mbfl_message_VERBOSE} is set to @code{no}.
+
+@item --debug
+Turns on debugging messages. The global variable
+@code{mbfl_message_DEBUGGING} is set to @code{yes} (@ref{Message}, for
+details).
+
+@item --test
+Turns on test execution. The global variable @code{mbfl_program_TEST} is
+set to @code{yes} (@ref{Program}, for details).
+
+@item --null
+Signals to the script that it has to use the null character to separate
+values, instead of the common newline. The global variable
+@code{mbfl_option_NULL} is set to @code{yes}.
+
+@item -f
+@itemx --force
+Signals to the script that it does @strong{not} have to query the user
+before doing dangerous operations, like overwriting files. The global
+variable @code{mbfl_option_INTERACTIVE} is set to @code{no}.
+
+@item -i
+@itemx --interactive
+Signals to the script that it @strong{does} have to query the user
+before doing dangerous operations, like overwriting files. The global
+variable @code{mbfl_option_INTERACTIVE} is set to @code{yes}.
+
+@item --version
+Prints to the standard output of the script the contents of the global
+variable @code{mbfl_message_VERSION}, then exits with code zero. The
+variable makes use of the service variables (@ref{Service Variables},
+for details).
+
+@item --version-only
+Prints to the standard output of the script the contents of the global
+variable @code{script_VERSION}, then exits with code zero.
+
+@item --license
+Prints to the standard output of the script the contents of one of the
+global variables @code{mbfl_message_LICENSE_*}, then exits with code
+zero. The variable makes use of the service variables (@ref{Service
+Variables}, for details).
+
+@item -h
+@itemx --help
+@itemx --usage
+Prints to the standard output of the script the contents of the global
+variable @code{script_USAGE}, then exits with code zero.
+@end table
+
+
+@c ------------------------------------------------------------
+@node Getopt Interface
+@unnumberedsec Interface functions
+
+
+@deffn Function mbfl_getopts_parse
+Parses a set of command line options. The options are handed to user
+defined functions.
+
+The global array @code{ARGV1} and the global variable @code{ARGC1} are
+supposed to hold the command line arguments and the number of command
+line arguments.
+
+When an option without argument is found: @code{mbfl_getopts_option()}
+is called with the option name, without dashes, as first argument; when
+an option with argument is found: @code{mbfl_getopts_option_with()} is
+called with the option name, without dashes, as first argument and the
+option value as second argument.
+
+Non--option arguments are left in the global array @code{ARGV}, the
+global variable @code{ARGC} holds the number of elements in @code{ARGV}.
+@end deffn
+
+
+@deffn Function mbfl_getopts_option @var{option}
+Callback function required by @code{mbfl_getopts_parse()}. It's invoked
+whenever an option without argument is found on the command line.
+@var{option} must be the option without the leading dash(es).
+
+Recognises the option and updates the value of the appropriated
+@code{mbfl_*} global variable.  If the option is not a @mbfl{} one:
+invokes the function named: @code{script_option()} with the option name
+as argument.
+@end deffn
+
+
+@deffn Function mbfl_getopts_option_with @var{option} @var{value}
+Callback function required by @code{mbfl_getopts_parse()}. It's invoked
+whenever an option with argument is found on the command line.
+
+@var{option} is the option without the leading dash(es), @var{value} is
+the option argument.
+
+Recognises the option and updates the value of the appropriated
+@code{mbfl_*} global variable.
+
+If the option is not a @mbfl{} one: invokes the function named:
+@code{script_option_with()} with the option name and value as arguments.
+@end deffn
+
+
+@deffn Function mbfl_getopts_islong @var{string} @var{varname}
+Verifies if a string is a long option without argument.  @var{string} is
+the string to validate, @var{varname} is the optional name of a variable
+that's set to the option name, without the leading dashes.
+
+Returns with code zero if the string is a long option without argument,
+else returns with code one.
+
+An option must be of the form @code{--option}, only characters in the
+ranges @code{A-Z}, @code{a-z}, @code{0-9} and the characters @code{-}
+and @code{_} are allowed in the option name.
+@end deffn
+
+
+@deffn Function mbfl_getopts_islong_with @var{string} @var{optname} @var{varname}
+Verifies if a string is a long option with argument. Arguments:
+
+@table @var
+@item string
+the string to validate;
+
+@item optname
+optional name of a variable that's set to the option name, without the
+leading dashes;
+
+@item varname
+optional name of a variable that's set to the option value.
+@end table
+
+Returns with code zero if the string is a long option with argument,
+else returns with code one.
+
+An option must be of the form @code{--option=value}, only characters in
+the ranges @code{A-Z}, @code{a-z}, @code{0-9} and the characters
+@code{-} and @code{_} are allowed in the option name.
+
+If the argument is not an option with value, the variable names are
+ignored.
+@end deffn
+
+
+@deffn Function mbfl_getopts_isbrief @var{string} @var{varname}
+Verifies if a string is a brief option without argument. Arguments:
+@var{string} is the string to validate, @var{varname} optional name of a
+variable that's set to the option name, without the leading dash.
+
+Returns with code zero if the argument is a brief option without
+argument, else returns with code one.
+
+A brief option must be of the form @code{-a}, only characters in the
+ranges @code{A-Z}, @code{a-z}, @code{0-9} are allowed as option letters.
+@end deffn
+
+
+@deffn Function mbfl_getopts_isbrief_with @var{string} @var{optname} @var{valname}
+Verifies if a string is a brief option without argument. Arguments:
+
+@table @var
+@item string
+the string to validate;
+
+@item optname
+optional name of a variable that's set to the option name, without the
+leading dashes;
+
+@item valname
+optional name of a variable that's set to the option value.
+@end table
+
+Returns with code zero if the argument is a brief option without
+argument, else returns with code one.
+
+A brief option must be of the form @code{-aV} (@code{a} is the option,
+@code{V} is the value), only characters in the ranges @code{A-Z},
+@code{a-z}, @code{0-9} are allowed as option letters.
+@end deffn
+
+
+@deffn Function mbfl_getopts_decode_hex
+Decodes non--option arguments. Requires @code{mbfl_decode_hex()}.  In
+hex--coding, each byte in the argument is replaced by its representation
+in hex number.
+
+Decodes hex--coded arguments in the @code{ARGV} array. This function can
+be invoked if the command line arguments have been encoded.
+@end deffn
+
+
+@deffn Function mbfl_wrong_num_args @var{required} @var{present}
+Validates the number of arguments.  @var{required} is the required
+number of arguments, @var{present} is the given number of arguments on
+the command line.
+
+If the number of arguments is different from the required one: prints an
+error message and returns with code one; else returns with code zero.
+
+Requires the message module (@ref{Message} for details).
+@end deffn
+
+
+@deffn Function mbfl_argv_from_stdin
+If the @code{ARGC} global variable is set to zero: fills the global
+variable @code{ARGV} with lines from stdin. If the global variable
+@code{mbfl_option_NULL} is set to @code{yes}: lines are read using the
+null character as terminator, else they are read using the standard
+newline as terminator.
+
+This function may block waiting for input.
+@end deffn
+
+
+@deffn Function mbfl_argv_all_files
+Checks that all the arguments in @code{ARGV} are file names of existent
+file.  Returns with code zero if no errors, else prints an error message
+and returns with code 1.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node Message
+@unnumbered Printing messages to the console
+
+
+@noindent
+This module allows one to print messages on an output channel. Various
+forms of message are supported.
+
+All the function names are prefixed with @code{mbfl_message_}. All the
+messages will have the forms:
+
+@example
+<progname>: <message>
+<progname> [error|warning]: <message>
+@end example
+
+The following global variables are declared:
+
+@table @code
+@item mbfl_message_PROGNAME
+must be initialised with the name of the script that'll be displayed at
+the beginning of each message;
+
+@item mbfl_message_VERBOSE
+@code{yes} if verbose messages should be displayed, else @code{no};
+
+@item mbfl_message_DEBUGGING
+@code{yes} if debugging messages should be displayed, else @code{no};
+
+@item mbfl_message_STDERR
+the channel used to output messages.
+@end table
+
+
+@deffn Function mbfl_message_set_program @var{PROGNAME}
+Sets the script official name to put at the beginning of messages.
+@end deffn
+
+
+@deffn Function mbfl_message_set_verbosity @var{value}
+Stores a value in @code{mbfl_message_VERBOSE}.
+@end deffn
+
+
+@deffn Function mbfl_message_set_debugging @var{string}
+If @var{string} is @code{yes} debug message are enabled, if it's
+@code{no} are disabled.
+@end deffn
+
+
+@deffn Function mbfl_message_set_stderr @var{channel}
+Selects the channel to be used to output messages.
+@end deffn
+
+
+@deffn Function mbfl_message_string @var{string}
+Outputs a message to the selected channel.  Echoes a string composed of:
+the content of the @code{mbfl_message_PROGNAME} global variable; a
+colon; a space; the provided message.
+
+A newline character is NOT appended to the message. Escape characters
+are allowed in the message.
+@end deffn
+
+
+@deffn Function mbfl_message_verbose @var{string}
+Outputs a message to the selected channel, but only if the global
+variable @code{mbfl_message_VERBOSE} is set to @code{yes}.
+
+Echoes a string composed of: the content of the
+@code{mbfl_message_PROGNAME} global variable; a colon; a space; the
+provided message.
+
+A newline character is NOT appended to the message. Escape characters
+are allowed in the message.
+@end deffn
+
+
+@deffn Function mbfl_message_verbose_end @var{string}
+Outputs a message to the selected channel, but only if the global
+variable @code{mbfl_message_VERBOSE} is set to @code{yes}.
+
+Echoes the string. A newline character is NOT appended to the
+message. Escape characters are allowed in the message.
+@end deffn
+
+
+@deffn Function mbfl_message_debug @var{string}
+Outputs a message to the selected channel, but only if the global
+variable @code{mbfl_message_DEBUGGING} is set to @code{yes}.
+
+Echoes a string composed of: the content of the
+@code{mbfl_message_PROGNAME} global variable; a colon; a space; the
+provided message.
+
+A newline character is NOT appended to the message. Escape characters
+are allowed in the message.
+@end deffn
+
+
+@deffn Function mbfl_message_warning @var{string}
+Outputs a warning message to the selected channel.  Echoes a string
+composed of: the content of the @code{mbfl_message_PROGNAME} global
+variable; a space; the string @code{warning}; a colon; a space; the
+provided message.
+
+A newline character IS appended to the message. Escape characters are
+allowed in the message.
+@end deffn
+
+
+@deffn Function mbfl_message_error @var{string}
+Outputs a error message to the selected channel.  Echoes a string
+composed of: the content of the @code{mbfl_message_PROGNAME} global
+variable; a space; the string @code{error}; a colon; a space; the
+provided message.
+
+A newline character IS appended to the message. Escape characters are
+allowed in the message.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node Program
+@unnumbered Using external programs
+
+
+@noindent
+This module declares a set of global variables all prefixed with
+@code{program_}. We have to look at the module's code to see which one
+are declared.
+
+
+@deffn Function mbfl_program_check @var{program} ?@var{program} ...?
+Checks the availability of programs. This function assumes that the
+program pathnames do not contain blank characters. All the pathnames on
+the command line are checked: if one is not executable an error message
+is printed.
+
+Returns true if a program can't be found, false otherwise.
+
+Requires the message module (@ref{Message} for details).
+@end deffn
+
+
+@deffn Function mbfl_program_exec @var{arg} ...
+Evaluates a command line. If the variable @code{mbfl_program_TEST} is
+set to @code{yes}: instead of evaluation, the command line is sent to
+stderr.
+@end deffn
+
+@c ------------------------------------------------------------
+@node Signal
+@unnumbered Catching signals
+
+
+@noindent
+This module is under development.
+
+@c ------------------------------------------------------------
+@node String
+@unnumbered Manipulating strings
+
+
+@deffn Function mbfl_string_chars @var{string}
+Splits a string into characters.  Echoes to stdout the characters one
+per line.
+
+The correct way to use the fields is:
+
+@example
+mbfl_string_chars $string $sep | while read ch
+do
+   ... $ch ...
+done
+@end example
+@end deffn
+
+
+@deffn Function mbfl_string_first @var{string} @var{char} @var{begin}
+Searches characters in a string. Arguments:
+
+@table @var
+@item string
+the target string;
+
+@item char
+the character to look for;
+
+@item begin
+optional, the index of the character in the target string from which the
+search begins; defaults to zero.
+@end table
+
+Echoes to stdout an integer representing the index of the first
+occurrence of @var{char} in @var{string}. If the character is not found:
+nothing is sent to stdout.
+@end deffn
+
+
+@deffn Function mbfl_string_index @var{string} @var{index}
+Selects a character from a string.  Echoes to stdout the selected
+character. If the index is out of range: the empty string is echoed to
+stdout.
+@end deffn
+
+
+@deffn Function mbfl_string_is @var{class} @var{string}
+Tests a string agains a character class. Supported classes are:
+
+@table @code
+@item alpha
+characters in the range @code{A-Z} and @code{a-Z};
+
+@item digit
+characters in the range @code{0-9};
+
+@item alnum
+character of the classes @code{alpha} and @code{digit};
+
+@item noblank
+all the characters excluding @code{ \n\t\r\f};
+
+@item name
+a string of characters numbers and underscores, with the first character
+not being a number.
+@end table
+
+@var{class} is the class name, @var{string} is the source string, a null
+string is of no class.
+
+Returns with code 0 if the string is of the selected class, else returns
+with code 1.
+@end deffn
+
+
+@deffn Function mbfl_string_last @var{string} @var{char} @var{begin}
+Searches characters in a string starting from the end. Arguments:
+
+@table @var
+@item string
+the target string;
+
+@item char
+the character to look for;
+
+@item begin
+optional, the index of the character in the target string from which the
+search begins; defaults to zero.
+@end table
+
+Echoes to stdout an integer representing the index of the last
+occurrence of @code{sring} in @code{char}. If the character is not
+found: nothing is sent to stdout.
+@end deffn
+
+
+@deffn Function mbfl_string_range @var{string} @var{begin} @var{end}
+Extracts a range of characters from a string. Arguments:
+
+@table @var
+@item string
+the source string;
+
+@item begin
+the index of the first character in the range;
+
+@item end
+optional, the index of the character next to the last in the range, this
+character is not extracted; defaults to the last character in the
+string; if equal to @code{end}: the end of the range is the end of the
+string.
+@end table
+
+Echoes to stdout the selected range of characters.
+@end deffn
+
+
+@deffn Function mbfl_string_split @var{string} @var{split}
+Splits a string into fields. This is done replacing each character from
+a selected set with a newline. If the source string contains newlines
+the splitting operation can lead to unexpected results.
+
+@var{string} is the source string, @var{split} is the string made up of
+characters to be used as field separators.
+
+Echoes to stdout the fields one per line.
+
+The correct way to use the fields is:
+
+@example
+mbfl_string_split $string $sep | while read field
+do
+   ... $field ...
+done
+@end example
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node Dialog
+@unnumbered Interacting with the user
+
+
+@deffn Function mbfl_dialog_yes_or_no @var{string}
+Prints the question @var{string} on the standard output and waits for
+the user to type @code{yes} or @code{no} in the standard input. Returns
+true if the user has typed @code{yes}, false if the user has typed
+@code{no}.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node Main
+@unnumbered Main function
+
+
+@noindent
+@mbfl{} declares a function to drive the execution of the script; its
+purpose is to make use of the other modules to reduce the size of
+scripts depending on @mbfl{}.
+
+
+@deffn Function mbfl_main
+Does the follwoing.
+
+@enumerate
+@item
+Parses command line options.
+
+@item
+Invokes the function @code{script_begin()}, if it exists, with no
+arguments; if its return value is non--zero: exits the script with the
+same code.
+
+@item
+If the global variable @code{mbfl_option_ACTION} is non--empty: executes
+a function whose name is composed of: @code{script_action_} and the
+value of @code{mbfl_option_ACTION}:
+
+@example
+script_action_$@{mbfl_option_ACTION@}
+@end example
+
+@noindent
+The return code  of such a function is  registered for later
+use.  We   refer  to  this  function   as  the  @emph{action
+function}. If  a function with  this name does not  exist, a
+function  named  @code{main}  is  executed. If  neither  the
+action function  nor to @code{main}  function exist: nothing
+happens at this step.
+
+@item
+Invokes the function @code{script_end()}, if it exists, with no
+arguments; if its return value is non--zero: exits the script with the
+same code.
+
+@item
+Exits the script with the return code of the action function or zero.
+@end enumerate
+@end deffn
+
+It is responsibility of the functions used to register command line
+options to store a value in @code{mbfl_option_ACTION}. A default value
+may be explicitly set by the script before invoking @code{mbfl_main()}.
+
+@c ------------------------------------------------------------
+@node Example
+@unnumbered A script example
+
+
+@example
+# script.sh --
+
+#set -e
+#set -x
+
+m4_changequote([[, ]])
+
+#PAGE
+## ------------------------------------------------------------
+## Service variables required by MBFL.
+## ------------------------------------------------------------
+
+script_PROGNAME="script.sh"
+script_AUTHOR="Marco Maggi"
+script_COPYRIGHT_YEARS="2004"
+
+script_VERSION="1.0"
+script_LICENSE=GPL
+
+script_USAGE="usage: $@{script_PROGNAME@} [options] ...
+A script template.
+Options:
+\t-a --alpha             alpha action
+\t-bVALUE
+\t   --beta=VALUE        sets option beta\n
+\t-i --interactive       ask before doing dangerous operations
+\t-f --force             do not ask before dangerous operations
+\t   --encoded-args      decode arguments following this option
+\t                       from the hex format (example: 414243 -> ABC)
+\t-v --verbose           verbose execution
+\t   --silent            silent execution
+\t   --null              use the null character as terminator
+\t   --debug             print debug messages
+\t   --test              tests execution
+\t   --version           print version informations and exit
+\t   --version-only      print version number and exit
+\t   --license           print license informations and exit
+\t-h --help --usage      print usage informations and exit
+"
+
+#PAGE
+## ------------------------------------------------------------
+## Global variables.
+## ------------------------------------------------------------
+
+...
+
+#PAGE
+## ------------------------------------------------------------
+## Libraries.
+## ------------------------------------------------------------
+
+m4_include(libmbfl.sh)
+
+#PAGE
+function script_begin () @{
+    return 0
+@}
+function script_end () @{
+    return 0
+@}
+function script_option () @{
+    local OPTNAME="$@{1@}"
+
+
+    case "$@{OPTNAME@}" in
+        a|alpha)
+            mbfl_option_ACTION=alpha
+            ;;
+        *)
+            return 2
+            ;;
+    esac
+    return 0
+@}
+function script_option_with () @{
+    local OPTNAME="$@{1@}"
+    local OPTVAL="$@{2@}"
+
+
+    case "$@{OPTNAME@}" in
+        b|beta)
+            echo "option beta: $@{OPTVAL@}"
+            ;;
+        *)
+            return 2
+            ;;
+    esac
+    return 0
+@}
+function script_action_alpha () @{
+    echo "action alpha"
+    return 0
+@}
+#PAGE
+## ------------------------------------------------------------
+## Main script.
+## ------------------------------------------------------------
+
+mbfl_main
+
+### end of file
+# Local Variables:
+# mode: sh
+# page-delimiter: "^#PAGE$"
+# End:
+@end example
+
+@c ------------------------------------------------------------
+
+@include fdl.texiinc
+@include lgpl.texiinc
+
+@c ------------------------------------------------------------
+@node References
+@appendix Bibliography and references
+
+
+@table @emph
+@item bash Manual Page
+By Brian Fox and Chet Ramey. The authoritative source for @command{bash}
+behaviour.
+
+@end table
+
+@c ------------------------------------------------------------
+@node Concept Index
+@appendix An entry for each concept
+     
+@printindex cp
+     
+@contents
+@bye
+
+@c end of file
+@c Local Variables:
+@c mode: texinfo
+@c page-separator: "^@c -+$"
+@c End:

@@ -1,0 +1,10 @@
+Identifier: mbfl
+Version: @PACKAGE_XVERSION@
+Title: Marco's BASH Functions Library
+Creator: Marco Maggi
+Rights: GNU General Public License
+URL: <http://web.tiscali.it/marcomaggi/>
+Available: @CURRENT_DATE@
+Architecture: all
+Subject: development
+Description: collection of functions for GNU BASH

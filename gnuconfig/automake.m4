@@ -1,0 +1,1 @@
+/usr/local/share/develstuff/gnuconfig/automake.m4
