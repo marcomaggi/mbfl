@@ -391,7 +391,7 @@ function mbfl_file_symlink () {
     local FLAGS="--symbolic"
 
     if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
-    mbfl_program_exec "${LN}" ${FLAGS} "${ORIGINAL_name}" "${SYMLINK_NAME}" || return 1    
+    mbfl_program_exec "${LN}" ${FLAGS} "${ORIGINAL_NAME}" "${SYMLINK_NAME}" || return 1    
 }
 #page
 function mbfl_file_enable_listing () {
