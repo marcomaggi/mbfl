@@ -565,6 +565,7 @@ otherwise.
 * File Commands Copy::          Copying files.
 * File Commands Removing::      Removing files and directories.
 * File Commands Tar::           Manipulating tar archives.
+* File Commands Symlink::       Creating symbolic links.
 @end menu
 
 
@@ -623,7 +624,6 @@ Creates a directory named @var{pathname}; all the unexistent parents are
 created, too. If @var{permissions} is present: it is the specification
 of directory permissions in octal mode.
 @end deffn
-
 
 @c ------------------------------------------------------------
 @node File Commands Copy
@@ -695,6 +695,22 @@ or it is not a file or an error occurs: returns 1.
 @deffn Function mbfl_file_remove_directory @var{pathname}
 Removes the directory selected by @var{pathname}. If the directory does
 not exist or an error occurs: returns 1.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node File Commands Symlink
+@unnumberedsubsec Creating symbolic links
+
+
+@deffn Function mbfl_file_enable_symlink
+Declares to the program module the commands required to create symbolic
+links (@ref{Program Declaring}). The programs are: @command{ln}.
+@end deffn
+
+
+@deffn Function mbfl_file_symlink @var{original_name} @var{symlink_name}
+Creates a symbolic link.
 @end deffn
 
 
@@ -850,9 +866,15 @@ executable.
 @unnumberedsec Miscellaneous commands
 
 
-@deffn Function mbfl_cd @var{dirname} ?...?
+@deffn Function mbfl_change_directory @var{dirname} ?...?
 Changes directory to @var{dirname}. Optional flags to @command{cd} may
 be appended.
+@end deffn
+
+
+@deffn Function mbfl_cd @var{dirname} ?...?
+Wrapper for @code{mbfl_change_directory}. If verbose mode is on: prints
+a message.
 @end deffn
 
 

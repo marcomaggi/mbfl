@@ -8,15 +8,15 @@
 ## Initialisation.
 ## ------------------------------------------------------------
 
-AC_INIT([mbfl], [1.0.9], [marcomaggi@tiscalinet.it])
+AC_INIT([mbfl], [1.0.11], [marcomaggi@tiscalinet.it])
 AC_PREREQ(2.57)
 AC_COPYRIGHT([Copyright (C) 2003, 2004 by Marco Maggi])
 AC_REVISION([$Revision: 1.1.1.131 $])
 AC_CONFIG_SRCDIR([./lib/libmbfl.sh.m4])
 AC_CONFIG_AUX_DIR([infrastructure])
 
-AC_SUBST([PACKAGE_XVERSION], [1.0.9])
-AC_DEFINE([PACKAGE_XVERSION], ["1.0.9"], [full package version])
+AC_SUBST([PACKAGE_XVERSION], [1.0.11])
+AC_DEFINE([PACKAGE_XVERSION], ["1.0.11"], [full package version])
 AC_SUBST([PACKAGE_NODOT_VERSION],  [10])
 AC_DEFINE([PACKAGE_NODOT_VERSION],
     ["10"], [package version with no dots])
@@ -36,8 +36,8 @@ AC_DEFINE([PACKAGE_VERSION_MAJOR], ["1"],
 AC_SUBST([PACKAGE_VERSION_MINOR],  [0])
 AC_DEFINE([PACKAGE_VERSION_MINOR], ["0"],
     [minor version number])
-AC_SUBST([PACKAGE_VERSION_PATCH],  [9])
-AC_DEFINE([PACKAGE_VERSION_PATCH], ["9"],
+AC_SUBST([PACKAGE_VERSION_PATCH],  [11])
+AC_DEFINE([PACKAGE_VERSION_PATCH], ["11"],
     [patch version number])
 AC_SUBST([PACKAGE_VERSION_STATE],  [.])
 AC_DEFINE([PACKAGE_VERSION_STATE], ["."],

@@ -96,6 +96,8 @@ INSTALL_DIR		= $(INSTALL) -m $(INSTALL_DIR_MODE) -d
 INSTALL_BIN		= $(INSTALL) -m $(INSTALL_BIN_MODE)
 INSTALL_DATA		= $(INSTALL) -m $(INSTALL_DATA_MODE)
 
+DEVELSTUFF		= $(top_srcdir)/infrastructure/develstuff.sh
+
 #page
 ## ------------------------------------------------------------
 ## Main rules.
@@ -115,13 +117,13 @@ install:	bin-install dev-install doc-install sta-install
 .PHONY: dist bindist reconfigure
 
 dist bindist dist-test:
-	develstuff.sh --$(@)
+	$(DEVELSTUFF) --$(@)
 
 reconfigure:
 	$(MAKE) clean
 	$(MAKE) realclean
-	develstuff.sh --autoconf --verbose
-	./config.status
+	$(DEVELSTUFF) --autoconf --verbose
+	$(DEVELSTUFF) --reconfigure --verbose --builddir="$(builddir)" --show-program
 
 # Makefile.ds --
 #
@@ -322,7 +324,7 @@ M4FLAGS		+= --prefix-builtins
 ## Test rules.
 ## ------------------------------------------------------------
 
-test_SRCDIR		= /home/devel/src/shell/mbfl/mbfl--stable--1.0/tests
+test_SRCDIR		= $(top_srcdir)/./tests
 #test_TARGETS		=
 
 #test_CLEANFILES	=
@@ -382,7 +384,7 @@ doc-install:	doc-generic-install
 ## Package documentation in Texinfo format.
 ## ------------------------------------------------------------
 
-doc_texinfo_SRCDIR	= /home/devel/src/shell/mbfl/mbfl--stable--1.0/doc
+doc_texinfo_SRCDIR	= $(top_srcdir)/./doc
 doc_texinfo_SOURCES	= $(wildcard $(doc_texinfo_SRCDIR)/*.texi)
 
 vpath	%.texi		$(doc_texinfo_SRCDIR)

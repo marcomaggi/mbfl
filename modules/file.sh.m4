@@ -28,8 +28,11 @@
 
 #page
 function mbfl_cd () {
-    mbfl_program_exec cd "$@" >/dev/null
-    mbfl_message_verbose "entering directory: '$PWD'\n"
+    mbfl_change_directory "$@"
+    mbfl_message_verbose "entering directory: '${PWD}'\n"
+}
+function mbfl_change_directory () {
+    cd "$@" &>/dev/null
 }
 #PAGE
 function mbfl_file_extension () {
@@ -376,6 +379,19 @@ function mbfl_file_make_directory () {
     if test -d "${PATHNAME}" ; then return 0; fi
     if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
     mbfl_program_exec "${MKDIR}" $FLAGS "${PATHNAME}" || return 1    
+}
+#page
+function mbfl_file_enable_symlink () {
+    mbfl_declare_program ln
+}
+function mbfl_file_symlink () {
+    mandatory_parameter(ORIGINAL_NAME, 1, original name)
+    mandatory_parameter(SYMLINK_NAME, 2, symbolic link name)
+    local LN=`mbfl_program_found ln`
+    local FLAGS="--symbolic"
+
+    if mbfl_option_verbose_program ; then FLAGS="${FLAGS} --verbose" ; fi
+    mbfl_program_exec "${LN}" ${FLAGS} "${ORIGINAL_name}" "${SYMLINK_NAME}" || return 1    
 }
 #page
 function mbfl_file_enable_listing () {
