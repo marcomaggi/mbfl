@@ -15,6 +15,7 @@ ds_source_file(./lib/libmbfl.sh.m4)
 
 ds_init
 AC_CONFIG_FILES(mbfl-config:scripts/mbfl-config)
+AC_CONFIG_FILES(mbflpp.sh:scripts/mbflpp.sh)
 ds_output
 
 ds_make_template({

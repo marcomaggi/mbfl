@@ -190,12 +190,12 @@ endif
 
 
 
-$(library_SOURCES): $(library_BUILDDIR)/%.sh: macros.m4 $(library_SRCDIR)/%.sh.m4
+$(library_SOURCES): $(library_BUILDDIR)/%.sh: preprocessor.m4 $(library_SRCDIR)/%.sh.m4
 	$(M4) $(M4FLAGS) $(^) | \
 	$(GREP) --invert-match -e '^#' -e '^$$' | $(SED) -e "s/^ \\+//" >$(@)
 
-$(LIBNAME): libmbfl.sh.m4 $(library_SOURCES)
-	$(M4) $(M4FLAGS) $(<) >$(@)
+$(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(library_SOURCES)
+	$(M4) $(M4FLAGS) preprocessor.m4 $(<) >$(@)
 
 
 bin:		library-all
@@ -208,11 +208,8 @@ bin-install:	library-install
 ## Script rules.
 ## ------------------------------------------------------------
 
-libexec_INSTLST		= mbfl-config
+libexec_INSTLST		= mbfl-config mbflpp.sh
 libexec_INSTDIR		= $(pkglibexecdir)
-
-# binscript_INSTLST	= mbfl-config
-# binscript_INSTDIR	= $(bindir)
 
 libexec_CLEANFILES	= $(script_TARGETS)
 libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
@@ -242,12 +239,37 @@ endif
 
 	cd $(INSTALL_ROOT)$(bindir) && \
 	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfl-config mbfl-config
-#AM_INSTALL_BIN(binscript)
+	cd $(INSTALL_ROOT)$(bindir) && \
+	$(SYMLINK) ../libexec/$(PKG_DIR)/mbflpp.sh mbflpp.sh
 
 bin:		script-all
 bin-clean:	script-clean
 bin-realclean:	script-realclean
 bin-install:	script-install
+
+#page
+## ------------------------------------------------------------
+## Preprocessor macros rules.
+## ------------------------------------------------------------
+
+macros_INSTLST		= $(top_srcdir)/macros/preprocessor.m4
+macros_INSTDIR		= $(pkgdatadir)
+
+.PHONY: macros-install
+
+macros-install:
+
+	@echo "Installing macros files... "
+ifneq	(,$(macros_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(macros_INSTDIR)
+	@$(INSTALL_DATA) $(macros_INSTLST) $(INSTALL_ROOT)$(macros_INSTDIR)
+	@echo "Done."
+else
+	$(warning *** empty install list)
+endif
+
+
+bin-install:	macros-install
 
 #PAGE
 ## ------------------------------------------------------------
