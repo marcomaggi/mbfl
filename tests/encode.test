@@ -1,0 +1,95 @@
+# encode.test --
+# 
+# Part of: Marco's BASH Functions Library
+# Contents: tests for the encode.sh functions
+# Date: Wed Apr 23, 2003
+# 
+# Abstract
+# 
+#	This file must be executes through "all.tcl": from the build
+#	directory:
+#
+#		$ make all test TESTFLAGS="-match encode-*"
+# 
+#	will select these tests.
+# 
+# Copyright (c) 2003 Marco Maggi
+# 
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  2.1 of the License,  or (at
+# your option) any later version.
+# 
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# Lesser General Public License for more details.
+# 
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA
+# 
+# $Id: encode.test,v 1.1.1.8 2003/12/17 12:45:31 marco Exp $
+#
+
+#PAGE
+## ------------------------------------------------------------
+## Setup.
+## ------------------------------------------------------------
+
+source [file join [file dirname [info script]] setup.tcl]
+
+#PAGE
+## ---------------------------------------------------------
+## Test namespace.
+## ---------------------------------------------------------
+
+namespace eval ::test {
+
+    variable	libname [file join $libpath encode.sh]
+
+    variable	precmd ". %s"
+    set precmd [format $precmd $libname]
+
+
+#PAGE
+
+#  ::tcltest::test encode-1.1 "encoding" {
+#      -body	{
+#  	bash "_encode_hex ABC"
+#      }
+#      -result 414243
+#  }
+
+#PAGE
+
+::tcltest::test encode-2.1 "decoding hex" {
+    -body	{
+	bash "mbfl_decode_hex 414243"
+    }
+    -result ABC
+}
+
+::tcltest::test encode-2.2 "decoding oct" {
+    -body	{
+	bash "mbfl_decode_oct 101102103"
+    }
+    -result ABC
+}
+
+#PAGE
+## ---------------------------------------------------------
+## End of "::test" namespace.
+## ---------------------------------------------------------
+
+::tcltest::cleanupTests
+}
+namespace delete ::test
+
+
+### end of file
+# Local Variables:
+# mode: tcl
+# page-delimiter: "^#PAGE"
+# End:

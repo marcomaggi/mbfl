@@ -1,0 +1,110 @@
+# signal.test --
+# 
+# Part of: Marco's BASH function libraries
+# Contents: tests for the signal library
+# Date: Mon Jul  7, 2003
+# 
+# Abstract
+# 
+#	This file must be executes through "all.tcl": from the build
+#	directory:
+#
+#		$ make all test TESTFLAGS="-match signal-*"
+# 
+#	will select these tests.
+# 
+# Copyright (c) 2003 Marco Maggi
+# 
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 2, or (at your  option) any later
+# version.
+# 
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# General Public License for more details.
+# 
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
+# 
+# $Id: signal.test,v 1.1.1.7 2003/12/17 12:46:42 marco Exp $
+#
+
+#PAGE
+## ------------------------------------------------------------
+## Setup.
+## ------------------------------------------------------------
+
+source [file join [file dirname [info script]] setup.tcl]
+
+#PAGE
+## ---------------------------------------------------------
+## Test namespace.
+## ---------------------------------------------------------
+
+namespace eval ::test {
+
+    variable	signal [file join $libpath signal.sh]
+    variable	maintest \
+	    [file join [::tcltest::configure -testdir] maintest.sh]
+    variable	testscript \
+	    [file join [::tcltest::configure -testdir] testscript.sh]
+
+    variable	precmd ". %s"
+    set precmd [format $precmd $signal]
+
+
+#PAGE
+
+::tcltest::test signal-1.1 "signal chars" {
+    -setup	{
+	::tcltest::makeFile "
+	set -x
+	bash $testscript >&2 &
+	sleep 1
+	echo jobs: `jobs`
+	kill -10 %%
+	exit 0
+	" $maintest
+	::tcltest::makeFile "
+	source $signal
+	function handler () {
+	    echo here
+	    exit
+	}
+	mbfl_signal_attach SIGUSR1 handler
+	sleep 4
+	exit 0
+	" $testscript
+    }
+    -body	{
+	exec bash $maintest >@stdout 2>@stderr
+    }
+    -result {}
+    -cleanup	{
+	::tcltest::removeFile $maintest
+	::tcltest::removeFile $testscript
+    }
+}
+
+
+#PAGE
+
+#PAGE
+## ---------------------------------------------------------
+## End of "::test" namespace.
+## ---------------------------------------------------------
+
+::tcltest::cleanupTests
+}
+namespace delete ::test
+
+
+### end of file
+# Local Variables:
+# mode: tcl
+# page-delimiter: "^#PAGE"
+# End:
