@@ -76,6 +76,14 @@ function program-3.2 () {
     mbfl_declare_program unexistent
     ! mbfl_program_validate_declared &>/dev/null
 }
+function program-3.3 () {
+    mbfl_declare_program ls
+    mbfl_program_found ls | dotest-output /bin/ls
+}
+function program-3.4 () {
+    mbfl_declare_program unexistent
+    mbfl_program_found unexistent | dotest-output
+}
 function program-3.5 () {
     local ret=0
 
@@ -84,15 +92,7 @@ function program-3.5 () {
     mbfl_message_set_progname "test"
     mbfl_declare_program unexistent
     mbfl_program_validate_declared | dotest-output \
-	"test: error: cannot find executable 'unexistent'"
-}
-function program-3.3 () {
-    mbfl_declare_program ls
-    mbfl_program_found ls | dotest-output /bin/ls
-}
-function program-3.4 () {
-    mbfl_declare_program unexistent
-    mbfl_program_found unexistent | dotest-output
+	"test: *** not found 'unexistent', path: ''"
 }
 
 #PAGE

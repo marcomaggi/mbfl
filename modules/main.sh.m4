@@ -37,12 +37,15 @@ if test "${mbfl_INTERACTIVE}" != 'yes'; then
     mbfl_option_TMPDIR="${TMPDIR:-/tmp}"
     mbfl_ORG_PWD="${PWD}"
     mbfl_main_SCRIPT_FUNCTION=main
+    mbfl_main_PRIVATE_SCRIPT_FUNCTION=
 fi
 
 function mbfl_main_set_main () {
-    mbfl_main_SCRIPT_FUNCTION="${1:?}"    
+    mbfl_main_SCRIPT_FUNCTION="${1:?}"
 }
-
+function mbfl_main_set_private_main () {
+    mbfl_main_PRIVATE_SCRIPT_FUNCTION="${1:?}"
+}
 #PAGE
 ## ------------------------------------------------------------
 ## License message variables.
@@ -140,7 +143,11 @@ function mbfl_main () {
     mbfl_invoke_script_function script_before_parsing_options
     mbfl_getopts_parse
     mbfl_invoke_script_function script_after_parsing_options
-    mbfl_invoke_script_function ${mbfl_main_SCRIPT_FUNCTION}
+    if test -n "${mbfl_main_PRIVATE_SCRIPT_FUNCTION}" ; then
+        mbfl_invoke_script_function ${mbfl_main_PRIVATE_SCRIPT_FUNCTION}
+    else
+        mbfl_invoke_script_function ${mbfl_main_SCRIPT_FUNCTION}
+    fi
 }
 function mbfl_invoke_script_function () {
     local item="${1:?${FUNCNAME} error: missing function name}"

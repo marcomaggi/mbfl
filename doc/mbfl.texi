@@ -1066,6 +1066,17 @@ variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
 declared with @code{mbfl_declare_option}; a string describing the
 @mbfl{} default options. Then exits with code zero.
+
+@item -H
+@item --brief-help
+@item --brief-usage
+Prints to the standard output of the script: the contents of the global
+variable @code{script_USAGE}; a newline; the string @code{options:}; a
+newline; an automatically generated string describing the options
+declared with @code{mbfl_declare_option}. Then exits with code zero.
+
+The difference with @option{--help} is that predefined options are not
+described.
 @end table
 
 
@@ -1139,6 +1150,11 @@ Query/sets/unsets the interactive excution option.
 @c ------------------------------------------------------------
 @node Getopts Interface
 @unnumberedsec Interface functions
+
+
+@noindent
+Every declared option should have a long switch, the brief switch may be
+omitted.
 
 
 @deffn Function mbfl_declare_option @var{keyword} @var{default} @var{brief} @var{long} @var{hasarg} @var{description}
@@ -1290,6 +1306,11 @@ file.  Returns with code zero if no errors, else prints an error message
 and returns with code 1.
 @end deffn
 
+
+@deffn Function mbfl_getopts_print_long_switches
+Prints all the long switches in a row, separated by spaces. This is
+useful to retrieve the option for @bash{} programmable completion.
+@end deffn
 
 @c ------------------------------------------------------------
 @node Getopts Values

@@ -51,9 +51,12 @@ mbfl_declare_option FILE 0 f file witharg "selects a file"
 mbfl_declare_option ENABLE no e enable noarg "enables a feature"
 mbfl_declare_option DISABLE no d disable noarg "disables a feature"
 
+mbfl_file_enable_make_directory
+mbfl_declare_program woah
+
 #page
 function script_before_parsing_options () {
-    mbfl_message_verbose "${FUNCNAME}"
+    mbfl_message_verbose "${FUNCNAME}\n"
 
     if test -n "${script_option_BETA}";	then
 	echo "option beta: ${script_option_BETA}"
@@ -61,7 +64,7 @@ function script_before_parsing_options () {
     return 0
 }
 function script_after_parsing_options () {
-    mbfl_message_verbose "${FUNCNAME}"
+    mbfl_message_verbose "${FUNCNAME}\n"
     return 0
 }
 function script_option_update_beta () {

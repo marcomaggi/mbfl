@@ -31,7 +31,7 @@ function mbfl_program_check () {
 
 
     for item in "${@}"; do
-        path=`mbfl_program_find ${item}`
+        path=`mbfl_program_find "${item}"`
         if test ! -x "${path}" ; then
             mbfl_message_error "cannot find executable '${item}'"
             return 1
@@ -65,7 +65,7 @@ if test "${mbfl_INTERACTIVE}" != 'yes'; then
     declare -i mbfl_program_INDEX=0
 fi
 function mbfl_declare_program () {
-    local PROGRAM="${1:?${FUNCNAME} error: missing program name}"
+    local PROGRAM=${1:?"missing program parameter to ${FUNCNAME}"}
     local i=$mbfl_program_INDEX
 
     mbfl_program_NAMES[$i]="${PROGRAM}"
@@ -74,16 +74,17 @@ function mbfl_declare_program () {
     return 0
 }
 function mbfl_program_validate_declared () {
-    local i= item= path= retval=0
+    local i= name= path= retval=0
 
 
     for ((i=0; $i < $mbfl_program_INDEX; ++i)); do
-        item="${mbfl_program_NAMES[$i]}"
+        name="${mbfl_program_NAMES[$i]}"
         path="${mbfl_program_PATHS[$i]}"
 
-        if mbfl_program_check "${item}"; then
-            mbfl_message_verbose "found '${item}': '${path}'\n"
+        if test -n "${path}" -a -x "${path}"; then
+            mbfl_message_verbose "found '${name}': '${path}'\n"
         else
+            mbfl_message_verbose "*** not found '${name}', path: '${path}'\n"
             retval=1
         fi
     done
@@ -105,7 +106,10 @@ function mbfl_program_found () {
     mbfl_message_error "executable not found \"${PROGRAM}\""
     mbfl_exit_program_not_found
 }
-
+#page
+function mbfl_program_main_validate_programs () {
+    mbfl_program_validate_declared || mbfl_exit_program_not_found
+}
 ### end of file
 # Local Variables:
 # mode: sh

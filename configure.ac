@@ -8,32 +8,40 @@
 ## Initialisation.
 ## ------------------------------------------------------------
 
-AC_INIT([mbfl], [1.0.4], [marcomaggi@tiscalinet.it])
+AC_INIT([mbfl], [1.0.6], [marcomaggi@tiscalinet.it])
 AC_PREREQ(2.57)
 AC_COPYRIGHT([Copyright (C) 2003, 2004 by Marco Maggi])
 AC_REVISION([$Revision: 1.1.1.131 $])
 AC_CONFIG_SRCDIR([./lib/libmbfl.sh.m4])
 AC_CONFIG_AUX_DIR([infrastructure])
 
-AC_SUBST([PACKAGE_XVERSION], [1.0.4])
-AC_DEFINE([PACKAGE_XVERSION], ["1.0.4"], [full version])
+AC_SUBST([PACKAGE_XVERSION], [1.0.6])
+AC_DEFINE([PACKAGE_XVERSION], ["1.0.6"], [full package version])
 AC_SUBST([PACKAGE_NODOT_VERSION],  [10])
-AC_DEFINE([PACKAGE_NODOT_VERSION], ["10"])
-AC_SUBST([PACKAGE_NAME_UPPERCASE],  [MBFL])
-AC_DEFINE([PACKAGE_NAME_UPPERCASE], ["MBFL"])
+AC_DEFINE([PACKAGE_NODOT_VERSION],
+    ["10"], [package version with no dots])
+AC_SUBST([PACKAGE_NAME_UPPERCASE], [MBFL])
+AC_DEFINE([PACKAGE_NAME_UPPERCASE],
+    ["MBFL"], [package name in upper case chars])
 AC_SUBST([PACKAGE_NAME_LOWERCASE],  [mbfl])
-AC_DEFINE([PACKAGE_NAME_LOWERCASE], ["mbfl"])
+AC_DEFINE([PACKAGE_NAME_LOWERCASE], ["mbfl"],
+    [package name in lower case chars])
 
 AC_SUBST([PACKAGE_VERSION_MAJMIN],  [1.0])
-AC_DEFINE([PACKAGE_VERSION_MAJMIN], ["1.0"])
+AC_DEFINE([PACKAGE_VERSION_MAJMIN], ["1.0"],
+    [major/minor package version])
 AC_SUBST([PACKAGE_VERSION_MAJOR],  [1])
-AC_DEFINE([PACKAGE_VERSION_MAJOR], ["1"])
+AC_DEFINE([PACKAGE_VERSION_MAJOR], ["1"],
+    [major version number])
 AC_SUBST([PACKAGE_VERSION_MINOR],  [0])
-AC_DEFINE([PACKAGE_VERSION_MINOR], ["0"])
-AC_SUBST([PACKAGE_VERSION_PATCH],  [4])
-AC_DEFINE([PACKAGE_VERSION_PATCH], ["4"])
+AC_DEFINE([PACKAGE_VERSION_MINOR], ["0"],
+    [minor version number])
+AC_SUBST([PACKAGE_VERSION_PATCH],  [6])
+AC_DEFINE([PACKAGE_VERSION_PATCH], ["6"],
+    [patch version number])
 AC_SUBST([PACKAGE_VERSION_STATE],  [.])
-AC_DEFINE([PACKAGE_VERSION_STATE], ["."])
+AC_DEFINE([PACKAGE_VERSION_STATE], ["."],
+    [state of the package])
 
 
 #PAGE

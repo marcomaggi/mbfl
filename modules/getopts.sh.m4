@@ -97,6 +97,9 @@ mbfl_message_DEFAULT_OPTIONS="
 \t--help
 \t--usage
 \t\tprint usage informations and exit
+\t--brief-help
+\t\tprint usage informations and the list of script specific
+\t\toptions, then exit
 "
 
 fi
@@ -260,7 +263,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
             mbfl_set_option_interactive
 	    ;;
         validate-programs)
-            mbfl_program_validate_declared || mbfl_exit_program_not_found
+            mbfl_main_set_private_main mbfl_program_main_validate_programs
             ;;
 	version)
 	    echo -e "${mbfl_message_VERSION}"
@@ -294,6 +297,13 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
             echo 'options:'
             mbfl_getopts_p_build_and_print_options_usage
             echo -e "${mbfl_message_DEFAULT_OPTIONS}"
+	    exit 0
+	    ;;
+	H|brief-help|brief-usage)
+	    echo -e "${script_USAGE}"
+            test -n "${script_DESCRIPTION}" && echo -e "${script_DESCRIPTION}"
+            echo 'options:'
+            mbfl_getopts_p_build_and_print_options_usage
 	    exit 0
 	    ;;
 	*)
@@ -493,6 +503,18 @@ function mbfl_argv_all_files () {
 function mbfl_getopts_p_test_option () {
     test "${!1}" = "yes" && return 0
     return 1
+}
+function mbfl_getopts_print_long_switches () {
+    for ((i=0; $i < ${#mbfl_getopts_LONGS[@]}; ++i)); do
+        if test -n "${mbfl_getopts_LONGS[$i]}" ; then
+            echo -n "${mbfl_getopts_LONGS[$i]}"
+        else
+            continue
+        fi
+        test $(($i+1)) -lt ${#mbfl_getopts_LONGS[@]} && echo -n ' '
+    done
+    echo
+    return 0
 }
 
 ### end of file
