@@ -64,6 +64,7 @@ library_INSTLST		= $(library_TARGETS)
 library_INSTDIR		= $(pkglibdir)
 
 library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES)
+library_REALCLEANFILES	= $(library_CLEANFILES)
 
 .PHONY: library-all library-clean library-realclean library-install
 
@@ -112,7 +113,7 @@ template-install:
 AM_INSTALL_DATA([template])
 
 
-$(template_TARGETS): $(scripts_TARGETS)
+$(template_TARGETS): $(library_TARGETS)
 
 dev:		template-all
 dev-clean:	template-clean

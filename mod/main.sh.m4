@@ -146,13 +146,11 @@ function mbfl_main () {
 
     
     action_func=script_action_"${mbfl_option_ACTION}"
-    if test \
-	\( -n "${mbfl_option_ACTION}" \)               -a \
-        \( "$(type -t ${action_func})" = "function" \)
-    then
+    if test \( -n "${mbfl_option_ACTION}" \) -a \
+            \( "$(type -t ${action_func})" = "function" \); then
 	$action_func
 	exit_code=$?
-    elif test "$(type -t main)" = "function"
+    elif test "$(type -t main)" = "function"; then
 	main
 	exit_code=$?
     fi

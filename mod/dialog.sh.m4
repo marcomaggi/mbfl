@@ -9,7 +9,7 @@
 #       This file is a collection of functions used to interact to the
 #       user at the console.
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -26,26 +26,21 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA
 # 
-# $Id: dialog.sh.m4,v 1.1.1.3 2003/12/22 19:53:50 marco Exp $
-#
 
 function mbfl_dialog_yes_or_no () {
     local STRING="${1:?}"
+    local PROMPT="${script_PROGNAME}: ${STRING}? (yes/no) "
     local ANS=
 
 
-    read -e -p "${STRING}? (yes/no) " ANS
-    while test "$ANS" != 'yes' -a "$ANS" != 'no'
-      do
-      echo 'Please answer yes or no.'
-      read -e -p "install?(yes/no) " ANS
+    read -e -p "${PROMPT}" ANS
+    while test "$ANS" != 'yes' -a "$ANS" != 'no'; do
+        echo 'Please answer yes or no.'
+        read -e -p "${PROMPT}" ANS
     done
-
-    if test "$ANS" = yes; then
-        return 0
-    else
-        return 1
-    fi
+    
+    test "$ANS" = yes && return 0
+    return 1
 }
 
 ### end of file
