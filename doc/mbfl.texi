@@ -108,6 +108,7 @@ Documentation License''.
 * String::                      Manipulating strings.
 * Dialog::                      Interacting with the user.
 * Variables::                   Manipulating variables.
+* System::                      Interfacing with the system.
 * Main::                        Main function.
 * Testing::                     Building test suites.
 
@@ -165,7 +166,7 @@ file @file{libmbfl.sh} in the script; this is possible by installing
 
 @example
 mbfl_INTERACTIVE='no'
-source "$@{MBFL_LIBRARY:=`mbfl-config`@}"
+source "$@{MBFL_LIBRARY:=$(mbfl-config)@}"
 @end example
 
 @noindent
@@ -566,6 +567,7 @@ otherwise.
 * File Commands Removing::      Removing files and directories.
 * File Commands Tar::           Manipulating tar archives.
 * File Commands Symlink::       Creating symbolic links.
+* File Commands Perms::         Set/get file permissions.
 @end menu
 
 
@@ -624,6 +626,7 @@ Creates a directory named @var{pathname}; all the unexistent parents are
 created, too. If @var{permissions} is present: it is the specification
 of directory permissions in octal mode.
 @end deffn
+
 
 @c ------------------------------------------------------------
 @node File Commands Copy
@@ -779,6 +782,33 @@ Like @code{mbfl_tar_create_to_file} but archives all the contents of
 Prints to stdout the list of files in @var{archive}. @command{tar} flags
 may be appended to the invocation to this function. In case of error
 returns 1.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node File Commands Perms
+@unnumberedsubsec Set/get file permissions
+
+
+@deffn Function mbfl_file_enable_permissions
+Declares the intention to use the programs required to get/set file
+permissions.
+@end deffn
+
+
+@deffn Function mbfl_file_get_permissions @var{pathname}
+Prints the access permissions for @var{pathname}, in octal format.
+@end deffn
+
+
+To set permissions one may request the use of @command{sudo}: just
+request a user before invoking the following function (@ref{Program
+Executing} for details).
+
+
+@deffn Function mbfl_file_set_permissions @var{mode} @var{pathname}
+Sets the access permissions for @var{pathname}; @var{mode} must be in a
+form accepted by @command{chmod}.
 @end deffn
 
 
@@ -1632,6 +1662,38 @@ found.
 @unnumberedsec Executing a program
 
 
+@noindent
+This module provides functions to execute a program under the privileges
+of the current user or under a more or less privileged user; it makes
+use of @command{sudo}, to allow one to execute a program as a different
+user but without entering a password: refer to the @command{sudo}
+documentation for the required configuration.
+
+The functions described here must be used in the following way: to
+execute a program under the current user privileges:
+
+@example
+mbfl_program_exec ls /bin
+@end example
+
+@noindent
+to execute a program under a more or less privileged user:
+
+@example
+# At the beginning of the script:
+mbfl_program_enable_sudo
+
+# When executing a program:
+mbfl_program_declare_sudo_user root
+mbfl_program_exec ls /root
+@end example
+
+Every time we execute a program with @command{sudo}: we have to select
+the user under which to execute it; if we do not do it: the internally
+registered user defaults to @code{nosudo}, which tells the function to
+not use @command{sudo}.
+
+
 @deffn Function mbfl_program_exec @var{arg} ...
 Evaluates a command line.
 
@@ -1642,6 +1704,18 @@ If the function @code{mbfl_option_show_program} returns true: the
 command line is sent to stderr, then it is executed.
 @end deffn
 
+
+@deffn Function mbfl_program_enable_sudo
+Declares the intention to use @command{sudo}.
+@end deffn
+
+
+@deffn Function mbfl_program_declare_sudo_user @var{user}
+Register @var{user} as the user under which execute the next program
+through @command{sudo}; the user will be selected using the @code{-u}
+option of @command{sudo}. The value @code{nosudo} means: do not use
+@command{sudo}.
+@end deffn
 
 @c ------------------------------------------------------------
 @node Program Declaring
@@ -2071,6 +2145,56 @@ colon separated list of strings.
 @deffn Function mbfl_variable_colon_variable_drop_duplicate @var{varname}
 Reads @var{varname}'s value, a colon separated list of string, and
 removes duplicates.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node System
+@unnumbered Interfacing with the system
+
+
+@menu
+* System User Id::              Converting user identifiers.
+* System File Perms::           Converting file permissions.
+@end menu
+
+
+@deffn Function mbfl_system_enable_programs
+Declares the intention to use the programs required by this module.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node System User Id
+@unnumberedsec Converting user identifiers
+
+
+@deffn Function mbfl_system_numerical_user_id_to_name @var{id}
+Converts the numerical user @var{id} to the user name found in the
+@file{/etc/passwd} file.
+@end deffn
+
+
+@deffn Function mbfl_system_numerical_user_id_to_name @var{name}
+Converts the symbolic user @var{name} to the numerical identifier found
+in the @file{/etc/passwd} file.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node System File Perms
+@unnumberedsec Converting file permissions
+
+
+@deffn Function mbfl_system_symbolic_to_octal_permissions @var{mode}
+Converts three chars representing file permissions in a single octal
+digit.
+@end deffn
+
+
+@deffn Function mbfl_system_octal_to_symbolic_permissions @var{mode}
+Converts a single octal digit representing file permissions into three
+chars.
 @end deffn
 
 

@@ -96,7 +96,7 @@ INSTALL_DIR		= $(INSTALL) -m $(INSTALL_DIR_MODE) -d
 INSTALL_BIN		= $(INSTALL) -m $(INSTALL_BIN_MODE)
 INSTALL_DATA		= $(INSTALL) -m $(INSTALL_DATA_MODE)
 
-DEVELSTUFF		= $(top_srcdir)/infrastructure/develstuff.sh
+DEVELSTUFF		= @DEVELSTUFF@
 
 #page
 ## ------------------------------------------------------------
@@ -123,7 +123,7 @@ reconfigure:
 	$(MAKE) clean
 	$(MAKE) realclean
 	$(DEVELSTUFF) --autoconf --verbose
-	$(DEVELSTUFF) --reconfigure --verbose --builddir="$(builddir)" --show-program
+	$(DEVELSTUFF) --reconfigure --verbose --builddir="$(builddir)"
 
 # Makefile.ds --
 #
@@ -160,7 +160,7 @@ MBFLPP	= $(BASH) $(top_srcdir)/scripts/mbflpp.sh			\
 ## ------------------------------------------------------------
 
 MODULES			= base encode file getopts message program signal \
-			  string dialog main variable
+			  string dialog main variable system
 LIBNAME			= libmbfl.sh
 LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
 
@@ -414,25 +414,30 @@ doc-install:	doc-generic-install
 ## ------------------------------------------------------------
 
 doc_texinfo_SRCDIR	= $(top_srcdir)/./doc
+doc_texinfo_BUILDDIR	= $(top_builddir)/doc
 doc_texinfo_SOURCES	= $(wildcard $(doc_texinfo_SRCDIR)/*.texi)
 
 vpath	%.texi		$(doc_texinfo_SRCDIR)
 vpath	%.texiinc	$(doc_texinfo_SRCDIR)
 
-doc_texi2html_TARGETS	= $(notdir $(doc_texinfo_SOURCES:.texi=.html))
+doc_texi2html_TARGETS	= $(addprefix $(doc_texinfo_BUILDDIR)/, \
+				$(notdir $(doc_texinfo_SOURCES:.texi=.html)))
 doc_texi2html_INSTLST	= $(wildcard $(doc_texi2html_TARGETS))
 doc_texi2html_INSTDIR	= $(pkghtmldir)
 
-doc_texi2info_TARGETS	= $(notdir $(doc_texinfo_SOURCES:.texi=.info))
+doc_texi2info_TARGETS	= $(addprefix $(doc_texinfo_BUILDDIR)/, \
+				$(notdir $(doc_texinfo_SOURCES:.texi=.info)))
 doc_texi2info_INSTLST	= $(wildcard $(foreach f, $(doc_texi2info_TARGETS), $(f)*))
 doc_texi2info_INSTDIR	= $(infodir)
 
-doc_texinfo_CLEANFILES	 = $(doc_texi2info_INSTLST) $(doc_texi2html_INSTLST)
-doc_texinfo_REALCLEANFILES = $(doc_texinfo_CLEANFILES) version.texiinc
+doc_texinfo_CLEANFILES		= $(doc_texinfo_BUILDDIR)
+doc_texinfo_REALCLEANFILES	= $(doc_texinfo_CLEANFILES)
 
-MAKEINFO		= @MAKEINFO@
-DS_TEXI2INFO_FLAGS	= -I $(doc_texinfo_SRCDIR) -I $(builddir)
-DS_TEXI2HTML_FLAGS	= -I $(doc_texinfo_SRCDIR) -I $(builddir) --html --no-split
+DS_TEXI_FLAGS		= -I $(doc_texinfo_SRCDIR) -I $(builddir) -I $(doc_texinfo_BUILDDIR)
+DS_TEXI2INFO_FLAGS	= $(DS_TEXI_FLAGS)
+DS_TEXI2HTML_FLAGS	= $(DS_TEXI_FLAGS) --html --no-split
+
+doc_texinfo_PREREQ	= $(doc_texinfo_BUILDDIR) $(doc_texinfo_BUILDDIR)/version.texiinc
 
 .PHONY: doc-texinfo-all doc-texinfo-clean doc-texinfo-realclean
 .PHONY: doc-texinfo-install
@@ -467,13 +472,16 @@ else
 endif
 
 
-$(doc_texi2info_TARGETS): %.info : %.texi version.texiinc
+$(doc_texinfo_BUILDDIR):
+	$(MKDIR) $(@)
+
+$(doc_texinfo_BUILDDIR)/%.info: $(doc_texinfo_SRCDIR)/%.texi $(doc_texinfo_PREREQ)
 	$(MAKEINFO) $(DS_TEXI2INFO_FLAGS) $(<) -o $(@)
 
-$(doc_texi2html_TARGETS): %.html : %.texi version.texiinc
+$(doc_texinfo_BUILDDIR)/%.html: $(doc_texinfo_SRCDIR)/%.texi $(doc_texinfo_PREREQ)
 	$(MAKEINFO) $(DS_TEXI2HTML_FLAGS) $(<) -o $(@)
 
-version.texiinc: Makefile
+$(doc_texinfo_BUILDDIR)/version.texiinc: Makefile
 	echo -e "@macro version{}\n$(PACKAGE_XVERSION)\n@end macro\n" >$(@)
 
 doc:		doc-texinfo-all

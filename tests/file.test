@@ -495,6 +495,33 @@ file-directory-is-executable-1.3 () {
     result=$?; dotest-clean-files; return $result
 }
 
+#page
+
+file-get-permissions-1.1 () {
+    dotest-mktmpdir
+    local PATHNAME=$(dotest-mkfile file.ext)
+    local MODE=0750
+
+    chmod ${MODE} "${PATHNAME}"
+    mbfl_file_enable_permissions
+    {
+	mbfl_file_get_permissions "$PATHNAME"
+	dotest-clean-files
+    } | dotest-output ${MODE}
+}
+file-get-permissions-2.1 () {
+    dotest-mktmpdir
+    local PATHNAME=$(dotest-mkfile file.ext)
+    local MODE=0750
+
+    mbfl_file_enable_permissions
+    mbfl_file_set_permissions ${MODE} "${PATHNAME}"
+    {
+	mbfl_file_get_permissions "${PATHNAME}"
+	dotest-clean-files
+    } | dotest-output ${MODE}
+}
+
 #PAGE
 
 dotest file-

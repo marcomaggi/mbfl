@@ -95,6 +95,21 @@ function program-3.5 () {
 	"test: *** not found 'unexistent', path: ''"
 }
 
+#page
+
+function program-4.1 () {
+    mbfl_program_enable_sudo
+    mbfl_program_declare_sudo_user root
+    echo 123 | mbfl_program_exec cat | dotest-output 123
+}
+
+function program-4.2 () {
+    mbfl_program_enable_sudo
+    mbfl_program_declare_sudo_user woah
+    echo 123 | mbfl_program_exec cat 2>&1 | \
+        dotest-output '/usr/bin/sudo: no passwd entry for woah!'
+}
+
 #PAGE
 ## ---------------------------------------------------------
 ## End of "::test" namespace.

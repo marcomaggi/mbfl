@@ -33,7 +33,7 @@ MBFLPP	= $(BASH) $(top_srcdir)/scripts/mbflpp.sh			\
 ## ------------------------------------------------------------
 
 MODULES			= base encode file getopts message program signal \
-			  string dialog main variable
+			  string dialog main variable system
 LIBNAME			= libmbfl.sh
 LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
 

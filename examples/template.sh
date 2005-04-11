@@ -41,7 +41,7 @@ script_USAGE="usage: ${script_PROGNAME} [options] ..."
 script_DESCRIPTION='This is an example script.'
 
 mbfl_INTERACTIVE='no'
-source "${MBFL_LIBRARY:=`mbfl-config`}"
+source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ALPHA no a alpha noarg "selects action alpha"

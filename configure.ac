@@ -8,15 +8,15 @@
 ## Initialisation.
 ## ------------------------------------------------------------
 
-AC_INIT([mbfl], [1.1.2], [marcomaggi@tiscalinet.it])
+AC_INIT([mbfl], [1.1.3], [marcomaggi@tiscalinet.it])
 AC_PREREQ(2.57)
 AC_COPYRIGHT([Copyright (C) 2003, 2004 by Marco Maggi])
 AC_REVISION([$Revision: 1.1.1.131 $])
 AC_CONFIG_SRCDIR([./lib/libmbfl.sh.m4])
 AC_CONFIG_AUX_DIR([infrastructure])
 
-AC_SUBST([PACKAGE_XVERSION], [1.1.2])
-AC_DEFINE([PACKAGE_XVERSION], ["1.1.2"], [full package version])
+AC_SUBST([PACKAGE_XVERSION], [1.1.3])
+AC_DEFINE([PACKAGE_XVERSION], ["1.1.3"], [full package version])
 AC_SUBST([PACKAGE_NODOT_VERSION],  [11])
 AC_DEFINE([PACKAGE_NODOT_VERSION],
     ["11"], [package version with no dots])
@@ -36,8 +36,8 @@ AC_DEFINE([PACKAGE_VERSION_MAJOR], ["1"],
 AC_SUBST([PACKAGE_VERSION_MINOR],  [1])
 AC_DEFINE([PACKAGE_VERSION_MINOR], ["1"],
     [minor version number])
-AC_SUBST([PACKAGE_VERSION_PATCH],  [2])
-AC_DEFINE([PACKAGE_VERSION_PATCH], ["2"],
+AC_SUBST([PACKAGE_VERSION_PATCH],  [3])
+AC_DEFINE([PACKAGE_VERSION_PATCH], ["3"],
     [patch version number])
 AC_SUBST([PACKAGE_VERSION_STATE],  [.])
 AC_DEFINE([PACKAGE_VERSION_STATE], ["."],
@@ -100,6 +100,9 @@ AC_ARG_VAR([TAR], [the GNU tar program])
 
 AC_PATH_PROG([TCLSH], [tclsh], :)
 AC_ARG_VAR([TCLSH], [the TCL shell])
+
+AC_PATH_PROG([DEVELSTUFF], [develstuff.sh], :)
+AC_ARG_VAR([DEVELSTUFF], [an infrastructure script])
 
 CURRENT_DATE=$($DATE)
 AC_SUBST(CURRENT_DATE)

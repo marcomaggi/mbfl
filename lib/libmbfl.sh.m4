@@ -41,6 +41,7 @@ m4_include(program.sh)
 m4_include(signal.sh)
 m4_include(variable.sh)
 m4_include(dialog.sh)
+m4_include(system.sh)
 m4_include(main.sh)
 
 ### end of file

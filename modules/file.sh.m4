@@ -578,6 +578,41 @@ function mbfl_tar_exec () {
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec "${TAR}" ${FLAGS} "$@"
 }
+#page
+## ------------------------------------------------------------
+## File permissions functions.
+## ------------------------------------------------------------
+
+function mbfl_file_enable_permissions () {
+    mbfl_declare_program ls
+    mbfl_declare_program cut
+    mbfl_declare_program chmod
+}
+function mbfl_file_get_permissions () {
+    mandatory_parameter(PATHNAME, 1, pathname)
+    local LS=$(mbfl_program_found ls)
+    local CUT=$(mbfl_program_found cut)
+    local SYMBOLIC OWNER GROUP OTHER
+
+    SYMBOLIC=$(mbfl_program_exec ${LS} -l "${PATHNAME}" | \
+        mbfl_program_exec ${CUT} -d' ' -f1)
+    OWNER=${SYMBOLIC:1:3}
+    GROUP=${SYMBOLIC:4:3}
+    OTHER=${SYMBOLIC:7:3}
+
+    printf '0%d%d%d\n' \
+        $(mbfl_system_symbolic_to_octal_permissions ${OWNER}) \
+        $(mbfl_system_symbolic_to_octal_permissions ${GROUP}) \
+        $(mbfl_system_symbolic_to_octal_permissions ${OTHER})
+}
+function mbfl_file_set_permissions () {
+    mandatory_parameter(PERMISSIONS, 1, permissions)
+    mandatory_parameter(PATHNAME, 2, pathname)
+    local CHMOD=$(mbfl_program_found chmod)
+    
+    mbfl_program_exec ${CHMOD} "${PERMISSIONS}" "${PATHNAME}"
+}
+
 
 ### end of file
 # Local Variables:
