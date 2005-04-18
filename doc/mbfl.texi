@@ -45,9 +45,13 @@
 @end macro
 
 @macro copyrightyears{}
-2003, 2004
+2003, 2004, 2005
 @end macro
 
+
+@macro function{NAME}
+@code{\NAME\()}
+@end macro
 
 @c ------------------------------------------------------------
 @titlepage
@@ -356,7 +360,7 @@ is not the empty string.
 
 @deffn Function mbfl_read_maybe_null @var{varname}
 Reads a line from its stdin and stores it in a variable named
-@var{varname}. If @code{mbfl_option_null} returns true: the null
+@var{varname}. If @function{mbfl_option_null} returns true: the null
 character is used as terminator, like in:
 
 @example
@@ -490,13 +494,13 @@ Normalises a file name: removes all the occurrences of @code{.} and
 @code{..}.
 
 If @var{pathname} is relative (according to
-@code{mbfl_file_is_absolute}) and @var{prefix} is not present or it is
-the empty string: the current process working directory is prepended to
-@var{pathname}.
+@function{mbfl_file_is_absolute}) and @var{prefix} is not present or it
+is the empty string: the current process working directory is prepended
+to @var{pathname}.
 
 If @var{prefix} is present and non empty, and @var{pathname} is relative
- (according to @code{mbfl_file_is_absolute}): @var{prefix} is prepended
-to @var{pathname} and normalised, too.
+(according to @function{mbfl_file_is_absolute}): @var{prefix} is
+prepended to @var{pathname} and normalised, too.
 
 Echoes to stdout the normalised file name; returns true.
 @end deffn
@@ -527,15 +531,15 @@ Returns true if the first character in @var{pathname} is a slash
 
 @deffn Function mbfl_file_is_absolute_dirname @var{pathname}
 Returns true if @var{pathname} is a directory according to
-@code{mbfl_file_is_directory} and an absolute pathname according to
-@code{mbfl_file_is_absolute}.
+@function{mbfl_file_is_directory} and an absolute pathname according to
+@function{mbfl_file_is_absolute}.
 @end deffn
 
 
 @deffn Function mbfl_file_is_absolute_filename @var{pathname}
 Returns true if @var{pathname} is a file according to
-@code{mbfl_file_is_file} and an absolute pathname according to
-@code{mbfl_file_is_absolute}.
+@function{mbfl_file_is_file} and an absolute pathname according to
+@function{mbfl_file_is_absolute}.
 @end deffn
 
 
@@ -628,6 +632,13 @@ of directory permissions in octal mode.
 @end deffn
 
 
+@deffn Function mbfl_file_make_if_not_directory @var{pathname} ?@var{permissions}?
+Wrapper for @function{mbfl_file_make_directory} that creates the
+directory if it does not exist.
+@end deffn
+
+
+
 @c ------------------------------------------------------------
 @node File Commands Copy
 @unnumberedsubsec Copying files
@@ -651,8 +662,8 @@ generated and the return value is 1. No test is done upon @var{target}.
 @deffn Function mbfl_file_copy_recursively @var{source} @var{target} ?@dots{}?
 Copies the @var{source}, a directory, to @var{target}, a directory
 pathname. Additional arguments are handed to the command unchanged. This
-function is like @code{mbfl_file_copy}, but it adds @code{--recursive}
-to the command line of @command{cp}.
+function is like @function{mbfl_file_copy}, but it adds
+@code{--recursive} to the command line of @command{cp}.
 
 If @var{source} does not exist, or if it is not a file, an error is
 generated and the return value is 1. No test is done upon @var{target}.
@@ -773,7 +784,7 @@ to this function. In case of error returns 1.
 
 
 @deffn Function mbfl_tar_archive_directory_to_file @var{directory} @var{archive} ?...?
-Like @code{mbfl_tar_create_to_file} but archives all the contents of
+Like @function{mbfl_tar_create_to_file} but archives all the contents of
 @var{directory}, including the directory itself (not its parents).
 @end deffn
 
@@ -819,7 +830,7 @@ form accepted by @command{chmod}.
 
 @noindent
 The optional argument @var{PRINT_ERROR} will cause an error message to
-be printed with @code{mbfl_message_error} if the test fails; the
+be printed with @function{mbfl_message_error} if the test fails; the
 argument value must be @code{print_error}.
 
 
@@ -907,8 +918,8 @@ be appended.
 
 
 @deffn Function mbfl_cd @var{dirname} ?...?
-Wrapper for @code{mbfl_change_directory}. If verbose mode is on: prints
-a message.
+Wrapper for @function{mbfl_change_directory}. If verbose mode is on:
+prints a message.
 @end deffn
 
 
@@ -971,7 +982,7 @@ store command line arguments in the global array @code{ARGV1} and the
 number of command line arguments in the global variable @code{ARGC1}.
 
 The global array @code{ARGV} and the global variable @code{ARGC} are
-predefined and should be used by the @code{mbfl_getopts} functions to
+predefined and should be used by the @code{mbfl_getopts_*} functions to
 store non--option command line arguments.
 
 Example:
@@ -1001,13 +1012,14 @@ done
 @noindent
 To use this module we have to declare a set of script options; we
 declare a new script option with the function
-@code{mbfl_declare_option}. Options declaration should be done at the
-beginning of the script, before doing anything; for example: right after
-the @mbfl{} library code.
+@function{mbfl_declare_option}. Options declaration should be done at
+the beginning of the script, before doing anything; for example: right
+after the @mbfl{} library code.
 
 In the main block of the script: options are parsed by invoking
-@code{mbfl_getopts_parse}: this function will update a global variable
-and invoke a script function for each option on the command line.
+@function{mbfl_getopts_parse}: this function will update a global
+variable and invoke a script function for each option on the command
+line.
 
 
 @unnumberedsubsec Examples
@@ -1099,22 +1111,22 @@ values are encoded in hexadecimal strings. Encoding is useful to avoid
 quoting problems when invoking a script from another one.
 
 If this option is used: the values are decoded by
-@code{mbfl_getopts_parse} before storing them in the @code{ARGV} array
-and before being stored in the option's specific global variables.
+@function{mbfl_getopts_parse} before storing them in the @code{ARGV}
+array and before being stored in the option's specific global variables.
 
 @item -v
 @itemx --verbose
-Turns on verbose messages. The fuction @code{mbfl_option_verbose}
+Turns on verbose messages. The fuction @function{mbfl_option_verbose}
 returns true (@ref{Message}, for details).
 
 @item --silent
-Turns off verbose messages. The fuction @code{mbfl_option_verbose}
+Turns off verbose messages. The fuction @function{mbfl_option_verbose}
 returns false.
 
 @item --verbose-program
 If used the @option{--verbose} option is added to the command line of
 external programs that support it. The fuction
-@code{mbfl_option_verbose_program} returns true or false depending on
+@function{mbfl_option_verbose_program} returns true or false depending on
 the state of this option.
 
 @item --show-program
@@ -1170,7 +1182,7 @@ Variables}, for details).
 Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
-declared with @code{mbfl_declare_option}; a string describing the
+declared with @function{mbfl_declare_option}; a string describing the
 @mbfl{} default options. Then exits with code zero.
 
 @item -H
@@ -1179,7 +1191,7 @@ declared with @code{mbfl_declare_option}; a string describing the
 Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
-declared with @code{mbfl_declare_option}. Then exits with code zero.
+declared with @function{mbfl_declare_option}. Then exits with code zero.
 
 The difference with @option{--help} is that predefined options are not
 described.
@@ -1211,8 +1223,8 @@ Query/sets/unsets verbose execution for external programs.
 
 This option, of course, is supported only for programs that are known by
 @mbfl{} (like @command{rm}): if a program is executed with
-@code{mbfl_program_exec}, it is responsibility of the caller to use the
-option.
+@function{mbfl_program_exec}, it is responsibility of the caller to use
+the option.
 @end deffn
 
 
@@ -1517,7 +1529,7 @@ are allowed in the message.
 
 @deffn Function mbfl_message_verbose @var{string}
 Outputs a message to the selected channel, but only if the evaluation of
-the function/alias @code{mbfl_option_verbose} returns true.
+the function/alias @function{mbfl_option_verbose} returns true.
 
 Echoes a string composed of: the content of the
 @code{mbfl_message_PROGNAME} global variable; a colon; a space; the
@@ -1530,7 +1542,7 @@ are allowed in the message.
 
 @deffn Function mbfl_message_verbose_end @var{string}
 Outputs a message to the selected channel, but only if the evaluation of
-the function/alias @code{mbfl_option_verbose} returns true.
+the function/alias @function{mbfl_option_verbose} returns true.
 
 Echoes the string. A newline character is NOT appended to the
 message. Escape characters are allowed in the message.
@@ -1539,7 +1551,7 @@ message. Escape characters are allowed in the message.
 
 @deffn Function mbfl_message_debug @var{string}
 Outputs a message to the selected channel, but only if the evaluation of
-the function/alias @code{mbfl_option_debug} returns true.
+the function/alias @function{mbfl_option_debug} returns true.
 
 Echoes a string composed of: the content of the
 @code{mbfl_message_PROGNAME} global variable; a colon; a space; the
@@ -1602,7 +1614,7 @@ perform any operation on the system, just print messages describing what
 will happen if the script is executed with the selected options. This
 implies, in the @mbfl{} model, that no external program is executed.
 
-When this feature is turned on: @code{mbfl_program_exec} does not
+When this feature is turned on: @function{mbfl_program_exec} does not
 execute the program, instead it prints the command line on standard
 error and returns true.
 
@@ -1697,10 +1709,10 @@ not use @command{sudo}.
 @deffn Function mbfl_program_exec @var{arg} ...
 Evaluates a command line.
 
-If the function @code{mbfl_option_test} returns true: instead of
+If the function @function{mbfl_option_test} returns true: instead of
 evaluation, the command line is sent to stderr.
 
-If the function @code{mbfl_option_show_program} returns true: the
+If the function @function{mbfl_option_show_program} returns true: the
 command line is sent to stderr, then it is executed.
 @end deffn
 
@@ -1734,9 +1746,9 @@ control.  On a system where executables may vanish from one moment to
 another, no matter how we test a program existence, there's always the
 possibility that the program is not ``there'' when we invoke it.
 
-If we just use @code{mbfl_program_exec} to invoke an external program,
-the function will try and fail if the executable is unavailable: the
-return code will be false.
+If we just use @function{mbfl_program_exec} to invoke an external
+program, the function will try and fail if the executable is
+unavailable: the return code will be false.
 
 The vanishing of a program is a rare event: if it's there when we look
 for it, probably it will be there also a few moments later when we
@@ -1756,7 +1768,7 @@ script. The return value is always zero.
 Validates the existence of all the declared programs. The return value
 is zero if all the programs are found, one otherwise.
 
-This function is invoked by @code{mbfl_getopts_parse} when the
+This function is invoked by @function{mbfl_getopts_parse} when the
 @code{--validate-programs} option is used on the command line.
 
 It is a good idea to invoke this function at the beginning of a script,
@@ -1775,10 +1787,10 @@ from the command line the option @option{--verbose} must be used before
 @deffn Function mbfl_program_found @var{program}
 Prints the pathname of the previously declared @var{program}. Returns
 zero if the program was found, otherwise prints an error message and
-exits the script by invoking @code{mbfl_exit_program_not_found}.
+exits the script by invoking @function{mbfl_exit_program_not_found}.
 
 This function should be used to retrieve the pathname of the program to
-be used as first argument to @code{mbfl_program_exec}.
+be used as first argument to @function{mbfl_program_exec}.
 @end deffn
 
 
@@ -1850,7 +1862,7 @@ a zero--based index.
 @deffn Function mbfl_string_is_equal_unquoted_char @var{string} @var{position} @var{char}
 Returns true if the character at @var{position} in @var{string} is equal
 to @var{char} and is not quoted (according to
-@code{mbfl_string_is_quoted_char}); else returns false. @var{position}
+@function{mbfl_string_is_quoted_char}); else returns false. @var{position}
 is a zero--based index.
 @end deffn
 
@@ -1936,7 +1948,7 @@ them as part of the following character. So, for example, the sequence
 @end deffn
 
 
-Example of usage for @code{mbfl_string_chars}:
+Example of usage for @function{mbfl_string_chars}:
 
 @example
 string="abcde\nfghilm"
@@ -2119,7 +2131,7 @@ indexes starting at zero.
 
 
 @deffn Function mbfl_variable_element_is_in_array @var{element}
-A wrapper for @code{mbfl_variable_find_in_array} that does not print
+A wrapper for @function{mbfl_variable_find_in_array} that does not print
 anything.
 @end deffn
 
@@ -2217,16 +2229,16 @@ Must be the last line of code in the script. Does the following.
 @enumerate
 @item
 Registers the value of the variable @code{script_PROGNAME} in the
-message module using the function @code{mbfl_message_set_progname}.
+message module using the function @function{mbfl_message_set_progname}.
 
 @item
-If it exists: invokes the function @code{script_before_parsing_options}.
+If it exists: invokes the function @function{script_before_parsing_options}.
 
 @item
-Parses command line options with @code{mbfl_getopts_parse}.
+Parses command line options with @function{mbfl_getopts_parse}.
 
 @item
-If it exists: invokes the function @code{script_after_parsing_options}.
+If it exists: invokes the function @function{script_after_parsing_options}.
 
 @item
 Invokes the function whose name is stored in the global variable

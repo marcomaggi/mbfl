@@ -370,6 +370,13 @@ function mbfl_file_make_directory () {
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec "${MKDIR}" $FLAGS "${PATHNAME}"
 }
+function mbfl_file_make_if_not_directory () {
+    mandatory_parameter(PATHNAME, 1, pathname)
+    optional_parameter(PERMISSIONS, 2, 0775)
+
+    mbfl_file_is_directory "${PATHNAME}" || \
+        mbfl_file_make_directory "${PATHNAME}" "${PERMISSIONS}"
+}
 #page
 function mbfl_file_enable_symlink () {
     mbfl_declare_program ln
@@ -533,6 +540,10 @@ function mbfl_file_is_symlink () {
 }
 
 #page
+## ------------------------------------------------------------
+## tar interface.
+## ------------------------------------------------------------
+
 function mbfl_file_enable_tar () {
     mbfl_declare_program tar
 }
