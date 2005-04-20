@@ -44,6 +44,8 @@ source "${MBFL_LIBRARY:=$(mbfl-config)}"
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option PRESERVE_COMMENTS \
     no "" preserve-comments noarg "do not filter out comments"
+mbfl_declare_option ADD_BASH \
+    no "" add-bash noarg "add '#!${BASH}' at the beginning"
 mbfl_declare_option DEFINE \
     "" "" define witharg "define a new symbols (m4 syntax)"
 mbfl_declare_option INCLUDE \
@@ -93,6 +95,9 @@ function main () {
     mbfl_file_is_readable "${libfile}" && M4_FLAGS="${M4_FLAGS} ${libfile}"
     M4_FLAGS="${M4_FLAGS} ${libraries}"    
 
+    if test "${script_option_ADD_BASH}" = "yes"; then
+        printf "#!${BASH}\n"
+    fi
     if test "${script_option_PRESERVE_COMMENTS}" = "yes"; then
         program_m4 ${M4_FLAGS} -
     else

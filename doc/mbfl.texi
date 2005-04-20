@@ -412,6 +412,7 @@ mbfl_decode_hex 414243
 * File Names::                  Manipulating file names.
 * File Commands::               Manipulating files with external commands.
 * File Testing::                Testing file existence and the like.
+* File Read and Write::         Reading and writing files with privileges.
 * File Misc::                   Miscellaneous commands.
 @end menu
 
@@ -634,7 +635,9 @@ of directory permissions in octal mode.
 
 @deffn Function mbfl_file_make_if_not_directory @var{pathname} ?@var{permissions}?
 Wrapper for @function{mbfl_file_make_directory} that creates the
-directory if it does not exist.
+directory if it does not exist. If a @command{sudo} user was requested:
+after the invocation the request is reset even if no command has been
+executed.
 @end deffn
 
 
@@ -882,6 +885,13 @@ Returns true if @var{directory} is not the empty string, is a directory
 and is executable.
 @end deffn
 
+@deffn Function mbfl_file_directory_validate_writability @var{directory} @var{description}
+Tests directory existence and writability; return true if the directory
+exists and is writable. If the condition is not met: prints informative
+messages using @var{description} to refere to the directory.
+@end deffn
+
+
 
 @unnumberedsubsec Symbolic link functions
 
@@ -905,6 +915,50 @@ Returns true if @var{pathname} is not the empty string and is writable.
 Returns true if @var{pathname} is not the empty string and is
 executable.
 @end deffn
+
+
+@c ------------------------------------------------------------
+@node File Read and Write
+@unnumberedsec Reading and writing files with privileges
+
+
+@noindent
+The following functions perform actions that can normally be done
+directly with the redirection operators of @code{bash}:
+
+@example
+# write to a file
+printf '%s' "$string" >"$filename"
+
+# append to a file
+printf '%s' "$string" >>"$filename"
+
+# read a file, print contents
+printf '%s' "$(<$filename)"
+@end example
+
+The functions act differently in that they spawn a @command{bash}
+subprocess, by invoking @function{mbfl_program_exec}, and let it do the
+operation; this allows us to request the usage of @command{sudo} and so
+to read and write files with modified privileges, but only for the time
+needed to do the operation, not for the whole script.
+
+
+@deffn Function mbfl_file_write @var{string} @var{filename}
+Writes @var{string} to @var{filename}, eventually creating it or
+overwriting old contents.
+@end deffn
+
+
+@deffn Function mbfl_file_append @var{string} @var{filename}
+Appends @var{string} to @var{filename}, eventually creating it.
+@end deffn
+
+
+@deffn Function mbfl_file_read @var{filename}
+Reads and prints @strong{all} the contents of @var{filename}.
+@end deffn
+
 
 @c ------------------------------------------------------------
 @node File Misc
@@ -1728,6 +1782,13 @@ through @command{sudo}; the user will be selected using the @code{-u}
 option of @command{sudo}. The value @code{nosudo} means: do not use
 @command{sudo}.
 @end deffn
+
+@deffn Function mbfl_program_reset_sudo_user
+Resets the previously requested @command{sudo} user to  a value that
+will cause sudo not to be used in the next program invocation. This is
+useful to abort a user request.
+@end deffn
+
 
 @c ------------------------------------------------------------
 @node Program Declaring

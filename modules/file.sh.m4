@@ -27,6 +27,10 @@
 # 
 
 #page
+## ------------------------------------------------------------
+## Changing directory functions.
+## ------------------------------------------------------------
+
 function mbfl_cd () {
     mbfl_change_directory "$@"
     mbfl_message_verbose "entering directory: '${PWD}'\n"
@@ -34,7 +38,12 @@ function mbfl_cd () {
 function mbfl_change_directory () {
     cd "$@" &>/dev/null
 }
-#PAGE
+
+#page
+## ------------------------------------------------------------
+## File name functions.
+## ------------------------------------------------------------
+
 function mbfl_file_extension () {
     mandatory_parameter(PATHNAME, 1, pathname)
     local i=
@@ -48,7 +57,6 @@ function mbfl_file_extension () {
         fi
     done
 }
-#PAGE
 function mbfl_file_dirname () {
     optional_parameter(PATHNAME, 1, '')
     local i=
@@ -74,7 +82,6 @@ function mbfl_file_dirname () {
     printf '.\n'
     return 0
 }
-#PAGE
 function mbfl_file_subpathname () {
     mandatory_parameter(PATHNAME, 1, pathname)
     mandatory_parameter(BASEDIR, 2, base directory)
@@ -92,7 +99,6 @@ function mbfl_file_subpathname () {
         return 1
     fi
 }
-#page
 function mbfl_file_normalise () {
     local pathname="${1:?}"
     local prefix="${2}"
@@ -135,7 +141,6 @@ function mbfl_p_file_normalise2 () {
     if test -n "$2" ; then echo "${PWD}/$2"; else echo "${PWD}"; fi
     cd - >/dev/null
 }
-#page
 function mbfl_p_file_remove_dots_from_pathname () {
     mandatory_parameter(PATHNAME, 1, pathname)
     local item i
@@ -166,7 +171,6 @@ function mbfl_p_file_remove_dots_from_pathname () {
 
     printf '%s\n' "${PATHNAME}"
 }
-#PAGE
 function mbfl_file_rootname () {
     mandatory_parameter(PATHNAME, 1, pathname)
     local i="${#PATHNAME}"
@@ -189,8 +193,6 @@ function mbfl_file_rootname () {
     done
     return 0
 }
-
-#PAGE
 function mbfl_file_split () {
     mandatory_parameter(PATHNAME, 1, pathname)
     local i=0 last_found=0
@@ -210,7 +212,6 @@ function mbfl_file_split () {
     let ++SPLITCOUNT
     return 0
 }
-#PAGE
 function mbfl_file_tail () {
     mandatory_parameter(PATHNAME, 1, pathname)
     local i=
@@ -227,6 +228,10 @@ function mbfl_file_tail () {
     return 0
 }
 #PAGE
+## ------------------------------------------------------------
+## Temporary directory functions.
+## ------------------------------------------------------------
+
 function mbfl_file_find_tmpdir () {
     local TMPDIR="${1}"
 
@@ -254,6 +259,10 @@ function mbfl_file_find_tmpdir () {
     return 1
 }
 #page
+## ------------------------------------------------------------
+## File removal functions.
+## ------------------------------------------------------------
+
 function mbfl_file_enable_remove () {
     mbfl_declare_program rm
     mbfl_declare_program rmdir
@@ -291,6 +300,10 @@ function mbfl_exec_rm () {
     mbfl_program_exec "${RM}" ${FLAGS} "$@" -- "${PATHNAME}"
 }
 #page
+## ------------------------------------------------------------
+## File copy functions.
+## ------------------------------------------------------------
+
 function mbfl_file_enable_copy () {
     mbfl_declare_program cp
 }
@@ -329,7 +342,12 @@ function mbfl_exec_cp () {
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec ${CP} ${FLAGS} "$@" -- "${SOURCE}" "${TARGET}"
 }
+
 #page
+## ------------------------------------------------------------
+## Directory remove functions.
+## ------------------------------------------------------------
+
 function mbfl_file_remove_directory () {
     mandatory_parameter(PATHNAME, 1, pathname)
     optional_parameter(REMOVE_SILENTLY, 2, no)
@@ -355,7 +373,12 @@ function mbfl_exec_rmdir () {
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec "${RMDIR}" $FLAGS "$@" "${PATHNAME}"
 }
+
 #page
+## ------------------------------------------------------------
+## Directory creation functions.
+## ------------------------------------------------------------
+
 function mbfl_file_enable_make_directory () {
     mbfl_declare_program mkdir
 }
@@ -374,10 +397,16 @@ function mbfl_file_make_if_not_directory () {
     mandatory_parameter(PATHNAME, 1, pathname)
     optional_parameter(PERMISSIONS, 2, 0775)
 
-    mbfl_file_is_directory "${PATHNAME}" || \
-        mbfl_file_make_directory "${PATHNAME}" "${PERMISSIONS}"
+    mbfl_file_is_directory   "${PATHNAME}" || \
+    mbfl_file_make_directory "${PATHNAME}" "${PERMISSIONS}"
+    mbfl_program_reset_sudo_user
 }
+
 #page
+## ------------------------------------------------------------
+## Symbolic link functions.
+## ------------------------------------------------------------
+
 function mbfl_file_enable_symlink () {
     mbfl_declare_program ln
 }
@@ -390,7 +419,12 @@ function mbfl_file_symlink () {
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec "${LN}" ${FLAGS} "${ORIGINAL_NAME}" "${SYMLINK_NAME}"
 }
+
 #page
+## ------------------------------------------------------------
+## File listing functions.
+## ------------------------------------------------------------
+
 function mbfl_file_enable_listing () {
     mbfl_declare_program ls readlink
 }
@@ -420,7 +454,12 @@ function mbfl_file_normalise_link () {
     local READLINK=$(mbfl_program_found readlink)
     mbfl_program_exec ${READLINK} -fn $1
 }
+
 #page
+## ------------------------------------------------------------
+## File permissions inspection functions.
+## ------------------------------------------------------------
+
 function mbfl_p_file_print_error_return_result () {
     local RESULT=$?
 
@@ -513,8 +552,32 @@ function mbfl_file_directory_is_executable () {
     mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
         mbfl_file_pathname_is_executable "${PATHNAME}" "${PRINT_ERROR}"    
 }
+function mbfl_file_directory_validate_writability () {
+    mandatory_parameter(DIRECTORY, 1, directory pathname)
+    mandatory_parameter(DESCRIPTION, 2, directory description)
+
+    mbfl_message_verbose "validating ${DESCRIPTION} directory '${DIRECTORY}'"
+    mbfl_file_is_directory              "${DIRECTORY}" print_error && \
+    mbfl_file_directory_is_writable     "${DIRECTORY}" print_error
+    test $? != 0 && mbfl_message_error \
+        "unwritable ${DESCRIPTION} directory '${DIRECTORY}'"
+    return $?
+}
+
+# ------------------------------------------------------------
+
+function mbfl_file_is_symlink () {
+    local PATHNAME=${1}
+    local PRINT_ERROR=${2:-no}    
+    local ERROR_MESSAGE="not a symbolic link pathname '${PATHNAME}'"
+    test -n "${PATHNAME}" -a -L "${PATHNAME}"
+    mbfl_p_file_print_error_return_result
+}
 
 #page
+## ------------------------------------------------------------
+## File pathname type functions.
+## ------------------------------------------------------------
 
 function mbfl_file_is_absolute () {
     mandatory_parameter(PATHNAME, 1, pathname)
@@ -530,18 +593,8 @@ function mbfl_file_is_absolute_filename () {
 }
 
 #page
-
-function mbfl_file_is_symlink () {
-    local PATHNAME=${1}
-    local PRINT_ERROR=${2:-no}    
-    local ERROR_MESSAGE="not a symbolic link pathname '${PATHNAME}'"
-    test -n "${PATHNAME}" -a -L "${PATHNAME}"
-    mbfl_p_file_print_error_return_result
-}
-
-#page
 ## ------------------------------------------------------------
-## tar interface.
+## "tar" interface.
 ## ------------------------------------------------------------
 
 function mbfl_file_enable_tar () {
@@ -624,6 +677,25 @@ function mbfl_file_set_permissions () {
     mbfl_program_exec ${CHMOD} "${PERMISSIONS}" "${PATHNAME}"
 }
 
+#page
+## ------------------------------------------------------------
+## Reading and writing files with privileges.
+## ------------------------------------------------------------
+
+function mbfl_file_append () {
+    mandatory_parameter(STRING, 1, string)
+    mandatory_parameter(FILENAME, 2, file name)
+    mbfl_program_bash "printf '%s' '${STRING}' >>'${FILENAME}'"
+}
+function mbfl_file_write () {
+    mandatory_parameter(STRING, 1, string)
+    mandatory_parameter(FILENAME, 2, file name)
+    mbfl_program_bash "printf '%s' '${STRING}' >'${FILENAME}'" 
+}
+function mbfl_file_read () {
+    mandatory_parameter(FILENAME, 1, file name)
+    mbfl_program_bash "printf '%s' \"\$(<${FILENAME})\""
+}
 
 ### end of file
 # Local Variables:

@@ -8,9 +8,9 @@
 # 
 #	To select the tests in this file:
 #
-#		$ make all test TESTMATCH=encode-
+#		$ TESTMATCH=encode- make all test
 # 
-# Copyright (c) 2003, 2004 Marco Maggi
+# Copyright (c) 2003, 2004, 2005 Marco Maggi
 # 
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -54,6 +54,7 @@ function decode-oct-1.1 () {
 #PAGE
 
 dotest encode-
+dotest decode-
 
 ### end of file
 # Local Variables:

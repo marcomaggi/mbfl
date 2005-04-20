@@ -60,15 +60,18 @@ function mbfl_program_find () {
 ## Program execution functions.
 ## ------------------------------------------------------------
 
-if test "${mbfl_INTERACTIVE}" != 'yes'; then
-    declare mbfl_program_SUDO_USER='nosudo'
-fi
+declare mbfl_program_SUDO_USER='nosudo'
+declare mbfl_program_BASH=${BASH}
+
 function mbfl_program_enable_sudo () {
     mbfl_declare_program sudo
 }
 function mbfl_program_declare_sudo_user () {
     mandatory_parameter(USER, 1, sudo user name)
     mbfl_program_SUDO_USER=${USER}
+}
+function mbfl_program_reset_sudo_user () {
+    mbfl_program_SUDO_USER='nosudo'
 }
 function mbfl_program_exec () {
     local USER=${mbfl_program_SUDO_USER} USE_SUDO='no' SUDO
@@ -93,6 +96,10 @@ function mbfl_program_exec () {
             "${@}"
         fi
     fi
+}
+function mbfl_program_bash () {
+    mandatory_parameter(COMMAND, 1, command)
+    mbfl_program_exec "${mbfl_program_BASH}" -c "${1}"
 }
 
 #page
