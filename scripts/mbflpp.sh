@@ -1,3 +1,4 @@
+#!/bin/bash
 # mbflpp.sh --
 # 
 # Part of: Marco's BASH Functions Library

@@ -226,6 +226,7 @@ function mbfl_getopts_parse () {
         fi
     done
 
+    declare -r ARGC ARGV
     mbfl_getopts_p_decode_hex
     return 0
 }

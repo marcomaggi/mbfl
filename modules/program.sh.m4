@@ -99,7 +99,7 @@ function mbfl_program_exec () {
 }
 function mbfl_program_bash () {
     mandatory_parameter(COMMAND, 1, command)
-    mbfl_program_exec "${mbfl_program_BASH}" -c "${1}"
+    mbfl_program_exec "${mbfl_program_BASH}" -c "${COMMAND}"
 }
 
 #page
