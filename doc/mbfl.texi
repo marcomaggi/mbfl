@@ -2375,9 +2375,9 @@ Declares an exit code with value @var{code} and identifier @var{name}.
 @end deffn
 
 
-@deffn Function mbfl_main_create_exit_aliases
+@deffn Function mbfl_main_create_exit_functions
 For each of the codes declared with
-@function{mbfl_main_declare_exit_code} creates an alias for the
+@function{mbfl_main_declare_exit_code} creates a function for the
 @code{exit} command using the numerical code. Example: if a code is
 declared as:
 
@@ -2386,18 +2386,21 @@ mbfl_main_declare_exit_code 4 unexistent_file
 @end example
 
 @noindent
-an alias is created with:
+a function is created with:
 
 @example
-alias exit_because_unexistent_file='exit 4'
+function exit_because_unexistent_file () @{ exit 4; @}
 @end example
 
 @noindent
-the name of the alias is the string @code{exit_because_} followed by the
-name. The alias may be used in the script to exit the process.
+the name of the function is the string @code{exit_because_} followed by
+the exit code name. The function may be used in the script to exit the
+process.
 @end deffn
 
-
+By default the exit code @code{0} is associated to the name
+@code{success}; so to exit a script with success one may invoke the
+function @code{exit_because_success}.
 
 @c ------------------------------------------------------------
 @node Testing

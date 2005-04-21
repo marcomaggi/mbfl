@@ -64,11 +64,12 @@ function mbfl_main_declare_exit_code () {
     mbfl_main_EXIT_NAMES[${i}]=${DESCRIPTION}
     mbfl_main_EXIT_CODES[${i}]=${CODE}
 }
-function mbfl_main_create_exit_aliases () {
-    local i
+function mbfl_main_create_exit_functions () {
+    local i name
 
     for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i)); do
-        alias exit_because_${mbfl_main_EXIT_NAMES[${i}]}="exit ${mbfl_main_EXIT_CODES[${i}]}"
+        name=exit_because_${mbfl_main_EXIT_NAMES[${i}]}
+        eval function "${name}" "()" "{ exit ${mbfl_main_EXIT_CODES[${i}]}; }"
     done
 }
 function mbfl_main_list_exit_codes () {
@@ -185,6 +186,10 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 fi
 
 #PAGE
+## ------------------------------------------------------------
+## Main function.
+## ------------------------------------------------------------
+
 function mbfl_main () {
     local exit_code=0
     local action_func
@@ -192,7 +197,7 @@ function mbfl_main () {
 
 
     mbfl_message_set_progname "${script_PROGNAME}"
-    mbfl_main_create_exit_aliases
+    mbfl_main_create_exit_functions
 
     mbfl_invoke_script_function script_before_parsing_options
     mbfl_getopts_parse

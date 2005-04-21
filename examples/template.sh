@@ -60,11 +60,15 @@ mbfl_main_declare_exit_code 3 third_error
 mbfl_main_declare_exit_code 3 fourth_error
 
 #page
+## ------------------------------------------------------------
+## Main functions.
+## ------------------------------------------------------------
+
 function script_before_parsing_options () {
     mbfl_message_verbose "${FUNCNAME}\n"
 
     if test -n "${script_option_BETA}";	then
-	echo "option beta: ${script_option_BETA}"
+	printf 'option beta: %s\n' "${script_option_BETA}"
     fi
     return 0
 }
@@ -73,14 +77,20 @@ function script_after_parsing_options () {
     return 0
 }
 function script_option_update_beta () {
-    echo "option beta: ${script_option_BETA}"
+    printf 'option beta: %s\n' "${script_option_BETA}"
 }
 function script_option_update_alpha () {
-    echo "option alpha"
+    printf 'option alpha\n'
 }
 function main () {
-    echo "arguments: $ARGC, '${ARGV[@]}'"
+    printf "arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
+    exit_because_success
 }
+#page
+## ------------------------------------------------------------
+## Start.
+## ------------------------------------------------------------
+
 mbfl_main
 
 ### end of file
