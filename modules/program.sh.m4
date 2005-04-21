@@ -67,31 +67,31 @@ function mbfl_program_enable_sudo () {
     mbfl_declare_program sudo
 }
 function mbfl_program_declare_sudo_user () {
-    mandatory_parameter(USER, 1, sudo user name)
-    mbfl_program_SUDO_USER=${USER}
+    mandatory_parameter(PERSONA, 1, sudo user name)
+    mbfl_program_SUDO_USER=${PERSONA}
 }
 function mbfl_program_reset_sudo_user () {
     mbfl_program_SUDO_USER='nosudo'
 }
 function mbfl_program_exec () {
-    local USER=${mbfl_program_SUDO_USER} USE_SUDO='no' SUDO
+    local PERSONA=${mbfl_program_SUDO_USER} USE_SUDO='no' SUDO
     mbfl_program_SUDO_USER='nosudo'
 
-    if test "${USER}" != 'nosudo' ; then
+    if test "${PERSONA}" != 'nosudo' ; then
         SUDO=$(mbfl_program_found sudo)
         USE_SUDO=yes
     fi
 
     if mbfl_option_test || mbfl_option_show_program ; then
         if test "${USE_SUDO}" = 'yes' ; then
-            echo "${SUDO}" -u "${USER}" "${@}" >&2
+            echo "${SUDO}" -u "${PERSONA}" "${@}" >&2
         else
             echo "${@}" >&2
         fi
     fi
     if ! mbfl_option_test ; then
         if test "${USE_SUDO}" = 'yes' ; then
-            "${SUDO}" -u "${USER}" "${@}"
+            "${SUDO}" -u "${PERSONA}" "${@}"
         else
             "${@}"
         fi

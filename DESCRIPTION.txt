@@ -1,5 +1,5 @@
 Identifier: mbfl
-Version: 1.1.7
+Version: 1.1.8
 Creator: Marco Maggi
 Title: Marco Bash Functions Library
 License: GNU General Public License
