@@ -54,6 +54,11 @@ mbfl_declare_option DISABLE no d disable noarg "disables a feature"
 mbfl_file_enable_make_directory
 mbfl_declare_program woah
 
+mbfl_main_declare_exit_code 1 first_error
+mbfl_main_declare_exit_code 8 second_error
+mbfl_main_declare_exit_code 3 third_error
+mbfl_main_declare_exit_code 3 fourth_error
+
 #page
 function script_before_parsing_options () {
     mbfl_message_verbose "${FUNCNAME}\n"

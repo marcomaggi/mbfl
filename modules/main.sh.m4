@@ -46,6 +46,59 @@ function mbfl_main_set_main () {
 function mbfl_main_set_private_main () {
     mbfl_main_PRIVATE_SCRIPT_FUNCTION="${1:?}"
 }
+#page
+## ------------------------------------------------------------
+## Exit codes management.
+## ------------------------------------------------------------
+
+if test "${mbfl_INTERACTIVE}" != 'yes'; then
+    declare -a mbfl_main_EXIT_CODES mbfl_main_EXIT_NAMES
+    mbfl_main_EXIT_CODES[0]=0
+    mbfl_main_EXIT_NAMES[0]='success'
+fi
+
+function mbfl_main_declare_exit_code () {
+    mandatory_parameter(CODE, 1, exit code)
+    mandatory_parameter(DESCRIPTION, 2, exit code name)
+    local i=${#mbfl_main_EXIT_CODES[@]}
+    mbfl_main_EXIT_NAMES[${i}]=${DESCRIPTION}
+    mbfl_main_EXIT_CODES[${i}]=${CODE}
+}
+function mbfl_main_create_exit_aliases () {
+    local i
+
+    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i)); do
+        alias exit_because_${mbfl_main_EXIT_NAMES[${i}]}="exit ${mbfl_main_EXIT_CODES[${i}]}"
+    done
+}
+function mbfl_main_list_exit_codes () {
+    local i
+
+    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i)); do
+        printf '%d %s\n' ${mbfl_main_EXIT_CODES[${i}]} ${mbfl_main_EXIT_NAMES[${i}]}
+    done
+}
+function mbfl_main_print_exit_code () {
+    mandatory_parameter(NAME, 1, exit code name)
+    local i
+
+    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i)); do
+        if test "${mbfl_main_EXIT_NAMES[${i}]}" = "${NAME}"; then
+            printf '%d\n' ${mbfl_main_EXIT_CODES[${i}]}
+        fi
+    done
+}
+function mbfl_main_print_exit_code_names () {
+    mandatory_parameter(CODE, 1, exit code)
+    local i
+
+    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i)); do
+        if test "${mbfl_main_EXIT_CODES[${i}]}" = "${CODE}"; then
+            printf '%s\n' ${mbfl_main_EXIT_NAMES[${i}]}
+        fi
+    done
+}
+
 #PAGE
 ## ------------------------------------------------------------
 ## License message variables.
@@ -134,11 +187,12 @@ fi
 #PAGE
 function mbfl_main () {
     local exit_code=0
-    local action_func=
-    local item=
+    local action_func
+    local item code
 
 
     mbfl_message_set_progname "${script_PROGNAME}"
+    mbfl_main_create_exit_aliases
 
     mbfl_invoke_script_function script_before_parsing_options
     mbfl_getopts_parse

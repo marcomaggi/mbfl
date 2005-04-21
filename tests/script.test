@@ -82,6 +82,40 @@ function script-3.1 () {
     script a b c | dotest-output "arguments: 3, 'a b c'"
 }
 
+#page
+
+function script-4.1 () {
+    script --list-exit-codes | dotest-output \
+        "0 success\n1 first_error\n8 second_error\n3 third_error\n3 fourth_error"
+}
+function script-4.2 () {
+    script --print-exit-code=first_error | dotest-output 1
+}
+function script-4.3 () {
+    script --print-exit-code=second_error | dotest-output 8
+}
+function script-4.4 () {
+    script --print-exit-code=third_error | dotest-output 3
+}
+function script-4.5 () {
+    script --print-exit-code=unexistent | dotest-output ""
+}
+function script-4.6 () {
+    script --print-exit-code=success | dotest-output 0
+}
+function script-4.7 () {
+    script --print-exit-code-names=1 | dotest-output "first_error"
+}
+function script-4.8 () {
+    script --print-exit-code-names=8 | dotest-output "second_error"
+}
+function script-4.9 () {
+    script --print-exit-code-names=3 | dotest-output "third_error\nfourth_error"
+}
+function script-4.10 () {
+    script --print-exit-code-names=0 | dotest-output "success"
+}
+
 #PAGE
 ## ---------------------------------------------------------
 ## End of "::test" namespace.

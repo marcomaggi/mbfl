@@ -87,6 +87,12 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\ttests execution
 \t--validate-programs
 \t\tchecks the existence of all the required external programs
+\t--list-exit-codes
+\t\tprints a list of exit codes and names
+\t--print-exit-code=NAME
+\t\tprints the exit code associated to a name
+\t--print-exit-code-names=CODE
+\t\tprints the names associated to an exit code
 \t--version
 \t\tprint version informations and exit
 \t--version-only
@@ -270,6 +276,10 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
         validate-programs)
             mbfl_main_set_private_main mbfl_program_main_validate_programs
             ;;
+        list-exit-codes)
+            mbfl_main_list_exit_codes
+	    exit 0
+            ;;
 	version)
 	    echo -e "${mbfl_message_VERSION}"
 	    exit 0
@@ -335,6 +345,14 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
     # at present no options with argument are declared by MBFL
 
     case "${OPT}" in
+        print-exit-code)
+            mbfl_main_print_exit_code "${OPTARG}"
+            exit 0
+        ;;
+        print-exit-code-names|print-exit-code-name)
+            mbfl_main_print_exit_code_names "${OPTARG}"
+            exit 0
+        ;;
 	*)
 	    mbfl_getopts_p_process_script_option "${OPT}" "${OPTARG}" || {
                 mbfl_message_error "unknown option \"${OPT}\""

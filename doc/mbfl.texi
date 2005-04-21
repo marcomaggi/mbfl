@@ -1214,6 +1214,16 @@ Validates the existence of all the programs needed by the script; then
 exits. The exit code is zero if all the programs were found, one
 otherwise.
 
+@item --list-exit-codes
+Prints a list of numerical exit codes and their associated names, as
+declared in the script (@ref{Main Exit} for details).
+
+@item --print-exit-code=NAME
+Prints the numerical exit code associated to @code{NAME}.
+
+@item --print-exit-code-names=CODE
+Prints the list of names associated to the numerical exit @code{CODE}.
+
 @item --version
 Prints to the standard output of the script the contents of the global
 variable @code{mbfl_message_VERSION}, then exits with code zero. The
@@ -2284,13 +2294,29 @@ the exception of global variables declaration, should be enclosed in
 functions.
 
 
+@menu
+* Main Function::               Driving script execution.
+* Main Exit::                   Declaring exit codes.
+@end menu
+
+
+@c ------------------------------------------------------------
+@node Main Function
+@unnumberedsec Driving script execution
+
+
 @deffn Function mbfl_main
-Must be the last line of code in the script. Does the following.
+The invocation to this function must be the last line of code in the
+script. Does the following.
 
 @enumerate
 @item
 Registers the value of the variable @code{script_PROGNAME} in the
 message module using the function @function{mbfl_message_set_progname}.
+
+@item
+Invokes @function{mbfl_main_create_exit_aliases} (@ref{Main Exit} for
+details).
 
 @item
 If it exists: invokes the function @function{script_before_parsing_options}.
@@ -2328,6 +2354,49 @@ type -t @var{FUNCNAME} = function
 Selects the main function storing @var{funcname} into
 @code{mbfl_main_SCRIPT_FUNCTION}.
 @end deffn
+
+
+@defvar mbfl_main_SCRIPT_FUNCTION
+Global variable that holds the name of the custom main script function.
+@end defvar
+
+@c ------------------------------------------------------------
+@node Main Exit
+@unnumberedsec Declaring exit codes
+
+
+@noindent
+Some functions and global variables are provided to declare script's
+exit codes.
+
+
+@deffn Function mbfl_main_declare_exit_code @var{code} @var{name}
+Declares an exit code with value @var{code} and identifier @var{name}.
+@end deffn
+
+
+@deffn Function mbfl_main_create_exit_aliases
+For each of the codes declared with
+@function{mbfl_main_declare_exit_code} creates an alias for the
+@code{exit} command using the numerical code. Example: if a code is
+declared as:
+
+@example
+mbfl_main_declare_exit_code 4 unexistent_file
+@end example
+
+@noindent
+an alias is created with:
+
+@example
+alias exit_because_unexistent_file='exit 4'
+@end example
+
+@noindent
+the name of the alias is the string @code{exit_because_} followed by the
+name. The alias may be used in the script to exit the process.
+@end deffn
+
 
 
 @c ------------------------------------------------------------
