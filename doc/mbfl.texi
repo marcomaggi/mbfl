@@ -485,6 +485,13 @@ number of elements in the array is stored in a variable named
 @code{SPLITCOUNT}. Returns true.
 @end deffn
 
+
+@deffn Function mbfl_file_strip_trailing_slash @var{pathname}
+If the last character in @var{pathname} is a slash (@code{/}): this
+function removes it and prints the result on stdout.
+@end deffn
+
+
 @c ------------------------------------------------------------
 @node File Name Path
 @unnumberedsubsec Handling relative pathnames
@@ -1797,6 +1804,15 @@ option of @command{sudo}. The value @code{nosudo} means: do not use
 Resets the previously requested @command{sudo} user to  a value that
 will cause sudo not to be used in the next program invocation. This is
 useful to abort a user request.
+@end deffn
+
+@deffn Function mbfl_program_sudo_user
+Prints the current @command{sudo} user.
+@end deffn
+
+@deffn Function mbfl_program_requested_sudo
+Returns with code true if the usage of @command{sudo} has been requested
+for the next command execution.
 @end deffn
 
 

@@ -99,48 +99,6 @@ function mbfl_file_subpathname () {
         return 1
     fi
 }
-function mbfl_file_normalise () {
-    local pathname="${1:?}"
-    local prefix="${2}"
-    local dirname=
-    local tailname=
-    local ORGDIR="${PWD}"
-
-    if mbfl_file_is_absolute "${pathname}" ; then
-        mbfl_p_file_normalise1 "${pathname}"
-    elif mbfl_file_is_directory "${prefix}" ; then
-        pathname="${prefix}/${pathname}"
-        mbfl_p_file_normalise1 "${pathname}"
-    elif test -n "${prefix}" ; then
-        prefix=$(mbfl_p_file_remove_dots_from_pathname "${prefix}")
-        pathname=$(mbfl_p_file_remove_dots_from_pathname "${pathname}")
-        echo "${prefix}/${pathname}"
-    else
-        mbfl_p_file_normalise1 "${pathname}"
-    fi
-
-    cd "${ORGDIR}" >/dev/null
-    return 0
-}
-function mbfl_p_file_normalise1 () {
-    if mbfl_file_is_directory "${pathname}"; then
-        mbfl_p_file_normalise2 "${pathname}"
-    else
-        local tailname=$(mbfl_file_tail "${pathname}")
-        local dirname=$(mbfl_file_dirname "${pathname}")
-
-        if mbfl_file_is_directory "${dirname}"; then
-            mbfl_p_file_normalise2 "${dirname}" "${tailname}"
-        else
-            echo "${pathname}"
-        fi
-    fi
-}
-function mbfl_p_file_normalise2 () {
-    cd "$1" >/dev/null
-    if test -n "$2" ; then echo "${PWD}/$2"; else echo "${PWD}"; fi
-    cd - >/dev/null
-}
 function mbfl_p_file_remove_dots_from_pathname () {
     mandatory_parameter(PATHNAME, 1, pathname)
     local item i
@@ -227,6 +185,66 @@ function mbfl_file_tail () {
     printf '%s\n' "${PATHNAME}"
     return 0
 }
+
+#page
+## ------------------------------------------------------------
+## Pathname normalisation.
+## ------------------------------------------------------------
+
+function mbfl_file_normalise () {
+    local pathname="${1:?}"
+    local prefix="${2}"
+    local dirname=
+    local tailname=
+    local ORGDIR="${PWD}"
+
+    if mbfl_file_is_absolute "${pathname}" ; then
+        mbfl_p_file_normalise1 "${pathname}"
+    elif mbfl_file_is_directory "${prefix}" ; then
+        pathname="${prefix}/${pathname}"
+        mbfl_p_file_normalise1 "${pathname}"
+    elif test -n "${prefix}" ; then
+        prefix=$(mbfl_p_file_remove_dots_from_pathname "${prefix}")
+        pathname=$(mbfl_p_file_remove_dots_from_pathname "${pathname}")
+        pathname=$(mbfl_file_strip_trailing_slash "${pathname}")
+        printf '%s/%s\n' "${prefix}" "${pathname}"
+    else
+        mbfl_p_file_normalise1 "${pathname}"
+    fi
+
+    cd "${ORGDIR}" >/dev/null
+    return 0
+}
+function mbfl_p_file_normalise1 () {
+    if mbfl_file_is_directory "${pathname}"; then
+        mbfl_p_file_normalise2 "${pathname}"
+    else
+        local tailname=$(mbfl_file_tail "${pathname}")
+        local dirname=$(mbfl_file_dirname "${pathname}")
+
+        if mbfl_file_is_directory "${dirname}"; then
+            mbfl_p_file_normalise2 "${dirname}" "${tailname}"
+        else
+            pathname=$(mbfl_file_strip_trailing_slash "${pathname}")
+            printf '%s\n' "${pathname}"
+        fi
+    fi
+}
+function mbfl_p_file_normalise2 () {
+    cd "$1" >/dev/null
+    if test -n "$2" ; then echo "${PWD}/$2"; else echo "${PWD}"; fi
+    cd - >/dev/null
+}
+function mbfl_file_strip_trailing_slash () {
+    mandatory_parameter(pathname, 1, pathname)
+    local len=${#pathname}
+
+    if test "${pathname:$len}" = '/' ; then
+        pathname=${pathname:1:$(($len-1))}
+    fi
+    printf '%s\n' "${pathname}"
+}
+
 #PAGE
 ## ------------------------------------------------------------
 ## Temporary directory functions.
@@ -430,15 +448,27 @@ function mbfl_file_enable_listing () {
 }
 function mbfl_file_get_owner () {
     mandatory_parameter(PATHNAME, 1, pathname)
-    local LS_FLAGS="-l"
+    local LS_FLAGS="-l" OWNER
+
     set -- $(mbfl_file_p_invoke_ls) || return 1
-    printf '%s\n' "$3"
+    OWNER=$3
+    if test -z "${OWNER}" ; then
+        mbfl_message_error "null owner while inspecting '${PATHNAME}'"
+        return 1
+    fi
+    printf '%s\n' "${OWNER}"
 }
 function mbfl_file_get_group () {
     mandatory_parameter(PATHNAME, 1, pathname)
-    local LS_FLAGS="-l"
+    local LS_FLAGS="-l" GROUP
+
     set -- $(mbfl_file_p_invoke_ls) || return 1
-    printf '%s\n' "$4"
+    GROUP=$4
+    if test -z "${GROUP}" ; then
+        mbfl_message_error "null group while inspecting '${PATHNAME}'"
+        return 1
+    fi
+    printf '%s\n' "${GROUP}"
 }
 function mbfl_file_get_size () {
     mandatory_parameter(PATHNAME, 1, pathname)
@@ -448,6 +478,7 @@ function mbfl_file_get_size () {
 }
 function mbfl_file_p_invoke_ls () {
     local LS=$(mbfl_program_found ls)
+    if mbfl_file_is_directory "${PATHNAME}" ; then LS_FLAGS="${LS_FLAGS} -d"; fi
     mbfl_program_exec ${LS} ${LS_FLAGS} "${PATHNAME}"
 }
 function mbfl_file_normalise_link () {
@@ -555,13 +586,15 @@ function mbfl_file_directory_is_executable () {
 function mbfl_file_directory_validate_writability () {
     mandatory_parameter(DIRECTORY, 1, directory pathname)
     mandatory_parameter(DESCRIPTION, 2, directory description)
+    local code
 
-    mbfl_message_verbose "validating ${DESCRIPTION} directory '${DIRECTORY}'"
+    mbfl_message_verbose "validating ${DESCRIPTION} directory '${DIRECTORY}'\n"
     mbfl_file_is_directory              "${DIRECTORY}" print_error && \
     mbfl_file_directory_is_writable     "${DIRECTORY}" print_error
-    test $? != 0 && mbfl_message_error \
+    code=$?
+    test $code != 0 && mbfl_message_error \
         "unwritable ${DESCRIPTION} directory '${DIRECTORY}'"
-    return $?
+    return $code
 }
 
 # ------------------------------------------------------------

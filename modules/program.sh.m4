@@ -73,6 +73,12 @@ function mbfl_program_declare_sudo_user () {
 function mbfl_program_reset_sudo_user () {
     mbfl_program_SUDO_USER='nosudo'
 }
+function mbfl_program_sudo_user () {
+    printf '%s\n' "${mbfl_program_SUDO_USER}"
+}
+function mbfl_program_requested_sudo () {
+    test "${mbfl_program_SUDO_USER}" != 'nosudo'
+}
 function mbfl_program_exec () {
     local PERSONA=${mbfl_program_SUDO_USER} USE_SUDO='no' SUDO
     mbfl_program_SUDO_USER='nosudo'
