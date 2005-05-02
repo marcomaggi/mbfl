@@ -309,6 +309,30 @@ function mbfl_file_remove_file () {
     fi
     mbfl_exec_rm "${PATHNAME}" ${FLAGS}    
 }
+function mbfl_file_remove_symlink () {
+    mandatory_parameter(PATHNAME, 1, pathname)
+    local FLAGS="--force"
+
+    if ! mbfl_option_test ; then
+        if ! mbfl_file_is_symlink "${PATHNAME}" ; then
+            mbfl_message_error "pathname is not a symboli link '${PATHNAME}'"
+            return 1
+        fi
+    fi
+    mbfl_exec_rm "${PATHNAME}" ${FLAGS}    
+}
+function mbfl_file_remove_file_or_symlink () {
+    mandatory_parameter(PATHNAME, 1, pathname)
+    local FLAGS="--force"
+
+    if ! mbfl_option_test ; then
+        if ! mbfl_file_is_file "${PATHNAME}" && ! mbfl_file_is_symlink "${PATHNAME}" ; then
+            mbfl_message_error "pathname is not a file neither a symbolic link '${PATHNAME}'"
+            return 1
+        fi
+    fi
+    mbfl_exec_rm "${PATHNAME}" ${FLAGS}    
+}
 function mbfl_exec_rm () {
     mandatory_parameter(PATHNAME, 1, pathname)
     shift

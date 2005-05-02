@@ -711,14 +711,32 @@ occurs returns 1.
 
 
 @deffn Function mbfl_file_remove_file @var{pathname}
-Removes the file selected by @var{pathname}. If the file does not exist
-or it is not a file or an error occurs: returns 1.
+Removes the file or symbolic link selected by @var{pathname}. If the
+file does not exist or it is not a file or an error occurs: returns 1.
+@end deffn
+
+
+@deffn Function mbfl_file_remove_symlink @var{pathname}
+Removes the symbolic link selected by @var{pathname}. If the link does
+not exist or it is not a symbolic link or an error occurs: returns 1.
+@end deffn
+
+
+@deffn Function mbfl_file_remove_file_or_symlink @var{pathname}
+Removes the file or symbolic link selected by @var{pathname}. If the
+file does not exist or it is not a file or an error occurs: returns 1.
 @end deffn
 
 
 @deffn Function mbfl_file_remove_directory @var{pathname}
 Removes the directory selected by @var{pathname}. If the directory does
 not exist or an error occurs: returns 1.
+@end deffn
+
+
+@deffn Function mbfl_file_remove_directory_silently @var{pathname}
+Like @function{mbfl_file_remove_directory}, but do not print messages if
+the directory is not empty.
 @end deffn
 
 
