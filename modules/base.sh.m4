@@ -65,6 +65,14 @@ mbfl_create_option_procedures(null)
 mbfl_create_option_procedures(interactive)
 mbfl_create_option_procedures(encoded_args)
 
+function mbfl_option_test_save () {
+    mbfl_option_test && mbfl_save_option_TEST=yes
+    mbfl_unset_option_test
+}
+function mbfl_option_test_restore () {
+    test "${mbfl_save_option_TEST}" = "yes" && mbfl_set_option_test
+}
+
 #page
 ## ------------------------------------------------------------
 ## Exit functions.

@@ -1336,6 +1336,20 @@ Query/sets/unsets the interactive excution option.
 @end deffn
 
 
+The following are special option functions.
+
+
+@deffn Function mbfl_option_test_save
+Save the current state of the test option then invokes
+@function{mbfl_unset_option_test}.
+@end deffn
+
+@deffn Function mbfl_option_test_restore
+Restore the state of the test option to the one before the invocation to
+@function{mbfl_option_test_save}.
+@end deffn
+
+
 @c ------------------------------------------------------------
 @node Getopts Interface
 @unnumberedsec Interface functions
@@ -1815,6 +1829,19 @@ Returns with code true if the usage of @command{sudo} has been requested
 for the next command execution.
 @end deffn
 
+
+@deffn Function mbfl_program_bash @var{arg} @dots{}
+Execute @command{bash} with whatever arguments are appended. The
+@command{bash} pathname is registered in the library at start up, from
+the built in variable @code{BASH}.
+@end deffn
+
+
+@deffn Function mbfl_program_bash_command @var{command}
+Execute @var{command} in a @command{bash} subprocess, using the
+@code{-c} switch. The @command{bash} pathname is registered in the
+library at start up, from the built in variable @code{BASH}.
+@end deffn
 
 @c ------------------------------------------------------------
 @node Program Declaring

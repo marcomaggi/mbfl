@@ -718,16 +718,16 @@ function mbfl_file_set_permissions () {
 function mbfl_file_append () {
     mandatory_parameter(STRING, 1, string)
     mandatory_parameter(FILENAME, 2, file name)
-    mbfl_program_bash "printf '%s' '${STRING}' >>'${FILENAME}'"
+    mbfl_program_bash_command "printf '%s' '${STRING}' >>'${FILENAME}'"
 }
 function mbfl_file_write () {
     mandatory_parameter(STRING, 1, string)
     mandatory_parameter(FILENAME, 2, file name)
-    mbfl_program_bash "printf '%s' '${STRING}' >'${FILENAME}'" 
+    mbfl_program_bash_command "printf '%s' '${STRING}' >'${FILENAME}'" 
 }
 function mbfl_file_read () {
     mandatory_parameter(FILENAME, 1, file name)
-    mbfl_program_bash "printf '%s' \"\$(<${FILENAME})\""
+    mbfl_program_bash_command "printf '%s' \"\$(<${FILENAME})\""
 }
 
 ### end of file

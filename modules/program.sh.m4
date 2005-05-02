@@ -103,9 +103,12 @@ function mbfl_program_exec () {
         fi
     fi
 }
-function mbfl_program_bash () {
+function mbfl_program_bash_command () {
     mandatory_parameter(COMMAND, 1, command)
     mbfl_program_exec "${mbfl_program_BASH}" -c "${COMMAND}"
+}
+function mbfl_program_bash () {
+    mbfl_program_exec "${mbfl_program_BASH}" "${@}"
 }
 
 #page
