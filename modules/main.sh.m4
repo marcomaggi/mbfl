@@ -57,6 +57,9 @@ if test "${mbfl_INTERACTIVE}" != 'yes'; then
     mbfl_main_EXIT_NAMES[0]='success'
 fi
 
+function exit_success () {
+    exit_because_success
+}
 function mbfl_main_declare_exit_code () {
     mandatory_parameter(CODE, 1, exit code)
     mandatory_parameter(DESCRIPTION, 2, exit code name)

@@ -489,6 +489,7 @@ function mbfl_getopts_p_decode_hex () {
     return 0
 }
 #PAGE
+
 function mbfl_wrong_num_args () {
     mandatory_parameter(required, 1, required number of args)
     mandatory_parameter(argc, 2, given number of args)
@@ -499,6 +500,19 @@ function mbfl_wrong_num_args () {
     }
     return 0
 }
+function mbfl_wrong_num_args_range () {
+    mandatory_parameter(min_required, 1, minimum required number of args)
+    mandatory_parameter(max_required, 2, maximum required number of args)
+    mandatory_parameter(argc, 3, given number of args)
+
+    if test $min_required -gt $argc -o $max_required -lt $argc ; then
+        mbfl_message_error \
+            "number of required arguments between $min_required and $max_required but given $argc"
+        return 1
+    fi
+    return 0
+}
+
 #PAGE
 function mbfl_argv_from_stdin () {
     local file=

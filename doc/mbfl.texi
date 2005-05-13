@@ -1510,6 +1510,12 @@ returns with code zero.
 @end deffn
 
 
+@deffn Function mbfl_wrong_num_args_range @var{min_required} @var{max_required} @var{argc}
+Validates the number of arguments. @var{argc} must be between
+@var{min_required} and @var{max_required}, inclusive.
+@end deffn
+
+
 @deffn Function mbfl_argv_from_stdin
 If the @code{ARGC} global variable is set to zero: fills the global
 variable @code{ARGV} with lines from stdin. If the global variable
@@ -2461,7 +2467,13 @@ process.
 
 By default the exit code @code{0} is associated to the name
 @code{success}; so to exit a script with success one may invoke the
-function @code{exit_because_success}.
+function @function{exit_because_success}, but a function exists to let
+us invoke @function{exit_success}.
+
+
+@deffn Function mbfl_main_print_exit_code @var{name}
+Prints the code associated to @var{name}.
+@end deffn
 
 @c ------------------------------------------------------------
 @node Testing
