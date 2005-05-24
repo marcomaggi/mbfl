@@ -558,7 +558,9 @@ Returns true if @var{pathname} is a file according to
 
 @deffn Function mbfl_file_find_tmpdir ?@var{PATHNAME}?
 Finds a value for a temporary directory. If @var{PATHNAME} is not null
-and is a directory and is writable it is accepted; else the value
+and is a directory and is writable it is accepted; if the argument is
+not used: it defaults to the current value of
+@code{mbfl_option_TMPDIR}. If the value is invalid: the value
 @file{/tmp/$USER}, where @env{USER} is the environment variable, is
 tried; finally the value @file{/tmp} is tried. When a value is accepted
 it's echoed to stdout. Returns true if a value is found, false
@@ -1184,6 +1186,12 @@ A set of predefined options is recognised by the library and not handed
 to the user defined functions.
 
 @table @option
+@item --tmpdir=DIR
+Selects a directory for temporary files. The default value is the one in
+the environment variable @env{TMPDIR}, or @file{/tmp/$USER} if that
+variable is not set. The value is stored in the variable
+@code{mbfl_option_TMPDIR}.
+
 @item --encoded-args
 Signals to the library that the non--option arguments and the option
 values are encoded in hexadecimal strings. Encoding is useful to avoid

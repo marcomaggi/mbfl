@@ -34,7 +34,7 @@
 ## ------------------------------------------------------------
 
 if test "${mbfl_INTERACTIVE}" != 'yes'; then
-    mbfl_option_TMPDIR="${TMPDIR:-/tmp}"
+    mbfl_option_TMPDIR="${TMPDIR:-/tmp/${USER}}"
     mbfl_ORG_PWD="${PWD}"
     mbfl_main_SCRIPT_FUNCTION=main
     mbfl_main_PRIVATE_SCRIPT_FUNCTION=

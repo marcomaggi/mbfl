@@ -61,6 +61,8 @@ fi
 if test "${mbfl_INTERACTIVE}" != 'yes'; then
 
 mbfl_message_DEFAULT_OPTIONS="
+\t--tmpdir=DIR
+\t\tselect a directory for temporary files
 \t-i
 \t--interactive
 \t\task before doing dangerous operations
@@ -347,6 +349,9 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
     # at present no options with argument are declared by MBFL
 
     case "${OPT}" in
+        tmpdir)
+            mbfl_option_TMPDIR="${OPTARG}"
+            ;;
         print-exit-code)
             mbfl_main_print_exit_code "${OPTARG}"
             exit 0

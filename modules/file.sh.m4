@@ -251,7 +251,7 @@ function mbfl_file_strip_trailing_slash () {
 ## ------------------------------------------------------------
 
 function mbfl_file_find_tmpdir () {
-    local TMPDIR="${1}"
+    local TMPDIR="${1:-${mbfl_option_TMPDIR}}"
 
 
     if mbfl_file_directory_is_writable "${TMPDIR}" ; then
@@ -276,6 +276,7 @@ function mbfl_file_find_tmpdir () {
     mbfl_message_error "cannot find usable value for 'TMPDIR'"
     return 1
 }
+
 #page
 ## ------------------------------------------------------------
 ## File removal functions.
