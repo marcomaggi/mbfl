@@ -1833,10 +1833,11 @@ Declares the intention to use @command{sudo}.
 
 
 @deffn Function mbfl_program_declare_sudo_user @var{user}
-Register @var{user} as the user under which execute the next program
+Register @var{user} as the user under which to execute the next program
 through @command{sudo}; the user will be selected using the @code{-u}
 option of @command{sudo}. The value @code{nosudo} means: do not use
-@command{sudo}.
+@command{sudo}. When the time comes: if the selected user name equals
+the value of @code{USER}: @command{sudo} is not used.
 @end deffn
 
 @deffn Function mbfl_program_reset_sudo_user

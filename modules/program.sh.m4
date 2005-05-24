@@ -89,14 +89,14 @@ function mbfl_program_exec () {
     fi
 
     if mbfl_option_test || mbfl_option_show_program ; then
-        if test "${USE_SUDO}" = 'yes' ; then
+        if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}" ; then
             echo "${SUDO}" -u "${PERSONA}" "${@}" >&2
         else
             echo "${@}" >&2
         fi
     fi
     if ! mbfl_option_test ; then
-        if test "${USE_SUDO}" = 'yes' ; then
+        if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}" ; then
             "${SUDO}" -u "${PERSONA}" "${@}"
         else
             "${@}"
