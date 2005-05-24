@@ -259,7 +259,9 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
             mbfl_set_option_show_program
 	    ;;
 	debug)
+            mbfl_set_option_debug
             mbfl_set_option_verbose
+            mbfl_set_option_show_program
 	    ;;
 	test)
             mbfl_set_option_test

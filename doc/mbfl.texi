@@ -1212,7 +1212,8 @@ the state of this option.
 Prints the command line of executed external programs.
 
 @item --debug
-Turns on debugging messages (@ref{Message}, for details).
+Turns on debugging messages (@ref{Message}, for details). Automatically
+turns on verbose messages and program showing.
 
 @item --test
 Turns on test execution (@ref{Program Testing}, for details).
