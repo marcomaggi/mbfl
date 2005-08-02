@@ -3,36 +3,10 @@
 @setfilename mbfl.info
 @settitle Marco's BASH Functions Library
 @c %**end of header
-@c mbfl.texi --
-@c 
-@c Part of: Marco's BASH Functions Library
-@c Contents: package documentation
-@c Date: Tue Oct 26, 2004
-@c 
-@c Abstract
-@c 
-@c 
-@c 
-@c Copyright (c) 2004 Marco Maggi
-@c 
-@c This is free software; you  can redistribute it and/or modify it under
-@c the terms of the GNU Lesser General Public License as published by the
-@c Free Software  Foundation; either version  2.1 of the License,  or (at
-@c your option) any later version.
-@c 
-@c This library  is distributed in the  hope that it will  be useful, but
-@c WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
-@c MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-@c Lesser General Public License for more details.
-@c 
-@c You  should have  received a  copy of  the GNU  Lesser  General Public
-@c License along  with this library; if  not, write to  the Free Software
-@c Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-@c USA.
-@c 
 
 @include version.texiinc
-@syncodeindex fn cp
+@c @syncodeindex  cp
+@c @syncodeindex fn cp
 
 @c ------------------------------------------------------------
 
@@ -52,6 +26,11 @@
 @macro function{NAME}
 @code{\NAME\()}
 @end macro
+
+@macro gnu{}
+@acronym{GNU}
+@end macro
+
 
 @c ------------------------------------------------------------
 @titlepage
@@ -87,8 +66,10 @@ Documentation License''.
 @top Marco's BASH Functions Library
 
 @noindent
-This file documents version @version{} or @mbfl{}, a collection
-of @acronym{GNU} @command{bash} shell functions.
+This file documents version @version{} of @mbfl{}, a collection of
+@acronym{GNU} @command{bash} shell functions. This package is
+distributed under the terms of the @gnu{} General Public License
+(@acronym{GPL}).
 
 Copyright @copyright{}  @copyrightyears{}  by Marco Maggi.
 
@@ -101,6 +82,7 @@ Documentation License''.
      
 @menu
 * Overview::                    Overview of the library. 
+* Preprocessor::                Using the script preprocessor.
 * Service Variables::           Required user defined variables.
 * Base::                        Some base functions.
 * Encoding::                    Encoding and decoding strings.
@@ -118,13 +100,15 @@ Documentation License''.
 
 Appendices
 
-* Package License::             GNU Lesser General Public License.
+* Package License::             GNU General Public License.
 * Documentation License::       GNU Free Documentation License.
 * References::                  Bibliography and references.
 
 Indexes
 
 * Concept Index::               An entry for each concept. 
+* Functions Index::             An entry for each function. 
+* Variables Index::             An entry for each variable. 
 @end menu
 @end ifnottex
 
@@ -138,13 +122,13 @@ Indexes
 This package is an attempt to make @acronym{GNU} @command{bash} a viable
 solution for medium sized scripts. A problem with bash is that it
 doesn't provide encapsulation of any sort, beside the feature of
-providing functions. This problem is partly solved by writing subscripts
-and invoking them in the main script, but this is not always the best
-solution.
+providing functions.  This problem is partly solved by writing
+subscripts and invoking them in the main script, but this is not always
+the best solution.
 
 A set of modules implementing common operations and a script template
-are provided by this package and the author has used them with success
-in implementing non--small scripts.
+are offered by this package and the author has used them with success in
+implementing non--small scripts.
 
 The philosophy of @mbfl{} is to do the work as much as possible
 without external commands. For example: string manipulation is done
@@ -169,7 +153,6 @@ file @file{libmbfl.sh} in the script; this is possible by installing
 @mbfl{} on the system and using this code in the scripts:
 
 @example
-mbfl_INTERACTIVE='no'
 source "$@{MBFL_LIBRARY:=$(mbfl-config)@}"
 @end example
 
@@ -179,7 +162,7 @@ for details). This code will read the full pathname of the library from
 the environment variable @env{MBFL_LIBRARY}; if this variable is not
 set: the script @command{mbfl-config} is invoked with no arguments to
 acquire the pathname of the library. @command{mbfl-config} is installed
-in the @file{bin} directory with the library.
+in the @file{bin} directory by the package.
 
 Another solution is to include the library directly in the script; this
 is easy if we preprocess our scripts with @acronym{GNU} @command{m4}:
@@ -190,7 +173,8 @@ m4_include(libmbfl.sh)
 @end example
 
 @noindent
-is all we need to do. We can preprocess the script with:
+is all we need to put in our source script. We can preprocess the script
+with:
 
 @example
 $ m4 --prefix-builtins --include=/path/to/library \
@@ -201,9 +185,13 @@ $ m4 --prefix-builtins --include=/path/to/library \
 easy to do in a @file{Makefile}; we can take the @mbfl{}'s
 @file{Makefile} as example of this method.
 
-It is also interesting to process the script with the following rule:
+It is also interesting to process the script with the following rule of
+@acronym{GNU} @command{make}: assuming that the source scripts are in
+the @file{modules} directory of the source tree:
 
 @example
+vpath	%.sh.m4		$(top_srcdir)/modules
+
 M4      = ...
 M4FLAGS = --prefix-builtins --include=/path/to/library
 
@@ -245,6 +233,9 @@ script.sh: script.sh.m4 realscript.sh
 @noindent
 @file{realscript.sh} can be processed as explained above.
 
+At this point, though, it is better to use the @mbfl{} preprocessor
+(@ref{Preprocessor} for details).
+
 
 @unnumberedsec Notes
 
@@ -281,6 +272,11 @@ so they are not executed. Disabled modules are: main, getopts, signal;
 global variable declarations are excluded; this is a little dirty, but,
 at present, it works.
 @end itemize
+
+
+@c ------------------------------------------------------------
+@node Preprocessor
+@unnumbered Using the script preprocessor
 
 
 @c ------------------------------------------------------------
@@ -2883,7 +2879,7 @@ dotest mytest-
 @c ------------------------------------------------------------
 
 @include fdl.texiinc
-@include lgpl.texiinc
+@include gpl.texiinc
 
 @c ------------------------------------------------------------
 @node References
@@ -2902,7 +2898,18 @@ behaviour.
 @appendix An entry for each concept
      
 @printindex cp
+
+@node Functions Index
+@appendix An entry for each function
      
+@printindex fn
+     
+@node Variables Index
+@appendix An entry for each variable
+     
+@printindex vr
+
+
 @contents
 @bye
 

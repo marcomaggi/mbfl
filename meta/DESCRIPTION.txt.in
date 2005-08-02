@@ -3,7 +3,7 @@ Version: @PACKAGE_XVERSION@
 Title: Marco's BASH Functions Library
 Creator: Marco Maggi
 Rights: GNU General Public License
-URL: <http://web.tiscali.it/marcomaggi/>
+URL: <http://gna.org/projects/mbfl/>
 Available: @CURRENT_DATE@
 Architecture: all
 Subject: development

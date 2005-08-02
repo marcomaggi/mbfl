@@ -9,7 +9,7 @@
 #	This script shows how an MBFL script should be organised
 #	to use MBFL.
 # 
-# Copyright (c) 2004 Marco Maggi
+# Copyright (c) 2004, 2005 Marco Maggi
 # 
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -34,13 +34,12 @@
 
 script_PROGNAME=template.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS=2004
+script_COPYRIGHT_YEARS='2004, 2005'
 script_AUTHOR="Marco Maggi and Marco Maggi"
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
 script_DESCRIPTION='This is an example script.'
 
-mbfl_INTERACTIVE='no'
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
 # keyword default-value brief-option long-option has-argument description
@@ -86,6 +85,7 @@ function main () {
     printf "arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
     exit_because_success
 }
+
 #page
 ## ------------------------------------------------------------
 ## Start.

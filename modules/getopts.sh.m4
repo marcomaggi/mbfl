@@ -12,22 +12,22 @@
 #         Support for encoded argument values is provided and requires
 #       the "encode.sh" file to be included in the script.
 #
-# Copyright (c) 2003, 2004 Marco Maggi
+# Copyright (c) 2003, 2004, 2005 Marco Maggi
 # 
-# This is free software; you  can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  2.1 of the License,  or (at
-# your option) any later version.
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 2, or (at your  option) any later
+# version.
 # 
-# This library  is distributed in the  hope that it will  be useful, but
-# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# Lesser General Public License for more details.
+# General Public License for more details.
 # 
-# You  should have  received a  copy of  the GNU  Lesser  General Public
-# License along  with this library; if  not, write to  the Free Software
-# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
 # 
 
 #PAGE
@@ -35,22 +35,26 @@
 ## Global variables.
 ## ------------------------------------------------------------
 
-if test "${mbfl_INTERACTIVE}" != 'yes'; then
-    declare -i ARGC=0
-    declare -a ARGV ARGV1
+if test "${mbfl_INTERACTIVE}" != 'yes' ; then
 
-    for ((ARGC1=0; $# > 0; ++ARGC1)); do
-        ARGV1[$ARGC1]="$1"
-        shift
-    done
+declare -i ARGC=0
+declare -a ARGV ARGV1
 
-    mbfl_getopts_INDEX=0
-    declare -a mbfl_getopts_KEYWORDS
-    declare -a mbfl_getopts_DEFAULTS
-    declare -a mbfl_getopts_BRIEFS
-    declare -a mbfl_getopts_LONGS
-    declare -a mbfl_getopts_HASARG
-    declare -a mbfl_getopts_DESCRIPTION
+for ((ARGC1=0; $# > 0; ++ARGC1)); do
+    ARGV1[$ARGC1]="$1"
+    shift
+done
+
+declare -r ARGC1 ARGV1
+
+mbfl_getopts_INDEX=0
+declare -a mbfl_getopts_KEYWORDS
+declare -a mbfl_getopts_DEFAULTS
+declare -a mbfl_getopts_BRIEFS
+declare -a mbfl_getopts_LONGS
+declare -a mbfl_getopts_HASARG
+declare -a mbfl_getopts_DESCRIPTION
+
 fi
 
 #page
@@ -58,7 +62,7 @@ fi
 ## Default options description.
 ## ------------------------------------------------------------
 
-if test "${mbfl_INTERACTIVE}" != 'yes'; then
+if test "${mbfl_INTERACTIVE}" != 'yes' ; then
 
 mbfl_message_DEFAULT_OPTIONS="
 \t--tmpdir=DIR
@@ -117,6 +121,10 @@ mbfl_message_DEFAULT_OPTIONS="
 fi
 
 #page
+## ------------------------------------------------------------
+## Options declaration functions.
+## ------------------------------------------------------------
+
 function mbfl_declare_option () {
     local keyword="$1"
     local default="$2"
@@ -167,6 +175,7 @@ function mbfl_p_declare_option_test_length () {
         exit 2
     }
 }
+
 #page
 function mbfl_getopts_p_process_script_option () {
     mandatory_parameter(OPT, 1, option name)
