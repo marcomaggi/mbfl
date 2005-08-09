@@ -389,6 +389,37 @@ function mbfl_exec_cp () {
 
 #page
 ## ------------------------------------------------------------
+## File move functions.
+## ------------------------------------------------------------
+
+function mbfl_file_enable_move () {
+    mbfl_declare_program mv
+}
+function mbfl_file_move () {
+    mandatory_parameter(SOURCE, 1, source pathname)
+    mandatory_parameter(TARGET, 2, target pathname)
+    shift 2
+
+    if ! mbfl_option_test ; then
+        if ! mbfl_file_is_readable "${SOURCE}" ; then
+            mbfl_message_error "moving file '${SOURCE}'"
+            return 1
+        fi
+    fi
+    mbfl_exec_mv "${SOURCE}" "${TARGET}" "$@"
+}
+function mbfl_exec_mv () {
+    mandatory_parameter(SOURCE, 1, source pathname)
+    mandatory_parameter(TARGET, 2, target pathname)
+    shift 2
+    local MV=$(mbfl_program_found mv) FLAGS
+
+    mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
+    mbfl_program_exec ${MV} ${FLAGS} "$@" -- "${SOURCE}" "${TARGET}"
+}
+
+#page
+## ------------------------------------------------------------
 ## Directory remove functions.
 ## ------------------------------------------------------------
 
@@ -470,7 +501,8 @@ function mbfl_file_symlink () {
 ## ------------------------------------------------------------
 
 function mbfl_file_enable_listing () {
-    mbfl_declare_program ls readlink
+    mbfl_declare_program ls
+    mbfl_declare_program readlink
 }
 function mbfl_file_get_owner () {
     mandatory_parameter(PATHNAME, 1, pathname)
@@ -754,6 +786,47 @@ function mbfl_file_write () {
 function mbfl_file_read () {
     mandatory_parameter(FILENAME, 1, file name)
     mbfl_program_bash_command "printf '%s' \"\$(<${FILENAME})\""
+}
+
+#page
+## ------------------------------------------------------------
+## Compression functions.
+## ------------------------------------------------------------
+
+function mbfl_file_enable_compress () {
+    mbfl_declare_program gzip
+    mbfl_declare_program bzip2
+    mbfl_file_select_compressor gzip
+}
+function mbfl_file_select_compressor () {
+    mandatory_parameter(COMPRESSOR, 1, compression program)
+
+    case "${COMPRESSOR}" in
+        gzip|bzip2)
+            mbfl_p_file_compressor=${COMPRESSOR}
+            ;;
+        *)
+            mbfl_message_error "unsupported compressor '${COMPRESSOR}'"
+            return 1
+            ;;
+    esac
+}
+function mbfl_file_compress () {
+    mandatory_parameter(FILE, 1, target file)
+
+    if ! mbfl_file_is_file "${FILE}" ; then
+        mbfl_message_error "compression target is not a file '${FILE}'"
+        return 1
+    fi
+    mbfl_exec_compress "${FILE}" "$@"
+}
+function mbfl_exec_compress () {
+    mandatory_parameter(FILE, 1, target file)
+    local COMPRESSOR=$(mbfl_program_found "${mbfl_p_file_compressor}")
+    local FLAGS
+
+    mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
+    mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "${FILE}" "$@"
 }
 
 ### end of file

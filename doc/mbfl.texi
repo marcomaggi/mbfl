@@ -574,10 +574,12 @@ otherwise.
 * File Commands Listing::       Retrieving informations.
 * File Commands Mkdir::         Creating directories.
 * File Commands Copy::          Copying files.
+* File Commands move::          Moving files.
 * File Commands Removing::      Removing files and directories.
 * File Commands Tar::           Manipulating tar archives.
 * File Commands Symlink::       Creating symbolic links.
 * File Commands Perms::         Set/get file permissions.
+* File Commands Compress::      Compressing files.
 @end menu
 
 
@@ -677,6 +679,25 @@ If @var{source} does not exist, or if it is not a file, an error is
 generated and the return value is 1. No test is done upon @var{target}.
 @end deffn
 
+
+@c ------------------------------------------------------------
+@node File Commands move
+@unnumberedsubsec Moving files
+
+
+@deffn Function mbfl_file_enable_move
+Declares to the program module the commands required to move files and
+directories (@ref{Program Declaring}). The programs are: @command{mv}.
+@end deffn
+
+
+@deffn Function mbfl_file_move @var{source} @var{target} ?@dots{}?
+Moves the @var{source}, a file, to @var{target}, a file
+pathname. Additional arguments are handed to the command unchanged.
+
+If @var{source} does not exist, or if it is not a file, an error is
+generated and the return value is 1. No test is done upon @var{target}.
+@end deffn
 
 @c ------------------------------------------------------------
 @node File Commands Removing
@@ -846,6 +867,30 @@ Executing} for details).
 @deffn Function mbfl_file_set_permissions @var{mode} @var{pathname}
 Sets the access permissions for @var{pathname}; @var{mode} must be in a
 form accepted by @command{chmod}.
+@end deffn
+
+
+@c ------------------------------------------------------------
+@node File Commands Compress
+@unnumberedsubsec Compressing files
+
+
+@deffn Function mbfl_file_enable_compress
+Declares the programs required to compress a file (@ref{Program
+Declaring}). The programs are: @command{gzip}, @command{bzip2}.
+@end deffn
+
+
+@deffn Function mbfl_file_select_compressor @var{program}
+Selects a compressor program. Accepted values for @var{program} are:
+@code{gzip}, @code{bzip2}. The default selection is @code{gzip}.
+@end deffn
+
+
+@deffn Function mbfl_file_compress @var{PATHNAME} ?@dots{}?
+Compresses @var{PATHNAME}, a file pathname, with the currently selected
+compressor program. Additional arguments to the selected compressor may
+used and are handed to the compressor unchanged.
 @end deffn
 
 
