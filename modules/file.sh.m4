@@ -41,6 +41,24 @@ function mbfl_change_directory () {
 
 #page
 ## ------------------------------------------------------------
+## Miscellaneous functions.
+## ------------------------------------------------------------
+
+function mbfl_file_cat () {
+    mandatory_parameter(OUTPUT, 1, output file)
+    local LINE
+
+    while read LINE; do
+        if test "${OUTPUT}" != '-' ; then
+            printf '%s\n' "${LINE}" >"${OUTPUT}"
+        else
+            printf '%s\n' "${LINE}"
+        fi
+    done
+}
+
+#page
+## ------------------------------------------------------------
 ## File name functions.
 ## ------------------------------------------------------------
 

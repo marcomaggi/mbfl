@@ -120,21 +120,26 @@ function mbfl_string_index () {
 }
 #PAGE
 function mbfl_string_is_alpha_char () {
-    ! test \( "$1" \< A -o Z \< "$1" \) -a \( "$1" \< a -o z \< "$1" \)
+    mandatory_parameter(CHAR, 1, char)
+    ! test \( "${CHAR}" \< A -o Z \< "${CHAR}" \) -a \( "${CHAR}" \< a -o z \< "${CHAR}" \)
 }
 function mbfl_string_is_digit_char () {
-    ! test "$1" \< 0 -o 9 \< "$1"
+    mandatory_parameter(CHAR, 1, char)
+    ! test "${CHAR}" \< 0 -o 9 \< "${CHAR}"
 }
 function mbfl_string_is_alnum_char () {
-    mbfl_string_is_alpha_char "$1" || mbfl_string_is_digit_char "$1"
+    mandatory_parameter(CHAR, 1, char)
+    mbfl_string_is_alpha_char "${CHAR}" || mbfl_string_is_digit_char "${CHAR}"
 }
 function mbfl_string_is_name_char () {
-    mbfl_string_is_alnum_char "$1" || test "$1" = _
+    mandatory_parameter(CHAR, 1, char)
+    mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = _
 }
 function mbfl_string_is_noblank_char () {
-    test \( "$1" != " " \) -a \
-	\( "$1" != $'\n' \) -a \( "$1" != $'\r' \) -a \
-	\( "$1" != $'\t' \) -a \( "$1" != $'\f' \)
+    mandatory_parameter(CHAR, 1, char)
+    test \( "${CHAR}" != " " \) -a \
+	\( "${CHAR}" != $'\n' \) -a \( "${CHAR}" != $'\r' \) -a \
+	\( "${CHAR}" != $'\t' \) -a \( "${CHAR}" != $'\f' \)
 }
 for class in alpha digit alnum noblank ; do
     alias "mbfl_string_is_${class}"="mbfl_p_string_is $class"

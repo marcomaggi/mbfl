@@ -53,6 +53,10 @@ mbfl_declare_option INCLUDE \
     "" "" include witharg "add a search path for files"
 mbfl_declare_option LIBRARY \
     "" "" library witharg "include an M4 library"
+mbfl_declare_option OUTPUT \
+    - o output witharg "selects an output file, '-' for stdout"
+mbfl_declare_option EVAL \
+    no e eval noarg "if used evaluates the output script in bash, instead of printing it"
 
 mbfl_declare_program m4
 mbfl_declare_program grep
@@ -97,13 +101,22 @@ function main () {
     M4_FLAGS="${M4_FLAGS} ${libraries}"    
 
     if test "${script_option_ADD_BASH}" = "yes"; then
-        printf "#!${BASH}\n"
+        printf '#!%s\n' "${BASH}"
     fi
-    if test "${script_option_PRESERVE_COMMENTS}" = "yes"; then
-        program_m4 ${M4_FLAGS} -
-    else
-        program_m4 ${M4_FLAGS} - | filter_drop_comments
-    fi
+    {
+        if test "${script_option_PRESERVE_COMMENTS}" = "yes"; then
+            program_m4 ${M4_FLAGS} -
+        else
+            program_m4 ${M4_FLAGS} - | filter_drop_comments
+        fi
+    } | {
+        if test "${script_option_EVAL}" = 'yes' ; then
+            exec "${BASH}"
+        else
+            mbfl_file_cat "${script_option_OUTPUT}"
+        fi
+    }
+    exit_success
 }
 
 #page

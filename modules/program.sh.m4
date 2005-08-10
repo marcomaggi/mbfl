@@ -158,7 +158,7 @@ function mbfl_program_found () {
     fi
 
     mbfl_message_error "executable not found '${PROGRAM}'"
-    mbfl_exit_program_not_found
+    exit_because_program_not_found
 }
 
 #page
@@ -167,7 +167,7 @@ function mbfl_program_found () {
 ## ------------------------------------------------------------
 
 function mbfl_program_main_validate_programs () {
-    mbfl_program_validate_declared || mbfl_exit_program_not_found
+    mbfl_program_validate_declared || exit_because_program_not_found
 }
 
 ### end of file

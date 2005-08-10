@@ -86,13 +86,13 @@ function script-3.1 () {
 
 function script-4.1 () {
     script --list-exit-codes | dotest-output \
-        "0 success\n1 first_error\n8 second_error\n3 third_error\n3 fourth_error"
+        "0 success\n1 failure\n20 program_not_found\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
 }
 function script-4.2 () {
-    script --print-exit-code=first_error | dotest-output 1
+    script --print-exit-code=second_error | dotest-output 2
 }
 function script-4.3 () {
-    script --print-exit-code=second_error | dotest-output 8
+    script --print-exit-code=eighth_error | dotest-output 8
 }
 function script-4.4 () {
     script --print-exit-code=third_error | dotest-output 3
@@ -104,10 +104,10 @@ function script-4.6 () {
     script --print-exit-code=success | dotest-output 0
 }
 function script-4.7 () {
-    script --print-exit-code-names=1 | dotest-output "first_error"
+    script --print-exit-code-names=1 | dotest-output "failure"
 }
 function script-4.8 () {
-    script --print-exit-code-names=8 | dotest-output "second_error"
+    script --print-exit-code-names=8 | dotest-output "eighth_error"
 }
 function script-4.9 () {
     script --print-exit-code-names=3 | dotest-output "third_error\nfourth_error"

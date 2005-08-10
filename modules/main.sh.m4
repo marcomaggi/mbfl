@@ -54,10 +54,17 @@ if test "${mbfl_INTERACTIVE}" != 'yes'; then
     declare -a mbfl_main_EXIT_CODES mbfl_main_EXIT_NAMES
     mbfl_main_EXIT_CODES[0]=0
     mbfl_main_EXIT_NAMES[0]='success'
+    mbfl_main_EXIT_CODES[1]=1
+    mbfl_main_EXIT_NAMES[1]='failure'
+    mbfl_main_EXIT_CODES[2]=20
+    mbfl_main_EXIT_NAMES[2]='program_not_found'
 fi
 
 function exit_success () {
     exit_because_success
+}
+function exit_failure () {
+    exit_because_failure
 }
 function mbfl_main_declare_exit_code () {
     mandatory_parameter(CODE, 1, exit code)

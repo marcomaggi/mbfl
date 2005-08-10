@@ -1045,6 +1045,12 @@ prints a message.
 @end deffn
 
 
+@deffn Function mbfl_file_cat @var{OUTPUT_FILE}
+Reads text from the standard input and writes it to @var{OUTPUT_FILE};
+if @code{-} is used as argument: the text goes to the standard output.
+@end deffn
+
+
 @c ------------------------------------------------------------
 @node Getopts
 @unnumbered Parsing command line options
@@ -1964,7 +1970,7 @@ It is a good idea to invoke this function at the beginning of a script,
 just before starting to do stuff, example:
 
 @example
-mbfl_program_validate_declared || mbfl_exit_program_not_found
+mbfl_program_validate_declared || exit_because_program_not_found
 @end example
 
 If verbose messages are enabled: a brief summary is echoed to stderr;
@@ -1976,17 +1982,15 @@ from the command line the option @option{--verbose} must be used before
 @deffn Function mbfl_program_found @var{program}
 Prints the pathname of the previously declared @var{program}. Returns
 zero if the program was found, otherwise prints an error message and
-exits the script by invoking @function{mbfl_exit_program_not_found}.
+exits the script by invoking @function{exit_because_program_not_found}.
 
 This function should be used to retrieve the pathname of the program to
 be used as first argument to @function{mbfl_program_exec}.
 @end deffn
 
 
-@deffn Function mbfl_exit_program_not_found
-Terminates the script with exit code 20. This function may be redefined
-by a script to make use of a different exit code; it may even be
-redefined to execute arbitrary code and then exit.
+@deffn Function exit_because_program_not_found
+Terminates the script with exit code 20.
 @end deffn
 
 
@@ -2517,9 +2521,20 @@ process.
 @end deffn
 
 By default the exit code @code{0} is associated to the name
-@code{success}; so to exit a script with success one may invoke the
-function @function{exit_because_success}, but a function exists to let
-us invoke @function{exit_success}.
+@code{success} and the exit code @code{1} is associated to the name
+@code{failure}; so the following functions exist.
+
+
+@deffn Function exit_because_success
+@deffnx Function exit_success
+Exits the script with code zero.
+@end deffn
+
+
+@deffn Function exit_because_failure
+@deffnx Function exit_failure
+Exits the script with code one.
+@end deffn
 
 
 @deffn Function mbfl_main_print_exit_code @var{name}

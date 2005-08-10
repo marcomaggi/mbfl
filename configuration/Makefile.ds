@@ -12,14 +12,9 @@ vpath	%.sh.m4		$(top_srcdir)/lib
 vpath	%.sh.m4		$(top_srcdir)/examples
 vpath	%.sh.m4		$(builddir)
 
-ds-files-from-dir	= $(filter-out %~, $(wildcard $(1)/*))
-ds-make-dir		= $(shell test ! -d $(1) && $(MKDIR) $(1))
-ds-replace-dir		= $(addprefix $(1)/, $(notdir $(2)))
 
-library_SRCDIR		= $(top_srcdir)/modules
-library_BUILDDIR	= $(builddir)/modules
-
-MBFLPP	= $(BASH) $(top_srcdir)/scripts/mbflpp.sh			\
+MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
+		$(BASH) $(top_srcdir)/infrastructure/mbflpp.sh		\
 		--include=$(top_srcdir)/macros				\
 		--include=$(library_BUILDDIR)				\
 		--library=preprocessor.m4	 			\
@@ -37,6 +32,9 @@ MODULES			= base encode file getopts message program signal \
 LIBNAME			= libmbfl.sh
 LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
 
+library_SRCDIR		= $(top_srcdir)/modules
+DS_BUILDDIR(library)
+
 library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(addprefix $(library_BUILDDIR)/, \
 				$(foreach m, $(MODULES), $(m).sh))
@@ -47,28 +45,15 @@ library_INSTDIR		= $(pkgdatadir)
 library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES) $(library_BUILDDIR)
 library_REALCLEANFILES	= $(library_CLEANFILES)
 
-.PHONY: library-all library-clean library-realclean library-install
+DS_SECTION(library, bin, DATA)
 
-library-all: $(call ds-make-dir, $(library_BUILDDIR)) $(library_TARGETS)
-library-clean:
-	-$(RM) $(library_CLEANFILES)
-library-realclean:
-	-$(RM) $(library_REALCLEANFILES)
-
-library-install:
-AM_INSTALL_DATA(library)
-
+$(library_SOURCES): $(library_BUILDDIR)
 
 $(library_SOURCES): $(library_BUILDDIR)/%.sh: $(library_SRCDIR)/%.sh.m4 preprocessor.m4
 	$(MBFLPP) <$(<) >$(@)
 
 $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(library_SOURCES)
 	$(MBFLPP) --show-program --preserve-comments <$(<) >$(@)
-
-bin:		library-all
-bin-clean:	library-clean
-bin-realclean:	library-realclean
-bin-install:	library-install
 
 #page
 ## ------------------------------------------------------------
@@ -162,6 +147,17 @@ ifneq ($(strip $(test_FILES)),)
 	@$(foreach f, $(test_FILES), top_srcdir=$(top_srcdir); \
 	TESTSUCCESS='yes' TESTSTART='yes' $(test_CMD) $(f);)
 endif
+
+#page
+## ------------------------------------------------------------
+## Update targets.
+## ------------------------------------------------------------
+
+.PHONY: update-infrastructure
+
+update-infrastructure: libmbfl.sh mbflpp.sh
+	$(CP) $(^) $(top_srcdir)/infrastructure/
+
 
 ### end of file
 # Local Variables:

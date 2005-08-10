@@ -81,8 +81,8 @@ GAWK		= @GAWK@
 GZIP		= @GZIP@
 M4		= @M4@
 MAKEINFO	= @MAKEINFO@
-MKDIR		= @MKDIR@ --parents
-RM		= @RM@ --force --recursive --
+MKDIR		= @MKDIR@ --parents --verbose
+RM		= @RM@ --force --recursive --verbose --
 SED		= @SED@
 SYMLINK		= @SYMLINK@ --symbolic
 TAR		= @TAR@
@@ -101,19 +101,37 @@ DEVELSTUFF		= @DEVELSTUFF@
 
 #page
 ## ------------------------------------------------------------
+## GNU Make functions.
+## ------------------------------------------------------------
+
+# To be invoked with (call), example:
+#
+#	section_SOURCES = $(call files-from-dir, $(section_SRCDIR))
+
+# Collects files dropping out backups.
+ds-files-from-dir	= $(filter-out %~, $(wildcard $(1)/*))
+# Replaces a directory with another in a group of files.
+ds-replace-dir		= $(addprefix $(1)/, $(notdir $(2)))
+
+#page
+## ------------------------------------------------------------
 ## Main rules.
 ## ------------------------------------------------------------
 
-.PHONY: all clean realclean install
-.PHONY: bin bin-clean bin-realclean bin-install
-.PHONY: dev dev-clean dev-realclean dev-install
-.PHONY: sta sta-clean sta-realclean sta-install
-.PHONY: doc doc-clean doc-realclean doc-install
+ds_group_RULES		= bin dev doc sta
+ds_main_RULES	= all clean realclean install
 
-all:		bin dev doc sta
-clean:		bin-clean dev-clean doc-clean sta-clean
-realclean:	bin-realclean dev-realclean doc-realclean sta-realclean
-install:	bin-install dev-install doc-install sta-install
+.PHONY: $(ds_group_RULES) $(ds_main_RULES)
+.PHONY: $(foreach rule, $(ds_group_RULES), $(addprefix $(rule)-, $(ds_main_RULES)))
+
+all:		$(ds_group_RULES)
+clean:		$(addsuffix -clean, $(ds_group_RULES))
+realclean:	$(addsuffix -realclean, $(ds_group_RULES))
+install:	$(addsuffix -install, $(ds_group_RULES))
+
+$(ds_group_RULES):
+
+$(addsuffix -all, $(ds_group_RULES)): %-all : %
 
 .PHONY: dist bindist reconfigure
 
@@ -140,14 +158,9 @@ vpath	%.sh.m4		$(top_srcdir)/lib
 vpath	%.sh.m4		$(top_srcdir)/examples
 vpath	%.sh.m4		$(builddir)
 
-ds-files-from-dir	= $(filter-out %~, $(wildcard $(1)/*))
-ds-make-dir		= $(shell test ! -d $(1) && $(MKDIR) $(1))
-ds-replace-dir		= $(addprefix $(1)/, $(notdir $(2)))
 
-library_SRCDIR		= $(top_srcdir)/modules
-library_BUILDDIR	= $(builddir)/modules
-
-MBFLPP	= $(BASH) $(top_srcdir)/scripts/mbflpp.sh			\
+MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
+		$(BASH) $(top_srcdir)/infrastructure/mbflpp.sh		\
 		--include=$(top_srcdir)/macros				\
 		--include=$(library_BUILDDIR)				\
 		--library=preprocessor.m4	 			\
@@ -165,6 +178,13 @@ MODULES			= base encode file getopts message program signal \
 LIBNAME			= libmbfl.sh
 LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
 
+library_SRCDIR		= $(top_srcdir)/modules
+library_BUILDDIR		= $(builddir)/library.d
+
+$(library_BUILDDIR):
+	@if test ! -d $(@) ; then $(MKDIR) $(@) ; fi
+
+
 library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
 library_SOURCES		= $(addprefix $(library_BUILDDIR)/, \
 				$(foreach m, $(MODULES), $(m).sh))
@@ -175,13 +195,22 @@ library_INSTDIR		= $(pkgdatadir)
 library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES) $(library_BUILDDIR)
 library_REALCLEANFILES	= $(library_CLEANFILES)
 
-.PHONY: library-all library-clean library-realclean library-install
 
-library-all: $(call ds-make-dir, $(library_BUILDDIR)) $(library_TARGETS)
+.PHONY: $(addprefix library-, all clean realclean install)
+
+library-all: $(library_TARGETS)
 library-clean:
-	-$(RM) $(library_CLEANFILES)
+ifdef library_CLEANFILES
+	-@$(RM) $(library_CLEANFILES)
+else
+	@echo nothing to clean for library
+endif
 library-realclean:
-	-$(RM) $(library_REALCLEANFILES)
+ifdef library_REALCLEANFILES
+	-@$(RM) $(library_REALCLEANFILES)
+else
+	@echo nothing to realclean for library
+endif
 
 library-install:
 
@@ -195,17 +224,19 @@ else
 endif
 
 
+bin:		library-all
+bin-clean:	library-clean
+bin-realclean:	library-realclean
+bin-install:	library-install
+
+
+$(library_SOURCES): $(library_BUILDDIR)
 
 $(library_SOURCES): $(library_BUILDDIR)/%.sh: $(library_SRCDIR)/%.sh.m4 preprocessor.m4
 	$(MBFLPP) <$(<) >$(@)
 
 $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(library_SOURCES)
 	$(MBFLPP) --show-program --preserve-comments <$(<) >$(@)
-
-bin:		library-all
-bin-clean:	library-clean
-bin-realclean:	library-realclean
-bin-install:	library-install
 
 #page
 ## ------------------------------------------------------------
@@ -330,6 +361,17 @@ ifneq ($(strip $(test_FILES)),)
 	TESTSUCCESS='yes' TESTSTART='yes' $(test_CMD) $(f);)
 endif
 
+#page
+## ------------------------------------------------------------
+## Update targets.
+## ------------------------------------------------------------
+
+.PHONY: update-infrastructure
+
+update-infrastructure: libmbfl.sh mbflpp.sh
+	$(CP) $(^) $(top_srcdir)/infrastructure/
+
+
 ### end of file
 # Local Variables:
 # mode: makefile
@@ -369,16 +411,24 @@ doc_generic_INSTLST		?= $(filter-out %~, \
 				  NEWS ChangeLog DESCRIPTION.txt TODO)))
 doc_generic_INSTDIR		= $(pkgdocdir)
 
-.PHONY: doc-generic-all doc-generic-clean doc-generic-realclean
-.PHONY: doc-generic-install
 
-doc-generic-all: $(doc_generic_TARGETS)
-doc-generic-clean:
-	-$(RM) $(doc_generic_CLEANFILES)
-doc-generic-realclean:
-	-$(RM) $(doc_generic_REALCLEANFILES)
+.PHONY: $(addprefix doc_generic-, all clean realclean install)
 
-doc-generic-install:
+doc_generic-all: $(doc_generic_TARGETS)
+doc_generic-clean:
+ifdef doc_generic_CLEANFILES
+	-@$(RM) $(doc_generic_CLEANFILES)
+else
+	@echo nothing to clean for doc_generic
+endif
+doc_generic-realclean:
+ifdef doc_generic_REALCLEANFILES
+	-@$(RM) $(doc_generic_REALCLEANFILES)
+else
+	@echo nothing to realclean for doc_generic
+endif
+
+doc_generic-install:
 
 	@echo "Installing doc_generic files... "
 ifneq	(,$(doc_generic_INSTLST))
@@ -390,10 +440,11 @@ else
 endif
 
 
-doc:		doc-generic-all
-doc-clean:	doc-generic-clean
-doc-realclean:	doc-generic-realclean
-doc-install:	doc-generic-install
+doc:		doc_generic-all
+doc-clean:	doc_generic-clean
+doc-realclean:	doc_generic-realclean
+doc-install:	doc_generic-install
+
 
 #page
 ## ------------------------------------------------------------
@@ -407,36 +458,85 @@ doc_texinfo_SOURCES	= $(wildcard $(doc_texinfo_SRCDIR)/*.texi)
 vpath	%.texi		$(doc_texinfo_SRCDIR)
 vpath	%.texiinc	$(doc_texinfo_SRCDIR)
 
-doc_texi2html_TARGETS	= $(addprefix $(doc_texinfo_BUILDDIR)/, \
-				$(notdir $(doc_texinfo_SOURCES:.texi=.html)))
-doc_texi2html_INSTLST	= $(wildcard $(doc_texi2html_TARGETS))
-doc_texi2html_INSTDIR	= $(pkghtmldir)
-
-doc_texi2info_TARGETS	= $(addprefix $(doc_texinfo_BUILDDIR)/, \
-				$(notdir $(doc_texinfo_SOURCES:.texi=.info)))
-doc_texi2info_INSTLST	= $(wildcard $(foreach f, $(doc_texi2info_TARGETS), $(f)*))
-doc_texi2info_INSTDIR	= $(infodir)
-
-doc_texinfo_CLEANFILES		= $(doc_texinfo_BUILDDIR)
-doc_texinfo_REALCLEANFILES	= $(doc_texinfo_CLEANFILES)
-
 DS_TEXI_FLAGS		= -I $(doc_texinfo_SRCDIR) -I $(builddir) -I $(doc_texinfo_BUILDDIR)
 DS_TEXI2INFO_FLAGS	= $(DS_TEXI_FLAGS)
 DS_TEXI2HTML_FLAGS	= $(DS_TEXI_FLAGS) --html --no-split
 
 doc_texinfo_PREREQ	= $(doc_texinfo_BUILDDIR) $(doc_texinfo_BUILDDIR)/version.texiinc
 
-.PHONY: doc-texinfo-all doc-texinfo-clean doc-texinfo-realclean
-.PHONY: doc-texinfo-install
+# HTML format.
 
-doc-texinfo-all: $(doc_texi2info_TARGETS) $(doc_texi2html_TARGETS)
-doc-texinfo-clean:
-	-$(RM) $(doc_texinfo_CLEANFILES)
-doc-texinfo-realclean:
-	-$(RM) $(doc_texinfo_REALCLEANFILES)
+doc_texi2html_TARGETS	= $(addprefix $(doc_texinfo_BUILDDIR)/, \
+				$(notdir $(doc_texinfo_SOURCES:.texi=.html)))
+doc_texi2html_INSTLST	= $(wildcard $(doc_texi2html_TARGETS))
+doc_texi2html_INSTDIR	= $(pkghtmldir)
 
-doc-texinfo-install:
-	@echo "Installing documentation in Info format."
+doc_texi2html_CLEANFILES	= $(doc_texinfo_BUILDDIR)
+doc_texi2html_REALCLEANFILES	= $(doc_texi2html_CLEANFILES)
+
+
+.PHONY: $(addprefix doc_texi2html-, all clean realclean install)
+
+doc_texi2html-all: $(doc_texi2html_TARGETS)
+doc_texi2html-clean:
+ifdef doc_texi2html_CLEANFILES
+	-@$(RM) $(doc_texi2html_CLEANFILES)
+else
+	@echo nothing to clean for doc_texi2html
+endif
+doc_texi2html-realclean:
+ifdef doc_texi2html_REALCLEANFILES
+	-@$(RM) $(doc_texi2html_REALCLEANFILES)
+else
+	@echo nothing to realclean for doc_texi2html
+endif
+
+doc_texi2html-install:
+
+	@echo "Installing doc_texi2html files... "
+ifneq	(,$(doc_texi2html_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(doc_texi2html_INSTDIR)
+	@$(INSTALL_DATA) $(doc_texi2html_INSTLST) $(INSTALL_ROOT)$(doc_texi2html_INSTDIR)
+	@echo "Done."
+else
+	$(warning *** empty install list)
+endif
+
+
+doc:		doc_texi2html-all
+doc-clean:	doc_texi2html-clean
+doc-realclean:	doc_texi2html-realclean
+doc-install:	doc_texi2html-install
+
+
+# Info format.
+
+doc_texi2info_TARGETS	= $(addprefix $(doc_texinfo_BUILDDIR)/, \
+				$(notdir $(doc_texinfo_SOURCES:.texi=.info)))
+doc_texi2info_INSTLST	= $(wildcard $(foreach f, $(doc_texi2info_TARGETS), $(f)*))
+doc_texi2info_INSTDIR	= $(infodir)
+
+doc_texi2info_CLEANFILES	= $(doc_texinfo_BUILDDIR)
+doc_texi2info_REALCLEANFILES	= $(doc_texi2info_CLEANFILES)
+
+
+.PHONY: $(addprefix doc_texi2info-, all clean realclean install)
+
+doc_texi2info-all: $(doc_texi2info_TARGETS)
+doc_texi2info-clean:
+ifdef doc_texi2info_CLEANFILES
+	-@$(RM) $(doc_texi2info_CLEANFILES)
+else
+	@echo nothing to clean for doc_texi2info
+endif
+doc_texi2info-realclean:
+ifdef doc_texi2info_REALCLEANFILES
+	-@$(RM) $(doc_texi2info_REALCLEANFILES)
+else
+	@echo nothing to realclean for doc_texi2info
+endif
+
+doc_texi2info-install:
 
 	@echo "Installing doc_texi2info files... "
 ifneq	(,$(doc_texi2info_INSTLST))
@@ -447,16 +547,13 @@ else
 	$(warning *** empty install list)
 endif
 
-	@echo "Installing documentation in HTML format."
 
-	@echo "Installing doc_texi2html files... "
-ifneq	(,$(doc_texi2html_INSTLST))
-	@$(INSTALL_DIR) $(INSTALL_ROOT)$(doc_texi2html_INSTDIR)
-	@$(INSTALL_DATA) $(doc_texi2html_INSTLST) $(INSTALL_ROOT)$(doc_texi2html_INSTDIR)
-	@echo "Done."
-else
-	$(warning *** empty install list)
-endif
+doc:		doc_texi2info-all
+doc-clean:	doc_texi2info-clean
+doc-realclean:	doc_texi2info-realclean
+doc-install:	doc_texi2info-install
+
+
 
 
 $(doc_texinfo_BUILDDIR):
@@ -471,10 +568,6 @@ $(doc_texinfo_BUILDDIR)/%.html: $(doc_texinfo_SRCDIR)/%.texi $(doc_texinfo_PRERE
 $(doc_texinfo_BUILDDIR)/version.texiinc: Makefile
 	echo -e "@macro version{}\n$(PACKAGE_XVERSION)\n@end macro\n" >$(@)
 
-doc:		doc-texinfo-all
-doc-clean:	doc-texinfo-clean
-doc-realclean:	doc-texinfo-realclean
-doc-install:	doc-texinfo-install
 
 #page
 ## ------------------------------------------------------------

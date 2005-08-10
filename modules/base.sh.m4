@@ -72,13 +72,6 @@ function mbfl_option_test_restore () {
     test "${mbfl_save_option_TEST}" = "yes" && mbfl_set_option_test
 }
 
-#page
-## ------------------------------------------------------------
-## Exit functions.
-## ------------------------------------------------------------
-
-function mbfl_exit_program_not_found () { exit 20; }
-
 ### end of file
 # Local Variables:
 # mode: sh
