@@ -1,0 +1,165 @@
+# Makefile.ds --
+#
+
+#PAGE
+## ------------------------------------------------------------
+## Search paths and programs.
+## ------------------------------------------------------------
+
+vpath	%.m4		$(top_srcdir)/macros
+vpath	%.sh.m4		$(top_srcdir)/modules
+vpath	%.sh.m4		$(top_srcdir)/lib
+vpath	%.sh.m4		$(top_srcdir)/examples
+vpath	%.sh.m4		$(builddir)
+
+
+MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
+		$(BASH) $(top_srcdir)/infrastructure/mbflpp.sh		\
+		--include=$(top_srcdir)/macros				\
+		--include=$(library_BUILDDIR)				\
+		--library=preprocessor.m4	 			\
+		--define=__PKGDATADIR__=$(pkgdatadir)			\
+		--define=__PACKAGE_NAME__=$(PACKAGE_NAME)		\
+		--define=__PACKAGE_VERSION__=$(PACKAGE_XVERSION)
+
+#PAGE
+## ------------------------------------------------------------
+## Library rules.
+## ------------------------------------------------------------
+
+MODULES			= base encode file getopts message program signal \
+			  string dialog main variable system
+LIBNAME			= libmbfl.sh
+LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
+
+library_SRCDIR		= $(top_srcdir)/modules
+DS_BUILDDIR(library)
+
+library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
+library_SOURCES		= $(addprefix $(library_BUILDDIR)/, \
+				$(foreach m, $(MODULES), $(m).sh))
+library_TARGETS		= $(LIBNAME)
+library_INSTLST		= $(library_TARGETS) $(LIBRARIES)
+library_INSTDIR		= $(pkgdatadir)
+
+library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES) $(library_BUILDDIR)
+library_REALCLEANFILES	= $(library_CLEANFILES)
+
+DS_SECTION(library, bin, DATA)
+
+$(library_SOURCES): $(library_BUILDDIR)
+
+$(library_SOURCES): $(library_BUILDDIR)/%.sh: $(library_SRCDIR)/%.sh.m4 preprocessor.m4
+	$(MBFLPP) <$(<) >$(@)
+
+$(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(library_SOURCES)
+	$(MBFLPP) --show-program --preserve-comments <$(<) >$(@)
+
+#page
+## ------------------------------------------------------------
+## Script rules.
+## ------------------------------------------------------------
+
+libexec_TARGETS		= mbflpp.sh
+libexec_INSTLST		= mbfl-config mbflpp.sh
+libexec_INSTDIR		= $(pkglibexecdir)
+
+libexec_CLEANFILES	= $(libexec_TARGETS)
+libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
+
+.PHONY: script-all script-clean script-realclean script-install
+
+script-all: $(libexec_TARGETS)
+script-clean:
+	-$(RM) $(libexec_CLEANFILES)
+script-realclean:
+	-$(RM) $(libexec_REALCLEANFILES)
+
+script-install:
+AM_INSTALL_BIN(libexec)
+AM_INSTALL_DIR($(bindir))
+	cd $(INSTALL_ROOT)$(bindir) && \
+	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfl-config mbfl-config
+	cd $(INSTALL_ROOT)$(bindir) && \
+	$(SYMLINK) ../libexec/$(PKG_DIR)/mbflpp.sh mbflpp.sh
+
+mbflpp.sh: $(top_srcdir)/scripts/mbflpp.sh
+	$(MBFLPP) --preserve-comments <$(<) >$(@)
+
+bin:		script-all
+bin-clean:	script-clean
+bin-realclean:	script-realclean
+bin-install:	script-install
+
+#page
+## ------------------------------------------------------------
+## Preprocessor macros rules.
+## ------------------------------------------------------------
+
+macros_INSTLST		= $(top_srcdir)/macros/preprocessor.m4
+macros_INSTDIR		= $(pkgdatadir)
+
+.PHONY: macros-install
+
+macros-install:
+AM_INSTALL_DATA(macros)
+
+bin-install:	macros-install
+
+#PAGE
+## ------------------------------------------------------------
+## Template rules.
+## ------------------------------------------------------------
+
+template_INSTLST	= $(top_srcdir)/examples/template.sh
+template_INSTDIR	= $(pkgexampledir)
+
+.PHONY: template-install
+
+template-install:
+AM_INSTALL_DATA([template])
+
+doc-install:	template-install
+
+#page
+## ------------------------------------------------------------
+## Test rules.
+## ------------------------------------------------------------
+
+testdir		= $(top_srcdir)/tests
+test_FILES	= $(wildcard $(testdir)/*.test)
+test_TARGETS	= test-all
+
+test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
+test_ENV	+= builddir=$(builddir) top_srcdir=$(top_srcdir)
+test_CMD	= $(test_ENV) /bin/bash
+
+.PHONY: test-all test-all-verbose
+
+test-all:
+ifneq ($(strip $(test_FILES)),)
+	@$(foreach f, $(test_FILES), \
+	top_srcdir=$(top_srcdir); $(test_CMD) $(f);)
+endif
+
+test-all-verbose:
+ifneq ($(strip $(test_FILES)),)
+	@$(foreach f, $(test_FILES), top_srcdir=$(top_srcdir); \
+	TESTSUCCESS='yes' TESTSTART='yes' $(test_CMD) $(f);)
+endif
+
+#page
+## ------------------------------------------------------------
+## Update targets.
+## ------------------------------------------------------------
+
+.PHONY: update-infrastructure
+
+update-infrastructure: libmbfl.sh mbflpp.sh
+	$(CP) $(^) $(top_srcdir)/infrastructure/
+
+
+### end of file
+# Local Variables:
+# mode: makefile
+# End:

@@ -1,0 +1,10 @@
+Identifier: mbfl
+Version: 1.1.19
+Creator: Marco Maggi
+Title: Marco Bash Functions Library
+License: GNU General Public License
+URL: http://gna.org/projects/mbfl
+Description: library of bash functions
+
+ MBFL is a library of GNU Bash functions.
+

@@ -1,0 +1,12 @@
+	       Marco's BASH Functions Library
+	       ==============================
+
+			 Known Bugs
+			 ----------
+
+* The signal module is not guaranteed to be working.
+
+### end of file
+# Local Variables:
+# mode: text
+# End:
