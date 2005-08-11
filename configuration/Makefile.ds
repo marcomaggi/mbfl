@@ -16,7 +16,7 @@ vpath	%.sh.m4		$(builddir)
 MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
 		$(BASH) $(top_srcdir)/infrastructure/mbflpp.sh		\
 		--include=$(top_srcdir)/macros				\
-		--include=$(library_BUILDDIR)				\
+		--include=$(modules_BUILDDIR)				\
 		--library=preprocessor.m4	 			\
 		--define=__PKGDATADIR__=$(pkgdatadir)			\
 		--define=__PACKAGE_NAME__=$(PACKAGE_NAME)		\
@@ -24,35 +24,45 @@ MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
 
 #PAGE
 ## ------------------------------------------------------------
-## Library rules.
+## Modules rules.
 ## ------------------------------------------------------------
 
 MODULES			= base encode file getopts message program signal \
 			  string dialog main variable system
+
+modules_SRCDIR		= $(top_srcdir)/modules
+DS_BUILDDIR(modules)
+
+modules_SOURCES		= $(foreach m, $(MODULES), $(modules_SRCDIR)/$(m).sh.m4)
+modules_TARGETS		= $(call ds-replace-dir, $(modules_BUILDDIR)/, \
+				$(modules_SOURCES:.sh.m4=.sh))
+
+modules_CLEANFILES	= $(modules_TARGETS)
+modules_REALCLEANFILES	= $(modules_CLEANFILES)
+
+DS_SECTION_NO_INSTALL(modules, library)
+
+$(modules_TARGETS): $(modules_BUILDDIR)/%.sh: $(modules_SRCDIR)/%.sh.m4 preprocessor.m4
+	$(MBFLPP) <$(<) >$(@)
+
+#page
+## ------------------------------------------------------------
+## Library rules.
+## ------------------------------------------------------------
+
 LIBNAME			= libmbfl.sh
 LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
 
-library_SRCDIR		= $(top_srcdir)/modules
-DS_BUILDDIR(library)
-
-library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
-library_SOURCES		= $(addprefix $(library_BUILDDIR)/, \
-				$(foreach m, $(MODULES), $(m).sh))
 library_TARGETS		= $(LIBNAME)
 library_INSTLST		= $(library_TARGETS) $(LIBRARIES)
 library_INSTDIR		= $(pkgdatadir)
 
-library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES) $(library_BUILDDIR)
+library_CLEANFILES	= $(library_TARGETS)
 library_REALCLEANFILES	= $(library_CLEANFILES)
 
 DS_SECTION(library, bin, DATA)
 
-$(library_SOURCES): $(library_BUILDDIR)
-
-$(library_SOURCES): $(library_BUILDDIR)/%.sh: $(library_SRCDIR)/%.sh.m4 preprocessor.m4
-	$(MBFLPP) <$(<) >$(@)
-
-$(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(library_SOURCES)
+$(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
 	$(MBFLPP) --show-program --preserve-comments <$(<) >$(@)
 
 #page

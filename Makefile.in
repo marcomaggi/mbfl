@@ -162,7 +162,7 @@ vpath	%.sh.m4		$(builddir)
 MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
 		$(BASH) $(top_srcdir)/infrastructure/mbflpp.sh		\
 		--include=$(top_srcdir)/macros				\
-		--include=$(library_BUILDDIR)				\
+		--include=$(modules_BUILDDIR)				\
 		--library=preprocessor.m4	 			\
 		--define=__PKGDATADIR__=$(pkgdatadir)			\
 		--define=__PACKAGE_NAME__=$(PACKAGE_NAME)		\
@@ -170,29 +170,62 @@ MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
 
 #PAGE
 ## ------------------------------------------------------------
-## Library rules.
+## Modules rules.
 ## ------------------------------------------------------------
 
 MODULES			= base encode file getopts message program signal \
 			  string dialog main variable system
+
+modules_SRCDIR		= $(top_srcdir)/modules
+modules_BUILDDIR		= $(builddir)/modules.d
+$(shell test -d $(modules_BUILDDIR) || $(MKDIR) $(modules_BUILDDIR))
+
+
+modules_SOURCES		= $(foreach m, $(MODULES), $(modules_SRCDIR)/$(m).sh.m4)
+modules_TARGETS		= $(call ds-replace-dir, $(modules_BUILDDIR)/, \
+				$(modules_SOURCES:.sh.m4=.sh))
+
+modules_CLEANFILES	= $(modules_TARGETS)
+modules_REALCLEANFILES	= $(modules_CLEANFILES)
+
+
+.PHONY: $(addprefix modules-, all clean realclean)
+
+modules-all: $(modules_TARGETS)
+modules-clean:
+ifdef modules_CLEANFILES
+	-@$(RM) $(modules_CLEANFILES)
+else
+	@echo nothing to clean for modules
+endif
+modules-realclean:
+ifdef modules_REALCLEANFILES
+	-@$(RM) $(modules_REALCLEANFILES)
+else
+	@echo nothing to realclean for modules
+endif
+
+library:		modules-all
+library-clean:	modules-clean
+library-realclean:	modules-realclean
+
+
+$(modules_TARGETS): $(modules_BUILDDIR)/%.sh: $(modules_SRCDIR)/%.sh.m4 preprocessor.m4
+	$(MBFLPP) <$(<) >$(@)
+
+#page
+## ------------------------------------------------------------
+## Library rules.
+## ------------------------------------------------------------
+
 LIBNAME			= libmbfl.sh
 LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
 
-library_SRCDIR		= $(top_srcdir)/modules
-library_BUILDDIR		= $(builddir)/library.d
-
-$(library_BUILDDIR):
-	@if test ! -d $(@) ; then $(MKDIR) $(@) ; fi
-
-
-library_MODULES		= $(foreach m, $(MODULES), $(m).sh.m4)
-library_SOURCES		= $(addprefix $(library_BUILDDIR)/, \
-				$(foreach m, $(MODULES), $(m).sh))
 library_TARGETS		= $(LIBNAME)
 library_INSTLST		= $(library_TARGETS) $(LIBRARIES)
 library_INSTDIR		= $(pkgdatadir)
 
-library_CLEANFILES	= $(library_TARGETS) $(library_SOURCES) $(library_BUILDDIR)
+library_CLEANFILES	= $(library_TARGETS)
 library_REALCLEANFILES	= $(library_CLEANFILES)
 
 
@@ -230,12 +263,7 @@ bin-realclean:	library-realclean
 bin-install:	library-install
 
 
-$(library_SOURCES): $(library_BUILDDIR)
-
-$(library_SOURCES): $(library_BUILDDIR)/%.sh: $(library_SRCDIR)/%.sh.m4 preprocessor.m4
-	$(MBFLPP) <$(<) >$(@)
-
-$(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(library_SOURCES)
+$(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
 	$(MBFLPP) --show-program --preserve-comments <$(<) >$(@)
 
 #page
@@ -452,7 +480,9 @@ doc-install:	doc_generic-install
 ## ------------------------------------------------------------
 
 doc_texinfo_SRCDIR	= $(top_srcdir)/./doc
-doc_texinfo_BUILDDIR	= $(top_builddir)/doc
+doc_texinfo_BUILDDIR		= $(builddir)/doc_texinfo.d
+$(shell test -d $(doc_texinfo_BUILDDIR) || $(MKDIR) $(doc_texinfo_BUILDDIR))
+
 doc_texinfo_SOURCES	= $(wildcard $(doc_texinfo_SRCDIR)/*.texi)
 
 vpath	%.texi		$(doc_texinfo_SRCDIR)
@@ -462,7 +492,7 @@ DS_TEXI_FLAGS		= -I $(doc_texinfo_SRCDIR) -I $(builddir) -I $(doc_texinfo_BUILDD
 DS_TEXI2INFO_FLAGS	= $(DS_TEXI_FLAGS)
 DS_TEXI2HTML_FLAGS	= $(DS_TEXI_FLAGS) --html --no-split
 
-doc_texinfo_PREREQ	= $(doc_texinfo_BUILDDIR) $(doc_texinfo_BUILDDIR)/version.texiinc
+doc_texinfo_PREREQ	= $(doc_texinfo_BUILDDIR)/version.texiinc
 
 # HTML format.
 
@@ -554,10 +584,6 @@ doc-realclean:	doc_texi2info-realclean
 doc-install:	doc_texi2info-install
 
 
-
-
-$(doc_texinfo_BUILDDIR):
-	$(MKDIR) $(@)
 
 $(doc_texinfo_BUILDDIR)/%.info: $(doc_texinfo_SRCDIR)/%.texi $(doc_texinfo_PREREQ)
 	$(MAKEINFO) $(DS_TEXI2INFO_FLAGS) $(<) -o $(@)
