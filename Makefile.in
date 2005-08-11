@@ -245,7 +245,7 @@ else
 	@echo nothing to realclean for library
 endif
 
-library-install:
+library-install: library-install-sub
 
 	@echo "Installing library files... "
 ifneq	(,$(library_INSTLST))
@@ -256,6 +256,8 @@ else
 	$(warning *** empty install list)
 endif
 
+
+library-install-sub:
 
 bin:		library-all
 bin-clean:	library-clean
@@ -271,32 +273,51 @@ $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
 ## Script rules.
 ## ------------------------------------------------------------
 
-libexec_TARGETS		= mbflpp.sh
-libexec_INSTLST		= mbfl-config mbflpp.sh
-libexec_INSTDIR		= $(pkglibexecdir)
+script_TARGETS		= mbflpp.sh
+script_INSTLST		= mbfl-config mbflpp.sh
+script_INSTDIR		= $(pkglibexecdir)
 
-libexec_CLEANFILES	= $(libexec_TARGETS)
-libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
+script_CLEANFILES	= $(script_TARGETS)
+script_REALCLEANFILES	= $(script_CLEANFILES)
 
-.PHONY: script-all script-clean script-realclean script-install
 
-script-all: $(libexec_TARGETS)
+.PHONY: $(addprefix script-, all clean realclean install)
+
+script-all: $(script_TARGETS)
 script-clean:
-	-$(RM) $(libexec_CLEANFILES)
+ifdef script_CLEANFILES
+	-@$(RM) $(script_CLEANFILES)
+else
+	@echo nothing to clean for script
+endif
 script-realclean:
-	-$(RM) $(libexec_REALCLEANFILES)
+ifdef script_REALCLEANFILES
+	-@$(RM) $(script_REALCLEANFILES)
+else
+	@echo nothing to realclean for script
+endif
 
-script-install:
+script-install: script-install-sub
 
-	@echo -en "Installing libexec files... "
-ifneq	(,$(libexec_INSTLST))
-	@$(INSTALL_DIR) $(INSTALL_ROOT)$(libexec_INSTDIR)
-	@$(INSTALL_BIN) $(libexec_INSTLST) $(INSTALL_ROOT)$(libexec_INSTDIR)
+	@echo -en "Installing script files... "
+ifneq	(,$(script_INSTLST))
+	@$(INSTALL_DIR) $(INSTALL_ROOT)$(script_INSTDIR)
+	@$(INSTALL_BIN) $(script_INSTLST) $(INSTALL_ROOT)$(script_INSTDIR)
 	@echo "done"
 else
 	$(warning *** empty install list)
 endif
 
+
+script-install-sub:
+
+bin:		script-all
+bin-clean:	script-clean
+bin-realclean:	script-realclean
+bin-install:	script-install
+
+
+script-install-sub:
 	@echo -en "Installing directory $(bindir)... "
 	@$(INSTALL_DIR) $(INSTALL_ROOT)$(bindir)
 	@echo "done"
@@ -309,11 +330,6 @@ endif
 mbflpp.sh: $(top_srcdir)/scripts/mbflpp.sh
 	$(MBFLPP) --preserve-comments <$(<) >$(@)
 
-bin:		script-all
-bin-clean:	script-clean
-bin-realclean:	script-realclean
-bin-install:	script-install
-
 #page
 ## ------------------------------------------------------------
 ## Preprocessor macros rules.
@@ -322,9 +338,24 @@ bin-install:	script-install
 macros_INSTLST		= $(top_srcdir)/macros/preprocessor.m4
 macros_INSTDIR		= $(pkgdatadir)
 
-.PHONY: macros-install
 
-macros-install:
+.PHONY: $(addprefix macros-, all clean realclean install)
+
+macros-all: $(macros_TARGETS)
+macros-clean:
+ifdef macros_CLEANFILES
+	-@$(RM) $(macros_CLEANFILES)
+else
+	@echo nothing to clean for macros
+endif
+macros-realclean:
+ifdef macros_REALCLEANFILES
+	-@$(RM) $(macros_REALCLEANFILES)
+else
+	@echo nothing to realclean for macros
+endif
+
+macros-install: macros-install-sub
 
 	@echo "Installing macros files... "
 ifneq	(,$(macros_INSTLST))
@@ -336,7 +367,13 @@ else
 endif
 
 
+macros-install-sub:
+
+bin:		macros-all
+bin-clean:	macros-clean
+bin-realclean:	macros-realclean
 bin-install:	macros-install
+
 
 #PAGE
 ## ------------------------------------------------------------
@@ -346,9 +383,24 @@ bin-install:	macros-install
 template_INSTLST	= $(top_srcdir)/examples/template.sh
 template_INSTDIR	= $(pkgexampledir)
 
-.PHONY: template-install
 
-template-install:
+.PHONY: $(addprefix template-, all clean realclean install)
+
+template-all: $(template_TARGETS)
+template-clean:
+ifdef template_CLEANFILES
+	-@$(RM) $(template_CLEANFILES)
+else
+	@echo nothing to clean for template
+endif
+template-realclean:
+ifdef template_REALCLEANFILES
+	-@$(RM) $(template_REALCLEANFILES)
+else
+	@echo nothing to realclean for template
+endif
+
+template-install: template-install-sub
 
 	@echo "Installing template files... "
 ifneq	(,$(template_INSTLST))
@@ -360,7 +412,13 @@ else
 endif
 
 
+template-install-sub:
+
+doc:		template-all
+doc-clean:	template-clean
+doc-realclean:	template-realclean
 doc-install:	template-install
+
 
 #page
 ## ------------------------------------------------------------
@@ -456,7 +514,7 @@ else
 	@echo nothing to realclean for doc_generic
 endif
 
-doc_generic-install:
+doc_generic-install: doc_generic-install-sub
 
 	@echo "Installing doc_generic files... "
 ifneq	(,$(doc_generic_INSTLST))
@@ -467,6 +525,8 @@ else
 	$(warning *** empty install list)
 endif
 
+
+doc_generic-install-sub:
 
 doc:		doc_generic-all
 doc-clean:	doc_generic-clean
@@ -521,7 +581,7 @@ else
 	@echo nothing to realclean for doc_texi2html
 endif
 
-doc_texi2html-install:
+doc_texi2html-install: doc_texi2html-install-sub
 
 	@echo "Installing doc_texi2html files... "
 ifneq	(,$(doc_texi2html_INSTLST))
@@ -532,6 +592,8 @@ else
 	$(warning *** empty install list)
 endif
 
+
+doc_texi2html-install-sub:
 
 doc:		doc_texi2html-all
 doc-clean:	doc_texi2html-clean
@@ -566,7 +628,7 @@ else
 	@echo nothing to realclean for doc_texi2info
 endif
 
-doc_texi2info-install:
+doc_texi2info-install: doc_texi2info-install-sub
 
 	@echo "Installing doc_texi2info files... "
 ifneq	(,$(doc_texi2info_INSTLST))
@@ -577,6 +639,8 @@ else
 	$(warning *** empty install list)
 endif
 
+
+doc_texi2info-install-sub:
 
 doc:		doc_texi2info-all
 doc-clean:	doc_texi2info-clean

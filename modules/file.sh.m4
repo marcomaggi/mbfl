@@ -811,6 +811,8 @@ function mbfl_file_read () {
 ## Compression functions.
 ## ------------------------------------------------------------
 
+mbfl_p_file_compressor='gzip'
+
 function mbfl_file_enable_compress () {
     mbfl_declare_program gzip
     mbfl_declare_program bzip2

@@ -55,10 +55,9 @@ Documentation License''.
 @ifinfo
 @dircategory Development
 @direntry
-* MBFL: (MBFL).                 Marco's BASH Functions Library. 
+* MBFL: (mbfl).                 Marco's BASH Functions Library. 
 @end direntry
 @end ifinfo
-
 
 @c ------------------------------------------------------------
 @ifnottex
@@ -90,6 +89,7 @@ Documentation License''.
 * Getopts::                     Parsing command line options.
 * Message::                     Printing messages to the console.
 * Program::                     Using external programs.
+* Interfaces::                  Interfaces to external programs.
 * Signal::                      Catching signals.
 * String::                      Manipulating strings.
 * Dialog::                      Interacting with the user.
@@ -115,7 +115,7 @@ Indexes
 
 @c ------------------------------------------------------------
 @node Overview
-@unnumbered Overview of the library
+@chapter Overview of the library
 
 
 @noindent
@@ -145,7 +145,7 @@ true for the options parsing module.
 
 
 
-@unnumberedsec Using the library
+@section Using the library
 
 @noindent
 The best way to use the library is to include at runtime the library
@@ -237,7 +237,7 @@ At this point, though, it is better to use the @mbfl{} preprocessor
 (@ref{Preprocessor} for details).
 
 
-@unnumberedsec Notes
+@section Notes
 
 
 @itemize
@@ -276,12 +276,12 @@ at present, it works.
 
 @c ------------------------------------------------------------
 @node Preprocessor
-@unnumbered Using the script preprocessor
+@chapter Using the script preprocessor
 
 
 @c ------------------------------------------------------------
 @node Service Variables
-@unnumbered Required user defined variables
+@chapter Required user defined variables
 
 
 @noindent
@@ -326,7 +326,7 @@ used).
 @end defvar
 
 
-@unnumberedsec Example
+@section Example
 
 @noindent
 The following example shows how to declare the variables.
@@ -344,7 +344,7 @@ script_DESCRIPTION='Does this and that.'
 
 @c ------------------------------------------------------------
 @node Base
-@unnumbered Some base functions
+@chapter Some base functions
 
 
 
@@ -366,7 +366,7 @@ read -d $'\x00'
 
 @c ------------------------------------------------------------
 @node Encoding
-@unnumbered Encoding and decoding strings
+@chapter Encoding and decoding strings
 
 
 @noindent
@@ -401,7 +401,7 @@ mbfl_decode_hex 414243
 
 @c ------------------------------------------------------------
 @node File
-@unnumbered Manipulating files and pathnames
+@chapter Manipulating files and pathnames
 
 
 @menu
@@ -415,7 +415,7 @@ mbfl_decode_hex 414243
 
 @c ------------------------------------------------------------
 @node File Names
-@unnumberedsec File names
+@section File names
 
 
 @menu
@@ -427,7 +427,7 @@ mbfl_decode_hex 414243
 
 @c ------------------------------------------------------------
 @node File Name Parts
-@unnumberedsubsec Splitting a file name into its components
+@subsection Splitting a file name into its components
 
 
 
@@ -490,7 +490,7 @@ function removes it and prints the result on stdout.
 
 @c ------------------------------------------------------------
 @node File Name Path
-@unnumberedsubsec Handling relative pathnames
+@subsection Handling relative pathnames
 
 
 @deffn Function mbfl_file_normalise @var{pathname} ?@var{prefix}?
@@ -549,7 +549,7 @@ Returns true if @var{pathname} is a file according to
 
 @c ------------------------------------------------------------
 @node File Name System
-@unnumberedsubsec Finding pathnames on the system
+@subsection Finding pathnames on the system
 
 
 @deffn Function mbfl_file_find_tmpdir ?@var{PATHNAME}?
@@ -567,7 +567,7 @@ otherwise.
 
 @c ------------------------------------------------------------
 @node File Commands
-@unnumberedsec File Commands
+@section File Commands
 
 
 @menu
@@ -585,7 +585,7 @@ otherwise.
 
 @c ------------------------------------------------------------
 @node File Commands Listing
-@unnumberedsubsec Retrieving informations
+@subsection Retrieving informations
 
 
 @deffn Function mbfl_file_enable_listing
@@ -624,7 +624,7 @@ readlink -fn $@var{pathname}
 
 @c ------------------------------------------------------------
 @node File Commands Mkdir
-@unnumberedsubsec Creating directories
+@subsection Creating directories
 
 
 @deffn Function mbfl_file_enable_make_directory
@@ -651,7 +651,7 @@ executed.
 
 @c ------------------------------------------------------------
 @node File Commands Copy
-@unnumberedsubsec Copying files
+@subsection Copying files
 
 
 @deffn Function mbfl_file_enable_copy
@@ -682,7 +682,7 @@ generated and the return value is 1. No test is done upon @var{target}.
 
 @c ------------------------------------------------------------
 @node File Commands move
-@unnumberedsubsec Moving files
+@subsection Moving files
 
 
 @deffn Function mbfl_file_enable_move
@@ -701,7 +701,7 @@ generated and the return value is 1. No test is done upon @var{target}.
 
 @c ------------------------------------------------------------
 @node File Commands Removing
-@unnumberedsubsec Removing files and directories
+@subsection Removing files and directories
 
 
 @noindent
@@ -761,7 +761,7 @@ the directory is not empty.
 
 @c ------------------------------------------------------------
 @node File Commands Symlink
-@unnumberedsubsec Creating symbolic links
+@subsection Creating symbolic links
 
 
 @deffn Function mbfl_file_enable_symlink
@@ -777,7 +777,7 @@ Creates a symbolic link.
 
 @c ------------------------------------------------------------
 @node File Commands Tar
-@unnumberedsubsec Manipulating tar archives
+@subsection Manipulating tar archives
 
 
 @noindent
@@ -845,7 +845,7 @@ returns 1.
 
 @c ------------------------------------------------------------
 @node File Commands Perms
-@unnumberedsubsec Set/get file permissions
+@subsection Set/get file permissions
 
 
 @deffn Function mbfl_file_enable_permissions
@@ -872,7 +872,7 @@ form accepted by @command{chmod}.
 
 @c ------------------------------------------------------------
 @node File Commands Compress
-@unnumberedsubsec Compressing files
+@subsection Compressing files
 
 
 @deffn Function mbfl_file_enable_compress
@@ -896,7 +896,7 @@ used and are handed to the compressor unchanged.
 
 @c ------------------------------------------------------------
 @node File Testing
-@unnumberedsec Testing file existence and the like
+@section Testing file existence and the like
 
 
 @noindent
@@ -905,7 +905,7 @@ be printed with @function{mbfl_message_error} if the test fails; the
 argument value must be @code{print_error}.
 
 
-@unnumberedsubsec File functions
+@subsection File functions
 
 @deffn Function mbfl_file_exists @var{pathname}
 Returns true if @var{pathname} exists.
@@ -931,7 +931,7 @@ executable.
 @end deffn
 
 
-@unnumberedsubsec Directory functions
+@subsection Directory functions
 
 @deffn Function mbfl_file_is_directory @var{directory} ?@var{PRINT_ERROR}?
 Returns true if @var{directory} is not the empty string and is a
@@ -961,7 +961,7 @@ messages using @var{description} to refere to the directory.
 
 
 
-@unnumberedsubsec Symbolic link functions
+@subsection Symbolic link functions
 
 @deffn Function mbfl_file_is_symlink @var{pathname} ?@var{PRINT_ERROR}?
 Returns true if @var{pathname} is not the empty string and is a symbolic
@@ -969,7 +969,7 @@ link.
 @end deffn
 
 
-@unnumberedsubsec Generic pathname functions
+@subsection Generic pathname functions
 
 @deffn Function mbfl_file_pathname_is_readable @var{pathname} ?@var{PRINT_ERROR}?
 Returns true if @var{pathname} is not the empty string and is readable.
@@ -987,7 +987,7 @@ executable.
 
 @c ------------------------------------------------------------
 @node File Read and Write
-@unnumberedsec Reading and writing files with privileges
+@section Reading and writing files with privileges
 
 
 @noindent
@@ -1030,7 +1030,7 @@ Reads and prints @strong{all} the contents of @var{filename}.
 
 @c ------------------------------------------------------------
 @node File Misc
-@unnumberedsec Miscellaneous commands
+@section Miscellaneous commands
 
 
 @deffn Function mbfl_change_directory @var{dirname} ?...?
@@ -1053,7 +1053,7 @@ if @code{-} is used as argument: the text goes to the standard output.
 
 @c ------------------------------------------------------------
 @node Getopts
-@unnumbered Parsing command line options
+@chapter Parsing command line options
 
 
 @noindent
@@ -1087,7 +1087,7 @@ Requires the message module (@ref{Message} for details).
 
 @c ------------------------------------------------------------
 @node Getopts Arguments
-@unnumberedsec Arguments
+@section Arguments
 
 
 @noindent
@@ -1134,7 +1134,7 @@ done
 @end example
 @c ------------------------------------------------------------
 @node Getopts Usage
-@unnumberedsec Using the module
+@section Using the module
 
 
 @noindent
@@ -1150,7 +1150,7 @@ variable and invoke a script function for each option on the command
 line.
 
 
-@unnumberedsubsec Examples
+@subsection Examples
 
 
 @noindent
@@ -1225,7 +1225,7 @@ $ script.sh --beta=456
 
 @c ------------------------------------------------------------
 @node Getopts Options
-@unnumberedsec Predefined options
+@section Predefined options
 
 
 @noindent
@@ -1426,7 +1426,7 @@ Restore the state of the test option to the one before the invocation to
 
 @c ------------------------------------------------------------
 @node Getopts Interface
-@unnumberedsec Interface functions
+@section Interface functions
 
 
 @noindent
@@ -1597,7 +1597,7 @@ useful to retrieve the option for @bash{} programmable completion.
 
 @c ------------------------------------------------------------
 @node Getopts Values
-@unnumberedsec Querying Options
+@section Querying Options
 
 
 @noindent
@@ -1645,7 +1645,7 @@ occurrences of @code{--interactive}.
 
 @c ------------------------------------------------------------
 @node Message
-@unnumbered Printing messages to the console
+@chapter Printing messages to the console
 
 
 @noindent
@@ -1751,7 +1751,7 @@ allowed in the message.
 
 @c ------------------------------------------------------------
 @node Program
-@unnumbered Using external programs
+@chapter Using external programs
 
 
 @noindent
@@ -1770,7 +1770,7 @@ one are declared.
 
 @c ------------------------------------------------------------
 @node Program Testing
-@unnumberedsec Testing a script and running programs
+@section Testing a script and running programs
 
 
 @noindent
@@ -1805,7 +1805,7 @@ Returns true if test execution is enabled, else returns false.
 
 @c ------------------------------------------------------------
 @node Program Checking
-@unnumberedsec Checking programs existence
+@section Checking programs existence
 
 
 @noindent
@@ -1836,7 +1836,7 @@ found.
 
 @c ------------------------------------------------------------
 @node Program Executing
-@unnumberedsec Executing a program
+@section Executing a program
 
 
 @noindent
@@ -1926,7 +1926,7 @@ library at start up, from the built in variable @code{BASH}.
 
 @c ------------------------------------------------------------
 @node Program Declaring
-@unnumberedsec Declaring the intention to use a program
+@section Declaring the intention to use a program
 
 
 @noindent
@@ -1995,8 +1995,69 @@ Terminates the script with exit code 20.
 
 
 @c ------------------------------------------------------------
+@node Interfaces
+@chapter Interfaces to external programs
+
+
+@menu
+* Interfaces At::               Scheduling jobs for later execution.
+@end menu
+
+
+@c ------------------------------------------------------------
+@node Interfaces At
+@section Scheduling jobs for later execution
+
+
+@noindent
+This section documents the interface to the @command{atd} daemon; you
+may want to read the @command{at}(1) manual page.
+
+
+@deffn Function mbfl_at_enable
+Declares the intention to use the @command{at} interface. The declared
+programs are: @command{at}, @command{atq}, @command{atrm}.
+@end deffn
+
+
+@deffn Function mbfl_at_validate_queue_letter @var{letter}
+Returns true if @var{letter} is a valid queue identifier, else returns
+false.
+@end deffn
+
+
+@deffn Function mbfl_at_select_queue @var{letter}
+Selects and register in an internal state a queue identifier; invokes
+@function{mbfl_at_validate_queue_letter} to validate the selection.
+@end deffn
+
+
+@deffn Function mbfl_at_schedule @var{script} @var{time}
+Schedules @var{script} in the currently selected queue; the script will
+be executed at @var{time}. @var{script} must be a string: it is sent
+unchanged to the @command{at} command. @var{time} is the argument to the
+@command{at} command, see the manual page for its description.
+@end deffn
+
+
+@deffn Function mbfl_at_queue_print_identifiers
+Prints all the job identifiers in the currently selected queue.
+@end deffn
+
+
+@deffn Function mbfl_at_drop @var{identifier}
+Removes a job from the currently selected queue.
+@end deffn
+
+
+@deffn Function mbfl_at_queue_clean
+Removes all the jobs from the currently selected queue.
+@end deffn
+
+
+@c ------------------------------------------------------------
 @node Signal
-@unnumbered Catching signals
+@chapter Catching signals
 
 
 @noindent
@@ -2026,7 +2087,7 @@ useful to debug a script.
 
 @c ------------------------------------------------------------
 @node String
-@unnumbered Manipulating strings
+@chapter Manipulating strings
 
 
 @menu
@@ -2041,7 +2102,7 @@ useful to debug a script.
 
 @c ------------------------------------------------------------
 @node String Quote
-@unnumberedsec Quoted characters
+@section Quoted characters
 
 
 @deffn Function mbfl_string_is_quoted_char @var{string} @var{position}
@@ -2068,7 +2129,7 @@ backslash character, @code{\}, are substituted with a quoted backslash,
 
 @c ------------------------------------------------------------
 @node String Inspection
-@unnumberedsec Inspecting a string
+@section Inspecting a string
 
 
 @deffn Function mbfl_string_index @var{string} @var{index}
@@ -2123,7 +2184,7 @@ the return value is false, always.
 
 @c ------------------------------------------------------------
 @node String Splitting
-@unnumberedsec Splitting a string
+@section Splitting a string
 
 
 
@@ -2174,7 +2235,7 @@ declared @code{local} in the scope of the caller.
 
 @c ------------------------------------------------------------
 @node String Case
-@unnumberedsec Converting between upper and lower case
+@section Converting between upper and lower case
 
 
 @deffn Function mbfl_string_toupper @var{string}
@@ -2191,7 +2252,7 @@ Outputs @var{string} with all the occurrencies of upper case
 
 @c ------------------------------------------------------------
 @node String Class
-@unnumberedsec Matching a string with a class
+@section Matching a string with a class
 
 
 @deffn Function mbfl-string-is-alpha-char @var{char}
@@ -2243,7 +2304,7 @@ returns true when acting upon the first character of @var{string}.
 
 @c ------------------------------------------------------------
 @node String Misc
-@unnumberedsec Miscellaneous functions
+@section Miscellaneous functions
 
 
 
@@ -2276,7 +2337,7 @@ If the initial value of the offset corresponds to a char equal to
 
 @c ------------------------------------------------------------
 @node Dialog
-@unnumbered Interacting with the user
+@chapter Interacting with the user
 
 
 @deffn Function mbfl_dialog_yes_or_no @var{string} ?@var{progname}?
@@ -2300,7 +2361,7 @@ password from the terminal. Prints the password.
 
 @c ------------------------------------------------------------
 @node Variables
-@unnumbered Manipulating variables
+@chapter Manipulating variables
 
 
 @menu
@@ -2310,7 +2371,7 @@ password from the terminal. Prints the password.
 
 @c ------------------------------------------------------------
 @node Variables Arrays
-@unnumberedsec Manipulating arrays
+@section Manipulating arrays
 
 
 @deffn Function mbfl_variable_find_in_array @var{element}
@@ -2331,7 +2392,7 @@ anything.
 
 @c ------------------------------------------------------------
 @node Variables Colon
-@unnumberedsec Manipulating colon variables
+@section Manipulating colon variables
 
 
 @deffn Function mbfl_variable_colon_variable_to_array @var{varname}
@@ -2355,7 +2416,7 @@ removes duplicates.
 
 @c ------------------------------------------------------------
 @node System
-@unnumbered Interfacing with the system
+@chapter Interfacing with the system
 
 
 @menu
@@ -2371,7 +2432,7 @@ Declares the intention to use the programs required by this module.
 
 @c ------------------------------------------------------------
 @node System User Id
-@unnumberedsec Converting user identifiers
+@section Converting user identifiers
 
 
 @deffn Function mbfl_system_numerical_user_id_to_name @var{id}
@@ -2388,7 +2449,7 @@ in the @file{/etc/passwd} file.
 
 @c ------------------------------------------------------------
 @node System File Perms
-@unnumberedsec Converting file permissions
+@section Converting file permissions
 
 
 @deffn Function mbfl_system_symbolic_to_octal_permissions @var{mode}
@@ -2405,7 +2466,7 @@ chars.
 
 @c ------------------------------------------------------------
 @node Main
-@unnumbered Main function
+@chapter Main function
 
 
 @noindent
@@ -2424,7 +2485,7 @@ functions.
 
 @c ------------------------------------------------------------
 @node Main Function
-@unnumberedsec Driving script execution
+@section Driving script execution
 
 
 @deffn Function mbfl_main
@@ -2484,7 +2545,7 @@ Global variable that holds the name of the custom main script function.
 
 @c ------------------------------------------------------------
 @node Main Exit
-@unnumberedsec Declaring exit codes
+@section Declaring exit codes
 
 
 @noindent
@@ -2543,7 +2604,7 @@ Prints the code associated to @var{name}.
 
 @c ------------------------------------------------------------
 @node Testing
-@unnumbered Building test suites
+@chapter Building test suites
 
 
 @noindent
@@ -2577,7 +2638,7 @@ his taste.
 
 @c ------------------------------------------------------------
 @node Testing Intro
-@unnumberedsec A way to organise a test suite
+@section A way to organise a test suite
 
 
 @noindent
@@ -2657,7 +2718,7 @@ endif
 
 @c ------------------------------------------------------------
 @node Testing Config
-@unnumberedsec Configuring the package
+@section Configuring the package
 
 
 @deffn Function dotest-set-verbose
@@ -2710,7 +2771,7 @@ false.
 
 @c ------------------------------------------------------------
 @node Testing Running
-@unnumberedsec Running test functions
+@section Running test functions
 
 
 
@@ -2763,7 +2824,7 @@ invoking @code{dotest-unset-report-success}.
 
 @c ------------------------------------------------------------
 @node Testing Compare
-@unnumberedsec Validating results by comparing
+@section Validating results by comparing
 
 
 
@@ -2804,7 +2865,7 @@ dotest mytest-
 
 @c ------------------------------------------------------------
 @node Testing Output
-@unnumberedsec Validating results by output
+@section Validating results by output
 
 
 @deffn Function dotest-output ?@var{string}?
@@ -2841,7 +2902,7 @@ dotest mytest
 
 @c ------------------------------------------------------------
 @node Testing Messages
-@unnumberedsec Printing messages from test functions
+@section Printing messages from test functions
 
 
 @deffn Alias dotest-echo @var{string} ?...?
@@ -2853,7 +2914,7 @@ to make the message more visible.
 
 @c ------------------------------------------------------------
 @node Testing Files
-@unnumberedsec Handling files in tests
+@section Handling files in tests
 
 
 @noindent

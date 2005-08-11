@@ -70,23 +70,16 @@ $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
 ## Script rules.
 ## ------------------------------------------------------------
 
-libexec_TARGETS		= mbflpp.sh
-libexec_INSTLST		= mbfl-config mbflpp.sh
-libexec_INSTDIR		= $(pkglibexecdir)
+script_TARGETS		= mbflpp.sh
+script_INSTLST		= mbfl-config mbflpp.sh
+script_INSTDIR		= $(pkglibexecdir)
 
-libexec_CLEANFILES	= $(libexec_TARGETS)
-libexec_REALCLEANFILES	= $(libexec_CLEANFILES)
+script_CLEANFILES	= $(script_TARGETS)
+script_REALCLEANFILES	= $(script_CLEANFILES)
 
-.PHONY: script-all script-clean script-realclean script-install
+DS_SECTION(script, bin, BIN)
 
-script-all: $(libexec_TARGETS)
-script-clean:
-	-$(RM) $(libexec_CLEANFILES)
-script-realclean:
-	-$(RM) $(libexec_REALCLEANFILES)
-
-script-install:
-AM_INSTALL_BIN(libexec)
+script-install-sub:
 AM_INSTALL_DIR($(bindir))
 	cd $(INSTALL_ROOT)$(bindir) && \
 	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfl-config mbfl-config
@@ -96,11 +89,6 @@ AM_INSTALL_DIR($(bindir))
 mbflpp.sh: $(top_srcdir)/scripts/mbflpp.sh
 	$(MBFLPP) --preserve-comments <$(<) >$(@)
 
-bin:		script-all
-bin-clean:	script-clean
-bin-realclean:	script-realclean
-bin-install:	script-install
-
 #page
 ## ------------------------------------------------------------
 ## Preprocessor macros rules.
@@ -109,12 +97,7 @@ bin-install:	script-install
 macros_INSTLST		= $(top_srcdir)/macros/preprocessor.m4
 macros_INSTDIR		= $(pkgdatadir)
 
-.PHONY: macros-install
-
-macros-install:
-AM_INSTALL_DATA(macros)
-
-bin-install:	macros-install
+DS_SECTION(macros, bin, DATA)
 
 #PAGE
 ## ------------------------------------------------------------
@@ -124,12 +107,7 @@ bin-install:	macros-install
 template_INSTLST	= $(top_srcdir)/examples/template.sh
 template_INSTDIR	= $(pkgexampledir)
 
-.PHONY: template-install
-
-template-install:
-AM_INSTALL_DATA([template])
-
-doc-install:	template-install
+DS_SECTION(template, doc, DATA)
 
 #page
 ## ------------------------------------------------------------
