@@ -28,7 +28,7 @@ MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
 ## ------------------------------------------------------------
 
 MODULES			= base encode file getopts message program signal \
-			  string dialog main variable system
+			  string dialog main variable system interfaces
 
 modules_SRCDIR		= $(top_srcdir)/modules
 DS_BUILDDIR(modules)

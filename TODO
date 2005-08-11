@@ -4,8 +4,7 @@
 		   List Of Things To Do
 		   --------------------
 
-* program: test the compress interface
-* program: test the at interface
+* interface: test the at interface
 * file: tests for the move functions
 * file: tests for the copy functions
 * file: tests for the compress functions

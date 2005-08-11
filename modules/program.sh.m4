@@ -170,63 +170,6 @@ function mbfl_program_main_validate_programs () {
     mbfl_program_validate_declared || exit_because_program_not_found
 }
 
-#page
-## ------------------------------------------------------------
-## 'atd' interface.
-## ------------------------------------------------------------
-
-mbfl_p_at_queue_letter='a'
-
-function mbfl_at_enable () {
-    mbfl_declare_program at
-    mbfl_declare_program atq
-    mbfl_declare_program atrm
-}
-function mbfl_at_validate_queue_letter () {
-    mandatory_parameter(QUEUE, 1, queue letter)
-    test ${#QUEUE} -eq 1 && mbfl_string_is_alpha_char "${QUEUE}"
-}
-function mbfl_at_select_queue () {
-    mandatory_parameter(QUEUE, 1, queue letter)
-
-    if ! mbfl_at_validate_queue_letter "${QUEUE}" ; then
-        mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
-        return 1
-    fi
-    mbfl_p_at_queue_letter=${QUEUE}
-}
-function mbfl_at_schedule () {
-    mandatory_parameter(SCRIPT, 1, script)
-    mandatory_parameter(TIME, 2, time)
-    local QUEUE=${mbfl_p_at_queue_letter}
-    local AT=$(mbfl_program_found at)
-
-    printf %s "${SCRIPT}" | mbfl_program_exec "${AT}" -q "${QUEUE}" ${TIME}
-}
-function mbfl_at_queue_print_identifiers () {
-    local QUEUE=${mbfl_p_at_queue_letter}
-    local ATQ=$(mbfl_program_found atq)
-
-    mbfl_program_exec "${ATQ}" -q "${QUEUE}" | while read LINE ; do
-        set -- ${LINE}
-        printf %d "${1}"
-    done
-}
-function mbfl_at_drop () {
-    mandatory_parameter(ID, 1, script identifier)
-    local ATRM=$(mbfl_program_found atrm)
-
-    mbfl_program_exec "${ATRM}" "${ID}"
-}
-function mbfl_at_queue_clean () {
-    local QUEUE=${mbfl_p_at_queue_letter}
-    local item
-
-    for item in $(mbfl_at_queue_print_identifiers "${QUEUE}") ; do
-        mbfl_at_drop "${item}"
-    done
-}
-
 
 
 ### end of file
