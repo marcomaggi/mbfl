@@ -174,7 +174,7 @@ MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
 ## ------------------------------------------------------------
 
 MODULES			= base encode file getopts message program signal \
-			  string dialog main variable system
+			  string dialog main variable system interfaces
 
 modules_SRCDIR		= $(top_srcdir)/modules
 modules_BUILDDIR		= $(builddir)/modules.d
@@ -380,7 +380,7 @@ bin-install:	macros-install
 ## Template rules.
 ## ------------------------------------------------------------
 
-template_INSTLST	= $(top_srcdir)/examples/template.sh
+template_INSTLST	= $(call ds-files-from-dir, $(top_srcdir)/examples)
 template_INSTDIR	= $(pkgexampledir)
 
 

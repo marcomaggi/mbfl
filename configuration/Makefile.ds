@@ -104,7 +104,7 @@ DS_SECTION(macros, bin, DATA)
 ## Template rules.
 ## ------------------------------------------------------------
 
-template_INSTLST	= $(top_srcdir)/examples/template.sh
+template_INSTLST	= $(call ds-files-from-dir, $(top_srcdir)/examples)
 template_INSTDIR	= $(pkgexampledir)
 
 DS_SECTION(template, doc, DATA)

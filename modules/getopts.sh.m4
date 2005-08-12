@@ -531,31 +531,31 @@ function mbfl_wrong_num_args_range () {
 
 #PAGE
 function mbfl_argv_from_stdin () {
-    local file=
+    local item=
 
-
-    test $ARGC -eq 0 || {
-        while mbfl_read_maybe_null file ; do
-            ARGV[$ARGC]="${file}"
+    if test $ARGC -ne 0 ; then 
+        while mbfl_read_maybe_null item ; do
+            ARGV[${ARGC}]=${item}
             let ++ARGC
         done
-    }
+    fi
     return 0
 }
 function mbfl_argv_all_files () {
-    local i file
+    local i item
 
 
     for ((i=0; $i < $ARGC; ++i)) ; do
-	file=$(mbfl_file_normalise "${ARGV[$i]}")
-	if test ! -f "${file}" ; then
-	    mbfl_message_error "unexistent file '${file}'"
+	item=$(mbfl_file_normalise "${ARGV[$i]}")
+	if test ! -f "${item}" ; then
+	    mbfl_message_error "unexistent file '${item}'"
 	    return 1
 	fi
-	ARGV[$i]="${file}"
+	ARGV[$i]=${item}
     done
     return 0
 }
+
 #page
 function mbfl_getopts_p_test_option () {
     test "${!1}" = "yes" && return 0
@@ -564,7 +564,7 @@ function mbfl_getopts_p_test_option () {
 function mbfl_getopts_print_long_switches () {
     for ((i=0; $i < ${#mbfl_getopts_LONGS[@]}; ++i)); do
         if test -n "${mbfl_getopts_LONGS[$i]}" ; then
-            echo -n "--${mbfl_getopts_LONGS[$i]}"
+            printf -- '--%s' "${mbfl_getopts_LONGS[$i]}"
         else
             continue
         fi

@@ -2011,7 +2011,20 @@ Terminates the script with exit code 20.
 
 @noindent
 This section documents the interface to the @command{atd} daemon; you
-may want to read the @command{at}(1) manual page.
+may want to read the @command{at}(1) manual page. The @command{at}
+service allows a user to schedule commands to be executed at a later
+time.
+
+This interface is suitable for scripts that define a unique simple
+policy to schedule commands; example: at each run they schedule a
+command in a fixed queue, to be executed at a fixed time in the
+future.
+
+This is good to implement the logic: if a condition does not happen
+before time @code{T}, then execute command @command{C}.
+
+
+@subsection Commands declaration
 
 
 @deffn Function mbfl_at_enable
@@ -2020,10 +2033,23 @@ programs are: @command{at}, @command{atq}, @command{atrm}.
 @end deffn
 
 
+@subsection Arguments validation
+
+
 @deffn Function mbfl_at_validate_queue_letter @var{letter}
 Returns true if @var{letter} is a valid queue identifier, else returns
 false.
 @end deffn
+
+
+@deffn Function mbfl_at_validate_selected_queue
+Returns true if the currently selected queue identifier is valid, else
+prints an error message and returns false. A false return code means
+that an internal error has corrupted the module state.
+@end deffn
+
+
+@subsection Commands scheduling
 
 
 @deffn Function mbfl_at_select_queue @var{letter}
@@ -2032,21 +2058,22 @@ Selects and register in an internal state a queue identifier; invokes
 @end deffn
 
 
-@deffn Function mbfl_at_schedule @var{script} @var{time}
-Schedules @var{script} in the currently selected queue; the script will
-be executed at @var{time}. @var{script} must be a string: it is sent
-unchanged to the @command{at} command. @var{time} is the argument to the
-@command{at} command, see the manual page for its description.
-@end deffn
+@deffn Function mbfl_at_schedule @var{command} @var{time}
+Schedules @var{command} in the currently selected queue; the script will
+be executed at @var{time}. If no error occurs: prints to stdout the
+identifier of the scheduled job; the identifier can be used as argument
+to @function{mbfl_at_drop}.
 
-
-@deffn Function mbfl_at_queue_print_identifiers
-Prints all the job identifiers in the currently selected queue.
+@var{command} must be a string representing the invocation of an
+external executable program: it is sent unchanged to the @command{at}
+command. @var{time} is the argument to the @command{at} command, see the
+manual page for its description.
 @end deffn
 
 
 @deffn Function mbfl_at_drop @var{identifier}
-Removes a job from the currently selected queue.
+Removes a job; the identifier of a job is unique in all the queues, so
+this function is not affected by the currently selected queue.
 @end deffn
 
 
@@ -2054,6 +2081,18 @@ Removes a job from the currently selected queue.
 Removes all the jobs from the currently selected queue.
 @end deffn
 
+
+@subsection Inspection
+
+
+@deffn Function mbfl_at_queue_print_identifiers
+Prints all the job identifiers in the currently selected queue.
+@end deffn
+
+
+@deffn Function mbfl_at_print_queue
+Prints the currently selected queue letter.
+@end deffn
 
 @c ------------------------------------------------------------
 @node Signal

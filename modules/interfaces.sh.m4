@@ -41,6 +41,12 @@ function mbfl_at_validate_queue_letter () {
     mandatory_parameter(QUEUE, 1, queue letter)
     test ${#QUEUE} -eq 1 && mbfl_string_is_alpha_char "${QUEUE}"
 }
+function mbfl_at_validate_selected_queue () {
+    if ! mbfl_at_check_queue_letter "${QUEUE}" ; then
+        mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
+        return 1
+    fi
+}
 function mbfl_at_select_queue () {
     mandatory_parameter(QUEUE, 1, queue letter)
 
@@ -56,7 +62,12 @@ function mbfl_at_schedule () {
     local QUEUE=${mbfl_p_at_queue_letter}
     local AT=$(mbfl_program_found at)
 
-    printf %s "${SCRIPT}" | mbfl_program_exec "${AT}" -q "${QUEUE}" ${TIME}
+    if ! printf %s "${SCRIPT}" | mbfl_program_exec "${AT}" -q ${QUEUE} ${TIME} 2>&1
+        then
+        mbfl_message_error "scheduling command execution '${SCRIPT}' at time '${TIME}'"
+        return 1
+    fi | { read ; read ; set -- ${REPLY}; printf %d "$2"; }
+    return 0
 }
 function mbfl_at_queue_print_identifiers () {
     local QUEUE=${mbfl_p_at_queue_letter}
@@ -64,8 +75,12 @@ function mbfl_at_queue_print_identifiers () {
 
     mbfl_program_exec "${ATQ}" -q "${QUEUE}" | while read LINE ; do
         set -- ${LINE}
-        printf %d "${1}"
+        printf '%d ' "${1}"
     done
+}
+function mbfl_at_print_queue () {
+    local QUEUE=${mbfl_p_at_queue_letter}
+    printf '%c' "${QUEUE}"
 }
 function mbfl_at_drop () {
     mandatory_parameter(ID, 1, script identifier)
