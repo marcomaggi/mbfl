@@ -36,6 +36,7 @@ function mbfl_at_enable () {
     mbfl_declare_program at
     mbfl_declare_program atq
     mbfl_declare_program atrm
+    mbfl_declare_program sort
 }
 function mbfl_at_validate_queue_letter () {
     mandatory_parameter(QUEUE, 1, queue letter)
@@ -71,12 +72,26 @@ function mbfl_at_schedule () {
 }
 function mbfl_at_queue_print_identifiers () {
     local QUEUE=${mbfl_p_at_queue_letter}
-    local ATQ=$(mbfl_program_found atq)
 
-    mbfl_program_exec "${ATQ}" -q "${QUEUE}" | while read LINE ; do
+    mbfl_p_at_program_atq "${QUEUE}" | while read LINE ; do
         set -- ${LINE}
         printf '%d ' "${1}"
     done
+}
+function mbfl_at_queue_print_queues () {
+    local ATQ=$(mbfl_program_found atq)
+    local SORT=$(mbfl_program_found sort)
+
+    {
+        mbfl_program_exec "${ATQ}" | while read LINE ; do
+            set -- ${LINE}
+            printf '%c\n' "${4}"
+        done
+    } | mbfl_program_exec "${SORT}" -u
+}
+function mbfl_at_queue_print_jobs () {
+    local QUEUE=${mbfl_p_at_queue_letter}
+    mbfl_p_at_program_atq "${QUEUE}"
 }
 function mbfl_at_print_queue () {
     local QUEUE=${mbfl_p_at_queue_letter}
@@ -97,6 +112,11 @@ function mbfl_at_queue_clean () {
     done
 }
 
+function mbfl_p_at_program_atq () {
+    mandatory_parameter(QUEUE, 1, job queue)
+    local ATQ=$(mbfl_program_found atq)
+    mbfl_program_exec "${ATQ}" -q "${QUEUE}"
+}
 
 
 ### end of file

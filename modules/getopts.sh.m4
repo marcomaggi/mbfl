@@ -67,17 +67,14 @@ if test "${mbfl_INTERACTIVE}" != 'yes' ; then
 mbfl_message_DEFAULT_OPTIONS="
 \t--tmpdir=DIR
 \t\tselect a directory for temporary files
-\t-i
-\t--interactive
+\t-i --interactive
 \t\task before doing dangerous operations
-\t-f
-\t--force
+\t-f --force
 \t\tdo not ask before dangerous operations
 \t--encoded-args
 \t\tdecode arguments following this option
 \t\tfrom the hex format (example: 414243 -> ABC)
-\t-v
-\t--verbose
+\t-v --verbose
 \t\tverbose execution
 \t--silent
 \t\tsilent execution
@@ -105,13 +102,9 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\tprint version number and exit
 \t--license
 \t\tprint license informations and exit
-\t-h
-\t--help
-\t--usage
+\t-h --help --usage
 \t\tprint usage informations and exit
-\t-H
-\t--brief-help
-\t--brief-usage
+\t-H --brief-help --brief-usage
 \t\tprint usage informations and the list of script specific
 \t\toptions, then exit
 \t--print-options
@@ -163,6 +156,17 @@ function mbfl_declare_option () {
 
     # Creates the global option variable
     eval script_option_$(mbfl_string_toupper ${keyword})=\'"${default}"\'
+
+    # Process action option.
+    if mbfl_getopts_p_is_action_option "${keyword}" ; then
+        if test "${hasarg}" = 'noarg' ; then
+            if test "${default}" = 'yes' ; then
+                mbfl_getopts_p_process_action_option ${keyword}
+            fi
+        else
+            mbfl_message_error "action option must be with no argument '${keyword}'"
+        fi
+    fi
 }
 function mbfl_p_declare_option_test_length () {
     local value="${1}"
@@ -177,43 +181,10 @@ function mbfl_p_declare_option_test_length () {
 }
 
 #page
-function mbfl_getopts_p_process_script_option () {
-    mandatory_parameter(OPT, 1, option name)
-    optional_parameter(OPTARG, 2)
-    local i=0
-    local value=
-    local brief= long= hasarg= keyword= procedure= variable=
+## ------------------------------------------------------------
+## Parse and process options.
+## ------------------------------------------------------------
 
-
-    for ((i=0; $i < $mbfl_getopts_INDEX; ++i)); do
-        keyword="${mbfl_getopts_KEYWORDS[$i]}"
-        brief="${mbfl_getopts_BRIEFS[$i]}"
-        long="${mbfl_getopts_LONGS[$i]}"
-        hasarg="${mbfl_getopts_HASARG[$i]}"
-        if test \
-            \( -n "$OPT" \) -a \( \( -n "$brief" -a "$brief" = "$OPT" \) -o \
-                                \( -n "$long"  -a "$long"  = "$OPT" \) \)
-        then
-            if test "$hasarg" = "witharg"; then
-                if mbfl_option_encoded_args; then
-                    value=$(mbfl_decode_hex "${OPTARG}")
-                else
-                    value="$OPTARG"
-                fi
-            else
-                value="yes"
-            fi
-            
-            procedure=script_option_update_$(mbfl_string_tolower ${keyword})
-            variable=script_option_$(mbfl_string_toupper ${keyword})
-            eval $variable=\'"${value}"\'
-            mbfl_invoke_script_function $procedure
-            return 0
-        fi
-    done
-    return 1
-}
-#PAGE
 function mbfl_getopts_parse () {
     local p_OPT= p_OPTARG=
     local argument= i=0
@@ -247,6 +218,54 @@ function mbfl_getopts_parse () {
     mbfl_getopts_p_decode_hex
     return 0
 }
+
+function mbfl_getopts_p_process_script_option () {
+    mandatory_parameter(OPT, 1, option name)
+    optional_parameter(OPTARG, 2)
+    local i=0 value brief long hasarg keyword update_procedure state_variable
+
+
+    for ((i=0; $i < $mbfl_getopts_INDEX; ++i)); do
+        keyword="${mbfl_getopts_KEYWORDS[$i]}"
+        brief="${mbfl_getopts_BRIEFS[$i]}"
+        long="${mbfl_getopts_LONGS[$i]}"
+        hasarg="${mbfl_getopts_HASARG[$i]}"
+        if test \
+            \( -n "$OPT" \) -a \( \( -n "$brief" -a "$brief" = "$OPT" \) -o \
+                                  \( -n "$long"  -a "$long"  = "$OPT" \) \)
+        then
+            if test "$hasarg" = "witharg"; then
+                if mbfl_option_encoded_args; then
+                    value=$(mbfl_decode_hex "${OPTARG}")
+                else
+                    value="$OPTARG"
+                fi
+            else
+                value="yes"
+            fi
+
+            mbfl_getopts_p_process_action_option ${keyword}
+            update_procedure=script_option_update_$(mbfl_string_tolower ${keyword})
+            state_variable=script_option_$(mbfl_string_toupper ${keyword})
+            eval ${state_variable}=\'"${value}"\'
+            mbfl_invoke_script_function ${update_procedure}
+            return 0
+        fi
+    done
+    return 1
+}
+function mbfl_getopts_p_is_action_option () {
+    mandatory_parameter(KEYWORD, 1, option keyword)
+    test ${KEYWORD:0:7} = 'ACTION_'
+}
+function mbfl_getopts_p_process_action_option () {
+    mandatory_parameter(KEYWORD, 1, option keyword)
+
+    if mbfl_getopts_p_is_action_option "${KEYWORD}" ; then
+        mbfl_main_set_main script_$(mbfl_string_tolower ${KEYWORD})
+    fi
+}
+
 #PAGE
 function mbfl_getopts_p_process_predefined_option_no_arg () {
     local OPT="${1:?}"
@@ -379,9 +398,12 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
     return 0
 }
 #page
+## ------------------------------------------------------------
+## Help screen.
+## ------------------------------------------------------------
+
 function mbfl_getopts_p_build_and_print_options_usage () {
-    local i=0 item
-    local brief= long= description= long_hasarg= long_hasarg=
+    local i=0 item brief long description long_hasarg long_hasarg default
 
 
     for ((i=0; $i < $mbfl_getopts_INDEX; ++i)); do
@@ -393,26 +415,30 @@ function mbfl_getopts_p_build_and_print_options_usage () {
             long_hasarg=
         fi
 
+        printf '\t'
+
         brief="${mbfl_getopts_BRIEFS[$i]}"
-        test -n "$brief" && echo -e "\t-${brief}${brief_hasarg}"
+        test -n "$brief" && printf -- '-%s%s ' "${brief}" "${brief_hasarg}"
 
         long="${mbfl_getopts_LONGS[$i]}"
-        test -n "$long" && echo -e "\t--${long}${long_hasarg}"
+        test -n "$long" && printf -- '--%s%s' "${long}" "${long_hasarg}"
+
+        printf '\n'
 
         description="${mbfl_getopts_DESCRIPTION[$i]}"
+        test -z "${description}" && description='undocumented option'
 
-        if test -z "${description}" ; then
-            description='undocumented option'
-        fi
+        printf '\t\t%s\n' "${description}"
+
         if test "${mbfl_getopts_HASARG[$i]}" = 'witharg' ; then
             item="${mbfl_getopts_DEFAULTS[$i]}"
             if test -n "${item}" ; then
-                description="${description}\n\t\t(default: '${item}')"
+                default=$(printf "'%s'" "${item}")
             else
-                description="${description}\n\t\t(default: empty)"
+                default='empty'
             fi
+            printf '\t\t(default: %s)\n' "${default}"
         fi
-        echo -e "\t\t$description"
     done
 }
 #PAGE
@@ -494,6 +520,7 @@ function mbfl_p_getopts_not_char_in_brief_option_name () {
         \( "$1" \< 0 -o 9 \< "$1" \)
 }
 #PAGE
+
 function mbfl_getopts_p_decode_hex () {
     local i=0
 
@@ -504,7 +531,11 @@ function mbfl_getopts_p_decode_hex () {
     }
     return 0
 }
+
 #PAGE
+## ------------------------------------------------------------
+## Non-option command line arguments.
+## ------------------------------------------------------------
 
 function mbfl_wrong_num_args () {
     mandatory_parameter(required, 1, required number of args)
@@ -528,8 +559,6 @@ function mbfl_wrong_num_args_range () {
     fi
     return 0
 }
-
-#PAGE
 function mbfl_argv_from_stdin () {
     local item=
 

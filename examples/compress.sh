@@ -32,7 +32,7 @@
 ## MBFL's related options and variables.
 ## ------------------------------------------------------------
 
-script_PROGNAME=template.sh
+script_PROGNAME=compress.sh
 script_VERSION=1.0
 script_COPYRIGHT_YEARS='2005'
 script_AUTHOR='Marco Maggi'
@@ -43,7 +43,7 @@ script_DESCRIPTION='Example script to compress files.'
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
 # keyword default-value brief-option long-option has-argument description
-mbfl_declare_option ACTION_COMPRESS no '' compress noarg "selects compress action"
+mbfl_declare_option ACTION_COMPRESS yes '' compress noarg "selects compress action"
 mbfl_declare_option ACTION_DECOMPRESS no '' decompress noarg "selects decompress action"
 mbfl_declare_option GZIP no G gzip noarg "selects gzip"
 mbfl_declare_option BZIP no B bzip noarg "selects bzip2"
@@ -59,12 +59,6 @@ mbfl_main_declare_exit_code 3 error_decompressing
 ## Options update functions.
 ## ------------------------------------------------------------
 
-function script_option_update_action_compress () {
-    mbfl_main_set_main script_action_compress
-}
-function script_option_update_action_decompress () {
-    mbfl_main_set_main script_action_decompress
-}
 function script_option_update_gzip () {
     mbfl_file_compress_select_gzip
 }
@@ -81,7 +75,6 @@ function script_option_update_keep () {
 ## ------------------------------------------------------------
 
 function script_before_parsing_options () {
-    script_option_update_action_compress
     mbfl_file_compress_nokeep
 }
 function script_action_compress () {

@@ -42,39 +42,40 @@ script_DESCRIPTION="Example script to test the 'at' interface."
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
 # keyword default-value brief-option long-option has-argument description
-mbfl_declare_option ACTION_SCHEDULE no S schedule noarg 'schedules a command'
-mbfl_declare_option ACTION_LIST no     L list     noarg 'lists scheduled commands'
-mbfl_declare_option ACTION_DROP no     D drop     noarg 'drops a scheduled command'
-mbfl_declare_option ACTION_CLEAN no    C clean    noarg 'cleans a queue'
+mbfl_declare_option ACTION_SCHEDULE no  \
+    S   schedule        noarg   'schedules a command'
+mbfl_declare_option ACTION_LIST yes      \
+    L   list            noarg   'lists scheduled job identifiers'
+mbfl_declare_option ACTION_LIST_JOBS no  \
+    J   list-jobs       noarg   'lists scheduled jobs'
+mbfl_declare_option ACTION_LIST_QUEUES no  \
+    Q   list-queues     noarg   'lists queues with scheduled jobs'
+mbfl_declare_option ACTION_DROP no      \
+    D   drop            noarg   'drops a scheduled command'
+mbfl_declare_option ACTION_CLEAN no     \
+    C   clean           noarg   'cleans a queue'
 
-mbfl_declare_option QUEUE z               q queue       witharg 'selects the queue'
-mbfl_declare_option TIME 'now +1 minutes' t time        witharg 'selects time'
-mbfl_declare_option COMMAND :             c command     witharg 'selects the command'
-mbfl_declare_option IDENTIFIER ''         '' identifier witharg 'selects a job'
+mbfl_declare_option QUEUE z             \
+    q   queue           witharg 'selects the queue'
+mbfl_declare_option TIME 'now +1 minutes' \
+    t   time            witharg 'selects time'
+mbfl_declare_option COMMAND :           \
+    c   command         witharg 'selects the command'
+mbfl_declare_option IDENTIFIER ''       \
+    ''  identifier      witharg 'selects a job'
 
 # Program declarations.
 mbfl_at_enable
 
 # Exit code declarations.
 mbfl_main_declare_exit_code 3 wrong_queue_identifier
+mbfl_main_declare_exit_code 4 wrong_command_line_arguments
 
 #page
 ## ------------------------------------------------------------
 ## Options update functions.
 ## ------------------------------------------------------------
 
-function script_option_update_action_schedule () {
-    mbfl_main_set_main script_action_schedule
-}
-function script_option_update_action_list () {
-    mbfl_main_set_main script_action_list
-}
-function script_option_update_action_drop () {
-    mbfl_main_set_main script_action_drop
-}
-function script_option_update_action_clean () {
-    mbfl_main_set_main script_action_clean
-}
 function script_option_update_queue () {
     local Q=${script_option_QUEUE}
 
@@ -90,8 +91,11 @@ function script_option_update_queue () {
 ## ------------------------------------------------------------
 
 function script_before_parsing_options () {
-    mbfl_main_set_main script_action_list
+    mbfl_at_select_queue ${script_option_QUEUE}
 }
+# function script_after_parsing_options () {
+#     echo $mbfl_main_SCRIPT_FUNCTION
+# }
 function script_action_schedule () {
     local Q=$(mbfl_at_print_queue)
     local TIME=${script_option_TIME}
@@ -109,18 +113,31 @@ function script_action_list () {
     local item
 
     mbfl_message_verbose "jobs in queue '${Q}': "
-    {
-        for item in $(mbfl_at_queue_print_identifiers) ; do
-            printf '%d ' "${item}"
-        done
-        printf '\n'
-    } >&2
+    for item in $(mbfl_at_queue_print_identifiers) ; do
+        printf '%d ' "${item}"
+    done
+    printf '\n'
+}
+function script_action_list_jobs () {
+    mbfl_at_queue_print_jobs
+}
+function script_action_list_queues () {
+    mbfl_message_verbose "queues with pending jobs: "
+    for item in $(mbfl_at_queue_print_queues) ; do
+        printf '%c ' "${item}"
+    done
+    printf '\n'
 }
 function script_action_drop () {
     local ID=${script_option_IDENTIFIER}
 
-    mbfl_message_verbose "dropping job '${ID}'\n"
-    mbfl_at_drop "${ID}"
+    if test -n "${ID}" ; then
+        mbfl_message_verbose "dropping job '${ID}'\n"
+        mbfl_at_drop "${ID}"
+    else
+        mbfl_message_error "no job selected"
+        exit_because_wrong_command_line_arguments
+    fi
 }
 function script_action_clean () {
     local Q=$(mbfl_at_print_queue)

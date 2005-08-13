@@ -1238,6 +1238,50 @@ $ script.sh -b456
 $ script.sh --beta=456
 @end example
 
+
+@subsubsection Action options
+
+@noindent
+A special option example:
+
+@example
+mbfl_declare_option ACTION_GAMMA no g gamma noarg "do gamma action"
+mbfl_declare_option ACTION_DELTA yes d delta noarg "do delta action"
+@end example
+
+@noindent
+this code declares two options with no arguments; the difference from
+the other declarations is that the keywords are prefixed with
+@code{ACTION_}: this prefix is recognised by the module and causes, if
+the option is used on the command line, the following code to be
+evaluated at argument parsing time:
+
+@example
+mbfl_main_set_main script_action_gamma
+@end example
+
+@noindent
+or:
+
+@example
+mbfl_main_set_main script_action_delta
+@end example
+
+@noindent
+where the argument @code{script_action_gamma} is build by prefixing the
+lower case version of the keyword with @code{script_}. The code selects
+a function as main function for the script (@ref{Main Function}).
+
+Additionally, if the default value is @code{yes}: the main function is
+selected at declaration time (that is by
+@function{mbfl_declare_option}); this is useful declare an action option
+and select automatically the action function. In the example: the
+function @function{script_action_delta} is selected as main action
+function.
+
+It is an error to declare a keyword prefixed with @code{ACTION_} with an
+option with argument.
+
 @c ------------------------------------------------------------
 @node Getopts Options
 @section Predefined options
@@ -2102,6 +2146,16 @@ Removes all the jobs from the currently selected queue.
 
 @deffn Function mbfl_at_queue_print_identifiers
 Prints all the job identifiers in the currently selected queue.
+@end deffn
+
+
+@deffn Function mbfl_at_queue_print_jobs
+Prints all the job descriptions in the currently selected queue.
+@end deffn
+
+
+@deffn Function mbfl_at_queue_print_queues
+Prints the letters identifying queues with pending jobs.
 @end deffn
 
 
