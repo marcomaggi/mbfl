@@ -881,9 +881,17 @@ Declaring}). The programs are: @command{gzip}, @command{bzip2}.
 @end deffn
 
 
-@deffn Function mbfl_file_select_compressor @var{program}
-Selects a compressor program. Accepted values for @var{program} are:
-@code{gzip}, @code{bzip2}. The default selection is @code{gzip}.
+@deffn Function mbfl_file_compress_select_gzip @var{program}
+@deffnx Function mbfl_file_compress_select_bzip @var{program}
+Selects a compressor program. The default selection is @code{gzip}.
+@end deffn
+
+
+@deffn Function mbfl_file_compress_keep
+@deffnx Function mbfl_file_compress_nokeep
+Selects whether the compress program should keep the original file or
+not. The selection will affect all the future invocations of the
+compression/decompression functions.
 @end deffn
 
 
@@ -891,6 +899,13 @@ Selects a compressor program. Accepted values for @var{program} are:
 Compresses @var{PATHNAME}, a file pathname, with the currently selected
 compressor program. Additional arguments to the selected compressor may
 used and are handed to the compressor unchanged.
+@end deffn
+
+
+@deffn Function mbfl_file_decompress @var{PATHNAME} ?@dots{}?
+Decompresses @var{PATHNAME}, a file pathname, with the currently
+selected compressor program. Additional arguments to the selected
+compressor may used and are handed to the compressor unchanged.
 @end deffn
 
 

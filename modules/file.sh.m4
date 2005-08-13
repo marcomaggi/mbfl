@@ -808,45 +808,97 @@ function mbfl_file_read () {
 
 #page
 ## ------------------------------------------------------------
-## Compression functions.
+## Compression interface functions.
 ## ------------------------------------------------------------
 
-mbfl_p_file_compressor='gzip'
+mbfl_p_file_compress_function=mbfl_file_compress_gzip
+mbfl_p_file_compress_keep='nokeep'
 
 function mbfl_file_enable_compress () {
     mbfl_declare_program gzip
     mbfl_declare_program bzip2
-    mbfl_file_select_compressor gzip
+    mbfl_file_compress_select_gzip
+    mbfl_file_compress_nokeep
 }
-function mbfl_file_select_compressor () {
-    mandatory_parameter(COMPRESSOR, 1, compression program)
-
-    case "${COMPRESSOR}" in
-        gzip|bzip2)
-            mbfl_p_file_compressor=${COMPRESSOR}
-            ;;
-        *)
-            mbfl_message_error "unsupported compressor '${COMPRESSOR}'"
-            return 1
-            ;;
-    esac
+function mbfl_file_compress_keep ()   { mbfl_p_file_compress_keep='keep'; }
+function mbfl_file_compress_nokeep () { mbfl_p_file_compress_keep='nokeep'; }
+function mbfl_file_compress_select_gzip () {
+    mbfl_p_file_compress_function=mbfl_file_compress_gzip
+}
+function mbfl_file_compress_select_bzip () {
+    mbfl_p_file_compress_function=mbfl_file_compress_bzip
 }
 function mbfl_file_compress () {
     mandatory_parameter(FILE, 1, target file)
+    mbfl_p_file_compress compress "${FILE}" "$@"
+}
+function mbfl_file_decompress () {
+    mandatory_parameter(FILE, 1, target file)
+    mbfl_p_file_compress decompress "${FILE}" "$@"
+}
+function mbfl_p_file_compress () {
+    mandatory_parameter(MODE, 1, compression/decompression mode)
+    mandatory_parameter(FILE, 2, target file)
 
     if ! mbfl_file_is_file "${FILE}" ; then
         mbfl_message_error "compression target is not a file '${FILE}'"
         return 1
     fi
-    mbfl_exec_compress "${FILE}" "$@"
+    ${mbfl_p_file_compress_function} ${MODE} "${FILE}" "$@"
 }
-function mbfl_exec_compress () {
-    mandatory_parameter(FILE, 1, target file)
-    local COMPRESSOR=$(mbfl_program_found "${mbfl_p_file_compressor}")
-    local FLAGS
 
+#page
+## ------------------------------------------------------------
+## Compression action functions.
+## ------------------------------------------------------------
+
+function mbfl_file_compress_gzip () {
+    mandatory_parameter(COMPRESS, 1, compress/decompress mode)
+    mandatory_parameter(SOURCE, 2, target file)
+    local COMPRESSOR=$(mbfl_program_found gzip)
+    local FLAGS='--stdout'
+    
+    case "${COMPRESS}" in
+        compress)
+            ;;
+        decompress)
+            FLAGS="${FLAGS} --decompress"
+            ;;
+    esac
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-    mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "${FILE}" "$@"
+    case "${mbfl_p_file_compress_keep}" in
+        keep)
+            local DEST=${SOURCE}.gz
+            mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "${SOURCE}" "$@" >"${DEST}"
+            ;;
+        nokeep)
+            mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "${SOURCE}" "$@"
+            ;;
+    esac
+}
+function mbfl_file_compress_bzip () {
+    mandatory_parameter(COMPRESS, 1, compress/decompress mode)
+    mandatory_parameter(SOURCE, 2, target file)
+    local COMPRESSOR=$(mbfl_program_found bzip2)
+    local FLAGS='--stdout'
+    
+    case "${COMPRESS}" in
+        compress)
+            FLAGS="${FLAGS} --compress"
+            ;;
+        decompress)
+            FLAGS="${FLAGS} --decompress"
+            ;;
+    esac
+    case "${mbfl_p_file_compress_keep}" in
+        keep)
+            FLAGS="${FLAGS} --keep"
+            ;;
+        nokeep)
+            ;;
+    esac
+    mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
+    mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "${SOURCE}" "$@"
 }
 
 ### end of file
