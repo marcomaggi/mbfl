@@ -811,8 +811,9 @@ function mbfl_file_read () {
 ## Compression interface functions.
 ## ------------------------------------------------------------
 
-mbfl_p_file_compress_function=mbfl_file_compress_gzip
-mbfl_p_file_compress_keep='nokeep'
+mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_gzip
+mbfl_p_file_compress_KEEP_ORIGINAL='no'
+mbfl_p_file_compress_TO_STDOUT='no'
 
 function mbfl_file_enable_compress () {
     mbfl_declare_program gzip
@@ -820,31 +821,36 @@ function mbfl_file_enable_compress () {
     mbfl_file_compress_select_gzip
     mbfl_file_compress_nokeep
 }
-function mbfl_file_compress_keep ()   { mbfl_p_file_compress_keep='keep'; }
-function mbfl_file_compress_nokeep () { mbfl_p_file_compress_keep='nokeep'; }
+function mbfl_file_compress_keep ()     { mbfl_p_file_compress_KEEP_ORIGINAL='yes'; }
+function mbfl_file_compress_nokeep ()   { mbfl_p_file_compress_KEEP_ORIGINAL='no'; }
+function mbfl_file_compress_stdout ()   { mbfl_p_file_compress_TO_STDOUT='yes'; }
+function mbfl_file_compress_nostdout () { mbfl_p_file_compress_TO_STDOUT='no'; }
 function mbfl_file_compress_select_gzip () {
-    mbfl_p_file_compress_function=mbfl_file_compress_gzip
+    mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_gzip
 }
 function mbfl_file_compress_select_bzip () {
-    mbfl_p_file_compress_function=mbfl_file_compress_bzip
+    mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_bzip
 }
 function mbfl_file_compress () {
     mandatory_parameter(FILE, 1, target file)
+    shift
     mbfl_p_file_compress compress "${FILE}" "$@"
 }
 function mbfl_file_decompress () {
     mandatory_parameter(FILE, 1, target file)
+    shift
     mbfl_p_file_compress decompress "${FILE}" "$@"
 }
 function mbfl_p_file_compress () {
     mandatory_parameter(MODE, 1, compression/decompression mode)
     mandatory_parameter(FILE, 2, target file)
+    shift 2
 
     if ! mbfl_file_is_file "${FILE}" ; then
         mbfl_message_error "compression target is not a file '${FILE}'"
         return 1
     fi
-    ${mbfl_p_file_compress_function} ${MODE} "${FILE}" "$@"
+    ${mbfl_p_file_compress_FUNCTION} ${MODE} "${FILE}" "$@"
 }
 
 #page
@@ -852,11 +858,12 @@ function mbfl_p_file_compress () {
 ## Compression action functions.
 ## ------------------------------------------------------------
 
-function mbfl_file_compress_gzip () {
+function mbfl_p_file_compress_gzip () {
     mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mandatory_parameter(SOURCE, 2, target file)
+    shift 2
     local COMPRESSOR=$(mbfl_program_found gzip)
-    local FLAGS='--stdout'
+    local FLAGS
     
     case "${COMPRESS}" in
         compress)
@@ -864,23 +871,31 @@ function mbfl_file_compress_gzip () {
         decompress)
             FLAGS="${FLAGS} --decompress"
             ;;
+        *)
+            mbfl_message_error "internal error: wrong mode '${COMPRESS}' in '${FUNCNAME}'"
+            exit_failure
+            ;;
     esac
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-    case "${mbfl_p_file_compress_keep}" in
-        keep)
+    if test "${mbfl_p_file_compress_TO_STDOUT}" = 'yes' ; then
+        FLAGS="${FLAGS} --stdout"
+        mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
+    else
+        if test "${mbfl_p_file_compress_KEEP_ORIGINAL}" = 'yes' ; then
             local DEST=${SOURCE}.gz
-            mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "${SOURCE}" "$@" >"${DEST}"
-            ;;
-        nokeep)
-            mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "${SOURCE}" "$@"
-            ;;
-    esac
+            FLAGS="${FLAGS} --stdout"
+            mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}" >"${DEST}"
+        else
+            mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
+        fi
+    fi
 }
-function mbfl_file_compress_bzip () {
+function mbfl_p_file_compress_bzip () {
     mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mandatory_parameter(SOURCE, 2, target file)
+    shift 2
     local COMPRESSOR=$(mbfl_program_found bzip2)
-    local FLAGS='--stdout'
+    local FLAGS
     
     case "${COMPRESS}" in
         compress)
@@ -889,16 +904,21 @@ function mbfl_file_compress_bzip () {
         decompress)
             FLAGS="${FLAGS} --decompress"
             ;;
-    esac
-    case "${mbfl_p_file_compress_keep}" in
-        keep)
-            FLAGS="${FLAGS} --keep"
-            ;;
-        nokeep)
+        *)
+            mbfl_message_error "internal error: wrong mode '${COMPRESS}' in '${FUNCNAME}'"
+            exit_failure
             ;;
     esac
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-    mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "${SOURCE}" "$@"
+    if test "${mbfl_p_file_compress_TO_STDOUT}" = 'yes' ; then
+        FLAGS="${FLAGS} --keep --stdout"
+        mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
+    else
+        if "${mbfl_p_file_compress_KEEP_ORIGINAL}" = 'yes' ; then
+            FLAGS="${FLAGS} --keep"
+        fi
+        mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
+    fi
 }
 
 ### end of file

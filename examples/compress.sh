@@ -53,7 +53,7 @@ mbfl_file_enable_compress
 
 mbfl_main_declare_exit_code 2 error_compressing
 mbfl_main_declare_exit_code 3 error_decompressing
-
+mbfl_main_declare_exit_code 4 wrong_command_line_arguments
 #page
 ## ------------------------------------------------------------
 ## Options update functions.
@@ -80,6 +80,9 @@ function script_before_parsing_options () {
 function script_action_compress () {
     local item
 
+    if ! mbfl_argv_all_files ; then
+        exit_because_wrong_command_line_arguments
+    fi
     for item in "${ARGV[@]}" ; do
         if ! mbfl_file_compress "${item}" ; then
             mbfl_message_error "compressing '${item}'"
@@ -91,8 +94,11 @@ function script_action_compress () {
 function script_action_decompress () {
     local item
 
+    if ! mbfl_argv_all_files ; then
+        exit_because_wrong_command_line_arguments
+    fi
     for item in "${ARGV[@]}" ; do
-        if ! mbfl_file_compress "${item}" ; then
+        if ! mbfl_file_decompress "${item}" ; then
             mbfl_message_error "decompressing '${item}'"
             exit_because_error_decompressing
         fi

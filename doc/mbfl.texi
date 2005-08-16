@@ -248,9 +248,9 @@ that starts with @code{p_}. It is guaranteed that @mbfl{} never use
 variables with name starting with such a prefix.
 
 @item
-It is possible to source the library in an interactive shell: though
-some modules must be disabled. To do this execute the following code in
-the shell before sourcing the library:
+It is possible, but not recommended, to source the library in an
+interactive shell, though some modules must be disabled. To do this
+execute the following code in the shell before sourcing the library:
 
 @example
 mbfl_INTERACTIVE='yes'
@@ -270,7 +270,7 @@ fi
 so they are not executed. Disabled modules are: main, getopts, signal;
 ``disabled'' does not mean that the functions are not there: only the
 global variable declarations are excluded; this is a little dirty, but,
-at present, it works.
+at present, it should work.
 @end itemize
 
 
@@ -322,8 +322,19 @@ Must be a string describing the usage of the program.
 @defvar script_DESCRIPTION
 One line string providing a brief description of the program. It is used
 in the help screen (the one echoed when the @option{--help} option is
-used).
+used) just after the content of @code{script_USAGE}.
 @end defvar
+
+@defvar script_EXAMPLES
+One or more lines of text to be displayed at the end of the help screen,
+after the options description. It should contain examples of common
+invocations for the script.
+@end defvar
+
+All the text in these variables is used as argument to the @code{printf}
+built--in command; in particular: @code{script_DESCRIPTION} and
+@code{script_EXAMPLES} are used as first argument to @code{printf}, so
+the escape sequences are evaluated.
 
 
 @section Example
@@ -331,16 +342,22 @@ used).
 @noindent
 The following example shows how to declare the variables.
 
-
 @example
-script_PROGNAME="myscript.sh"
-script_AUTHOR="Marco Maggi and Marco Maggi"
-script_COPYRIGHT_YEARS="2002, 2003, 2004"
-script_VERSION="1.0"
+script_PROGNAME='myscript.sh'
+script_AUTHOR='Marco Maggi and Marco Maggi'
+script_COPYRIGHT_YEARS='2002, 2003, 2004'
+script_VERSION='1.0'
 script_LICENSE=GPL
 script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
 script_DESCRIPTION='Does this and that.'
+script_EXAMPLES='Examples:
+
+\tmyscript.sh --do-something arg arg ...
+\tmyscript.sh --do-other arg arg ...'
 @end example
+
+Notice that @code{script_DESCRIPTION} and @code{script_EXAMPLES} do not
+end with a newline character.
 
 @c ------------------------------------------------------------
 @node Base
@@ -574,7 +591,7 @@ otherwise.
 * File Commands Listing::       Retrieving informations.
 * File Commands Mkdir::         Creating directories.
 * File Commands Copy::          Copying files.
-* File Commands move::          Moving files.
+* File Commands Move::          Moving files.
 * File Commands Removing::      Removing files and directories.
 * File Commands Tar::           Manipulating tar archives.
 * File Commands Symlink::       Creating symbolic links.
@@ -681,7 +698,7 @@ generated and the return value is 1. No test is done upon @var{target}.
 
 
 @c ------------------------------------------------------------
-@node File Commands move
+@node File Commands Move
 @subsection Moving files
 
 
@@ -875,37 +892,63 @@ form accepted by @command{chmod}.
 @subsection Compressing files
 
 
+@noindent
+This module has an internal state, stored in global variables. The state
+holds informations about: the selected compression external program
+(default: @command{gzip}); whether the program should keep the original
+files or replace them with the (de)compressed version (default: do not
+keep); whether the output must be sent to standard output or a file.
+
+
+@subsubsection Initialisation
+
 @deffn Function mbfl_file_enable_compress
 Declares the programs required to compress a file (@ref{Program
 Declaring}). The programs are: @command{gzip}, @command{bzip2}.
 @end deffn
 
 
-@deffn Function mbfl_file_compress_select_gzip @var{program}
-@deffnx Function mbfl_file_compress_select_bzip @var{program}
-Selects a compressor program. The default selection is @code{gzip}.
-@end deffn
+@subsubsection Configuration
 
+@noindent
+The selection will affect all the future invocations of the
+compression/decompression functions.
+
+@deffn Function mbfl_file_compress_select_gzip
+@deffnx Function mbfl_file_compress_select_bzip
+Selects a compressor program.
+@end deffn
 
 @deffn Function mbfl_file_compress_keep
 @deffnx Function mbfl_file_compress_nokeep
 Selects whether the compress program should keep the original file or
-not. The selection will affect all the future invocations of the
-compression/decompression functions.
+not.
+@end deffn
+
+@deffn Function mbfl_file_compress_select_stdout
+@deffnx Function mbfl_file_compress_select_nostdout
+Selects if the output must be sent to stdout or a file. This takes
+precedence over the keep/no keep configuration: if the ouptut is sent to
+stdout the original file is kept.
 @end deffn
 
 
+@subsubsection Actions
+
+@noindent
+Additional arguments to the selected compressor may be appended to the
+invocation of the following functions and are handed to the compressor
+unchanged.
+
 @deffn Function mbfl_file_compress @var{PATHNAME} ?@dots{}?
 Compresses @var{PATHNAME}, a file pathname, with the currently selected
-compressor program. Additional arguments to the selected compressor may
-used and are handed to the compressor unchanged.
+compressor program.
 @end deffn
 
 
 @deffn Function mbfl_file_decompress @var{PATHNAME} ?@dots{}?
 Decompresses @var{PATHNAME}, a file pathname, with the currently
-selected compressor program. Additional arguments to the selected
-compressor may used and are handed to the compressor unchanged.
+selected compressor program.
 @end deffn
 
 

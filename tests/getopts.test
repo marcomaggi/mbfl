@@ -105,6 +105,17 @@ function getopts-5.2 () {
 function getopts-5.3 () {
     mbfl_declare_option A a o option witharg 'an option' | dotest-output
 }
+
+function getopts-5.4 () {
+    mbfl_main_set_main wao
+    dotest-equal wao ${mbfl_main_SCRIPT_FUNCTION}
+    mbfl_declare_option ACTION_ALPHA yes a alpha noarg 'an option'
+    mbfl_declare_option ACTION_BETA no b beta noarg 'an option'
+    dotest-equal script_action_alpha ${mbfl_main_SCRIPT_FUNCTION}
+}
+
+#page
+
 function getopts-6.1 () {
     mbfl_declare_option A a o option wappa 'an option' 2>&1 | dotest-output \
 	"$0: error: wrong value 'wappa' to hasarg field in option declaration number 1"
@@ -112,6 +123,10 @@ function getopts-6.1 () {
 function getopts-6.2 () {
     mbfl_declare_option A a o option noarg 'an option' 2>&1| dotest-output \
 	"$0: error: wrong value 'a' as default for option with no argument number 1"
+}
+function getopts-6.3 () {
+    mbfl_declare_option ACTION_DELTA no o option witharg 'an option' 2>&1 | dotest-output \
+        "$0: error: action option must be with no argument 'ACTION_DELTA'"
 }
 
 #page

@@ -102,13 +102,13 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\tprint version number and exit
 \t--license
 \t\tprint license informations and exit
+\t--print-options
+\t\tprint a list of long option switches
 \t-h --help --usage
 \t\tprint usage informations and exit
 \t-H --brief-help --brief-usage
 \t\tprint usage informations and the list of script specific
 \t\toptions, then exit
-\t--print-options
-\t\tprint a list of long option switches
 "
 
 fi
@@ -339,11 +339,12 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	    exit 0
 	    ;;
 	h|help|usage)
-	    echo -e "${script_USAGE}"
-            test -n "${script_DESCRIPTION}" && echo -e "${script_DESCRIPTION}"
-            echo 'options:'
+	    printf '%s\n' "${script_USAGE}"
+            test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n"
+            printf 'options:\n'
             mbfl_getopts_p_build_and_print_options_usage
-            echo -e "${mbfl_message_DEFAULT_OPTIONS}"
+            printf "${mbfl_message_DEFAULT_OPTIONS}"
+            test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
 	    exit 0
 	    ;;
 	H|brief-help|brief-usage)

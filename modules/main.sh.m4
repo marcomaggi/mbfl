@@ -187,7 +187,7 @@ if test "${mbfl_INTERACTIVE}" != 'yes'; then
 mbfl_message_VERSION="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
-This is  free software; see the  source or use the  --license option for
+This is free software; see the  source or use the '--license' option for
 copying conditions.  There is NO warranty; not  even for MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.
 "

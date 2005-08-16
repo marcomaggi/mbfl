@@ -38,6 +38,12 @@ script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
 script_DESCRIPTION="Example script to test the 'at' interface."
+script_EXAMPLES="Examples:
+
+\tat.sh --schedule --time='now +1 hour' --queue=A --command='command.sh --option'
+\tat.sh --list-jobs --queue=A
+\tat.sh --drop --identifier=1234
+"
 
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
