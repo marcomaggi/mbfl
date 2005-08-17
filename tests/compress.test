@@ -36,6 +36,8 @@
 source setup.sh
 
 function compress () {
+    top_srcdir=${top_srcdir:=${PWD}/..}
+
     if false ; then
         ${BASH} ${top_srcdir}/tests/compress.sh --debug -v "$@"
     else

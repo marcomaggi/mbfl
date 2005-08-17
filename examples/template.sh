@@ -35,10 +35,13 @@
 script_PROGNAME=template.sh
 script_VERSION=1.0
 script_COPYRIGHT_YEARS='2004, 2005'
-script_AUTHOR="Marco Maggi and Marco Maggi"
+script_AUTHOR='Marco Maggi and Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
 script_DESCRIPTION='This is an example script.'
+script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} --alpha"
 
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
@@ -60,6 +63,18 @@ mbfl_main_declare_exit_code 3 fourth_error
 
 #page
 ## ------------------------------------------------------------
+## Option update functions.
+## ------------------------------------------------------------
+
+function script_option_update_beta () {
+    printf 'option beta: %s\n' "${script_option_BETA}"
+}
+function script_option_update_alpha () {
+    printf 'option alpha\n'
+}
+
+#page
+## ------------------------------------------------------------
 ## Main functions.
 ## ------------------------------------------------------------
 
@@ -74,12 +89,6 @@ function script_before_parsing_options () {
 function script_after_parsing_options () {
     mbfl_message_verbose "${FUNCNAME}\n"
     return 0
-}
-function script_option_update_beta () {
-    printf 'option beta: %s\n' "${script_option_BETA}"
-}
-function script_option_update_alpha () {
-    printf 'option alpha\n'
 }
 function main () {
     printf "arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"

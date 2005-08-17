@@ -33,7 +33,8 @@
 source setup.sh
 
 function script () {
-    MBFL_LIBRARY=${builddir}/libmbfl.sh $BASH ../examples/template.sh "$@"
+    MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/libmbfl.sh} \
+        "${BASH}" ../examples/template.sh "$@"
 }
 
 

@@ -2,7 +2,7 @@
 
 SIGSPEC=SIGUSR1
 
-source libmbfl.sh
+source "${MBFL_LIBRARY:=libmbfl.sh}"
 
 function main () {
     flag=0
