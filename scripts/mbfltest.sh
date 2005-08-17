@@ -81,12 +81,11 @@ function main () {
     local item FILES i=0 lib testlib=$(mbfl-config --testlib)
 
 
-    if test -n "${script_option_LIBRARY}" ; then
-        lib=$(mbfl_file_normalise "${script_option_LIBRARY}")
-    else
-        lib=$(mbfl-config)
+    if test $ARGC -eq 0 ; then
+        mbfl_message_error "no files on the command line"
+        exit_because_file_not_found
     fi
-
+    mbfl_argv_all_files || exit_because_file_not_found
     for item in "${ARGV[@]}" ; do
         if mbfl_file_is_file "${item}" ; then
             FILES[$i]=$(mbfl_file_normalise "${item}")
@@ -96,6 +95,12 @@ function main () {
         fi
         let ++i
     done
+
+    if test -n "${script_option_LIBRARY}" ; then
+        lib=$(mbfl_file_normalise "${script_option_LIBRARY}")
+    else
+        lib=$(mbfl-config)
+    fi
 
     mbfl_cd "${script_option_DIRECTORY}"
     for item in "${FILES[@]}" ; do

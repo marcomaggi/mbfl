@@ -273,8 +273,8 @@ $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
 ## Script rules.
 ## ------------------------------------------------------------
 
-script_TARGETS		= mbflpp.sh
-script_INSTLST		= mbfl-config mbflpp.sh
+script_TARGETS		= mbflpp.sh mbfltest.sh
+script_INSTLST		= mbfl-config mbflpp.sh mbfltest.sh
 script_INSTDIR		= $(pkglibexecdir)
 
 script_CLEANFILES	= $(script_TARGETS)
@@ -326,8 +326,13 @@ script-install-sub:
 	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfl-config mbfl-config
 	cd $(INSTALL_ROOT)$(bindir) && \
 	$(SYMLINK) ../libexec/$(PKG_DIR)/mbflpp.sh mbflpp.sh
+	cd $(INSTALL_ROOT)$(bindir) && \
+	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfltest.sh mbfltest.sh
 
 mbflpp.sh: $(top_srcdir)/scripts/mbflpp.sh
+	$(MBFLPP) --preserve-comments <$(<) >$(@)
+
+mbfltest.sh: $(top_srcdir)/scripts/mbfltest.sh
 	$(MBFLPP) --preserve-comments <$(<) >$(@)
 
 #page
