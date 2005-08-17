@@ -2957,20 +2957,21 @@ details).
 The following environment variables may configure the behaviour of
 @code{dotest}.
 
-@table @env
-@item TESTMATCH
+@defvar TESTMATCH
 Overrides the value selected with @var{pattern}.
+@end defvar
 
-@item TESTSTART
+@defvar TESTSTART
 If @code{yes}: it is equivalent to invoking
 @code{dotest-set-report-start}; if @code{no}: it is equivalent to
 invoking @code{dotest-unset-report-start}.
+@end defvar
 
-@item TESTSUCCESS
+@defvar TESTSUCCESS
 If @code{yes}: it is equivalent to invoking
 @code{dotest-set-report-success}; if @code{no}: it is equivalent to
 invoking @code{dotest-unset-report-success}.
-@end table
+@end defvar
 
 
 @c ------------------------------------------------------------
@@ -3078,6 +3079,24 @@ automatically invokes @code{dotest-clean-files} when exiting (using
 that creates files.
 
 
+@subsection Directories
+
+@deffn Function dotest-cd @var{directory}
+Change the working directory. This is just a wrapper for @command{cd};
+if verbose mode is on: prints a message.
+@end deffn
+
+@deffn Function dotest-mkdir @var{directory} ?@var{prefix}?
+Creates @var{directory} under the temporary directory; @var{directory}
+must be a relative pathname (that is: it must not begin with a
+slash). The optional @var{prefix} is a relative pathname that is
+prepended to @var{directory}: it is useful to prepend the name of a
+parent directory. Prints to stdout the full pathname of the directory.
+@end deffn
+
+
+@subsubsection Temporary directory
+
 @deffn Function dotest-echo-tmpdir
 Printd the value of the temporary directory in which all the files and
 directories will be created. The value is prefixed with the value of the
@@ -3090,12 +3109,6 @@ Change the working directory to eh temporary directory.
 @end deffn
 
 
-@deffn Function dotest-cd @var{directory}
-Change the working directory. This is just a wrapper for @command{cd};
-if verbose mode is on: prints a message.
-@end deffn
-
-
 @deffn Function dotest-mktmpdir
 Creates the temporary directory. This is automatically invoked by
 @code{dotest-mkfile} before creating files; @code{dotest-mkdir} creates
@@ -3104,14 +3117,7 @@ option of @command{mkdir}.
 @end deffn
 
 
-@deffn Function dotest-mkdir @var{directory} ?@var{prefix}?
-Creates @var{directory} under the temporary directory; @var{directory}
-must be a relative pathname (that is: it must not begin with a
-slash). The optional @var{prefix} is a relative pathname that is
-prepended to @var{directory}: it is useful to prepend the name of a
-parent directory. Prints to stdout the full pathname of the directory.
-@end deffn
-
+@subsection Files
 
 @deffn Function dotest-mkfile @var{pathname} ?@var{prefix}?
 Creates an empty file.  The optional @var{prefix} is a relative pathname
@@ -3125,17 +3131,46 @@ Removes the temporary directory and all its children. Should be invoked
 at the end of each function that creates temporary files or
 directories.
 
-Returns the value of the last command executed before the invocation,
-that way it can be used right after @code{dotest-output} and
+@strong{Note} Returns the value of the last command executed before the
+invocation, that way it can be used right after @code{dotest-output} and
 @code{dotest-equal} without loosing the return value of the function.
 @end deffn
 
 
-Example of usage of @code{dotest-clean-files}:
+@subsection Testing conditions
+
+@deffn Function dotest-assert-file-exists @var{file} @var{error_message}
+Tests that @var{file} exists: if true returns with code zero, else
+prints @var{error_message}, invokes @function{dotest-clean-files} and
+returns with code one.
+@end deffn
+
+@deffn Function dotest-assert-file-unexists @var{file} @var{error_message}
+Tests that @var{file} does not exist: if true returns with code zero,
+else prints @var{error_message}, invokes @function{dotest-clean-files}
+and returns with code one.
+@end deffn
+
+
+
+
+@subsection Examples
+
+@noindent
+Examples of usage of @code{dotest-clean-files}:
 
 @example
 function mytest-1.1 () @{
     local dir=$(dotest-mkdir a/b)
+    local result=
+
+    ...
+    result=...
+    dotest-equal 123 $result
+    dotest-clean-files
+@}
+function mytest-1.2 () @{
+    local dir=$(dotest-mkfile file.ext)
     local result=
 
     ...

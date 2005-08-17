@@ -863,12 +863,15 @@ function mbfl_p_file_compress_gzip () {
     mandatory_parameter(SOURCE, 2, target file)
     shift 2
     local COMPRESSOR=$(mbfl_program_found gzip)
-    local FLAGS
+    local FLAGS DEST
+
     
     case "${COMPRESS}" in
         compress)
+            DEST=${SOURCE}.gz
             ;;
         decompress)
+            DEST=$(mbfl_file_rootname "${SOURCE}")
             FLAGS="${FLAGS} --decompress"
             ;;
         *)
@@ -882,7 +885,6 @@ function mbfl_p_file_compress_gzip () {
         mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
     else
         if test "${mbfl_p_file_compress_KEEP_ORIGINAL}" = 'yes' ; then
-            local DEST=${SOURCE}.gz
             FLAGS="${FLAGS} --stdout"
             mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}" >"${DEST}"
         else
@@ -895,13 +897,15 @@ function mbfl_p_file_compress_bzip () {
     mandatory_parameter(SOURCE, 2, target file)
     shift 2
     local COMPRESSOR=$(mbfl_program_found bzip2)
-    local FLAGS
+    local FLAGS DEST
     
     case "${COMPRESS}" in
         compress)
+            DEST=${SOURCE}.bz2
             FLAGS="${FLAGS} --compress"
             ;;
         decompress)
+            DEST=$(mbfl_file_rootname "${SOURCE}")
             FLAGS="${FLAGS} --decompress"
             ;;
         *)
@@ -914,7 +918,7 @@ function mbfl_p_file_compress_bzip () {
         FLAGS="${FLAGS} --keep --stdout"
         mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
     else
-        if "${mbfl_p_file_compress_KEEP_ORIGINAL}" = 'yes' ; then
+        if test "${mbfl_p_file_compress_KEEP_ORIGINAL}" = 'yes' ; then
             FLAGS="${FLAGS} --keep"
         fi
         mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"

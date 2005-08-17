@@ -30,22 +30,16 @@
 
 #page
 ## ------------------------------------------------------------
-## Global variables.
+## Shell configuration.
 ## ------------------------------------------------------------
 
 shopt -s expand_aliases
 
-function dotest-echo-tmpdir () {
-    echo "${TMPDIR:-/tmp}/dotest.$$"
-}
 
-for item in verbose debug test ; do
-    eval function dotest-set-$item \(\) \
-	\{ function dotest-option-$item \(\) \{ true\;  \}\; \}
-    eval function dotest-unset-$item \(\) \
-	\{ function dotest-option-$item \(\) \{ false\; \}\; \}
-	dotest-unset-$item
-done
+#page
+## ------------------------------------------------------------
+## Output messages.
+## ------------------------------------------------------------
 
 alias dotest-echo='dotest-p-echo ${FUNCNAME}'
 function dotest-p-echo () {
@@ -59,64 +53,30 @@ function dotest-p-debug () {
     shift
     dotest-option-debug && echo "*** $name ***: $@" >&2
 }
+
 #page
-function dotest-set-report-start () {
-    function dotest-option-report-start () { true; }
-}
-function dotest-unset-report-start () {
-    function dotest-option-report-start () { false; }
-}
-dotest-unset-report-start
+## ------------------------------------------------------------
+## Configuration.
+## ------------------------------------------------------------
 
-function dotest-set-report-success () {
-    function dotest-option-report-success () { true; }
-}
-function dotest-unset-report-success () {
-    function dotest-option-report-success () { false; }
-}
-dotest-unset-report-success
-#page
-function dotest-output () {
-    local expected_output="$1"
-    local output= line=l ORGIFS="${IFS}" globmode=0 expected_output_len
+function dotest-p-create-option-functions () {
+    local item
 
-
-    expected_output_len=${#expected_output}
-    if test "${expected_output:$((${expected_output_len}-1)):1}" = "*" ; then
-	globmode=1
-	expected_output="${expected_output:0:$((${expected_output_len}-1))}"
-	expected_output_len=${#expected_output}
-    fi
-
-    IFS=""
-    while read -r -t 4 line; do
-	if test -z "${output}"; then
-	    output="$line"
-	else
-	    output="$output\n$line"
-	fi
+    for item in verbose debug test report-start report-success ; do
+        eval function dotest-set-$item \(\) \
+            \{ function dotest-option-$item \(\) \{ true\;  \}\; \}
+            eval function dotest-unset-$item \(\) \
+                \{ function dotest-option-$item \(\) \{ false\; \}\; \}
+                dotest-unset-$item
     done
-    IFS="${ORGIFS}"
-
-    if test -z "${expected_output}" ; then
-	if test ! -z "${output}" ; then
-	    echo "   expected output of zero length" >&2
-	    echo "   got:      '$output'" >&2
-	    return 1
-	fi
-    else
-	if test \
-	    \( $globmode = 0 -a "${expected_output}" != "${output}" \) -o  \
-	    \( $globmode = 1 -a \
-               "${expected_output}" != "${output:0:${expected_output_len}}" \) ; then
-	    echo "   expected: '$expected_output'" >&2
-	    echo "   got:      '$output'" >&2
-	    return 1
-	fi
-    fi
-    return 0
 }
+dotest-p-create-option-functions
+
 #page
+## ------------------------------------------------------------
+## Test execution.
+## ------------------------------------------------------------
+
 function dotest () {
     local PATTERN="${1:?missing test function pattern parameter to ${FUNCNAME}}"
     local FUNCTIONS; declare -a FUNCTIONS
@@ -176,7 +136,52 @@ function dotest-p-report-success-from-environment () {
 	    ;;
     esac
 }
+
 #page
+## ------------------------------------------------------------
+## Testing results.
+## ------------------------------------------------------------
+
+function dotest-output () {
+    local expected_output="$1"
+    local output= line=l ORGIFS="${IFS}" globmode=0 expected_output_len
+
+
+    expected_output_len=${#expected_output}
+    if test "${expected_output:$((${expected_output_len}-1)):1}" = "*" ; then
+	globmode=1
+	expected_output="${expected_output:0:$((${expected_output_len}-1))}"
+	expected_output_len=${#expected_output}
+    fi
+
+    IFS=""
+    while read -r -t 4 line; do
+	if test -z "${output}"; then
+	    output="$line"
+	else
+	    output="$output\n$line"
+	fi
+    done
+    IFS="${ORGIFS}"
+
+    if test -z "${expected_output}" ; then
+	if test ! -z "${output}" ; then
+	    echo "   expected output of zero length" >&2
+	    echo "   got:      '$output'" >&2
+	    return 1
+	fi
+    else
+	if test \
+	    \( $globmode = 0 -a "${expected_output}" != "${output}" \) -o  \
+	    \( $globmode = 1 -a \
+               "${expected_output}" != "${output:0:${expected_output_len}}" \) ; then
+	    echo "   expected: '$expected_output'" >&2
+	    echo "   got:      '$output'" >&2
+	    return 1
+	fi
+    fi
+    return 0
+}
 function dotest-equal () {
     local expected="$1"
     local got="$2"
@@ -187,7 +192,15 @@ function dotest-equal () {
 	return 1
     fi
 }
+
 #page
+## ------------------------------------------------------------
+## File functions.
+## ------------------------------------------------------------
+
+function dotest-echo-tmpdir () {
+    echo "${TMPDIR:-/tmp}/dotest.$$"
+}
 function dotest-cd-tmpdir () {
     cd "$(dotest-echo-tmpdir)" &>/dev/null
     test -n "$1" -a -d "$1" && cd "$1" &>/dev/null
@@ -243,13 +256,42 @@ function dotest-clean-files () {
     dotest-program-rm "$(dotest-echo-tmpdir)"
     return $result
 }
+
+function dotest-assert-file-exists () {
+    local FILE_NAME=${1:?"missing file name to '${FUNCNAME}'"}
+    local ERROR_MESSAGE=${2:?"missing error message to '${FUNCNAME}'"}
+
+    if test ! -f "${FILE_NAME}" ; then
+        dotest-echo "${ERROR_MESSAGE}"
+        dotest-clean-files
+        return 1
+    fi
+    return 0
+}
+function dotest-assert-file-unexists () {
+    local FILE_NAME=${1:?"missing file name to '${FUNCNAME}'"}
+    local ERROR_MESSAGE=${2:?"missing error message to '${FUNCNAME}'"}
+
+    if test -f "${FILE_NAME}" ; then
+        dotest-echo "${ERROR_MESSAGE}"
+        dotest-clean-files
+        return 1
+    fi
+    return 0
+}
+
 #page
+## ------------------------------------------------------------
+## Program interfaces.
+## ------------------------------------------------------------
+
 function dotest-program-mkdir () {
     dotest-option-verbose && FLAGS="--verbose"
-    dotest-program-exec /bin/mkdir --parents $FLAGS --mode=0700 "$@" >&2 || {
+    if ! dotest-program-exec /bin/mkdir --parents $FLAGS --mode=0700 "$@" >&2
+        then
 	dotest-clean-files
 	exit 2
-    }
+    fi
 }
 function dotest-program-rm () {
     dotest-option-verbose && FLAGS="--verbose"
@@ -259,13 +301,19 @@ function dotest-program-exec () {
     if dotest-option-test ; then
 	echo "$@"
     else
-	"$@" || {
+	if ! "$@"
+            then 
 	    dotest-clean-files
 	    exit 2
-	}
+        fi
     fi
 }
+
 #page
+## ------------------------------------------------------------
+## Final report.
+## ------------------------------------------------------------
+
 trap dotest-final-report EXIT
 
 test -z ${dotest_TEST_NUMBER} && declare -i dotest_TEST_NUMBER=0
@@ -275,18 +323,19 @@ test -z ${dotest_TEST_FAILED} && dotest_TEST_FAILED=
 function dotest-final-report () {
     local item=
 
-    echo
-    echo "Test file '$0'"
-    echo "Number of executed tests: ${dotest_TEST_NUMBER}"
-    echo "Number of failed tests:   ${dotest_TEST_FAILED_NUMBER}"
-    test -n "${dotest_TEST_FAILED}" && {
-	echo "Failed tests:"
-	for item in ${dotest_TEST_FAILED} ; do
-	    echo "   ${item}" >&2
-	done
-    }
-    echo
-
+    if test ${dotest_TEST_NUMBER} -ne 0 ; then
+        echo
+        echo "Test file '$0'"
+        echo "Number of executed tests: ${dotest_TEST_NUMBER}"
+        echo "Number of failed tests:   ${dotest_TEST_FAILED_NUMBER}"
+        if test -n "${dotest_TEST_FAILED}" ; then
+            echo "Failed tests:"
+            for item in ${dotest_TEST_FAILED} ; do
+                echo "   ${item}" >&2
+            done
+        fi
+        echo
+    fi
     dotest-clean-files
 }
 

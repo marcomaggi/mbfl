@@ -48,6 +48,7 @@ mbfl_declare_option ACTION_DECOMPRESS no '' decompress noarg "selects decompress
 mbfl_declare_option GZIP no G gzip noarg "selects gzip"
 mbfl_declare_option BZIP no B bzip noarg "selects bzip2"
 mbfl_declare_option KEEP no k keep noarg "keeps the original file"
+mbfl_declare_option STDOUT no '' stdout noarg "writes output to stdout"
 
 mbfl_file_enable_compress
 
@@ -67,6 +68,9 @@ function script_option_update_bzip () {
 }
 function script_option_update_keep () {
     mbfl_file_compress_keep
+}
+function script_option_update_stdout () {
+    mbfl_file_compress_stdout
 }
 
 #page
