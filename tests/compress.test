@@ -176,7 +176,7 @@ function compress-bzip-decompress-2.1 () {
 
     compress --bzip --compress "${original}"
     sub-compress-assert-after-compression || dotest-clean-files
-    compress --bzip --decompress "${compressed}"
+    compress --decompress "${compressed}"
     sub-compress-assert-after-decompression
     dotest-clean-files
 }
@@ -187,7 +187,7 @@ function compress-bzip-decompress-2.2 () {
 
     compress --bzip --compress "${original}"
     sub-compress-assert-after-compression || dotest-clean-files
-    compress --bzip --keep --decompress "${compressed}"
+    compress --keep --decompress "${compressed}"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }
@@ -198,7 +198,7 @@ function compress-bzip-decompress-2.3 () {
 
     compress --bzip --compress "${original}"
     sub-compress-assert-after-compression || dotest-clean-files
-    compress --bzip --stdout --decompress "${compressed}" >"${original}"
+    compress --stdout --decompress "${compressed}" >"${original}"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }

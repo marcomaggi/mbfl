@@ -439,6 +439,12 @@ function mbfl_getopts_p_build_and_print_options_usage () {
                 default='empty'
             fi
             printf '\t\t(default: %s)\n' "${default}"
+        else
+            if mbfl_getopts_p_is_action_option "${mbfl_getopts_KEYWORDS[$i]}"; then
+                if test "${mbfl_getopts_DEFAULTS[$i]}" = 'yes' ; then
+                    printf '\t\t(default action)\n'
+                fi
+            fi
         fi
     done
 }

@@ -45,13 +45,13 @@ alias dotest-echo='dotest-p-echo ${FUNCNAME}'
 function dotest-p-echo () {
     local name="$1"
     shift
-    echo "$name: $@" >&2
+    echo -e "$name: $@" >&2
 }
 alias dotest-debug='dotest-p-debug ${FUNCNAME}'
 function dotest-p-debug () {
     local name="$1"
     shift
-    dotest-option-debug && echo "*** $name ***: $@" >&2
+    dotest-option-debug && echo -e "*** $name ***: $@" >&2
 }
 
 #page
@@ -96,20 +96,26 @@ function dotest () {
 	name="${item##${PATTERN}}"
 	if test -n "${name}" -o "${item}" = "${PATTERN}" ; then
 	    item="${PATTERN}${name}"
-	    dotest-option-report-start && \
-		dotest-echo "${item} -- start"
-	    if result=`"${item}"` ; then
-		dotest-option-report-success && \
+	    if dotest-option-report-start ; then
+                dotest-echo "${item} -- start"
+            fi
+	    if result=$("${item}") ; then
+		if dotest-option-report-success ; then
 		    dotest-echo "${item} -- success"
+                else
+                    if dotest-option-report-start ; then
+                        echo
+                    fi
+                fi
 	    else
-		dotest-echo "${item} -- *** FAILED ***"
+		dotest-echo "${item} -- *** FAILED ***\n"
 		dotest_TEST_FAILED="${dotest_TEST_FAILED} ${item}"
 		let ++dotest_TEST_FAILED_NUMBER
 	    fi
-	    test -n "$result" && {
+	    if test -n "$result" ; then
 		echo "$result" >&2
 		echo >&2
-	    }
+	    fi
 	    dotest-cd "${ORGPWD}"
 	fi
     done
