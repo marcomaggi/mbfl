@@ -332,17 +332,17 @@ function dotest-final-report () {
 
 
     if test ${dotest_TEST_NUMBER} -ne 0 ; then
-        echo
-        echo "Test file '${mbfl_TEST_FILE:-$0}'"
-        echo "Number of executed tests: ${dotest_TEST_NUMBER}"
-        echo "Number of failed tests:   ${dotest_TEST_FAILED_NUMBER}"
+        printf '\n'
+        printf "Test file '${mbfl_TEST_FILE:-$0}'\n"
+        printf "\tNumber of executed tests: ${dotest_TEST_NUMBER}\n"
+        printf "\tNumber of failed tests:   ${dotest_TEST_FAILED_NUMBER}\n"
         if test -n "${dotest_TEST_FAILED}" ; then
-            echo "Failed tests:"
+            printf "Failed tests:\n"
             for item in ${dotest_TEST_FAILED} ; do
-                echo "   ${item}" >&2
+                printf "   ${item}\n" >&2
             done
         fi
-        echo
+        printf '\n'
     fi
     dotest-clean-files
 }

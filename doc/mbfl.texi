@@ -682,20 +682,23 @@ Copies the @var{source}, a file, to @var{target}, a file
 pathname. Additional arguments are handed to the command unchanged.
 
 If @var{source} does not exist, or if it is not a file, an error is
-generated and the return value is 1. No test is done upon @var{target}.
+generated and the return value is 1.  If @var{target} exists an error is
+printed and the return value is 1.
 @end deffn
 
 
-@deffn Function mbfl_file_copy_recursively @var{source} @var{target} ?@dots{}?
-Copies the @var{source}, a directory, to @var{target}, a directory
-pathname. Additional arguments are handed to the command unchanged. This
-function is like @function{mbfl_file_copy}, but it adds
-@code{--recursive} to the command line of @command{cp}.
+@deffn Function mbfl_file_copy_to_directory @var{source} @var{target} ?@dots{}?
+Copies the @var{source}, a file, into the directory
+@var{target}. Additional arguments are handed to the command unchanged.
 
 If @var{source} does not exist, or if it is not a file, an error is
-generated and the return value is 1. No test is done upon @var{target}.
+generated and the return value is 1.  If @var{target} does not exist or
+it is not a directory: an error message is printed and the return value
+is 1.
 @end deffn
 
+Note that, at present, copying of directories is not supported; one has
+to create the directory and then copy files into it.
 
 @c ------------------------------------------------------------
 @node File Commands Move
@@ -709,11 +712,23 @@ directories (@ref{Program Declaring}). The programs are: @command{mv}.
 
 
 @deffn Function mbfl_file_move @var{source} @var{target} ?@dots{}?
-Moves the @var{source}, a file, to @var{target}, a file
-pathname. Additional arguments are handed to the command unchanged.
+Moves the @var{source}, a file or directory, to @var{target}, a
+pathname.  Additional arguments are handed to the command unchanged.
 
-If @var{source} does not exist, or if it is not a file, an error is
-generated and the return value is 1. No test is done upon @var{target}.
+If @var{source} does not exist, or if it is not readable, an error is
+generated and the return value is 1.  If @var{target} exists an error is
+displayed and the return value is 1.
+@end deffn
+
+
+@deffn Function mbfl_file_move_to_directory @var{source} @var{target} ?@dots{}?
+Moves the @var{source}, a file or directory, into the directory
+@var{target}.  Additional arguments are handed to the command unchanged.
+
+If @var{source} does not exist, or if it is not readable, an error
+message is displayed and the return value is 1.  If @var{target} does
+not exist or it is not a directory: an error message is printed and the
+return value is 1.
 @end deffn
 
 @c ------------------------------------------------------------

@@ -272,7 +272,6 @@ function file-mkdir-1.1 () {
 #page
 
 function file-owner-1.1 () {
-    dotest-mktmpdir
     local name=$(dotest-mkfile file.ext)
 
     mbfl_file_enable_listing
@@ -559,6 +558,74 @@ file-read-1.1 () {
     dotest-equal "${STRING}" "${CONTENT}"
 }
 
+#page
+
+function file-move-1.1 () {
+    local src=$(dotest-mkfile file.ext)
+    local dst=$(dotest-echo-tmpdir)/file2.ext
+
+    mbfl_file_enable_move
+    mbfl_file_move "${src}" "${dst}"
+    test -f "${dst}" -a ! -f "${src}"
+    dotest-equal 0 $?
+    dotest-clean-files
+}
+function file-move-1.2 () {
+    local src=$(dotest-mkdir file.ext)
+    local dst=$(dotest-echo-tmpdir)/file2.ext
+
+    mbfl_file_enable_move
+    mbfl_file_move "${src}" "${dst}"
+    test -d "${dst}" -a ! -e "${src}"
+    dotest-equal 0 $?
+    dotest-clean-files
+}
+function file-move-2.1 () {
+    local src=$(dotest-mkfile file.ext)
+    local dir=$(dotest-mkdir wap)
+    local dst=${dir}/file.ext
+
+    mbfl_file_enable_move
+    mbfl_file_move_to_directory "${src}" "${dir}"
+    test -f "${dst}" -a ! -f "${src}"
+    dotest-equal 0 $?
+    dotest-clean-files
+}
+function file-move-2.2 () {
+    local src=$(dotest-mkdir file.ext)
+    local dir=$(dotest-mkdir wap)
+    local dst=${dir}/file.ext
+
+    mbfl_file_enable_move
+    mbfl_file_move_to_directory "${src}" "${dir}"
+    test -d "${dst}" -a ! -e "${src}"
+    dotest-equal 0 $?
+    dotest-clean-files
+}
+
+#page
+
+function file-copy-1.1 () {
+    local src=$(dotest-mkfile file.ext)
+    local dst=$(dotest-echo-tmpdir)/file2.ext
+
+    mbfl_file_enable_copy
+    mbfl_file_copy "${src}" "${dst}"
+    test -f "${dst}" -a -f "${src}"
+    dotest-equal 0 $?
+    dotest-clean-files
+}
+function file-copy-2.1 () {
+    local src=$(dotest-mkfile file.ext)
+    local dir=$(dotest-mkdir wap)
+    local dst=${dir}/file.ext
+
+    mbfl_file_enable_copy
+    mbfl_file_copy_to_directory "${src}" "${dir}"
+    test -f "${dst}" -a -f "${src}"
+    dotest-equal 0 $?
+    dotest-clean-files
+}
 
 #PAGE
 

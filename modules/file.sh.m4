@@ -380,20 +380,32 @@ function mbfl_file_copy () {
             return 1
         fi
     fi
+    if mbfl_file_exists "${TARGET}" ; then
+        if mbfl_file_is_directory "${TARGET}" ; then
+            mbfl_message_error "target exists and it is a directory '${TARGET}'"
+        else
+            mbfl_message_error "target file already exists '${TARGET}'"
+        fi
+        return 1
+    fi
     mbfl_exec_cp "${SOURCE}" "${TARGET}" "$@"
 }
-function mbfl_file_copy_recursively () {
+function mbfl_file_copy_to_directory () {
     mandatory_parameter(SOURCE, 1, source pathname)
     mandatory_parameter(TARGET, 2, target pathname)
     shift 2
 
     if ! mbfl_option_test ; then
-        if ! mbfl_file_is_readable "${SOURCE}" print_error ; then
-            mbfl_message_error "copying '${SOURCE}'"
+        if \
+            ! mbfl_file_is_readable "${SOURCE}" print_error || \
+            ! mbfl_file_exists "${TARGET}" print_error || \
+            ! mbfl_file_is_directory "${TARGET}" print_error
+            then
+            mbfl_message_error "copying file '${SOURCE}'"
             return 1
         fi
-    fi
-    mbfl_exec_cp "${SOURCE}" "${TARGET}" --recursive "$@"
+    fi 
+    mbfl_exec_cp_to_dir "${SOURCE}" "${TARGET}" "$@"
 }
 function mbfl_exec_cp () {
     mandatory_parameter(SOURCE, 1, source pathname)
@@ -403,6 +415,15 @@ function mbfl_exec_cp () {
 
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec ${CP} ${FLAGS} "$@" -- "${SOURCE}" "${TARGET}"
+}
+function mbfl_exec_cp_to_dir () {
+    mandatory_parameter(SOURCE, 1, source pathname)
+    mandatory_parameter(TARGET, 2, target pathname)
+    shift 2
+    local CP=$(mbfl_program_found cp) FLAGS
+
+    mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
+    mbfl_program_exec ${CP} ${FLAGS} "$@" --target-directory="${TARGET}/" -- "${SOURCE}"
 }
 
 #page
@@ -419,12 +440,29 @@ function mbfl_file_move () {
     shift 2
 
     if ! mbfl_option_test ; then
-        if ! mbfl_file_is_readable "${SOURCE}" ; then
-            mbfl_message_error "moving file '${SOURCE}'"
+        if ! mbfl_file_pathname_is_readable "${SOURCE}" print_error ; then
+            mbfl_message_error "moving '${SOURCE}'"
             return 1
         fi
     fi
     mbfl_exec_mv "${SOURCE}" "${TARGET}" "$@"
+}
+function mbfl_file_move_to_directory () {
+    mandatory_parameter(SOURCE, 1, source pathname)
+    mandatory_parameter(TARGET, 2, target pathname)
+    shift 2
+
+    if ! mbfl_option_test ; then
+        if \
+            ! mbfl_file_pathname_is_readable "${SOURCE}" print_error || \
+            ! mbfl_file_exists "${TARGET}" print_error || \
+            ! mbfl_file_is_directory "${TARGET}" print_error
+            then
+            mbfl_message_error "moving file '${SOURCE}'"
+            return 1
+        fi
+    fi 
+    mbfl_exec_mv_to_dir "${SOURCE}" "${TARGET}" "$@"
 }
 function mbfl_exec_mv () {
     mandatory_parameter(SOURCE, 1, source pathname)
@@ -434,6 +472,15 @@ function mbfl_exec_mv () {
 
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec ${MV} ${FLAGS} "$@" -- "${SOURCE}" "${TARGET}"
+}
+function mbfl_exec_mv_to_dir () {
+    mandatory_parameter(SOURCE, 1, source pathname)
+    mandatory_parameter(TARGET, 2, target pathname)
+    shift 2
+    local MV=$(mbfl_program_found mv) FLAGS
+
+    mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
+    mbfl_program_exec ${MV} ${FLAGS} "$@" --target-directory="${TARGET}/" -- "${SOURCE}"
 }
 
 #page
