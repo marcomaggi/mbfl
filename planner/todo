@@ -1,0 +1,11 @@
+* Tasks
+
+More tests for libsignal. 
+
+ExecProgramChannel: add support  for printing "show program"
+messages  to  a  channel  different from  stderr,  to  avoid
+conflicts with program execution.
+
+* Notes
+
+

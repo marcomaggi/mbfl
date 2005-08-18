@@ -1,0 +1,16 @@
+* Tasks
+
+
+* Notes
+
+mbfl_program_exec should output test messages to channel 12,
+by default a duplicate of stderr (channel 2); this has to be
+documented. 
+
+A function  should activate the feature  of directing stderr
+of the  program to stdout  upon execution, and  then restore
+the duplication 12 -> 2. Something like:
+
+  mbfl_program_request_stderr_to_stdout
+  mbfl_program_exec $command ...
+

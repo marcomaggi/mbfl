@@ -2177,9 +2177,14 @@ Selects and register in an internal state a queue identifier; invokes
 
 @deffn Function mbfl_at_schedule @var{command} @var{time}
 Schedules @var{command} in the currently selected queue; the script will
-be executed at @var{time}. If no error occurs: prints to stdout the
-identifier of the scheduled job; the identifier can be used as argument
-to @function{mbfl_at_drop}.
+be executed at @var{time}.
+
+If no error occurs: prints to stdout the identifier of the scheduled
+job; the identifier can be used as argument to @function{mbfl_at_drop}.
+@strong{Note}: the @command{at} command outputs some text (in which the
+job is embedded) on its stderr channel, so this function redirects
+stderr to stdout to return the value; this operation conflicts with the
+use of the ``show program'' feature of @function{mbfl_program_exec}.
 
 @var{command} must be a string representing the invocation of an
 external executable program: it is sent unchanged to the @command{at}
