@@ -39,6 +39,10 @@ script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] <INFILE >OUTFILE"
 script_DESCRIPTION='Script preprocessor for MBFL.'
+script_EXAMPLES="Usage examples:
+
+${scripts_PROGNAME} <INFILE >OUTFILE
+${scripts_PROGNAME} --outfile=OUTFILE INFILE1 INFILE2 ..."
 
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
