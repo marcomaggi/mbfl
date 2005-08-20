@@ -62,6 +62,8 @@ mbfl_declare_program m4
 mbfl_declare_program grep
 mbfl_declare_program sed
 
+mbfl_main_declare_exit_code 2 wrong_command_line_arguments
+
 #page
 ## ------------------------------------------------------------
 ## Global variables.
@@ -94,16 +96,27 @@ function script_option_update_include () {
 function main () {
     local M4_FLAGS='--prefix-builtins'
     local libfile=${hidden_option_DATADIR}/preprocessor.m4
+    local item
 
     
     M4_FLAGS="${M4_FLAGS} ${includes} ${symbols}"
     mbfl_file_is_readable "${libfile}" && M4_FLAGS="${M4_FLAGS} ${libfile}"
     M4_FLAGS="${M4_FLAGS} ${libraries}"    
 
-    if test "${script_option_ADD_BASH}" = "yes"; then
-        printf '#!%s\n' "${BASH}"
-    fi
-    {
+    if ! {
+        if test $ARGC -eq 0 ; then
+            mbfl_file_cat -
+        else
+            mbfl_argv_all_files || exit_because_wrong_command_line_arguments
+            for item in "${ARGV[@]}" ; do
+                mbfl_message_verbose "reading '${item}'\n"
+                mbfl_file_cat - <"${item}"
+            done
+        fi
+    } | {
+        if test "${script_option_ADD_BASH}" = "yes"; then
+            printf '#!%s\n' "${BASH}"
+        fi
         if test "${script_option_PRESERVE_COMMENTS}" = "yes"; then
             program_m4 ${M4_FLAGS} -
         else
@@ -115,7 +128,7 @@ function main () {
         else
             mbfl_file_cat "${script_option_OUTPUT}"
         fi
-    }
+    } ; then exit $?; fi
     exit_success
 }
 

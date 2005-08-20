@@ -1702,8 +1702,8 @@ This function may block waiting for input.
 
 @deffn Function mbfl_argv_all_files
 Checks that all the arguments in @code{ARGV} are file names of existent
-file.  Returns with code zero if no errors, else prints an error message
-and returns with code 1.
+files.  Returns with code zero if no errors, else prints an error
+message and returns with code 1.
 @end deffn
 
 
