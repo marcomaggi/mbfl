@@ -65,6 +65,7 @@ mbfl_declare_option EVAL \
 mbfl_declare_program m4
 mbfl_declare_program grep
 mbfl_declare_program sed
+mbfl_declare_program cat
 
 mbfl_main_declare_exit_code 2 wrong_command_line_arguments
 
@@ -100,7 +101,6 @@ function script_option_update_include () {
 function main () {
     local M4_FLAGS='--prefix-builtins'
     local libfile=${hidden_option_DATADIR}/preprocessor.m4
-    local item
 
     
     M4_FLAGS="${M4_FLAGS} ${includes} ${symbols}"
@@ -109,19 +109,16 @@ function main () {
 
     if ! {
         if test $ARGC -eq 0 ; then
-            mbfl_file_cat -
+            program_cat
         else
             mbfl_argv_all_files || exit_because_wrong_command_line_arguments
-            for item in "${ARGV[@]}" ; do
-                mbfl_message_verbose "reading '${item}'\n"
-                mbfl_file_cat - <"${item}"
-            done
+            program_cat "${ARGV[@]}"
         fi
     } | {
-        if test "${script_option_ADD_BASH}" = "yes"; then
+        if test "${script_option_ADD_BASH}" = 'yes'; then
             printf '#!%s\n' "${BASH}"
         fi
-        if test "${script_option_PRESERVE_COMMENTS}" = "yes"; then
+        if test "${script_option_PRESERVE_COMMENTS}" = 'yes'; then
             program_m4 ${M4_FLAGS} -
         else
             program_m4 ${M4_FLAGS} - | filter_drop_comments
@@ -130,7 +127,11 @@ function main () {
         if test "${script_option_EVAL}" = 'yes' ; then
             exec "${BASH}"
         else
-            mbfl_file_cat "${script_option_OUTPUT}"
+            if test "${script_option_OUTPUT}" = '-' ; then
+                program_cat
+            else
+                program_cat >"${script_option_OUTPUT}"
+            fi
         fi
     } ; then exit $?; fi
     exit_success
@@ -162,6 +163,10 @@ function program_grep () {
 function program_sed () {
     local SED=$(mbfl_program_found sed)
     mbfl_program_exec ${SED} "$@"
+}
+function program_cat () {
+    local CAT=$(mbfl_program_found cat)
+    mbfl_program_exec ${CAT} "$@"
 }
 
 #page

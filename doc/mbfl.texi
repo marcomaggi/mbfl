@@ -1118,12 +1118,6 @@ prints a message.
 @end deffn
 
 
-@deffn Function mbfl_file_cat @var{OUTPUT_FILE}
-Reads text from the standard input and writes it to @var{OUTPUT_FILE};
-if @code{-} is used as argument: the text goes to the standard output.
-@end deffn
-
-
 @c ------------------------------------------------------------
 @node Getopts
 @chapter Parsing command line options
