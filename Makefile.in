@@ -229,7 +229,7 @@ library_CLEANFILES	= $(library_TARGETS)
 library_REALCLEANFILES	= $(library_CLEANFILES)
 
 
-.PHONY: $(addprefix library-, all clean realclean install)
+.PHONY: library-all library-clean library-realclean library-install
 
 library-all: $(library_TARGETS)
 library-clean:
@@ -281,7 +281,7 @@ script_CLEANFILES	= $(script_TARGETS)
 script_REALCLEANFILES	= $(script_CLEANFILES)
 
 
-.PHONY: $(addprefix script-, all clean realclean install)
+.PHONY: script-all script-clean script-realclean script-install
 
 script-all: $(script_TARGETS)
 script-clean:
@@ -344,7 +344,7 @@ macros_INSTLST		= $(top_srcdir)/macros/preprocessor.m4
 macros_INSTDIR		= $(pkgdatadir)
 
 
-.PHONY: $(addprefix macros-, all clean realclean install)
+.PHONY: macros-all macros-clean macros-realclean macros-install
 
 macros-all: $(macros_TARGETS)
 macros-clean:
@@ -389,7 +389,7 @@ template_INSTLST	= $(call ds-files-from-dir, $(top_srcdir)/examples)
 template_INSTDIR	= $(pkgexampledir)
 
 
-.PHONY: $(addprefix template-, all clean realclean install)
+.PHONY: template-all template-clean template-realclean template-install
 
 template-all: $(template_TARGETS)
 template-clean:
@@ -503,7 +503,7 @@ doc_generic_INSTLST		?= $(filter-out %~, \
 doc_generic_INSTDIR		= $(pkgdocdir)
 
 
-.PHONY: $(addprefix doc_generic-, all clean realclean install)
+.PHONY: doc_generic-all doc_generic-clean doc_generic-realclean doc_generic-install
 
 doc_generic-all: $(doc_generic_TARGETS)
 doc_generic-clean:
@@ -570,7 +570,7 @@ doc_texi2html_CLEANFILES	= $(doc_texinfo_BUILDDIR)
 doc_texi2html_REALCLEANFILES	= $(doc_texi2html_CLEANFILES)
 
 
-.PHONY: $(addprefix doc_texi2html-, all clean realclean install)
+.PHONY: doc_texi2html-all doc_texi2html-clean doc_texi2html-realclean doc_texi2html-install
 
 doc_texi2html-all: $(doc_texi2html_TARGETS)
 doc_texi2html-clean:
@@ -617,7 +617,7 @@ doc_texi2info_CLEANFILES	= $(doc_texinfo_BUILDDIR)
 doc_texi2info_REALCLEANFILES	= $(doc_texi2info_CLEANFILES)
 
 
-.PHONY: $(addprefix doc_texi2info-, all clean realclean install)
+.PHONY: doc_texi2info-all doc_texi2info-clean doc_texi2info-realclean doc_texi2info-install
 
 doc_texi2info-all: $(doc_texi2info_TARGETS)
 doc_texi2info-clean:
