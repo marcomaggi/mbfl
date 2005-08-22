@@ -61,6 +61,7 @@ function mbfl_program_find () {
 ## ------------------------------------------------------------
 
 declare mbfl_program_SUDO_USER='nosudo'
+declare mbfl_program_STDERR_TO_STDOUT='no'
 declare mbfl_program_BASH=${BASH}
 
 function mbfl_program_enable_sudo () {
@@ -79,14 +80,21 @@ function mbfl_program_sudo_user () {
 function mbfl_program_requested_sudo () {
     test "${mbfl_program_SUDO_USER}" != 'nosudo'
 }
+function mbfl_program_redirect_stderr_to_stdout () {
+    mbfl_program_STDERR_TO_STDOUT='yes'
+}
 function mbfl_program_exec () {
     local PERSONA=${mbfl_program_SUDO_USER} USE_SUDO='no' SUDO
+    local STDERR_TO_STDOUT='no'
     mbfl_program_SUDO_USER='nosudo'
 
     if test "${PERSONA}" != 'nosudo' ; then
         SUDO=$(mbfl_program_found sudo)
         USE_SUDO=yes
     fi
+
+    STDERR_TO_STDOUT=${mbfl_program_STDERR_TO_STDOUT}
+    mbfl_program_STDERR_TO_STDOUT='no'
 
     if mbfl_option_test || mbfl_option_show_program ; then
         if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}" ; then
@@ -97,9 +105,17 @@ function mbfl_program_exec () {
     fi
     if ! mbfl_option_test ; then
         if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}" ; then
-            "${SUDO}" -u "${PERSONA}" "${@}"
+            if test "${STDERR_TO_STDOUT}" = 'yes' ; then
+                "${SUDO}" -u "${PERSONA}" "${@}" 2>&1
+            else
+                "${SUDO}" -u "${PERSONA}" "${@}"
+            fi
         else
-            "${@}"
+            if test "${STDERR_TO_STDOUT}" = 'yes' ; then
+                "${@}" 2>&1
+            else
+                "${@}"
+            fi
         fi
     fi
 }

@@ -63,7 +63,8 @@ function mbfl_at_schedule () {
     local QUEUE=${mbfl_p_at_queue_letter}
     local AT=$(mbfl_program_found at)
 
-    if ! printf %s "${SCRIPT}" | mbfl_program_exec "${AT}" -q ${QUEUE} ${TIME} 2>&1
+    mbfl_program_redirect_stderr_to_stdout
+    if ! printf %s "${SCRIPT}" | mbfl_program_exec "${AT}" -q ${QUEUE} ${TIME}
         then
         mbfl_message_error "scheduling command execution '${SCRIPT}' at time '${TIME}'"
         return 1
