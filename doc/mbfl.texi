@@ -2035,6 +2035,16 @@ Execute @var{command} in a @command{bash} subprocess, using the
 library at start up, from the built in variable @code{BASH}.
 @end deffn
 
+
+@deffn Function mbfl_program_redirect_stderr_to_stdout
+Just for the next invocation to @function{mbfl_program_exec} redirects
+stderr to stdout, that is use the @code{2>&1} redirection. This is
+useful because redirecting the output of @function{mbfl_program_exec},
+redirects also the ``show program'' output (@ref{Getopts Options}, for
+the @option{--show-program} option explanation).
+@end deffn
+
+
 @c ------------------------------------------------------------
 @node Program Declaring
 @section Declaring the intention to use a program
