@@ -63,13 +63,25 @@ function mbfl_at_schedule () {
     local QUEUE=${mbfl_p_at_queue_letter}
     local AT=$(mbfl_program_found at)
 
-    mbfl_program_redirect_stderr_to_stdout
-    if ! printf %s "${SCRIPT}" | mbfl_program_exec "${AT}" -q ${QUEUE} ${TIME}
-        then
-        mbfl_message_error "scheduling command execution '${SCRIPT}' at time '${TIME}'"
-        return 1
-    fi | { read ; read ; set -- ${REPLY}; printf %d "$2"; }
-    return 0
+    # The return code of this function is the return code of the
+    # following pipe.
+    printf %s "${SCRIPT}" | {
+        mbfl_program_redirect_stderr_to_stdout
+        if ! mbfl_program_exec "${AT}" -q ${QUEUE} ${TIME} ; then
+            mbfl_message_error \
+                "scheduling command execution '${SCRIPT}' at time '${TIME}'"
+            return 1
+        fi
+    } | {
+        if ! read && read ; then
+            mbfl_message_error "reading output of 'at'"
+            mbfl_message_error \
+                "while scheduling command execution '${SCRIPT}' at time '${TIME}'"
+            return 1
+        fi
+        set -- ${REPLY}
+        printf %d "$2"
+    }
 }
 function mbfl_at_queue_print_identifiers () {
     local QUEUE=${mbfl_p_at_queue_letter}

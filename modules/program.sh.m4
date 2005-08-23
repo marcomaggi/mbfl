@@ -44,11 +44,11 @@ function mbfl_program_check () {
 }
 function mbfl_program_find () {
     mandatory_parameter(PROGRAM, 1, program)
-    local program=
+    local item
 
-    for program in $(type -ap "${PROGRAM}"); do
-        if mbfl_file_is_executable "${program}" ; then
-            printf "${program}\n"
+    for item in $(type -ap "${PROGRAM}"); do
+        if mbfl_file_is_executable "${item}" ; then
+            printf "%s\n" "${item}"
             return 0
         fi
     done
@@ -137,10 +137,15 @@ if test "${mbfl_INTERACTIVE}" != 'yes'; then
 fi
 function mbfl_declare_program () {
     mandatory_parameter(PROGRAM, 1, program)
+    local pathname
     local next_free_index=${#mbfl_program_NAMES[@]}
 
     mbfl_program_NAMES[${next_free_index}]="${PROGRAM}"
-    mbfl_program_PATHS[${next_free_index}]=$(mbfl_program_find "${PROGRAM}")
+    PROGRAM=$(mbfl_program_find "${PROGRAM}")
+    if test -n "${PROGRAM}" ; then
+        PROGRAM=$(mbfl_file_normalise "${PROGRAM}")
+    fi
+    mbfl_program_PATHS[${next_free_index}]="${PROGRAM}"
     return 0
 }
 function mbfl_program_validate_declared () {
