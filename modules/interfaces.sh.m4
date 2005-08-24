@@ -73,12 +73,13 @@ function mbfl_at_schedule () {
             return 1
         fi
     } | {
-        if ! read && read ; then
+        if ! { read; read; } ; then
             mbfl_message_error "reading output of 'at'"
             mbfl_message_error \
                 "while scheduling command execution '${SCRIPT}' at time '${TIME}'"
             return 1
         fi
+        
         set -- ${REPLY}
         printf %d "$2"
     }
