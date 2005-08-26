@@ -32,11 +32,18 @@
 ## ------------------------------------------------------------
 
 function mbfl_cd () {
-    mbfl_change_directory "$@"
-    mbfl_message_verbose "entering directory: '${PWD}'\n"
+    mandatory_parameter(DIRECTORY, 1, directory)
+    shift 1
+
+    DIRECTORY=$(mbfl_file_normalise "${DIRECTORY}")
+    mbfl_message_verbose "entering directory: '${DIRECTORY}'\n"
+    mbfl_change_directory "${DIRECTORY}" "$@"
 }
 function mbfl_change_directory () {
-    cd "$@" &>/dev/null
+    mandatory_parameter(DIRECTORY, 1, directory)
+    shift 1
+
+    cd "$@" "${DIRECTORY}" &>/dev/null
 }
 
 #page
@@ -551,6 +558,17 @@ function mbfl_file_enable_listing () {
     mbfl_declare_program ls
     mbfl_declare_program readlink
 }
+function mbfl_file_listing () {
+    mandatory_parameter(PATHNAME, 1, pathname)
+    shift 1
+    local LS=$(mbfl_program_found ls)
+    mbfl_program_exec ${LS} "$@" "${PATHNAME}"
+}
+function mbfl_file_long_listing () {
+    mandatory_parameter(PATHNAME, 1, pathname)
+    local LS_FLAGS='-l'
+    mbfl_file_listing "${PATHNAME}" "${LS_FLAGS}"
+}
 function mbfl_file_get_owner () {
     mandatory_parameter(PATHNAME, 1, pathname)
     local LS_FLAGS="-l" OWNER
@@ -588,7 +606,7 @@ function mbfl_file_p_invoke_ls () {
 }
 function mbfl_file_normalise_link () {
     local READLINK=$(mbfl_program_found readlink)
-    mbfl_program_exec ${READLINK} -fn $1
+    mbfl_program_exec "${READLINK}" -fn $1
 }
 
 #page

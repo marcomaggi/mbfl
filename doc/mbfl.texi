@@ -612,6 +612,17 @@ programs are: @command{ls}.
 @end deffn
 
 
+@deffn Function mbfl_file_listing @var{pathname}
+Executes @command{ls} with @var{pathname} as argument.
+@end deffn
+
+
+@deffn Function mbfl_file_long_listing @var{pathname}
+Executes @command{ls} with @var{pathname} as argument and the flag
+@code{-l}.
+@end deffn
+
+
 @deffn Function mbfl_file_get_owner @var{pathname}
 Prints the owner of the file.
 @end deffn
