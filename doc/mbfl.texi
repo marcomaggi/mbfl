@@ -650,6 +650,14 @@ readlink -fn $@var{pathname}
 @end example
 @end deffn
 
+
+@deffn Function mbfl_file_read_link @var{pathname}
+Makes use of the @command{readlink} to acquire the original pathname
+referenced by @var{pathname}, then prints it.
+@end deffn
+
+
+
 @c ------------------------------------------------------------
 @node File Commands Mkdir
 @subsection Creating directories

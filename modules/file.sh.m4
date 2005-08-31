@@ -605,8 +605,14 @@ function mbfl_file_p_invoke_ls () {
     mbfl_program_exec ${LS} ${LS_FLAGS} "${PATHNAME}"
 }
 function mbfl_file_normalise_link () {
+    mandatory_parameter(PATHNAME, 1, pathname)
     local READLINK=$(mbfl_program_found readlink)
-    mbfl_program_exec "${READLINK}" -fn $1
+    mbfl_program_exec "${READLINK}" -fn "${PATHNAME}"
+}
+function mbfl_file_read_link () {
+    mandatory_parameter(PATHNAME, 1, pathname)
+    local READLINK=$(mbfl_program_found readlink)
+    mbfl_program_exec "${READLINK}" "${PATHNAME}"
 }
 
 #page
