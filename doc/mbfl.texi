@@ -147,12 +147,16 @@ true for the options parsing module.
 
 @section Using the library
 
+
+@subsection Quick runtime loading
+
 @noindent
 The best way to use the library is to include at runtime the library
 file @file{libmbfl.sh} in the script; this is possible by installing
 @mbfl{} on the system and using this code in the scripts:
 
 @example
+mbfl_INTERACTIVE='no'
 source "$@{MBFL_LIBRARY:=$(mbfl-config)@}"
 @end example
 
@@ -163,6 +167,72 @@ the environment variable @env{MBFL_LIBRARY}; if this variable is not
 set: the script @command{mbfl-config} is invoked with no arguments to
 acquire the pathname of the library. @command{mbfl-config} is installed
 in the @file{bin} directory by the package.
+
+
+@subsection Reliable runtime loading
+
+@noindent
+A more reliable solution is:
+
+@example
+mbfl_INTERACTIVE='no'
+mbfl_LOADED='no'
+INSTALLED_MBFL="$(mbfl-config)" &>/dev/null
+for item in "$@{MBFL_LIBRARY@}" ./some/dir/libmbfl.sh "$@{INSTALLED_MBFL@}"
+    do
+    if test -n "$@{item@}" -f "$@{item@}" -a -r "$@{item@}" ; then
+        if ! source "$@{item@}" &>/dev/null ; then
+            printf '%s error: evaluating MBFL "%s"\n' \
+                "$@{script_PROGNAME@}" "$@{item@}" >&2
+            exit 2
+        fi
+    fi
+done
+if test "$@{mbfl_LOADED@}" != 'yes' ; then
+    printf '%s error: loading MBFL\n' "$@{script_PROGNAME@}" >&2
+fi
+@end example
+
+@noindent
+where the optional @file{./some/dir/libmbfl.sh} can be a path to a known
+location  in which to find the library; with this code:
+
+@enumerate
+@item
+look for the pathname in the @env{MBFL_LIBRARY} variable, to allow us to
+explicitly select the file from the command line; example:
+
+@example
+$ MBFL_LIBRARY=/path/to/libmbfl.sh script.sh
+@end example
+
+@item
+look in some known directory; for example a subdirectory of a software
+package that we have distributed;
+@item
+as a last resort try to evaluate the @command{mbfl-config} script to
+pick up a library installed on the system.
+@end enumerate
+
+We see that the output of the @command{source} command is discarded:
+this is because we assume that:
+
+@itemize
+@item
+if an error occurs evaluating the library a lot of error messages may
+fill the screen, confusing the user; we just want a single error message
+pointing the finger of the blame;
+@item
+an error in the evaluation of the library code can be replicated because
+the evaluation does not heavily depends on the environment, so we can
+track down library errors later.
+@end itemize
+
+This code is included in the @mbfl{} distribution in the
+@file{loader.sh} file.
+
+
+@subsection Direct inclusion
 
 Another solution is to include the library directly in the script; this
 is easy if we preprocess our scripts with @acronym{GNU} @command{m4}:

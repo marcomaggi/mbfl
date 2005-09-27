@@ -46,6 +46,7 @@ script_EXAMPLES="Usage examples:
 
 \t${script_PROGNAME} --bzip --stdout --compress file.ext >file.ext.bz2"
 
+mbfl_INTERACTIVE='no'
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
 # keyword default-value brief-option long-option has-argument description
