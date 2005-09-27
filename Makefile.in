@@ -96,6 +96,7 @@ INSTALL			= @INSTALL@
 INSTALL_DIR		= $(INSTALL) -m $(INSTALL_DIR_MODE) -d
 INSTALL_BIN		= $(INSTALL) -m $(INSTALL_BIN_MODE)
 INSTALL_DATA		= $(INSTALL) -m $(INSTALL_DATA_MODE)
+INSTALL_LIB		= $(INSTALL) -m $(INSTALL_DATA_MODE) --strip
 
 DEVELSTUFF		= @DEVELSTUFF@
 
@@ -133,7 +134,7 @@ $(ds_group_RULES):
 
 $(addsuffix -all, $(ds_group_RULES)): %-all : %
 
-.PHONY: dist bindist reconfigure
+.PHONY: dist bindist reconfigure automake
 
 dist bindist dist-test:
 	$(DEVELSTUFF) --$(@)
@@ -143,6 +144,10 @@ reconfigure:
 	$(MAKE) realclean
 	$(DEVELSTUFF) --autoconf --verbose
 	$(DEVELSTUFF) --reconfigure --verbose --builddir="$(builddir)"
+
+automake:
+	$(DEVELSTUFF) --automake --verbose
+	./config.status
 
 # Makefile.ds --
 #
@@ -666,7 +671,7 @@ $(doc_texinfo_BUILDDIR)/version.texiinc: Makefile
 
 #page
 ## ------------------------------------------------------------
-## Auto configuration rules.
+## Autoc onfiguration rules.
 ## ------------------------------------------------------------
 
 ds_config_CLEANFILES	= config.log config.status config.cache Makefile

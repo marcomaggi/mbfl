@@ -234,6 +234,7 @@ This code is included in the @mbfl{} distribution in the
 
 @subsection Direct inclusion
 
+@noindent
 Another solution is to include the library directly in the script; this
 is easy if we preprocess our scripts with @acronym{GNU} @command{m4}:
 
@@ -341,6 +342,9 @@ so they are not executed. Disabled modules are: main, getopts, signal;
 ``disabled'' does not mean that the functions are not there: only the
 global variable declarations are excluded; this is a little dirty, but,
 at present, it should work.
+
+The purpose of interactive loading is only to test and debug the
+functions by hand.
 @end itemize
 
 
