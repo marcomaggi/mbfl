@@ -180,7 +180,7 @@ mbfl_LOADED='no'
 INSTALLED_MBFL="$(mbfl-config)" &>/dev/null
 for item in "$@{MBFL_LIBRARY@}" ./some/dir/libmbfl.sh "$@{INSTALLED_MBFL@}"
     do
-    if test -n "$@{item@}" -f "$@{item@}" -a -r "$@{item@}" ; then
+    if test -n "$@{item@}" -a -f "$@{item@}" -a -r "$@{item@}" ; then
         if ! source "$@{item@}" &>/dev/null ; then
             printf '%s error: evaluating MBFL "%s"\n' \
                 "$@{script_PROGNAME@}" "$@{item@}" >&2
