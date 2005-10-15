@@ -51,10 +51,22 @@ function mbfl_change_directory () {
 ## File name functions.
 ## ------------------------------------------------------------
 
+# *NOTE*: the file name functions are not implemented using the
+# parameter expansion functionalities; in the way the author has
+# comprehended parameter expansion: there are cases that are not
+# correctly handled.
+
 function mbfl_file_extension () {
     mandatory_parameter(PATHNAME, 1, pathname)
+
+#     PATHNAME=${PATHNAME##*/}
+#     PATHNAME=${PATHNAME#*.}
+#     printf '%s\n' "${PATHNAME}"
+#     return
+
     local i=
-    
+
+
     for ((i="${#PATHNAME}"; $i >= 0; --i)); do
         test "${PATHNAME:$i:1}" = '/' && return
         if mbfl_string_is_equal_unquoted_char "${PATHNAME}" $i '.' ; then
@@ -518,7 +530,6 @@ function mbfl_file_make_directory () {
     local FLAGS="--parents"
 
     FLAGS="${FLAGS} --mode=${PERMISSIONS}"
-    mbfl_file_is_directory "${PATHNAME}" && return 0
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec "${MKDIR}" $FLAGS "${PATHNAME}"
 }

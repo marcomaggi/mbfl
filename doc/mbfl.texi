@@ -747,6 +747,8 @@ directories (@ref{Program Declaring}). The programs are: @command{mkdir}.
 Creates a directory named @var{pathname}; all the unexistent parents are
 created, too. If @var{permissions} is present: it is the specification
 of directory permissions in octal mode.
+
+This function does not test if the directory already exists.
 @end deffn
 
 
