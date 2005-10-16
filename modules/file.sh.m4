@@ -831,16 +831,19 @@ function mbfl_file_get_permissions () {
     local CUT=$(mbfl_program_found cut)
     local SYMBOLIC OWNER GROUP OTHER
 
-    SYMBOLIC=$(mbfl_program_exec ${LS} -l "${PATHNAME}" | \
-        mbfl_program_exec ${CUT} -d' ' -f1)
+    # Here we use '-d' even with files: it appears to work with GNU ls.
+    SYMBOLIC=$(mbfl_program_exec ${LS} -ld "${PATHNAME}" | \
+        mbfl_program_exec ${CUT} -d' ' -f1) || return $?
+    mbfl_message_debug "symbolic permissions '${SYMBOLIC}'"
     OWNER=${SYMBOLIC:1:3}
     GROUP=${SYMBOLIC:4:3}
     OTHER=${SYMBOLIC:7:3}
 
-    printf '0%d%d%d\n' \
-        $(mbfl_system_symbolic_to_octal_permissions ${OWNER}) \
-        $(mbfl_system_symbolic_to_octal_permissions ${GROUP}) \
-        $(mbfl_system_symbolic_to_octal_permissions ${OTHER})
+    OWNER=$(mbfl_system_symbolic_to_octal_permissions "${OWNER}")
+    GROUP=$(mbfl_system_symbolic_to_octal_permissions "${GROUP}")
+    OTHER=$(mbfl_system_symbolic_to_octal_permissions "${OTHER}")
+
+    printf '0%d%d%d\n' "${OWNER}" "${GROUP}" "${OTHER}"
 }
 function mbfl_file_set_permissions () {
     mandatory_parameter(PERMISSIONS, 1, permissions)
