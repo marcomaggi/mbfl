@@ -56,8 +56,10 @@ if test "${mbfl_INTERACTIVE}" != 'yes'; then
     mbfl_main_EXIT_NAMES[0]='success'
     mbfl_main_EXIT_CODES[1]=1
     mbfl_main_EXIT_NAMES[1]='failure'
-    mbfl_main_EXIT_CODES[2]=20
+    mbfl_main_EXIT_CODES[2]=99
     mbfl_main_EXIT_NAMES[2]='program_not_found'
+    mbfl_main_EXIT_CODES[3]=98
+    mbfl_main_EXIT_NAMES[3]='wrong_num_args'
 fi
 
 function exit_success () {

@@ -81,7 +81,7 @@ mbfl_message_DEFAULT_OPTIONS="
 \t--verbose-program
 \t\tverbose execution for external program (if supported)
 \t--show-program
-\t\tprint then command line of executed external programs
+\t\tprint the command line of executed external programs
 \t--null
 \t\tuse the null character as terminator
 \t--debug

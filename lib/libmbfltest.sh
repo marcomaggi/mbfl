@@ -294,7 +294,7 @@ function dotest-assert-file-unexists () {
 
 function dotest-program-mkdir () {
     dotest-option-verbose && FLAGS="--verbose"
-    if ! dotest-program-exec /bin/mkdir --parents $FLAGS --mode=0700 "$@" >&2
+    if ! dotest-program-exec /bin/mkdir --parents ${FLAGS} --mode=0700 "$@" >&2
         then
 	dotest-clean-files
 	exit 2
@@ -302,7 +302,7 @@ function dotest-program-mkdir () {
 }
 function dotest-program-rm () {
     dotest-option-verbose && FLAGS="--verbose"
-    dotest-program-exec /bin/rm --force --recursive $FLAGS "$@" >&2
+    dotest-program-exec /bin/rm --force --recursive ${FLAGS} "$@" >&2
 }
 function dotest-program-exec () {
     if dotest-option-test ; then

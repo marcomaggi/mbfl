@@ -87,7 +87,7 @@ function script-3.1 () {
 
 function script-4.1 () {
     script --list-exit-codes | dotest-output \
-        "0 success\n1 failure\n20 program_not_found\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
+        "0 success\n1 failure\n99 program_not_found\n98 wrong_num_args\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
 }
 function script-4.2 () {
     script --print-exit-code=second_error | dotest-output 2

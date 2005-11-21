@@ -104,8 +104,11 @@ function main () {
 
     mbfl_cd "${script_option_DIRECTORY}"
     for item in "${FILES[@]}" ; do
+        mbfl_message_debug "executing subprocess for test '${item}'"
         {
-            printf 'source %s\nsource %s\n' "${testlib}" "${lib}"
+            printf 'source %s || exit 2\n' "${lib}"
+            printf 'source %s || exit 2\n' "${testlib}"
+            mbfl_option_debug && printf 'mbfl_set_option_debug\n'
             printf 'export MBFL_LIBRARY=%s\n' "${lib}"
             printf 'mbfl_TEST_FILE=%s\n' "${item}"
             printf 'source %s\n' "${item}"

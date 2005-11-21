@@ -14,7 +14,7 @@ vpath	%.sh.m4		$(builddir)
 
 
 MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
-		$(BASH) $(top_srcdir)/infrastructure/mbflpp.sh		\
+		$(BASH_PROGRAM) $(top_srcdir)/infrastructure/mbflpp.sh		\
 		--include=$(top_srcdir)/macros				\
 		--include=$(modules_BUILDDIR)				\
 		--library=preprocessor.m4	 			\
@@ -30,7 +30,7 @@ MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
 MODULES			= base encode file getopts message program signal \
 			  string dialog main variable system interfaces
 
-modules_SRCDIR		= $(top_srcdir)/modules
+DS_SRCDIR(modules)
 DS_BUILDDIR(modules)
 
 modules_SOURCES		= $(foreach m, $(MODULES), $(modules_SRCDIR)/$(m).sh.m4)
@@ -71,28 +71,28 @@ $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
 ## ------------------------------------------------------------
 
 script_TARGETS		= mbflpp.sh mbfltest.sh
-script_INSTLST		= mbfl-config mbflpp.sh mbfltest.sh
+script_INSTLST		= mbflpp.sh mbfltest.sh
 script_INSTDIR		= $(pkglibexecdir)
+
+script_link_INSTDIR	= $(bindir)
 
 script_CLEANFILES	= $(script_TARGETS)
 script_REALCLEANFILES	= $(script_CLEANFILES)
 
-DS_SECTION(script, bin, BIN)
+DS_SECTION(script,bin,BIN)
 
 script-install-sub:
-AM_INSTALL_DIR($(bindir))
-	cd $(INSTALL_ROOT)$(bindir) && \
-	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfl-config mbfl-config
+	$(call ds-install-directory,script_link)
 	cd $(INSTALL_ROOT)$(bindir) && \
 	$(SYMLINK) ../libexec/$(PKG_DIR)/mbflpp.sh mbflpp.sh
 	cd $(INSTALL_ROOT)$(bindir) && \
 	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfltest.sh mbfltest.sh
 
 mbflpp.sh: $(top_srcdir)/scripts/mbflpp.sh
-	$(MBFLPP) --preserve-comments <$(<) >$(@)
+	$(MBFLPP) --add-bash --preserve-comments <$(<) >$(@)
 
 mbfltest.sh: $(top_srcdir)/scripts/mbfltest.sh
-	$(MBFLPP) --preserve-comments <$(<) >$(@)
+	$(MBFLPP) --add-bash --preserve-comments <$(<) >$(@)
 
 #page
 ## ------------------------------------------------------------

@@ -14,7 +14,7 @@ ds_package_long_description({ MBFL is a library of GNU Bash functions.
 ds_source_file(./lib/libmbfl.sh.m4)
 
 ds_init
-AC_CONFIG_FILES(mbfl-config:scripts/mbfl-config)
+ds_config_inspection_script
 ds_output
 
 ds_make_template({
@@ -26,6 +26,7 @@ DS_PROJECT_RULES
 DS_TESTS
 DS_GENERIC_DOCUMENTATION
 DS_TEXINFO_DOCUMENTATION
+DS_CONFIG_INSPECTION_SCRIPT
 DS_AUTO_CONFIGURATION
 DS_END_OF_MAKEFILE
 })

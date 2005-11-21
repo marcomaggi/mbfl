@@ -1537,8 +1537,8 @@ declared with @function{mbfl_declare_option}; a string describing the
 @mbfl{} default options. Then exits with code zero.
 
 @item -H
-@item --brief-help
-@item --brief-usage
+@itemx --brief-help
+@itemx --brief-usage
 Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
@@ -1775,6 +1775,11 @@ returns with code zero.
 @deffn Function mbfl_wrong_num_args_range @var{min_required} @var{max_required} @var{argc}
 Validates the number of arguments. @var{argc} must be between
 @var{min_required} and @var{max_required}, inclusive.
+@end deffn
+
+
+@deffn Function exit_because_wrong_num_args
+Exits with code @code{98}.
 @end deffn
 
 
@@ -2279,7 +2284,7 @@ function program_wrapper () @{
 
 
 @deffn Function exit_because_program_not_found
-Terminates the script with exit code 20.
+Terminates the script with exit code @code{99}.
 @end deffn
 
 
@@ -2970,6 +2975,7 @@ his taste.
 
 @menu
 * Testing Intro::               A way to organise a test suite.
+* Testing Shell::               A script to run tests.
 * Testing Config::              Configuring the package.
 * Testing Running::             Running tests.
 * Testing Compare::             Validating results by comparing.
@@ -2988,8 +2994,19 @@ his taste.
 A useful way to organise a test suite is to split it into a set of
 files: one for each module to be tested.
 
-The file @file{mbfltest.sh} must be sourced at the beginning of each
-test file.
+The file @file{libmbfltest.sh} must be sourced at the beginning of each
+test file. This means that the variables that you set may interfere with
+the ones in the library; this should not happen because the test library
+prefixes variable names with @code{mbfl_} or @code{dotest_}, but one
+exception is @env{TMPDIR}: do not set it in your script, use
+@function{dotest-echo-tmpdir} to access that value (@ref{Testing Files}
+for details).
+
+
+@subsection A not so automated example
+
+@noindent
+To understand how the library works lets examine a bare bone example.
 
 The function @code{dotest} should be invoked at the end of each module
 in the test suite; each module should define functions starting with the
@@ -2999,7 +3016,7 @@ the following:
 @example
 # mymodule.test --
 
-source mbfltest.sh
+source libmbfltest.sh
 source module.sh
 
 function module-featureA-1.1 () @{ ... @}
@@ -3031,7 +3048,7 @@ directories selected by the @env{PATH} environment variables, so we may
 want to do:
 
 @example
-$ PATH="path/to/modules:$@{PATH@}" \
+$ PATH=path/to/modules:$@{PATH@} \
 TESTMATCH=module-featureA bash mymodule.test
 @end example
 
@@ -3041,7 +3058,7 @@ It is better to put such stuff in a @file{Makefile}, with @acronym{GNU}
 @example
 top_srcdir      = ...
 builddir        = ...
-BASHPROG        = bash
+BASH_PROGRAM    = bash
 MODULES         = moduleA moduleB
 
 testdir         = $(top_srcdir)/tests
@@ -3049,7 +3066,7 @@ test_FILES      = $(foreach f, $(MODULES), $(testdir)/$(f).test)
 test_TARGETS    = test-modules
 
 test_ENV        = PATH=$(builddir):$(testdir):$(PATH) TESTMATCH=$(TESTMATCH)
-test_CMD        = $(test_ENV) $(BASHPROG)
+test_CMD        = $(test_ENV) $(BASH_PROGRAM)
 
 .PHONY: test-modules
 
@@ -3058,6 +3075,70 @@ ifneq ($(strip $(test_FILES)),)
         @@$(foreach f, $(test_FILES), $(test_CMD) $(f);)
 endif
 @end example
+
+
+@c ------------------------------------------------------------
+@node Testing Shell
+@section A script to run tests
+
+
+@noindent
+@mbfl{} comes with a script that can be used to handle the execution
+of tests; it is called @command{mbfltest.sh}. Synopsis:
+
+@example
+mbfltest.sh [options] TESTFILE ...
+@end example
+
+@noindent
+supported options are all the @mbfl{} generic ones (@ref{Getopts
+Options}) and additionally:
+
+@table @code
+@item --start
+print start messages for tests, it is the same as invoking
+@function{dotest-set-report-start};
+@item --end
+print end messages for tests, it is the same as invoking
+@function{dotest-set-report-success};
+@item --match=VALUE
+select match pattern for tests, it is the same as setting the
+@env{TESTMATCH} variable;
+@item --directory=VALUE
+change directory before executing tests, but after having located the
+test files on the file system;
+@item --library=VALUE
+select a specific version of the @mbfl{} library.
+@end table
+
+When running tests with the script: in the test modules we can omit the
+sourcing of @mbfl{} and the @mbfl{} test library, @command{mbfltest.sh}
+does this before sourcing the test module. Each test module is evaluated
+in a @bash{} subprocess, so: there is no interference between modules;
+each module has to do its own initialisation and finalisation.
+
+With @gnu{} @command{make} we can do:
+
+@example
+MBFLTEST        = mbfltest.sh
+MBFLTEST_FLAGS  = --end --match=
+ifneq (,$(TESTMATCH))
+MBFLTEST_FLAGS  += --match=$(TESTMATCH)
+endif
+
+top_srcdir      = ...
+testdir         = $(top_srcdir)/tests
+TESTNAME        = *
+TESTFILES       = $(wildcard $(testdir)/$(TESTNAME).test)
+
+.PHONY: test tests
+
+ifneq ($(strip $(TESTFILES)),)
+test tests:
+        $(MBFLTEST) $(MBFLTEST_FLAGS) $(TESTFILES)
+endif
+@end example
+
 
 @c ------------------------------------------------------------
 @node Testing Config
@@ -3290,7 +3371,7 @@ parent directory. Prints to stdout the full pathname of the directory.
 @subsubsection Temporary directory
 
 @deffn Function dotest-echo-tmpdir
-Printd the value of the temporary directory in which all the files and
+Prints the value of the temporary directory in which all the files and
 directories will be created. The value is prefixed with the value of the
 environment variable @env{TMPDIR}, or @file{/tmp} if not set.
 @end deffn
