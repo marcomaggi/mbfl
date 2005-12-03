@@ -300,7 +300,7 @@ bin-realclean:	modules-realclean
 
 
 $(modules_TARGETS): $(modules_BUILDDIR)/%.sh: $(modules_SRCDIR)/%.sh.m4 preprocessor.m4
-	$(MBFLPP) $(MBFLPP_MODULES_FLAGS) <$(^) >$(@)
+	$(MBFLPP) $(MBFLPP_MODULES_FLAGS) <$(<) >$(@)
 
 #page
 ## ------------------------------------------------------------
@@ -374,10 +374,10 @@ script-install-sub:
 	$(SYMLINK) ../libexec/$(PKG_DIR)/mbfltest.sh mbfltest.sh
 
 mbflpp.sh: $(top_srcdir)/scripts/mbflpp.sh
-	$(MBFLPP) --add-bash --preserve-comments <$(<) >$(@)
+	$(MBFLPP) $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments <$(<) >$(@)
 
 mbfltest.sh: $(top_srcdir)/scripts/mbfltest.sh
-	$(MBFLPP) --add-bash --preserve-comments <$(<) >$(@)
+	$(MBFLPP) $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments <$(<) >$(@)
 
 #page
 ## ------------------------------------------------------------
@@ -436,21 +436,20 @@ testdir		= $(top_srcdir)/tests
 test_FILES	= $(wildcard $(testdir)/*.test)
 test_TARGETS	= test-all
 
-test_ENV	= PATH=$(builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
-test_ENV	+= builddir=$(builddir) top_srcdir=$(top_srcdir)
+test_ENV	= PATH=$(abs_top_builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
+test_ENV	+= MBFL_LIBRARY=$(abs_top_builddir)/libmbfl.sh
 test_CMD	= $(test_ENV) /bin/bash
 
 .PHONY: test-all test-all-verbose
 
 test-all:
 ifneq ($(strip $(test_FILES)),)
-	@$(foreach f, $(test_FILES), \
-	top_srcdir=$(top_srcdir); $(test_CMD) $(f);)
+	@$(foreach f, $(test_FILES), $(test_CMD) $(f);)
 endif
 
 test-all-verbose:
 ifneq ($(strip $(test_FILES)),)
-	@$(foreach f, $(test_FILES), top_srcdir=$(top_srcdir); \
+	@$(foreach f, $(test_FILES), \
 	TESTSUCCESS='yes' TESTSTART='yes' $(test_CMD) $(f);)
 endif
 
