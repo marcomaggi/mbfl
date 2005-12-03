@@ -352,6 +352,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
             test -n "${script_DESCRIPTION}" && echo -e "${script_DESCRIPTION}"
             echo 'options:'
             mbfl_getopts_p_build_and_print_options_usage
+            test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
 	    exit 0
 	    ;;
         print-options)

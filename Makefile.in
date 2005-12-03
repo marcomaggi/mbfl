@@ -248,14 +248,19 @@ vpath	%.sh.m4		$(top_srcdir)/examples
 vpath	%.sh.m4		$(builddir)
 
 
-MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
-		$(BASH_PROGRAM) $(top_srcdir)/infrastructure/mbflpp.sh		\
+MBFL_LIBRARY	= $(top_srcdir)/infrastructure/libmbfl.sh
+MBFLPP_SCRIPT	= $(top_srcdir)/infrastructure/mbflpp.sh
+MBFLPP_MODULES_FLAGS = \
 		--include=$(top_srcdir)/macros				\
-		--include=$(modules_BUILDDIR)				\
 		--library=preprocessor.m4	 			\
 		--define=__PKGDATADIR__=$(pkgdatadir)			\
 		--define=__PACKAGE_NAME__=$(PACKAGE_NAME)		\
 		--define=__PACKAGE_VERSION__=$(PACKAGE_XVERSION)
+MBFLPP_LIBRARY_FLAGS = \
+		--include=$(modules_BUILDDIR)				\
+		--show-program --preserve-comments
+
+MBFLPP		= MBFL_LIBRARY=$(MBFL_LIBRARY) $(BASH_PROGRAM) $(MBFLPP_SCRIPT)
 
 #PAGE
 ## ------------------------------------------------------------
@@ -276,9 +281,8 @@ modules-make-builddir:
 modules-all: modules-make-builddir
 
 
-modules_SOURCES		= $(foreach m, $(MODULES), $(modules_SRCDIR)/$(m).sh.m4)
-modules_TARGETS		= $(call ds-replace-dir, $(modules_BUILDDIR)/, \
-				$(modules_SOURCES:.sh.m4=.sh))
+modules_SOURCES	= $(foreach m, $(MODULES), $(modules_SRCDIR)/$(m).sh.m4)
+modules_TARGETS	= $(call ds-replace-dir,$(modules_BUILDDIR),$(modules_SOURCES:.sh.m4=.sh))
 
 modules_CLEANFILES	= $(modules_TARGETS)
 modules_REALCLEANFILES	= $(modules_CLEANFILES)
@@ -290,13 +294,13 @@ modules-clean:
 	-@$(call ds-clean-files,modules)
 modules-realclean:
 	-@$(call ds-real-clean-files,modules)
-library:		modules-all
-library-clean:	modules-clean
-library-realclean:	modules-realclean
+bin:		modules-all
+bin-clean:	modules-clean
+bin-realclean:	modules-realclean
 
 
 $(modules_TARGETS): $(modules_BUILDDIR)/%.sh: $(modules_SRCDIR)/%.sh.m4 preprocessor.m4
-	$(MBFLPP) <$(<) >$(@)
+	$(MBFLPP) $(MBFLPP_MODULES_FLAGS) <$(^) >$(@)
 
 #page
 ## ------------------------------------------------------------
@@ -330,7 +334,7 @@ bin-install:	library-install
 
 
 $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
-	$(MBFLPP) --show-program --preserve-comments <$(<) >$(@)
+	$(MBFLPP) $(MBFLPP_LIBRARY_FLAGS) <$(<) >$(@)
 
 #page
 ## ------------------------------------------------------------
@@ -558,8 +562,7 @@ ds_doc_texinfo_PREREQ	= $(ds_doc_texinfo_BUILDDIR)/version.texiinc
 # HTML format.
 
 ds_doc_texi2html_TARGETS	= $(addprefix $(ds_doc_texinfo_BUILDDIR)/, \
-					$(notdir $(ds_doc_texinfo_SOURCES:.texi=.html))) \
-				  $(ds_doc_texinfo_PREREQ)
+					$(notdir $(ds_doc_texinfo_SOURCES:.texi=.html)))
 ds_doc_texi2html_INSTLST	= $(wildcard $(ds_doc_texi2html_TARGETS))
 ds_doc_texi2html_INSTDIR	= $(pkghtmldir)
 
@@ -585,8 +588,7 @@ doc-install:	ds_doc_texi2html-install
 # Info format.
 
 ds_doc_texi2info_TARGETS	= $(addprefix $(ds_doc_texinfo_BUILDDIR)/, \
-					$(notdir $(ds_doc_texinfo_SOURCES:.texi=.info))) \
-				  $(ds_doc_texinfo_PREREQ)
+					$(notdir $(ds_doc_texinfo_SOURCES:.texi=.info)))
 ds_doc_texi2info_INSTLST	= $(wildcard $(foreach f, $(ds_doc_texi2info_TARGETS), $(f)*))
 ds_doc_texi2info_INSTDIR	= $(pkginfodir)
 

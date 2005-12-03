@@ -1,5 +1,5 @@
 # prepare.sh --
 
-../configure
+../configure --prefix=//
 
 ### end of file

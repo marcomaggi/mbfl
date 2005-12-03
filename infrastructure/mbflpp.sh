@@ -1,3 +1,4 @@
+#!/usr/local/bin/bash
 #!/bin/bash
 # mbflpp.sh --
 # 
@@ -39,6 +40,10 @@ script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] <INFILE >OUTFILE"
 script_DESCRIPTION='Script preprocessor for MBFL.'
+script_EXAMPLES="Usage examples:
+
+${script_PROGNAME} <INFILE >OUTFILE
+${script_PROGNAME} --outfile=OUTFILE INFILE1 INFILE2 ..."
 
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
@@ -61,6 +66,9 @@ mbfl_declare_option EVAL \
 mbfl_declare_program m4
 mbfl_declare_program grep
 mbfl_declare_program sed
+mbfl_declare_program cat
+
+mbfl_main_declare_exit_code 2 wrong_command_line_arguments
 
 #page
 ## ------------------------------------------------------------
@@ -100,11 +108,18 @@ function main () {
     mbfl_file_is_readable "${libfile}" && M4_FLAGS="${M4_FLAGS} ${libfile}"
     M4_FLAGS="${M4_FLAGS} ${libraries}"    
 
-    if test "${script_option_ADD_BASH}" = "yes"; then
-        printf '#!%s\n' "${BASH}"
-    fi
-    {
-        if test "${script_option_PRESERVE_COMMENTS}" = "yes"; then
+    if ! {
+        if test $ARGC -eq 0 ; then
+            program_cat
+        else
+            mbfl_argv_all_files || exit_because_wrong_command_line_arguments
+            program_cat "${ARGV[@]}"
+        fi
+    } | {
+        if test "${script_option_ADD_BASH}" = 'yes'; then
+            printf '#!%s\n' "${BASH}"
+        fi
+        if test "${script_option_PRESERVE_COMMENTS}" = 'yes'; then
             program_m4 ${M4_FLAGS} -
         else
             program_m4 ${M4_FLAGS} - | filter_drop_comments
@@ -113,10 +128,14 @@ function main () {
         if test "${script_option_EVAL}" = 'yes' ; then
             exec "${BASH}"
         else
-cat
-#            mbfl_file_cat "${script_option_OUTPUT}"
+            if test "${script_option_OUTPUT}" = '-' ; then
+                program_cat
+            else
+                program_cat >"${script_option_OUTPUT}"
+            fi
         fi
-    }
+    } ; then exit $?; fi
+    exit_success
 }
 
 #page
@@ -145,6 +164,10 @@ function program_grep () {
 function program_sed () {
     local SED=$(mbfl_program_found sed)
     mbfl_program_exec ${SED} "$@"
+}
+function program_cat () {
+    local CAT=$(mbfl_program_found cat)
+    mbfl_program_exec ${CAT} "$@"
 }
 
 #page

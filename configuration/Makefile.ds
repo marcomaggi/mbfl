@@ -13,14 +13,19 @@ vpath	%.sh.m4		$(top_srcdir)/examples
 vpath	%.sh.m4		$(builddir)
 
 
-MBFLPP	= MBFL_LIBRARY=$(top_srcdir)/infrastructure/libmbfl.sh \
-		$(BASH_PROGRAM) $(top_srcdir)/infrastructure/mbflpp.sh		\
+MBFL_LIBRARY	= $(top_srcdir)/infrastructure/libmbfl.sh
+MBFLPP_SCRIPT	= $(top_srcdir)/infrastructure/mbflpp.sh
+MBFLPP_MODULES_FLAGS = \
 		--include=$(top_srcdir)/macros				\
-		--include=$(modules_BUILDDIR)				\
 		--library=preprocessor.m4	 			\
 		--define=__PKGDATADIR__=$(pkgdatadir)			\
 		--define=__PACKAGE_NAME__=$(PACKAGE_NAME)		\
 		--define=__PACKAGE_VERSION__=$(PACKAGE_XVERSION)
+MBFLPP_LIBRARY_FLAGS = \
+		--include=$(modules_BUILDDIR)				\
+		--show-program --preserve-comments
+
+MBFLPP		= MBFL_LIBRARY=$(MBFL_LIBRARY) $(BASH_PROGRAM) $(MBFLPP_SCRIPT)
 
 #PAGE
 ## ------------------------------------------------------------
@@ -33,17 +38,16 @@ MODULES			= base encode file getopts message program signal \
 DS_SRCDIR(modules)
 DS_BUILDDIR(modules)
 
-modules_SOURCES		= $(foreach m, $(MODULES), $(modules_SRCDIR)/$(m).sh.m4)
-modules_TARGETS		= $(call ds-replace-dir, $(modules_BUILDDIR)/, \
-				$(modules_SOURCES:.sh.m4=.sh))
+modules_SOURCES	= $(foreach m, $(MODULES), $(modules_SRCDIR)/$(m).sh.m4)
+modules_TARGETS	= $(call ds-replace-dir,$(modules_BUILDDIR),$(modules_SOURCES:.sh.m4=.sh))
 
 modules_CLEANFILES	= $(modules_TARGETS)
 modules_REALCLEANFILES	= $(modules_CLEANFILES)
 
-DS_SECTION_NO_INSTALL(modules, library)
+DS_SECTION_NO_INSTALL(modules,bin)
 
 $(modules_TARGETS): $(modules_BUILDDIR)/%.sh: $(modules_SRCDIR)/%.sh.m4 preprocessor.m4
-	$(MBFLPP) <$(<) >$(@)
+	$(MBFLPP) $(MBFLPP_MODULES_FLAGS) <$(^) >$(@)
 
 #page
 ## ------------------------------------------------------------
@@ -63,7 +67,7 @@ library_REALCLEANFILES	= $(library_CLEANFILES)
 DS_SECTION(library, bin, DATA)
 
 $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
-	$(MBFLPP) --show-program --preserve-comments <$(<) >$(@)
+	$(MBFLPP) $(MBFLPP_LIBRARY_FLAGS) <$(<) >$(@)
 
 #page
 ## ------------------------------------------------------------
