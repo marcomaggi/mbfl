@@ -41,11 +41,12 @@ BASE_VERSION='@PACKAGE_VERSION_MAJMIN@'
 
 # If 'configure' is invoked with '--prefix=/': for some reason GNU
 # Autoconf does not substitute '${prefix}' with '/' and '@datadir@'
-# here is substituted with something like '${prefix}/share'.
+# here is substituted with something like '${prefix}/share', while
+# '${prefix}' is expanded to the empty string.
 #
-# So we include the following 'prefix' definition.
-prefix=${prefix:=/}
-pkgdatadir="@datadir@/@PACKAGE_NAME@_@PACKAGE_XVERSION@"
+# So we initialise this letting the shell do a round of variable
+# substitution, to let "${prefix}" expand to the empty string.
+pkgdatadir="@datadir@/@PKG_DIR@"
 
 USAGE="usage: mbfl-config [option]
 Marco's BASH Functions Library configuration script
