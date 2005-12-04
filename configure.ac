@@ -8,15 +8,15 @@
 ## Initialisation.
 ## ------------------------------------------------------------
 
-AC_INIT([mbfl], [1.2.34], [marcomaggi@tiscalinet.it])
+AC_INIT([mbfl], [1.2.35], [marcomaggi@tiscalinet.it])
 AC_PREREQ(2.57)
 AC_COPYRIGHT([Copyright (C) 2003, 2004, 2005 by Marco Maggi])
 AC_REVISION([$Revision: 1.1.1.131 $])
 AC_CONFIG_SRCDIR([./lib/libmbfl.sh.m4])
 AC_CONFIG_AUX_DIR([infrastructure])
 
-AC_SUBST([PACKAGE_XVERSION], [1.2a34])
-AC_DEFINE([PACKAGE_XVERSION], ["1.2a34"], [full package version])
+AC_SUBST([PACKAGE_XVERSION], [1.2a35])
+AC_DEFINE([PACKAGE_XVERSION], ["1.2a35"], [full package version])
 AC_SUBST([PACKAGE_NODOT_VERSION],  [12])
 AC_DEFINE([PACKAGE_NODOT_VERSION], ["12"], [package version with no dots])
 AC_SUBST([PACKAGE_NAME_UPPERCASE], [MBFL])
@@ -30,12 +30,12 @@ AC_SUBST([PACKAGE_VERSION_MAJOR],  [1])
 AC_DEFINE([PACKAGE_VERSION_MAJOR], ["1"], [major version number])
 AC_SUBST([PACKAGE_VERSION_MINOR],  [2])
 AC_DEFINE([PACKAGE_VERSION_MINOR], ["2"], [minor version number])
-AC_SUBST([PACKAGE_VERSION_PATCH],  [34])
-AC_DEFINE([PACKAGE_VERSION_PATCH], ["34"], [patch version number])
+AC_SUBST([PACKAGE_VERSION_PATCH],  [35])
+AC_DEFINE([PACKAGE_VERSION_PATCH], ["35"], [patch version number])
 AC_SUBST([PACKAGE_VERSION_STATE],  [a])
 AC_DEFINE([PACKAGE_VERSION_STATE], ["a"], [state of the package])
-AC_SUBST([PKG_DIR], [mbfl/1.2a34])
-AC_SUBST([PKG_ID], [mbfl_1.2a34])
+AC_SUBST([PKG_DIR], [mbfl/1.2a35])
+AC_SUBST([PKG_ID], [mbfl_1.2a35])
 
 
 #PAGE

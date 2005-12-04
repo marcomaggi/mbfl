@@ -35,7 +35,7 @@
 script_PROGNAME=template.sh
 script_VERSION=1.0
 script_COPYRIGHT_YEARS='2004, 2005'
-script_AUTHOR='Marco Maggi and Marco Maggi'
+script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
 script_DESCRIPTION='This is an example script.'
@@ -47,15 +47,25 @@ mbfl_INTERACTIVE='no'
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
 # keyword default-value brief-option long-option has-argument description
-mbfl_declare_option ALPHA no a alpha noarg "selects action alpha"
-mbfl_declare_option BETA "" b beta  witharg "selects option beta"
-mbfl_declare_option VALUE 0 "" value witharg "selects a value"
-mbfl_declare_option FILE 0 f file witharg "selects a file"
-mbfl_declare_option ENABLE no e enable noarg "enables a feature"
-mbfl_declare_option DISABLE no d disable noarg "disables a feature"
+mbfl_declare_option ALPHA no a alpha noarg 0selects action alpha0
+mbfl_declare_option BETA 00 b beta  witharg 0selects option beta0
+mbfl_declare_option VALUE 0 00 value witharg 0selects a value0
+mbfl_declare_option FILE 0 f file witharg 0selects a file0
+mbfl_declare_option ENABLE no e enable noarg 0enables a feature0
+mbfl_declare_option DISABLE no d disable noarg 0disables a feature0
+
+#page
+## ------------------------------------------------------------
+## Declare external programs usage.
+## ------------------------------------------------------------
 
 mbfl_file_enable_make_directory
 mbfl_declare_program woah
+
+#page
+## ------------------------------------------------------------
+## Declare exit codes.
+## ------------------------------------------------------------
 
 mbfl_main_declare_exit_code 2 second_error
 mbfl_main_declare_exit_code 8 eighth_error
