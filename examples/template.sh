@@ -47,12 +47,12 @@ mbfl_INTERACTIVE='no'
 source "${MBFL_LIBRARY:=$(mbfl-config)}"
 
 # keyword default-value brief-option long-option has-argument description
-mbfl_declare_option ALPHA no a alpha noarg 0selects action alpha0
-mbfl_declare_option BETA 00 b beta  witharg 0selects option beta0
-mbfl_declare_option VALUE 0 00 value witharg 0selects a value0
-mbfl_declare_option FILE 0 f file witharg 0selects a file0
-mbfl_declare_option ENABLE no e enable noarg 0enables a feature0
-mbfl_declare_option DISABLE no d disable noarg 0disables a feature0
+mbfl_declare_option ALPHA no a alpha noarg 'selects action alpha'
+mbfl_declare_option BETA '' b beta  witharg 'selects option beta'
+mbfl_declare_option VALUE '' '' value witharg 'selects a value'
+mbfl_declare_option FILE '' f file witharg 'selects a file'
+mbfl_declare_option ENABLE no e enable noarg 'enables a feature'
+mbfl_declare_option DISABLE no d disable noarg 'disables a feature'
 
 #page
 ## ------------------------------------------------------------
