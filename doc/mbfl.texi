@@ -2603,24 +2603,24 @@ Outputs @var{string} with all the occurrencies of upper case
 @section Matching a string with a class
 
 
-@deffn Function mbfl-string-is-alpha-char @var{char}
+@deffn Function mbfl_string_is_alpha_char @var{char}
 Returns true if @var{char} is in one of the ranges: @code{a-z},
 @code{A-Z}.
 @end deffn
 
 
-@deffn Function mbfl-string-is-digit-char @var{char}
+@deffn Function mbfl_string_is_digit_char @var{char}
 Returns true if @var{char} is in one of the ranges: @code{0-9}.
 @end deffn
 
 
-@deffn Function mbfl-string-is-alnum-char @var{char}
-Returns true if @code{mbfl-string-is-alpha-char} ||
-@code{mbfl-string-is-digit-char} returns true when acting on @var{char}.
+@deffn Function mbfl_string_is_alnum_char @var{char}
+Returns true if @code{mbfl_string_is_alpha_char ||
+mbfl_string_is_digit_char} returns true when acting on @var{char}.
 @end deffn
 
 
-@deffn Function mbfl-string-is-noblank-char @var{char}
+@deffn Function mbfl_string_is_noblank_char @var{char}
 Returns true if @var{char} is in none of the characters: @code{ },
 @code{\n}, @code{\r}, @code{\f}, @code{\t}. @var{char} is meant to be
 the unquoted version of the non--blank characters: the one obtained
@@ -2632,20 +2632,20 @@ $'char'
 @end deffn
 
 
-@deffn Function mbfl-string-is-name-char @var{char}
-Returns true if @code{mbfl-string-is-alnum-char} returns true when
+@deffn Function mbfl_string_is_name_char @var{char}
+Returns true if @code{mbfl_string_is_alnum_char} returns true when
 acting upon @var{char} or @var{char} is an underscore, @code{_}.
 @end deffn
 
 
-@deffn Function mbfl-string-is-alpha @var{string}
-@deffnx Function mbfl-string-is-digit @var{string}
-@deffnx Function mbfl-string-is-alnum @var{string}
-@deffnx Function mbfl-string-is-noblank @var{string}
-@deffnx Function mbfl-string-is-name @var{string}
+@deffn Function mbfl_string_is_alpha @var{string}
+@deffnx Function mbfl_string_is_digit @var{string}
+@deffnx Function mbfl_string_is_alnum @var{string}
+@deffnx Function mbfl_string_is_noblank @var{string}
+@deffnx Function mbfl_string_is_name @var{string}
 Return true if the associated char function returns true for each
 character in @var{string}. As an additional constraint:
-@code{mbfl-string-is-name} returns false if @code{mbfl-string-is-digit}
+@code{mbfl_string_is_name} returns false if @code{mbfl_string_is_digit}
 returns true when acting upon the first character of @var{string}.
 @end deffn
 
