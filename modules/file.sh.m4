@@ -607,7 +607,8 @@ function mbfl_file_get_group () {
 function mbfl_file_get_size () {
     mandatory_parameter(PATHNAME, 1, pathname)
     local LS_FLAGS="--block-size=1 --size"
-    set -- $(mbfl_file_p_invoke_ls) || return 1
+    local output=$(mbfl_file_p_invoke_ls) || return 1
+    set -- ${output}
     printf '%s\n' "${1}"
 }
 function mbfl_file_p_invoke_ls () {

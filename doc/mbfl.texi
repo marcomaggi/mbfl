@@ -555,7 +555,7 @@ the first character, echoes to stdout the empty string.
 @end deffn
 
 
-@deffn Function mbfl_file_tail @var{pathnbame}
+@deffn Function mbfl_file_tail @var{pathname}
 Extracts the file portion from a fully qualified file name.  Searches
 the last slash character in the input string and echoes to stdout the
 range of characters from the slash to the end, not including the slash.
