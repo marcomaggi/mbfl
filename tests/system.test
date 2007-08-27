@@ -43,7 +43,7 @@ function system-1.1 () {
 }
 function system-1.2 () {
     mbfl_system_enable_programs
-    mbfl_system_numerical_user_id_to_name 1 | dotest-output 'daemon'
+    mbfl_system_numerical_user_id_to_name 1000 | dotest-output 'marco'
 }
 
 function system-2.1 () {

@@ -2483,7 +2483,7 @@ backslash character, @code{\}, are substituted with a quoted backslash,
 @deffn Function mbfl_string_index @var{string} @var{index}
 Selects a character from a string.  Echoes to stdout the selected
 character. If the index is out of range: the empty string is echoed to
-stdout.
+stdout, that is: a newline is echoed to stdout.
 @end deffn
 
 

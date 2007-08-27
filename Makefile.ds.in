@@ -15,7 +15,7 @@ vpath	%.sh.m4		$(builddir)
 MBFL_LIBRARY	= $(srcdir)/backup/libmbfl.sh
 MBFLPP_SCRIPT	= $(srcdir)/scripts/mbflpp.sh
 
-MBFLPP_MODULES_FLAGS = --show-program \
+MBFLPP_MODULES_FLAGS = \
 		--include=$(srcdir)/macros				\
 		--library=preprocessor.m4	 			\
 		--define=__PKGDATADIR__=$(pkgdatadir)			\
@@ -113,7 +113,7 @@ test_TARGETS	= test-all
 
 test_ENV	= PATH=$(builddir):$(testdir):$(srcdir)/lib:$(PATH)
 test_ENV	+= MBFL_LIBRARY=$(builddir)/libmbfl.sh
-test_CMD	= $(test_ENV) /bin/bash
+test_CMD	= $(test_ENV) $(BASH_PROGRAM)
 
 .PHONY: test-verbose
 

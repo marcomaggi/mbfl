@@ -172,7 +172,7 @@ function dotest-output () {
     IFS="${ORGIFS}"
 
     if test -z "${expected_output}" ; then
-	if test ! -z "${output}" ; then
+	if test ! -z "${output}" -a ${#output} -eq 0 ; then
 	    echo "   expected output of zero length" >&2
 	    echo "   got:      '$output'" >&2
 	    return 1
