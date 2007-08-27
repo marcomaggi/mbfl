@@ -758,7 +758,8 @@ printf '%s\n' "${GROUP}"
 function mbfl_file_get_size () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
 local LS_FLAGS="--block-size=1 --size"
-set -- $(mbfl_file_p_invoke_ls) || return 1
+local output=$(mbfl_file_p_invoke_ls) || return 1
+set -- ${output}
 printf '%s\n' "${1}"
 }
 function mbfl_file_p_invoke_ls () {

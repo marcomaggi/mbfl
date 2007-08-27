@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/bash
 #!/bin/bash
 # mbflpp.sh --
 # 
@@ -34,7 +34,7 @@
 ## ------------------------------------------------------------
 
 script_PROGNAME=mbflpp.sh
-script_VERSION='__PACKAGE_VERSION__'
+script_VERSION='1.2a35'
 script_COPYRIGHT_YEARS=2005
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
@@ -75,7 +75,7 @@ mbfl_main_declare_exit_code 2 wrong_command_line_arguments
 ## Global variables.
 ## ------------------------------------------------------------
 
-hidden_option_DATADIR='__PKGDATADIR__'
+hidden_option_DATADIR='///share/mbfl/1.2a35'
 
 declare symbols libraries includes
 
@@ -145,7 +145,7 @@ function main () {
 
 function filter_drop_comments () {
     program_grep --invert-match -e '^[ \t]*#' -e '^$' | \
-        program_sed -e 's/^[[:blank:]]\+//'
+        program_sed -e 's/^:blank:\+//'
 }
 
 #page

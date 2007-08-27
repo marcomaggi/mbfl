@@ -1,22 +1,21 @@
 # Makefile.ds --
-#
 
 #PAGE
 ## ------------------------------------------------------------
 ## Search paths and programs.
 ## ------------------------------------------------------------
 
-vpath	%.m4		$(top_srcdir)/macros
-vpath	%.sh.m4		$(top_srcdir)/modules
-vpath	%.sh.m4		$(top_srcdir)/lib
-vpath	%.sh.m4		$(top_srcdir)/examples
+vpath	%.m4		$(srcdir)/macros
+vpath	%.sh.m4		$(srcdir)/modules
+vpath	%.sh.m4		$(srcdir)/lib
+vpath	%.sh.m4		$(srcdir)/examples
 vpath	%.sh.m4		$(builddir)
 
 
-MBFL_LIBRARY	= $(top_srcdir)/infrastructure/libmbfl.sh
-MBFLPP_SCRIPT	= $(top_srcdir)/infrastructure/mbflpp.sh
+MBFL_LIBRARY	= $(srcdir)/backup/libmbfl.sh
+MBFLPP_SCRIPT	= $(srcdir)/backup/mbflpp.sh
 MBFLPP_MODULES_FLAGS = \
-		--include=$(top_srcdir)/macros				\
+		--include=$(srcdir)/macros				\
 		--library=preprocessor.m4	 			\
 		--define=__PKGDATADIR__=$(pkgdatadir)			\
 		--define=__PACKAGE_NAME__=$(PACKAGE_NAME)		\
@@ -27,35 +26,34 @@ MBFLPP_LIBRARY_FLAGS = \
 
 MBFLPP		= MBFL_LIBRARY=$(MBFL_LIBRARY) $(BASH_PROGRAM) $(MBFLPP_SCRIPT)
 
+## ------------------------------------------------------------
+
 #PAGE
 ## ------------------------------------------------------------
-## Modules rules.
+## Modules and library rules.
 ## ------------------------------------------------------------
 
 MODULES			= base encode file getopts message program signal \
 			  string dialog main variable system interfaces
 
-DS_SRCDIR(modules)
-DS_BUILDDIR(modules)
+$(eval $(call ds-srcdir,modules))
+$(eval $(call ds-builddir,modules))
 
-modules_SOURCES	= $(foreach m, $(MODULES), $(modules_SRCDIR)/$(m).sh.m4)
-modules_TARGETS	= $(call ds-replace-dir,$(modules_BUILDDIR),$(modules_SOURCES:.sh.m4=.sh))
+modules_SOURCES		= $(foreach m,$(MODULES),$(modules_SRCDIR)/$(m).sh.m4)
+modules_TARGETS		= $(call ds-replace-dir,$(modules_BUILDDIR),$(modules_SOURCES:.sh.m4=.sh))
 
 modules_CLEANFILES	= $(modules_TARGETS)
 modules_REALCLEANFILES	= $(modules_CLEANFILES)
 
-DS_SECTION_NO_INSTALL(modules,bin)
+$(eval $(call ds-module-no-install,modules,bin))
 
 $(modules_TARGETS): $(modules_BUILDDIR)/%.sh: $(modules_SRCDIR)/%.sh.m4 preprocessor.m4
 	$(MBFLPP) $(MBFLPP_MODULES_FLAGS) <$(<) >$(@)
 
-#page
-## ------------------------------------------------------------
-## Library rules.
 ## ------------------------------------------------------------
 
 LIBNAME			= libmbfl.sh
-LIBRARIES		= $(top_srcdir)/lib/libmbfltest.sh
+LIBRARIES		= $(srcdir)/lib/libmbfltest.sh
 
 library_TARGETS		= $(LIBNAME)
 library_INSTLST		= $(library_TARGETS) $(LIBRARIES)
@@ -64,10 +62,12 @@ library_INSTDIR		= $(pkgdatadir)
 library_CLEANFILES	= $(library_TARGETS)
 library_REALCLEANFILES	= $(library_CLEANFILES)
 
-DS_SECTION(library, bin, DATA)
+$(eval $(call ds-module,library,bin,DATA))
 
 $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
 	$(MBFLPP) $(MBFLPP_LIBRARY_FLAGS) <$(<) >$(@)
+
+## ------------------------------------------------------------
 
 #page
 ## ------------------------------------------------------------
@@ -76,59 +76,42 @@ $(LIBNAME): libmbfl.sh.m4 preprocessor.m4 $(modules_TARGETS)
 
 script_TARGETS		= mbflpp.sh mbfltest.sh
 script_INSTLST		= mbflpp.sh mbfltest.sh
-script_INSTDIR		= $(pkglibexecdir)
-
-script_link_INSTDIR	= $(bindir)
+script_INSTDIR		= $(bindir)
 
 script_CLEANFILES	= $(script_TARGETS)
 script_REALCLEANFILES	= $(script_CLEANFILES)
 
-DS_SECTION(script,bin,BIN)
 
-script-install-sub:
-	$(call ds-install-directory,script_link)
-	cd $(INSTALL_ROOT)$(bindir) && \
-	$(SYMLINK) -f ../libexec/$(PKG_DIR)/mbflpp.sh mbflpp.sh
-	cd $(INSTALL_ROOT)$(bindir) && \
-	$(SYMLINK) -f ../libexec/$(PKG_DIR)/mbfltest.sh mbfltest.sh
+$(eval $(call ds-module,script,bin,BIN))
 
-mbflpp.sh: $(top_srcdir)/scripts/mbflpp.sh
+mbflpp.sh: $(srcdir)/scripts/mbflpp.sh
 	$(MBFLPP) $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments <$(<) >$(@)
 
-mbfltest.sh: $(top_srcdir)/scripts/mbfltest.sh
+mbfltest.sh: $(srcdir)/scripts/mbfltest.sh
 	$(MBFLPP) $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments <$(<) >$(@)
 
-#page
-## ------------------------------------------------------------
-## Preprocessor macros rules.
 ## ------------------------------------------------------------
 
-macros_INSTLST		= $(top_srcdir)/macros/preprocessor.m4
+macros_INSTLST		= $(srcdir)/macros/preprocessor.m4
 macros_INSTDIR		= $(pkgdatadir)
 
-DS_SECTION(macros, bin, DATA)
+$(eval $(call ds-module,macros,bin))
 
-#PAGE
-## ------------------------------------------------------------
-## Template rules.
 ## ------------------------------------------------------------
 
-template_INSTLST	= $(call ds-files-from-dir, $(top_srcdir)/examples)
-template_INSTDIR	= $(pkgexampledir)
+examples_INSTLST	= $(call ds-files-from-dir,$(srcdir)/examples)
+examples_INSTDIR	= $(pkgexampledir)
 
-DS_SECTION(template, doc, DATA)
+$(eval $(call ds-module,examples,doc))
 
-#page
-## ------------------------------------------------------------
-## Test rules.
 ## ------------------------------------------------------------
 
-testdir		= $(top_srcdir)/tests
+testdir		= $(srcdir)/tests
 test_FILES	= $(wildcard $(testdir)/*.test)
 test_TARGETS	= test-all
 
-test_ENV	= PATH=$(abs_top_builddir):$(testdir):$(top_srcdir)/lib:$(PATH)
-test_ENV	+= MBFL_LIBRARY=$(abs_top_builddir)/libmbfl.sh
+test_ENV	= PATH=$(builddir):$(testdir):$(srcdir)/lib:$(PATH)
+test_ENV	+= MBFL_LIBRARY=$(builddir)/libmbfl.sh
 test_CMD	= $(test_ENV) /bin/bash
 
 .PHONY: test-all test-all-verbose
@@ -143,17 +126,6 @@ ifneq ($(strip $(test_FILES)),)
 	@$(foreach f, $(test_FILES), \
 	TESTSUCCESS='yes' TESTSTART='yes' $(test_CMD) $(f);)
 endif
-
-#page
-## ------------------------------------------------------------
-## Update targets.
-## ------------------------------------------------------------
-
-.PHONY: update-infrastructure
-
-update-infrastructure: libmbfl.sh mbflpp.sh
-	$(CP) $(^) $(top_srcdir)/infrastructure/
-
 
 ### end of file
 # Local Variables:

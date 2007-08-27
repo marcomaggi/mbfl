@@ -1,1 +1,0 @@
-/usr/local/share/develstuff/infrastructure/automake.m4
