@@ -36,7 +36,7 @@ DEFAULT_OPTION='--library'
 OPTION="${1:-${DEFAULT_OPTION}}"
 
 PACKAGE_NAME_LOWERCASE='@PACKAGE_NAME_LOWERCASE@'
-FULL_VERSION='@PACKAGE_XVERSION@'
+PACKAGE_XVERSION='@PACKAGE_XVERSION@'
 VERSION='@PACKAGE_VERSION@'
 BASE_VERSION='@PACKAGE_VERSION_MAJOR_MINOR@'
 
@@ -70,7 +70,7 @@ case "${OPTION}" in
 	echo "${pkgdatadir}/libmbfltest.sh"
 	;;
     --full-version)
-	echo "${FULL_VERSION}"
+	echo "${PACKAGE_XVERSION}"
 	;;
     --version)
 	echo "${VERSION}"
