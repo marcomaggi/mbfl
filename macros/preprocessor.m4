@@ -26,12 +26,12 @@ m4_divert(-1)m4_dnl
 # 02111-1307, USA.
 # 
 
-m4_changequote([[, ]])
+m4_changequote(`[[', `]]')
 
 m4_define([[mandatory_parameter]],[[local $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])
 m4_define([[optional_parameter]],[[local $1="${$2:-$3}"]])
 
-m4_define([[command_line_argument]], [[local $1="${ARGV[$2]}"]])
+m4_define([[command_line_argument]],[[local $1="${ARGV[$2]}"]])
 
 ### end of file
 # Local Variables:

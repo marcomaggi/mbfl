@@ -57,20 +57,22 @@ function mbfl_read_maybe_null () {
 ## Global option creation functions.
 ## ------------------------------------------------------------
 
-m4_define([[mbfl_create_option_procedures]], [[
+m4_define([[mbfl_create_option_procedure]],[[
+m4_errprint(this is it $1
+)
     function mbfl_set_option_$1 ()   { function mbfl_option_$1 () { true;  }; }
     function mbfl_unset_option_$1 () { function mbfl_option_$1 () { false; }; }
     mbfl_unset_option_$1
 ]])
 
-mbfl_create_option_procedures(test)
-mbfl_create_option_procedures(verbose_program)
-mbfl_create_option_procedures(show_program)
-mbfl_create_option_procedures(verbose)
-mbfl_create_option_procedures(debug)
-mbfl_create_option_procedures(null)
-mbfl_create_option_procedures(interactive)
-mbfl_create_option_procedures(encoded_args)
+mbfl_create_option_procedure([[test]])
+mbfl_create_option_procedure([[verbose_program]])
+mbfl_create_option_procedure([[show_program]])
+mbfl_create_option_procedure([[verbose]])
+mbfl_create_option_procedure([[debug]])
+mbfl_create_option_procedure([[null]])
+mbfl_create_option_procedure([[interactive]])
+mbfl_create_option_procedure([[encoded_args]])
 
 function mbfl_option_test_save () {
     mbfl_option_test && mbfl_save_option_TEST=yes

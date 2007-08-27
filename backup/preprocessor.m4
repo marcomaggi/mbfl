@@ -26,7 +26,7 @@ m4_divert(-1)m4_dnl
 # 02111-1307, USA.
 # 
 
-m4_changequote([[, ]])
+m4_changequote(`[[', `]]')
 
 m4_define([[mandatory_parameter]],
 	[[local $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])

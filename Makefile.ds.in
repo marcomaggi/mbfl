@@ -13,8 +13,9 @@ vpath	%.sh.m4		$(builddir)
 
 
 MBFL_LIBRARY	= $(srcdir)/backup/libmbfl.sh
-MBFLPP_SCRIPT	= $(srcdir)/backup/mbflpp.sh
-MBFLPP_MODULES_FLAGS = \
+MBFLPP_SCRIPT	= $(srcdir)/scripts/mbflpp.sh
+
+MBFLPP_MODULES_FLAGS = --show-program \
 		--include=$(srcdir)/macros				\
 		--library=preprocessor.m4	 			\
 		--define=__PKGDATADIR__=$(pkgdatadir)			\
@@ -114,14 +115,14 @@ test_ENV	= PATH=$(builddir):$(testdir):$(srcdir)/lib:$(PATH)
 test_ENV	+= MBFL_LIBRARY=$(builddir)/libmbfl.sh
 test_CMD	= $(test_ENV) /bin/bash
 
-.PHONY: test-all test-all-verbose
+.PHONY: test-verbose
 
-test-all:
+test:
 ifneq ($(strip $(test_FILES)),)
 	@$(foreach f, $(test_FILES), $(test_CMD) $(f);)
 endif
 
-test-all-verbose:
+test-verbose:
 ifneq ($(strip $(test_FILES)),)
 	@$(foreach f, $(test_FILES), \
 	TESTSUCCESS='yes' TESTSTART='yes' $(test_CMD) $(f);)
