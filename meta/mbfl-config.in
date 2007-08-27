@@ -35,18 +35,16 @@
 DEFAULT_OPTION='--library'
 OPTION="${1:-${DEFAULT_OPTION}}"
 
+PACKAGE_NAME_LOWERCASE='@PACKAGE_NAME_LOWERCASE@'
 FULL_VERSION='@PACKAGE_XVERSION@'
 VERSION='@PACKAGE_VERSION@'
-BASE_VERSION='@PACKAGE_VERSION_MAJMIN@'
+BASE_VERSION='@PACKAGE_VERSION_MAJOR_MINOR@'
 
-# If 'configure' is invoked with '--prefix=/': for some reason GNU
-# Autoconf does not substitute '${prefix}' with '/' and '@datadir@'
-# here is substituted with something like '${prefix}/share', while
-# '${prefix}' is expanded to the empty string.
-#
-# So we initialise this letting the shell do a round of variable
-# substitution, to let "${prefix}" expand to the empty string.
-pkgdatadir="@datadir@/@PKG_DIR@"
+prefix="@prefix@"
+datarootdir="@datarootdir@"
+datadir="@datadir@"
+PKG_DIR="@PKG_DIR@"
+pkgdatadir="@pkgdatadir@"
 
 USAGE="usage: mbfl-config [option]
 Marco's BASH Functions Library configuration script
