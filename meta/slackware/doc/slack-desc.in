@@ -1,0 +1,12 @@
+                            |-----handy-ruler-----------------------------------------------|
+@PACKAGE_NAME_LOWERCASE@-doc: @PACKAGE_NAME@ @PACKAGE_XVERSION@ documentation
+@PACKAGE_NAME_LOWERCASE@-doc:
+@PACKAGE_NAME_LOWERCASE@-doc: This is the documentation for DevelStuff, a collection of
+@PACKAGE_NAME_LOWERCASE@-doc: tools to automate configuration and building of software
+@PACKAGE_NAME_LOWERCASE@-doc: distribution packages.
+@PACKAGE_NAME_LOWERCASE@-doc: 
+@PACKAGE_NAME_LOWERCASE@-doc:
+@PACKAGE_NAME_LOWERCASE@-doc:
+@PACKAGE_NAME_LOWERCASE@-doc:
+@PACKAGE_NAME_LOWERCASE@-doc:
+@PACKAGE_NAME_LOWERCASE@-doc:
