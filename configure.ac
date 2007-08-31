@@ -14,14 +14,14 @@
 # from "${top_srcdir}/infrastructure/acmacros.m4".
 
 
-AC_INIT([mbfl], [1.2.1])
+AC_INIT([mbfl], [1.2.3])
 AC_PREREQ(2.60)
 
-AC_SUBST([PACKAGE_VERSION], [1.2.1])
-AC_DEFINE([PACKAGE_VERSION], ["1.2.1"], [full package version])
+AC_SUBST([PACKAGE_VERSION], [1.2.3])
+AC_DEFINE([PACKAGE_VERSION], ["1.2.3"], [full package version])
 
-AC_SUBST([PACKAGE_XVERSION], [1.2.1])
-AC_DEFINE([PACKAGE_XVERSION], ["1.2.1"], [full extended package version])
+AC_SUBST([PACKAGE_XVERSION], [1.2.3])
+AC_DEFINE([PACKAGE_XVERSION], ["1.2.3"], [full extended package version])
 
 AC_SUBST([PACKAGE_VERSION_MAJOR_MINOR], [1.2])
 AC_DEFINE([PACKAGE_VERSION_MAJOR_MINOR], ["1.2"], [package version major.minor])
