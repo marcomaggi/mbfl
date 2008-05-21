@@ -32,6 +32,12 @@
 ## ------------------------------------------------------------
 
 AC_DEFUN([DS_BEGIN],[
+AC_SYS_INTERPRETER
+AC_SYS_LARGEFILE
+AC_SYS_LONG_FILE_NAMES
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
 DS_DIRECTORIES
 
 AC_ARG_ENABLE([versioned-layout],
@@ -43,19 +49,45 @@ AC_ARG_ENABLE([versioned-layout],
         fi
         AC_SUBST([ds_config_VERSIONED_LAYOUT])
 ],[ds_config_VERSIONED_LAYOUT=yes])
+
+ds_VARIABLES=
 ])
 
 AC_DEFUN([DS_END],[
+
+if test -n "${ds_VARIABLES}" ; then
+    echo "${ds_VARIABLES}" >${srcdir}/configuration/Makefile.variables.in
+fi
+
 DS_CONFIG_FILES
 AC_OUTPUT
 ])
 
 ## ------------------------------------------------------------
 
+# Synopsis:
+#
+#       DS_ADD_VARIABLES([...])
+#
+# Description:
+#
+#  Everything inside the square brackets is put in the
+#  confguration file "Makefile.variables.in", where
+#  it will undergo "configure"'s symbols substitution.
+
+AC_DEFUN([DS_ADD_VARIABLES],[
+ds_VARIABLES=$(printf '%s\n%s' "${ds_VARIABLES}" "$1")
+])
+
+## ------------------------------------------------------------
+
 AC_DEFUN([DS_CONFIG_FILES],[
-AC_CONFIG_FILES([Makefile.library:infrastructure/Makefile.library.in])
-AC_CONFIG_FILES([Makefile.ds])
+AC_CONFIG_FILES([Makefile.library:${ds_top_srcdir}/infrastructure/Makefile.library.in])
+AC_CONFIG_FILES([Makefile.ds:${srcdir}/configuration/Makefile.ds.in])
 AC_CONFIG_FILES([Makefile])
+if test -n "${ds_VARIABLES}" ; then
+AC_CONFIG_FILES([Makefile.variables:${srcdir}/configuration/Makefile.variables.in])
+fi
 ])
 
 ## ------------------------------------------------------------
@@ -66,6 +98,8 @@ AC_CONFIG_FILES([Makefile])
 ## ------------------------------------------------------------
 
 AC_DEFUN([DS_DIRECTORIES],[
+AC_SUBST([ds_top_srcdir],[${srcdir}])
+
 AC_SUBST([PKG_DIR],[\${PACKAGE_NAME_LOWERCASE}/\${PACKAGE_XVERSION}])
 AC_SUBST([pkgdatadir],[\${datadir}/\${PKG_DIR}])
 AC_SUBST([pkgdocdir],[\${docdir}/\${PKG_DIR}])
@@ -211,6 +245,231 @@ else
     AC_PATH_PROG([ds_slackware_UPGRADEPKG_PROGRAM],[upgradepkg],[:],[/sbin:${PATH}])
 fi
 AC_ARG_VAR([ds_slackware_UPGRADEPKG_PROGRAM],[Slackware Linux package upgrader.])
+
+])
+
+## ------------------------------------------------------------
+
+#page
+## ------------------------------------------------------------
+## C language macros.
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#       DS_C_LANGUAGE
+#
+# Description:
+#
+#  Add common stuff for C compiler usage.
+
+AC_DEFUN([DS_C_LANGUAGE],[
+
+AC_CONFIG_HEADERS(config.h)
+
+AC_ARG_ENABLE([assert],
+    AC_HELP_STRING([--disable-assert],[disable assertions]),[
+        if test "$enableval" = yes ; then
+            ds_config_ENABLE_ASSERTIONS=yes
+        else
+            ds_config_ENABLE_ASSERTIONS=no
+        fi],[ds_config_ENABLE_ASSERTIONS=yes])
+AC_DEFINE_UNQUOTED([ds_config_ENABLE_ASSERTIONS],
+    [$ds_config_ENABLE_ASSERTIONS],[turns off assertions])
+AC_SUBST([ds_config_ENABLE_ASSERTIONS])
+
+AC_DEFINE([_GNU_SOURCE],[1],[GNU libc symbol, see its documentation])
+
+## ------------------------------------------------------------
+## Compiler stuff.
+
+# Programs.
+AC_PROG_CC
+AC_PROG_CC_C_O
+AC_PROG_CPP
+AC_PROG_RANLIB
+AC_PATH_PROG([AR],[ar],:)
+AC_PATH_PROG([STRIP], [strip],:)
+AC_PATH_PROG([GDB],[GDB],:)
+#AC_PROG_CC_STDC
+AC_PROG_CC_C99
+
+# Headers and C compiler features.
+AC_INCLUDES_DEFAULT
+AC_HEADER_STDC
+AC_CHECK_HEADERS([assert.h])
+AC_CHECK_HEADERS([limits.h])
+AC_CHECK_HEADERS([dlfcn.h])
+AC_C_BIGENDIAN
+AC_C_CHAR_UNSIGNED
+AC_C_CONST
+AC_C_FLEXIBLE_ARRAY_MEMBER
+AC_C_INLINE
+AC_C_TYPEOF
+AC_C_RESTRICT
+AC_C_VARARRAYS
+AC_C_VOLATILE
+AC_CHECK_TYPES([ptrdiff_t])
+AC_TYPE_SIZE_T
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([memmove memset strerror strchr])
+
+AC_SUBST([NO_MINUS_C_MINUS_O])
+AC_ARG_VAR([GNU_C_FLAGS],[fixed GNU C compiler flags])
+
+## ------------------------------------------------------------
+## Preprocessor stuff.
+
+AC_ARG_VAR([INCLUDES],[directory options for include files])
+
+# Note: 'DEFS' substitution is automatically handled.
+# Note: 'CPPFLAGS' substitution is automatically handled.
+
+## ------------------------------------------------------------
+## Linker stuff.
+
+AC_SUBST([LIBS])
+AC_SUBST([LDFLAGS_RPATH],['-Wl,-rpath,$(libdir)'])
+AC_ARG_VAR([LDFLAGS],[fixed linker flags])
+
+AC_CHECK_LIB([dl],[dlopen],[LDFLAGS_DL=-ldl])
+AC_SUBST(LDFLAGS_DL)
+
+## ------------------------------------------------------------
+
+AC_CACHE_SAVE
+])
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#       DS_C_LANGUAGE_COMMON_LIBRARY
+#
+# Description:
+#
+#  Add common stuff for C language library building.
+
+AC_DEFUN([DS_C_LANGUAGE_COMMON_LIBRARY],[
+
+AC_ARG_ENABLE([shared],
+    AC_HELP_STRING([--enable-shared],[enable shared library (default: ENabled)]),[
+        if test "$enableval" = yes ; then
+            ds_config_ENABLE_SHARED=yes
+        else
+            ds_config_ENABLE_SHARED=no
+        fi],[ds_config_ENABLE_SHARED=yes])
+AC_SUBST([ds_config_ENABLE_SHARED])
+
+AC_ARG_ENABLE([static],
+    AC_HELP_STRING([--enable-static],[enable static library (default: DISabled)]),[
+        if test "$enableval" = yes ; then
+            ds_config_ENABLE_STATIC=yes
+        else
+            ds_config_ENABLE_STATIC=no
+        fi],[ds_config_ENABLE_STATIC=no])
+AC_SUBST([ds_config_ENABLE_STATIC])
+
+])
+
+# Synopsis:
+#
+#       DS_C_LANGUAGE_COMMON_STUB_LIBRARY
+#
+# Description:
+#
+#  Add common stuff for C language stub library building.
+
+AC_DEFUN([DS_C_LANGUAGE_COMMON_STUB_LIBRARY],[
+
+AC_ARG_ENABLE([stub-library],
+    AC_HELP_STRING([--enable-stub-library],[enable building of stub library (default: ENabled)]),[
+        if test "$enableval" = yes ; then
+            ds_config_ENABLE_STUB=yes
+        else
+            ds_config_ENABLE_STUB=no
+        fi],[ds_config_ENABLE_STUB=yes])
+AC_SUBST([ds_config_ENABLE_STUB])
+
+])
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#       DS_C_LANGUAGE_LIBRARY(<LIBRARY_PREFIX>,<MAJOR_INTERFACE_VERSION>,<MINOR_INTERFACE_VERSION>)
+#
+# Description:
+#
+#  Add stuff for a specific library. Example:
+#
+#       DS_C_LANGUAGE_LIBRARY([ucl],[1],[2])
+#
+#  declares a library whose identifier is 'ucl' and whose
+#  interface version is '1.2':
+#
+#  - the shared library file name will be 'libucl1.2.so';
+#
+#  - the shared library file name will be 'libucl1.2.a';
+#
+#  - to link with the library we will do '-lucl1.2'.
+#
+#  Variables definitions are put in "Makefile.variables.in".
+
+AC_DEFUN([DS_C_LANGUAGE_LIBRARY],[
+DS_C_LANGUAGE_LIBRARY_STUB(m4_translit($1,-,_),$2,$3,$1)
+])
+
+AC_DEFUN([DS_C_LANGUAGE_LIBRARY_STUB],[
+
+AC_SUBST([$1_LIBRARY_ID],[$4$2.$3])
+AC_SUBST([$1_INTERFACE_VERSION],[$2.$3])
+AC_SUBST([$1_INTERFACE_MAJOR_VERSION],[$2])
+AC_SUBST([$1_INTERFACE_MINOR_VERSION],[$3])
+
+AC_DEFINE([$1_LIBRARY_ID],[$4$2.$3],[the library identifier])
+AC_DEFINE([$1_INTERFACE_VERSION],[$2.$3],[library interface version])
+AC_DEFINE([$1_INTERFACE_MAJOR_VERSION],[$2],[library interface major version])
+AC_DEFINE([$1_INTERFACE_MINOR_VERSION],[$3],[library interface minor version])
+
+$1_SHARED_LIBRARY_NAME=lib${$1_LIBRARY_ID}.so
+$1_STATIC_LIBRARY_NAME=lib${$1_LIBRARY_ID}.a
+
+$1_stub_SHARED_LIBRARY_ID=$4stub$2.$3
+$1_stub_SHARED_LIBRARY_NAME=lib${$1_stub_SHARED_LIBRARY_ID}.so
+$1_stub_SHARED_LIBRARY_LINK_NAME=lib$4stub$2.so
+$1_stub_SHARED_LIBRARY_LINK_ID=$4stub$2
+$1_stub_STATIC_LIBRARY_ID=$4staticstub$2.$3
+$1_stub_STATIC_LIBRARY_NAME=lib${$1_stub_STATIC_LIBRARY_ID}.a
+
+AC_SUBST([$1_SHARED_LIBRARY_NAME])
+AC_SUBST([$1_STATIC_LIBRARY_NAME])
+AC_SUBST([$1_stub_SHARED_LIBRARY_ID])
+AC_SUBST([$1_stub_SHARED_LIBRARY_NAME])
+AC_SUBST([$1_stub_SHARED_LIBRARY_LINK_NAME])
+AC_SUBST([$1_stub_SHARED_LIBRARY_LINK_ID])
+AC_SUBST([$1_stub_STATIC_LIBRARY_ID])
+AC_SUBST([$1_stub_STATIC_LIBRARY_NAME])
+
+AC_DEFINE_UNQUOTED([$1_stub_SHARED_LIBRARY_NAME],["${$1_stub_SHARED_LIBRARY_NAME}"],[shared library name])
+AC_DEFINE_UNQUOTED([$1_stub_SHARED_LIBRARY_LINK_NAME],["${$1_stub_SHARED_LIBRARY_LINK_NAME}"],\
+    [unversioned link to the shared library])
+
+DS_ADD_VARIABLES([
+$1_LIBRARY_ID                   = @$1_LIBRARY_ID@
+$1_INTERFACE_VERSION            = @$1_INTERFACE_VERSION@
+$1_INTERFACE_MAJOR_VERSION      = @$1_INTERFACE_MAJOR_VERSION@
+$1_INTERFACE_MINOR_VERSION      = @$1_INTERFACE_MINOR_VERSION@
+$1_SHARED_LIBRARY_NAME          = @$1_SHARED_LIBRARY_NAME@
+$1_STATIC_LIBRARY_NAME          = @$1_STATIC_LIBRARY_NAME@
+
+$1_stub_SHARED_LIBRARY_ID       = @$1_stub_SHARED_LIBRARY_ID@
+$1_stub_SHARED_LIBRARY_NAME     = @$1_stub_SHARED_LIBRARY_NAME@
+$1_stub_SHARED_LIBRARY_LINK_NAME= @$1_stub_SHARED_LIBRARY_LINK_NAME@
+$1_stub_SHARED_LIBRARY_LINK_ID  = @$1_stub_SHARED_LIBRARY_LINK_ID@
+$1_stub_STATIC_LIBRARY_ID       = @$1_stub_STATIC_LIBRARY_ID@
+$1_stub_STATIC_LIBRARY_NAME     = @$1_stub_STATIC_LIBRARY_NAME@
+])
 
 ])
 

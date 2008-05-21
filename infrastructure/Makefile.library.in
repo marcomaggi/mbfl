@@ -34,7 +34,7 @@
 # loaded in your "Makefile". It is mandatory to put this file in
 # the "infrastructure" directory of the top source tree:
 #
-#    $(top_srcdir)/infrastructure/Makefile.library.in
+#    $(ds_top_srcdir)/infrastructure/Makefile.library.in
 #
 # so in "configure.ac" (the input file for GNU Autoconf) we can put:
 #
@@ -88,7 +88,7 @@
 #
 # - there is only one "configure.ac" and one "Makefile.in";
 #
-# - the 'top_srcdir' and 'srcdir' variables are set to the
+# - the 'ds_top_srcdir' and 'srcdir' variables are set to the
 #   same pathname.
 #
 # With multiple-package distribution:
@@ -109,7 +109,7 @@
 # - there is one "configure.ac" and one "Makefile.in" for each
 #   package;
 #
-# - the 'top_srcdir' variable is set to the root of the
+# - the 'ds_top_srcdir' variable is set to the root of the
 #   distribution source tree;
 #
 # - the 'srcdir' variable is set to the root of the package
@@ -375,7 +375,6 @@ ds_config_VERSIONED_LAYOUT	?= @ds_config_VERSIONED_LAYOUT@
 
 ds_config_ABI	?= slackware
 
-
 ## ------------------------------------------------------------
 
 # Synopsis:
@@ -476,14 +475,16 @@ endif
 
 # If there is not a value for "TMPDIR" from the environment
 # we select a common default.
-TMPDIR		?= /tmp
+ifeq ($(strip $(TMPDIR)),)
+TMPDIR		= /tmp
+endif
 
 ## ------------------------------------------------------------
 
 ifndef ds_config_EXCLUDE_AUTOCONF_DIRECTORIES
 
 builddir	= $(if @builddir@,@builddir@,.)
-top_srcdir	= $(if @top_srcdir@,@top_srcdir@,.)
+ds_top_srcdir	= $(if @ds_top_srcdir@,@ds_top_srcdir@,.)
 srcdir		= $(if @srcdir@,@srcdir@,.)
 
 prefix		= @prefix@
@@ -593,7 +594,7 @@ endif
 
 # This is the pathname of the infrastructure directory: a relative
 # pathname with respect to the build directory.
-ds_main_INFRADIR	?= $$(top_srcdir)/infrastructure
+ds_main_INFRADIR	?= $$(ds_top_srcdir)/infrastructure
 
 # This is the pathname of the configuration directory: a relative
 # pathname with respect to the build directory.
@@ -624,6 +625,11 @@ clean-builddir:
 .PHONY: ds-nop
 
 ds-nop:
+
+clean:		ds-nop-clean
+realclean:	ds-nop-realclean
+ds-nop-clean:
+ds-nop-realclean:
 
 ## ------------------------------------------------------------
 
@@ -1279,6 +1285,91 @@ endef
 
 #page
 ## ------------------------------------------------------------
+## Predefined modules: pkg-config meta data files.
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-pkg-config,<NAMES>))
+#
+# Description:
+#
+#  Add a module to install the meta data files for pkg-config.
+#  More than one meta file can be selected by setting the
+#  <NAMES> parameter to the list of file names with the ".pc"
+#  extension stripped.
+#
+#  Each of the file names will be "$(builddir)/meta.d/<NAME>.pc",
+#  and it should be produced by "configure" by putting the line
+#
+#	AC_CONFIG_FILES(meta.d/<NAME>.pc:meta/<NAME>.pc.in)
+#
+#  in the "configure.ac" file. It is fine if the files do not
+#  not exist. If <NAMES> is not used: by default an attempt
+#  is done to use "$(PACKAGE_NAME_LOWERCASE).pc".
+
+define ds-pkg-config
+$$(eval $$(call ds-srcdir,ds_pkg_config,$$(srcdir)/meta))
+$$(eval $$(call ds-builddir,ds_pkg_config,$$(builddir)/meta.d))
+
+ds_pkg_config_NAMES	= $$(addsuffix .pc,$$(call ds-ornull,$2,$$(PACKAGE_NAME_LOWERCASE)))
+ds_pkg_config_SOURCES	= $$(call ds-glob,ds_pkg_config,$$(addsuffix .in,$$(ds_pkg_config_NAMES)))
+ds_pkg_config_INSTLST	= $$(call ds-replace-dir,$$(ds_pkg_config_BUILDDIR),$$(ds_pkg_config_SOURCES:.in=))
+ds_pkg_config_INSTDIR	= $$(libdir)/pkgconfig
+
+ifneq ($$(strip $$(ds_pkg_config_SOURCES)),)
+$$(eval $$(call ds-module,ds_pkg_config,bin,DATA))
+endif
+
+endef
+
+## ------------------------------------------------------------
+
+#page
+## ------------------------------------------------------------
+## Predefined modules: GNU Autoconf macro files.
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-autoconf,<NAMES>))
+#
+# Description:
+#
+#  Add a module to install macro files GNU Autoconf. These
+#  files are meant to be included in foreign packages that
+#  depend on this pakcage.
+#
+#  More than one macro file can be selected by setting the
+#  <NAMES> parameter to the list of file names with the ".m4"
+#  extension stripped.
+#
+#  The files are searched in the directory "$(srcdir)/autoconf".
+#  It is fine if the files do not not exist. If <NAMES> is not
+#  used: by default an attempt is done to install
+#  "$(PACKAGE_NAME_LOWERCASE).m4".
+
+define ds-autoconf
+$$(eval $$(call ds-srcdir,ds_autoconf,$$(srcdir)/autoconf))
+
+ds_autoconf_NAMES	= $$(addsuffix .m4,$$(call ds-ornull,$2,$$(PACKAGE_NAME_LOWERCASE)))
+ds_autoconf_INSTLST	= $$(call ds-glob,ds_autoconf,$$(ds_autoconf_NAMES))
+ds_autoconf_INSTDIR	= $$(datadir)/aclocal
+
+ifneq ($$(strip $$(ds_autoconf_INSTLST)),)
+$$(eval $$(call ds-module,ds_autoconf,dev,DATA))
+endif
+
+endef
+
+## ------------------------------------------------------------
+
+
+
+
+
+#page
+## ------------------------------------------------------------
 ## Predefined modules: uninstall scripts.
 ## ------------------------------------------------------------
 
@@ -1398,7 +1489,7 @@ test-clean:
 tests-clean: test-clean
 clean: test-clean
 
-test-realclean:
+test-realclean: test-clean
 tests-realclean: test-realclean
 realclean: test-realclean
 endef
@@ -1435,7 +1526,7 @@ ds_tcl_test_REALCLEANFILES	?=
 tcltest tcltests: $$(ds_tcl_test_TARGETS)
 	if test -f $$(ds_tcl_TESTDIR); then		\
 	  export TMPDIR=$$(TMPDIR);			\
-	  export top_srcdir=$$(top_srcdir);		\
+	  export ds_top_srcdir=$$(ds_top_srcdir);		\
 	  export srcdir=$$(srcdir);			\
 	  export builddir=$$(builddir);			\
 	  $$(TCLSH) $$(ds_tcl_TESTDIR) $$(TESTFLAGS);	\
@@ -1512,6 +1603,8 @@ endef
 # Description:
 #
 #  Add rules to install documentation in Texinfo format.
+#  The variable 'ds_doc_texinfo_AUX_PREREQ' can be used
+#  to add prerequisites.
 
 define ds-texinfo-documentation
 ds_doc_texinfo_SRCDIR	= $$(srcdir)/doc
@@ -1524,7 +1617,9 @@ DS_TEXI_FLAGS		= -I $$(ds_doc_texinfo_SRCDIR) -I $$(ds_doc_texinfo_BUILDDIR)
 DS_TEXI2INFO_FLAGS	= $$(DS_TEXI_FLAGS)
 DS_TEXI2HTML_FLAGS	= $$(DS_TEXI_FLAGS) --html --no-split
 
-ds_doc_texinfo_PREREQ	= $$(ds_doc_texinfo_BUILDDIR)/version.texiinc
+ds_doc_texinfo_PREREQ	= $$(ds_doc_texinfo_BUILDDIR)/version.texiinc \
+			  $$(wildcard $$(ds_doc_texinfo_SRCDIR)/*.texiinc) \
+			  $$(ds_doc_texinfo_AUX_PREREQ)
 
 ## ------------------------------------------------------------
 
@@ -1584,54 +1679,481 @@ endef
 
 # Synopsis:
 #
-#	$(eval $(call ds-c-programs))
-#	
-# Description:
-#
-#  Add variables for C language compiler and tools.
-
-define ds-c-programs
-CC		= @CC@
-AR		= @AR@ rc
-RANLIB		= @RANLIB@
-STRIP		= @STRIP@
-GDB		= @GDB@
-endef
-
-# Synopsis:
-#
-#	$(eval $(call ds-c-programs))
-#	$(eval $(call ds-c-compiler-rules))
+#	$(eval $(call ds-c-language))
 #
 # optionally:
 #
 #	INCLUDES	= $(srcdir)/...
-#	$(eval $(call ds-c-compiler-rules))
+#	$(eval $(call ds-c-language))
 #
 # Description:
 #
-#  Add rules to compile C source files.
+#  Add variables used to compile C source files.
 
-define ds-c-compiler-rules
-INCLUDES	+= @INCLUDES@ -I. -I$$(srcdir)
+define ds-c-language
 
-ifneq ($$(top_srcdir),$$(srcdir))
-INCLUDES	+= -I$$(top_srcdir)
+# If set to 'yes' static libraries are built.
+ds_config_ENABLE_STATIC		?= @ds_config_ENABLE_STATIC@
+
+# If set to 'yes' shared libraries are built.
+ds_config_ENABLE_SHARED		?= @ds_config_ENABLE_SHARED@
+
+# If set to 'yes' stub libraries are built.
+ds_config_ENABLE_STUB		?= @ds_config_ENABLE_STUB@
+
+# Set it to 'yes' to disable 'strip' upon libraries.
+ds_config_ENABLE_STRIP		?= yes
+
+# Set it to 'yes' to enable assertions.
+ds_config_ENABLE_ASSERTIONS	?= @ds_config_ENABLE_ASSERTIONS@
+
+## ------------------------------------------------------------
+
+CC		= @CC@
+CPP		= @CPP@
+AR		= @AR@ rc
+RANLIB		= @RANLIB@
+STRIP		= @STRIP@
+GDB		= @GDB@
+
+## ------------------------------------------------------------
+
+# Notice that '-std=c99' is appended to 'CC' by the Autoconf
+# macro 'AC_PROG_CC_C99'.
+C_DEFAULT	?= -pipe -fPIC
+C_WARNINGS	?= -Wall -W -Wextra -pedantic \
+			-Wmissing-prototypes \
+			-Wpointer-arith -Wcast-qual -Wcast-align \
+			-Wwrite-strings -Wnested-externs \
+			-Wstrict-prototypes -Wshadow
+# This gives error when statically linking linking MPFI.
+# -fno-common
+
+## ------------------------------------------------------------
+## Preprocessor stuff.
+
+DEFS		?= @DEFS@
+ifneq ($$(strip $$(ds_config_ENABLE_ASSERTIONS)),yes)
+DEFS		+= -DNDEBUG=1
 endif
 
-DEFS		= @DEFS@
-LIBS		= @LIBS@
-CPPFLAGS	= @CPPFLAGS@
+INCLUDES	+= @INCLUDES@ -I. -I$$(srcdir)
+ifeq ($$(strip $$(ds_top_srcdir)),$$(strip $$(srcdir)))
+INCLUDES	+= -I$$(ds_top_srcdir)
+endif
 
-GNU_C_FLAGS	= @GNU_C_FLAGS@
-ALL_CFLAGS	= $$(GNU_C_FLAGS) $$(CPPFLAGS) $$(INCLUDES) $$(DEFS)
+CPPFLAGS	?= @CPPFLAGS@ $$(DEFS) $$(INCLUDES)
+
+## ------------------------------------------------------------
+## Linker stuff.
+
+LIBS		?= @LIBS@
+LDFLAGS		?= @LDFLAGS@
+LDFLAGS_RPATH	?= @LDFLAGS_RPATH@
+LDFLAGS_DL	?= @LDFLAGS_DL@
+
+## ------------------------------------------------------------
+
+GNU_C_FLAGS	?= @GNU_C_FLAGS@ $$(C_DEFAULT) $$(C_WARNINGS)
+ALL_CFLAGS	?= $$(GNU_C_FLAGS) $$(CPPFLAGS)
 CFLAGS		?= @CFLAGS@
+OBJEXT		= @OBJEXT@
 
-MAKE_OBJECT	?= $$(CC) $$(ALL_CFLAGS) $$(CFLAGS)
-LINK_OBJECTS	?= $$(CC) $$(ALL_CFLAGS) $$(CFLAGS) $$(LIBS)
+## ------------------------------------------------------------
 
-%.o: %.c
-	$$(MAKE_OBJECT) $$(<) -c -o $$(@)
+NO_MINUS_C_MINUS_O	= @NO_MINUS_C_MINUS_O@
+ifeq ($$(strip $$(NO_MINUS_C_MINUS_O)),)
+CC_COMPILE_OUTPUT	?= -c -o
+else
+CC_COMPILE_OUTPUT	?= -o
+endif
+
+CC_COMMAND_LINE		?= $$(CC) $$(ALL_CFLAGS) $$(CFLAGS)
+CC_COMPILE		?= $$(CC_COMMAND_LINE) $$(CC_COMPILE_OUTPUT)
+CC_BUILD_PROGRAM	?= $$(CC_COMMAND_LINE) $$(LDFLAGS) $$(LIBS) -o
+CC_BUILD_LIBRARY	?= $$(CC_COMMAND_LINE) -shared $$(LDFLAGS) $$(LIBS) -o
+
+endef
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-cc-compile,<VARNAME>,<OPTIONAL_FLAGS>))
+#	$(eval $(call ds-cc-build-program,<VARNAME>,<OPTIONAL_FLAGS>))
+#	$(eval $(call ds-cc-build-library,<VARNAME>,<OPTIONAL_FLAGS>))
+#
+#	$(eval $(call ds-cc-build-program-no-libs,<VARNAME>,<OPTIONAL_FLAGS>))
+#	$(eval $(call ds-cc-build-library-no-libs,<VARNAME>,<OPTIONAL_FLAGS>))
+#
+# Description:
+#
+#  Define a variable to be used as command line for compiling
+#  and linking.
+
+define ds-cc-compile
+$(1)	?= $$(CC) $$(ALL_CFLAGS) $(2) $$(CFLAGS) $(CC_COMPILE_OUTPUT)
+endef
+
+define ds-cc-build-program
+$(1)	?= $$(CC) $$(ALL_CFLAGS) $(2) $$(CFLAGS) $$(LDFLAGS) $$(LIBS) -o
+endef
+
+define ds-cc-build-library
+$(1)	?= $$(CC) $$(ALL_CFLAGS) -shared $(2) $$(CFLAGS) $$(LDFLAGS) $$(LIBS) -o
+endef
+
+define ds-cc-build-program-no-libs
+$(1)	?= $$(CC) $$(ALL_CFLAGS) $(2) $$(CFLAGS) $$(LDFLAGS) -o
+endef
+
+define ds-cc-build-library-no-libs
+$(1)	?= $$(CC) $$(ALL_CFLAGS) -shared $(2) $$(CFLAGS) $$(LDFLAGS) -o
+endef
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-c-sources,<IDENTIFIER>,<SRCDIR>,\
+#		<PATTERNS>,<BUILDDIR>))
+#
+# Description:
+#
+#  Build a set of C language source files.
+#
+#  The optional <PATTERNS> argument allows selection of source
+#  files and defaults to '*.c'.
+#
+#  The optional <BUILDDIR> argument allows selection of build
+#  directory and defaults to '$(builddir)/objects.d'.
+#
+#  The variable '<IDENTIFIER>_PREREQUISITES' can be used to add
+#  prerequisites.
+#
+#  The variable '<IDENTIFIER>_CC_COMPILE' can be used to select
+#  the command line for the C compiler; it defaults to the
+#  expansion of:
+#
+#	$(eval $(call ds-cc-compile,<IDENTIFIER>_CC_COMPILE,-I$(<IDENTIFIER>_SRCDIR)))
+
+define ds-c-sources
+
+$$(eval $$(call ds-srcdir,$(1),$(2)))
+$$(eval $$(call ds-builddir,$(1),$$(call ds-ornull,$(4),$$(builddir)/objects.d)))
+
+vpath	%.h		$$($(1)_SRCDIR)
+vpath	%.$$(OBJEXT)	$$($(1)_BUILDDIR)
+
+$$(eval $$(call ds-cc-compile,$(1)_CC_COMPILE,-I$$($(1)_SRCDIR)))
+
+$(1)_SOURCES	= $$(call ds-glob,$(1),$$(call ds-ornull,$(3),*.c))
+$(1)_TARGETS	= $$(addprefix $$($(1)_BUILDDIR)/,$$(notdir $$($(1)_SOURCES:.c=.$$(OBJEXT))))
+
+$(1)_CLEANFILES		= $$($(1)_TARGETS)
+$(1)_REALCLEANFILES	= $$($(1)_CLEANFILES)
+
+$$(eval $$(call ds-module-no-install,$(1),bin))
+
+$$($(1)_TARGETS) : $$($(1)_BUILDDIR)/%.$$(OBJEXT) : $$($(1)_SRCDIR)/%.c $$($(1)_PREREQUISITES)
+	$$($(1)_CC_COMPILE) $$(@) $$(<)
+endef
+
+## ------------------------------------------------------------
+## Like 'ds-c-sources' but does not compile under 'bin'.
+
+define ds-c-sources-nop
+
+$$(eval $$(call ds-srcdir,$(1),$(2)))
+$$(eval $$(call ds-builddir,$(1),$$(call ds-ornull,$(4),$$(builddir)/objects.d)))
+
+vpath	%.h		$$($(1)_SRCDIR)
+vpath	%.$$(OBJEXT)	$$($(1)_BUILDDIR)
+
+$$(eval $$(call ds-cc-compile,$(1)_CC_COMPILE,-I$$($(1)_SRCDIR)))
+
+$(1)_SOURCES	= $$(call ds-glob,$(1),$$(call ds-ornull,$(3),*.c))
+$(1)_TARGETS	= $$(addprefix $$($(1)_BUILDDIR)/,$$(notdir $$($(1)_SOURCES:.c=.$$(OBJEXT))))
+
+$(1)_CLEANFILES		= $$($(1)_TARGETS)
+$(1)_REALCLEANFILES	= $$($(1)_CLEANFILES)
+
+$$(eval $$(call ds-module-no-install,$(1),ds-nop))
+
+$$($(1)_TARGETS) : $$($(1)_BUILDDIR)/%.$$(OBJEXT) : $$($(1)_SRCDIR)/%.c $$($(1)_PREREQUISITES)
+	$$($(1)_CC_COMPILE) $$(@) $$(<)
+endef
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-c-shared-library,<IDENTIFIER>,<LIBNAME>,<OBJECTS>,<TAIL>))
+#
+# Description:
+#
+#  Build a shared library from a set of selected objects.
+#  The library file will be "lib<LIBNAME>.so".
+#
+#  The variable '<IDENTIFIER>_shared_library_CC_BUILD' can
+#  be used to select the command line for the C compiler; it
+#  defaults to '$(CC_BUILD_LIBRARY)'.
+
+define ds-c-shared-library
+ifeq ($$(strip $$(ds_config_ENABLE_SHARED)),yes)
+
+$(1)_shared_library_CC_BUILD	?= $$(CC_BUILD_LIBRARY)
+$(1)_shared_library_BUILDDIR	?= $$(builddir)/library.d
+$(1)_shared_library_LIBRARY	= $$($(1)_shared_library_BUILDDIR)/lib$(2).so
+
+$$(eval $$(call ds-builddir,$(1)_shared_library,$$($(1)_shared_library_BUILDDIR)))
+
+$(1)_shared_library_OBJECTS	= $(3)
+$(1)_shared_library_TARGETS	= $$($(1)_shared_library_LIBRARY)
+$(1)_shared_library_INSTLST	= $$($(1)_shared_library_TARGETS)
+$(1)_shared_library_INSTDIR	?= $(libdir)
+
+$(1)_shared_library_CLEANFILES		= $$($(1)_shared_library_TARGETS)
+$(1)_shared_library_REALCLEANFILES	= $$($(1)_shared_library_CLEANFILES)
+
+$(1)-clean:	$(1)_shared_library-clean
+$(1)-realclean:	$(1)_shared_library-realclean
+
+$$(eval $$(call ds-module,$(1)_shared_library,bin,LIB))
+
+$$($(1)_shared_library_LIBRARY) : $$($(1)_shared_library_OBJECTS)
+	$$($(1)_shared_library_CC_BUILD) $$(@) $$(^) $4
+ifeq ($$(ds_config_ENABLE_STRIP),yes)
+	$$(STRIP) $$(@)
+endif
+endif
+endef
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-c-static-library,<IDENTIFIER>,<LIBNAME>,<OBJECTS>,<TAIL>))
+#
+# Description:
+#
+#  Build a static library from a set of selected objects. The library file
+#  will be "lib<LIBNAME>.a".
+
+define ds-c-static-library
+ifeq ($$(strip $$(ds_config_ENABLE_STATIC)),yes)
+
+$(1)_static_library_BUILDDIR	= $$(builddir)/library.d
+$(1)_static_library_LIBRARY	= $$($(1)_static_library_BUILDDIR)/lib$(2).a
+
+$$(eval $$(call ds-builddir,$(1)_static_library,$$($(1)_static_library_BUILDDIR)))
+
+$(1)_static_library_OBJECTS	= $(3)
+$(1)_static_library_TARGETS	= $$($(1)_static_library_LIBRARY)
+$(1)_static_library_INSTLST	= $$($(1)_static_library_TARGETS)
+$(1)_static_library_INSTDIR	?= $(libdir)
+
+$(1)_static_library_CLEANFILES		= $$($(1)_static_library_TARGETS)
+$(1)_static_library_REALCLEANFILES	= $$($(1)_static_library_CLEANFILES)
+
+$(1)-clean:	$(1)_static_library-clean
+$(1)-realclean:	$(1)_static_library-realclean
+
+$$(eval $$(call ds-module,$(1)_static_library,dev,LIB))
+
+$$($(1)_static_library_LIBRARY) : $$($(1)_static_library_OBJECTS)
+	$$(AR) $$(@) $$(^) $4
+	-($$(RANLIB) $$(@) || true) >/dev/null 2>&1
+
+endif
+endef
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-c-aux-static-library,<IDENTIFIER>,<LIBNAME>,<OBJECTS>,<TAIL>))
+#
+# Description:
+#
+#  Build a static library from a set of selected objects. The library file
+#  will be "lib<LIBNAME>.a".
+#
+#  The difference from 'ds-c-static-library' is that this library is built
+#  when 'ds_config_ENABLE_SHARED' is 'yes'. This function is meant to be
+#  used for static libraries that are auxiliary to shared libraries, like
+#  static stub libraries.
+
+define ds-c-aux-static-library
+ifeq ($$(strip $$(ds_config_ENABLE_SHARED)),yes)
+
+$(1)_static_library_BUILDDIR	= $$(builddir)/library.d
+$(1)_static_library_LIBRARY	= $$($(1)_static_library_BUILDDIR)/lib$(2).a
+
+$$(eval $$(call ds-builddir,$(1)_static_library,$$($(1)_static_library_BUILDDIR)))
+
+$(1)_static_library_OBJECTS	= $(3)
+$(1)_static_library_TARGETS	= $$($(1)_static_library_LIBRARY)
+$(1)_static_library_INSTLST	= $$($(1)_static_library_TARGETS)
+$(1)_static_library_INSTDIR	?= $(libdir)
+
+$(1)_static_library_CLEANFILES		= $$($(1)_static_library_TARGETS)
+$(1)_static_library_REALCLEANFILES	= $$($(1)_static_library_CLEANFILES)
+
+$(1)-clean:	$(1)_static_library-clean
+$(1)-realclean:	$(1)_static_library-realclean
+
+$$(eval $$(call ds-module,$(1)_static_library,dev,LIB))
+
+$$($(1)_static_library_LIBRARY) : $$($(1)_static_library_OBJECTS)
+	$$(AR) $$(@) $$(^) $4
+	-($$(RANLIB) $$(@) || true) >/dev/null 2>&1
+
+endif
+endef
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-h-files-installer,<IDENTIFIER>,<SRCDIR>,<PATTERNS>))
+#
+# Description:
+#
+#  Install header files.
+
+define ds-h-files-installer
+
+$$(eval $$(call ds-srcdir,$(1),$(2)))
+
+$(1)_headers_INSTLST	= $$(call ds-glob,$(1),$$(call ds-ornull,$(3),*.h))
+$(1)_headers_INSTDIR	?= $$(pkgincludedir)
+
+$$(eval $$(call ds-module,$(1)_headers,dev))
+
+endef
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-c-program,<IDENTIFIER>,<PROGNAME>,<OBJECTS>,<TAIL>))
+#
+# Description:
+#
+#  Build an executable program from a set of selected objects.
+#  The program file name is "<PROGNAME>".
+#
+#  The variable '<IDENTIFIER>_program_CC_BUILD' can be used to
+#  select the command line for the C compiler; it defaults to
+#  '$(CC_BUILD_PROGRAM)'.
+
+define ds-c-program
+$(1)_program_CC_BUILD		?= $$(CC_BUILD_PROGRAM)
+$(1)_program_BUILDDIR		?= $$(builddir)/bin.d
+$(1)_program_EXECUTABLE		= $$($(1)_program_BUILDDIR)/$(2)
+
+$$(eval $$(call ds-builddir,$(1)_program,$$($(1)_program_BUILDDIR)))
+
+$(1)_program_OBJECTS		= $(3)
+$(1)_program_TARGETS		= $$($(1)_program_EXECUTABLE)
+$(1)_program_INSTLST		= $$($(1)_program_TARGETS)
+$(1)_program_INSTDIR		?= $(pkglibexecdir)
+
+$(1)_program_CLEANFILES		= $$($(1)_program_TARGETS)
+$(1)_program_REALCLEANFILES	= $$($(1)_program_CLEANFILES)
+
+$$(eval $$(call ds-module,$(1)_program,bin,BIN))
+
+clean:		$(1)_program-clean
+realclean:	$(1)_program-realclean
+
+$$($(1)_program_EXECUTABLE): $$($(1)_program_OBJECTS)
+	$$($(1)_program_CC_BUILD) $$(@) $$(^) $4
+ifeq ($$(ds_config_ENABLE_STRIP),yes)
+	$$(STRIP) $$(@)
+endif
+endef
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-c-program-no-install,<IDENTIFIER>,<PROGNAME>,<OBJECTS>,<TAIL>))
+#
+# Description:
+#
+#  Build an executable program from a set of selected objects. The
+#  program file name is "<PROGNAME>". Does not install the result.
+#
+#  The variable '<IDENTIFIER>_program_CC_BUILD' can be used to
+#  select the command line for the C compiler; it defaults to
+#  '$(CC_BUILD_PROGRAM)'.
+
+define ds-c-program-no-install
+$(1)_program_CC_BUILD		?= $$(CC_BUILD_PROGRAM)
+$(1)_program_BUILDDIR		?= $$(builddir)/bin.d
+$(1)_program_EXECUTABLE		= $$($(1)_program_BUILDDIR)/$(2)
+
+$$(eval $$(call ds-builddir,$(1)_program,$$($(1)_program_BUILDDIR)))
+
+$(1)_program_OBJECTS		= $(3)
+$(1)_program_TARGETS		= $$($(1)_program_EXECUTABLE)
+
+$(1)_program_CLEANFILES		= $$($(1)_program_TARGETS)
+$(1)_program_REALCLEANFILES	= $$($(1)_program_CLEANFILES)
+
+$$(eval $$(call ds-module-no-install,$(1)_program,ds-nop))
+
+clean:		$(1)_program-clean
+realclean:	$(1)_program-realclean
+
+$$($(1)_program_EXECUTABLE): $$($(1)_program_OBJECTS)
+	$$($(1)_program_CC_BUILD) $$(@) $$(^) $4
+	$$(STRIP) $$(@)
+endef
+
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#	$(eval $(call ds-c-test-programs,<IDENTIFIER>,<OBJECTS>,<TAIL>))
+#
+# Description:
+#
+#  Build and run a set of C test programs from already compiled
+#  object files.
+#
+#  The variable '<IDENTIFIER>_test_program_CC_BUILD' can be
+#  used to select the command line for the C compiler; it defaults
+#  to '$(CC_BUILD_PROGRAM)'.
+#
+#  The variable '<IDENTIFIER>_test_program_PREREQUISITES' can be
+#  used to select prerequisites for the programs.
+#
+#  The variable '<IDENTIFIER>_test_program_COMMON_OBJECTS' can be
+#  used to select object prerequisites for the programs that are
+#  linked in.
+
+define ds-c-test-programs
+$(1)_test_programs_CC_BUILD	?= $$(CC_BUILD_PROGRAM)
+$(1)_test_programs_BUILDDIR	?= $$(builddir)/tests.d
+
+$$(eval $$(call ds-builddir,$(1)_test_programs,$$($(1)_test_programs_BUILDDIR)))
+
+$(1)_test_programs_OBJECTS	= $(2)
+$(1)_test_programs_TARGETS	= $$($(1)_test_programs_OBJECTS:.$$(OBJEXT)=)
+
+$(1)_test_programs_CLEANFILES		= $$($(1)_test_programs_TARGETS)
+$(1)_test_programs_REALCLEANFILES	= $$($(1)_test_programs_CLEANFILES)
+
+$$(eval $$(call ds-module-no-install,$(1)_test_programs,ds-nop))
+
+$$($(1)_test_programs_TARGETS): % : %.$$(OBJEXT)	\
+		$$($(1)_test_programs_COMMON_OBJECTS)	\
+		$$($(1)_test_programs_PREREQUISITES)
+	$$($(1)_test_programs_CC_BUILD) $$(@) $$(<) $$($(1)_test_programs_COMMON_OBJECTS) \
+		 $$($(1)_test_programs_TAIL) $3
 endef
 
 ## ------------------------------------------------------------
@@ -1744,12 +2266,12 @@ dist:
 	$$(RM_SILENT) $$(TMPDIR)/$$(ds_dist_ARCHIVE)
 	$$(MKDIR) $$(ds_dist_TMPDIR)
 	$$(TAR) \
-		--directory=$$(top_srcdir) --create --file=- --dereference	\
+		--directory=$$(ds_top_srcdir) --create --file=- --dereference	\
 		--exclude=RCS                   --exclude=CVS                   \
 		--exclude=archives              --exclude=\*.ps			\
 		--exclude=\*.dvi                --exclude=tmp			\
 		--exclude=\*.gz                 --exclude=\*.tar                \
-		--exclude=\*.so                 --exclude=\*.o                  \
+		--exclude=\*.so                 --exclude=\*.$$(OBJEXT)         \
 		--exclude=\*.a                  --exclude=\*.rpm                \
 		--exclude=\*.deb                --exclude=.emacs\*		\
 		--exclude=\*~                   --exclude=TAGS                  \
@@ -1923,15 +2445,15 @@ ds_slackware_REMOVEPKG		= $$(ds_slackware_PRECMD) $$(ds_slackware_REMOVEPKG_PROG
 # This should be an architecture tag, like 'i486'.
 # 'noarch' means that the package works for any
 # architecture
-ds_slackware_PACKAGE_ARCHITECTURE	?= noarch
+ds_slackware_PACKAGE_ARCHITECTURE	?= $(shell $(ds_main_INFRADIR)/config.guess | cut -f1 -d'-')
 # This should be the build number followed by
 # your initials ('mm' = Marco Maggi).
-ds_slackware_PACKAGE_TAG		?= 1mm
-ds_slackware_PACKAGE_SPEC		?= -$$(ds_slackware_PACKAGE_ARCHITECTURE)-$$(ds_slackware_PACKAGE_TAG)
+ds_slackware_PACKAGE_TAG	?= 1mm
+ds_slackware_PACKAGE_SPEC	?= -$$(ds_slackware_PACKAGE_ARCHITECTURE)-$$(ds_slackware_PACKAGE_TAG)
 
 ds_slackware_PACKAGE_SUFFIX	= $$(ds_slackware_PACKAGE_SPEC).tgz
 ds_slackware_PACKAGE_BIN_FILE	= $$(PACKAGE_NAME)-$$(PACKAGE_XVERSION)$$(ds_slackware_PACKAGE_SUFFIX)
-ds_slackware_PACKAGE_DOC_FILE	= $$(PACKAGE_NAME)-doc-$$(PACKAGE_XVERSION)$$(ds_slackware_PACKAGE_SUFFIX)
+ds_slackware_PACKAGE_DOC_FILE	= $$(PACKAGE_NAME)-doc-$$(PACKAGE_XVERSION)-noarch-$$(ds_slackware_PACKAGE_TAG).tgz
 ds_slackware_PACKAGE_DEV_FILE	= $$(PACKAGE_NAME)-dev-$$(PACKAGE_XVERSION)$$(ds_slackware_PACKAGE_SUFFIX)
 
 ds_slackware_STORED_PACKAGE_BIN	= $$(ds_slackware_STOREDIR)/$$(ds_slackware_PACKAGE_BIN_FILE)

@@ -1,0 +1,17 @@
+## ~/.gitignore --
+
+*~
+=*
+*.o
+*.a
+*.so.*
+*.so
+.arch
+{arch}
+autom4te*
+.emacs.*
+
+### end of file
+# Local Variables:
+# mode: script
+# End:
