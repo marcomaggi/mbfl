@@ -1,7 +1,6 @@
-## ~/.gitignore --
-
 *~
 =*
+,,*
 *.o
 *.a
 *.so.*
@@ -10,8 +9,8 @@
 {arch}
 autom4te*
 .emacs.*
-
-### end of file
-# Local Variables:
-# mode: script
-# End:
+*.gz
+*.bz2
+*.info
+*.html
+configure

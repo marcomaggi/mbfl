@@ -13,14 +13,14 @@
 # The real GNU Autoconf configuration script is in "configure.ds",
 # which is loaded in this file. A set of macros is also loaded
 # from "${ds_top_srcdir}/infrastructure/acmacros.m4".
-AC_INIT([mbfl],[1.3a1])
+AC_INIT([mbfl],[1.3a2])
 AC_PREREQ(2.60)
 
 AC_SUBST([PACKAGE_VERSION],[1.3.0])
 AC_DEFINE([PACKAGE_VERSION],["1.3.0"],[full package version])
 
-AC_SUBST([PACKAGE_XVERSION],[1.3a1])
-AC_DEFINE([PACKAGE_XVERSION],["1.3a1"],[full extended package version])
+AC_SUBST([PACKAGE_XVERSION],[1.3a2])
+AC_DEFINE([PACKAGE_XVERSION],["1.3a2"],[full extended package version])
 
 AC_SUBST([PACKAGE_VERSION_MAJOR],[1])
 AC_DEFINE([PACKAGE_VERSION_MAJOR],["1"],[package version major number])
@@ -28,8 +28,8 @@ AC_DEFINE([PACKAGE_VERSION_MAJOR],["1"],[package version major number])
 AC_SUBST([PACKAGE_VERSION_MINOR],[3])
 AC_DEFINE([PACKAGE_VERSION_MINOR],["3"],[package version minor number])
 
-AC_SUBST([PACKAGE_VERSION_PATCH],[1])
-AC_DEFINE([PACKAGE_VERSION_PATCH],["1"],[package version patch number])
+AC_SUBST([PACKAGE_VERSION_PATCH],[2])
+AC_DEFINE([PACKAGE_VERSION_PATCH],["2"],[package version patch number])
 
 AC_SUBST([PACKAGE_VERSION_MAJOR_MINOR],[1.3])
 AC_DEFINE([PACKAGE_VERSION_MAJOR_MINOR],["1.3"],[package version major.minor])
@@ -42,7 +42,7 @@ m4_include([infrastructure/acmacros.m4])
 AC_CONFIG_FILES([meta.d/mbfl-config:meta/mbfl-config.in])
 AC_CONFIG_FILES([meta.d/slackware/bin/slack-desc:meta/slackware/bin/slack-desc.in])
 AC_CONFIG_FILES([meta.d/slackware/doc/slack-desc:meta/slackware/doc/slack-desc.in])
-m4_include([configure.ds])
+m4_include([configuration/configure.ds])
 
 
 ### end of file
