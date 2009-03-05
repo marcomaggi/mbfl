@@ -1,12 +1,20 @@
-# prepare.sh --
+# configure.sh --
 
-set -x
+set -xe
 
 (cd ..
-    if test configure.ac -nt configure -o configure.ds -nt configure ; then
+    if test \
+        configure -ot prepare.sh   -o \
+        configure -ot configure.ac -o \
+        configure -ot aclocal.m4   -o \
+        configure -ot infrastructure/develstuff.autoconf
+    then
         autoconf
     fi)
 
-../configure "$@"
+../configure \
+    --config-cache                              \
+    --with-abi=local-slackware                  \
+    --enable-doc-pdf                            \
 
 ### end of file

@@ -1,30 +1,31 @@
+#! /bin/sh
 # file.sh --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: file functions
 # Date: Fri Apr 18, 2003
-# 
+#
 # Abstract
-# 
+#
 #       This is a collection of file functions for the GNU BASH shell.
-# 
+#
 # Copyright (c) 2003, 2004, 2005 Marco Maggi
-# 
+#
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
 # Software Foundation; either  version 2, or (at your  option) any later
 # version.
-# 
+#
 # This  file is  distributed in  the hope  that it  will be  useful, but
 # WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
 # General Public License for more details.
-# 
+#
 # You  should have received  a copy  of the  GNU General  Public License
 # along with this file; see the file COPYING.  If not, write to the Free
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
-# 
+#
 
 #page
 ## ------------------------------------------------------------
@@ -123,7 +124,7 @@ function mbfl_p_file_remove_dots_from_pathname () {
     local item i
     local SPLITPATH SPLITCOUNT; declare -a SPLITPATH
     local output output_counter=0; declare -a output
-    local input_counter=0 
+    local input_counter=0
 
     mbfl_file_split "${PATHNAME}"
 
@@ -327,7 +328,7 @@ function mbfl_file_remove_file () {
             return 1
         fi
     fi
-    mbfl_exec_rm "${PATHNAME}" ${FLAGS}    
+    mbfl_exec_rm "${PATHNAME}" ${FLAGS}
 }
 function mbfl_file_remove_symlink () {
     mandatory_parameter(PATHNAME, 1, pathname)
@@ -339,7 +340,7 @@ function mbfl_file_remove_symlink () {
             return 1
         fi
     fi
-    mbfl_exec_rm "${PATHNAME}" ${FLAGS}    
+    mbfl_exec_rm "${PATHNAME}" ${FLAGS}
 }
 function mbfl_file_remove_file_or_symlink () {
     mandatory_parameter(PATHNAME, 1, pathname)
@@ -351,7 +352,7 @@ function mbfl_file_remove_file_or_symlink () {
             return 1
         fi
     fi
-    mbfl_exec_rm "${PATHNAME}" ${FLAGS}    
+    mbfl_exec_rm "${PATHNAME}" ${FLAGS}
 }
 function mbfl_exec_rm () {
     mandatory_parameter(PATHNAME, 1, pathname)
@@ -405,7 +406,7 @@ function mbfl_file_copy_to_directory () {
             mbfl_message_error "copying file '${SOURCE}'"
             return 1
         fi
-    fi 
+    fi
     mbfl_exec_cp_to_dir "${SOURCE}" "${TARGET}" "$@"
 }
 function mbfl_exec_cp () {
@@ -462,7 +463,7 @@ function mbfl_file_move_to_directory () {
             mbfl_message_error "moving file '${SOURCE}'"
             return 1
         fi
-    fi 
+    fi
     mbfl_exec_mv_to_dir "${SOURCE}" "${TARGET}" "$@"
 }
 function mbfl_exec_mv () {
@@ -662,7 +663,7 @@ function mbfl_file_pathname_is_writable () {
 }
 function mbfl_file_pathname_is_executable () {
     local PATHNAME=${1}
-    local PRINT_ERROR=${2:-no}    
+    local PRINT_ERROR=${2:-no}
     local ERROR_MESSAGE="not executable pathname '${PATHNAME}'"
     test -n "${PATHNAME}" -a -x "${PATHNAME}"
     mbfl_p_file_print_error_return_result
@@ -672,7 +673,7 @@ function mbfl_file_pathname_is_executable () {
 
 function mbfl_file_is_file () {
     local PATHNAME=${1}
-    local PRINT_ERROR=${2:-no}    
+    local PRINT_ERROR=${2:-no}
     local ERROR_MESSAGE="unexistent file '${PATHNAME}'"
     test -n "${PATHNAME}" -a -f "${PATHNAME}"
     mbfl_p_file_print_error_return_result
@@ -710,19 +711,19 @@ function mbfl_file_directory_is_readable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
     mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
-        mbfl_file_pathname_is_readable "${PATHNAME}" "${PRINT_ERROR}"    
+        mbfl_file_pathname_is_readable "${PATHNAME}" "${PRINT_ERROR}"
 }
 function mbfl_file_directory_is_writable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
     mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
-        mbfl_file_pathname_is_writable "${PATHNAME}" "${PRINT_ERROR}"    
+        mbfl_file_pathname_is_writable "${PATHNAME}" "${PRINT_ERROR}"
 }
 function mbfl_file_directory_is_executable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
     mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
-        mbfl_file_pathname_is_executable "${PATHNAME}" "${PRINT_ERROR}"    
+        mbfl_file_pathname_is_executable "${PATHNAME}" "${PRINT_ERROR}"
 }
 function mbfl_file_directory_validate_writability () {
     mandatory_parameter(DIRECTORY, 1, directory pathname)
@@ -742,7 +743,7 @@ function mbfl_file_directory_validate_writability () {
 
 function mbfl_file_is_symlink () {
     local PATHNAME=${1}
-    local PRINT_ERROR=${2:-no}    
+    local PRINT_ERROR=${2:-no}
     local ERROR_MESSAGE="not a symbolic link pathname '${PATHNAME}'"
     test -n "${PATHNAME}" -a -L "${PATHNAME}"
     mbfl_p_file_print_error_return_result
@@ -850,7 +851,7 @@ function mbfl_file_set_permissions () {
     mandatory_parameter(PERMISSIONS, 1, permissions)
     mandatory_parameter(PATHNAME, 2, pathname)
     local CHMOD=$(mbfl_program_found chmod)
-    
+
     mbfl_program_exec ${CHMOD} "${PERMISSIONS}" "${PATHNAME}"
 }
 
@@ -867,7 +868,7 @@ function mbfl_file_append () {
 function mbfl_file_write () {
     mandatory_parameter(STRING, 1, string)
     mandatory_parameter(FILENAME, 2, file name)
-    mbfl_program_bash_command "printf '%s' '${STRING}' >'${FILENAME}'" 
+    mbfl_program_bash_command "printf '%s' '${STRING}' >'${FILENAME}'"
 }
 function mbfl_file_read () {
     mandatory_parameter(FILENAME, 1, file name)
@@ -933,7 +934,7 @@ function mbfl_p_file_compress_gzip () {
     local COMPRESSOR=$(mbfl_program_found gzip)
     local FLAGS DEST
 
-    
+
     case "${COMPRESS}" in
         compress)
             DEST=${SOURCE}.gz
@@ -966,7 +967,7 @@ function mbfl_p_file_compress_bzip () {
     shift 2
     local COMPRESSOR=$(mbfl_program_found bzip2)
     local FLAGS DEST
-    
+
     case "${COMPRESS}" in
         compress)
             DEST=${SOURCE}.bz2

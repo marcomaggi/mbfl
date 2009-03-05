@@ -1,26 +1,10 @@
-## Makefile.in --
+# @configure_input@
+#
 
-ds_config_ABI	= slackware
+builddir	= @builddir@
+srcdir		= @srcdir@
 
-include Makefile.library
-#$(eval $(call ds-begin))
-$(eval $(call ds-package-variables))
-$(eval $(call ds-common-programs))
-$(eval $(call ds-main-rules))
-$(eval $(call ds-tests))
-$(eval $(call ds-generic-documentation))
-include Makefile.ds
-$(eval $(call ds-texinfo-documentation))
-$(eval $(call ds-uninstall-scripts))
-$(eval $(call ds-meta-scripts))
-$(eval $(call ds-config-inspection-script))
-$(eval $(call ds-source-distribution))
-$(eval $(call ds-binary-distribution))
-$(eval $(call ds-slackware-distribution))
-$(eval $(call ds-end))
-
+include meta.d/makefiles/develstuff.make
+include meta.d/makefiles/project.make
 
 ### end of file
-# Local Variables:
-# mode: makefile
-# End:

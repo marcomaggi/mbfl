@@ -1,156 +1,563 @@
 \input texinfo.tex
 @c %**start of header
 @setfilename mbfl.info
-@settitle Marco's BASH Functions Library
+@settitle Marco's Bash Functions Library
 @c %**end of header
 
-@include version.texiinc
-@c @syncodeindex  cp
-@c @syncodeindex fn cp
-
+@c page
+@c ------------------------------------------------------------
+@c Macros.
 @c ------------------------------------------------------------
 
-@macro bash{}
-@command{bash}
-@end macro
+@include version.texiinc
 
-@macro mbfl{}
-@acronym{MBFL}
-@end macro
-
-@macro copyrightyears{}
-2003, 2004, 2005
-@end macro
-
-
-@macro function{NAME}
-@code{\NAME\()}
-@end macro
+@c ------------------------------------------------------------
+@c License macros.
+@c ------------------------------------------------------------
 
 @macro gnu{}
 @acronym{GNU}
 @end macro
 
+@macro gpl{}
+@acronym{GPL}
+@end macro
+
+@macro lgpl{}
+@acronym{LGPL}
+@end macro
+
+@macro fdl{}
+@acronym{FDL}
+@end macro
+
+@macro bsd{}
+@acronym{BSD}
+@end macro
 
 @c ------------------------------------------------------------
+@c Software related macros.
+@c ------------------------------------------------------------
+
+@macro mbfl{}
+@acronym{MBFL}
+@end macro
+
+@macro bash{}
+@command{bash}
+@end macro
+
+@macro gmp{}
+@acronym{GMP}
+@end macro
+
+@macro gcc{}
+@acronym{GCC}
+@end macro
+
+@macro glibc{}
+@gnu{} C Library
+@end macro
+
+@c ------------------------------------------------------------
+@c Network protocols acronyms.
+@c ------------------------------------------------------------
+
+@macro dns{}
+@acronym{DNS}
+@end macro
+
+@macro ftp{}
+@acronym{FTP}
+@end macro
+
+@macro dhcp{}
+@acronym{DHCP}
+@end macro
+
+@macro icmp{}
+@acronym{ICMP}
+@end macro
+
+@macro http{}
+@acronym{HTTP}
+@end macro
+
+@macro https{}
+@acronym{HTTP}
+@end macro
+
+@macro imap{}
+@acronym{IMAP}
+@end macro
+
+@macro tcp{}
+@acronym{TCP}
+@end macro
+
+@macro udp{}
+@acronym{UDP}
+@end macro
+
+@macro ppp{}
+@acronym{PPP}
+@end macro
+
+@macro sftp{}
+@acronym{FTP}
+@end macro
+
+@macro smtp{}
+@acronym{SMTP}
+@end macro
+
+@macro snmp{}
+@acronym{SNMP}
+@end macro
+
+@macro ssh{}
+@acronym{SSH}
+@end macro
+
+@macro ssl{}
+@acronym{SSL}
+@end macro
+
+@macro tls{}
+@acronym{TLS}
+@end macro
+
+@c ------------------------------------------------------------
+@c Miscellaneous acronyms.
+@c ------------------------------------------------------------
+
+@macro adsl{}
+@acronym{ADSL}
+@end macro
+
+@macro alsa{}
+@acronym{ALSA}
+@end macro
+
+@macro ansi{}
+@acronym{ANSI}
+@end macro
+
+@macro api{}
+@acronym{API}
+@end macro
+
+@macro ascii{}
+@acronym{ASCII}
+@end macro
+
+@macro cdrom{}
+@acronym{CDROM}
+@end macro
+
+@macro cli{}
+@acronym{CLI}
+@end macro
+
+@macro cpu{}
+@acronym{CPU}
+@end macro
+
+@macro gui{}
+@acronym{GUI}
+@end macro
+
+@macro ieee{}
+@acronym{IEEE}
+@end macro
+
+@macro isp{}
+@acronym{ISP}
+@end macro
+
+@macro iso{}
+@acronym{ISO}
+@end macro
+
+@macro mpeg{}
+@acronym{MPEG}
+@end macro
+
+@macro posix{}
+@acronym{POSIX}
+@end macro
+
+@macro ram{}
+@acronym{RAM}
+@end macro
+
+@macro rfc{}
+@acronym{RFC}
+@end macro
+
+@c Remember that @url is already used by Texinfo.
+@macro urla{}
+@acronym{URL}
+@end macro
+
+@macro usb{}
+@acronym{USB}
+@end macro
+
+@macro utf{}
+@acronym{UTF}
+@end macro
+
+@macro uri{}
+@acronym{URI}
+@end macro
+
+@macro xmla{}
+@acronym{XML}
+@end macro
+
+
+@c ------------------------------------------------------------
+@c Arguments macros.
+@c ------------------------------------------------------------
+
+@macro vari{ARG}
+@var{\ARG\1}
+@end macro
+
+@macro varii{ARG}
+@var{\ARG\2}
+@end macro
+
+@macro variii{ARG}
+@var{\ARG\3}
+@end macro
+
+@macro variv{ARG}
+@var{\ARG\4}
+@end macro
+
+@macro varn{ARG}
+@var{\ARG\n}
+@end macro
+
+@macro vark{ARG}
+@var{\ARG\k}
+@end macro
+
+@macro varj{ARG}
+@var{\ARG\j}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro meta{ARG}
+<\ARG\>
+@end macro
+
+@macro metai{ARG}
+@meta{\ARG\1}
+@end macro
+
+@macro metaii{ARG}
+@meta{\ARG\2}
+@end macro
+
+@macro metaiii{ARG}
+@meta{\ARG\3}
+@end macro
+
+@macro metaiv{ARG}
+@meta{\ARG\4}
+@end macro
+
+@macro metan{ARG}
+@meta{\ARG\n}
+@end macro
+
+@macro metak{ARG}
+@meta{\ARG\k}
+@end macro
+
+@macro metaj{ARG}
+@meta{\ARG\j}
+@end macro
+
+@c ------------------------------------------------------------
+@c C language macros.
+@c ------------------------------------------------------------
+
+@macro cfunc{NAME}
+@code{\NAME\()}
+@end macro
+
+@macro cnull{}
+@code{NULL}
+@end macro
+
+@c ------------------------------------------------------------
+@c Scheme language macros.
+@c ------------------------------------------------------------
+
+@macro clos{}
+@acronym{CLOS}
+@end macro
+
+@macro library{NAME}
+@code{(\NAME\)}
+@end macro
+
+@macro module{NAME}
+@code{\NAME\}
+@end macro
+
+@macro repl{}
+@acronym{REPL}
+@end macro
+
+@macro rnrs{VERSION}
+@acronym{R\VERSION\RS}
+@end macro
+
+@macro srfi{}
+@acronym{SRFI}
+@end macro
+
+@ignore
+Separating the @srfi{} macro from the number with a '--' rather than a
+'-' makes the expansion look ugly in menu entries under the Info reader.
+IMHO this should not happen, but it does; so we live with this, because
+the main purpose of this document is to provide an Info version.
+@end ignore
+@macro ansrfi{NUM}
+@srfi{}-\NUM\
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro func{NAME}
+@code{@sc{\NAME\}}
+@end macro
+
+@macro nil{}
+@code{()}
+@end macro
+
+@macro true{}
+@code{#t}
+@end macro
+
+@macro false{}
+@code{#f}
+@end macro
+
+@macro keyword{NAME}
+@code{#:\NAME\}
+@end macro
+
+@macro class{NAME}
+@code{<\NAME\>}
+@end macro
+
+@c ------------------------------------------------------------
+@c Macros for references to external documents.
+@c ------------------------------------------------------------
+
+@macro glibcref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,libc}
+@end macro
+
+@macro rsixref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,r6rs}
+@end macro
+
+@macro rfiveref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,r5rs}
+@end macro
+
+@macro ikarusref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,ikarus}
+@end macro
+
+@macro bibref{TAG}
+@code{[\TAG\]}
+@end macro
+
+@c ------------------------------------------------------------
+@c Bash macros.
+@c ------------------------------------------------------------
+
+@macro bfunc{NAME}
+@code{\NAME\}
+@end macro
+
+@c page
+@c ------------------------------------------------------------
+@c Values.
+@c ------------------------------------------------------------
+
+@set TITLE                      Marco's Bash Functions Library
+
+@c To be used as @value{PACKAGE} whenever we need to include the full
+@c name of this package.
+@set PACKAGE                    @mbfl{}
+
+@c To be used as @value{PACKAGE} whenever we need to include the
+@c nickname of the project: the name that is used to compose the
+@c distribution tarball or the web address.
+@set PACKAGE_NICKNAME           mbfl
+
+@c To be used as @value{AUTHOR} whenever we need to include the list of
+@c authors of this document.
+@set AUTHOR                     Marco Maggi
+
+@c To be used as @value{AUTHOR_EMAIL} whenever we need to include the
+@c email of the *single* author of this document.
+@set AUTHOR_EMAIL               @email{marcomaggi@@gna.org}
+
+@c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
+@c list of copyright years.
+@set COPYRIGHT_YEARS            2003-2005, 2009
+
+@c page
+@c ------------------------------------------------------------
+@c Copyright notice.
+@c ------------------------------------------------------------
+
+@copying
+This document describes version @version{} of @value{PACKAGE}, a library
+of functions for the @gnu{} Bash shell.
+
+The package is distributed under the terms of the @gnu{} Lesser General
+Public License (@lgpl{}) and can be downloaded from:
+
+@center @url{http://gna.org/projects/@value{PACKAGE_NICKNAME}}
+
+@noindent
+Copyright @copyright{} @value{COPYRIGHT_YEARS} by @value{AUTHOR} @value{AUTHOR_EMAIL}
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the @gnu{} Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with
+Invariant Sections being ``@gnu{} Free Documentation License'' and
+``@gnu{} General Public License'', no Front--Cover Texts, and no
+Back--Cover Texts.  A copy of the license is included in the section
+entitled ``@gnu{} Free Documentation License''.
+@end quotation
+@end copying
+
+@c page
+@c ------------------------------------------------------------
+@c Headers.
+@c ------------------------------------------------------------
+
 @titlepage
-@title Marco's BASH Functions Library
-@subtitle @version{}
-@author Marco Maggi
+@title @value{TITLE}
+@subtitle Revision @version{}
+@author @value{AUTHOR} @value{AUTHOR_EMAIL}
 @page
 @vskip 0pt plus 1filll
-@noindent
-Copyright @copyright{}  @copyrightyears{} by Marco Maggi.
-
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.2 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front--Cover Texts, and no Back--Cover Texts.  A
-copy of the license is included in the section entitled ``GNU Free
-Documentation License''.
+@insertcopying
 @end titlepage
 
-
 @c ------------------------------------------------------------
+
 @ifinfo
 @dircategory Development
 @direntry
-* MBFL: (mbfl).                 Marco's BASH Functions Library. 
+* mbfl: (mbfl).                 @value{TITLE}.
 @end direntry
 @end ifinfo
 
 @c ------------------------------------------------------------
+
+@ignore
+@syncodeindex tp cp
+@syncodeindex vr cp
+@syncodeindex fn cp
+@end ignore
+
+@c page
 @ifnottex
 @node Top
-@top Marco's BASH Functions Library
+@top @value{TITLE}
 
-@noindent
-This file documents version @version{} of @mbfl{}, a collection of
-@acronym{GNU} @command{bash} shell functions. This package is
-distributed under the terms of the @gnu{} General Public License
-(@acronym{GPL}).
+@insertcopying
 
-Copyright @copyright{}  @copyrightyears{}  by Marco Maggi.
-
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.2 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front--Cover Texts, and no Back--Cover Texts.  A
-copy of the license is included in the section entitled ``GNU Free
-Documentation License''.
-     
 @menu
-* Overview::                    Overview of the library. 
-* Preprocessor::                Using the script preprocessor.
-* Service Variables::           Required user defined variables.
-* Base::                        Some base functions.
-* Encoding::                    Encoding and decoding strings.
-* File::                        Manipulating files and pathnames.
-* Getopts::                     Parsing command line options.
-* Message::                     Printing messages to the console.
-* Program::                     Using external programs.
-* Interfaces::                  Interfaces to external programs.
-* Signal::                      Catching signals.
-* String::                      Manipulating strings.
-* Dialog::                      Interacting with the user.
-* Variables::                   Manipulating variables.
-* System::                      Interfacing with the system.
-* Main::                        Main function.
-* Testing::                     Building test suites.
+* overview::                    Overview of the package.
+* preprocessor::                Using the script preprocessor.
+* service variables::           Required user defined variables.
+* base::                        Some base functions.
+* encoding::                    Encoding and decoding strings.
+* file::                        Manipulating files and pathnames.
+* getopts::                     Parsing command line options.
+* message::                     Printing messages to the console.
+* program::                     Using external programs.
+* interfaces::                  Interfaces to external programs.
+* signal::                      Catching signals.
+* string::                      Manipulating strings.
+* dialog::                      Interacting with the user.
+* variables::                   Manipulating variables.
+* system::                      Interfacing with the system.
+* main::                        Main function.
+* testing::                     Building test suites.
 
 Appendices
 
 * Package License::             GNU General Public License.
 * Documentation License::       GNU Free Documentation License.
-* References::                  Bibliography and references.
+* references::                  Bibliography and references.
 
 Indexes
 
-* Concept Index::               An entry for each concept. 
-* Functions Index::             An entry for each function. 
-* Variables Index::             An entry for each variable. 
+* concept index::               An entry for each concept.
+* function index::              An entry for each function.
+* variable index::              An entry for each variable.
+* type index::                  An entry for each type.
 @end menu
 @end ifnottex
 
+@c page
+@node overview
+@chapter Overview of the package
 
-@c ------------------------------------------------------------
-@node Overview
-@chapter Overview of the library
 
-
-@noindent
-This package is an attempt to make @acronym{GNU} @command{bash} a viable
-solution for medium sized scripts. A problem with bash is that it
-doesn't provide encapsulation of any sort, beside the feature of
-providing functions.  This problem is partly solved by writing
-subscripts and invoking them in the main script, but this is not always
-the best solution.
+This package is an attempt to make @gnu{} Bash a viable solution for
+medium sized scripts.  A problem with Bash is that it does not provide
+encapsulation of any sort beside functions.  This problem is partly
+solved by writing subscripts and invoking them in the main script, but
+this is not always the best solution.
 
 A set of modules implementing common operations and a script template
 are offered by this package and the author has used them with success in
 implementing non--small scripts.
 
-The philosophy of @mbfl{} is to do the work as much as possible
-without external commands. For example: string manipulation is done
-using the special variable substitution provided by @command{bash}, and
-no use is done of utilities like @command{sed}, @command{grep} and
-@command{ed}.
+The philosophy of @mbfl{} is to do the work as much as possible without
+external commands.  For example: string manipulation is done using the
+special variable substitution provided by Bash, and no use is done of
+utilities like @command{sed}, @command{grep} and @command{ed}.
 
-The library is better used if our script is developed on the template
-provided in the package (@file{examples/template.sh}). This is because
+The library is better used if our script is developed from the template
+provided in the package (@file{examples/template.sh}).  This is because
 with @mbfl{} some choices have been made to reduce the application
 dependent part of the script to the smallest dimension; if we follow
-another schema, @mbfl{} modules may be indequate. This is especially
+another schema, @mbfl{} modules may be indequate.  This is especially
 true for the options parsing module.
 
+@menu
+* overview quick::              Quick runtime loading.
+* overview reliable::           Reliable runtime loading.
+* overview direct::             Direct inclusion.
+* overview notes::              Notes.
+@end menu
+
+@c page
+@node overview quick
+@section Quick runtime loading
 
 
-@section Using the library
-
-
-@subsection Quick runtime loading
-
-@noindent
 The best way to use the library is to include at runtime the library
 file @file{libmbfl.sh} in the script; this is possible by installing
 @mbfl{} on the system and using this code in the scripts:
@@ -161,27 +568,34 @@ source "$@{MBFL_LIBRARY:=$(mbfl-config)@}"
 @end example
 
 @noindent
-after the service variables have been declared (@ref{Service Variables}
-for details). This code will read the full pathname of the library from
-the environment variable @env{MBFL_LIBRARY}; if this variable is not
-set: the script @command{mbfl-config} is invoked with no arguments to
-acquire the pathname of the library. @command{mbfl-config} is installed
-in the @file{bin} directory by the package.
+after the service variables have been declared.  @ref{service variables,
+Required user defined variables}.
+
+This code will read the full pathname of the library from the
+environment variable @env{MBFL_LIBRARY}; if this variable is not set:
+the script @command{mbfl-config} is invoked with no arguments to acquire
+the pathname of the library.  @command{mbfl-config} is installed by the
+package in the @code{$(bindir)} directory.
+
+@c page
+@node overview reliable
+@section Reliable runtime loading
 
 
-@subsection Reliable runtime loading
-
-@noindent
 A more reliable solution is:
 
 @example
+script_PROGNAME=...
 mbfl_INTERACTIVE='no'
 mbfl_LOADED='no'
 INSTALLED_MBFL="$(mbfl-config)" &>/dev/null
-for item in "$@{MBFL_LIBRARY@}" ./some/dir/libmbfl.sh "$@{INSTALLED_MBFL@}"
+for item in \
+    "$@{MBFL_LIBRARY@}" ./some/dir/libmbfl.sh "$@{INSTALLED_MBFL@}"
     do
-    if test -n "$@{item@}" -a -f "$@{item@}" -a -r "$@{item@}" ; then
-        if ! source "$@{item@}" &>/dev/null ; then
+    if test -n "$@{item@}" -a -f "$@{item@}" -a -r "$@{item@}"
+    then
+        if ! source "$@{item@}" &>/dev/null
+        then
             printf '%s error: evaluating MBFL "%s"\n' \
                 "$@{script_PROGNAME@}" "$@{item@}" >&2
             exit 2
@@ -194,23 +608,24 @@ fi
 @end example
 
 @noindent
-where the optional @file{./some/dir/libmbfl.sh} can be a path to a known
-location  in which to find the library; with this code:
+where the optional @file{./some/dir/libmbfl.sh} can be the pathname of a
+known location in which to find the library.  This code:
 
 @enumerate
 @item
-look for the pathname in the @env{MBFL_LIBRARY} variable, to allow us to
-explicitly select the file from the command line; example:
+Looks for the pathname in the @env{MBFL_LIBRARY} variable, to allow us
+to explicitly select the file from the command line; example:
 
 @example
 $ MBFL_LIBRARY=/path/to/libmbfl.sh script.sh
 @end example
 
 @item
-look in some known directory; for example a subdirectory of a software
-package that we have distributed;
+Looks in some known directory; for example a subdirectory of a software
+package that we have distributed.
+
 @item
-as a last resort try to evaluate the @command{mbfl-config} script to
+As a last resort try to evaluate the @command{mbfl-config} script to
 pick up a library installed on the system.
 @end enumerate
 
@@ -219,11 +634,12 @@ this is because we assume that:
 
 @itemize
 @item
-if an error occurs evaluating the library a lot of error messages may
+If an error occurs evaluating the library a lot of error messages may
 fill the screen, confusing the user; we just want a single error message
-pointing the finger of the blame;
+pointing the finger of the blame.
+
 @item
-an error in the evaluation of the library code can be replicated because
+An error in the evaluation of the library code can be replicated because
 the evaluation does not heavily depends on the environment, so we can
 track down library errors later.
 @end itemize
@@ -232,20 +648,20 @@ This code is included in the @mbfl{} distribution in the
 @file{loader.sh} file.
 
 
-@subsection Direct inclusion
+@c page
+@node overview direct
+@section Direct inclusion
 
-@noindent
-Another solution is to include the library directly in the script; this
-is easy if we preprocess our scripts with @acronym{GNU} @command{m4}:
+
+Another solution is to directly include the library in the script; this
+is easy if we preprocess our scripts with @gnu{} M4.  We only need:
 
 @example
 m4_changequote([[, ]])
 m4_include(libmbfl.sh)
 @end example
 
-@noindent
-is all we need to put in our source script. We can preprocess the script
-with:
+We can preprocess the script with:
 
 @example
 $ m4 --prefix-builtins --include=/path/to/library \
@@ -253,15 +669,14 @@ $ m4 --prefix-builtins --include=/path/to/library \
 @end example
 
 @noindent
-easy to do in a @file{Makefile}; we can take the @mbfl{}'s
-@file{Makefile} as example of this method.
+easy to do in a @file{Makefile}.
 
 It is also interesting to process the script with the following rule of
-@acronym{GNU} @command{make}: assuming that the source scripts are in
-the @file{modules} directory of the source tree:
+@gnu{} Make: assuming that the source scripts are in the
+@file{src/modules} directory of the source tree:
 
 @example
-vpath	%.sh.m4		$(top_srcdir)/modules
+vpath	%.sh.m4		$(srcdir)/src/modules
 
 M4      = ...
 M4FLAGS = --prefix-builtins --include=/path/to/library
@@ -275,10 +690,10 @@ M4FLAGS = --prefix-builtins --include=/path/to/library
 @noindent
 this will remove all the comments and blank lines, decreasing the size
 of the script significantly if one makes use of verbose comments; note
-that this will wipe out the @code{#!/bin/bash} first line also.
+that this will wipe out the @code{#!/bin/bash} first line, too.
 
 Usually we want the script to begin with @code{#!/bin/bash} followed by
-a comment describing the license terms. We can do it by preparing a
+a comment describing the license terms.  We can do it by preparing a
 script like the following:
 
 @example
@@ -304,10 +719,11 @@ script.sh: script.sh.m4 realscript.sh
 @noindent
 @file{realscript.sh} can be processed as explained above.
 
-At this point, though, it is better to use the @mbfl{} preprocessor
-(@ref{Preprocessor} for details).
+At this point, though, it is better to use the @mbfl{} preprocessor.
+@ref{preprocessor, Using the script preprocessor}.
 
-
+@c page
+@node overview notes
 @section Notes
 
 
@@ -315,12 +731,12 @@ At this point, though, it is better to use the @mbfl{} preprocessor
 @item
 Some functions take a variable name as argument and store in the
 referenced variable some value; to avoid name collision: select a name
-that starts with @code{p_}. It is guaranteed that @mbfl{} never use
+that starts with @code{p_}.  It is guaranteed that @mbfl{} never uses
 variables with name starting with such a prefix.
 
 @item
 It is possible, but not recommended, to source the library in an
-interactive shell, though some modules must be disabled. To do this
+interactive shell, though some modules must be disabled.  To do this
 execute the following code in the shell before sourcing the library:
 
 @example
@@ -328,7 +744,7 @@ mbfl_INTERACTIVE='yes'
 @end example
 
 @noindent
-whitout exporting the variable. The ``dangerous'' blocks of code in the
+whitout exporting the variable.  The ``dangerous'' blocks of code in the
 library are surrounded by:
 
 @example
@@ -338,7 +754,7 @@ fi
 @end example
 
 @noindent
-so they are not executed. Disabled modules are: main, getopts, signal;
+so they are not executed.  Disabled modules are: main, getopts, signal;
 ``disabled'' does not mean that the functions are not there: only the
 global variable declarations are excluded; this is a little dirty, but,
 at present, it should work.
@@ -348,45 +764,43 @@ functions by hand.
 @end itemize
 
 
-@c ------------------------------------------------------------
-@node Preprocessor
+@c page
+@node preprocessor
 @chapter Using the script preprocessor
 
 
-@c ------------------------------------------------------------
-@node Service Variables
+@c page
+@node service variables
 @chapter Required user defined variables
 
 
-@noindent
 The following variables are expected to be defined before the @mbfl{}
-code is parsed by @command{bash}. The variables are used by @mbfl{} to
-declare its own variables, so they are to be declared before the
-inclusion of the @mbfl{} code in the script.
+code is evaluated.  They are used by @mbfl{} to compute values for its
+own variables.
 
 
 @defvar script_PROGNAME
-Declares the name of the script.
+The name of the script.
 @end defvar
 
 @defvar script_AUTHOR
-Declares the name of the script author(s).
+The name of the script author(s).
 @end defvar
 
 @defvar script_COPYRIGHT_YEARS
-Should be a comma separated list of years of copyright.
+A comma separated list of years of copyright.
 @end defvar
 
 @defvar script_VERSION
-Must be the version number of the script.
+The version number of the script.
 @end defvar
 
 @defvar script_LICENSE
-Must be the identifier of the license under which the script is
-released. Accepted values are: @code{GPL}, @code{LGPL}, @code{BSD}. It
-is used to select the appropriate value to be displayed when the user of
-the script selects the @code{--license} option (@ref{Getopts Options},
-for details).
+The identifier of the license under which the script is released.
+Accepted values are: @code{GPL}, @code{LGPL}, @code{BSD}.  It is used to
+select the appropriate value to be displayed when the user of the script
+selects the @code{--license} option.  @ref{getopts options, Predefined
+options}
 @end defvar
 
 @defvar script_USAGE
@@ -394,14 +808,14 @@ Must be a string describing the usage of the program.
 @end defvar
 
 @defvar script_DESCRIPTION
-One line string providing a brief description of the program. It is used
+One line string providing a brief description of the program.  It is used
 in the help screen (the one echoed when the @option{--help} option is
 used) just after the content of @code{script_USAGE}.
 @end defvar
 
 @defvar script_EXAMPLES
 One or more lines of text to be displayed at the end of the help screen,
-after the options description. It should contain examples of common
+after the options description.  It should contain examples of common
 invocations for the script.
 @end defvar
 
@@ -410,10 +824,10 @@ built--in command; in particular: @code{script_DESCRIPTION} and
 @code{script_EXAMPLES} are used as first argument to @code{printf}, so
 the escape sequences are evaluated.
 
+@c ------------------------------------------------------------
 
-@section Example
+@subsubheading Examples
 
-@noindent
 The following example shows how to declare the variables.
 
 @example
@@ -430,24 +844,24 @@ script_EXAMPLES='Examples:
 \tmyscript.sh --do-other arg arg ...'
 @end example
 
-Notice that @code{script_DESCRIPTION} and @code{script_EXAMPLES} do not
-end with a newline character.
+Notice that @code{script_DESCRIPTION} and @code{script_EXAMPLES}
+@strong{do not} end with a newline character.
 
-@c ------------------------------------------------------------
-@node Base
+@c page
+@node base
 @chapter Some base functions
 
 
 
 @deffn Function mbfl_set_maybe @var{name} @var{value}
-Sets a variable named @var{name} to @var{value}, but only if @var{name}
+Set a variable named @var{name} to @var{value}, but only if @var{name}
 is not the empty string.
 @end deffn
 
 
 @deffn Function mbfl_read_maybe_null @var{varname}
-Reads a line from its stdin and stores it in a variable named
-@var{varname}. If @function{mbfl_option_null} returns true: the null
+Read a line from its stdin and store it in a variable named
+@var{varname}.  If @bfunc{mbfl_option_null} returns true: the null
 character is used as terminator, like in:
 
 @example
@@ -455,22 +869,21 @@ read -d $'\x00'
 @end example
 @end deffn
 
-@c ------------------------------------------------------------
-@node Encoding
+@c page
+@node encoding
 @chapter Encoding and decoding strings
 
 
-@noindent
-The purpose of this module is to let an external process invoke a
-@command{bash} script with @emph{damn}command line arguments: strings
-including blanks or strange characters that may trigger quoting rules.
+The purpose of this module is to let an external process invoke a Bash
+script with @emph{damned} command line arguments: strings including
+blanks or strange characters that may trigger quoting rules.
 
 This problem can arise when using scripting languages with some sort of
 @code{eval} command.
 
 The solution is to encode the argument string in hexadecimal or octal
-format strings, so that all the damn characters are converted to
-``good'' ones. The the @command{bash} script can convert them back.
+format strings, so that all the damned characters are converted to
+``good'' ones.  The the Bash script can convert them back.
 
 
 @deffn Function mbfl_decode_hex @var{string}
@@ -490,120 +903,120 @@ mbfl_decode_hex 414243
 -> ABC
 @end example
 
-@c ------------------------------------------------------------
-@node File
+@c page
+@node file
 @chapter Manipulating files and pathnames
 
 
 @menu
-* File Names::                  Manipulating file names.
-* File Commands::               Manipulating files with external commands.
-* File Testing::                Testing file existence and the like.
-* File Read and Write::         Reading and writing files with privileges.
-* File Misc::                   Miscellaneous commands.
+* file names::                  Manipulating file names.
+* file commands::               Manipulating files with external
+                                commands.
+* file testing::                Testing file existence and the like.
+* file read and write::         Reading and writing files with
+                                privileges.
+* file misc::                   Miscellaneous commands.
 @end menu
 
-
-@c ------------------------------------------------------------
-@node File Names
+@c page
+@node file names
 @section File names
 
 
 @menu
-* File Name Parts::             Splitting a file name into its components.
-* File Name Path::              Handling relative pathnames.
-* File Name System::            Finding pathnames on the system.
+* file name parts::             Splitting a file name into its
+                                components.
+* file name path::              Handling relative pathnames.
+* file name system::            Finding pathnames on the system.
 @end menu
 
 
-@c ------------------------------------------------------------
-@node File Name Parts
+@c page
+@node file name parts
 @subsection Splitting a file name into its components
 
 
 
 @deffn Function mbfl_file_extension @var{pathname}
-Extracts the extension from a file name.  Searches the last dot
-(@code{.}) character in the argument string and echoes to stdout the
-range of characters from the dot to the end, not including the dot.  If
-a slash (@code{/}) character is found first, echoes to stdout the empty
+Extract the extension from a file name.  Search the last dot character
+in the argument string and echo to stdout the range of characters from
+the dot to the end, not including the dot.  If a slash character or the
+beginning of the string is found first: echoes to stdout the empty
 string.
 @end deffn
 
 
 @deffn Function mbfl_file_dirname @var{pathname}
-Extracts the directory part from a fully qualified file name.  Searches
-the last slash character in the input string and echoes to stdout the
-range of characters from the first to the slash, not including the
-slash.
+Extract the directory part from a fully qualified file name.  Search the
+last slash character in the input string and echo to stdout the range of
+characters from the first to the slash, not including the slash.
 
-If no slash is found: echoes a single dot (the current directory).
+If no slash is found: echo a single dot (the current directory).
 
 If the input string begins with @code{/} or @code{//} with no slash
-characters after the first ones, the string echoed to stdout is a single
-slash.
+characters after the first ones: echo a single slash.
 @end deffn
 
 
 @deffn Function mbfl_file_rootname @var{pathname}
-Extracts the root portion of a file name.  Searches the last dot
-character in the argument string and echoes to stdout the range of
-characters from the beginning to the dot, not including the dot.
+Extract the root portion of a file name.  Search the last dot character
+in the argument string and echo to stdout the range of characters from
+the beginning to the dot, not including the dot.
 
 If a slash character is found first, or no dot is found, or the dot is
-the first character, echoes to stdout the empty string.
+the first character: echo the empty string.
 @end deffn
 
 
 @deffn Function mbfl_file_tail @var{pathname}
-Extracts the file portion from a fully qualified file name.  Searches
-the last slash character in the input string and echoes to stdout the
-range of characters from the slash to the end, not including the slash.
-If no slash is found: echoes the whole string.
+Extract the file portion from a fully qualified file name.  Search the
+last slash character in the input string and echo to stdout the range of
+characters from the slash to the end, not including the slash.  If no
+slash is found: echo the whole string.
 @end deffn
 
 
 @deffn Function mbfl_file_split @var{pathname}
-Separates a file name into its components. One or more contiguous
-occurrences of the slash character are used as separator. The components
+Separate a file name into its components.  One or more contiguous
+occurrences of the slash character is used as separator.  The components
 are stored in an array named @code{SPLITPATH}, that may be declared
 @code{local} in the scope of the caller; the base index is zero.  The
 number of elements in the array is stored in a variable named
-@code{SPLITCOUNT}. Returns true.
+@code{SPLITCOUNT}.  Return true.
 @end deffn
 
 
 @deffn Function mbfl_file_strip_trailing_slash @var{pathname}
-If the last character in @var{pathname} is a slash (@code{/}): this
-function removes it and prints the result on stdout.
+If the last character in @var{pathname} is a slash (@code{/}): remove it
+and print the result on stdout.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node File Name Path
+@c page
+@node file name path
 @subsection Handling relative pathnames
 
 
-@deffn Function mbfl_file_normalise @var{pathname} ?@var{prefix}?
-Normalises a file name: removes all the occurrences of @code{.} and
+@deffn Function mbfl_file_normalise @var{pathname}
+@deffnx Function mbfl_file_normalise @var{pathname} @var{prefix}
+Normalise a file name: remove all the occurrences of @code{.} and
 @code{..}.
 
 If @var{pathname} is relative (according to
-@function{mbfl_file_is_absolute}) and @var{prefix} is not present or it
+@bfunc{mbfl_file_is_absolute}) and @var{prefix} is not present or it
 is the empty string: the current process working directory is prepended
 to @var{pathname}.
 
 If @var{prefix} is present and non empty, and @var{pathname} is relative
-(according to @function{mbfl_file_is_absolute}): @var{prefix} is
+(according to @bfunc{mbfl_file_is_absolute}): @var{prefix} is
 prepended to @var{pathname} and normalised, too.
 
-Echoes to stdout the normalised file name; returns true.
+Echo to stdout the normalised file name.  Return true.
 @end deffn
 
 
 @deffn Function mbfl_file_subpathname @var{pathname} @var{basedir}
-If @var{pathname} is a subdirectory or file under @var{basedir}, this
-function prints to stdout the subpathname portion; example:
+If @var{pathname} is a subdirectory or file under @var{basedir}: print
+to stdout the subpathname portion.  Example:
 
 @example
 mbfl_file_subpathname /a/b/c /a
@@ -619,103 +1032,114 @@ return code is zero; else the return code is one.
 
 
 @deffn Function mbfl_file_is_absolute @var{pathname}
-Returns true if the first character in @var{pathname} is a slash
+Return true if the first character in @var{pathname} is a slash
 (@code{/}); else returns false.
 @end deffn
 
 
 @deffn Function mbfl_file_is_absolute_dirname @var{pathname}
-Returns true if @var{pathname} is a directory according to
-@function{mbfl_file_is_directory} and an absolute pathname according to
-@function{mbfl_file_is_absolute}.
+Return true if @var{pathname} is a directory according to
+@bfunc{mbfl_file_is_directory} and an absolute pathname according to
+@bfunc{mbfl_file_is_absolute}.
 @end deffn
 
 
 @deffn Function mbfl_file_is_absolute_filename @var{pathname}
-Returns true if @var{pathname} is a file according to
-@function{mbfl_file_is_file} and an absolute pathname according to
-@function{mbfl_file_is_absolute}.
+Return true if @var{pathname} is a file according to
+@bfunc{mbfl_file_is_file} and an absolute pathname according to
+@bfunc{mbfl_file_is_absolute}.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node File Name System
+@c page
+@node file name system
 @subsection Finding pathnames on the system
 
 
-@deffn Function mbfl_file_find_tmpdir ?@var{PATHNAME}?
-Finds a value for a temporary directory. If @var{PATHNAME} is not null
-and is a directory and is writable it is accepted; if the argument is
-not used: it defaults to the current value of
-@code{mbfl_option_TMPDIR}. If the value is invalid: the value
-@file{/tmp/$USER}, where @env{USER} is the environment variable, is
-tried; finally the value @file{/tmp} is tried. When a value is accepted
-it's echoed to stdout. Returns true if a value is found, false
-otherwise.
+@deffn Function mbfl_file_find_tmpdir
+@deffnx Function mbfl_file_find_tmpdir @var{PATHNAME}
+Find a value for a temporary directory according to the following rules:
+
+@enumerate
+@item
+If @var{PATHNAME} argument is not used: it defaults to the current value
+of @code{mbfl_option_TMPDIR}.
+
+@item
+If @var{PATHNAME} is not null and it is a directory and it is writable:
+it is accepted as value.
+
+@item
+If @var{PATHNAME} argument is invalid: the value @file{/tmp/$USER},
+where @env{USER} is the environment variable, is tried; finally the
+value @file{/tmp} is tried.
+@end enumerate
+
+Echo the accepted value to stdout.  Return true if a value is found,
+false otherwise.
 @end deffn
 
-
-
-@c ------------------------------------------------------------
-@node File Commands
+@c page
+@node file commands
 @section File Commands
 
 
 @menu
-* File Commands Listing::       Retrieving informations.
-* File Commands Mkdir::         Creating directories.
-* File Commands Copy::          Copying files.
-* File Commands Move::          Moving files.
-* File Commands Removing::      Removing files and directories.
-* File Commands Tar::           Manipulating tar archives.
-* File Commands Symlink::       Creating symbolic links.
-* File Commands Perms::         Set/get file permissions.
-* File Commands Compress::      Compressing files.
+* file commands listing::       Retrieving informations.
+* file commands mkdir::         Creating directories.
+* file commands copy::          Copying files.
+* file commands move::          Moving files.
+* file commands removing::      Removing files and directories.
+* file commands tar::           Manipulating tar archives.
+* file commands symlink::       Creating symbolic links.
+* file commands perms::         Set/get file permissions.
+* file commands compress::      Compressing files.
 @end menu
 
 
-@c ------------------------------------------------------------
-@node File Commands Listing
+@c page
+@node file commands listing
 @subsection Retrieving informations
 
 
 @deffn Function mbfl_file_enable_listing
-Declares to the program module the commands required to retrieve
-informations about files and directories (@ref{Program Declaring}). The
-programs are: @command{ls}.
+Declare the commands required to retrieve informations about files and
+directories.  @ref{program declaring, Declaring the intention to use a
+program}
+
+The programs are: @command{ls}, @command{readlink}.
 @end deffn
 
 
 @deffn Function mbfl_file_listing @var{pathname}
-Executes @command{ls} with @var{pathname} as argument.
+Execute @command{ls} with @var{pathname} as argument.
 @end deffn
 
 
 @deffn Function mbfl_file_long_listing @var{pathname}
-Executes @command{ls} with @var{pathname} as argument and the flag
+Execute @command{ls} with @var{pathname} as argument and the flag
 @code{-l}.
 @end deffn
 
 
 @deffn Function mbfl_file_get_owner @var{pathname}
-Prints the owner of the file.
+Print the owner of the file.
 @end deffn
 
 
 @deffn Function mbfl_file_get_group @var{pathname}
-Prints the group of the file.
+Print the group of the file.
 @end deffn
 
 
 @deffn Function mbfl_file_get_size @var{pathname}
-Prints the size of the file.
+Print the size of the file.
 @end deffn
 
 
 @deffn Function mbfl_file_normalise_link @var{pathname}
-Makes use of the @command{readlink} to normalise the pathname of a
+Make use of the @command{readlink} to normalise the pathname of a
 symbolic link (remember that a symbolic link references a file, never a
-directory). Echoes to stdout the normalised pathname.
+directory).  Echo to stdout the normalised pathname.
 
 The command line of @command{readlink} is:
 
@@ -726,114 +1150,121 @@ readlink -fn $@var{pathname}
 
 
 @deffn Function mbfl_file_read_link @var{pathname}
-Makes use of the @command{readlink} to acquire the original pathname
-referenced by @var{pathname}, then prints it.
+Make use of @command{readlink} to acquire the original pathname
+referenced by @var{pathname}, then print it.
 @end deffn
 
-
-
-@c ------------------------------------------------------------
-@node File Commands Mkdir
+@c page
+@node file commands mkdir
 @subsection Creating directories
 
 
 @deffn Function mbfl_file_enable_make_directory
-Declares to the program module the commands required to create
-directories (@ref{Program Declaring}). The programs are: @command{mkdir}.
+Declare the commands required to create directories.  @ref{program
+declaring, Declaring the intention to use a program}
+
+The programs are: @command{mkdir}.
 @end deffn
 
 
-@deffn Function mbfl_file_make_directory @var{pathname} ?@var{permissions}?
-Creates a directory named @var{pathname}; all the unexistent parents are
-created, too. If @var{permissions} is present: it is the specification
+@deffn Function mbfl_file_make_directory @var{pathname}
+@deffnx Function mbfl_file_make_directory @var{pathname} @var{permissions}
+Create a directory named @var{pathname}; all the unexistent parents are
+created, too.  If @var{permissions} is present: it is the specification
 of directory permissions in octal mode.
 
-This function does not test if the directory already exists.
+This function does not test if the directory already exists: the command
+is always executed.
 @end deffn
 
 
-@deffn Function mbfl_file_make_if_not_directory @var{pathname} ?@var{permissions}?
-Wrapper for @function{mbfl_file_make_directory} that creates the
-directory if it does not exist. If a @command{sudo} user was requested:
-after the invocation the request is reset even if no command has been
-executed.
+@deffn Function mbfl_file_make_if_not_directory @var{pathname}
+@deffnx Function mbfl_file_make_if_not_directory @var{pathname} @var{permissions}
+Wrapper for @bfunc{mbfl_file_make_directory} that creates the
+directory if it does not exist.
+
+If a @command{sudo} user was requested: this function resets the request
+even if no command has been executed.
 @end deffn
 
-
-
-@c ------------------------------------------------------------
-@node File Commands Copy
+@c page
+@node file commands copy
 @subsection Copying files
 
 
+At present, copying of directories is not supported; we have to create
+the directory and then copy files into it.
+
+
 @deffn Function mbfl_file_enable_copy
-Declares to the program module the commands required to copy files and
-directories (@ref{Program Declaring}). The programs are: @command{cp}.
+Declare the commands required to copy files and directories.
+@ref{program declaring, Declaring the intention to use a program}
+
+The programs are: @command{cp}.
 @end deffn
 
 
 @deffn Function mbfl_file_copy @var{source} @var{target} ?@dots{}?
-Copies the @var{source}, a file, to @var{target}, a file
-pathname. Additional arguments are handed to the command unchanged.
+Copy the @var{source}, a file pathname, to @var{target}, a file
+pathname.  Additional arguments are handed to the command unchanged.
 
 If @var{source} does not exist, or if it is not a file, an error is
 generated and the return value is 1.  If @var{target} exists an error is
-printed and the return value is 1.
+generated and the return value is 1.
 @end deffn
 
 
 @deffn Function mbfl_file_copy_to_directory @var{source} @var{target} ?@dots{}?
-Copies the @var{source}, a file, into the directory
-@var{target}. Additional arguments are handed to the command unchanged.
+Copy the @var{source}, a file pathname, into the directory @var{target}.
+Additional arguments are handed to the command unchanged.
 
 If @var{source} does not exist, or if it is not a file, an error is
 generated and the return value is 1.  If @var{target} does not exist or
-it is not a directory: an error message is printed and the return value
-is 1.
+it is not a directory: an error message is generated and the return
+value is 1.
 @end deffn
 
-Note that, at present, copying of directories is not supported; one has
-to create the directory and then copy files into it.
-
-@c ------------------------------------------------------------
-@node File Commands Move
+@c page
+@node file commands move
 @subsection Moving files
 
 
 @deffn Function mbfl_file_enable_move
-Declares to the program module the commands required to move files and
-directories (@ref{Program Declaring}). The programs are: @command{mv}.
+Declare the commands required to move files and directories.
+@ref{program declaring, Declaring the intention to use a program}
+
+The programs are: @command{mv}.
 @end deffn
 
 
 @deffn Function mbfl_file_move @var{source} @var{target} ?@dots{}?
-Moves the @var{source}, a file or directory, to @var{target}, a
-pathname.  Additional arguments are handed to the command unchanged.
+Move the @var{source}, a file or directory, to @var{target}, a pathname.
+Additional arguments are handed to the command unchanged.
 
 If @var{source} does not exist, or if it is not readable, an error is
 generated and the return value is 1.  If @var{target} exists an error is
-displayed and the return value is 1.
+generated and the return value is 1.
 @end deffn
 
 
 @deffn Function mbfl_file_move_to_directory @var{source} @var{target} ?@dots{}?
-Moves the @var{source}, a file or directory, into the directory
+Move the @var{source}, a file or directory, into the directory
 @var{target}.  Additional arguments are handed to the command unchanged.
 
 If @var{source} does not exist, or if it is not readable, an error
-message is displayed and the return value is 1.  If @var{target} does
-not exist or it is not a directory: an error message is printed and the
-return value is 1.
+message is generated and the return value is 1.  If @var{target} does
+not exist or it is not a directory: an error is generated and the return
+value is 1.
 @end deffn
 
-@c ------------------------------------------------------------
-@node File Commands Removing
+@c page
+@node file commands removing
 @subsection Removing files and directories
 
 
 @noindent
 Files removal is forced: the @code{--force} option to @command{rm} is
-always used. It is responsibility of the caller to validate the
+always used.  It is responsibility of the caller to validate the
 operation before invoking these functions.
 
 Some functions test the existence of the pathname before attempting to
@@ -843,324 +1274,350 @@ easier to debug scripts.
 
 
 @deffn Function mbfl_file_enable_remove
-Declares to the program module the commands required to remove files and
-directories (@ref{Program Declaring}). The programs are: @command{rm}
-and @command{rmdir}.
+Declare the commands required to remove files and directories.
+@ref{program declaring, Declaring the intention to use a program}
+
+The programs are: @command{rm}, @command{rmdir}.
 @end deffn
 
 
 @deffn Function mbfl_file_remove @var{pathname}
-Removes @var{pathname}, no matter if it is a file or directory. If it is
-a directory: descends the sublevels removing all of them. If an error
-occurs returns 1.
+Remove @var{pathname}, no matter if it is a file or directory.  If it is
+a directory: descend the sublevels removing all of them.  If an error
+occurs return 1.
 @end deffn
 
 
 @deffn Function mbfl_file_remove_file @var{pathname}
-Removes the file or symbolic link selected by @var{pathname}. If the
-file does not exist or it is not a file or an error occurs: returns 1.
+Remove the file or symbolic link selected by @var{pathname}.  If the
+file does not exist or it is not a file or an error occurs: return 1.
 @end deffn
 
 
 @deffn Function mbfl_file_remove_symlink @var{pathname}
-Removes the symbolic link selected by @var{pathname}. If the link does
-not exist or it is not a symbolic link or an error occurs: returns 1.
+Remove the symbolic link selected by @var{pathname}.  If the link does
+not exist or it is not a symbolic link or an error occurs: return 1.
 @end deffn
 
 
 @deffn Function mbfl_file_remove_file_or_symlink @var{pathname}
-Removes the file or symbolic link selected by @var{pathname}. If the
-file does not exist or it is not a file or an error occurs: returns 1.
+Remove the file or symbolic link selected by @var{pathname}.  If the
+file does not exist or it is not a file or an error occurs: return 1.
 @end deffn
 
 
 @deffn Function mbfl_file_remove_directory @var{pathname}
-Removes the directory selected by @var{pathname}. If the directory does
-not exist or an error occurs: returns 1.
+Remove the directory selected by @var{pathname}.  If the directory does
+not exist or an error occurs: return 1.
 @end deffn
 
 
 @deffn Function mbfl_file_remove_directory_silently @var{pathname}
-Like @function{mbfl_file_remove_directory}, but do not print messages if
+Like @bfunc{mbfl_file_remove_directory}, but do not print messages if
 the directory is not empty.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node File Commands Symlink
+@c page
+@node file commands symlink
 @subsection Creating symbolic links
 
 
 @deffn Function mbfl_file_enable_symlink
-Declares to the program module the commands required to create symbolic
-links (@ref{Program Declaring}). The programs are: @command{ln}.
+Declare the commands required to create symbolic links.  @ref{program
+declaring, Declaring the intention to use a program}
+
+The programs are: @command{ln}.
 @end deffn
 
 
 @deffn Function mbfl_file_symlink @var{original_name} @var{symlink_name}
-Creates a symbolic link.
+Create a symbolic link.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node File Commands Tar
+@c page
+@node file commands tar
 @subsection Manipulating tar archives
 
 
-@noindent
 Remember that when we execute a script with the @option{--test} option:
 the external commands are not executed: a command line is echoed to
-stdout. It is recommended to use this mode to fine tune the command line
+stdout.  It is recommended to use this mode to fine tune the command line
 options required by @command{tar}.
 
 
 @deffn Function mbfl_file_enable_tar
-Declares to the program module the @command{tar} command (@ref{Program
-Declaring}).
+Declare the @command{tar} command.  @ref{program declaring, Declaring
+the intention to use a program}
 @end deffn
 
 
 @deffn Function mbfl_tar_exec ?...?
-Executes @command{tar} with whatever arguments are used. Returns the
+Execute @command{tar} with whatever arguments are used.  Return the
 return code of @command{tar}.
 @end deffn
 
 
 @deffn Function mbfl_tar_create_to_stdout @var{directory} ?...?
-Creates an archive and sends it to stdout. The root of the archive is
-the @var{directory}. Files are selected with the @code{.}
-pattern. @command{tar} flags may be appended to the invocation to this
-function. In case of error returns 1.
+Create an archive and send it to stdout.  The root of the archive is the
+@var{directory}.  Files are selected with the @code{.}  pattern.
+@command{tar} flags may be appended to the invocation to this function.
+In case of error return 1.
 @end deffn
 
 
 @deffn Function mbfl_tar_extract_from_stdin @var{directory} ?...?
-Reads an archive from stdin and extracts it under
-@var{directory}. @command{tar} flags may be appended to the invocation
-to this function. In case of error returns 1.
+Read an archive from stdin and extract it under @var{directory}.
+@command{tar} flags may be appended to the invocation to this function.
+In case of error return 1.
 @end deffn
 
 
 @deffn Function mbfl_tar_extract_from_file @var{directory} @var{archive} ?...?
-Reads an archive from a file and extracts it under
-@var{directory}. @command{tar} flags may be appended to the invocation
-to this function. In case of error returns 1.
+Read an archive from a file and extract it under @var{directory}.
+@command{tar} flags may be appended to the invocation to this function.
+In case of error return 1.
 @end deffn
 
 
 @deffn Function mbfl_tar_create_to_file @var{directory} @var{archive} ?...?
-Creates an archive named @var{archive} holding the contents of
-@var{directory}. Before creating the archive, the process changes the
+Create an archive named @var{archive} holding the contents of
+@var{directory}.  Before creating the archive, the process changes the
 current directory to @var{directory} and selects the files with the
-pattern @code{.}. @command{tar} flags may be appended to the invocation
-to this function. In case of error returns 1.
+pattern @code{.}.  @command{tar} flags may be appended to the invocation
+to this function.  In case of error return 1.
 @end deffn
 
 
 @deffn Function mbfl_tar_archive_directory_to_file @var{directory} @var{archive} ?...?
-Like @function{mbfl_tar_create_to_file} but archives all the contents of
+Like @bfunc{mbfl_tar_create_to_file} but archive all the contents of
 @var{directory}, including the directory itself (not its parents).
 @end deffn
 
 
 @deffn Function mbfl_tar_list @var{archive} ?...?
-Prints to stdout the list of files in @var{archive}. @command{tar} flags
-may be appended to the invocation to this function. In case of error
-returns 1.
+Print to stdout the list of files in @var{archive}.  @command{tar} flags
+may be appended to the invocation to this function.  In case of error
+return 1.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node File Commands Perms
+@c page
+@node file commands perms
 @subsection Set/get file permissions
 
 
 @deffn Function mbfl_file_enable_permissions
-Declares the intention to use the programs required to get/set file
-permissions.
+Declare the intention to use the programs required to get/set file
+permissions.  @ref{program declaring, Declaring the intention to use a
+program}
+
+The programs are: @command{ls}, @command{chmod}, @command{cut}.
 @end deffn
 
 
 @deffn Function mbfl_file_get_permissions @var{pathname}
-Prints the access permissions for @var{pathname}, in octal format.
+Print the access permissions for @var{pathname}, in octal format.
 @end deffn
 
 
 To set permissions one may request the use of @command{sudo}: just
-request a user before invoking the following function (@ref{Program
-Executing} for details).
+request a user before invoking the following function.  @ref{program
+executing, Executing a program}
 
 
 @deffn Function mbfl_file_set_permissions @var{mode} @var{pathname}
-Sets the access permissions for @var{pathname}; @var{mode} must be in a
+Set the access permissions for @var{pathname}; @var{mode} must be in a
 form accepted by @command{chmod}.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node File Commands Compress
+@c page
+@node file commands compress
 @subsection Compressing files
 
 
-@noindent
-This module has an internal state, stored in global variables. The state
-holds informations about: the selected compression external program
-(default: @command{gzip}); whether the program should keep the original
-files or replace them with the (de)compressed version (default: do not
-keep); whether the output must be sent to standard output or a file.
+This module has an internal state, stored in global variables.  The
+state holds informations about:
 
+@itemize
+@item
+The selected compression external program (default: @command{gzip}).
 
-@subsubsection Initialisation
+@item
+Whether the program should keep the original files or replace them with
+the (de)compressed version (default: do not keep).
+
+@item
+Whether the output must be sent to standard output or a file.
+@end itemize
+
+@c ------------------------------------------------------------
+
+@subsubheading Initialisation
 
 @deffn Function mbfl_file_enable_compress
-Declares the programs required to compress a file (@ref{Program
-Declaring}). The programs are: @command{gzip}, @command{bzip2}.
+Declare the programs required to compress a file.  @ref{program
+declaring, Declaring the intention to use a program}
+
+The programs are: @command{gzip}, @command{bzip2}.
 @end deffn
 
+@c ------------------------------------------------------------
 
-@subsubsection Configuration
+@subsubheading Configuration
 
-@noindent
 The selection will affect all the future invocations of the
 compression/decompression functions.
 
 @deffn Function mbfl_file_compress_select_gzip
 @deffnx Function mbfl_file_compress_select_bzip
-Selects a compressor program.
+Select a compressor program.
 @end deffn
 
 @deffn Function mbfl_file_compress_keep
 @deffnx Function mbfl_file_compress_nokeep
-Selects whether the compress program should keep the original file or
+Select whether the compress program should keep the original file or
 not.
 @end deffn
 
 @deffn Function mbfl_file_compress_select_stdout
 @deffnx Function mbfl_file_compress_select_nostdout
-Selects if the output must be sent to stdout or a file. This takes
-precedence over the keep/no keep configuration: if the ouptut is sent to
+Select if the output must be sent to stdout or a file.  This takes
+precedence over the keep/no keep configuration: if the output is sent to
 stdout the original file is kept.
 @end deffn
 
+@c ------------------------------------------------------------
 
-@subsubsection Actions
+@subsubheading Actions
 
-@noindent
 Additional arguments to the selected compressor may be appended to the
 invocation of the following functions and are handed to the compressor
 unchanged.
 
 @deffn Function mbfl_file_compress @var{PATHNAME} ?@dots{}?
-Compresses @var{PATHNAME}, a file pathname, with the currently selected
+Compress @var{PATHNAME}, a file pathname, with the currently selected
 compressor program.
 @end deffn
 
 
 @deffn Function mbfl_file_decompress @var{PATHNAME} ?@dots{}?
-Decompresses @var{PATHNAME}, a file pathname, with the currently
-selected compressor program.
+Decompress @var{PATHNAME}, a file pathname, with the currently selected
+compressor program.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node File Testing
+@c page
+@node file testing
 @section Testing file existence and the like
 
 
-@noindent
-The optional argument @var{PRINT_ERROR} will cause an error message to
-be printed with @function{mbfl_message_error} if the test fails; the
-argument value must be @code{print_error}.
+When using the following functions: The optional argument
+@var{PRINT_ERROR} will cause an error message to be printed with
+@bfunc{mbfl_message_error} if the test fails; the argument value must be
+@code{print_error}.
 
+@c ------------------------------------------------------------
 
-@subsection File functions
+@subsubheading File functions
 
 @deffn Function mbfl_file_exists @var{pathname}
-Returns true if @var{pathname} exists.
+Return true if @var{pathname} exists.
 @end deffn
 
-@deffn Function mbfl_file_is_file @var{filename} ?@var{PRINT_ERROR}?
-Returns true if @var{filename} is not the empty string and is a file.
+@deffn Function mbfl_file_is_file @var{filename}
+@deffnx Function mbfl_file_is_file @var{filename} @var{PRINT_ERROR}
+Return true if @var{filename} is not the empty string and is a file.
 @end deffn
 
-@deffn Function mbfl_file_is_readable @var{filename} ?@var{PRINT_ERROR}?
-Returns true if @var{filename} is not the empty string, is a file and is
+@deffn Function mbfl_file_is_readable @var{filename}
+@deffnx Function mbfl_file_is_readable @var{filename} @var{PRINT_ERROR}
+Return true if @var{filename} is not the empty string, is a file and is
 readable.
 @end deffn
 
-@deffn Function mbfl_file_is_writable @var{filename} ?@var{PRINT_ERROR}?
-Returns true if @var{filename} is not the empty string, is a file and is
+@deffn Function mbfl_file_is_writable @var{filename}
+@deffnx Function mbfl_file_is_writable @var{filename} @var{PRINT_ERROR}
+Return true if @var{filename} is not the empty string, is a file and is
 writable.
 @end deffn
 
-@deffn Function mbfl_file_is_executable @var{filename} ?@var{PRINT_ERROR}?
-Returns true if @var{filename} is not the empty string, is a file and is
+@deffn Function mbfl_file_is_executable @var{filename}
+@deffnx Function mbfl_file_is_executable @var{filename} @var{PRINT_ERROR}
+Return true if @var{filename} is not the empty string, is a file and is
 executable.
 @end deffn
 
+@c ------------------------------------------------------------
 
-@subsection Directory functions
+@subsubheading Directory functions
 
-@deffn Function mbfl_file_is_directory @var{directory} ?@var{PRINT_ERROR}?
-Returns true if @var{directory} is not the empty string and is a
+@deffn Function mbfl_file_is_directory @var{directory}
+@deffnx Function mbfl_file_is_directory @var{directory} @var{PRINT_ERROR}
+Return true if @var{directory} is not the empty string and is a
 directory.
 @end deffn
 
-@deffn Function mbfl_file_directory_is_readable @var{directory} ?@var{PRINT_ERROR}?
-Returns true if @var{directory} is not the empty string, is a directory
+@deffn Function mbfl_file_directory_is_readable @var{directory}
+@deffnx Function mbfl_file_directory_is_readable @var{directory} @var{PRINT_ERROR}
+Return true if @var{directory} is not the empty string, is a directory
 and is readable.
 @end deffn
 
-@deffn Function mbfl_file_directory_is_writable @var{directory} ?@var{PRINT_ERROR}?
-Returns true if @var{directory} is not the empty string, is a directory
+@deffn Function mbfl_file_directory_is_writable @var{directory}
+@deffnx Function mbfl_file_directory_is_writable @var{directory} @var{PRINT_ERROR}
+Return true if @var{directory} is not the empty string, is a directory
 and is writable.
 @end deffn
 
-@deffn Function mbfl_file_directory_is_executable @var{directory} ?@var{PRINT_ERROR}?
-Returns true if @var{directory} is not the empty string, is a directory
+@deffn Function mbfl_file_directory_is_executable @var{directory}
+@deffnx Function mbfl_file_directory_is_executable @var{directory} @var{PRINT_ERROR}
+Return true if @var{directory} is not the empty string, is a directory
 and is executable.
 @end deffn
 
 @deffn Function mbfl_file_directory_validate_writability @var{directory} @var{description}
-Tests directory existence and writability; return true if the directory
-exists and is writable. If the condition is not met: prints informative
-messages using @var{description} to refere to the directory.
+Test directory existence and writability; return true if the directory
+exists and is writable.  If the condition is not met: Print informative
+messages using @var{description} to refer to the directory.
 @end deffn
 
+@c ------------------------------------------------------------
 
+@subsubheading Symbolic link functions
 
-@subsection Symbolic link functions
-
-@deffn Function mbfl_file_is_symlink @var{pathname} ?@var{PRINT_ERROR}?
-Returns true if @var{pathname} is not the empty string and is a symbolic
+@deffn Function mbfl_file_is_symlink @var{pathname}
+@deffnx Function mbfl_file_is_symlink @var{pathname} @var{PRINT_ERROR}
+Return true if @var{pathname} is not the empty string and is a symbolic
 link.
 @end deffn
 
+@c ------------------------------------------------------------
 
-@subsection Generic pathname functions
+@subsubheading Generic pathname functions
 
-@deffn Function mbfl_file_pathname_is_readable @var{pathname} ?@var{PRINT_ERROR}?
-Returns true if @var{pathname} is not the empty string and is readable.
+@deffn Function mbfl_file_pathname_is_readable @var{pathname}
+@deffnx Function mbfl_file_pathname_is_readable @var{pathname} @var{PRINT_ERROR}
+Return true if @var{pathname} is not the empty string and is readable.
 @end deffn
 
-@deffn Function mbfl_file_pathname_is_writable @var{pathname} ?@var{PRINT_ERROR}?
-Returns true if @var{pathname} is not the empty string and is writable.
+@deffn Function mbfl_file_pathname_is_writable @var{pathname}
+@deffnx Function mbfl_file_pathname_is_writable @var{pathname} @var{PRINT_ERROR}
+Return true if @var{pathname} is not the empty string and is writable.
 @end deffn
 
-@deffn Function mbfl_file_pathname_is_executable @var{pathname} ?@var{PRINT_ERROR}?
-Returns true if @var{pathname} is not the empty string and is
+@deffn Function mbfl_file_pathname_is_executable @var{pathname}
+@deffnx Function mbfl_file_pathname_is_executable @var{pathname} @var{PRINT_ERROR}
+Return true if @var{pathname} is not the empty string and is
 executable.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node File Read and Write
+@c page
+@node file read and write
 @section Reading and writing files with privileges
 
 
-@noindent
 The following functions perform actions that can normally be done
-directly with the redirection operators of @code{bash}:
+directly with the redirection operators of Bash:
 
 @example
 # write to a file
@@ -1174,51 +1631,48 @@ printf '%s' "$(<$filename)"
 @end example
 
 The functions act differently in that they spawn a @command{bash}
-subprocess, by invoking @function{mbfl_program_exec}, and let it do the
+subprocess, by invoking @bfunc{mbfl_program_exec}, and let it do the
 operation; this allows us to request the usage of @command{sudo} and so
 to read and write files with modified privileges, but only for the time
 needed to do the operation, not for the whole script.
 
 
 @deffn Function mbfl_file_write @var{string} @var{filename}
-Writes @var{string} to @var{filename}, eventually creating it or
+Write @var{string} to @var{filename}, eventually creating it or
 overwriting old contents.
 @end deffn
 
 
 @deffn Function mbfl_file_append @var{string} @var{filename}
-Appends @var{string} to @var{filename}, eventually creating it.
+Append @var{string} to @var{filename}, eventually creating it.
 @end deffn
 
 
 @deffn Function mbfl_file_read @var{filename}
-Reads and prints @strong{all} the contents of @var{filename}.
+Read and print @strong{all} the contents of @var{filename}.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node File Misc
+@c page
+@node file misc
 @section Miscellaneous commands
 
 
 @deffn Function mbfl_change_directory @var{dirname} ?...?
-Changes directory to @var{dirname}. Optional flags to @command{cd} may
+Change directory to @var{dirname}.  Optional flags to @command{cd} may
 be appended.
 @end deffn
 
 
 @deffn Function mbfl_cd @var{dirname} ?...?
-Wrapper for @function{mbfl_change_directory}. If verbose mode is on:
-prints a message.
+Wrapper for @bfunc{mbfl_change_directory}.  If verbose mode is on:
+print a message.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node Getopts
+@c page
+@node getopts
 @chapter Parsing command line options
 
 
-@noindent
 The getopt module defines a set of procedures to be used to process
 command line arguments with the following format:
 
@@ -1236,23 +1690,19 @@ long option @code{bianco} with no value;
 long option @code{color} with value @code{bianco}.
 @end table
 
-Requires the message module (@ref{Message} for details).
-
 @menu
-* Arguments: Getopts Arguments.
-* Using the module: Getopts Usage.
-* Predefined options: Getopts Options.
-* Interface functions: Getopts Interface.
-* Querying Options: Getopts Values.
+* getopts arguments::           Arguments.
+* getopts usage::               Using the module.
+* getopts options::             Predefined options.
+* getopts interface::           Interface functions.
+* getopts values::              Querying options.
 @end menu
 
-
-@c ------------------------------------------------------------
-@node Getopts Arguments
+@c page
+@node getopts arguments
 @section Arguments
 
 
-@noindent
 The module contains, at the root level, a block of code like the
 following:
 
@@ -1267,9 +1717,10 @@ done
 @end example
 
 @noindent
-this block is executed when the script is evaluated. Its purpose is to
-store command line arguments in the global array @code{ARGV1} and the
-number of command line arguments in the global variable @code{ARGC1}.
+this block is executed when @mbfl{} (and the script that loads it) is
+evaluated.  Its purpose is to store command line arguments in the global
+array @code{ARGV1} and the number of command line arguments in the
+global variable @code{ARGC1}.
 
 The global array @code{ARGV} and the global variable @code{ARGC} are
 predefined and should be used by the @code{mbfl_getopts_*} functions to
@@ -1282,10 +1733,9 @@ $ script --gulp wo --gasp=123 wa
 @end example
 
 @noindent
-if the script makes use of the library, the strings @code{wo} and
-@code{wa} will go into @code{ARGV} and @code{ARGC} will be set to 2. The
-option arguments are processed and some action is performed to register
-them.
+if the script makes use of @mbfl{}, the strings @code{wo} and @code{wa}
+will go into @code{ARGV} and @code{ARGC} will be set to 2.  The option
+arguments are processed and some action is performed to register them.
 
 We can access the non--option arguments with the following code:
 
@@ -1294,28 +1744,27 @@ for ((i=0; $i < $ARGC; ++i)); do
     # do something with $@{ARGV[$i]@}
 done
 @end example
-@c ------------------------------------------------------------
-@node Getopts Usage
+
+@c page
+@node getopts usage
 @section Using the module
 
 
-@noindent
 To use this module we have to declare a set of script options; we
 declare a new script option with the function
-@function{mbfl_declare_option}. Options declaration should be done at
-the beginning of the script, before doing anything; for example: right
-after the @mbfl{} library code.
+@bfunc{mbfl_declare_option}.  Options declaration should be done at the
+beginning of the script, before doing anything; for example: right after
+the @mbfl{} library code.
 
-In the main block of the script: options are parsed by invoking
-@function{mbfl_getopts_parse}: this function will update a global
+In the main block of the script, options are parsed by invoking
+@bfunc{mbfl_getopts_parse}: this function will update a global
 variable and invoke a script function for each option on the command
 line.
 
+@c ------------------------------------------------------------
 
-@subsection Examples
+@subheading Examples
 
-
-@noindent
 Example of option declaration:
 
 @example
@@ -1323,7 +1772,7 @@ mbfl_declare_option ALPHA no a alpha noarg "enable alpha option"
 @end example
 
 @noindent
-this code declares an option with no argument and properties:
+this code declares an option with no argument having properties:
 
 @itemize
 @item
@@ -1331,19 +1780,20 @@ global variable @code{script_option_ALPHA}, which will be set to
 @code{no} by default and to @code{yes} if the option is used;
 
 @item
-brief flag @code{-a};
+Brief switch @code{-a}.
 
 @item
-long flag @code{--alpha};
+Long switch @code{--alpha}.
 
 @item
-description @code{enable alpha option}, to be shown in the usage output.
+Description @code{enable alpha option}, to be shown in the usage help
+screen.
 @end itemize
 
 If the option is used: the function @code{script_option_update_alpha} is
 invoked (if it exists) with no arguments, after the variable
-@code{script_option_ALPHA} has been set to @code{yes}. Valid option
-usages are:
+@code{script_option_ALPHA} has been set to @code{yes}.  Valid option
+uses are:
 
 @example
 $ script.sh -a
@@ -1357,7 +1807,7 @@ mbfl_declare_option BETA 123 b beta witharg "select beta value"
 @end example
 
 @noindent
-this code declares an option with argument and properties:
+this code declares an option with argument having properties:
 
 @itemize
 @item
@@ -1366,34 +1816,36 @@ global variable @code{script_option_BETA}, which will be set to
 the option is used;
 
 @item
-brief flag @code{-b};
+Brief switch @code{-b}.
 
 @item
-long flag @code{--beta};
+Long switch @code{--beta}.
 
 @item
-description @code{select beta value}, to be shown in the usage output.
+Description @code{select beta value}, to be shown in the usage output.
 @end itemize
 
 If the option is used: the function @code{script_option_update_beta} is
 invoked (if it exists) with no arguments, after the variable
-@code{script_option_BETA} has been set to the selected value. Valid
-option usages are:
+@code{script_option_BETA} has been set to the selected value.  Valid
+option uses are:
 
 @example
 $ script.sh -b456
 $ script.sh --beta=456
 @end example
 
+@c ------------------------------------------------------------
 
-@subsubsection Action options
+@subsubheading Action options
 
-@noindent
 A special option example:
 
 @example
-mbfl_declare_option ACTION_GAMMA no g gamma noarg "do gamma action"
-mbfl_declare_option ACTION_DELTA yes d delta noarg "do delta action"
+mbfl_declare_option ACTION_GAMMA \
+   no g gamma noarg "do gamma action"
+mbfl_declare_option ACTION_DELTA \
+   yes d delta noarg "do delta action"
 @end example
 
 @noindent
@@ -1415,95 +1867,94 @@ mbfl_main_set_main script_action_delta
 @end example
 
 @noindent
-where the argument @code{script_action_gamma} is build by prefixing the
-lower case version of the keyword with @code{script_}. The code selects
-a function as main function for the script (@ref{Main Function}).
+where the argument @code{script_action_gamma} is built by prefixing the
+lower case version of the keyword with @code{script_}.  The code selects
+a function as main function for the script.  @ref{main function, Driving
+script execution}.
 
 Additionally, if the default value is @code{yes}: the main function is
-selected at declaration time (that is by
-@function{mbfl_declare_option}); this is useful declare an action option
-and select automatically the action function. In the example: the
-function @function{script_action_delta} is selected as main action
-function.
+selected at declaration time (that is by @bfunc{mbfl_declare_option});
+this is useful to declare an action option and select automatically the
+action function.  In the example: the function
+@bfunc{script_action_delta} is selected as main action function.
 
 It is an error to declare a keyword prefixed with @code{ACTION_} with an
 option with argument.
 
-@c ------------------------------------------------------------
-@node Getopts Options
+@c page
+@node getopts options
 @section Predefined options
 
 
-@noindent
 A set of predefined options is recognised by the library and not handed
 to the user defined functions.
 
 @table @option
 @item --tmpdir=DIR
-Selects a directory for temporary files. The default value is the one in
+Selects a directory for temporary files.  The default value is the one in
 the environment variable @env{TMPDIR}, or @file{/tmp/$USER} if that
-variable is not set. The value is stored in the variable
+variable is not set.  The value is stored in the variable
 @code{mbfl_option_TMPDIR}.
 
 @item --encoded-args
 Signals to the library that the non--option arguments and the option
-values are encoded in hexadecimal strings. Encoding is useful to avoid
+values are encoded in hexadecimal strings.  Encoding is useful to avoid
 quoting problems when invoking a script from another one.
 
 If this option is used: the values are decoded by
-@function{mbfl_getopts_parse} before storing them in the @code{ARGV}
+@bfunc{mbfl_getopts_parse} before storing them in the @code{ARGV}
 array and before being stored in the option's specific global variables.
 
 @item -v
 @itemx --verbose
-Turns on verbose messages. The fuction @function{mbfl_option_verbose}
-returns true (@ref{Message}, for details).
+Turns on verbose messages.  The fuction @bfunc{mbfl_option_verbose}
+returns true (@ref{message}, for details).
 
 @item --silent
-Turns off verbose messages. The fuction @function{mbfl_option_verbose}
+Turns off verbose messages.  The fuction @bfunc{mbfl_option_verbose}
 returns false.
 
 @item --verbose-program
 If used the @option{--verbose} option is added to the command line of
-external programs that support it. The fuction
-@function{mbfl_option_verbose_program} returns true or false depending on
+external programs that support it.  The fuction
+@bfunc{mbfl_option_verbose_program} returns true or false depending on
 the state of this option.
 
 @item --show-program
 Prints the command line of executed external programs.
 
 @item --debug
-Turns on debugging messages (@ref{Message}, for details). Automatically
+Turns on debugging messages (@ref{message}, for details).  Automatically
 turns on verbose messages and program showing.
 
 @item --test
-Turns on test execution (@ref{Program Testing}, for details).
+Turns on test execution (@ref{program testing}, for details).
 
 @item --null
 Signals to the script that it has to use the null character to separate
-values, instead of the common newline. The global variable
+values, instead of the common newline.  The global variable
 @code{mbfl_option_NULL} is set to @code{yes}.
 
 @item -f
 @itemx --force
 Signals to the script that it does @strong{not} have to query the user
-before doing dangerous operations, like overwriting files. The global
+before doing dangerous operations, like overwriting files.  The global
 variable @code{mbfl_option_INTERACTIVE} is set to @code{no}.
 
 @item -i
 @itemx --interactive
 Signals to the script that it @strong{does} have to query the user
-before doing dangerous operations, like overwriting files. The global
+before doing dangerous operations, like overwriting files.  The global
 variable @code{mbfl_option_INTERACTIVE} is set to @code{yes}.
 
 @item --validate-programs
 Validates the existence of all the programs needed by the script; then
-exits. The exit code is zero if all the programs were found, one
+exits.  The exit code is zero if all the programs were found, one
 otherwise.
 
 @item --list-exit-codes
 Prints a list of numerical exit codes and their associated names, as
-declared in the script (@ref{Main Exit} for details).
+declared in the script (@ref{main exit} for details).
 
 @item --print-exit-code=NAME
 Prints the numerical exit code associated to @code{NAME}.
@@ -1513,8 +1964,8 @@ Prints the list of names associated to the numerical exit @code{CODE}.
 
 @item --version
 Prints to the standard output of the script the contents of the global
-variable @code{mbfl_message_VERSION}, then exits with code zero. The
-variable makes use of the service variables (@ref{Service Variables},
+variable @code{mbfl_message_VERSION}, then exits with code zero.  The
+variable makes use of the service variables (@ref{service variables},
 for details).
 
 @item --version-only
@@ -1524,8 +1975,8 @@ variable @code{script_VERSION}, then exits with code zero.
 @item --license
 Prints to the standard output of the script the contents of one of the
 global variables @code{mbfl_message_LICENSE_*}, then exits with code
-zero. The variable makes use of the service variables (@ref{Service
-Variables}, for details).
+zero.  The variable makes use of the service variables (@ref{service
+variables}, for details).
 
 @item -h
 @itemx --help
@@ -1533,8 +1984,8 @@ Variables}, for details).
 Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
-declared with @function{mbfl_declare_option}; a string describing the
-@mbfl{} default options. Then exits with code zero.
+declared with @bfunc{mbfl_declare_option}; a string describing the
+@mbfl{} default options.  Then exits with code zero.
 
 @item -H
 @itemx --brief-help
@@ -1542,7 +1993,7 @@ declared with @function{mbfl_declare_option}; a string describing the
 Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
-declared with @function{mbfl_declare_option}. Then exits with code zero.
+declared with @bfunc{mbfl_declare_option}.  Then exits with code zero.
 
 The difference with @option{--help} is that predefined options are not
 described.
@@ -1574,7 +2025,7 @@ Query/sets/unsets verbose execution for external programs.
 
 This option, of course, is supported only for programs that are known by
 @mbfl{} (like @command{rm}): if a program is executed with
-@function{mbfl_program_exec}, it is responsibility of the caller to use
+@bfunc{mbfl_program_exec}, it is responsibility of the caller to use
 the option.
 @end deffn
 
@@ -1582,7 +2033,7 @@ the option.
 @deffn Function mbfl_option_show_program
 @deffnx Function mbfl_set_option_show_program
 @deffnx Function mbfl_unset_option_show_program
-Prints the command line of executed external program. This does not
+Prints the command line of executed external program.  This does not
 disable program execution, it just prints the command line before
 executing it.
 @end deffn
@@ -1621,45 +2072,43 @@ The following are special option functions.
 
 @deffn Function mbfl_option_test_save
 Save the current state of the test option then invokes
-@function{mbfl_unset_option_test}.
+@bfunc{mbfl_unset_option_test}.
 @end deffn
 
 @deffn Function mbfl_option_test_restore
 Restore the state of the test option to the one before the invocation to
-@function{mbfl_option_test_save}.
+@bfunc{mbfl_option_test_save}.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node Getopts Interface
+@c page
+@node getopts interface
 @section Interface functions
 
 
-@noindent
 Every declared option should have a long switch, the brief switch may be
 omitted.
 
 
 @deffn Function mbfl_declare_option @var{keyword} @var{default} @var{brief} @var{long} @var{hasarg} @var{description}
-Declares a new option. Arguments description follows.
+Declares a new option.  Arguments description follows.
 
 @table @var
 @item keyword
 A string identifying the option; internally it is used to build a
-function name and a variable name. It is safer to limit this string to
+function name and a variable name.  It is safer to limit this string to
 the letters in the range @code{a-z} and underscores.
 
 @item default
-The default value for the option. For an option with argument it can be
+The default value for the option.  For an option with argument it can be
 anything; for an option with no argument: it must be @code{yes} or
 @code{no}.
 
 @item brief
-The brief option selector: a single character. It is safer to choose a
+The brief option selector: a single character.  It is safer to choose a
 single letter (lower or upper case) in the @acronym{ASCII} standard.
 
 @item long
-The long option selector: a string. It is safer to choose a sequence of
+The long option selector: a string.  It is safer to choose a sequence of
 letters in the @acronym{ASCII} standard, separated by underscores or
 dashes.
 
@@ -1674,10 +2123,10 @@ A one--line string describing the option briefly.
 
 
 @deffn Function mbfl_getopts_parse
-Parses a set of command line options. The options are handed to user
-defined functions.  The global array @code{ARGV1} and the global
+Parses a set of command line options.  The options are handed to user
+defined functions.   The global array @code{ARGV1} and the global
 variable @code{ARGC1} are supposed to hold the command line arguments
-and the number of command line arguments.  Non--option arguments are
+and the number of command line arguments.   Non--option arguments are
 left in the global array @code{ARGV}, the global variable @code{ARGC}
 holds the number of elements in @code{ARGV}.
 @end deffn
@@ -1685,7 +2134,7 @@ holds the number of elements in @code{ARGV}.
 
 
 @deffn Function mbfl_getopts_islong @var{string} @var{varname}
-Verifies if a string is a long option without argument.  @var{string} is
+Verifies if a string is a long option without argument.   @var{string} is
 the string to validate, @var{varname} is the optional name of a variable
 that's set to the option name, without the leading dashes.
 
@@ -1700,7 +2149,7 @@ and @code{_} are allowed in the option name.
 
 
 @deffn Function mbfl_getopts_islong_with @var{string} @var{optname} @var{varname}
-Verifies if a string is a long option with argument. Arguments:
+Verifies if a string is a long option with argument.  Arguments:
 
 @table @var
 @item string
@@ -1727,7 +2176,7 @@ ignored.
 
 
 @deffn Function mbfl_getopts_isbrief @var{string} @var{varname}
-Verifies if a string is a brief option without argument. Arguments:
+Verifies if a string is a brief option without argument.  Arguments:
 @var{string} is the string to validate, @var{varname} optional name of a
 variable that's set to the option name, without the leading dash.
 
@@ -1740,7 +2189,7 @@ ranges @code{A-Z}, @code{a-z}, @code{0-9} are allowed as option letters.
 
 
 @deffn Function mbfl_getopts_isbrief_with @var{string} @var{optname} @var{valname}
-Verifies if a string is a brief option without argument. Arguments:
+Verifies if a string is a brief option without argument.  Arguments:
 
 @table @var
 @item string
@@ -1764,16 +2213,16 @@ A brief option must be of the form @code{-aV} (@code{a} is the option,
 
 
 @deffn Function mbfl_wrong_num_args @var{required} @var{present}
-Validates the number of arguments.  @var{required} is the required
+Validates the number of arguments.   @var{required} is the required
 number of arguments, @var{present} is the given number of arguments on
-the command line.  If the number of arguments is different from the
+the command line.   If the number of arguments is different from the
 required one: prints an error message and returns with code one; else
 returns with code zero.
 @end deffn
 
 
 @deffn Function mbfl_wrong_num_args_range @var{min_required} @var{max_required} @var{argc}
-Validates the number of arguments. @var{argc} must be between
+Validates the number of arguments.  @var{argc} must be between
 @var{min_required} and @var{max_required}, inclusive.
 @end deffn
 
@@ -1785,7 +2234,7 @@ Exits with code @code{98}.
 
 @deffn Function mbfl_argv_from_stdin
 If the @code{ARGC} global variable is set to zero: fills the global
-variable @code{ARGV} with lines from stdin. If the global variable
+variable @code{ARGV} with lines from stdin.  If the global variable
 @code{mbfl_option_NULL} is set to @code{yes}: lines are read using the
 null character as terminator, else they are read using the standard
 newline as terminator.
@@ -1796,24 +2245,23 @@ This function may block waiting for input.
 
 @deffn Function mbfl_argv_all_files
 Checks that all the arguments in @code{ARGV} are file names of existent
-files.  Returns with code zero if no errors, else prints an error
+files.   Returns with code zero if no errors, else prints an error
 message and returns with code 1.
 @end deffn
 
 
 @deffn Function mbfl_getopts_print_long_switches
-Prints all the long switches in a row, separated by spaces. This is
+Prints all the long switches in a row, separated by spaces.  This is
 useful to retrieve the option for @bash{} programmable completion.
 @end deffn
 
-@c ------------------------------------------------------------
-@node Getopts Values
+@c page
+@node getopts values
 @section Querying Options
 
 
-@noindent
 Some feature and behaviour of the library is configured by the return
-value of the following set of functions. All of these functions are
+value of the following set of functions.  All of these functions are
 defined by the Getopts module, but they can be redefined by the script.
 
 
@@ -1825,7 +2273,7 @@ line.
 
 @deffn Function mbfl_option_verbose
 Returns true if the option @code{--verbose} was used on the command line
-after all the occurrences of @code{--silent}. Returns false if the
+after all the occurrences of @code{--silent}.  Returns false if the
 option @code{--silent} was used on the command line after all the
 occurrences of @code{--verbose}.
 @end deffn
@@ -1848,22 +2296,21 @@ Returns true if the option @code{--null} was used on the command line.
 
 @deffn Function mbfl_option_interactive
 Returns true if the option @code{--interactive} was used on the command
-line after all the occurrences of @code{--force}. Returns false if the
+line after all the occurrences of @code{--force}.  Returns false if the
 option @code{--force} was used on the command line after all the
 occurrences of @code{--interactive}.
 @end deffn
 
-
-@c ------------------------------------------------------------
-@node Message
+@c page
+@node message
 @chapter Printing messages to the console
 
 
 @noindent
-This module allows one to print messages on an output channel. Various
+This module allows one to print messages on an output channel.  Various
 forms of message are supported.
 
-All the function names are prefixed with @code{mbfl_message_}. All the
+All the function names are prefixed with @code{mbfl_message_}.  All the
 messages will have the forms:
 
 @example
@@ -1894,117 +2341,115 @@ Selects the channel to be used to output messages.
 
 
 @deffn Function mbfl_message_string @var{string}
-Outputs a message to the selected channel.  Echoes a string composed of:
+Outputs a message to the selected channel.   Echoes a string composed of:
 the content of the @code{mbfl_message_PROGNAME} global variable; a
 colon; a space; the provided message.
 
-A newline character is NOT appended to the message. Escape characters
+A newline character is NOT appended to the message.  Escape characters
 are allowed in the message.
 @end deffn
 
 
 @deffn Function mbfl_message_verbose @var{string}
 Outputs a message to the selected channel, but only if the evaluation of
-the function/alias @function{mbfl_option_verbose} returns true.
+the function/alias @bfunc{mbfl_option_verbose} returns true.
 
 Echoes a string composed of: the content of the
 @code{mbfl_message_PROGNAME} global variable; a colon; a space; the
 provided message.
 
-A newline character is NOT appended to the message. Escape characters
+A newline character is NOT appended to the message.  Escape characters
 are allowed in the message.
 @end deffn
 
 
 @deffn Function mbfl_message_verbose_end @var{string}
 Outputs a message to the selected channel, but only if the evaluation of
-the function/alias @function{mbfl_option_verbose} returns true.
+the function/alias @bfunc{mbfl_option_verbose} returns true.
 
-Echoes the string. A newline character is NOT appended to the
-message. Escape characters are allowed in the message.
+Echoes the string.  A newline character is NOT appended to the
+message.  Escape characters are allowed in the message.
 @end deffn
 
 
 @deffn Function mbfl_message_debug @var{string}
 Outputs a message to the selected channel, but only if the evaluation of
-the function/alias @function{mbfl_option_debug} returns true.
+the function/alias @bfunc{mbfl_option_debug} returns true.
 
 Echoes a string composed of: the content of the
 @code{mbfl_message_PROGNAME} global variable; a colon; a space; the
 provided message.
 
-A newline character is NOT appended to the message. Escape characters
+A newline character is NOT appended to the message.  Escape characters
 are allowed in the message.
 @end deffn
 
 
 @deffn Function mbfl_message_warning @var{string}
-Outputs a warning message to the selected channel.  Echoes a string
+Outputs a warning message to the selected channel.   Echoes a string
 composed of: the content of the @code{mbfl_message_PROGNAME} global
 variable; a colon; a space; the string @code{warning}; a colon; a space;
 the provided message.
 
-A newline character IS appended to the message. Escape characters are
+A newline character IS appended to the message.  Escape characters are
 allowed in the message.
 @end deffn
 
 
 @deffn Function mbfl_message_error @var{string}
-Outputs a error message to the selected channel.  Echoes a string
+Outputs a error message to the selected channel.   Echoes a string
 composed of: the content of the @code{mbfl_message_PROGNAME} global
 variable; a colon; a space; the string @code{error}; a colon; a space;
 the provided message.
 
-A newline character IS appended to the message. Escape characters are
+A newline character IS appended to the message.  Escape characters are
 allowed in the message.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node Program
+@c page
+@node program
 @chapter Using external programs
 
 
-@noindent
 This module declares a set of global variables all prefixed with
-@code{mbfl_program_}. We have to look at the module's code to see which
+@code{mbfl_program_}.  We have to look at the module's code to see which
 one are declared.
 
 
 @menu
-* Program Testing::             Testing a script and running programs.
-* Program Checking::            Checking programs existence.
-* Program Executing::           Executing a program.
-* Program Declaring::           Declaring the intention to use a program.
+* program testing::             Testing a script and running programs.
+* program checking::            Checking programs existence.
+* program executing::           Executing a program.
+* program declaring::           Declaring the intention to use a program.
 @end menu
 
-
-@c ------------------------------------------------------------
-@node Program Testing
+@c page
+@node program testing
 @section Testing a script and running programs
 
 
 @noindent
 @mbfl{} allows a script to execute a ``dry run'', that is: do not
 perform any operation on the system, just print messages describing what
-will happen if the script is executed with the selected options. This
+will happen if the script is executed with the selected options.  This
 implies, in the @mbfl{} model, that no external program is executed.
 
-When this feature is turned on: @function{mbfl_program_exec} does not
+When this feature is turned on: @bfunc{mbfl_program_exec} does not
 execute the program, instead it prints the command line on standard
 error and returns true.
 
 
 @deffn Function mbfl_set_option_test
-Enables the script test option. After this a script should not do
+Enables the script test option.  After this a script should not do
 anything on the system, just print messages describing the
-operations. This function is invoked when the predefined option
+operations.  This function is invoked when the predefined option
 @option{--test} is used on the command line.
 @end deffn
 
 
 @deffn Function mbfl_unset_option_test
-Disables the script test option. After this a script should perform
+Disables the script test option.  After this a script should perform
 normal operations.
 @end deffn
 
@@ -2014,8 +2459,8 @@ Returns true if test execution is enabled, else returns false.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node Program Checking
+@c page
+@node program checking
 @section Checking programs existence
 
 
@@ -2038,7 +2483,7 @@ found.
 
 @var{program} may be a program name with no directory part (exmaples:
 @command{sed}, @command{grep}), or a full or relative pathname
-(examples: @file{/bin/sed}, @file{../bin/grep}). If @var{program} is a
+(examples: @file{/bin/sed}, @file{../bin/grep}).  If @var{program} is a
 relative pathname and it is an executable file: the output of the
 function is exactly @var{program}, the pathname is @strong{not}
 normalised.
@@ -2052,19 +2497,19 @@ which will return the correct file pathname.
 If the environment variable @env{PATH} holds the same directory more
 than once, or there exist programs with the same name in more than one
 @env{PATH} elements: @code{type -ap $program} will return more than one
-line of output, one for each executable file found. The first value is
+line of output, one for each executable file found.  The first value is
 the selected one.
 
 @strong{The use of the following function is deprecated.}
 
 @deffn Function mbfl_program_check @var{program} ?@var{program} ...?
-Checks the availability of programs. All the pathnames on the command
+Checks the availability of programs.  All the pathnames on the command
 line are checked: if one is not executable an error message is printed
-on stderr.  Returns false if a program can't be found, true otherwise.
+on stderr.   Returns false if a program can't be found, true otherwise.
 @end deffn
 
-@c ------------------------------------------------------------
-@node Program Executing
+@c page
+@node program executing
 @section Executing a program
 
 
@@ -2103,10 +2548,10 @@ to use @command{sudo}.
 @deffn Function mbfl_program_exec @var{arg} ...
 Evaluates a command line.
 
-If the function @function{mbfl_option_test} returns true: instead of
+If the function @bfunc{mbfl_option_test} returns true: instead of
 evaluation, the command line is sent to stderr.
 
-If the function @function{mbfl_option_show_program} returns true: the
+If the function @bfunc{mbfl_option_show_program} returns true: the
 command line is sent to stderr, then it is executed.
 @end deffn
 
@@ -2119,15 +2564,15 @@ Declares the intention to use @command{sudo}.
 @deffn Function mbfl_program_declare_sudo_user @var{user}
 Register @var{user} as the user under which to execute the next program
 through @command{sudo}; the user will be selected using the @code{-u}
-option of @command{sudo}. The value @code{nosudo} means: do not use
-@command{sudo}. When the time comes: if the selected user name equals
+option of @command{sudo}.  The value @code{nosudo} means: do not use
+@command{sudo}.  When the time comes: if the selected user name equals
 the value of the environment variable @code{USER}: @command{sudo} is not
 used.
 @end deffn
 
 @deffn Function mbfl_program_reset_sudo_user
 Resets the previously requested @command{sudo} user to a value that will
-cause @command{sudo} not to be used in the next program invocation. This
+cause @command{sudo} not to be used in the next program invocation.  This
 is useful to abort a user request.
 @end deffn
 
@@ -2144,7 +2589,7 @@ for the next command execution.
 @subsection Executing a subshell
 
 @deffn Function mbfl_program_bash @var{arg} @dots{}
-Execute @command{bash} with whatever arguments are appended. The
+Execute @command{bash} with whatever arguments are appended.  The
 @command{bash} pathname is registered in the library at start up, from
 the built in variable @code{BASH}.
 @end deffn
@@ -2152,7 +2597,7 @@ the built in variable @code{BASH}.
 
 @deffn Function mbfl_program_bash_command @var{command}
 Execute @var{command} in a @command{bash} subprocess, using the
-@code{-c} switch. The @command{bash} pathname is registered in the
+@code{-c} switch.  The @command{bash} pathname is registered in the
 library at start up, from the built in variable @code{BASH}.
 @end deffn
 
@@ -2165,21 +2610,21 @@ There are programs that output useful informations on their stderr
 channel (example: the @command{at} command).
 
 @deffn Function mbfl_program_redirect_stderr_to_stdout
-Just for the next invocation to @function{mbfl_program_exec} redirects
+Just for the next invocation to @bfunc{mbfl_program_exec} redirects
 stderr to stdout, that is use the @code{2>&1} redirection.
 @end deffn
 
 This is useful because redirecting the output of
-@function{mbfl_program_exec}:
+@bfunc{mbfl_program_exec}:
 
 @example
 echo ls | mbfl_program_exec at 'now +25 minutes' 2>&1 | while read
 @end example
 
 @noindent
-redirects also the ``show program'' output (@ref{Getopts Options} for
+redirects also the ``show program'' output (@ref{getopts options} for
 the @option{--show-program} option explanation and see the above
-description of @function{mbfl_program_exec}).
+description of @bfunc{mbfl_program_exec}).
 
 By using:
 
@@ -2191,33 +2636,33 @@ echo ls | mbfl_program_exec at 'now +25 minutes' | while read
 @noindent
 the ``show program'' output goes to stderr and the stderr output of the
 @command{at} command is, internally, redirected to the stdout of
-@function{mbfl_program_exec}.
+@bfunc{mbfl_program_exec}.
 
 
-@c ------------------------------------------------------------
-@node Program Declaring
+@c page
+@node program declaring
 @section Declaring the intention to use a program
 
 
 @noindent
 To make a script model simpler, we assume that the unavailability of a
-program at the time of its execution is a fatal error. So if we need to
+program at the time of its execution is a fatal error.  So if we need to
 execute a program and the executable is not there, the script must be
 aborted on the spot.
 
 Functions are available to test the availability of a program, so we can
 try to locate an alternative or terminate the process under the script
-control.  On a system where executables may vanish from one moment to
+control.   On a system where executables may vanish from one moment to
 another, no matter how we test a program existence, there's always the
 possibility that the program is not ``there'' when we invoke it.
 
-If we just use @function{mbfl_program_exec} to invoke an external
+If we just use @bfunc{mbfl_program_exec} to invoke an external
 program, the function will try and fail if the executable is
 unavailable: the return code will be false.
 
 The vanishing of a program is a rare event: if it's there when we look
 for it, probably it will be there also a few moments later when we
-invoke it. For this reason, @mbfl{} proposes a set of functions with
+invoke it.  For this reason, @mbfl{} proposes a set of functions with
 which we can declare the intention of a script to use a set of programs;
 a command line option is predefined to let the user test the
 availability of all the declared programs before invoking the script.
@@ -2225,8 +2670,8 @@ availability of all the declared programs before invoking the script.
 
 @deffn Function mbfl_declare_program @var{program}
 Registers @var{program} as the name of a program required by the script;
-@function{mbfl_program_find} is used to locate the program on the system
-(@ref{Program Checking} for details).
+@bfunc{mbfl_program_find} is used to locate the program on the system
+(@ref{program checking} for details).
 
 If @var{program} is a file name with no directory part (examples:
 @command{sed}, @command{grep}) the selected program is the full pathname
@@ -2235,17 +2680,17 @@ of the file in one of the directories of @env{PATH}.
 If @var{program} is a relative pathname (examples: @file{../bin/sed},
 @file{./grep}): the selected program is the full pathname of the file
 normalised by this function with respect to the current working
-directory (with a call to @function{mbfl_file_normalise}).
+directory (with a call to @bfunc{mbfl_file_normalise}).
 
 The return value is always zero.
 @end deffn
 
 
 @deffn Function mbfl_program_validate_declared
-Validates the existence of all the declared programs. The return value
+Validates the existence of all the declared programs.  The return value
 is zero if all the programs are found, one otherwise.
 
-This function is invoked by @function{mbfl_getopts_parse} when the
+This function is invoked by @bfunc{mbfl_getopts_parse} when the
 @code{--validate-programs} option is used on the command line.
 
 It may be a good idea to invoke this function at the beginning of a
@@ -2262,12 +2707,12 @@ from the command line the option @option{--verbose} must be used before
 
 
 @deffn Function mbfl_program_found @var{program}
-Prints the pathname of the previously declared @var{program}. Returns
+Prints the pathname of the previously declared @var{program}.  Returns
 zero if the program was found, otherwise prints an error message and
-exits the script by invoking @function{exit_because_program_not_found}.
+exits the script by invoking @bfunc{exit_because_program_not_found}.
 
 This function should be used to retrieve the pathname of the program to
-be used as first argument to @function{mbfl_program_exec}:
+be used as first argument to @bfunc{mbfl_program_exec}:
 
 @example
 function program_wrapper () @{
@@ -2275,7 +2720,7 @@ function program_wrapper () @{
     shift
     local PROGNAME=$(mbfl_program_found 'myprog')
     local FLAGS
-    
+
     mbfl_option_verbose_program && FLAGS="$@{FLAGS@} --verbose"
     mbfl_program_exec "$@{PROGNAME@}" $@{FLAGS@} "$@{ARGUMENT@}" "$@@"
 @}
@@ -2288,24 +2733,24 @@ Terminates the script with exit code @code{99}.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node Interfaces
+@c page
+@node interfaces
 @chapter Interfaces to external programs
 
 
 @menu
-* Interfaces At::               Scheduling jobs for later execution.
+* interfaces at::               Scheduling jobs for later execution.
 @end menu
 
 
-@c ------------------------------------------------------------
-@node Interfaces At
+@c page
+@node interfaces at
 @section Scheduling jobs for later execution
 
 
 @noindent
 This section documents the interface to the @command{atd} daemon; you
-may want to read the @command{at}(1) manual page. The @command{at}
+may want to read the @command{at}(1) manual page.  The @command{at}
 service allows a user to schedule commands to be executed at a later
 time.
 
@@ -2322,7 +2767,7 @@ before time @code{T}, then execute command @command{C}.
 
 
 @deffn Function mbfl_at_enable
-Declares the intention to use the @command{at} interface. The declared
+Declares the intention to use the @command{at} interface.  The declared
 programs are: @command{at}, @command{atq}, @command{atrm}.
 @end deffn
 
@@ -2338,7 +2783,7 @@ false.
 
 @deffn Function mbfl_at_validate_selected_queue
 Returns true if the currently selected queue identifier is valid, else
-prints an error message and returns false. A false return code means
+prints an error message and returns false.  A false return code means
 that an internal error has corrupted the module state.
 @end deffn
 
@@ -2348,7 +2793,7 @@ that an internal error has corrupted the module state.
 
 @deffn Function mbfl_at_select_queue @var{letter}
 Selects and register in an internal state a queue identifier; invokes
-@function{mbfl_at_validate_queue_letter} to validate the selection.
+@bfunc{mbfl_at_validate_queue_letter} to validate the selection.
 @end deffn
 
 
@@ -2357,15 +2802,15 @@ Schedules @var{command} in the currently selected queue; the script will
 be executed at @var{time}.
 
 If no error occurs: prints to stdout the identifier of the scheduled
-job; the identifier can be used as argument to @function{mbfl_at_drop}.
+job; the identifier can be used as argument to @bfunc{mbfl_at_drop}.
 @strong{Note}: the @command{at} command outputs some text (in which the
 job is embedded) on its stderr channel, so this function redirects
 stderr to stdout to return the value; this operation conflicts with the
-use of the ``show program'' feature of @function{mbfl_program_exec}.
+use of the ``show program'' feature of @bfunc{mbfl_program_exec}.
 
 @var{command} must be a string representing the invocation of an
 external executable program: it is sent unchanged to the @command{at}
-command. @var{time} is the argument to the @command{at} command, see the
+command.  @var{time} is the argument to the @command{at} command, see the
 manual page for its description.
 @end deffn
 
@@ -2403,8 +2848,8 @@ Prints the letters identifying queues with pending jobs.
 Prints the currently selected queue letter.
 @end deffn
 
-@c ------------------------------------------------------------
-@node Signal
+@c page
+@node signal
 @chapter Catching signals
 
 
@@ -2427,36 +2872,36 @@ Append @var{handler} to the list of functions that are executed whenever
 
 
 @deffn Function mbfl_signal_invoke_handlers @var{signum}
-Invokes all the handlers registered for @var{signum}. This function is
+Invokes all the handlers registered for @var{signum}.  This function is
 not meant to be used during normal scripts execution, but it may be
 useful to debug a script.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node String
+@c page
+@node string
 @chapter Manipulating strings
 
 
 @menu
-* String Quote::                Quoted characters.
-* String Inspection::           Inspecting a string.
-* String Splitting::            Splitting a string.
-* String Case::                 Converting between upper and lower case.
-* String Class::                Matching a string with a class.
-* String Misc::                 Miscellaneous functions.
+* string quote::                Quoted characters.
+* string inspection::           Inspecting a string.
+* string splitting::            Splitting a string.
+* string case::                 Converting between upper and lower case.
+* string class::                Matching a string with a class.
+* string misc::                 Miscellaneous functions.
 @end menu
 
 
-@c ------------------------------------------------------------
-@node String Quote
+@c page
+@node string quote
 @section Quoted characters
 
 
 @deffn Function mbfl_string_is_quoted_char @var{string} @var{position}
 Returns true if the character at @var{position} in @var{string} is
-quoted; else returns false. A character is considered quoted if it is
-preceeded by an odd number of backslashes (@code{\}). @var{position} is
+quoted; else returns false.  A character is considered quoted if it is
+preceeded by an odd number of backslashes (@code{\}).  @var{position} is
 a zero--based index.
 @end deffn
 
@@ -2464,93 +2909,93 @@ a zero--based index.
 @deffn Function mbfl_string_is_equal_unquoted_char @var{string} @var{position} @var{char}
 Returns true if the character at @var{position} in @var{string} is equal
 to @var{char} and is not quoted (according to
-@function{mbfl_string_is_quoted_char}); else returns false. @var{position}
+@bfunc{mbfl_string_is_quoted_char}); else returns false.  @var{position}
 is a zero--based index.
 @end deffn
 
 @deffn Function mbfl_string_quote @var{string}
-Prints @var{string} with quoted characters. All the occurrences of the
+Prints @var{string} with quoted characters.  All the occurrences of the
 backslash character, @code{\}, are substituted with a quoted backslash,
-@code{\\}. Returns true.
+@code{\\}.  Returns true.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node String Inspection
+@c page
+@node string inspection
 @section Inspecting a string
 
 
 @deffn Function mbfl_string_index @var{string} @var{index}
-Selects a character from a string.  Echoes to stdout the selected
-character. If the index is out of range: the empty string is echoed to
+Selects a character from a string.   Echoes to stdout the selected
+character.  If the index is out of range: the empty string is echoed to
 stdout, that is: a newline is echoed to stdout.
 @end deffn
 
 
 @deffn Function mbfl_string_first @var{string} @var{char} ?@var{begin}?
-Searches characters in a string. Arguments: @var{string}, the target
+Searches characters in a string.  Arguments: @var{string}, the target
 string; @var{char}, the character to look for; @var{begin}, optional,
 the index of the character in the target string from which the search
 begins (defaults to zero).
 
 Prints an integer representing the index of the first occurrence of
-@var{char} in @var{string}. If the character is not found: nothing is
+@var{char} in @var{string}.  If the character is not found: nothing is
 sent to stdout.
 @end deffn
 
 
 @deffn Function mbfl_string_last @var{string} @var{char} ?@var{begin}?
-Searches characters in a string starting from the end. Arguments:
+Searches characters in a string starting from the end.  Arguments:
 @var{string}, the target string; @var{char}, the character to look for;
 @var{begin}, optional, the index of the character in the target string
 from which the search begins (defaults to zero).
 
 Prints an integer representing the index of the last occurrence of
-@var{char} in @var{string}. If the character is not found: nothing is
+@var{char} in @var{string}.  If the character is not found: nothing is
 sent to stdout.
 @end deffn
 
 
 @deffn Function mbfl_string_range @var{string} @var{begin} @var{end}
-Extracts a range of characters from a string. Arguments: @var{string},
+Extracts a range of characters from a string.  Arguments: @var{string},
 the source string; @var{begin}, the index of the first character in the
 range; @var{end}, optional, the index of the character next to the last
-in the range, this character is not extracted. @var{end} defaults to the
+in the range, this character is not extracted.  @var{end} defaults to the
 last character in the string; if equal to @code{end}: the end of the
-range is the end of the string.  Echoes to stdout the selected range of
+range is the end of the string.   Echoes to stdout the selected range of
 characters.
 @end deffn
 
 
 @deffn Function mbfl_string_equal_substring @var{string} @var{position} @var{pattern}
 Returns true if the substring starting at @var{position} in @var{string}
-is equal to @var{pattern}; else returns false. If @var{position} plus
+is equal to @var{pattern}; else returns false.  If @var{position} plus
 the length of @var{pattern} is greater than the length of @var{string}:
 the return value is false, always.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node String Splitting
+@c page
+@node string splitting
 @section Splitting a string
 
 
 
 @deffn Function mbfl_string_chars @var{string}
-Splits a string into characters. Fills an array named @code{SPLITFIELD}
+Splits a string into characters.  Fills an array named @code{SPLITFIELD}
 with the characters from the string; the number of elements in the array
-is stored in a variable named @code{SPLITCOUNT}. Both @code{SPLITFIELD}
+is stored in a variable named @code{SPLITCOUNT}.  Both @code{SPLITFIELD}
 and @code{SPLITCOUNT} may be declared @code{local} in the scope of the
 caller.
 
 The difference between this function and using: @code{$@{STRING:$i:1@}},
 is that this function detects backslash characters, @code{\}, and treats
-them as part of the following character. So, for example, the sequence
+them as part of the following character.  So, for example, the sequence
 @code{\n} is treated as a single char.
 @end deffn
 
 
-Example of usage for @function{mbfl_string_chars}:
+Example of usage for @bfunc{mbfl_string_chars}:
 
 @example
 string="abcde\nfghilm"
@@ -2573,16 +3018,16 @@ mbfl_string_chars "$@{string@}"
 
 
 @deffn Function mbfl_string_split @var{string} @var{separator}
-Splits @var{string} into fields using @var{seprator}.  Fills an array
+Splits @var{string} into fields using @var{seprator}.   Fills an array
 named @code{SPLITFIELD} with the characters from the string; the number
 of elements in the array is stored in a variable named
-@code{SPLITCOUNT}. Both @code{SPLITFIELD} and @code{SPLITCOUNT} may be
+@code{SPLITCOUNT}.  Both @code{SPLITFIELD} and @code{SPLITCOUNT} may be
 declared @code{local} in the scope of the caller.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node String Case
+@c page
+@node string case
 @section Converting between upper and lower case
 
 
@@ -2598,8 +3043,8 @@ Outputs @var{string} with all the occurrencies of upper case
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node String Class
+@c page
+@node string class
 @section Matching a string with a class
 
 
@@ -2622,7 +3067,7 @@ mbfl_string_is_digit_char} returns true when acting on @var{char}.
 
 @deffn Function mbfl_string_is_noblank_char @var{char}
 Returns true if @var{char} is in none of the characters: @code{ },
-@code{\n}, @code{\r}, @code{\f}, @code{\t}. @var{char} is meant to be
+@code{\n}, @code{\r}, @code{\f}, @code{\t}.  @var{char} is meant to be
 the unquoted version of the non--blank characters: the one obtained
 with:
 
@@ -2644,21 +3089,21 @@ acting upon @var{char} or @var{char} is an underscore, @code{_}.
 @deffnx Function mbfl_string_is_noblank @var{string}
 @deffnx Function mbfl_string_is_name @var{string}
 Return true if the associated char function returns true for each
-character in @var{string}. As an additional constraint:
+character in @var{string}.  As an additional constraint:
 @code{mbfl_string_is_name} returns false if @code{mbfl_string_is_digit}
 returns true when acting upon the first character of @var{string}.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node String Misc
+@c page
+@node string misc
 @section Miscellaneous functions
 
 
 
 @deffn Function mbfl_string_replace @var{string} @var{pattern} ?@var{subst}?
 Replaces all the occurrences of @var{pattern} in @var{string} with
-@var{subst}; prints the result. If not used, @var{subst} defaults to the
+@var{subst}; prints the result.  If not used, @var{subst} defaults to the
 empty string.
 @end deffn
 
@@ -2672,59 +3117,59 @@ the variable in that scope.
 
 
 @deffn Function mbfl_string_skip @var{string} @var{varname} @var{char}
-Skips all the characters in a string equal to @var{char}.  @var{varname}
+Skips all the characters in a string equal to @var{char}.   @var{varname}
 is the name of a variable in the scope of the caller: its value is the
-offset of the first character to test in @var{string}. The offset is
+offset of the first character to test in @var{string}.  The offset is
 incremented until a char different from @var{char} is found, then the
 value of @var{varname} is update to the position of the different char.
 If the initial value of the offset corresponds to a char equal to
-@var{char}, the variable is left untouched.  Returns true.
+@var{char}, the variable is left untouched.   Returns true.
 @end deffn
 
 
 
-@c ------------------------------------------------------------
-@node Dialog
+@c page
+@node dialog
 @chapter Interacting with the user
 
 
 @deffn Function mbfl_dialog_yes_or_no @var{string} ?@var{progname}?
 Prints the question @var{string} on the standard output and waits for
-the user to type @code{yes} or @code{no} in the standard input. Returns
+the user to type @code{yes} or @code{no} in the standard input.  Returns
 true if the user has typed @code{yes}, false if the user has typed
 @code{no}.
 
 The optional parameter @var{progname} is used as prefix for the prompt;
 if not given: defaults to the value of @var{script_PROGNAME}
-(@ref{Service Variables} for details).
+(@ref{service variables} for details).
 @end deffn
 
 
 @deffn Function mbfl_dialog_ask_password @var{prompt}
 Prints @var{prompts} followed by a colon and a space, then reads a
-password from the terminal. Prints the password.
+password from the terminal.  Prints the password.
 @end deffn
 
 
 
-@c ------------------------------------------------------------
-@node Variables
+@c page
+@node variables
 @chapter Manipulating variables
 
 
 @menu
-* Variables Arrays::
-* Variables Colon::
+* variables arrays::
+* variables colon::
 @end menu
 
-@c ------------------------------------------------------------
-@node Variables Arrays
+@c page
+@node variables arrays
 @section Manipulating arrays
 
 
 @deffn Function mbfl_variable_find_in_array @var{element}
 Searches the array @code{mbfl_FIELDS} for a value equal to
-@var{element}. If it is found: prints the index and returns true; else
+@var{element}.  If it is found: prints the index and returns true; else
 prints nothing and returns false.
 
 @code{mbfl_FIELDS} must be filled with elements having subsequent
@@ -2733,13 +3178,13 @@ indexes starting at zero.
 
 
 @deffn Function mbfl_variable_element_is_in_array @var{element}
-A wrapper for @function{mbfl_variable_find_in_array} that does not print
+A wrapper for @bfunc{mbfl_variable_find_in_array} that does not print
 anything.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node Variables Colon
+@c page
+@node variables colon
 @section Manipulating colon variables
 
 
@@ -2762,15 +3207,9 @@ removes duplicates.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node System
+@c page
+@node system
 @chapter Interfacing with the system
-
-
-@menu
-* System User Id::              Converting user identifiers.
-* System File Perms::           Converting file permissions.
-@end menu
 
 
 @deffn Function mbfl_system_enable_programs
@@ -2778,8 +3217,13 @@ Declares the intention to use the programs required by this module.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node System User Id
+@menu
+* system user id::              Converting user identifiers.
+* system file perms::           Converting file permissions.
+@end menu
+
+@c page
+@node system user id
 @section Converting user identifiers
 
 
@@ -2795,8 +3239,8 @@ in the @file{/etc/passwd} file.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node System File Perms
+@c page
+@node system file perms
 @section Converting file permissions
 
 
@@ -2812,56 +3256,55 @@ chars.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node Main
+@c page
+@node main
 @chapter Main function
 
 
-@noindent
 @mbfl{} declares a function to drive the execution of the script; its
 purpose is to make use of the other modules to reduce the size of
-scripts depending on @mbfl{}.  All the code blocks in the script, with
+scripts depending on @mbfl{}.   All the code blocks in the script, with
 the exception of global variables declaration, should be enclosed in
 functions.
 
 
 @menu
-* Main Function::               Driving script execution.
-* Main Exit::                   Declaring exit codes.
+* main function::               Driving script execution.
+* main exit::                   Declaring exit codes.
 @end menu
 
 
-@c ------------------------------------------------------------
-@node Main Function
+@c page
+@node main function
 @section Driving script execution
 
 
 @deffn Function mbfl_main
 The invocation to this function must be the last line of code in the
-script. Does the following.
+script.  Does the following.
 
 @enumerate
 @item
 Registers the value of the variable @code{script_PROGNAME} in the
-message module using the function @function{mbfl_message_set_progname}.
+message module using the function @bfunc{mbfl_message_set_progname}.
 
 @item
-Invokes @function{mbfl_main_create_exit_aliases} (@ref{Main Exit} for
+Invokes @bfunc{mbfl_main_create_exit_aliases} (@ref{main exit} for
 details).
 
 @item
-If it exists: invokes the function @function{script_before_parsing_options}.
+If it exists: invokes the function @bfunc{script_before_parsing_options}.
 
 @item
-Parses command line options with @function{mbfl_getopts_parse}.
+Parses command line options with @bfunc{mbfl_getopts_parse}.
 
 @item
-If it exists: invokes the function @function{script_after_parsing_options}.
+If it exists: invokes the function @bfunc{script_after_parsing_options}.
 
 @item
 Invokes the function whose name is stored in the global variable
 @code{mbfl_main_SCRIPT_FUNCTION}, if it exists, with no arguments; if
-its return value is non--zero: exits the script with the same code. The
+its return value is non--zero: exits the script with the same code.  The
 default value is @code{main}.
 
 @item
@@ -2891,8 +3334,8 @@ Selects the main function storing @var{funcname} into
 Global variable that holds the name of the custom main script function.
 @end defvar
 
-@c ------------------------------------------------------------
-@node Main Exit
+@c page
+@node main exit
 @section Declaring exit codes
 
 
@@ -2908,8 +3351,8 @@ Declares an exit code with value @var{code} and identifier @var{name}.
 
 @deffn Function mbfl_main_create_exit_functions
 For each of the codes declared with
-@function{mbfl_main_declare_exit_code} creates a function for the
-@code{exit} command using the numerical code. Example: if a code is
+@bfunc{mbfl_main_declare_exit_code} creates a function for the
+@code{exit} command using the numerical code.  Example: if a code is
 declared as:
 
 @example
@@ -2925,7 +3368,7 @@ function exit_because_unexistent_file () @{ exit 4; @}
 
 @noindent
 the name of the function is the string @code{exit_because_} followed by
-the exit code name. The function may be used in the script to exit the
+the exit code name.  The function may be used in the script to exit the
 process.
 @end deffn
 
@@ -2950,8 +3393,8 @@ Exits the script with code one.
 Prints the code associated to @var{name}.
 @end deffn
 
-@c ------------------------------------------------------------
-@node Testing
+@c page
+@node testing
 @chapter Building test suites
 
 
@@ -2974,19 +3417,18 @@ his taste.
 
 
 @menu
-* Testing Intro::               A way to organise a test suite.
-* Testing Shell::               A script to run tests.
-* Testing Config::              Configuring the package.
-* Testing Running::             Running tests.
-* Testing Compare::             Validating results by comparing.
-* Testing Output::              Validating results by output.
-* Testing Messages::            Printing messages from test functions.
-* Testing Files::               Handling files in tests.
+* testing intro::               A way to organise a test suite.
+* testing shell::               A script to run tests.
+* testing config::              Configuring the package.
+* testing running::             Running tests.
+* testing compare::             Validating results by comparing.
+* testing output::              Validating results by output.
+* testing messages::            Printing messages from test functions.
+* testing files::               Handling files in tests.
 @end menu
 
-
-@c ------------------------------------------------------------
-@node Testing Intro
+@c page
+@node testing intro
 @section A way to organise a test suite
 
 
@@ -2995,11 +3437,11 @@ A useful way to organise a test suite is to split it into a set of
 files: one for each module to be tested.
 
 The file @file{libmbfltest.sh} must be sourced at the beginning of each
-test file. This means that the variables that you set may interfere with
+test file.  This means that the variables that you set may interfere with
 the ones in the library; this should not happen because the test library
 prefixes variable names with @code{mbfl_} or @code{dotest_}, but one
 exception is @env{TMPDIR}: do not set it in your script, use
-@function{dotest-echo-tmpdir} to access that value (@ref{Testing Files}
+@bfunc{dotest-echo-tmpdir} to access that value (@ref{testing files}
 for details).
 
 
@@ -3010,7 +3452,7 @@ To understand how the library works lets examine a bare bone example.
 
 The function @code{dotest} should be invoked at the end of each module
 in the test suite; each module should define functions starting with the
-same prefix. A module should be stored in a file, and should look like
+same prefix.  A module should be stored in a file, and should look like
 the following:
 
 @example
@@ -3077,30 +3519,30 @@ endif
 @end example
 
 
-@c ------------------------------------------------------------
-@node Testing Shell
+@c page
+@node testing shell
 @section A script to run tests
 
 
 @noindent
 @mbfl{} comes with a script that can be used to handle the execution
-of tests; it is called @command{mbfltest.sh}. Synopsis:
+of tests; it is called @command{mbfltest.sh}.  Synopsis:
 
 @example
 mbfltest.sh [options] TESTFILE ...
 @end example
 
 @noindent
-supported options are all the @mbfl{} generic ones (@ref{Getopts
-Options}) and additionally:
+supported options are all the @mbfl{} generic ones (@ref{getopts
+options}) and additionally:
 
 @table @code
 @item --start
 print start messages for tests, it is the same as invoking
-@function{dotest-set-report-start};
+@bfunc{dotest-set-report-start};
 @item --end
 print end messages for tests, it is the same as invoking
-@function{dotest-set-report-success};
+@bfunc{dotest-set-report-success};
 @item --match=VALUE
 select match pattern for tests, it is the same as setting the
 @env{TESTMATCH} variable;
@@ -3113,7 +3555,7 @@ select a specific version of the @mbfl{} library.
 
 When running tests with the script: in the test modules we can omit the
 sourcing of @mbfl{} and the @mbfl{} test library, @command{mbfltest.sh}
-does this before sourcing the test module. Each test module is evaluated
+does this before sourcing the test module.  Each test module is evaluated
 in a @bash{} subprocess, so: there is no interference between modules;
 each module has to do its own initialisation and finalisation.
 
@@ -3140,15 +3582,15 @@ endif
 @end example
 
 
-@c ------------------------------------------------------------
-@node Testing Config
+@c page
+@node testing config
 @section Configuring the package
 
 
 @deffn Function dotest-set-verbose
 @deffnx Function dotest-unset-verbose
-Set or unset verbose execution. If verbose mode is on: some commands
-output messages on stderr describing what is going on. Examples: files
+Set or unset verbose execution.  If verbose mode is on: some commands
+output messages on stderr describing what is going on.  Examples: files
 and directories creation/removal.
 @end deffn
 
@@ -3159,9 +3601,9 @@ Returns true if verbose mode is on, false otherwise.
 
 @deffn Function dotest-set-test
 @deffnx Function dotest-unset-test
-Set or unset test execution. If test mode is on: external commands (like
+Set or unset test execution.  If test mode is on: external commands (like
 @command{rm} and @command{mkdir}) are not executed, the command line is
-sent to stderr. Test mode is meant to be used to debug the test library
+sent to stderr.  Test mode is meant to be used to debug the test library
 functions.
 @end deffn
 
@@ -3183,7 +3625,7 @@ Returns true if start function reporting is on; otherwise returns false.
 @deffn Function dotest-set-report-success
 @deffnx Function dotest-unset-report-success
 Set or unset printing a message when a function execution
-succeeds. Failed tests always cause a message to be printed.
+succeeds.  Failed tests always cause a message to be printed.
 @end deffn
 
 @deffn Function dotest-option-report-success
@@ -3193,14 +3635,14 @@ false.
 
 
 
-@c ------------------------------------------------------------
-@node Testing Running
+@c page
+@node testing running
 @section Running test functions
 
 
 
 @deffn Funciton dotest @var{pattern}
-Run all the functions matching @var{pattern}. Usually @var{pattern} is
+Run all the functions matching @var{pattern}.  Usually @var{pattern} is
 the first part of the name of the functions to be executed; the function
 names are selected with the following code:
 
@@ -3215,7 +3657,7 @@ Before running a test function: the current process working directory is
 saved, and it is restored after the execution is terminated.
 
 The return value of the test functions is used as result of the test:
-true, the test succeeded; false, the test failed. Remembering that the
+true, the test succeeded; false, the test failed.  Remembering that the
 return value of a function is the return value of its last executed
 command, the functions @code{dotest-equal} and @code{dotest-output}, and
 of course the @command{test} command, may be used to return the correct
@@ -3224,7 +3666,7 @@ value.
 
 Messages are printed before and after the execution of each function,
 according to the mode selected with: @code{dotest-set-report-success},
-@code{dotest-set-report-start}, @dots{} (@ref{Testing Config} for
+@code{dotest-set-report-start}, @dots{} (@ref{testing config} for
 details).
 
 The following environment variables may configure the behaviour of
@@ -3247,16 +3689,16 @@ invoking @code{dotest-unset-report-success}.
 @end defvar
 
 
-@c ------------------------------------------------------------
-@node Testing Compare
+@c page
+@node testing compare
 @section Validating results by comparing
 
 
 
 @deffn Function dotest-equal @var{expected} @var{got}
 Compares the two parameters and returns true if they are equal; returns
-false otherwise. In the latter case prints a message showing the
-expected value and the wrong one. Must be used as last command in a
+false otherwise.  In the latter case prints a message showing the
+expected value and the wrong one.  Must be used as last command in a
 function, so that its return value is equal to that of the function.
 @end deffn
 
@@ -3288,8 +3730,8 @@ function mytest-1.1 () @{
 dotest mytest-
 @end example
 
-@c ------------------------------------------------------------
-@node Testing Output
+@c page
+@node testing output
 @section Validating results by output
 
 
@@ -3325,27 +3767,27 @@ function mytest-1.1 () @{
 dotest mytest
 @end example
 
-@c ------------------------------------------------------------
-@node Testing Messages
+@c page
+@node testing messages
 @section Printing messages from test functions
 
 
 @deffn Alias dotest-echo @var{string} ?...?
 @deffnx Alias dotest-debug @var{string} ?...?
-Print the parameters on stderr. @code{dotest-debug} prints some @code{*}
+Print the parameters on stderr.  @code{dotest-debug} prints some @code{*}
 to make the message more visible.
 @end deffn
 
 
-@c ------------------------------------------------------------
-@node Testing Files
+@c page
+@node testing files
 @section Handling files in tests
 
 
 @noindent
 In this section are described functions to be used to create temporary
 files; it is a common task to write scripts to manipulate files and
-directories. All the files should be created under a temporary directory
+directories.  All the files should be created under a temporary directory
 that must be removed after each test function is invoked; the library
 automatically invokes @code{dotest-clean-files} when exiting (using
 @code{trap}), but it is safer to invoke it at the end of each function
@@ -3355,16 +3797,16 @@ that creates files.
 @subsection Directories
 
 @deffn Function dotest-cd @var{directory}
-Change the working directory. This is just a wrapper for @command{cd};
+Change the working directory.  This is just a wrapper for @command{cd};
 if verbose mode is on: prints a message.
 @end deffn
 
 @deffn Function dotest-mkdir @var{directory} ?@var{prefix}?
 Creates @var{directory} under the temporary directory; @var{directory}
 must be a relative pathname (that is: it must not begin with a
-slash). The optional @var{prefix} is a relative pathname that is
+slash).  The optional @var{prefix} is a relative pathname that is
 prepended to @var{directory}: it is useful to prepend the name of a
-parent directory. Prints to stdout the full pathname of the directory.
+parent directory.  Prints to stdout the full pathname of the directory.
 @end deffn
 
 
@@ -3372,18 +3814,18 @@ parent directory. Prints to stdout the full pathname of the directory.
 
 @deffn Function dotest-echo-tmpdir
 Prints the value of the temporary directory in which all the files and
-directories will be created. The value is prefixed with the value of the
+directories will be created.  The value is prefixed with the value of the
 environment variable @env{TMPDIR}, or @file{/tmp} if not set.
 @end deffn
 
 
-@deffn Function dotest-cd-tmpdir 
+@deffn Function dotest-cd-tmpdir
 Change the working directory to eh temporary directory.
 @end deffn
 
 
 @deffn Function dotest-mktmpdir
-Creates the temporary directory. This is automatically invoked by
+Creates the temporary directory.  This is automatically invoked by
 @code{dotest-mkfile} before creating files; @code{dotest-mkdir} creates
 the temporary directory automatically by using the @code{--parents}
 option of @command{mkdir}.
@@ -3393,14 +3835,14 @@ option of @command{mkdir}.
 @subsection Files
 
 @deffn Function dotest-mkfile @var{pathname} ?@var{prefix}?
-Creates an empty file.  The optional @var{prefix} is a relative pathname
+Creates an empty file.   The optional @var{prefix} is a relative pathname
 that is prepended to @var{pathname}: it is useful to prepend the name of
-a parent directory. Prints to stdout the full pathname of the file.
+a parent directory.  Prints to stdout the full pathname of the file.
 @end deffn
 
 
 @deffn Function dotest-clean-files
-Removes the temporary directory and all its children. Should be invoked
+Removes the temporary directory and all its children.  Should be invoked
 at the end of each function that creates temporary files or
 directories.
 
@@ -3414,13 +3856,13 @@ invocation, that way it can be used right after @code{dotest-output} and
 
 @deffn Function dotest-assert-file-exists @var{file} @var{error_message}
 Tests that @var{file} exists: if true returns with code zero, else
-prints @var{error_message}, invokes @function{dotest-clean-files} and
+prints @var{error_message}, invokes @bfunc{dotest-clean-files} and
 returns with code one.
 @end deffn
 
 @deffn Function dotest-assert-file-unexists @var{file} @var{error_message}
 Tests that @var{file} does not exist: if true returns with code zero,
-else prints @var{error_message}, invokes @function{dotest-clean-files}
+else prints @var{error_message}, invokes @bfunc{dotest-clean-files}
 and returns with code one.
 @end deffn
 
@@ -3455,46 +3897,44 @@ function mytest-1.2 () @{
 dotest mytest-
 @end example
 
-
+@c page
+@c ------------------------------------------------------------
+@c Appendices.
 @c ------------------------------------------------------------
 
-@include fdl.texiinc
-@include gpl.texiinc
+@include lgpl-3.0.texiinc
+@include fdl-1.3.texiinc
 
-@c ------------------------------------------------------------
-@node References
+@c page
+@node references
 @appendix Bibliography and references
 
 
-@table @emph
-@item bash Manual Page
-By Brian Fox and Chet Ramey. The authoritative source for @command{bash}
-behaviour.
+@xref{Top,bash,@gnu{} Bash,@gnu{} Bash}.
 
-@end table
 
-@c ------------------------------------------------------------
-@node Concept Index
+@c page
+@node concept index
 @appendix An entry for each concept
-     
+
 @printindex cp
 
-@node Functions Index
-@appendix An entry for each function
-     
+@node function index
+@appendix An entry for each function.
+
 @printindex fn
-     
-@node Variables Index
-@appendix An entry for each variable
-     
+
+@node variable index
+@appendix An entry for each variable.
+
 @printindex vr
 
+@node type index
+@appendix An entry for each type.
+
+@printindex tp
 
 @contents
 @bye
 
 @c end of file
-@c Local Variables::
-@c mode: Texinfo
-@c page-separator: "^@c -+$"
-@c End::
