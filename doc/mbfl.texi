@@ -307,9 +307,9 @@
 @code{(\NAME\)}
 @end macro
 
-@macro module{NAME}
-@code{\NAME\}
-@end macro
+@c @macro module{NAME}
+@c @code{\NAME\}
+@c @end macro
 
 @macro repl{}
 @acronym{REPL}

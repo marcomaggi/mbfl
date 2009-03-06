@@ -1,29 +1,29 @@
 # message.test --
-# 
+#
 # Part of: Marco's BASH function libraries
 # Contents: tests for the message library
 # Date: Mon Sep 13, 2004
-# 
+#
 # Abstract
-# 
-# 
-# Copyright (c) 2004, 2005 Marco Maggi
-# 
+#
+#
+# Copyright (c) 2004, 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
 # Software Foundation; either  version 2, or (at your  option) any later
 # version.
-# 
+#
 # This  file is  distributed in  the hope  that it  will be  useful, but
 # WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
 # General Public License for more details.
-# 
+#
 # You  should have received  a copy  of the  GNU General  Public License
 # along with this file; see the file COPYING.  If not, write to the Free
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
-# 
+#
 
 #PAGE
 ## ------------------------------------------------------------
@@ -49,7 +49,7 @@ function message-2.2 () {
 	mbfl_set_option_verbose
 	mbfl_message_verbose "abcde\n"
 	mbfl_unset_option_verbose
-    } 2>&1 | dotest-output "$0: abcde"
+    } 2>&1 | dotest-output "<unknown>: abcde"
 }
 
 #page
@@ -59,17 +59,17 @@ function message-3.1 () {
 	mbfl_set_option_debug
 	mbfl_message_debug abcde
 	mbfl_unset_option_debug
-    }  2>&1 | dotest-output "$0: debug: abcde"
+    }  2>&1 | dotest-output "<unknown>: debug: abcde"
 }
 
 #page
 
 function message-4.1 () {
-    mbfl_message_warning abcde 2>&1 | dotest-output "$0: warning: abcde"
+    mbfl_message_warning abcde 2>&1 | dotest-output "<unknown>: warning: abcde"
 }
 
 function message-5.1 () {
-    mbfl_message_error abcde 2>&1 | dotest-output "$0: error: abcde"
+    mbfl_message_error abcde 2>&1 | dotest-output "<unknown>: error: abcde"
 }
 
 #PAGE

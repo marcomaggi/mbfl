@@ -108,11 +108,15 @@ function mbfl_program_exec () {
     fi
     if ! mbfl_option_test ; then
 ##if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}" ; then
-        if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != $("${WHOAMI}") ; then
-            if test "${STDERR_TO_STDOUT}" = 'yes' ; then
-                "${SUDO}" -u "${PERSONA}" "${@}" 2>&1
-            else
-                "${SUDO}" -u "${PERSONA}" "${@}"
+        if test "${USE_SUDO}" = 'yes' ; then
+            # Putting  this test  inside  here avoids  using
+            # "whoami" when "sudo" is not required.
+            if test "${PERSONA}" != $("${WHOAMI}") ; then
+                if test "${STDERR_TO_STDOUT}" = 'yes' ; then
+                    "${SUDO}" -u "${PERSONA}" "${@}" 2>&1
+                else
+                    "${SUDO}" -u "${PERSONA}" "${@}"
+                fi
             fi
         else
             if test "${STDERR_TO_STDOUT}" = 'yes' ; then

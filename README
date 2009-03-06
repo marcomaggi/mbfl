@@ -19,7 +19,8 @@ Topics
 ---------------
 
 The MBFL is a collection of shell functions for the GNU Bash
-shell.
+shell.  This  package is  an attempt to  make Bash  a viable
+solution for medium sized scripts.
 
 
 2. License
@@ -51,6 +52,7 @@ Read the INSTALL file. One should do:
 
   $ ./configure
   $ make
+  $ make tests
   $ make install
 
 
@@ -81,7 +83,7 @@ uses all the time.
 B. Bugs
 -------
 
-Bug  reports  are  appreciated:   you  should  use  the  bug
+Bug  reports  are  appreciated:   You  should  use  the  bug
 reporting interface at the GNA! site.
 
 

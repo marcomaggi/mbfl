@@ -39,7 +39,7 @@ function mbfl_decode_oct () {
     mandatory_parameter(INPUT, 1, input string)
 
     for ((i=0; $i < ${#INPUT}; i=$(($i + 3)))) ; do
-        echo -en "\\${INPUT:$i:3}"
+        echo -en "\\0${INPUT:$i:3}"
     done
     echo;# to end the line and let "read" acquire the stuff from a pipeline
 }
