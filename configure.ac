@@ -1,7 +1,7 @@
 dnl @configure_input@
 dnl
 
-AC_INIT([mbfl],[1.3a2])
+AC_INIT([mbfl],[1.3b1])
 DS_BEGIN([./src/modules/base.sh.m4])
 DS_EXCLUDE_SECTION([AUTOCONF])
 DS_EXCLUDE_SECTION([PKGCONFIG])
