@@ -1,29 +1,30 @@
 # program.sh.m4 --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: program functions
 # Date: Thu May  1, 2003
-# 
-# Abstract
-# 
 #
-# Copyright (c) 2003, 2004, 2005 Marco Maggi
-# 
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
-# version.
-# 
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# Abstract
+#
+#
+# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
+#
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  3.0 of the License,  or (at
+# your option) any later version.
+#
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
-# 
+# Lesser General Public License for more details.
+#
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
+#
 
 #page
 ## ------------------------------------------------------------
@@ -66,6 +67,7 @@ declare mbfl_program_BASH=${BASH}
 
 function mbfl_program_enable_sudo () {
     mbfl_declare_program sudo
+    mbfl_declare_program whoami
 }
 function mbfl_program_declare_sudo_user () {
     mandatory_parameter(PERSONA, 1, sudo user name)
@@ -84,12 +86,13 @@ function mbfl_program_redirect_stderr_to_stdout () {
     mbfl_program_STDERR_TO_STDOUT='yes'
 }
 function mbfl_program_exec () {
-    local PERSONA=${mbfl_program_SUDO_USER} USE_SUDO='no' SUDO
+    local PERSONA=${mbfl_program_SUDO_USER} USE_SUDO='no' SUDO WHOAMI
     local STDERR_TO_STDOUT='no'
     mbfl_program_SUDO_USER='nosudo'
 
     if test "${PERSONA}" != 'nosudo' ; then
         SUDO=$(mbfl_program_found sudo)
+        WHOAMI=$(mbfl_program_found whoami)
         USE_SUDO=yes
     fi
 
@@ -104,7 +107,8 @@ function mbfl_program_exec () {
         fi
     fi
     if ! mbfl_option_test ; then
-        if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}" ; then
+##if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}" ; then
+        if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != $("${WHOAMI}") ; then
             if test "${STDERR_TO_STDOUT}" = 'yes' ; then
                 "${SUDO}" -u "${PERSONA}" "${@}" 2>&1
             else
@@ -190,7 +194,6 @@ function mbfl_program_found () {
 function mbfl_program_main_validate_programs () {
     mbfl_program_validate_declared || exit_because_program_not_found
 }
-
 
 
 ### end of file

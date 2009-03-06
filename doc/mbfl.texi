@@ -441,7 +441,7 @@ Permission is granted to copy, distribute and/or modify this document
 under the terms of the @gnu{} Free Documentation License, Version 1.3 or
 any later version published by the Free Software Foundation; with
 Invariant Sections being ``@gnu{} Free Documentation License'' and
-``@gnu{} General Public License'', no Front--Cover Texts, and no
+``@gnu{} Lesser General Public License'', no Front--Cover Texts, and no
 Back--Cover Texts.  A copy of the license is included in the section
 entitled ``@gnu{} Free Documentation License''.
 @end quotation
@@ -506,7 +506,7 @@ entitled ``@gnu{} Free Documentation License''.
 
 Appendices
 
-* Package License::             GNU General Public License.
+* Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
 * references::                  Bibliography and references.
 
@@ -1695,7 +1695,6 @@ long option @code{color} with value @code{bianco}.
 * getopts usage::               Using the module.
 * getopts options::             Predefined options.
 * getopts interface::           Interface functions.
-* getopts values::              Querying options.
 @end menu
 
 @c page
@@ -1780,10 +1779,10 @@ global variable @code{script_option_ALPHA}, which will be set to
 @code{no} by default and to @code{yes} if the option is used;
 
 @item
-Brief switch @code{-a}.
+Brief switch @option{-a}.
 
 @item
-Long switch @code{--alpha}.
+Long switch @option{--alpha}.
 
 @item
 Description @code{enable alpha option}, to be shown in the usage help
@@ -1816,10 +1815,10 @@ global variable @code{script_option_BETA}, which will be set to
 the option is used;
 
 @item
-Brief switch @code{-b}.
+Brief switch @option{-b}.
 
 @item
-Long switch @code{--beta}.
+Long switch @option{--beta}.
 
 @item
 Description @code{select beta value}, to be shown in the usage output.
@@ -1907,15 +1906,16 @@ array and before being stored in the option's specific global variables.
 
 @item -v
 @itemx --verbose
-Turns on verbose messages.  The fuction @bfunc{mbfl_option_verbose}
-returns true (@ref{message}, for details).
+Turns on verbose messages.  If this option is used: The fuction
+@bfunc{mbfl_option_verbose} returns true.  @ref{message, Printing
+messages to the console}.
 
 @item --silent
-Turns off verbose messages.  The fuction @bfunc{mbfl_option_verbose}
-returns false.
+Turns off verbose messages.  If this option is used: The fuction
+@bfunc{mbfl_option_verbose} returns false.
 
 @item --verbose-program
-If used the @option{--verbose} option is added to the command line of
+If used: The @option{--verbose} option is added to the command line of
 external programs that support it.  The fuction
 @bfunc{mbfl_option_verbose_program} returns true or false depending on
 the state of this option.
@@ -1924,11 +1924,12 @@ the state of this option.
 Prints the command line of executed external programs.
 
 @item --debug
-Turns on debugging messages (@ref{message}, for details).  Automatically
-turns on verbose messages and program showing.
+Turns on debugging messages.  Automatically turns on verbose messages
+and program showing.  @ref{message, Printing messages to the console}.
 
 @item --test
-Turns on test execution (@ref{program testing}, for details).
+Turns on test execution.  @ref{program testing, Testing a script and
+external programs}.
 
 @item --null
 Signals to the script that it has to use the null character to separate
@@ -1954,7 +1955,7 @@ otherwise.
 
 @item --list-exit-codes
 Prints a list of numerical exit codes and their associated names, as
-declared in the script (@ref{main exit} for details).
+declared in the script.  @ref{main exit, Declaring exit codes}.
 
 @item --print-exit-code=NAME
 Prints the numerical exit code associated to @code{NAME}.
@@ -1965,18 +1966,19 @@ Prints the list of names associated to the numerical exit @code{CODE}.
 @item --version
 Prints to the standard output of the script the contents of the global
 variable @code{mbfl_message_VERSION}, then exits with code zero.  The
-variable makes use of the service variables (@ref{service variables},
-for details).
+variable makes use of the service variables.  @ref{service variables,
+Required user defined variables}.
 
 @item --version-only
 Prints to the standard output of the script the contents of the global
-variable @code{script_VERSION}, then exits with code zero.
+variable @code{script_VERSION}, then exits with code zero.  @ref{service
+variables, Required user defined variables}.
 
 @item --license
 Prints to the standard output of the script the contents of one of the
 global variables @code{mbfl_message_LICENSE_*}, then exits with code
-zero.  The variable makes use of the service variables (@ref{service
-variables}, for details).
+zero.  The variable makes use of the service variables.  @ref{service
+variables, Required user defined variables}.
 
 @item -h
 @itemx --help
@@ -1985,7 +1987,9 @@ Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
 declared with @bfunc{mbfl_declare_option}; a string describing the
-@mbfl{} default options.  Then exits with code zero.
+@mbfl{} default options; the contents of the global variable
+@code{script_EXAMPLES}.  Then exits with code zero.  @ref{service
+variables, Required user defined variables}.
 
 @item -H
 @itemx --brief-help
@@ -1995,33 +1999,42 @@ variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
 declared with @bfunc{mbfl_declare_option}.  Then exits with code zero.
 
-The difference with @option{--help} is that predefined options are not
-described.
+The difference with @option{--help} is that predefined options and usage
+examples are not displayed.
 @end table
 
 
-The following options may be used to set, unset and query the state of
+The following functions may be used to set, unset and query the state of
 the predefined options.
 
 
 @deffn Function mbfl_option_encoded_args
 @deffnx Function mbfl_set_option_encoded_args
 @deffnx Function mbfl_unset_option_encoded_args
-Query/sets/unsets the encoded arguments option.
+Query/set/unset the encoded arguments option.
+
+@bfunc{mbfl_option_encoded_args} returns true if the option
+@option{--encoded-args} was used on the command line.
 @end deffn
 
 
-@deffn Function mbfl_option_encoded_args
-@deffnx Function mbfl_set_option_encoded_args
-@deffnx Function mbfl_unset_option_encoded_args
-Query/sets/unsets the verbose messages option.
+@deffn Function mbfl_option_verbose
+@deffnx Function mbfl_set_option_verbose
+@deffnx Function mbfl_unset_option_verbose
+Query/set/unset the verbose messages option.
+
+@bfunc{mbfl_option_verbose} returns true if the option
+@option{--verbose} was used on the command line after all the
+occurrences of @option{--silent}; it returns false if the option
+@option{--silent} was used on the command line after all the occurrences
+of @option{--verbose}.
 @end deffn
 
 
 @deffn Function mbfl_option_verbose_program
 @deffnx Function mbfl_set_option_verbose_program
 @deffnx Function mbfl_unset_option_verbose_program
-Query/sets/unsets verbose execution for external programs.
+Query/set/unset verbose execution for external programs.
 
 This option, of course, is supported only for programs that are known by
 @mbfl{} (like @command{rm}): if a program is executed with
@@ -2033,7 +2046,7 @@ the option.
 @deffn Function mbfl_option_show_program
 @deffnx Function mbfl_set_option_show_program
 @deffnx Function mbfl_unset_option_show_program
-Prints the command line of executed external program.  This does not
+Print the command line of executed external program.  This does not
 disable program execution, it just prints the command line before
 executing it.
 @end deffn
@@ -2042,28 +2055,34 @@ executing it.
 @deffn Function mbfl_option_test
 @deffnx Function mbfl_set_option_test
 @deffnx Function mbfl_unset_option_test
-Query/sets/unsets the test execution option.
+Query/set/unset the test execution option.
 @end deffn
 
 
 @deffn Function mbfl_option_debug
 @deffnx Function mbfl_set_option_debug
 @deffnx Function mbfl_unset_option_debug
-Query/sets/unsets the debug messages option.
+Query/set/unset the debug messages option.
 @end deffn
 
 
 @deffn Function mbfl_option_null
 @deffnx Function mbfl_set_option_null
 @deffnx Function mbfl_unset_option_null
-Query/sets/unsets the null list separator option.
+Query/set/unset the null list separator option.
 @end deffn
 
 
 @deffn Function mbfl_option_interactive
 @deffnx Function mbfl_set_option_interactive
 @deffnx Function mbfl_unset_option_interactive
-Query/sets/unsets the interactive excution option.
+Query/set/unset the interactive excution option.
+
+@bfunc{mbfl_option_interactive} returns true if the option
+@option{--interactive} was used on the command line after all the
+occurrences of @option{--force}; it returns false if the option
+@option{--force} was used on the command line after all the occurrences
+of @option{--interactive}.
 @end deffn
 
 
@@ -2090,13 +2109,13 @@ omitted.
 
 
 @deffn Function mbfl_declare_option @var{keyword} @var{default} @var{brief} @var{long} @var{hasarg} @var{description}
-Declares a new option.  Arguments description follows.
+Declare a new option.  Arguments description follows.
 
 @table @var
 @item keyword
 A string identifying the option; internally it is used to build a
 function name and a variable name.  It is safer to limit this string to
-the letters in the range @code{a-z} and underscores.
+the letters in the ranges @code{a-z}, @code{A-Z} and underscores.
 
 @item default
 The default value for the option.  For an option with argument it can be
@@ -2123,22 +2142,23 @@ A one--line string describing the option briefly.
 
 
 @deffn Function mbfl_getopts_parse
-Parses a set of command line options.  The options are handed to user
-defined functions.   The global array @code{ARGV1} and the global
+Parse a set of command line options.  The options are handed to user
+defined functions.  The global array @code{ARGV1} and the global
 variable @code{ARGC1} are supposed to hold the command line arguments
-and the number of command line arguments.   Non--option arguments are
+and the number of command line arguments.  Non--option arguments are
 left in the global array @code{ARGV}, the global variable @code{ARGC}
 holds the number of elements in @code{ARGV}.
 @end deffn
 
 
+@deffn Function mbfl_getopts_islong @var{string}
+@deffnx Function mbfl_getopts_islong @var{string} @var{varname}
+Verify if a string is a long option without argument.  @var{string} is
+the string to validate.  The optional @var{varname} is the name of a
+variable that this function will set to the option name from
+@var{string}, without the leading dashes.
 
-@deffn Function mbfl_getopts_islong @var{string} @var{varname}
-Verifies if a string is a long option without argument.   @var{string} is
-the string to validate, @var{varname} is the optional name of a variable
-that's set to the option name, without the leading dashes.
-
-Returns with code zero if the string is a long option without argument,
+Return with code zero if the string is a long option without argument,
 else returns with code one.
 
 An option must be of the form @code{--option}, only characters in the
@@ -2147,24 +2167,25 @@ and @code{_} are allowed in the option name.
 @end deffn
 
 
-
-@deffn Function mbfl_getopts_islong_with @var{string} @var{optname} @var{varname}
-Verifies if a string is a long option with argument.  Arguments:
+@deffn Function mbfl_getopts_islong_with @var{string}
+@deffnx Function mbfl_getopts_islong_with @var{string} @var{optname} @var{varname}
+Verify if a string is a long option with argument.  Arguments:
 
 @table @var
 @item string
-the string to validate;
+The string to validate.
 
 @item optname
-optional name of a variable that's set to the option name, without the
-leading dashes;
+Optional name of a variable that this function will set to the option
+name from @var{string}, without the leading dashes.
 
 @item varname
-optional name of a variable that's set to the option value.
+Optional name of a variable that this function will set to the option
+value from @var{string}.
 @end table
 
-Returns with code zero if the string is a long option with argument,
-else returns with code one.
+Return with code zero if the string is a long option with argument, else
+return with code one.
 
 An option must be of the form @code{--option=value}, only characters in
 the ranges @code{A-Z}, @code{a-z}, @code{0-9} and the characters
@@ -2175,36 +2196,40 @@ ignored.
 @end deffn
 
 
-@deffn Function mbfl_getopts_isbrief @var{string} @var{varname}
-Verifies if a string is a brief option without argument.  Arguments:
-@var{string} is the string to validate, @var{varname} optional name of a
-variable that's set to the option name, without the leading dash.
+@deffn Function mbfl_getopts_isbrief @var{string}
+@deffnx Function mbfl_getopts_isbrief @var{string} @var{varname}
+Verify if a string is a brief option without argument.  @var{string} is
+the string to validate.  The optional @var{varname} is the name of a
+variable that this function will set to the option name from
+@var{string}, without the leading dash.
 
-Returns with code zero if the argument is a brief option without
-argument, else returns with code one.
+Return with code zero if the argument is a brief option without
+argument, else return with code one.
 
 A brief option must be of the form @code{-a}, only characters in the
 ranges @code{A-Z}, @code{a-z}, @code{0-9} are allowed as option letters.
 @end deffn
 
 
-@deffn Function mbfl_getopts_isbrief_with @var{string} @var{optname} @var{valname}
-Verifies if a string is a brief option without argument.  Arguments:
+@deffn Function mbfl_getopts_isbrief_with @var{string}
+@deffnx Function mbfl_getopts_isbrief_with @var{string} @var{optname} @var{valname}
+Verify if a string is a brief option without argument.  Arguments:
 
 @table @var
 @item string
-the string to validate;
+The string to validate.
 
 @item optname
-optional name of a variable that's set to the option name, without the
-leading dashes;
+Optional name of a variable that this function will set to the option
+name from @var{string}, without the leading dashes.
 
 @item valname
-optional name of a variable that's set to the option value.
+Optional name of a variable that this function will set to the option
+value.
 @end table
 
-Returns with code zero if the argument is a brief option without
-argument, else returns with code one.
+Return with code zero if the argument is a brief option without
+argument, else return with code one.
 
 A brief option must be of the form @code{-aV} (@code{a} is the option,
 @code{V} is the value), only characters in the ranges @code{A-Z},
@@ -2213,28 +2238,28 @@ A brief option must be of the form @code{-aV} (@code{a} is the option,
 
 
 @deffn Function mbfl_wrong_num_args @var{required} @var{present}
-Validates the number of arguments.   @var{required} is the required
-number of arguments, @var{present} is the given number of arguments on
-the command line.   If the number of arguments is different from the
-required one: prints an error message and returns with code one; else
-returns with code zero.
+Validate the number of arguments.  @var{required} is the required number
+of arguments, @var{present} is the given number of arguments on the
+command line.  If the number of arguments is different from the required
+one: print an error message and return with code one; else return with
+code zero.
 @end deffn
 
 
 @deffn Function mbfl_wrong_num_args_range @var{min_required} @var{max_required} @var{argc}
-Validates the number of arguments.  @var{argc} must be between
+Validate the number of arguments.  @var{argc} must be between
 @var{min_required} and @var{max_required}, inclusive.
 @end deffn
 
 
 @deffn Function exit_because_wrong_num_args
-Exits with code @code{98}.
+Exit with code @code{98}.
 @end deffn
 
 
 @deffn Function mbfl_argv_from_stdin
 If the @code{ARGC} global variable is set to zero: fills the global
-variable @code{ARGV} with lines from stdin.  If the global variable
+variable @code{ARGV} with lines read from stdin.  If the global variable
 @code{mbfl_option_NULL} is set to @code{yes}: lines are read using the
 null character as terminator, else they are read using the standard
 newline as terminator.
@@ -2244,61 +2269,15 @@ This function may block waiting for input.
 
 
 @deffn Function mbfl_argv_all_files
-Checks that all the arguments in @code{ARGV} are file names of existent
-files.   Returns with code zero if no errors, else prints an error
-message and returns with code 1.
+Check that all the arguments in @code{ARGV} are file names of existent
+files.  Return with code zero if no errors, else print an error message
+and return with code 1.
 @end deffn
 
 
 @deffn Function mbfl_getopts_print_long_switches
-Prints all the long switches in a row, separated by spaces.  This is
-useful to retrieve the option for @bash{} programmable completion.
-@end deffn
-
-@c page
-@node getopts values
-@section Querying Options
-
-
-Some feature and behaviour of the library is configured by the return
-value of the following set of functions.  All of these functions are
-defined by the Getopts module, but they can be redefined by the script.
-
-
-@deffn Function mbfl_option_encoded_args
-Returns true if the option @code{--encoded-args} was used on the command
-line.
-@end deffn
-
-
-@deffn Function mbfl_option_verbose
-Returns true if the option @code{--verbose} was used on the command line
-after all the occurrences of @code{--silent}.  Returns false if the
-option @code{--silent} was used on the command line after all the
-occurrences of @code{--verbose}.
-@end deffn
-
-
-@deffn Function mbfl_option_test
-Returns true if the option @code{--test} was used on the command line.
-@end deffn
-
-
-@deffn Function mbfl_option_debug
-Returns true if the option @code{--debug} was used on the command line.
-@end deffn
-
-
-@deffn Function mbfl_option_null
-Returns true if the option @code{--null} was used on the command line.
-@end deffn
-
-
-@deffn Function mbfl_option_interactive
-Returns true if the option @code{--interactive} was used on the command
-line after all the occurrences of @code{--force}.  Returns false if the
-option @code{--force} was used on the command line after all the
-occurrences of @code{--interactive}.
+Print all the long switches in a row, separated by spaces.  This is
+useful to retrieve the option for Bash programmable completion.
 @end deffn
 
 @c page
@@ -2306,122 +2285,92 @@ occurrences of @code{--interactive}.
 @chapter Printing messages to the console
 
 
-@noindent
-This module allows one to print messages on an output channel.  Various
-forms of message are supported.
-
-All the function names are prefixed with @code{mbfl_message_}.  All the
-messages will have the forms:
+This module allows us to print messages on an output channel.  Various
+forms of message are supported.  All the function names are prefixed
+with @code{mbfl_message_}.  All the messages will have the forms:
 
 @example
 <progname>: <message>
 <progname>: [error|warning]: <message>
 @end example
 
-The following global variables are declared:
-
-@table @code
-@item mbfl_message_PROGNAME
-must be initialised with the name of the script that'll be displayed at
-the beginning of each message;
-
-@item mbfl_message_VERBOSE
-@code{yes} if verbose messages should be displayed, else @code{no};
-@end table
-
 
 @deffn Function mbfl_message_set_program @var{PROGNAME}
-Sets the script official name to put at the beginning of messages.
+Set the script official name to put at the beginning of messages.  This
+value is initialised to @code{script_PROGNAME}.
 @end deffn
 
 
 @deffn Function mbfl_message_set_channel @var{channel}
-Selects the channel to be used to output messages.
+Select the channel to be used to output messages.  This value is
+initialised to 2, which is stderr.
 @end deffn
 
 
 @deffn Function mbfl_message_string @var{string}
-Outputs a message to the selected channel.   Echoes a string composed of:
-the content of the @code{mbfl_message_PROGNAME} global variable; a
-colon; a space; the provided message.
-
-A newline character is NOT appended to the message.  Escape characters
-are allowed in the message.
+Output a message to the selected output channel.  Echo a string composed
+of: the selected program name, a colon, a space, @var{string}.  No
+newline character is appended to the message.  Escape characters
+supported by @code{printf} are allowed in @var{string}.
 @end deffn
 
 
 @deffn Function mbfl_message_verbose @var{string}
-Outputs a message to the selected channel, but only if the evaluation of
-the function/alias @bfunc{mbfl_option_verbose} returns true.
+Output a message to the selected output channel, but only if the
+evaluation of the function @bfunc{mbfl_option_verbose} returns true.
 
-Echoes a string composed of: the content of the
-@code{mbfl_message_PROGNAME} global variable; a colon; a space; the
-provided message.
-
-A newline character is NOT appended to the message.  Escape characters
-are allowed in the message.
+Echo a string composed of: the selected program name, a colon, a space,
+@var{string}. No newline character is appended to the message.  Escape
+characters supported by @code{printf} are allowed in @var{string}.
 @end deffn
 
 
 @deffn Function mbfl_message_verbose_end @var{string}
-Outputs a message to the selected channel, but only if the evaluation of
-the function/alias @bfunc{mbfl_option_verbose} returns true.
-
-Echoes the string.  A newline character is NOT appended to the
-message.  Escape characters are allowed in the message.
+Output a message to the selected output channel, but only if the
+evaluation of the function @bfunc{mbfl_option_verbose} returns true.
+Echo the string.  No newline character is appended to the message.
+Escape characters supported by @code{printf} are allowed in
+@var{string}.
 @end deffn
 
 
 @deffn Function mbfl_message_debug @var{string}
-Outputs a message to the selected channel, but only if the evaluation of
-the function/alias @bfunc{mbfl_option_debug} returns true.
-
-Echoes a string composed of: the content of the
-@code{mbfl_message_PROGNAME} global variable; a colon; a space; the
-provided message.
-
-A newline character is NOT appended to the message.  Escape characters
-are allowed in the message.
+Output a message to the selected output channel, but only if the
+evaluation of the function @bfunc{mbfl_option_debug} returns true.  Echo
+a string composed of: the selected program name, a colon, a space,
+@var{string}.  No newline character is appended to the message.  Escape
+characters supported by @code{printf} are allowed in @var{string}.
 @end deffn
 
 
 @deffn Function mbfl_message_warning @var{string}
-Outputs a warning message to the selected channel.   Echoes a string
-composed of: the content of the @code{mbfl_message_PROGNAME} global
-variable; a colon; a space; the string @code{warning}; a colon; a space;
-the provided message.
-
-A newline character IS appended to the message.  Escape characters are
-allowed in the message.
+Output a warning message to the selected output channel.  Echo a string
+composed of: the selected program name, a colon, a space, the string
+@code{warning}, a colon, a space, @var{string}, a newline character.
+Escape characters supported by @code{printf} are allowed in
+@var{string}.
 @end deffn
 
 
 @deffn Function mbfl_message_error @var{string}
-Outputs a error message to the selected channel.   Echoes a string
-composed of: the content of the @code{mbfl_message_PROGNAME} global
-variable; a colon; a space; the string @code{error}; a colon; a space;
-the provided message.
-
-A newline character IS appended to the message.  Escape characters are
-allowed in the message.
+Output an error message to the selected output channel.  Echo a string
+composed of: the selected program name, a colon, a space, the string
+@code{error}, a colon, a space, @var{string}, a newline character.
+Escape characters supported by @code{printf} are allowed in
+@var{string}.
 @end deffn
-
 
 @c page
 @node program
 @chapter Using external programs
 
 
-This module declares a set of global variables all prefixed with
-@code{mbfl_program_}.  We have to look at the module's code to see which
-one are declared.
-
-
 @menu
 * program testing::             Testing a script and running programs.
 * program checking::            Checking programs existence.
 * program executing::           Executing a program.
-* program declaring::           Declaring the intention to use a program.
+* program declaring::           Declaring the intention to use a
+                                program.
 @end menu
 
 @c page
@@ -2429,7 +2378,6 @@ one are declared.
 @section Testing a script and running programs
 
 
-@noindent
 @mbfl{} allows a script to execute a ``dry run'', that is: do not
 perform any operation on the system, just print messages describing what
 will happen if the script is executed with the selected options.  This
@@ -2441,21 +2389,21 @@ error and returns true.
 
 
 @deffn Function mbfl_set_option_test
-Enables the script test option.  After this a script should not do
-anything on the system, just print messages describing the
-operations.  This function is invoked when the predefined option
-@option{--test} is used on the command line.
+Enable the script test option.  After this a script should not do
+anything on the system, just print messages describing the operations.
+This function is invoked when the predefined option @option{--test} is
+used on the command line.
 @end deffn
 
 
 @deffn Function mbfl_unset_option_test
-Disables the script test option.  After this a script should perform
+Disable the script test option.  After this a script should perform
 normal operations.
 @end deffn
 
 
 @deffn Function mbfl_option_test
-Returns true if test execution is enabled, else returns false.
+Return true if test execution is enabled, else returns false.
 @end deffn
 
 
@@ -2464,7 +2412,6 @@ Returns true if test execution is enabled, else returns false.
 @section Checking programs existence
 
 
-@noindent
 The simpler way to test the availability of a program is to look for it
 just before it is used.
 
@@ -2487,25 +2434,25 @@ found.
 relative pathname and it is an executable file: the output of the
 function is exactly @var{program}, the pathname is @strong{not}
 normalised.
-@end deffn
 
-
-If an alias exists for a program, @code{type -p $program} will return
-the empty string; that is why we have to use @code{type -ap $program},
-which will return the correct file pathname.
+If an alias exists for a program, @code{type -p @var{program}} will
+return the empty string; that is why we have to use @code{type -ap
+@var{program}}, which will return the correct file pathname.
 
 If the environment variable @env{PATH} holds the same directory more
 than once, or there exist programs with the same name in more than one
 @env{PATH} elements: @code{type -ap $program} will return more than one
 line of output, one for each executable file found.  The first value is
 the selected one.
+@end deffn
+
 
 @strong{The use of the following function is deprecated.}
 
 @deffn Function mbfl_program_check @var{program} ?@var{program} ...?
-Checks the availability of programs.  All the pathnames on the command
+Check the availability of programs.  All the pathnames on the command
 line are checked: if one is not executable an error message is printed
-on stderr.   Returns false if a program can't be found, true otherwise.
+on stderr.  Return false if a program can't be found, true otherwise.
 @end deffn
 
 @c page
@@ -2513,21 +2460,23 @@ on stderr.   Returns false if a program can't be found, true otherwise.
 @section Executing a program
 
 
-@noindent
 This module provides functions to execute a program under the privileges
 of the current user or under a more or less privileged user; it makes
 use of @command{sudo}, to allow one to execute a program as a different
 user (optionally without entering a password): refer to the
 @command{sudo} documentation for the required configuration.
 
-The functions described here must be used in the following way: to
-execute a program under the current user privileges:
+The functions described here must be used in the following way:
+
+@itemize
+@item
+to execute a program under the current user privileges:
 
 @example
 mbfl_program_exec ls /bin
 @end example
 
-@noindent
+@item
 to execute a program under a more or less privileged user:
 
 @example
@@ -2538,6 +2487,7 @@ mbfl_program_enable_sudo
 mbfl_program_declare_sudo_user root
 mbfl_program_exec ls /root
 @end example
+@end itemize
 
 Every time we execute a program with @command{sudo}: we have to select
 the user under which to execute it; if we do not do it: the internally
@@ -2546,7 +2496,13 @@ to use @command{sudo}.
 
 
 @deffn Function mbfl_program_exec @var{arg} ...
-Evaluates a command line.
+Evaluate a command line.
+
+If usage of @command{sudo} was requested, the command is executed with
+it; then the @command{sudo} request is reset.  This means that this
+function ``consumes'' a @command{sudo} request.
+
+See below for the redirection of stderr.
 
 If the function @bfunc{mbfl_option_test} returns true: instead of
 evaluation, the command line is sent to stderr.
@@ -2557,7 +2513,11 @@ command line is sent to stderr, then it is executed.
 
 
 @deffn Function mbfl_program_enable_sudo
-Declares the intention to use @command{sudo}.
+Declare the intention to use @command{sudo} and other commands required
+to use it.  @ref{program declaring, Declaring the intention to use a
+program}.
+
+The declared programs are: @command{sudo}, @command{whoami}.
 @end deffn
 
 
@@ -2565,9 +2525,12 @@ Declares the intention to use @command{sudo}.
 Register @var{user} as the user under which to execute the next program
 through @command{sudo}; the user will be selected using the @code{-u}
 option of @command{sudo}.  The value @code{nosudo} means: do not use
-@command{sudo}.  When the time comes: if the selected user name equals
-the value of the environment variable @code{USER}: @command{sudo} is not
-used.
+@command{sudo}.
+
+When the time comes: if the selected user name equals the value printed
+by @command{whoami}, @command{sudo} is not used.
+@c When the time comes: if the selected user name equals the value of the
+@c environment variable @code{USER}: @command{sudo} is not used.
 @end deffn
 
 @deffn Function mbfl_program_reset_sudo_user
@@ -2585,11 +2548,13 @@ Returns with code true if the usage of @command{sudo} has been requested
 for the next command execution.
 @end deffn
 
+@c ------------------------------------------------------------
 
-@subsection Executing a subshell
+@subsubheading Executing a subshell
+
 
 @deffn Function mbfl_program_bash @var{arg} @dots{}
-Execute @command{bash} with whatever arguments are appended.  The
+Execute @command{bash} with the @var{arg} arguments appended.  The
 @command{bash} pathname is registered in the library at start up, from
 the built in variable @code{BASH}.
 @end deffn
@@ -2601,16 +2566,15 @@ Execute @var{command} in a @command{bash} subprocess, using the
 library at start up, from the built in variable @code{BASH}.
 @end deffn
 
+@c ------------------------------------------------------------
 
-@subsection Redirecting the standard error
+@subsubheading Redirecting the standard error
 
-
-@noindent
 There are programs that output useful informations on their stderr
 channel (example: the @command{at} command).
 
 @deffn Function mbfl_program_redirect_stderr_to_stdout
-Just for the next invocation to @bfunc{mbfl_program_exec} redirects
+Just for the next invocation to @bfunc{mbfl_program_exec} redirect
 stderr to stdout, that is use the @code{2>&1} redirection.
 @end deffn
 
@@ -2624,9 +2588,7 @@ echo ls | mbfl_program_exec at 'now +25 minutes' 2>&1 | while read
 @noindent
 redirects also the ``show program'' output (@ref{getopts options} for
 the @option{--show-program} option explanation and see the above
-description of @bfunc{mbfl_program_exec}).
-
-By using:
+description of @bfunc{mbfl_program_exec}).  Instead By using:
 
 @example
 mbfl_program_redirect_stderr_to_stdout
@@ -2644,7 +2606,6 @@ the ``show program'' output goes to stderr and the stderr output of the
 @section Declaring the intention to use a program
 
 
-@noindent
 To make a script model simpler, we assume that the unavailability of a
 program at the time of its execution is a fatal error.  So if we need to
 execute a program and the executable is not there, the script must be
@@ -2652,8 +2613,8 @@ aborted on the spot.
 
 Functions are available to test the availability of a program, so we can
 try to locate an alternative or terminate the process under the script
-control.   On a system where executables may vanish from one moment to
-another, no matter how we test a program existence, there's always the
+control.  On a system where executables may vanish from one moment to
+another, no matter how we test a program's existence, there's always the
 possibility that the program is not ``there'' when we invoke it.
 
 If we just use @bfunc{mbfl_program_exec} to invoke an external
@@ -2663,15 +2624,17 @@ unavailable: the return code will be false.
 The vanishing of a program is a rare event: if it's there when we look
 for it, probably it will be there also a few moments later when we
 invoke it.  For this reason, @mbfl{} proposes a set of functions with
-which we can declare the intention of a script to use a set of programs;
-a command line option is predefined to let the user test the
+which we can declare the intention of a script to use a set of programs.
+
+A command line option is predefined to let the user test the
 availability of all the declared programs before invoking the script.
+@ref{getopts options, Predefined options}.
 
 
 @deffn Function mbfl_declare_program @var{program}
-Registers @var{program} as the name of a program required by the script;
-@bfunc{mbfl_program_find} is used to locate the program on the system
-(@ref{program checking} for details).
+Register @var{program} as the name of a program required by the script;
+@bfunc{mbfl_program_find} is used to locate the program on the system.
+@ref{program checking, Checking programs existence}.
 
 If @var{program} is a file name with no directory part (examples:
 @command{sed}, @command{grep}) the selected program is the full pathname
@@ -2687,17 +2650,18 @@ The return value is always zero.
 
 
 @deffn Function mbfl_program_validate_declared
-Validates the existence of all the declared programs.  The return value
+Validate the existence of all the declared programs.  The return value
 is zero if all the programs are found, one otherwise.
 
 This function is invoked by @bfunc{mbfl_getopts_parse} when the
-@code{--validate-programs} option is used on the command line.
+@option{--validate-programs} option is used on the command line.
 
 It may be a good idea to invoke this function at the beginning of a
 script, just before starting to do stuff, example:
 
 @example
-mbfl_program_validate_declared || exit_because_program_not_found
+mbfl_program_validate_declared || \
+   exit_because_program_not_found
 @end example
 
 If verbose messages are enabled: a brief summary is echoed to stderr;
@@ -2707,31 +2671,32 @@ from the command line the option @option{--verbose} must be used before
 
 
 @deffn Function mbfl_program_found @var{program}
-Prints the pathname of the previously declared @var{program}.  Returns
-zero if the program was found, otherwise prints an error message and
-exits the script by invoking @bfunc{exit_because_program_not_found}.
+Print the pathname of the previously declared @var{program}.  Return
+zero if the program was found, otherwise print an error message and exit
+the script by invoking @bfunc{exit_because_program_not_found}.
 
 This function should be used to retrieve the pathname of the program to
 be used as first argument to @bfunc{mbfl_program_exec}:
 
 @example
 function program_wrapper () @{
-    local ARGUMENT=$@{1:?"missing 'ARGUMENT' parameter to '$@{FUNCNAME@}'"@}
+    local ARGUMENT=$@{1:?"missing 'ARGUMENT'"@}
     shift
     local PROGNAME=$(mbfl_program_found 'myprog')
     local FLAGS
 
-    mbfl_option_verbose_program && FLAGS="$@{FLAGS@} --verbose"
-    mbfl_program_exec "$@{PROGNAME@}" $@{FLAGS@} "$@{ARGUMENT@}" "$@@"
+    mbfl_option_verbose_program && \
+       FLAGS="$@{FLAGS@} --verbose"
+    mbfl_program_exec "$@{PROGNAME@}" \
+       $@{FLAGS@} "$@{ARGUMENT@}" "$@@"
 @}
 @end example
 @end deffn
 
 
 @deffn Function exit_because_program_not_found
-Terminates the script with exit code @code{99}.
+Terminate the script with exit code @code{99}.
 @end deffn
-
 
 @c page
 @node interfaces
@@ -2748,65 +2713,67 @@ Terminates the script with exit code @code{99}.
 @section Scheduling jobs for later execution
 
 
-@noindent
-This section documents the interface to the @command{atd} daemon; you
-may want to read the @command{at}(1) manual page.  The @command{at}
-service allows a user to schedule commands to be executed at a later
-time.
+This section documents the interface to the @command{atd} daemon; we may
+want to read the @command{at}(1) manual page.  The @command{at} service
+allows a user to schedule commands to be executed at a later time.
 
 This interface is suitable for scripts that define a unique simple
 policy to schedule commands; example: at each run they schedule a
-command in a fixed queue, to be executed at a fixed time in the
-future.
+command in a fixed queue, to be executed at a fixed time in the future.
 
 This is good to implement the logic: if a condition does not happen
 before time @code{T}, then execute command @command{C}.
 
 
-@subsection Commands declaration
+@subsubheading Commands declaration
 
 
 @deffn Function mbfl_at_enable
-Declares the intention to use the @command{at} interface.  The declared
-programs are: @command{at}, @command{atq}, @command{atrm}.
+Declare the intention to use the @command{at} interface.  @ref{program
+declaring, Declaring the intention to use a program}.
+
+The declared programs are: @command{at}, @command{atq}, @command{atrm}.
 @end deffn
 
 
-@subsection Arguments validation
+@subsubheading Arguments validation
 
 
 @deffn Function mbfl_at_validate_queue_letter @var{letter}
-Returns true if @var{letter} is a valid queue identifier, else returns
+Return true if @var{letter} is a valid queue identifier, else return
 false.
 @end deffn
 
 
 @deffn Function mbfl_at_validate_selected_queue
-Returns true if the currently selected queue identifier is valid, else
-prints an error message and returns false.  A false return code means
+Return true if the currently selected queue identifier is valid, else
+print an error message and return false.  A false return code means
 that an internal error has corrupted the module state.
 @end deffn
 
 
-@subsection Commands scheduling
+@subsubheading Commands scheduling
 
 
 @deffn Function mbfl_at_select_queue @var{letter}
-Selects and register in an internal state a queue identifier; invokes
+Select and register in an internal state a queue identifier; invoke
 @bfunc{mbfl_at_validate_queue_letter} to validate the selection.
 @end deffn
 
 
 @deffn Function mbfl_at_schedule @var{command} @var{time}
-Schedules @var{command} in the currently selected queue; the script will
+Schedule @var{command} in the currently selected queue; the script will
 be executed at @var{time}.
 
-If no error occurs: prints to stdout the identifier of the scheduled
+If no error occurs: print to stdout the identifier of the scheduled
 job; the identifier can be used as argument to @bfunc{mbfl_at_drop}.
-@strong{Note}: the @command{at} command outputs some text (in which the
-job is embedded) on its stderr channel, so this function redirects
-stderr to stdout to return the value; this operation conflicts with the
-use of the ``show program'' feature of @bfunc{mbfl_program_exec}.
+
+@quotation
+The @command{at} command outputs some text (in which the job is
+embedded) on its stderr channel, so this function redirects stderr to
+stdout to return the value; this operation conflicts with the use of the
+``show program'' feature of @bfunc{mbfl_program_exec}.
+@end quotation
 
 @var{command} must be a string representing the invocation of an
 external executable program: it is sent unchanged to the @command{at}
@@ -2816,36 +2783,36 @@ manual page for its description.
 
 
 @deffn Function mbfl_at_drop @var{identifier}
-Removes a job; the identifier of a job is unique in all the queues, so
+Remove a job; the identifier of a job is unique in all the queues, so
 this function is not affected by the currently selected queue.
 @end deffn
 
 
 @deffn Function mbfl_at_queue_clean
-Removes all the jobs from the currently selected queue.
+Remove all the jobs from the currently selected queue.
 @end deffn
 
 
-@subsection Inspection
+@subsubheading Inspection
 
 
 @deffn Function mbfl_at_queue_print_identifiers
-Prints all the job identifiers in the currently selected queue.
+Print all the job identifiers in the currently selected queue.
 @end deffn
 
 
 @deffn Function mbfl_at_queue_print_jobs
-Prints all the job descriptions in the currently selected queue.
+Print all the job descriptions in the currently selected queue.
 @end deffn
 
 
 @deffn Function mbfl_at_queue_print_queues
-Prints the letters identifying queues with pending jobs.
+Print the letters identifying queues with pending jobs.
 @end deffn
 
 
 @deffn Function mbfl_at_print_queue
-Prints the currently selected queue letter.
+Print the currently selected queue letter.
 @end deffn
 
 @c page
@@ -2853,14 +2820,13 @@ Prints the currently selected queue letter.
 @chapter Catching signals
 
 
-@noindent
 @mbfl{} provides an interface to the @code{trap} builtin that allows the
 execution of more than one function when a signal is received; this may
 sound useless, but that is it.
 
 
 @deffn Function mbfl_signal_map_signame_to_signum @var{sigspec}
-Converts @var{sigspec} to the corresponding signal number, then prints
+Convert @var{sigspec} to the corresponding signal number, then print
 the number.
 @end deffn
 
@@ -2872,11 +2838,10 @@ Append @var{handler} to the list of functions that are executed whenever
 
 
 @deffn Function mbfl_signal_invoke_handlers @var{signum}
-Invokes all the handlers registered for @var{signum}.  This function is
+Invoke all the handlers registered for @var{signum}.  This function is
 not meant to be used during normal scripts execution, but it may be
 useful to debug a script.
 @end deffn
-
 
 @c page
 @node string
@@ -2892,14 +2857,13 @@ useful to debug a script.
 * string misc::                 Miscellaneous functions.
 @end menu
 
-
 @c page
 @node string quote
 @section Quoted characters
 
 
 @deffn Function mbfl_string_is_quoted_char @var{string} @var{position}
-Returns true if the character at @var{position} in @var{string} is
+Return true if the character at @var{position} in @var{string} is
 quoted; else returns false.  A character is considered quoted if it is
 preceeded by an odd number of backslashes (@code{\}).  @var{position} is
 a zero--based index.
@@ -2907,18 +2871,17 @@ a zero--based index.
 
 
 @deffn Function mbfl_string_is_equal_unquoted_char @var{string} @var{position} @var{char}
-Returns true if the character at @var{position} in @var{string} is equal
+Return true if the character at @var{position} in @var{string} is equal
 to @var{char} and is not quoted (according to
 @bfunc{mbfl_string_is_quoted_char}); else returns false.  @var{position}
 is a zero--based index.
 @end deffn
 
 @deffn Function mbfl_string_quote @var{string}
-Prints @var{string} with quoted characters.  All the occurrences of the
+Print @var{string} with quoted characters.  All the occurrences of the
 backslash character, @code{\}, are substituted with a quoted backslash,
 @code{\\}.  Returns true.
 @end deffn
-
 
 @c page
 @node string inspection

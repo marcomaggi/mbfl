@@ -1,36 +1,37 @@
 # variable.sh.m4 --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: variable manipulation functions
 # Date: Thu Oct  7, 2004
-# 
+#
 # Abstract
-# 
-# 
-# 
-# Copyright (c) 2004, 2005 Marco Maggi
-# 
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
-# version.
-# 
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+#
+#
+#
+# Copyright (c) 2004-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
+#
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  3.0 of the License,  or (at
+# your option) any later version.
+#
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
-# 
+# Lesser General Public License for more details.
+#
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
+#
 
 #page
 function mbfl_variable_find_in_array () {
     mandatory_parameter(ELEMENT, 1, element parameter)
     declare -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
-    
+
     for ((i=0; $i < ${ARRAY_DIM}; ++i)) ; do
 	test "${mbfl_FIELDS[$i]}" = "${ELEMENT}" && { printf "$i\n"; return 0; }
     done
@@ -72,7 +73,7 @@ function mbfl_variable_colon_variable_drop_duplicate () {
     mandatory_parameter(COLON_VARIABLE, 1, colon variable)
     local item
     declare -a mbfl_FIELDS FIELDS
-    declare -i dimension count i 
+    declare -i dimension count i
 
     mbfl_variable_colon_variable_to_array "${COLON_VARIABLE}"
     dimension=${#mbfl_FIELDS[*]}

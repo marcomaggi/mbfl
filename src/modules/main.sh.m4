@@ -1,31 +1,30 @@
 # main.sh.m4 --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: main script module
 # Date: Mon May 17, 2004
-# 
-# Abstract
-# 
-# 
-# 
-# Copyright (c) 2004, 2005 Marco Maggi
-# 
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
-# version.
-# 
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
 #
-
+# Abstract
+#
+#
+#
+# Copyright (c) 2004-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  3.0 of the License,  or (at
+# your option) any later version.
+#
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# Lesser General Public License for more details.
+#
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
+#
 
 #PAGE
 ## ------------------------------------------------------------
@@ -135,12 +134,46 @@ Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 02111-1307, USA.
 "
 
+mbfl_message_LICENSE_GPL3="${script_PROGNAME} version ${script_VERSION}
+Written by ${script_AUTHOR}.\n
+Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
+This file  is free software you  can redistribute it  and/or modify it
+under the terms of the GNU  General Public License as published by the
+Free Software  Foundation; either version  3, or (at your  option) any
+later version.\n
+This  file is  distributed in  the hope  that it  will be  useful, but
+WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+General Public License for more details.\n
+You  should have received  a copy  of the  GNU General  Public License
+along with this file; see the file COPYING.  If not, write to the Free
+Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+02111-1307, USA.
+"
+
 mbfl_message_LICENSE_LGPL="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This is free software; you  can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
 Free Software  Foundation; either version  2.1 of the License,  or (at
+your option) any later version.\n
+This library  is distributed in the  hope that it will  be useful, but
+WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+Lesser General Public License for more details.\n
+You  should have  received a  copy of  the GNU  Lesser  General Public
+License along  with this library; if  not, write to  the Free Software
+Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+USA.
+"
+
+mbfl_message_LICENSE_LGPL3="${script_PROGNAME} version ${script_VERSION}
+Written by ${script_AUTHOR}.\n
+Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
+This is free software; you  can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the
+Free Software  Foundation; either version  3.0 of the License,  or (at
 your option) any later version.\n
 This library  is distributed in the  hope that it will  be useful, but
 WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of

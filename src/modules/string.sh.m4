@@ -1,34 +1,35 @@
 # string.sh --
-# 
+#
 # Part of: Marco's BASH functions library
 # Contents: string library
 # Date: Fri Apr 18, 2003
-# 
+#
 # Abstract
-# 
+#
 #       This is a collection of string functions for the GNU BASH shell.
 #
 #       The functions made heavy usage of special variable substitutions
 #       (like ${name:num:num}) so, maybe, other Bourne shells will not
 #       made them work at all.
-# 
-# Copyright (c) 2003, 2004, 2005 Marco Maggi
-# 
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
-# version.
-# 
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+#
+# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
+#
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  3.0 of the License,  or (at
+# your option) any later version.
+#
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
-# 
+# Lesser General Public License for more details.
+#
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
+#
 
 #PAGE
 function mbfl_string_chars () {
@@ -143,7 +144,7 @@ function mbfl_string_is_noblank_char () {
 }
 for class in alpha digit alnum noblank ; do
     alias "mbfl_string_is_${class}"="mbfl_p_string_is $class"
-done    
+done
 function mbfl_p_string_is () {
     mandatory_parameter(CLASS, 1, class)
     mandatory_parameter(STRING, 2, string)
@@ -226,7 +227,7 @@ function mbfl_sprintf () {
     local FORMAT="${2:?missing format parameter in ${FUNCNAME}}"
     local OUTPUT=
     shift 2
-    
+
     OUTPUT=$(printf "${FORMAT}" "$@")
     eval "${VARNAME}"=\'"${OUTPUT}"\'
 }
@@ -256,7 +257,7 @@ function mbfl_string_is_quoted_char () {
 function mbfl_string_quote () {
     mandatory_parameter(STRING, 1, string)
     local i ch
-    
+
 
     for ((i=0; $i < "${#STRING}"; ++i)) ; do
         ch="${STRING:$i:1}"
