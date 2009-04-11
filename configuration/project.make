@@ -68,7 +68,7 @@ $(scripts_BUILDDIR)/%.sh: $(scripts_SRCDIR)/%.sh
 	$(MBFLPP) $(MBFLPP_SCRIPTS_FLAGS) <$(<) >$(@)
 
 #page
-macros_INSTLST		= $(srcdir)/macros/preprocessor.m4
+macros_INSTLST		= $(srcdir)/src/macros/preprocessor.m4
 macros_INSTDIR		= $(pkgdatadir)
 
 $(eval $(call ds-module-install-rules,macros,bin))

@@ -1,31 +1,31 @@
 #!/bin/bash
 # mbfl-config --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: configuration script
 # Date: Thu Oct  7, 2004
-# 
+#
 # Abstract
-# 
-# 
-# 
-# Copyright (c) 2004, 2005 Marco Maggi
-# 
+#
+#
+#
+# Copyright (c) 2004, 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
 # Software Foundation; either  version 2, or (at your  option) any later
 # version.
-# 
+#
 # This  file is  distributed in  the hope  that it  will be  useful, but
 # WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
 # General Public License for more details.
-# 
+#
 # You  should have received  a copy  of the  GNU General  Public License
 # along with this file; see the file COPYING.  If not, write to the Free
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
-# 
+#
 
 #page
 ## ------------------------------------------------------------
@@ -35,10 +35,8 @@
 DEFAULT_OPTION='--library'
 OPTION="${1:-${DEFAULT_OPTION}}"
 
-PACKAGE_NAME_LOWERCASE='@PACKAGE_NAME_LOWERCASE@'
-PACKAGE_XVERSION='@PACKAGE_XVERSION@'
-VERSION='@PACKAGE_VERSION@'
-BASE_VERSION='@PACKAGE_VERSION_MAJOR_MINOR@'
+PACKAGE_NAME='@PACKAGE_NAME@'
+PACKAGE_VERSION='@PACKAGE_VERSION@'
 
 prefix="@prefix@"
 datarootdir="@datarootdir@"
@@ -51,12 +49,10 @@ Marco's BASH Functions Library configuration script
 options:
    --library        prints the full pathname of the library
    --testlib        prints the full pathname of the testing library
-   --full-version   prints the full version number (with release state)
-   --version        prints the full version number (with patch level)
-   --base-version   prints the full version number (only major.minor)
+   --version        prints the version number
    --help           prints the help screen
 "
- 
+
 #page
 ## ------------------------------------------------------------
 ## Main script.
@@ -64,19 +60,13 @@ options:
 
 case "${OPTION}" in
     --library)
-	echo "${pkgdatadir}/libmbfl.sh"	
+	echo "${pkgdatadir}/libmbfl.sh"
 	;;
     --testlib)
 	echo "${pkgdatadir}/libmbfltest.sh"
 	;;
-    --full-version)
-	echo "${PACKAGE_XVERSION}"
-	;;
     --version)
-	echo "${VERSION}"
-	;;
-    --base-version)
-	echo "${BASE_VERSION}"
+	echo "${PACKAGE_VERSION}"
 	;;
     *)
 	echo "${USAGE}"
