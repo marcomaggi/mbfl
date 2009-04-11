@@ -8,9 +8,12 @@
 
   copy code from the user functions.
 
+* Getopts
+
+  Change  the  interface  of  command line  options  selecting  actions.
+  Implement an interface similar to the one of GIT.
+
 * Testing
 
-  Tests for libsignal
-
-  Tests for libmessage
+  More tests for signal handling.
 

@@ -568,7 +568,6 @@ file @file{libmbfl.sh} in the script; this is possible by installing
 @mbfl{} on the system and using this code in the scripts:
 
 @example
-mbfl_INTERACTIVE='no'
 source "$@{MBFL_LIBRARY:=$(mbfl-config)@}"
 @end example
 
@@ -630,7 +629,7 @@ Looks in some known directory; for example a subdirectory of a software
 package that we have distributed.
 
 @item
-As a last resort try to evaluate the @command{mbfl-config} script to
+As a last resort tries to evaluate the @command{mbfl-config} script to
 pick up a library installed on the system.
 @end enumerate
 
@@ -641,7 +640,7 @@ this is because we assume that:
 @item
 If an error occurs evaluating the library a lot of error messages may
 fill the screen, confusing the user; we just want a single error message
-pointing the finger of the blame.
+pointing the finger of blame.
 
 @item
 An error in the evaluation of the library code can be replicated because
@@ -662,7 +661,7 @@ Another solution is to directly include the library in the script; this
 is easy if we preprocess our scripts with @gnu{} M4.  We only need:
 
 @example
-m4_changequote([[, ]])
+m4_changequote([[,]])
 m4_include(libmbfl.sh)
 @end example
 
@@ -773,6 +772,163 @@ functions by hand.
 @node preprocessor
 @chapter Using the script preprocessor
 
+
+The @mbfl{} script preprocessor is a command line program named
+@command{mbflpp.sh}; it is itself a Bash script that makes use of the
+@mbfl{} library.  It can remove comments, blank lines, blank characters
+at the beginning of lines, and it can expand macros.
+
+The macro preprocessing is done with the @gnu{} m4 program, using a
+library of macros called @file{preprocessor.m4} which is installed on
+the system with the @mbfl{} package.
+
+The use of the preprocessor is fully optional: every feature of the
+@mbfl{} library can be used without the preprocessor.
+
+@menu
+* preprocessor invoking::       Invoking the preprocessor.
+* preprocessor macros::         Macros library.
+@end menu
+
+@c page
+@node preprocessor invoking
+@section Invoking the preprocessor
+
+
+The basic synopsis is:
+
+@example
+mbflpp.sh [options] <INFILE >OUTFILE
+mbflpp.sh [options] --outfile=OUTFILE INFILE1 INFILE2 ...
+@end example
+
+@noindent
+all the @code{INFILE} pathnames are interpreted as files to concatenate
+in the specified order.
+
+All the @mbfl{} built in command line options are available,
+additionally the following options are supported.
+
+@table @code
+@item --preserve-comments
+Do not filter out comments.
+
+@item --add-bash
+Add @code{#!/usr/local/bin/bash} at the beginning of the output.
+
+@item --define=VALUE
+Define a new symbols (M4 syntax).  This is equivalent to the
+@option{--define} option of M4.
+
+@item --include=VALUE
+Add a search path for files.  @code{VALUE} must be a directory pathname
+and it is handed to M4 to search for macro files.  Can be used multiple
+times.
+
+@item --library=VALUE
+Include an M4 library.  @code{VALUE} must be the name of an M4 macro
+file which is evaluated before the input files.
+
+@item -oVALUE
+@itemx --output=VALUE
+Select an output file, @code{-} for stdout.
+
+@item -e
+@itemx --eval
+If used evaluates the output script in bash, instead of printing it.
+@end table
+
+@c page
+@node preprocessor macros
+@section Macros library
+
+
+@deffn {Preprocessor Macro} mandatory_parameter @var{varname} @var{number} @var{name}
+Define a variable local to a shell function holding an argument to the
+function.  @var{varname} is the name of the variable; @var{number} is
+the positional parameter number; @var{name} is a description of the
+argument.
+
+Example, the following:
+
+@example
+mandatory_parameter(PATHNAME, 2, file pathname)
+@end example
+
+@noindent
+is expanded to:
+
+@smallexample
+local PATHNAME=$@{2:?"missing file pathname parameter to '$@{FUNCNAME@}'"@}
+@end smallexample
+
+Another example the following function:
+
+@example
+function message () @{
+  mandatory_parameter(PROGNAME, 1, program name)
+  mandatory_parameter(STRING,   2, message string)
+
+  printf '%s: %s\n' "$@{PROGNAME@}" "$@{STRING@}"
+@}
+@end example
+
+@noindent
+is expanded to:
+
+@smallexample
+function message () @{
+  local PROGNAME=$@{1:?"missing program name parameter to '$@{FUNCNAME@}'"@}
+  local STRING=$@{2:?"missing message string parameter to '$@{FUNCNAME@}'"@}
+
+  printf '%s: %s\n' "$@{PROGNAME@}" "$@{STRING@}"
+@}
+@end smallexample
+
+@noindent
+and so it is a function with two mandatory parameters.
+@end deffn
+
+
+@deffn {Preprocessor Macro} optional_parameter @var{varname} @var{number} @var{default_value}
+Define a variable local to a shell function holding an argument to the
+function.  @var{varname} is the name of the variable; @var{number} is
+the positional parameter number; @var{default_value} is the
+initialisation value for the variable if the argument is not used.
+
+Example, the following:
+
+@example
+optional_parameter(COUNT, 2, 123)
+@end example
+
+@noindent
+is expanded to:
+
+@smallexample
+local count=$@{2:-123@}"
+@end smallexample
+@end deffn
+
+
+@deffn {Preprocessor Macro} command_line_argument @var{varname} @var{argindex}
+Define a variable local to a shell function holding an argument to the
+script.  @var{varname} is the variable name, @var{argindex} is the
+argument index in the @code{ARGV} array.
+
+Example, the following:
+
+@example
+command_line_argument(PATHNAME,3)
+@end example
+
+@noindent
+is expanded to:
+
+@example
+local PATHNAME="$@{ARGV[3]@}"
+@end example
+@end deffn
 
 @c page
 @node service variables

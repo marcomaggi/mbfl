@@ -146,7 +146,7 @@ function main () {
 
 function filter_drop_comments () {
     program_grep --invert-match -e '^[ \t]*#' -e '^$' | \
-        program_sed -e 's/^[[:blank:]]\+//'
+        program_sed -e 's/^[ \t]\+//g'
 }
 
 #page
