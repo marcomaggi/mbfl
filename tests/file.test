@@ -284,14 +284,14 @@ function file-owner-1.1 () {
 #page
 
 function file-size-1.1 () {
-    dotest-mktmpdir
-    local name=$(dotest-mkfile file.ext)
+    local PATHNAME=$(dotest-mkfile file.ext)
 
+    echo -n 0123456789 >"${PATHNAME}"
     mbfl_file_enable_listing
     {
-	mbfl_file_get_size "$name"
+	mbfl_file_get_size "${PATHNAME}"
 	dotest-clean-files
-    } | dotest-output 1024
+    } | dotest-output 10
 }
 
 #page

@@ -1137,7 +1137,7 @@ Print the group of the file.
 
 
 @deffn Function mbfl_file_get_size @var{pathname}
-Print the size of the file.
+Print the size of the file in bytes.
 @end deffn
 
 

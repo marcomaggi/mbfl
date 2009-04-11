@@ -1,3 +1,4 @@
+#! /bin/bash
 # file.sh --
 #
 # Part of: Marco's BASH Functions Library
@@ -607,10 +608,11 @@ function mbfl_file_get_group () {
 }
 function mbfl_file_get_size () {
     mandatory_parameter(PATHNAME, 1, pathname)
-    local LS_FLAGS="--block-size=1 --size"
+##    local LS_FLAGS="--block-size=1 --size"
+    local LS_FLAGS="-l"
     local output=$(mbfl_file_p_invoke_ls) || return 1
     set -- ${output}
-    printf '%s\n' "${1}"
+    printf '%s\n' "${5}"
 }
 function mbfl_file_p_invoke_ls () {
     local LS=$(mbfl_program_found ls)
