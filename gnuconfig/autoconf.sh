@@ -1,1 +1,0 @@
-/usr/local/share/develstuff/gnuconfig/autoconf.sh

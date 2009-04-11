@@ -1,0 +1,46 @@
+# *DO NOT* use quotes for the values of the variables.
+
+PACKAGE_NAME=@PACKAGE_NAME@
+PACKAGE_VERSION=@PACKAGE_VERSION@
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+bindir=@bindir@
+datarootdir=@datarootdir@
+datadir=@datadir@
+docdir=${prefix}/doc
+includedir=@includedir@
+infodir=@infodir@
+htmldir=@htmldir@
+pdfdir=@pdfdir@
+psdir=@psdir@
+dvidir=@dvidir@
+libdir=@libdir@
+libexecdir=@libexecdir@
+localstatedir=@localstatedir@
+mandir=@mandir@
+sbindir=@sbindir@
+sharedstatedir=@sharedstatedir@
+sysconfdir=@sysconfdir@
+
+PKG_DIR=@PKG_DIR@
+pkgdatadir=@pkgdatadir@
+pkgdocdir=@pkgdocdir@
+pkgexampledir=@pkgexampledir@
+pkghtmldir=@pkghtmldir@
+pkgincludedir=@pkgincludedir@
+pkglibdir=@pkglibdir@
+pkglibexecdir=@pkglibexecdir@
+pkgsysconfdir=@pkgsysconfdir@
+
+## ------------------------------------------------------------
+
+Name: MBFL
+Description: collection of functions for GNU Bash
+Version: ${PACKAGE_VERSION}
+
+### end of file
+# Local Variables:
+# mode: script
+# End:

@@ -1,0 +1,226 @@
+
+	     DevelStuff Infrastructure Tutorial
+	     ==================================
+
+
+Topics
+------
+
+  1. Introduction
+  2. License
+  3. Requirements
+  4. Configuration
+  5. Makefile rules
+     5.1 More makefile rules
+     5.2 Distribution archives
+
+
+1. Introduction
+---------------
+
+This  package  comes  with  a  configuration,  building  and
+installation infrastructure  called DevelStuff and  based on
+GNU Autoconf.   This is  only an introductory  tutorial, the
+full documentation should be  available in Texinfo format in
+the file:
+
+	  $(srcdir)/infrastructure/develstuff.texi
+
+to compile it to Info  or HTML format we need the "makeinfo"
+program:
+
+   $ makeinfo develstuff.texi --no-split
+   $ makeinfo develstuff.texi --no-split --html
+
+  In  the following,  we  assume that  the  package name  is
+"package" and its version specification is "1.2.3".
+
+
+2. License
+----------
+
+Copyright (c) 2005-2009 Marco Maggi <marcomaggi@gna.org>
+
+This  program  is free  software:  you  can redistribute  it
+and/or modify it  under the terms of the  GNU General Public
+License as published by the Free Software Foundation, either
+version  3 of  the License,  or (at  your option)  any later
+version.
+
+This  program is  distributed in  the hope  that it  will be
+useful, but  WITHOUT ANY WARRANTY; without  even the implied
+warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
+PURPOSE.   See  the  GNU  General Public  License  for  more
+details.
+
+You should  have received a  copy of the GNU  General Public
+License   along   with    this   program.    If   not,   see
+<http://www.gnu.org/licenses/>.
+
+
+3. Requirements
+---------------
+
+The infrastructure depends  upon the following tools, mainly
+from the GNU Project:
+
+* GNU Bash version 3.1 or newer.
+
+* GNU Make  version 3.81 or newer (notice  that version 3.80
+  will NOT work).
+
+* GNU  coreutils  version  6.12  or newer.   These  are  the
+  command line utilities "rm", "mkdir", etc.
+
+* GNU tar version 1.16 or newer.
+
+* The gzip and/or bzip2 compressors.
+
+  To regenerate the "configure" script, GNU Autoconf version
+2.63  or newer  is  needed.   It is  usually  enough to  run
+"autoconf"  in  the  same  directory of  the  "configure.ac"
+template, and  for packages distributing C  language code we
+should run "autoconf" followed by "autoheader".
+
+
+4. Configuration
+----------------
+
+Usually  a DevelStuff  package comes  in a  GNU  Tar archive
+compressed with Bzip2.  Unpack the archive:
+
+    $ tar --bzip2 --file=package-1.2.3-src.tar.bz2
+
+move  into  the top  source  directory  and  create a  build
+subdirectory:
+
+    $ cd package-1.2.3
+    $ mkdir "=build"
+    $ cd "=build"
+
+beginning the build directory  name with "=" helps excluding
+it from version control, backups and archives.
+
+  To inspect the available configuration options:
+
+    $ ../configure --help
+
+then do it:
+
+    $ ../configure [options]
+
+  When  building  C   language  libraries  notice  that,  by
+default,  only  the  shared  library is  built,  the  static
+library is  not.  To build it we  need the "--enable-static"
+option to "configure".
+
+
+5. Makefile rules
+-----------------
+
+The usual main phony rules are implemented in the Makefile:
+
+all		Build everything this package is supposed to
+		build.
+
+clean		Remove all the files produced with "all".
+
+moslyclean	Remove  most  of  the  files  produced  with
+		"all", leaving behind files that rarely need
+		to be rebuilt.
+
+install		Install everything this  package is meant to
+		install.
+
+uninstall	Uninstall  everything this package  is meant
+		to install.
+
+  Notice that  the package  should install shell  scripts to
+uninstall the files and directories.  If we do not customise
+the Autoconf directories, they should be located in:
+
+	      /usr/local/libexec/package/1.2.3
+
+  The Makefile supports  the DESTDIR environment variable to
+install files in a  temporary location; example, to see what
+will happen:
+
+    $ make -n install DESTDIR=/tmp/marco/package
+
+to really do it:
+
+    $ make install DESTDIR=/tmp/marco/package
+
+
+5.1 More makefile rules
+-----------------------
+
+We can drive the project with three rulesets:
+
+bin
+bin-clean
+bin-mostlyclean
+bin-install
+bin-uninstall
+
+    Like  the  main  phony  rules,  but act  only  upon  the
+    "binary" targets.   These are  the core of  the package:
+    executable programs, shared libraries, data files, etc.
+
+doc
+doc-clean
+doc-mostlyclean
+doc-install
+doc-uninstall
+
+    Like  the  main  phony  rules,  but act  only  upon  the
+    documentation  targets.  DevelStuff has  special support
+    for documentation  in Texinfo format.   By default, only
+    documentation  in Info  format is  built  and installed;
+    there are many  configuration options for "configure" to
+    change this.
+
+dev
+dev-clean
+dev-mostlyclean
+dev-install
+dev-uninstall
+
+    Like  the  main  phony  rules,  but act  only  upon  the
+    development targets.  These are for stuff that is needed
+    only  by  developers;   examples:  static  libraries,  C
+    language header files, special support for GNU Autoconf.
+    Not all  the packages have  such targets, in  case there
+    are none the rules just do nothing.
+
+
+5.2 Distribution archives
+-------------------------
+
+The infrastructure can create distribution archives for both
+sources and binaries; special support for Slackware packages
+is available.  The following rules are implemented:
+
+dist		Build  a source  distribution  archive.  The
+		file   is   created   under  the   directory
+		"$(builddir)/dist.d".
+
+bindist		Build binary  distribution archives, one for
+		each  ruleset:  "bin",  "doc",  "dev".   The
+		files   are  created  under   the  directory
+		"$(builddir)/bindist.d".
+
+slackware	Build  binary  Slackware  packages, one  for
+		each  ruleset:  "bin",  "doc",  "dev".   The
+		files   are  created  under   the  directory
+		"$(builddir)/slackware.d".    To   use  this
+		feature  the Slackware packaging  tools must
+		be available on the system.
+
+
+### end of file
+# Local Variables:
+# mode: text
+# fill-column: 60
+# paragraph-start: "*"
+# End:

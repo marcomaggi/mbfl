@@ -6,14 +6,8 @@
 # 
 # Abstract
 # 
-#	This file must be executes through "all.tcl": from the build
-#	directory:
-#
-#		$ make all test TESTFLAGS="-match script-*"
 # 
-#	will select these tests.
-# 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2003, 2004, 2005 Marco Maggi
 # 
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -30,125 +24,97 @@
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
 # 
-# $Id: script.test,v 1.1.1.6 2003/12/17 12:46:56 marco Exp $
-#
 
 #PAGE
 ## ------------------------------------------------------------
 ## Setup.
 ## ------------------------------------------------------------
 
-source [file join [file dirname [info script]] setup.tcl]
+source setup.sh
 
-#PAGE
-## ---------------------------------------------------------
-## Test namespace.
-## ---------------------------------------------------------
+function script () {
+    MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/libmbfl.sh} \
+        "${BASH}" ../examples/template.sh "$@"
+}
 
-namespace eval ::test {
-
-    variable	script [file join $env(builddir) template.sh]
-    variable	bash [auto_execok bash]
-
-    proc script { args } {
-	variable	script
-	variable	bash
-	set result {}
-
-
-	if { [catch {
-	    set result [eval {exec $bash $script} $args]
-	} res] } {
-	    return $res
-	}
-	return $result
-    }
 
 #PAGE
 
-::tcltest::test script-1.1 "usage message" {
-    -body	{
-	script --usage
-    }
-    -result "usage: ... *"
-    -match glob
+function script-1.1 () {
+    script --usage | dotest-output "usage: template.sh *"
 }
-
-::tcltest::test script-1.2 "help message" {
-    -body	{
-	script --help
-    }
-    -result "usage: ... *"
-    -match glob
+function script-1.2 () {
+    script --help | dotest-output "usage: template.sh *"
 }
-
-::tcltest::test script-1.3 "h message" {
-    -body	{
-	script -h
-    }
-    -result "usage: ... *"
-    -match glob
+function script-1.3 () {
+    script -h | dotest-output "usage: template.sh *"
 }
-
-::tcltest::test script-1.4 "license message" {
-    -body	{
-	script --license
-    }
-    -result "... version: *"
-    -match glob
+function script-1.4 () {
+    script --license | dotest-output "template.sh version *"
 }
-
-::tcltest::test script-1.5 "version message" {
-    -body	{
-	script --version
-    }
-    -result "... version: *"
-    -match glob
+function script-1.5 () {
+    script --version | dotest-output "template.sh version *"
 }
-
-::tcltest::test script-1.6 "version only message" {
-    -body	{
-	script --version-only
-    }
-    -result {[0-9]+.[0-9]+.[0-9]+.[0-9]+}
-    -match regexp
+function script-1.6 () {
+    script --version-only | dotest-output 1.0
 }
 
 #PAGE
 
-::tcltest::test script-2.1 "one argument" {
-    -body	{
-	script --one=123
-    }
-    -result "argument: 123"
+function script-2.1 () {
+    script --beta=123 | dotest-output "option beta: 123\narguments: 0, ''"
+}
+function script-2.2 () {
+    script --beta=123\\ | dotest-output "option beta: 123\\\narguments: 0, ''"
+}
+function script-2.3 () {
+    script --beta="1 2" | dotest-output "option beta: 1 2\narguments: 0, ''"
+}
+function script-2.4 () {
+    script --beta=123\\\\ | dotest-output "option beta: 123\\\\\narguments: 0, ''"
+}
+function script-2.5 () {
+    script --alpha | dotest-output "option alpha\narguments: 0, ''"
 }
 
-::tcltest::test script-2.2 "one argument" {
-    -body	{
-	script --one=123\\
-    }
-    -result "argument: 123\\"
+#page
+
+function script-3.1 () {
+    script a b c | dotest-output "arguments: 3, 'a b c'"
 }
 
-::tcltest::test script-2.3 "one argument" {
-    -body	{
-	script "--one=1 2"
-    }
-    -result "argument: 1 2"
-}
+#page
 
-::tcltest::test script-2.4 "one argument" {
-    -body	{
-	script --one=123\\\\
-    }
-    -result "argument: 123\\\\"
+function script-4.1 () {
+    script --list-exit-codes | dotest-output \
+        "0 success\n1 failure\n99 program_not_found\n98 wrong_num_args\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
 }
-
-::tcltest::test script-2.5 "one argument" {
-    -body	{
-	script --four
-    }
-    -result "action four"
+function script-4.2 () {
+    script --print-exit-code=second_error | dotest-output 2
+}
+function script-4.3 () {
+    script --print-exit-code=eighth_error | dotest-output 8
+}
+function script-4.4 () {
+    script --print-exit-code=third_error | dotest-output 3
+}
+function script-4.5 () {
+    script --print-exit-code=unexistent | dotest-output ""
+}
+function script-4.6 () {
+    script --print-exit-code=success | dotest-output 0
+}
+function script-4.7 () {
+    script --print-exit-code-names=1 | dotest-output "failure"
+}
+function script-4.8 () {
+    script --print-exit-code-names=8 | dotest-output "eighth_error"
+}
+function script-4.9 () {
+    script --print-exit-code-names=3 | dotest-output "third_error\nfourth_error"
+}
+function script-4.10 () {
+    script --print-exit-code-names=0 | dotest-output "success"
 }
 
 #PAGE
@@ -156,13 +122,9 @@ namespace eval ::test {
 ## End of "::test" namespace.
 ## ---------------------------------------------------------
 
-::tcltest::cleanupTests
-}
-namespace delete ::test
-
+dotest script-
 
 ### end of file
 # Local Variables:
-# mode: tcl
-# page-delimiter: "^#PAGE"
+# mode: sh
 # End:

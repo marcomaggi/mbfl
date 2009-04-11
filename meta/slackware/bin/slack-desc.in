@@ -1,0 +1,12 @@
+              |-----handy-ruler-----------------------------------------------|
+@PACKAGE_NAME@: @PACKAGE_NAME@ @PACKAGE_VERSION@ (brief description)
+@PACKAGE_NAME@:
+@PACKAGE_NAME@: The MBFL is a collection of shell functions for the GNU Bash
+@PACKAGE_NAME@: shell.  This  package is  an attempt to  make Bash  a viable
+@PACKAGE_NAME@: solution for medium sized scripts.
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:
+@PACKAGE_NAME@:

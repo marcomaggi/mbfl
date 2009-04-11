@@ -6,14 +6,13 @@
 # 
 # Abstract
 # 
-#	This file must be executes through "all.tcl": from the build
-#	directory:
+#	This file must be executed with:
 #
-#		$ make all test TESTFLAGS="-match string-*"
+#		$ make all test TESTMATCH=string-
 # 
 #	will select these tests.
 # 
-# Copyright (c) 2003 Marco Maggi
+# Copyright (c) 2004, 2005 Marco Maggi
 # 
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -30,444 +29,408 @@
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
 # 
-# $Id: string.test,v 1.1.1.3 2003/12/17 12:46:31 marco Exp $
-#
 
 #PAGE
 ## ------------------------------------------------------------
 ## Setup.
 ## ------------------------------------------------------------
 
-source [file join [file dirname [info script]] setup.tcl]
+source setup.sh
 
-#PAGE
-## ---------------------------------------------------------
-## Test namespace.
-## ---------------------------------------------------------
+#page
 
-namespace eval ::test {
+function string-chars-1.1 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
-    variable	libstring [file join $libpath string.sh]
+    string=abcdefghilm
+    mbfl_string_chars $string
+    dotest-equal "${#string}" $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal d "${SPLITFIELD[3]}" && \
+	dotest-equal e "${SPLITFIELD[4]}" && \
+	dotest-equal f "${SPLITFIELD[5]}" && \
+	dotest-equal g "${SPLITFIELD[6]}" && \
+	dotest-equal h "${SPLITFIELD[7]}" && \
+	dotest-equal i "${SPLITFIELD[8]}" && \
+	dotest-equal l "${SPLITFIELD[9]}"
+}
+function string-chars-1.2 {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
-    variable	precmd ". %s"
-    set precmd [format $precmd $libstring]
+    string="abcde fghilm"
+    mbfl_string_chars "${string}"
+    dotest-equal "${#string}" $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal d "${SPLITFIELD[3]}" && \
+	dotest-equal e "${SPLITFIELD[4]}" && \
+	dotest-equal " " "${SPLITFIELD[5]}" && \
+	dotest-equal f "${SPLITFIELD[6]}" && \
+	dotest-equal g "${SPLITFIELD[7]}" && \
+	dotest-equal h "${SPLITFIELD[8]}" && \
+	dotest-equal i "${SPLITFIELD[9]}" && \
+	dotest-equal l "${SPLITFIELD[10]}"
+}
+function string-chars-1.3 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
+    string="abcde\nfghilm"
+    mbfl_string_chars "${string}"
+    dotest-equal $((${#string} - 1)) $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal d "${SPLITFIELD[3]}" && \
+	dotest-equal e "${SPLITFIELD[4]}" && \
+	dotest-equal "\n" "${SPLITFIELD[5]}" && \
+	dotest-equal f "${SPLITFIELD[6]}" && \
+	dotest-equal g "${SPLITFIELD[7]}" && \
+	dotest-equal h "${SPLITFIELD[8]}" && \
+	dotest-equal i "${SPLITFIELD[9]}" && \
+	dotest-equal l "${SPLITFIELD[10]}"
+}
+function string-chars-1.4 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
-#PAGE
+    string="abcde\rfghilm"
+    mbfl_string_chars "${string}"
+    dotest-equal $((${#string} - 1)) $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal d "${SPLITFIELD[3]}" && \
+	dotest-equal e "${SPLITFIELD[4]}" && \
+	dotest-equal "\r" "${SPLITFIELD[5]}" && \
+	dotest-equal f "${SPLITFIELD[6]}" && \
+	dotest-equal g "${SPLITFIELD[7]}" && \
+	dotest-equal h "${SPLITFIELD[8]}" && \
+	dotest-equal i "${SPLITFIELD[9]}" && \
+	dotest-equal l "${SPLITFIELD[10]}" && \
+	dotest-equal m "${SPLITFIELD[11]}"
+}
+function string-chars-1.5 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
-::tcltest::test libstring-1.1 "string chars" {
-    -body	{
-	bash "mbfl_string_chars abcdefghilm"
-    }
-    -result {a
-b
-c
-d
-e
-f
-g
-h
-i
-l
-m}
+    string="abc\\"
+    mbfl_string_chars "${string}"
+    dotest-equal 4 $SPLITCOUNT && \
+	dotest-equal a "${SPLITFIELD[0]}" && \
+	dotest-equal b "${SPLITFIELD[1]}" && \
+	dotest-equal c "${SPLITFIELD[2]}" && \
+	dotest-equal \\ "${SPLITFIELD[3]}"
 }
 
-::tcltest::test libstring-1.2 "string chars" {
-    -body	{
-	bash {mbfl_string_chars "abcde fghilm"}
-    }
-    -result {a
-b
-c
-d
-e
+#page
 
-f
-g
-h
-i
-l
-m}
+function string-equal-substring-1.1 () {
+    ! mbfl_string_equal_substring abcdefghi 0 123
+}
+function string-equal-substring-1.2 () {
+    mbfl_string_equal_substring abcdefghi 0 abc
+}
+function string-equal-substring-1.3 () {
+    mbfl_string_equal_substring abcdefghi 2 cde
+}
+function string-equal-substring-1.4 () {
+    ! mbfl_string_equal_substring abcdefghi 6 ghilm
+}
+function string-equal-substring-1.5 () {
+    mbfl_string_equal_substring abcdefghi 6 ghi
+}
+function string-equal-substring-1.6 () {
+    ! mbfl_string_equal_substring abcdefghi 4 123
 }
 
-::tcltest::test libstring-1.3 "string chars" {
-    -body	{
-	bash "mbfl_string_chars \"abcdef\nghilm\""
-    }
-    -result {a
-b
-c
-d
-e
-f
+#page
 
-g
-h
-i
-l
-m}
+function string-split-1.1 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
+
+    string=abc:def:ghi:lmn:opq:rs
+    mbfl_string_split "$string" :
+    dotest-equal 6 $SPLITCOUNT && \
+	dotest-equal abc "${SPLITFIELD[0]}" && \
+	dotest-equal def "${SPLITFIELD[1]}" && \
+	dotest-equal ghi "${SPLITFIELD[2]}" && \
+	dotest-equal lmn "${SPLITFIELD[3]}" && \
+	dotest-equal opq "${SPLITFIELD[4]}" && \
+	dotest-equal rs  "${SPLITFIELD[5]}"
 }
+function string-split-1.2 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
-#PAGE
-
-::tcltest::test libstring-2.1 "string first" {
-    -body	{
-	bash "mbfl_string_first abcdefghilm d"
-    }
-    -result 3
+    string=abc:::def:::ghi:::lmn:::opq:::rs
+    mbfl_string_split "$string" :::
+    dotest-equal 6 $SPLITCOUNT && \
+	dotest-equal abc "${SPLITFIELD[0]}" && \
+	dotest-equal def "${SPLITFIELD[1]}" && \
+	dotest-equal ghi "${SPLITFIELD[2]}" && \
+	dotest-equal lmn "${SPLITFIELD[3]}" && \
+	dotest-equal opq "${SPLITFIELD[4]}" && \
+	dotest-equal rs  "${SPLITFIELD[5]}"
 }
+function string-split-1.3 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
-::tcltest::test libstring-2.2 "string first" {
-    -body	{
-	bash "mbfl_string_first abcdefghilm a"
-    }
-    -result 0
+    string=abc:def:ghi:lmn:opq:rs
+    mbfl_string_split "$string" _
+    dotest-equal 1 $SPLITCOUNT && dotest-equal $string "${SPLITFIELD[0]}"
 }
+function string-split-1.4 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
-::tcltest::test libstring-2.3 "string first" {
-    -body	{
-	bash "mbfl_string_first abcdefghilm m"
-    }
-    -result 10
+    string=:abc:def
+    mbfl_string_split "$string" :
+
+    dotest-equal "" "${SPLITFIELD[0]}" && \
+	dotest-equal abc "${SPLITFIELD[1]}" && \
+	dotest-equal def "${SPLITFIELD[2]}" && \
+	dotest-equal 3 $SPLITCOUNT
 }
+function string-split-1.5 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
-::tcltest::test libstring-2.4 "string first" {
-    -body	{
-	bash "mbfl_string_first abcdefghilm X"
-    }
-    -result {}
+    string=abc::def:ghi
+    mbfl_string_split "$string" :
+
+    dotest-equal abc "${SPLITFIELD[0]}" && \
+	dotest-equal ""  "${SPLITFIELD[1]}" && \
+	dotest-equal def "${SPLITFIELD[2]}" && \
+	dotest-equal ghi "${SPLITFIELD[3]}" && \
+	dotest-equal 4 $SPLITCOUNT
 }
+function string-split-1.6 () {
+    local SPLITFIELD SPLITCOUNT string
+    declare -a SPLITFIELD
 
-::tcltest::test libstring-2.5 "string first" {
-    -body	{
-	bash "mbfl_string_first abcdeabcde a 3"
-    }
-    -result 5
-}
+    string=abc::::def::ghi
+    mbfl_string_split "$string" ::
 
-::tcltest::test libstring-2.6 "string first" {
-    -body	{
-	bash "mbfl_string_first abcdeabcde e 5"
-    }
-    -result 9
-}
-
-::tcltest::test libstring-2.7 "string first" {
-    -body	{
-	bash "mbfl_string_first abcdeabcde e 4"
-    }
-    -result 4
-}
-
-
-#PAGE
-
-::tcltest::test libstring-3.1 "string index" {
-    -body	{
-	bash "mbfl_string_index abcdefghilm 0"
-    }
-    -result a
-}
-
-::tcltest::test libstring-3.2 "string index" {
-    -body	{
-	bash "mbfl_string_index abcdefghilm 4"
-    }
-    -result e
-}
-
-::tcltest::test libstring-3.3 "string index" {
-    -body	{
-	bash "mbfl_string_index abcdefghilm 10"
-    }
-    -result m
-}
-
-::tcltest::test libstring-3.4 "string index" {
-    -body	{
-	bash "mbfl_string_index abcdefghilm 11"
-    }
-    -result {}
-}
-
-#PAGE
-
-::tcltest::test libstring-4.1 "string is" {
-    -body	{
-	bash "if mbfl_string_is alpha abcd ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.2 "string is" {
-    -body	{
-	bash "if mbfl_string_is alpha 123  ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.3 "string is" {
-    -body	{
-	bash "if mbfl_string_is alpha ab12 ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.4 "string is" {
-    -body	{
-	bash "if mbfl_string_is digit 123  ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.5 "string is" {
-    -body	{
-	bash "if mbfl_string_is digit abcd ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.6 "string is" {
-    -body	{
-	bash "if mbfl_string_is digit 12ab ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.7 "string is" {
-    -body	{
-	bash "if mbfl_string_is alnum abcd ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.8 "string is" {
-    -body	{
-	bash "if mbfl_string_is alnum 123 ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.9 "string is" {
-    -body	{
-	bash "if mbfl_string_is alnum ab12 ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.10 "string is" {
-    -body	{
-	bash "if mbfl_string_is noblank abcd ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.11 "string is" {
-    -body	{
-	bash "if mbfl_string_is noblank \"\n\" ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.12 "string is" {
-    -body	{
-	bash "if mbfl_string_is noblank \"\t\" ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.13 "string is" {
-    -body	{
-	bash "if mbfl_string_is noblank \"\r\" ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.14 "string is" {
-    -body	{
-	bash "if mbfl_string_is noblank \" \" ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.15 "string is" {
-    -body	{
-	bash "if mbfl_string_is noblank \"abcd\" ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.16 "string is" {
-    -body	{
-	bash "if mbfl_string_is noblank \"ab\ncd\" ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.17 "string is" {
-    -body	{
-	bash "if mbfl_string_is name \"abcd\" ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.18 "string is" {
-    -body	{
-	bash "if mbfl_string_is name \"ab_cd\" ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.19 "string is" {
-    -body	{
-	bash "if mbfl_string_is name \"_abcd123\" ; then echo yes; else echo no; fi"
-    }
-    -result yes
-}
-
-::tcltest::test libstring-4.20 "string is" {
-    -body	{
-	bash "if mbfl_string_is name \"1abcd3\" ; then echo yes; else echo no; fi"
-    }
-    -result no
-}
-
-::tcltest::test libstring-4.21 "string is" {
-    -body	{
-	bash "if mbfl_string_is name \"\n\" ; then echo yes; else echo no; fi"
-    }
-    -result no
+    dotest-equal abc "${SPLITFIELD[0]}" && \
+	dotest-equal ""  "${SPLITFIELD[1]}" && \
+	dotest-equal def "${SPLITFIELD[2]}" && \
+	dotest-equal ghi "${SPLITFIELD[3]}" && \
+	dotest-equal 4 $SPLITCOUNT
 }
 
 #PAGE
 
-::tcltest::test libstring-5.1 "string last" {
-    -body	{
-	bash "mbfl_string_last abcdefghilm d"
-    }
-    -result 3
+function string-first-1.1 () {
+    mbfl_string_first abcdefghilm d | dotest-output 3
 }
 
-::tcltest::test libstring-5.2 "string last" {
-    -body	{
-	bash "mbfl_string_last abcdefghilm a"
-    }
-    -result 0
+function string-first-1.2 () {
+    mbfl_string_first abcdefghilm a | dotest-output 0
 }
 
-::tcltest::test libstring-5.3 "string last" {
-    -body	{
-	bash "mbfl_string_last abcdefghilm m"
-    }
-    -result 10
+function string-first-1.3 () {
+    mbfl_string_first abcdefghilm m | dotest-output 10
 }
 
-::tcltest::test libstring-5.4 "string last" {
-    -body	{
-	bash "mbfl_string_last abcdefghilm X"
-    }
-    -result {}
+function string-first-1.4 () {
+    mbfl_string_first abcdefghilm X | dotest-output
 }
 
-::tcltest::test libstring-5.5 "string last" {
-    -body	{
-	bash "mbfl_string_last abcdefghilm a 3"
-    }
-    -result 0
+function string-first-1.5 () {
+    mbfl_string_first abcdeabcde a 3 | dotest-output 5
 }
 
-::tcltest::test libstring-5.6 "string last" {
-    -body	{
-	bash "mbfl_string_last abcdeabcde a 7"
-    }
-    -result 5
+function string-first-1.6 () {
+    mbfl_string_first abcdeabcde e 5 | dotest-output 9
 }
 
-::tcltest::test libstring-5.7 "string last" {
-    -body	{
-	bash "mbfl_string_last abcdeabcde e 7"
-    }
-    -result 4
-}
-
-::tcltest::test libstring-5.8 "string last" {
-    -body	{
-	bash "mbfl_string_last abcdeabcde e 4"
-    }
-    -result 4
+function string-first-1.7 () {
+    mbfl_string_first abcdeabcde e 4 | dotest-output 4
 }
 
 #PAGE
 
-::tcltest::test libstring-6.1 "string range" {
-    -body	{
-	bash "mbfl_string_range abcdefghilm 0 end"
-    }
-    -result abcdefghilm
+function string-index-1.1 () {
+    mbfl_string_index abcdefghilm 0 | dotest-output a
 }
 
-::tcltest::test libstring-6.2 "string range" {
-    -body	{
-	bash "mbfl_string_range abcdefghilm 0"
-    }
-    -result abcdefghilm
+function string-index-1.2 () {
+    mbfl_string_index abcdefghilm 4 | dotest-output e
 }
 
-::tcltest::test libstring-6.3 "string range" {
-    -body	{
-	bash "mbfl_string_range abcdefghilm 0 4"
-    }
-    -result abcd
+function string-index-1.3 () {
+    mbfl_string_index abcdefghilm 10 | dotest-output m
 }
 
-::tcltest::test libstring-6.4 "string range" {
-    -body	{
-	bash "mbfl_string_range abcdefghilm 4 end"
-    }
-    -result efghilm
+function string-index-1.4 () {
+    mbfl_string_index abcdefghilm 11 | dotest-output
 }
 
 #PAGE
 
-::tcltest::test libstring-7.1 "string split" {
-    -body	{
-	bash "mbfl_string_split abc:def:ghi:lm :"
-    }
-    -result {abc
-def
-ghi
-lm}
-}
+function string-is-1.1 () { mbfl_string_is_alpha abcd; }
+function string-is-1.2 () { ! mbfl_string_is_alpha 123 ; }
+function string-is-1.3 () { ! mbfl_string_is_alpha ab12; }
 
-::tcltest::test libstring-7.2 "string split" {
-    -body	{
-	bash "mbfl_string_split abc:def_ghi:lm \":_\""
-    }
-    -result {abc
-def
-ghi
-lm}
-}
+function string-is-2.1 () { mbfl_string_is_digit 123; }
+function string-is-2.2 () { ! mbfl_string_is_digit abcd; }
+function string-is-2.3 () { ! mbfl_string_is_digit 12ab; }
 
-::tcltest::test libstring-7.3 "string split" {
-    -body	{
-	bash "mbfl_string_split abcdefghilm :"
-    }
-    -result {abcdefghilm}
+function string-is-3.1 () { mbfl_string_is_alnum abcd; }
+function string-is-3.2 () { mbfl_string_is_alnum 123; }
+function string-is-3.3 () { mbfl_string_is_alnum ab12; }
+
+function string-is-4.1 () { mbfl_string_is_noblank abcd; }
+function string-is-4.2 () { ! mbfl_string_is_noblank $'\n'; }
+function string-is-4.3 () { ! mbfl_string_is_noblank $'\t'; }
+function string-is-4.4 () { ! mbfl_string_is_noblank $'\r'; }
+function string-is-4.5 () { ! mbfl_string_is_noblank " "; }
+function string-is-4.6 () { ! mbfl_string_is_noblank $'ab\ncd'; }
+
+function string-is-5.1 () { mbfl_string_is_name abcd; }
+function string-is-5.2 () { mbfl_string_is_name ab_cd; }
+function string-is-5.3 () { mbfl_string_is_name _abcd123; }
+function string-is-5.4 () { ! mbfl_string_is_name 1abcd3 ; }
+function string-is-5.5 () { ! mbfl_string_is_name "\n"; }
+
+#PAGE
+
+function string-last-1.1 () {
+    mbfl_string_last abcdefghilm d | dotest-output 3
+}
+function string-last-1.2 () {
+    mbfl_string_last abcdefghilm a | dotest-output 0
+}
+function string-last-1.3 () {
+    mbfl_string_last abcdefghilm m | dotest-output 10
+}
+function string-last-1.4 () {
+    mbfl_string_last abcdefghilm X | dotest-output
+}
+function string-last-1.5 () {
+    mbfl_string_last abcdefghilm a 3 | dotest-output 0
+}
+function string-last-1.6 () {
+    mbfl_string_last abcdeabcde a 7 | dotest-output 5
+}
+function string-last-1.7 () {
+    mbfl_string_last abcdeabcde e 7 | dotest-output 4
+}
+function string-last-1.8 () {
+    mbfl_string_last abcdeabcde e 4 | dotest-output 4
 }
 
 #PAGE
-## ---------------------------------------------------------
-## End of "::test" namespace.
-## ---------------------------------------------------------
 
-::tcltest::cleanupTests
+function string-range-1.1 () {
+    mbfl_string_range abcdefghilm 0 end | dotest-output abcdefghilm
 }
-namespace delete ::test
 
+function string-range-1.2 () {
+    mbfl_string_range abcdefghilm 0 | dotest-output abcdefghilm
+}
+
+function string-range-1.3 () {
+    mbfl_string_range abcdefghilm 0 4 | dotest-output abcd
+}
+
+function string-range-1.4 () {
+    mbfl_string_range abcdefghilm 4 end | dotest-output efghilm
+}
+
+#page
+
+function string-toupper-1.1 () {
+    mbfl_string_toupper abcdefghilm | dotest-output ABCDEFGHILM
+}
+function string-toupper-1.2 () {
+    mbfl_string_toupper ABCDEFGHILM | dotest-output ABCDEFGHILM
+}
+function string-toupper-1.3 () {
+    mbfl_string_toupper "" | dotest-output ""
+}
+
+function string-tolower-1.1 () {
+    mbfl_string_tolower ABCDEFGHILM | dotest-output abcdefghilm
+}
+function string-tolower-1.2 () {
+    mbfl_string_tolower abcdefghilm | dotest-output abcdefghilm
+}
+function string-tolower-1.3 () {
+    mbfl_string_tolower "" | dotest-output ""
+}
+
+#page
+
+function string-sprintf-1.1 () {
+    local var=1
+
+    mbfl_sprintf var "pre-%s-post" woah
+    test "$var" = "pre-woah-post"
+}
+
+#page
+
+function string-quoted-char-1.1 () {
+    ! mbfl_string_is_quoted_char abcdefg 3
+}
+function string-quoted-char-1.2 () {
+    mbfl_string_is_quoted_char 'ab\cdefg' 3
+}
+function string-quoted-char-1.3 () {
+    mbfl_string_is_quoted_char 'ab\ndefg' 3
+}
+
+function string-equal-unquoted-1.1 () {
+    mbfl_string_is_equal_unquoted_char abcdefg 3 d
+}
+function string-equal-unquoted-1.2 () {
+    ! mbfl_string_is_equal_unquoted_char 'abc\defg' 3 d
+}
+
+function string-quote-1.1 () {
+    mbfl_string_quote \\a\\b\\c | dotest-output \\\\a\\\\b\\\\c
+}
+function string-quote-2.1 () {
+    mbfl_string_quote abc | dotest-output abc
+}
+#page
+
+function string-skip-1.1 () {
+    local i=3
+    local string=abcdefg
+
+    mbfl_string_skip $string i z
+    dotest-equal 3 $i
+}
+function string-skip-1.2 () {
+    local i=3
+    local string=aaaaaaa
+
+    mbfl_string_skip $string i a
+    dotest-equal ${#string} $i
+}
+function string-skip-1.3 () {
+    local i=3
+    local string=abcccccdefg
+
+    mbfl_string_skip $string i c
+    dotest-equal 7 $i
+}
+
+#page
+
+dotest string-
 
 ### end of file
 # Local Variables:
-# mode: tcl
-# page-delimiter: "^#PAGE"
+# mode: sh
 # End:

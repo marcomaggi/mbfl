@@ -1,0 +1,95 @@
+# base.sh.m4 --
+#
+# Part of: Marco's BASH Functions Library
+# Contents: base functions
+# Date: Wed Oct  6, 2004
+#
+# Abstract
+#
+#
+#
+# Copyright (c) 2004-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
+#
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  3.0 of the License,  or (at
+# your option) any later version.
+#
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# Lesser General Public License for more details.
+#
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
+#
+
+#page
+## ------------------------------------------------------------
+## Variables.
+## ------------------------------------------------------------
+
+mbfl_LOADED='yes'
+
+: ${script_PROGNAME:='<unknown>'}
+: ${script_VERSION:='<unknown>'}
+: ${script_COPYRIGHT_YEARS:='<unknown>'}
+: ${script_AUTHOR:='<unknown>'}
+: ${script_LICENSE:='<unknown>'}
+: ${script_USAGE:='<unknown>'}
+: ${script_DESCRIPTION:='<unknown>'}
+: ${script_EXAMPLES:='<unknown>'}
+
+#page
+## ------------------------------------------------------------
+## Miscellaneous functions.
+## ------------------------------------------------------------
+
+function mbfl_set_maybe () {
+    test -n "${1}" && eval ${1}=\'"${2}"\'
+}
+function mbfl_read_maybe_null () {
+    mandatory_parameter(VARNAME, 1, variable name)
+
+    if mbfl_option_null ; then
+	read -d $'\x00' $VARNAME
+    else
+	read $VARNAME
+    fi
+}
+
+#page
+## ------------------------------------------------------------
+## Global option creation functions.
+## ------------------------------------------------------------
+
+m4_define([[mbfl_create_option_procedure]],[[
+    function mbfl_set_option_$1 ()   { function mbfl_option_$1 () { true;  }; }
+    function mbfl_unset_option_$1 () { function mbfl_option_$1 () { false; }; }
+    mbfl_unset_option_$1
+]])
+
+mbfl_create_option_procedure([[test]])
+mbfl_create_option_procedure([[verbose_program]])
+mbfl_create_option_procedure([[show_program]])
+mbfl_create_option_procedure([[verbose]])
+mbfl_create_option_procedure([[debug]])
+mbfl_create_option_procedure([[null]])
+mbfl_create_option_procedure([[interactive]])
+mbfl_create_option_procedure([[encoded_args]])
+
+function mbfl_option_test_save () {
+    mbfl_option_test && mbfl_save_option_TEST=yes
+    mbfl_unset_option_test
+}
+function mbfl_option_test_restore () {
+    test "${mbfl_save_option_TEST}" = "yes" && mbfl_set_option_test
+}
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

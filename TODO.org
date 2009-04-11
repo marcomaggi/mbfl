@@ -1,0 +1,16 @@
+* Code
+
+  Rewrite the PATH splitting functions using:
+
+	ORGIFS="${IFS}"
+        IFS=: original_FIELDS=(${!COLON_VARIABLE})
+	IFS="${ORGIFS}"
+
+  copy code from the user functions.
+
+* Testing
+
+  Tests for libsignal
+
+  Tests for libmessage
+

@@ -1,0 +1,119 @@
+@c libversion.texiinc --
+@node library version
+@appendix How to interpret the library version
+
+
+@quotation
+@strong{NOTE} This section is not specific to this package; it is an
+explanation of library interface version numbering that the author uses
+for all its C libraries.
+@end quotation
+
+@noindent
+This package is distributing one or more libraries; this package has a
+version number and each library has an interface version number, package
+and interface versions are independent.
+
+
+@appendixsec Package version
+
+@noindent
+The package version tracks the development of the source code: every
+time the source code is modified the package version is
+incremented. There are three numbers: major, minor, patch level.
+
+@table @code
+@item major
+Incremented before big rewritings or additions.
+@item minor
+Incremented to track incremental development of the code.
+@item patch level
+For stable versions: incremented for bug fixes and very small additions
+that were forgotten in the last minor update.
+@end table
+
+The package has also a letter that indicates the status of the release:
+@code{a} for experimental or ``alpha'', @code{b} for testing or
+``beta'', @code{.} for stable.
+
+A full version number looks like this:
+
+@table @code
+@item 1.2a3
+major @code{1}, minor @code{2}, patch level @code{3}, status alpha;
+@item 10.23b34
+major @code{10}, minor @code{23}, patch level @code{34}, status beta;
+@item 1.2.3
+major @code{1}, minor @code{2}, patch level @code{3}, status stable.
+@end table
+
+The reason for the letter to be between the minor number and the patch
+level is that it is more important:
+
+@itemize
+@item
+when starting to develop version @code{1.2} (major @code{1}, minor
+@code{2}), the last stable version of the @code{1.1} branch is taken and
+the project starts with alpha versions; each alpha has a patch level:
+@code{1.2a0}, @code{1.2a1}, @dots{};
+@item
+when experimental development, is finished the package is moved to
+testing and the status to beta: @code{1.2b0}, @code{1.2b1}, @dots{} so
+the first beta version is newer than the last alpha version;
+@item
+when testing is finished, the package is moved to stable status:
+@code{1.2.0}, @code{1.2.1}, @dots{} so the first stable version is newer
+than the last beta version.
+@end itemize
+
+@noindent
+summary:
+
+@example
+1.1.x < 1.2a0 < 1.2a1 < ... < 1.2b0 < 1.2b1 < ... < 1.2.0 < 1.2.1
+@end example
+
+
+@appendixsec Interface version
+
+@noindent
+The interface version changes only when the public interface of a
+library (public function prototypes and data types) is modified. There
+are two numbers: major and minor.
+
+@table @code
+@item major
+Establishes a set of: functions, data types, code behaviour that will
+not change until the next major number update. Code written for the
+first release of the library with a major interface number (@code{1.0}),
+will work unchanged with all the libraries with the same major interface
+number (@code{1.1}, @code{1.2}, @dots{}); if it does not: it is a
+library bug, please signal this to the author using the bug tracking
+system.
+
+The only exception to this rule is the wrong behaviour caused by bugs;
+code that relies on buggy behaviour of a package version may not work
+with subsequent package versions with the same major interface number.
+
+@item minor
+Establishes a set of: functions, data types, code behaviour that will
+not change until the next major number update. This set is added to the
+set of the previous interface version.
+@end table
+
+The library file installed on our system has name composed with the
+interface number; example: if the package has version @code{1.2.3} and
+the interface has version @code{1.1}, the library file is called
+@file{libmy1.1.so}.
+
+Even if the interface number has not changed, and the library file has
+the same name: when an installed shared library is updated to a new
+package version, programs and libraries depending on it will have to be
+recompiled, because the internals of the library file will have changed.
+
+
+
+@c end of file
+@c Local Variables:
+@c mode: texinfo
+@c End:

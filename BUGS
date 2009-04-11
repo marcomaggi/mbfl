@@ -1,13 +1,14 @@
+
 	       Marco's BASH Functions Library
 	       ==============================
 
 			 Known Bugs
 			 ----------
 
-* libsignal doesn't work.
+* The signal module is not guaranteed to be working.
+
 
 ### end of file
-# $Id: BUGS,v 1.1.1.1 2003/08/30 06:40:06 marco Exp $
 # Local Variables:
 # mode: text
 # End:
