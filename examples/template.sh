@@ -1,31 +1,31 @@
 # template.sh --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: script template
 # Date: Sun Sep 12, 2004
-# 
+#
 # Abstract
-# 
+#
 #	This script shows how an MBFL script should be organised
 #	to use MBFL.
-# 
-# Copyright (c) 2004, 2005 Marco Maggi
-# 
+#
+# Copyright (c) 2004, 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
 # Software Foundation; either  version 2, or (at your  option) any later
 # version.
-# 
+#
 # This  file is  distributed in  the hope  that it  will be  useful, but
 # WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
 # General Public License for more details.
-# 
+#
 # You  should have received  a copy  of the  GNU General  Public License
 # along with this file; see the file COPYING.  If not, write to the Free
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
-# 
+#
 
 #page
 ## ------------------------------------------------------------
@@ -34,7 +34,7 @@
 
 script_PROGNAME=template.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2004, 2005'
+script_COPYRIGHT_YEARS='2004, 2005, 2009'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
@@ -53,6 +53,10 @@ mbfl_declare_option VALUE '' '' value witharg 'selects a value'
 mbfl_declare_option FILE '' f file witharg 'selects a file'
 mbfl_declare_option ENABLE no e enable noarg 'enables a feature'
 mbfl_declare_option DISABLE no d disable noarg 'disables a feature'
+
+mbfl_declare_action_argument ONE no 'do action one'
+mbfl_declare_action_argument TWO no 'do action two'
+mbfl_declare_action_argument THREE no 'do action three'
 
 #page
 ## ------------------------------------------------------------
@@ -103,6 +107,18 @@ function script_after_parsing_options () {
 }
 function main () {
     printf "arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
+    exit_because_success
+}
+function script_action_one () {
+    printf 'action one\n'
+    exit_because_success
+}
+function script_action_two () {
+    printf 'action two\n'
+    exit_because_success
+}
+function script_action_three () {
+    printf "action three, arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
     exit_because_success
 }
 

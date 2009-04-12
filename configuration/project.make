@@ -44,8 +44,7 @@ libs_INSTDIR	= $(pkgdatadir)
 $(eval $(call ds-default-clean-variables,libs))
 $(eval $(call ds-module,libs,bin))
 
-MBFLPP_LIBS_FLAGS	= --include=$(modules_BUILDDIR) \
-			  --show-program --preserve-comments
+MBFLPP_LIBS_FLAGS	= --include=$(modules_BUILDDIR) --preserve-comments
 
 $(libs_BUILDDIR)/%.sh: $(libs_SRCDIR)/%.sh.m4 preprocessor.m4 $(modules_TARGETS)
 	$(MBFLPP) $(MBFLPP_LIBS_FLAGS) <$(<) >$(@)

@@ -31,7 +31,8 @@
 ## Generic variables.
 ## ------------------------------------------------------------
 
-if test "${mbfl_INTERACTIVE}" != 'yes'; then
+if test "${mbfl_INTERACTIVE}" != 'yes'
+then
     mbfl_option_TMPDIR="${TMPDIR:-/tmp/${USER}}"
     mbfl_ORG_PWD="${PWD}"
     mbfl_main_SCRIPT_FUNCTION=main

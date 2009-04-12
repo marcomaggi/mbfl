@@ -140,6 +140,43 @@ function getopts-7.1 () {
 
 #page
 
+function getopts-8.1 () { mbfl_getopts_is_action_argument alpha; }
+function getopts-8.2 () { mbfl_getopts_is_action_argument alpha-beta; }
+function getopts-8.3 () { mbfl_getopts_is_action_argument alpha-beta123; }
+function getopts-8.4 () { ! mbfl_getopts_is_action_argument 123alpha; }
+function getopts-8.5 () { ! mbfl_getopts_is_action_argument -a; }
+function getopts-8.6 () { ! mbfl_getopts_is_action_argument -a123; }
+function getopts-8.7 () { ! mbfl_getopts_is_action_argument --alpha; }
+function getopts-8.8 () { ! mbfl_getopts_is_action_argument --alpha=123; }
+
+#page
+
+function getopts-9.1 () {
+    mbfl_declare_action_argument A yes 'an option'
+}
+function getopts-9.2 () {
+    mbfl_declare_action_argument A no 'an option'
+}
+function getopts-9.3 () {
+    mbfl_declare_action_argument A wappa 'an option' 2>&1 | dotest-output \
+	"<unknown>: error: wrong value 'wappa' as selection for action argument number 1"
+}
+function getopts-9.4 () {
+    mbfl_declare_action_argument 123 wappa 'an option' 2>&1 | dotest-output \
+	"<unknown>: error: wrong value '123' as keyword for action argument number 1"
+}
+
+#page
+
+function getopts-10.1 () {
+    mbfl_declare_action_argument A yes 'an option'
+    mbfl_declare_action_argument B no  'an option'
+    mbfl_getopts_print_action_arguments | dotest-output 'a b'
+}
+
+
+#page
+
 dotest getopts-
 
 ### end of file
