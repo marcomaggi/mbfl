@@ -38,7 +38,7 @@ $(eval $(call ds-srcdir,libs,$(srcdir)/src/lib))
 $(eval $(call ds-builddir,libs))
 
 libs_TARGETS	= $(libs_BUILDDIR)/libmbfl.sh
-libs_INSTLST	= $(libs_TARGETS) $(libs_SRCDIR)/libmbfltest.sh
+libs_INSTLST	= $(libs_TARGETS)
 libs_INSTDIR	= $(pkgdatadir)
 
 $(eval $(call ds-default-clean-variables,libs))
@@ -48,6 +48,18 @@ MBFLPP_LIBS_FLAGS	= --include=$(modules_BUILDDIR) --preserve-comments
 
 $(libs_BUILDDIR)/%.sh: $(libs_SRCDIR)/%.sh.m4 preprocessor.m4 $(modules_TARGETS)
 	$(MBFLPP) $(MBFLPP_LIBS_FLAGS) <$(<) >$(@)
+
+## --------------------------------------------------------------------
+
+$(eval $(call ds-srcdir,testlibs,$(srcdir)/src/lib))
+$(eval $(call ds-builddir,testlibs))
+
+testlibs_TARGETS	=  $(testlibs_SRCDIR)/libmbfltest.sh
+testlibs_INSTLST	= $(testlibs_TARGETS)
+testlibs_INSTDIR	= $(pkgdatadir)
+
+$(eval $(call ds-default-clean-variables,testlibs))
+$(eval $(call ds-module,testlibs,dev))
 
 #page
 $(eval $(call ds-srcdir,scripts,$(srcdir)/src/scripts))
@@ -59,7 +71,7 @@ scripts_TARGETS	= $(call ds-replace-dir,$(scripts_BUILDDIR),$(scripts_SOURCES))
 
 $(eval $(call ds-default-install-variables,scripts,$(bindir)))
 $(eval $(call ds-default-clean-variables,scripts))
-$(eval $(call ds-module,scripts,bin,BIN))
+$(eval $(call ds-module,scripts,dev,BIN))
 
 MBFLPP_SCRIPTS_FLAGS	= $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments
 
@@ -70,12 +82,12 @@ $(scripts_BUILDDIR)/%.sh: $(scripts_SRCDIR)/%.sh
 macros_INSTLST		= $(srcdir)/src/macros/preprocessor.m4
 macros_INSTDIR		= $(pkgdatadir)
 
-$(eval $(call ds-module-install-rules,macros,bin))
+$(eval $(call ds-module-install-rules,macros,dev))
 
 examples_INSTLST	= $(call ds-files-from-dir,$(srcdir)/examples)
 examples_INSTDIR	= $(pkgexampledir)
 
-$(eval $(call ds-module-install-rules,examples,doc))
+$(eval $(call ds-module-install-rules,examples,dev))
 
 #page
 mtests_SRCDIR	= $(srcdir)/tests
