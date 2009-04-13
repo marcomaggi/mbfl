@@ -2071,8 +2071,8 @@ option with argument.
 The following example declares two action arguments:
 
 @example
-mbfl_declare_action_argument GAMMA gamma no  "do gamma action"
-mbfl_declare_action_argument DELTA delta yes "do delta action"
+mbfl_declare_action_argument GAMMA gamma no  no "do gamma action"
+mbfl_declare_action_argument DELTA delta yes no "do delta action"
 @end example
 
 @noindent
@@ -2091,8 +2091,12 @@ the argument.
 Argument string on the command line @code{gamma}.
 
 @item
-Selection value set to @code{no}: this script action is not selected by
-default.
+Selection value set to @code{no} (the first one): this script action is
+not selected by default.
+
+@item
+Options parsing activated when this action argument is found as first
+argument for the script (the second @code{no}).
 
 @item
 Description @code{do gamma action}, to be shown in the usage output.
@@ -2141,7 +2145,7 @@ mbfl_declare_option ACTION_GAMMA \
   yes g gamma noarg "do gamma action"
 
 mbfl_declare_action_argument DELTA \
-  delta yes "do delta action"
+  delta yes no "do delta action"
 @end example
 
 @noindent
@@ -2422,7 +2426,7 @@ A one--line string briefly describing the option.
 @end deffn
 
 
-@deffn Function mbfl_declare_action_argument @var{keyword} @var{string} @var{selected} @var{description}
+@deffn Function mbfl_declare_action_argument @var{keyword} @var{string} @var{selected} @var{skipopts} @var{description}
 Declare an action argument.  Arguments description follows.
 
 @table @var
@@ -2450,6 +2454,14 @@ A boolean value that can be @code{yes} or @code{no}.  If @code{yes} the
 function associated to this action argument is selected by default as
 main action of the script.  The function name is built by concatenating
 @code{script_action_} with the lowercase version of @var{keyword}.
+
+@item skipopts
+A boolean value that can be @code{yes} or @code{no}.  If @code{no}:
+command line options are parsed as usual; if @code{yes} when this action
+argument is found as first parameter to the script, the rest of the
+arguments are not parsed, but copied as is to the @code{ARGV} and
+@code{ARGC} variables.  This allows to hand options not recognised by
+the script to some external program.
 
 @item description
 A one--line string briefly describing the argument.

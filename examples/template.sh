@@ -52,9 +52,10 @@ mbfl_declare_option FILE '' f file witharg 'selects a file'
 mbfl_declare_option ENABLE no e enable noarg 'enables a feature'
 mbfl_declare_option DISABLE no d disable noarg 'disables a feature'
 
-mbfl_declare_action_argument ONE one no 'do action one'
-mbfl_declare_action_argument TWO two no 'do action two'
-mbfl_declare_action_argument THREE three no 'do action three'
+mbfl_declare_action_argument ONE one no no 'do action one'
+mbfl_declare_action_argument TWO two no no 'do action two'
+mbfl_declare_action_argument THREE three no no 'do action three'
+mbfl_declare_action_argument FOUR four no yes 'do action four'
 
 #page
 ## ------------------------------------------------------------
@@ -117,6 +118,10 @@ function script_action_two () {
 }
 function script_action_three () {
     printf "action three, arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
+    exit_because_success
+}
+function script_action_four () {
+    printf "action four, arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
     exit_because_success
 }
 

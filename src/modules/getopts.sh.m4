@@ -60,6 +60,7 @@ then
     declare -i mbfl_getopts_actargs_INDEX=0
     declare -a mbfl_getopts_actargs_KEYWORDS
     declare -a mbfl_getopts_actargs_STRINGS
+    declare -a mbfl_getopts_actargs_SKIPOPTS
     declare -a mbfl_getopts_actargs_DESCRIPTION
 fi
 
@@ -148,7 +149,7 @@ function mbfl_declare_option () {
     if test "$hasarg" = "noarg" ; then
         if test "$default" != "yes" -a "$default" != "no" ; then
             mbfl_message_error \
-  "wrong value '$default' as default for option with no argument number ${index}"
+                "wrong value '$default' as default for option with no argument number ${index}"
             exit 2
         fi
     fi
@@ -189,16 +190,24 @@ function mbfl_declare_action_argument () {
     mandatory_parameter(keyword,1,keyword)
     mandatory_parameter(argument,2,identifier)
     mandatory_parameter(selected,3,selection)
-    mandatory_parameter(description,4,description)
+    mandatory_parameter(skipopts,4,skip options)
+    mandatory_parameter(description,5,description)
     local index=$(($mbfl_getopts_actargs_INDEX + 1))
 
     mbfl_getopts_is_action_argument "${argument}" || {
         mbfl_message_error "wrong value '$argument' as keyword for action argument number ${index}"
         exit 2
     }
-    if test "$selected" != "yes" -a "$selected" != "no" ; then
+    if test "$selected" != "yes" -a "$selected" != "no"
+    then
         mbfl_message_error \
             "wrong value '$selected' as selection for action argument number ${index}"
+        exit 2
+    fi
+    if test "$skipopts" != "yes" -a "$skipopts" != "no"
+    then
+        mbfl_message_error \
+            "wrong value '$skipopts' as skip options flag for action argument number ${index}"
         exit 2
     fi
 
@@ -207,6 +216,9 @@ function mbfl_declare_action_argument () {
 
     mbfl_p_declare_action_argument_test_length $argument 'action argument' $index
     mbfl_getopts_actargs_STRINGS[$mbfl_getopts_actargs_INDEX]="$argument"
+
+    mbfl_p_declare_action_argument_test_length $skipopts 'skip options' $index
+    mbfl_getopts_actargs_SKIPOPTS[$mbfl_getopts_actargs_INDEX]="$skipopts"
 
     mbfl_p_declare_action_argument_test_length $description 'action argument description' $index
     mbfl_getopts_actargs_DESCRIPTION[$mbfl_getopts_actargs_INDEX]=$description
@@ -230,12 +242,32 @@ function mbfl_p_declare_action_argument_test_length () {
 }
 #page
 function mbfl_getopts_parse () {
-    local p_OPT= p_OPTARG=
-    local argument= i=0
-    local found_end_of_options_delimiter=0 found_possible_action_argument=0
+    local p_OPT= p_OPTARG= argument= i=0 j=0
+    local found_end_of_options_delimiter=0
 
+    if test -n "${ARGV1[0]}" && mbfl_getopts_is_action_argument "${ARGV1[0]}"
+    then
+        for ((j=0; $j < $mbfl_getopts_actargs_INDEX; ++j))
+        do
+            argument="${mbfl_getopts_actargs_STRINGS[$j]}"
+            if test "${ARGV1[0]}" = "$argument"
+            then
+                mbfl_getopts_p_process_action_argument "${mbfl_getopts_actargs_KEYWORDS[$j]}"
+                i=1
+                if test "${mbfl_getopts_actargs_SKIPOPTS[$j]}" = yes
+                then
+                    ARGC=$((${ARGC1}-1))
+                    for ((i=$i; $i < $ARGC1; ++i))
+                    do ARGV[$i]=${ARGV1[$i]}
+                    done
+                    return 0
+                else break
+                fi
+            fi
+        done
+    fi
 
-    for ((i=0; $i < $ARGC1; ++i)); do
+    for ((i=$i; $i < $ARGC1; ++i)); do
         argument="${ARGV1[$i]}"
 
         if test "$found_end_of_options_delimiter" = 1 ; then
@@ -258,21 +290,6 @@ function mbfl_getopts_parse () {
             let ++ARGC
         fi
     done
-
-    if test $found_possible_action_argument = 1 && \
-        mbfl_getopts_is_action_argument "${ARGV[0]}"
-    then
-        for ((i=0; $i < $mbfl_getopts_actargs_INDEX; ++i))
-        do
-            argument="${mbfl_getopts_actargs_STRINGS[$i]}"
-            if test "${ARGV[0]}" = "$argument"
-            then
-                mbfl_getopts_p_process_action_argument "${mbfl_getopts_actargs_KEYWORDS[$i]}"
-                mbfl_getopts_p_remove_first_argument
-                break
-            fi
-        done
-    fi
 
     mbfl_option_encoded_args && {
         for ((i=0; $i < $ARGC; ++i))
@@ -323,27 +340,23 @@ function mbfl_getopts_p_is_action_option () {
 }
 function mbfl_getopts_p_process_action_option () {
     mandatory_parameter(KEYWORD, 1, option keyword)
-
-    if mbfl_getopts_p_is_action_option "${KEYWORD}" ; then
-        mbfl_main_set_main script_$(mbfl_string_tolower ${KEYWORD})
+    if mbfl_getopts_p_is_action_option "${KEYWORD}"
+    then mbfl_main_set_main script_$(mbfl_string_tolower ${KEYWORD})
     fi
 }
 function mbfl_getopts_p_process_action_argument () {
     mandatory_parameter(KEYWORD, 1, action keyword)
-
     mbfl_main_set_main script_action_$(mbfl_string_tolower ${KEYWORD})
 }
-function mbfl_getopts_p_remove_first_argument () {
-    local i=0
-
-    for ((i=1; $i < $ARGC; ++i))
-    do
-        ARGV[$(($i-1))]=${ARGV[$i]}
-    done
-    ARGV[$(($ARGC-1))]=''
-    let --ARGC
-    return 0
-}
+# function mbfl_getopts_p_remove_first_argument () {
+#     local i=0
+#     for ((i=1; $i < $ARGC; ++i))
+#     do ARGV[$(($i-1))]=${ARGV[$i]}
+#     done
+#     ARGV[$(($ARGC-1))]=''
+#     let --ARGC
+#     return 0
+# }
 #PAGE
 function mbfl_getopts_p_process_predefined_option_no_arg () {
     local OPT="${1:?}"

@@ -236,14 +236,10 @@ fi
 ## ------------------------------------------------------------
 
 function mbfl_main () {
-    local exit_code=0
-    local action_func
-    local item code
-
+    local exit_code=0 action_func item code
 
     mbfl_message_set_progname "${script_PROGNAME}"
     mbfl_main_create_exit_functions
-
     mbfl_invoke_script_function script_before_parsing_options
     mbfl_getopts_parse
     mbfl_invoke_script_function script_after_parsing_options

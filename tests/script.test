@@ -119,7 +119,7 @@ function script-4.10 () {
 #page
 
 function script-5.1 () {
-    script --print-action-arguments | dotest-output 'one two three'
+    script --print-action-arguments | dotest-output 'one two three four'
 }
 
 function script-6.1 () {
@@ -129,10 +129,21 @@ function script-6.2 () {
     script two | dotest-output 'action two'
 }
 function script-6.3 () {
-    script three | dotest-output 'action three, arguments: 0, '''
+    script three | dotest-output "action three, arguments: 0, ''"
 }
-function script-6.3 () {
-    script three a b c | dotest-output "action three, arguments: 3, 'a b c '"
+function script-6.4 () {
+    script three a b c | dotest-output "action three, arguments: 3, 'a b c'"
+}
+function script-6.5 () {
+    script four a b c | dotest-output "action four, arguments: 3, 'a b c'"
+}
+function script-6.6 () {
+    script four a --verbose b c | \
+        dotest-output "action four, arguments: 4, 'a --verbose b c'"
+}
+function script-6.7 () {
+    script four a b --license c | \
+        dotest-output "action four, arguments: 4, 'a b --license c'"
 }
 
 
