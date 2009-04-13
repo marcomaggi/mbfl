@@ -274,7 +274,11 @@ function mbfl_getopts_parse () {
         done
     fi
 
-    mbfl_getopts_p_decode_hex
+    mbfl_option_encoded_args && {
+        for ((i=0; $i < $ARGC; ++i))
+        do ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
+        done
+    }
     declare -r ARGC ARGV
     return 0
 }
@@ -653,18 +657,6 @@ function mbfl_p_getopts_not_char_in_action_argument_name () {
         \( "$1" \< 0 -o 9 \< "$1" \) -a \
         \( "$1" != '-' \)
 }
-#PAGE
-function mbfl_getopts_p_decode_hex () {
-    local i=0
-
-    mbfl_option_encoded_args && {
-        for ((i=0; $i < $ARGC; ++i))
-          do ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
-        done
-    }
-    return 0
-}
-
 #PAGE
 function mbfl_wrong_num_args () {
     mandatory_parameter(required, 1, required number of args)
