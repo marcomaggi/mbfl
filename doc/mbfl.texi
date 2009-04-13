@@ -608,6 +608,7 @@ for item in \
 done
 if test "$@{mbfl_LOADED@}" != 'yes' ; then
     printf '%s error: loading MBFL\n' "$@{script_PROGNAME@}" >&2
+    exit 2
 fi
 @end example
 
@@ -843,6 +844,11 @@ If used evaluates the output script in bash, instead of printing it.
 @section Macros library
 
 
+The M4 preprocessor is invoked by @command{mbflpp.sh} with the
+@option{--prefix-builtins} option; so all the M4 built in macros and
+directives are available prefixed with @code{m4_}.
+
+
 @deffn {Preprocessor Macro} mandatory_parameter @var{varname} @var{number} @var{name}
 Define a variable local to a shell function holding an argument to the
 function.  @var{varname} is the name of the variable; @var{number} is
@@ -958,10 +964,10 @@ The version number of the script.
 
 @defvar script_LICENSE
 The identifier of the license under which the script is released.
-Accepted values are: @code{GPL}, @code{LGPL}, @code{BSD}.  It is used to
-select the appropriate value to be displayed when the user of the script
-selects the @code{--license} option.  @ref{getopts options, Predefined
-options}
+Accepted values are: @code{GPL} or @code{GPL2}, @code{GPL3}, @code{LGPL}
+or @code{LGPL2}, @code{LGPL3}, @code{BSD}.  It is used to select the
+appropriate value to be displayed when the user of the script selects
+the @code{--license} option.  @ref{getopts options, Predefined options}
 @end defvar
 
 @defvar script_USAGE
@@ -978,6 +984,9 @@ used) just after the content of @code{script_USAGE}.
 One or more lines of text to be displayed at the end of the help screen,
 after the options description.  It should contain examples of common
 invocations for the script.
+
+The string is used as first argument to @bfunc{printf}, so escape
+sequences like @code{\t} and @code{\n} are expanded.
 @end defvar
 
 All the text in these variables is used as argument to the @code{printf}
@@ -996,7 +1005,7 @@ script_PROGNAME='myscript.sh'
 script_AUTHOR='Marco Maggi and Marco Maggi'
 script_COPYRIGHT_YEARS='2002, 2003, 2004'
 script_VERSION='1.0'
-script_LICENSE=GPL
+script_LICENSE=GPL3
 script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
 script_DESCRIPTION='Does this and that.'
 script_EXAMPLES='Examples:

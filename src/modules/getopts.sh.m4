@@ -58,8 +58,8 @@ then
     declare -a mbfl_getopts_DESCRIPTION
 
     declare -i mbfl_getopts_actargs_INDEX=0
-    declare -a mbfl_getoptg_action_KEYWORDS
-    declare -a mbfl_getoptg_action_STRINGS
+    declare -a mbfl_getopts_actargs_KEYWORDS
+    declare -a mbfl_getopts_actargs_STRINGS
     declare -a mbfl_getopts_actargs_DESCRIPTION
 fi
 
@@ -122,10 +122,6 @@ mbfl_message_DEFAULT_OPTIONS="
 fi
 
 #page
-## ------------------------------------------------------------
-## Options declaration functions.
-## ------------------------------------------------------------
-
 function mbfl_declare_option () {
     local keyword="$1"
     local default="$2"
@@ -189,10 +185,6 @@ function mbfl_p_declare_option_test_length () {
 }
 
 #page
-## ------------------------------------------------------------
-## Action arguments declaration functions.
-## ------------------------------------------------------------
-
 function mbfl_declare_action_argument () {
     mandatory_parameter(keyword,1,keyword)
     mandatory_parameter(argument,2,identifier)
@@ -214,7 +206,7 @@ function mbfl_declare_action_argument () {
     mbfl_getopts_actargs_KEYWORDS[$mbfl_getopts_actargs_INDEX]=$(mbfl_string_toupper "$keyword")
 
     mbfl_p_declare_action_argument_test_length $argument 'action argument' $index
-    mbfl_getopts_actargs_ARGUMENTS[$mbfl_getopts_actargs_INDEX]="$argument"
+    mbfl_getopts_actargs_STRINGS[$mbfl_getopts_actargs_INDEX]="$argument"
 
     mbfl_p_declare_action_argument_test_length $description 'action argument description' $index
     mbfl_getopts_actargs_DESCRIPTION[$mbfl_getopts_actargs_INDEX]=$description
@@ -272,7 +264,7 @@ function mbfl_getopts_parse () {
     then
         for ((i=0; $i < $mbfl_getopts_actargs_INDEX; ++i))
         do
-            argument="${mbfl_getopts_actargs_ARGUMENTS[$i]}"
+            argument="${mbfl_getopts_actargs_STRINGS[$i]}"
             if test "${ARGV[0]}" = "$argument"
             then
                 mbfl_getopts_p_process_action_argument "${mbfl_getopts_actargs_KEYWORDS[$i]}"
@@ -404,11 +396,17 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	    ;;
 	license)
             case "${script_LICENSE}" in
-                GPL)
+                GPL|GPL2)
                     echo -e "${mbfl_message_LICENSE_GPL}"
                     ;;
-                LGPL)
+                GPL3)
+                    echo -e "${mbfl_message_LICENSE_GPL3}"
+                    ;;
+                LGPL|LGPL2)
                     echo -e "${mbfl_message_LICENSE_LGPL}"
+                    ;;
+                LGPL3)
+                    echo -e "${mbfl_message_LICENSE_LGPL3}"
                     ;;
                 BSD)
                     echo -e "${mbfl_message_LICENSE_BSD}"
@@ -421,20 +419,11 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	    exit 0
 	    ;;
 	h|help|usage)
-	    printf '%s\n' "${script_USAGE}"
-            test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n"
-            printf 'options:\n'
-            mbfl_getopts_p_build_and_print_options_usage
-            printf "${mbfl_message_DEFAULT_OPTIONS}"
-            test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+            mbfl_getopts_print_usage_screen long
 	    exit 0
 	    ;;
 	H|brief-help|brief-usage)
-	    echo -e "${script_USAGE}"
-            test -n "${script_DESCRIPTION}" && echo -e "${script_DESCRIPTION}"
-            echo 'options:'
-            mbfl_getopts_p_build_and_print_options_usage
-            test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+            mbfl_getopts_print_usage_screen brief
 	    exit 0
 	    ;;
         print-options)
@@ -484,50 +473,80 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
     return 0
 }
 #page
-function mbfl_getopts_p_build_and_print_options_usage () {
+function mbfl_getopts_print_usage_screen () {
+    mandatory_parameter(BRIEF_OR_LONG,1,brief or long selection)
     local i=0 item brief long description long_hasarg long_hasarg default
 
+    printf '%s\n' "${script_USAGE}"
+    test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n"
 
-    for ((i=0; $i < $mbfl_getopts_INDEX; ++i)); do
-        if test "${mbfl_getopts_HASARG[$i]}" = 'witharg' ; then
-            brief_hasarg="VALUE"
-            long_hasarg="=VALUE"
-        else
-            brief_hasarg=
-            long_hasarg=
-        fi
+    if test $mbfl_getopts_actargs_INDEX != 0
+    then
+        printf 'actions:\n'
+        for ((i=0; $i < $mbfl_getopts_actargs_INDEX; ++i))
+        do printf '\t%s %s [options] [-- [other-args]]\n\t\t%s\n\n' \
+            "${script_PROGNAME}" "${mbfl_getopts_actargs_STRINGS[$i]}" \
+            "${mbfl_getopts_actargs_DESCRIPTION[$i]}"
+        done
+    fi
 
-        printf '\t'
+    if test $mbfl_getopts_INDEX != 0 -o ${BRIEF_OR_LONG} = long
+    then printf 'options:\n'
+    fi
 
-        brief="${mbfl_getopts_BRIEFS[$i]}"
-        test -n "$brief" && printf -- '-%s%s ' "${brief}" "${brief_hasarg}"
-
-        long="${mbfl_getopts_LONGS[$i]}"
-        test -n "$long" && printf -- '--%s%s' "${long}" "${long_hasarg}"
-
-        printf '\n'
-
-        description="${mbfl_getopts_DESCRIPTION[$i]}"
-        test -z "${description}" && description='undocumented option'
-
-        printf '\t\t%s\n' "${description}"
-
-        if test "${mbfl_getopts_HASARG[$i]}" = 'witharg' ; then
-            item="${mbfl_getopts_DEFAULTS[$i]}"
-            if test -n "${item}" ; then
-                default=$(printf "'%s'" "${item}")
+    if test $mbfl_getopts_INDEX != 0
+    then
+        for ((i=0; $i < $mbfl_getopts_INDEX; ++i))
+        do
+            if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
+            then
+                brief_hasarg="VALUE"
+                long_hasarg="=VALUE"
             else
-                default='empty'
+                brief_hasarg=
+                long_hasarg=
             fi
-            printf '\t\t(default: %s)\n' "${default}"
-        else
-            if mbfl_getopts_p_is_action_option "${mbfl_getopts_KEYWORDS[$i]}"; then
-                if test "${mbfl_getopts_DEFAULTS[$i]}" = 'yes' ; then
-                    printf '\t\t(default action)\n'
+
+            printf '\t'
+
+            brief="${mbfl_getopts_BRIEFS[$i]}"
+            test -n "$brief" && printf -- '-%s%s ' "${brief}" "${brief_hasarg}"
+
+            long="${mbfl_getopts_LONGS[$i]}"
+            test -n "$long" && printf -- '--%s%s' "${long}" "${long_hasarg}"
+
+            printf '\n'
+
+            description="${mbfl_getopts_DESCRIPTION[$i]}"
+            test -z "${description}" && description='undocumented option'
+
+            printf '\t\t%s\n' "${description}"
+
+            if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
+            then
+                item="${mbfl_getopts_DEFAULTS[$i]}"
+                if test -n "${item}"
+                then default=$(printf "'%s'" "${item}")
+                else default='empty'
+                fi
+                printf '\t\t(default: %s)\n' "${default}"
+            else
+                if mbfl_getopts_p_is_action_option "${mbfl_getopts_KEYWORDS[$i]}"
+                then
+                    if test "${mbfl_getopts_DEFAULTS[$i]}" = 'yes'
+                    then printf '\t\t(default action)\n'
+                    fi
                 fi
             fi
-        fi
-    done
+        done
+    fi
+
+    if test ${BRIEF_OR_LONG} = long
+        # Do it as first argument of "printf" to expand the escaped
+        # characters.
+    then printf "${mbfl_message_DEFAULT_OPTIONS}"
+    fi
+    test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
 }
 #PAGE
 function mbfl_getopts_islong () {
@@ -635,7 +654,6 @@ function mbfl_p_getopts_not_char_in_action_argument_name () {
         \( "$1" != '-' \)
 }
 #PAGE
-
 function mbfl_getopts_p_decode_hex () {
     local i=0
 
@@ -648,10 +666,6 @@ function mbfl_getopts_p_decode_hex () {
 }
 
 #PAGE
-## ------------------------------------------------------------
-## Non-option command line arguments.
-## ------------------------------------------------------------
-
 function mbfl_wrong_num_args () {
     mandatory_parameter(required, 1, required number of args)
     mandatory_parameter(argc, 2, given number of args)
@@ -724,7 +738,7 @@ function mbfl_getopts_print_action_arguments () {
 
     for ((i=0; $i < ${mbfl_getopts_actargs_INDEX}; ++i))
     do
-        argument="${mbfl_getopts_actargs_ARGUMENTS[$i]}"
+        argument="${mbfl_getopts_actargs_STRINGS[$i]}"
         if test -n "${argument}"
         then echo -n "${argument}"
         else continue

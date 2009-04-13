@@ -88,6 +88,7 @@ mtests_ENV	= PATH=$(mtests_SRCDIR):$(libs_BUILDDIR):$(libs_SRCDIR):$(PATH)
 # to fail if the temporary test files are created under "/tmp".
 mtests_ENV	+= TMPDIR=$(PWD)/tmp
 mtests_ENV	+= MBFL_LIBRARY=$(libs_BUILDDIR)/libmbfl.sh
+mtests_ENV	+= TESTMATCH=$(TESTMATCH)
 mtests_VERBENV	= TESTSUCCESS=yes TESTSTART=yes
 mtests_CMD	= $(mtests_ENV) $(BASH_PROGRAM)
 

@@ -76,6 +76,18 @@ to really do it:
 
     $ make install DESTDIR=/tmp/marco/mbfl
 
+  The "make  tests" invocation will run all  the tests under
+the "$(srcdir)/tests"  directory.  To select a  set of tests
+set the  "TESTMATCH" variable to  a string that  matches the
+test names (the  names of the functions in  the test files);
+for example, the following runs the getopts tests:
+
+    $ make tests TESTMATCH=getopts
+
+and the following runs only the "getopts-2.4" test:
+
+    $ make tests TESTMATCH=getopts-2.4
+
 
 4. Usage
 --------

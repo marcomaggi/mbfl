@@ -36,7 +36,7 @@
 
 script_PROGNAME=mbflpp.sh
 script_VERSION='__PACKAGE_VERSION__'
-script_COPYRIGHT_YEARS=2005
+script_COPYRIGHT_YEARS='2005, 2009'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL3
 script_USAGE="usage: ${script_PROGNAME} [options] <INFILE >OUTFILE"
