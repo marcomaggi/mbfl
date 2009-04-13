@@ -1,5 +1,3 @@
-# template.sh --
-#
 # Part of: Marco's BASH Functions Library
 # Contents: script template
 # Date: Sun Sep 12, 2004
@@ -54,9 +52,9 @@ mbfl_declare_option FILE '' f file witharg 'selects a file'
 mbfl_declare_option ENABLE no e enable noarg 'enables a feature'
 mbfl_declare_option DISABLE no d disable noarg 'disables a feature'
 
-mbfl_declare_action_argument ONE no 'do action one'
-mbfl_declare_action_argument TWO no 'do action two'
-mbfl_declare_action_argument THREE no 'do action three'
+mbfl_declare_action_argument ONE one no 'do action one'
+mbfl_declare_action_argument TWO two no 'do action two'
+mbfl_declare_action_argument THREE three no 'do action three'
 
 #page
 ## ------------------------------------------------------------

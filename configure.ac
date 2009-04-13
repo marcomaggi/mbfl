@@ -1,7 +1,7 @@
 dnl @configure_input@
 dnl
 
-AC_INIT([mbfl],[1.3b2],[marcomaggi@gna.org])
+AC_INIT([mbfl],[1.3b3],[marcomaggi@gna.org])
 DS_BEGIN([./src/modules/base.sh.m4])
 DS_EXCLUDE_SECTION([AUTOCONF])
 DS_EXCLUDE_SECTION([META_SCRIPTS])

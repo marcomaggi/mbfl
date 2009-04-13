@@ -2062,8 +2062,8 @@ option with argument.
 The following example declares two action arguments:
 
 @example
-mbfl_declare_action_argument GAMMA no  "do gamma action"
-mbfl_declare_action_argument DELTA yes "do delta action"
+mbfl_declare_action_argument GAMMA gamma no  "do gamma action"
+mbfl_declare_action_argument DELTA delta yes "do delta action"
 @end example
 
 @noindent
@@ -2075,9 +2075,11 @@ The first of the two declarations has the following properties:
 
 @itemize
 @item
-Action argument keyword @code{GAMMA}; when matching a command line
-argument with the keyword: the command line argument is converted to
-upper case.
+Action argument keyword @code{GAMMA}; this is the internal identifier of
+the argument.
+
+@item
+Argument string on the command line @code{gamma}.
 
 @item
 Selection value set to @code{no}: this script action is not selected by
@@ -2130,7 +2132,7 @@ mbfl_declare_option ACTION_GAMMA \
   yes g gamma noarg "do gamma action"
 
 mbfl_declare_action_argument DELTA \
-  yes "do delta action"
+  delta yes "do delta action"
 @end example
 
 @noindent
@@ -2261,6 +2263,16 @@ declared with @bfunc{mbfl_declare_option}.  Then exits with code zero.
 
 The difference with @option{--help} is that predefined options and usage
 examples are not displayed.
+
+@item --print-options
+Print all the long options with
+@bfunc{mbfl_getopts_print_long_switches}, then exit the script with code
+zero.
+
+@item --print-action-arguments
+Print all the action arguments with
+@bfunc{mbfl_getopts_print_action_arguments}, then exit the script with
+code zero.
 @end table
 
 
@@ -2401,13 +2413,17 @@ A one--line string briefly describing the option.
 @end deffn
 
 
-@deffn Function mbfl_declare_action_argument @var{keyword} @var{selected} @var{description}
+@deffn Function mbfl_declare_action_argument @var{keyword} @var{string} @var{selected} @var{description}
 Declare an action argument.  Arguments description follows.
 
 @table @var
 @item keyword
 A string identifying the argument; internally it is used to build a
-function name.  An action argument keyword has limitations in format:
+function name.  It must be a valid Bash function identifier.
+
+@item string
+The string that identifies the argument on the command line of the
+string.  It has limitations in format:
 
 @itemize
 @item
@@ -2628,6 +2644,12 @@ Print all the long switches in a row, separated by spaces.  This is
 useful to retrieve the option for Bash programmable completion.
 @end deffn
 
+
+@deffn Function mbfl_getopts_print_action_arguments
+Print all the action arguments strings in a row, separated by spaces.
+This is useful to retrieve the option for Bash programmable completion.
+@end deffn
+
 @c page
 @node message
 @chapter Printing messages to the console
@@ -2643,7 +2665,7 @@ with @code{mbfl_message_}.  All the messages will have the forms:
 @end example
 
 
-@deffn Function mbfl_message_set_program @var{PROGNAME}
+@deffn Function mbfl_message_set_progname @var{PROGNAME}
 Set the script official name to put at the beginning of messages.  This
 value is initialised to @code{script_PROGNAME}.
 @end deffn

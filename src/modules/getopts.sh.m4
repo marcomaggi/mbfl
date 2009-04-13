@@ -57,9 +57,10 @@ then
     declare -a mbfl_getopts_HASARG
     declare -a mbfl_getopts_DESCRIPTION
 
-    declare -i mbfl_getopts_action_INDEX=0
+    declare -i mbfl_getopts_actargs_INDEX=0
     declare -a mbfl_getoptg_action_KEYWORDS
-    declare -a mbfl_getopts_action_DESCRIPTION
+    declare -a mbfl_getoptg_action_STRINGS
+    declare -a mbfl_getopts_actargs_DESCRIPTION
 fi
 
 #page
@@ -193,13 +194,14 @@ function mbfl_p_declare_option_test_length () {
 ## ------------------------------------------------------------
 
 function mbfl_declare_action_argument () {
-    local keyword="$1"
-    local selected="$2"
-    local description="$3"
-    local index=$(($mbfl_getopts_action_INDEX + 1))
+    mandatory_parameter(keyword,1,keyword)
+    mandatory_parameter(argument,2,identifier)
+    mandatory_parameter(selected,3,selection)
+    mandatory_parameter(description,4,description)
+    local index=$(($mbfl_getopts_actargs_INDEX + 1))
 
-    mbfl_getopts_is_action_argument "${keyword}" || {
-        mbfl_message_error "wrong value '$keyword' as keyword for action argument number ${index}"
+    mbfl_getopts_is_action_argument "${argument}" || {
+        mbfl_message_error "wrong value '$argument' as keyword for action argument number ${index}"
         exit 2
     }
     if test "$selected" != "yes" -a "$selected" != "no" ; then
@@ -208,13 +210,16 @@ function mbfl_declare_action_argument () {
         exit 2
     fi
 
-    mbfl_p_declare_action_argument_test_length $keyword 'action argument' $index
-    mbfl_getopts_action_KEYWORDS[$mbfl_getopts_action_INDEX]=$(mbfl_string_toupper "$keyword")
+    mbfl_p_declare_action_argument_test_length $keyword 'action argument keyword' $index
+    mbfl_getopts_actargs_KEYWORDS[$mbfl_getopts_actargs_INDEX]=$(mbfl_string_toupper "$keyword")
+
+    mbfl_p_declare_action_argument_test_length $argument 'action argument' $index
+    mbfl_getopts_actargs_ARGUMENTS[$mbfl_getopts_actargs_INDEX]="$argument"
 
     mbfl_p_declare_action_argument_test_length $description 'action argument description' $index
-    mbfl_getopts_action_DESCRIPTION[$mbfl_getopts_action_INDEX]=$description
+    mbfl_getopts_actargs_DESCRIPTION[$mbfl_getopts_actargs_INDEX]=$description
 
-    mbfl_getopts_action_INDEX=$index
+    mbfl_getopts_actargs_INDEX=$index
 
     test "${selected}" = 'yes' && \
         mbfl_getopts_p_process_action_argument ${keyword}
@@ -234,7 +239,7 @@ function mbfl_p_declare_action_argument_test_length () {
 #page
 function mbfl_getopts_parse () {
     local p_OPT= p_OPTARG=
-    local argument= i=0 keyword=
+    local argument= i=0
     local found_end_of_options_delimiter=0 found_possible_action_argument=0
 
 
@@ -265,12 +270,12 @@ function mbfl_getopts_parse () {
     if test $found_possible_action_argument = 1 && \
         mbfl_getopts_is_action_argument "${ARGV[0]}"
     then
-        for ((i=0; $i < $mbfl_getopts_action_INDEX; ++i))
+        for ((i=0; $i < $mbfl_getopts_actargs_INDEX; ++i))
         do
-            keyword="${mbfl_getopts_action_KEYWORDS[$i]}"
-            if test $(mbfl_string_toupper "${ARGV[0]}") = "$keyword"
+            argument="${mbfl_getopts_actargs_ARGUMENTS[$i]}"
+            if test "${ARGV[0]}" = "$argument"
             then
-                mbfl_getopts_p_process_action_argument "$keyword"
+                mbfl_getopts_p_process_action_argument "${mbfl_getopts_actargs_KEYWORDS[$i]}"
                 mbfl_getopts_p_remove_first_argument
                 break
             fi
@@ -456,8 +461,6 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
 
 
     mbfl_option_encoded_args && OPTARG=$(mbfl_decode_hex "${OPTARG}")
-
-    # at present no options with argument are declared by MBFL
 
     case "${OPT}" in
         tmpdir)
@@ -717,16 +720,16 @@ function mbfl_getopts_print_long_switches () {
     return 0
 }
 function mbfl_getopts_print_action_arguments () {
-    local i=0
+    local i=0 argument
 
-    for ((i=0; $i < ${#mbfl_getopts_action_KEYWORDS[@]}; ++i))
+    for ((i=0; $i < ${mbfl_getopts_actargs_INDEX}; ++i))
     do
-        if test -n "${mbfl_getopts_action_KEYWORDS[$i]}" ; then
-            echo -n $(mbfl_string_tolower "${mbfl_getopts_action_KEYWORDS[$i]}")
-        else
-            continue
+        argument="${mbfl_getopts_actargs_ARGUMENTS[$i]}"
+        if test -n "${argument}"
+        then echo -n "${argument}"
+        else continue
         fi
-        test $(($i+1)) -lt ${#mbfl_getopts_action_KEYWORDS[@]} && echo -n ' '
+        test $(($i+1)) -lt ${mbfl_getopts_actargs_INDEX} && echo -n ' '
     done
     echo
     return 0

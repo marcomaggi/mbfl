@@ -1,6 +1,6 @@
 # script.test --
 #
-# Part of: Azzurra Package Manager
+# Part of: MBFL
 # Contents: template tests
 # Date: Fri Aug  8, 2003
 #
@@ -36,7 +36,6 @@ function script () {
     MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/libmbfl.sh} \
         "${BASH}" ../examples/template.sh "$@"
 }
-
 
 #PAGE
 
