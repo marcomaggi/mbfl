@@ -1,7 +1,5 @@
 # loader.sh
 
-mbfl_INTERACTIVE='no'
-mbfl_LOADED='no'
 INSTALLED_MBFL="$(mbfl-config)" &>/dev/null
 for item in "${MBFL_LIBRARY}" ./infrastructure/libmbfl.sh "${INSTALLED_MBFL}"
   do
@@ -15,7 +13,7 @@ for item in "${MBFL_LIBRARY}" ./infrastructure/libmbfl.sh "${INSTALLED_MBFL}"
 done
 if test "${mbfl_LOADED}" != 'yes' ; then
     printf '%s error: loading MBFL\n' "${script_PROGNAME}" >&2
+    exit 2
 fi
-
 
 ### end of file

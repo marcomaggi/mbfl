@@ -47,10 +47,11 @@ pkgdatadir="@pkgdatadir@"
 USAGE="usage: mbfl-config [option]
 Marco's BASH Functions Library configuration script
 options:
-   --library        prints the full pathname of the library
-   --testlib        prints the full pathname of the testing library
-   --version        prints the version number
-   --help           prints the help screen
+   --library    print the full pathname of the library
+   --testlib    print the full pathname of the testing library
+   --libpath    print the librarires installation directory
+   --version    print the version number
+   --help       print the help screen
 "
 
 #page
@@ -65,6 +66,9 @@ case "${OPTION}" in
     --testlib)
 	echo "${pkgdatadir}/libmbfltest.sh"
 	;;
+    --libpath)
+        echo "${pkgdatadir}"
+        ;;
     --version)
 	echo "${PACKAGE_VERSION}"
 	;;

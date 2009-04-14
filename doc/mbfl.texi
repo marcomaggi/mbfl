@@ -608,6 +608,7 @@ for item in \
 done
 if test "$@{mbfl_LOADED@}" != 'yes' ; then
     printf '%s error: loading MBFL\n' "$@{script_PROGNAME@}" >&2
+    exit 2
 fi
 @end example
 
@@ -673,7 +674,8 @@ $ m4 --prefix-builtins --include=/path/to/library \
 @end example
 
 @noindent
-easy to do in a @file{Makefile}.
+easy to do in a @file{Makefile}.  The installation pathname of the
+library is the output of @code{mbfl-config --libpath}.
 
 It is also interesting to process the script with the following rule of
 @gnu{} Make: assuming that the source scripts are in the
@@ -843,6 +845,11 @@ If used evaluates the output script in bash, instead of printing it.
 @section Macros library
 
 
+The M4 preprocessor is invoked by @command{mbflpp.sh} with the
+@option{--prefix-builtins} option; so all the M4 built in macros and
+directives are available prefixed with @code{m4_}.
+
+
 @deffn {Preprocessor Macro} mandatory_parameter @var{varname} @var{number} @var{name}
 Define a variable local to a shell function holding an argument to the
 function.  @var{varname} is the name of the variable; @var{number} is
@@ -958,10 +965,10 @@ The version number of the script.
 
 @defvar script_LICENSE
 The identifier of the license under which the script is released.
-Accepted values are: @code{GPL}, @code{LGPL}, @code{BSD}.  It is used to
-select the appropriate value to be displayed when the user of the script
-selects the @code{--license} option.  @ref{getopts options, Predefined
-options}
+Accepted values are: @code{GPL} or @code{GPL2}, @code{GPL3}, @code{LGPL}
+or @code{LGPL2}, @code{LGPL3}, @code{BSD}.  It is used to select the
+appropriate value to be displayed when the user of the script selects
+the @code{--license} option.  @ref{getopts options, Predefined options}
 @end defvar
 
 @defvar script_USAGE
@@ -978,6 +985,9 @@ used) just after the content of @code{script_USAGE}.
 One or more lines of text to be displayed at the end of the help screen,
 after the options description.  It should contain examples of common
 invocations for the script.
+
+The string is used as first argument to @bfunc{printf}, so escape
+sequences like @code{\t} and @code{\n} are expanded.
 @end defvar
 
 All the text in these variables is used as argument to the @code{printf}
@@ -996,7 +1006,7 @@ script_PROGNAME='myscript.sh'
 script_AUTHOR='Marco Maggi and Marco Maggi'
 script_COPYRIGHT_YEARS='2002, 2003, 2004'
 script_VERSION='1.0'
-script_LICENSE=GPL
+script_LICENSE=GPL3
 script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
 script_DESCRIPTION='Does this and that.'
 script_EXAMPLES='Examples:
@@ -1839,16 +1849,16 @@ command line arguments with the following format:
 
 @table @code
 @item -a
-brief option @code{a} with no value;
+Brief option @code{a} with no value.
 
 @item -a123
-brief option @code{a} with value @code{123};
+Brief option @code{a} with value @code{123}.
 
 @item --bianco
-long option @code{bianco} with no value;
+Long option @code{bianco} with no value.
 
 @item --color=bianco
-long option @code{color} with value @code{bianco}.
+Long option @code{color} with value @code{bianco}.
 @end table
 
 @menu
@@ -1905,25 +1915,35 @@ for ((i=0; $i < $ARGC; ++i)); do
 done
 @end example
 
+When using action arguments: the first non--option argument can be
+interpreted as special value that selects an action to be performed by
+the script.  In this case the first argument is removed from the
+@code{ARGV} array, so that processing the other arguments is not
+affected.
+
 @c page
 @node getopts usage
 @section Using the module
 
 
-To use this module we have to declare a set of script options; we
-declare a new script option with the function
-@bfunc{mbfl_declare_option}.  Options declaration should be done at the
-beginning of the script, before doing anything; for example: right after
-the @mbfl{} library code.
+To use this module we have to declare a set of script options and
+optionally a set of action arguments.  We declare a new script option
+with the function @bfunc{mbfl_declare_option} and a new action argument
+with the function @bfunc{mbfl_declare_action_argument}.
+
+Option and action argument declarations should be done at the beginning
+of the script, before doing anything else; for example: right after the
+@mbfl{} library code.
 
 In the main block of the script, options are parsed by invoking
-@bfunc{mbfl_getopts_parse}: this function will update a global
-variable and invoke a script function for each option on the command
-line.
+@bfunc{mbfl_getopts_parse}: this function will update global variables
+and invoke a script function for each option on the command line.  It
+can also select a function to be invoked as the main action of the
+script.
 
 @c ------------------------------------------------------------
 
-@subheading Examples
+@subsubheading Option with no argument
 
 Example of option declaration:
 
@@ -1936,8 +1956,8 @@ this code declares an option with no argument having properties:
 
 @itemize
 @item
-global variable @code{script_option_ALPHA}, which will be set to
-@code{no} by default and to @code{yes} if the option is used;
+Global variable @code{script_option_ALPHA}, which will be set to
+@code{no} by default and to @code{yes} if the option is used.
 
 @item
 Brief switch @option{-a}.
@@ -1960,7 +1980,11 @@ $ script.sh -a
 $ script.sh --alpha
 @end example
 
-Another example:
+@c ------------------------------------------------------------
+
+@subsubheading Option with argument
+
+Example of option declaration:
 
 @example
 mbfl_declare_option BETA 123 b beta witharg "select beta value"
@@ -1971,9 +1995,9 @@ this code declares an option with argument having properties:
 
 @itemize
 @item
-global variable @code{script_option_BETA}, which will be set to
+Global variable @code{script_option_BETA}, which will be set to
 @code{123} by default and to the value selected on the command line if
-the option is used;
+the option is used.
 
 @item
 Brief switch @option{-b}.
@@ -2040,6 +2064,97 @@ action function.  In the example: the function
 
 It is an error to declare a keyword prefixed with @code{ACTION_} with an
 option with argument.
+
+@c ------------------------------------------------------------
+
+@subsubheading Action arguments
+
+The following example declares two action arguments:
+
+@example
+mbfl_declare_action_argument GAMMA gamma no  no "do gamma action"
+mbfl_declare_action_argument DELTA delta yes no "do delta action"
+@end example
+
+@noindent
+an action argument is a non--option argument that is used on the command
+line as first parameter.  Its purpose is to select a function to be
+evaluated as main action of the script.
+
+The first of the two declarations has the following properties:
+
+@itemize
+@item
+Action argument keyword @code{GAMMA}; this is the internal identifier of
+the argument.
+
+@item
+Argument string on the command line @code{gamma}.
+
+@item
+Selection value set to @code{no} (the first one): this script action is
+not selected by default.
+
+@item
+Options parsing activated when this action argument is found as first
+argument for the script (the second @code{no}).
+
+@item
+Description @code{do gamma action}, to be shown in the usage output.
+@end itemize
+
+If the first parameter to the script is @code{gamma} or @code{delta},
+the following code is evaluated at argument parsing time:
+
+@example
+mbfl_main_set_main script_action_gamma
+@end example
+
+@noindent
+or:
+
+@example
+mbfl_main_set_main script_action_delta
+@end example
+
+@noindent
+where the argument @code{script_action_gamma} is built by prefixing the
+lower case version of the keyword with @code{script_action_}.  The code
+selects a function as main function for the script.  @ref{main function,
+Driving script execution}.
+
+Additionally, if the selection value is @code{yes}: the main function is
+selected at declaration time (that is by
+@bfunc{mbfl_declare_action_argument}); this is useful to declare an
+action option and select automatically the action function.  In the
+example: the function @bfunc{script_action_delta} is selected as main
+action function.
+
+@c ------------------------------------------------------------
+
+@subsubheading Action arguments and action options
+
+Notice that action arguments and action options implement the same
+feature and are fully compatible with each other.  Both can be used to
+select an action for the script.
+
+When declaring action options and action arguments selected by default:
+the last one wins.  So the following:
+
+@example
+mbfl_declare_option ACTION_GAMMA \
+  yes g gamma noarg "do gamma action"
+
+mbfl_declare_action_argument DELTA \
+  delta yes no "do delta action"
+@end example
+
+@noindent
+defines a @code{GAMMA} action option and a @code{DELTA} action argument,
+and the main function is set to @bfunc{script_action_delta}.
+
+However, it is bad interface design to use both of them; it is better to
+use action arguments @strong{or} action options.
 
 @c page
 @node getopts options
@@ -2162,6 +2277,16 @@ declared with @bfunc{mbfl_declare_option}.  Then exits with code zero.
 
 The difference with @option{--help} is that predefined options and usage
 examples are not displayed.
+
+@item --print-options
+Print all the long options with
+@bfunc{mbfl_getopts_print_long_switches}, then exit the script with code
+zero.
+
+@item --print-action-arguments
+Print all the action arguments with
+@bfunc{mbfl_getopts_print_action_arguments}, then exit the script with
+code zero.
 @end table
 
 
@@ -2297,7 +2422,50 @@ Either @code{witharg} or @code{noarg}: declares if the option requires
 an argument or not.
 
 @item description
-A one--line string describing the option briefly.
+A one--line string briefly describing the option.
+@end table
+@end deffn
+
+
+@deffn Function mbfl_declare_action_argument @var{keyword} @var{string} @var{selected} @var{skipopts} @var{description}
+Declare an action argument.  Arguments description follows.
+
+@table @var
+@item keyword
+A string identifying the argument; internally it is used to build a
+function name.  It must be a valid Bash function identifier.
+
+@item string
+The string that identifies the argument on the command line of the
+string.  It has limitations in format:
+
+@itemize
+@item
+Its first character must be a letter in the range @code{a-z} or
+@code{A-Z}.
+
+@item
+All the characters but the first must be: letters in the range
+@code{a-z} or @code{A-Z}; numbers in the range @code{0-9}; dash
+characters @code{-}.
+@end itemize
+
+@item selected
+A boolean value that can be @code{yes} or @code{no}.  If @code{yes} the
+function associated to this action argument is selected by default as
+main action of the script.  The function name is built by concatenating
+@code{script_action_} with the lowercase version of @var{keyword}.
+
+@item skipopts
+A boolean value that can be @code{yes} or @code{no}.  If @code{no}:
+command line options are parsed as usual; if @code{yes} when this action
+argument is found as first parameter to the script, the rest of the
+arguments are not parsed, but copied as is to the @code{ARGV} and
+@code{ARGC} variables.  This allows to hand options not recognised by
+the script to some external program.
+
+@item description
+A one--line string briefly describing the argument.
 @end table
 @end deffn
 
@@ -2309,15 +2477,19 @@ variable @code{ARGC1} are supposed to hold the command line arguments
 and the number of command line arguments.  Non--option arguments are
 left in the global array @code{ARGV}, the global variable @code{ARGC}
 holds the number of elements in @code{ARGV}.
+
+If an action argument is recognised as the first element in
+@code{ARGV1}: it is processed but @strong{not} added to @code{ARGV} and
+@strong{not} counted in @code{ARGC}.
 @end deffn
 
 
 @deffn Function mbfl_getopts_islong @var{string}
 @deffnx Function mbfl_getopts_islong @var{string} @var{varname}
-Verify if a string is a long option without argument.  @var{string} is
-the string to validate.  The optional @var{varname} is the name of a
-variable that this function will set to the option name from
-@var{string}, without the leading dashes.
+Verify if a string has the format of a long option without argument.
+@var{string} is the string to validate.  The optional @var{varname} is
+the name of a variable that this function will set to the option name
+from @var{string}, without the leading dashes.
 
 Return with code zero if the string is a long option without argument,
 else returns with code one.
@@ -2325,12 +2497,21 @@ else returns with code one.
 An option must be of the form @code{--option}, only characters in the
 ranges @code{A-Z}, @code{a-z}, @code{0-9} and the characters @code{-}
 and @code{_} are allowed in the option name.
+
+Usage examples:
+
+@example
+mbfl_getopts_islong --option            @result{} 0
+mbfl_getopts_islong --option=123        @result{} 1
+mbfl_getopts_islong gasp                @result{} 1
+@end example
 @end deffn
 
 
 @deffn Function mbfl_getopts_islong_with @var{string}
 @deffnx Function mbfl_getopts_islong_with @var{string} @var{optname} @var{varname}
-Verify if a string is a long option with argument.  Arguments:
+Verify if a string has the format of a long option with argument.
+Arguments:
 
 @table @var
 @item string
@@ -2354,27 +2535,44 @@ the ranges @code{A-Z}, @code{a-z}, @code{0-9} and the characters
 
 If the argument is not an option with value, the variable names are
 ignored.
+
+Usage examples:
+
+@example
+mbfl_getopts_islong_with --option=one   @result{} 0
+mbfl_getopts_islong_with --option       @result{} 1
+mbfl_getopts_islong_with wappa          @result{} 1
+@end example
 @end deffn
 
 
 @deffn Function mbfl_getopts_isbrief @var{string}
 @deffnx Function mbfl_getopts_isbrief @var{string} @var{varname}
-Verify if a string is a brief option without argument.  @var{string} is
-the string to validate.  The optional @var{varname} is the name of a
-variable that this function will set to the option name from
-@var{string}, without the leading dash.
+Verify if a string has the format of a brief option without argument.
+@var{string} is the string to validate.  The optional @var{varname} is
+the name of a variable that this function will set to the option name
+from @var{string}, without the leading dash.
 
 Return with code zero if the argument is a brief option without
 argument, else return with code one.
 
 A brief option must be of the form @code{-a}, only characters in the
 ranges @code{A-Z}, @code{a-z}, @code{0-9} are allowed as option letters.
+
+Usage examples:
+
+@example
+mbfl_getopts_isbrief -o         @result{} 0
+mbfl_getopts_isbrief -o123      @result{} 1
+mbfl_getopts_isbrief gasp       @result{} 1
+@end example
 @end deffn
 
 
 @deffn Function mbfl_getopts_isbrief_with @var{string}
 @deffnx Function mbfl_getopts_isbrief_with @var{string} @var{optname} @var{valname}
-Verify if a string is a brief option without argument.  Arguments:
+Verify if a string has the format of a brief option with argument.
+Arguments:
 
 @table @var
 @item string
@@ -2395,6 +2593,33 @@ argument, else return with code one.
 A brief option must be of the form @code{-aV} (@code{a} is the option,
 @code{V} is the value), only characters in the ranges @code{A-Z},
 @code{a-z}, @code{0-9} are allowed as option letters.
+
+Usage examples:
+
+@example
+mbfl_getopts_isbrief_with -o123         @result{} 0
+mbfl_getopts_isbrief_with -o            @result{} 1
+mbfl_getopts_isbrief_with --option      @result{} 1
+mbfl_getopts_isbrief_with wappa         @result{} 1
+@end example
+@end deffn
+
+
+@deffn Function mbfl_getopts_is_action_argument @var{string}
+Verify if a string has the format of an action argument.  @var{string}
+is the string to validate.  Return with code zero if the argument is an
+action argument, else return with code one.
+
+Usage examples:
+
+@example
+mbfl_getopts_action_argument alpha              @result{} 0
+mbfl_getopts_action_argument do-this            @result{} 0
+mbfl_getopts_action_argument -o                 @result{} 1
+mbfl_getopts_action_argument -o123              @result{} 1
+mbfl_getopts_action_argument --option           @result{} 1
+mbfl_getopts_action_argument --option=one       @result{} 1
+@end example
 @end deffn
 
 
@@ -2439,6 +2664,12 @@ and return with code 1.
 @deffn Function mbfl_getopts_print_long_switches
 Print all the long switches in a row, separated by spaces.  This is
 useful to retrieve the option for Bash programmable completion.
+@end deffn
+
+
+@deffn Function mbfl_getopts_print_action_arguments
+Print all the action arguments strings in a row, separated by spaces.
+This is useful to retrieve the option for Bash programmable completion.
 @end deffn
 
 @c page

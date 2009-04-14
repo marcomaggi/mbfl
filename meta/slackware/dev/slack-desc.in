@@ -1,0 +1,12 @@
+                  |-----handy-ruler-----------------------------------------------|
+@PACKAGE_NAME@-doc: @PACKAGE_NAME@ @PACKAGE_VERSION@ development
+@PACKAGE_NAME@-doc:
+@PACKAGE_NAME@-doc: This is the development package of MBFL, a collection of shell
+@PACKAGE_NAME@-doc: functions for the GNU Bash shell.
+@PACKAGE_NAME@-doc:
+@PACKAGE_NAME@-doc:
+@PACKAGE_NAME@-doc:
+@PACKAGE_NAME@-doc:
+@PACKAGE_NAME@-doc:
+@PACKAGE_NAME@-doc:
+@PACKAGE_NAME@-doc:

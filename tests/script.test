@@ -1,29 +1,29 @@
 # script.test --
-# 
-# Part of: Azzurra Package Manager
+#
+# Part of: MBFL
 # Contents: template tests
 # Date: Fri Aug  8, 2003
-# 
+#
 # Abstract
-# 
-# 
-# Copyright (c) 2003, 2004, 2005 Marco Maggi
-# 
+#
+#
+# Copyright (c) 2003, 2004, 2005, 2009 Marco Maggi
+#
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
 # Software Foundation; either  version 2, or (at your  option) any later
 # version.
-# 
+#
 # This  file is  distributed in  the hope  that it  will be  useful, but
 # WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
 # General Public License for more details.
-# 
+#
 # You  should have received  a copy  of the  GNU General  Public License
 # along with this file; see the file COPYING.  If not, write to the Free
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
-# 
+#
 
 #PAGE
 ## ------------------------------------------------------------
@@ -36,7 +36,6 @@ function script () {
     MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/libmbfl.sh} \
         "${BASH}" ../examples/template.sh "$@"
 }
-
 
 #PAGE
 
@@ -116,6 +115,37 @@ function script-4.9 () {
 function script-4.10 () {
     script --print-exit-code-names=0 | dotest-output "success"
 }
+
+#page
+
+function script-5.1 () {
+    script --print-action-arguments | dotest-output 'one two three four'
+}
+
+function script-6.1 () {
+    script one | dotest-output 'action one'
+}
+function script-6.2 () {
+    script two | dotest-output 'action two'
+}
+function script-6.3 () {
+    script three | dotest-output "action three, arguments: 0, ''"
+}
+function script-6.4 () {
+    script three a b c | dotest-output "action three, arguments: 3, 'a b c'"
+}
+function script-6.5 () {
+    script four a b c | dotest-output "action four, arguments: 3, 'a b c'"
+}
+function script-6.6 () {
+    script four a --verbose b c | \
+        dotest-output "action four, arguments: 4, 'a --verbose b c'"
+}
+function script-6.7 () {
+    script four a b --license c | \
+        dotest-output "action four, arguments: 4, 'a b --license c'"
+}
+
 
 #PAGE
 ## ---------------------------------------------------------
