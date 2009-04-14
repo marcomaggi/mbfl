@@ -674,7 +674,8 @@ $ m4 --prefix-builtins --include=/path/to/library \
 @end example
 
 @noindent
-easy to do in a @file{Makefile}.
+easy to do in a @file{Makefile}.  The installation pathname of the
+library is the output of @code{mbfl-config --libpath}.
 
 It is also interesting to process the script with the following rule of
 @gnu{} Make: assuming that the source scripts are in the

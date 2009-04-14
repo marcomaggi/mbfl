@@ -33,11 +33,13 @@ AC_DEFUN([MBFL_SETUP],
    AC_PATH_PROG([MBFLTEST],[mbfltest.sh],[:])
    mbfl_LIBRARY=$("${MBFLCONFIG}" --library)
    mbfl_TEST_LIBRARY=$("${MBFLCONFIG}" --testlib)
+   MBFL_LIB=$("${MBFLCONFIG}" --libpath)
    AC_CHECK_FILE([${mbfl_LIBRARY}],,
        [AC_MSG_ERROR([cannot find MBFL library ${mbfl_LIBRARY}],2)])
    AC_CHECK_FILE([${mbfl_TEST_LIBRARY}],,
        [AC_MSG_ERROR([cannot find MBFL test library ${mbfl_TEST_LIBRARY}],2)])
-   AC_SUBST(mbfl_LIBRARY)])
+   AC_SUBST(mbfl_LIBRARY)
+   AC_SUBST(MBFL_LIB)])
 
 ### end of file
 # Local Variables:
