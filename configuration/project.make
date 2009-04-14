@@ -52,13 +52,11 @@ $(libs_BUILDDIR)/%.sh: $(libs_SRCDIR)/%.sh.m4 preprocessor.m4 $(modules_TARGETS)
 ## --------------------------------------------------------------------
 
 $(eval $(call ds-srcdir,testlibs,$(srcdir)/src/lib))
-$(eval $(call ds-builddir,testlibs))
 
-testlibs_TARGETS	=  $(testlibs_SRCDIR)/libmbfltest.sh
+testlibs_TARGETS	= $(testlibs_SRCDIR)/libmbfltest.sh
 testlibs_INSTLST	= $(testlibs_TARGETS)
 testlibs_INSTDIR	= $(pkgdatadir)
 
-$(eval $(call ds-default-clean-variables,testlibs))
 $(eval $(call ds-module,testlibs,dev))
 
 #page
