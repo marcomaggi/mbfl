@@ -2072,24 +2072,25 @@ option with argument.
 The following example declares two action arguments:
 
 @example
-mbfl_declare_action_argument GAMMA gamma no  no "do gamma action"
-mbfl_declare_action_argument DELTA delta yes no "do delta action"
+mbfl_declare_action_argument gamma gamma no  no "do gamma action"
+mbfl_declare_action_argument delta delta yes no "do delta action"
 @end example
 
 @noindent
 an action argument is a non--option argument that is used on the command
-line as first parameter.  Its purpose is to select a function to be
+line as first parameter; its purpose is to select a function to be
 evaluated as main action of the script.
 
 The first of the two declarations has the following properties:
 
 @itemize
 @item
-Action argument keyword @code{GAMMA}; this is the internal identifier of
-the argument.
+Action argument keyword @code{gamma} (the first one); this is the
+internal identifier of the argument used to build the associated action
+function name.
 
 @item
-Argument string on the command line @code{gamma}.
+Argument string on the command line @code{gamma} (the second one).
 
 @item
 Selection value set to @code{no} (the first one): this script action is
@@ -2119,9 +2120,9 @@ mbfl_main_set_main script_action_delta
 
 @noindent
 where the argument @code{script_action_gamma} is built by prefixing the
-lower case version of the keyword with @code{script_action_}.  The code
-selects a function as main function for the script.  @ref{main function,
-Driving script execution}.
+the keyword with @code{script_action_}.  The code selects a function as
+main function for the script.  @ref{main function, Driving script
+execution}.
 
 Additionally, if the selection value is @code{yes}: the main function is
 selected at declaration time (that is by
@@ -2145,13 +2146,13 @@ the last one wins.  So the following:
 mbfl_declare_option ACTION_GAMMA \
   yes g gamma noarg "do gamma action"
 
-mbfl_declare_action_argument DELTA \
+mbfl_declare_action_argument delta \
   delta yes no "do delta action"
 @end example
 
 @noindent
-defines a @code{GAMMA} action option and a @code{DELTA} action argument,
-and the main function is set to @bfunc{script_action_delta}.
+defines a @code{--gamma} action option and a @code{delta} action
+argument, and the main function is set to @bfunc{script_action_delta}.
 
 However, it is bad interface design to use both of them; it is better to
 use action arguments @strong{or} action options.
@@ -2454,7 +2455,7 @@ characters @code{-}.
 A boolean value that can be @code{yes} or @code{no}.  If @code{yes} the
 function associated to this action argument is selected by default as
 main action of the script.  The function name is built by concatenating
-@code{script_action_} with the lowercase version of @var{keyword}.
+@code{script_action_} with @var{keyword}.
 
 @item skipopts
 A boolean value that can be @code{yes} or @code{no}.  If @code{no}:

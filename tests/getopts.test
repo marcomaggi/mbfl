@@ -157,18 +157,22 @@ function getopts-9.1 () {
 function getopts-9.2 () {
     mbfl_declare_action_argument A a no no 'an option'
 }
-function getopts-9.3 () {
-    mbfl_declare_action_argument A a wappa no 'an option' 2>&1 | dotest-output \
-	"<unknown>: error: wrong value 'wappa' as selection for action argument number 1"
-}
-function getopts-9.4 () {
-    mbfl_declare_action_argument A 123 wappa no 'an option' 2>&1 | dotest-output \
-	"<unknown>: error: wrong value '123' as keyword for action argument number 1"
-}
-function getopts-9.5 () {
-    mbfl_declare_action_argument A a no wappa 'an option' 2>&1 | dotest-output \
-	"<unknown>: error: wrong value 'wappa' as skip options flag for action argument number 1"
-}
+
+# The following are commented out because "mbfl_declare_action_argument()"
+# does not validate the values for speed problems.
+
+# function getopts-9.3 () {
+#     mbfl_declare_action_argument A a wappa no 'an option' 2>&1 | dotest-output \
+# 	"<unknown>: error: wrong value 'wappa' as selection for action argument number 1"
+# }
+# function getopts-9.4 () {
+#     mbfl_declare_action_argument A 123 wappa no 'an option' 2>&1 | dotest-output \
+# 	"<unknown>: error: wrong value '123' as keyword for action argument number 1"
+# }
+# function getopts-9.5 () {
+#     mbfl_declare_action_argument A a no wappa 'an option' 2>&1 | dotest-output \
+# 	"<unknown>: error: wrong value 'wappa' as skip options flag for action argument number 1"
+# }
 
 #page
 
