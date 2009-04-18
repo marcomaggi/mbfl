@@ -190,37 +190,35 @@ function mbfl_declare_action_argument () {
     mandatory_parameter(description,5,description)
     local index=$(($mbfl_getopts_actargs_INDEX + 1))
 
-# Validation of arguments is commented out for speed problems
-
-#     test -z "${keyword}" && {
-#         mbfl_message_error "null keyword in declared action argument number ${index}"
-#         exit 2
-#     }
+    test -z "${keyword}" && {
+        mbfl_message_error "null keyword in declared action argument number ${index}"
+        exit 2
+    }
     mbfl_getopts_actargs_KEYWORDS[$mbfl_getopts_actargs_INDEX]="$keyword"
 
-#     mbfl_getopts_is_action_argument "${argument}" || {
-#         mbfl_message_error "wrong value '$argument' as keyword for action argument number ${index}"
-#         exit 2
-#     }
+    mbfl_getopts_is_action_argument "${argument}" || {
+        mbfl_message_error "wrong value '$argument' as keyword for action argument number ${index}"
+        exit 2
+    }
     mbfl_getopts_actargs_STRINGS[$mbfl_getopts_actargs_INDEX]="$argument"
 
-#     test "$selected" != "yes" -a "$selected" != "no" && {
-#         mbfl_message_error \
-#             "wrong value '$selected' as selection for action argument number ${index}"
-#         exit 2
-#     }
+    test "$selected" != "yes" -a "$selected" != "no" && {
+        mbfl_message_error \
+            "wrong value '$selected' as selection for action argument number ${index}"
+        exit 2
+    }
 
-#     test "$skipopts" != "yes" -a "$skipopts" != "no" && {
-#         mbfl_message_error \
-#             "wrong value '$skipopts' as skip options flag for action argument number ${index}"
-#         exit 2
-#     }
+    test "$skipopts" != "yes" -a "$skipopts" != "no" && {
+        mbfl_message_error \
+            "wrong value '$skipopts' as skip options flag for action argument number ${index}"
+        exit 2
+    }
     mbfl_getopts_actargs_SKIPOPTS[$mbfl_getopts_actargs_INDEX]="$skipopts"
 
-#     test -z "$description" && {
-#         mbfl_message_error "null description in declared action argument number ${index}"
-#         exit 2
-#     }
+    test -z "$description" && {
+        mbfl_message_error "null description in declared action argument number ${index}"
+        exit 2
+    }
     mbfl_getopts_actargs_DESCRIPTION[$mbfl_getopts_actargs_INDEX]=$description
 
     mbfl_getopts_actargs_INDEX=$index
