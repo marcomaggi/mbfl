@@ -1,31 +1,30 @@
-# compress.sh --
-# 
 # Part of: Marco's BASH Functions Library
 # Contents: script example for the compress interface
 # Date: Fri Aug 12, 2005
-# 
+#
 # Abstract
-# 
-#	This script shows how to use the interface to the compression
-#	programs.
-# 
-# Copyright (c) 2005 Marco Maggi
-# 
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
+#
+#	This script shows how to use the interface to the
+#	compression programs.
+#
+# Copyright (c) 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
+# This  program  is free  software:  you  can redistribute  it
+# and/or modify it  under the terms of the  GNU General Public
+# License as published by the Free Software Foundation, either
+# version  3 of  the License,  or (at  your option)  any later
 # version.
-# 
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
-# 
+#
+# This  program is  distributed in  the hope  that it  will be
+# useful, but  WITHOUT ANY WARRANTY; without  even the implied
+# warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
+# PURPOSE.   See  the  GNU  General Public  License  for  more
+# details.
+#
+# You should  have received a  copy of the GNU  General Public
+# License   along   with    this   program.    If   not,   see
+# <http://www.gnu.org/licenses/>.
+#
 
 #page
 ## ------------------------------------------------------------
@@ -34,7 +33,7 @@
 
 script_PROGNAME=compress.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2005'
+script_COPYRIGHT_YEARS='2005, 2009'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] FILE ..."
@@ -57,7 +56,7 @@ mbfl_declare_option BZIP no B bzip noarg "selects bzip2"
 mbfl_declare_option AUTO yes B bzip noarg "automatically select compressor"
 mbfl_declare_option KEEP no k keep noarg "keeps the original file"
 mbfl_declare_option STDOUT no '' stdout noarg "writes output to stdout"
-mbfl_declare_option GOON no '' go-on noarg "try to ignore errors when processing multiple files"
+mbfl_declare_option GO_ON no '' go-on noarg "try to ignore errors when processing multiple files"
 
 mbfl_file_enable_compress
 mbfl_file_enable_listing
@@ -72,11 +71,11 @@ mbfl_main_declare_exit_code 4 wrong_command_line_arguments
 
 function script_option_update_gzip () {
     mbfl_file_compress_select_gzip
-    script_option_AUTO='no'
+    script_option_AUTO=no
 }
 function script_option_update_bzip () {
     mbfl_file_compress_select_bzip
-    script_option_AUTO='no'
+    script_option_AUTO=no
 }
 function script_option_update_keep () {
     mbfl_file_compress_keep
@@ -96,36 +95,36 @@ function script_before_parsing_options () {
 function script_action_compress () {
     local item size
 
-    if ! mbfl_argv_all_files ; then
+    mbfl_argv_all_files || \
         exit_because_wrong_command_line_arguments
-    fi
-    for item in "${ARGV[@]}" ; do
-        if test "${script_option_AUTO}" = 'yes' ; then
+
+    for item in "${ARGV[@]}"
+    do
+        test "${script_option_AUTO}" = yes && {
             size=$(mbfl_file_get_size "${item}")
-            if test "${size}" -gt 10000000 ; then
-                mbfl_file_compress_select_bzip
-            else
-                mbfl_file_compress_select_gzip
+            if test "${size}" -gt 10000000
+            then mbfl_file_compress_select_bzip
+            else mbfl_file_compress_select_gzip
             fi
-        fi
-        if ! mbfl_file_compress "${item}" ; then
-            if test "${script_option_GOON}" = 'yes' ; then
-                mbfl_message_warning "unable to successfully compress '${item}'"
+        }
+        mbfl_file_compress "${item}" || {
+            if test "${script_option_GO_ON}" = yes
+            then mbfl_message_warning "unable to successfully compress '${item}'"
             else
                 mbfl_message_error "unable to successfully compress '${item}'"
                 exit_because_error_compressing
             fi
-        fi
+        }
     done
     exit_success
 }
 function script_action_decompress () {
     local item ext
 
-    if ! mbfl_argv_all_files ; then
+    mbfl_argv_all_files || \
         exit_because_wrong_command_line_arguments
-    fi
-    for item in "${ARGV[@]}" ; do
+    for item in "${ARGV[@]}"
+    do
         ext=$(mbfl_file_extension "${item}")
         case "${ext}" in
             gz)
@@ -139,18 +138,17 @@ function script_action_decompress () {
                 continue
                 ;;
         esac
-        if ! mbfl_file_decompress "${item}" ; then
-            if test "${script_option_GOON}" = 'yes' ; then
-                mbfl_message_warning "unable to successfully decompress '${item}'"
+        mbfl_file_decompress "${item}" || {
+            if test "${script_option_GO_ON}" = yes
+            then mbfl_message_warning "unable to successfully decompress '${item}'"
             else
                 mbfl_message_error "unable to successfully decompress '${item}'"
                 exit_because_error_decompressing
             fi
-        fi
+        }
     done
     exit_success
 }
-
 #page
 ## ------------------------------------------------------------
 ## Start.

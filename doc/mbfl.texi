@@ -3549,12 +3549,37 @@ anything.
 Take @var{varname}'s value, a colon separated list of string, and store
 each string in the array @code{mbfl_FIELDS}, starting with a base index
 of zero.
+
+Example:
+
+@example
+VAR=a:b:c:d:e
+declare -a mbfl_FIELDS
+
+mbfl_variable_colon_variable_to_array VAR
+
+echo $@{#mbfl_FIELDS[*]@}       @print{} 5
+echo "$@{mbfl_FIELDS[0]@}"      @print{} a
+echo "$@{mbfl_FIELDS[1]@}"      @print{} b
+echo "$@{mbfl_FIELDS[2]@}"      @print{} c
+echo "$@{mbfl_FIELDS[3]@}"      @print{} d
+echo "$@{mbfl_FIELDS[4]@}"      @print{} e
+@end example
 @end deffn
 
 
 @deffn Function mbfl_variable_array_to_colon_variable @var{varname}
-Store each value in the array @code{mbfl_FIELDS} in @var{varname} as a
-colon separated list of strings.
+Store each value from the array @code{mbfl_FIELDS} (with base index
+zero) in @var{varname} as a colon separated list of strings.
+
+Example:
+
+@example
+declare -a mbfl_FIELDS=(a b c d e)
+
+mbfl_variable_array_to_colon_variable VAR
+echo $VAR                       @print{} a:b:c:d:e
+@end example
 @end deffn
 
 

@@ -1,30 +1,29 @@
-# at.sh --
-# 
 # Part of: Marco's BASH Functions Library
 # Contents: interface to the 'at' service
 # Date: Fri Aug 12, 2005
-# 
+#
 # Abstract
-# 
+#
 #	This example script shows how to use the 'at' interface.
-# 
-# Copyright (c) 2005 Marco Maggi
-# 
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
+#
+# Copyright (c) 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
+# This  program  is free  software:  you  can redistribute  it
+# and/or modify it  under the terms of the  GNU General Public
+# License as published by the Free Software Foundation, either
+# version  3 of  the License,  or (at  your option)  any later
 # version.
-# 
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
-# 
+#
+# This  program is  distributed in  the hope  that it  will be
+# useful, but  WITHOUT ANY WARRANTY; without  even the implied
+# warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
+# PURPOSE.   See  the  GNU  General Public  License  for  more
+# details.
+#
+# You should  have received a  copy of the GNU  General Public
+# License   along   with    this   program.    If   not,   see
+# <http://www.gnu.org/licenses/>.
+#
 
 #page
 ## ------------------------------------------------------------
@@ -33,9 +32,9 @@
 
 script_PROGNAME=at.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2005'
+script_COPYRIGHT_YEARS='2005, 2009'
 script_AUTHOR='Marco Maggi'
-script_LICENSE=GPL
+script_LICENSE=GPL3
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
 script_DESCRIPTION="Example script to test the 'at' interface."
 script_EXAMPLES="Examples:
@@ -85,12 +84,9 @@ mbfl_main_declare_exit_code 4 wrong_command_line_arguments
 
 function script_option_update_queue () {
     local Q=${script_option_QUEUE}
-
-    if ! mbfl_at_select_queue "${Q}" ; then
+    mbfl_at_select_queue "${Q}" || \
         exit_because_wrong_queue_identifier
-    fi
 }
-
 
 #page
 ## ------------------------------------------------------------
@@ -109,10 +105,9 @@ function script_action_schedule () {
     local ID
 
     mbfl_message_verbose "scheduling a job in queue '${Q}'\n"
-    if ! ID=$(mbfl_at_schedule : "${TIME}") ; then
+    ID=$(mbfl_at_schedule : "${TIME}") && \
         exit_failure
-    fi
-    mbfl_message_verbose "scheded job identifier '${ID}'\n"    
+    mbfl_message_verbose "scheded job identifier '${ID}'\n"
     exit_success
 }
 function script_action_list () {
@@ -120,8 +115,8 @@ function script_action_list () {
     local item
 
     mbfl_message_verbose "jobs in queue '${Q}': "
-    for item in $(mbfl_at_queue_print_identifiers) ; do
-        printf '%d ' "${item}"
+    for item in $(mbfl_at_queue_print_identifiers)
+    do printf '%d ' "${item}"
     done
     printf '\n'
 }
@@ -130,15 +125,16 @@ function script_action_list_jobs () {
 }
 function script_action_list_queues () {
     mbfl_message_verbose "queues with pending jobs: "
-    for item in $(mbfl_at_queue_print_queues) ; do
-        printf '%c ' "${item}"
+    for item in $(mbfl_at_queue_print_queues)
+    do printf '%c ' "${item}"
     done
     printf '\n'
 }
 function script_action_drop () {
     local ID=${script_option_IDENTIFIER}
 
-    if test -n "${ID}" ; then
+    if test -n "${ID}"
+    then
         mbfl_message_verbose "dropping job '${ID}'\n"
         mbfl_at_drop "${ID}"
     else
