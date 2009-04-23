@@ -59,6 +59,10 @@
 @gnu{} C Library
 @end macro
 
+@macro fifo{}
+@acronym{FIFO}
+@end macro
+
 @c ------------------------------------------------------------
 @c Network protocols acronyms.
 @c ------------------------------------------------------------
@@ -511,6 +515,7 @@ entitled ``@gnu{} Free Documentation License''.
 
 Appendices
 
+* email::                       Examples for sending email.
 * Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
 * references::                  Bibliography and references.
@@ -4288,6 +4293,370 @@ function mytest-1.2 () @{
 
 dotest mytest-
 @end example
+
+@c page
+@node email
+@appendix Examples for sending email
+
+
+In this appendix we review some example that can be used to send email
+from a Bash script.  First we examine some plain script, making no use
+of @mbfl{}, to understand the basics of how to handle the @smtp{}
+protocol and how to ``talk'' to a process in background.  The we see the
+documentation of the example scripts that come in the @mbfl{}
+distribution under the @file{examples} directory.
+
+@menu
+* email plain::                 Just send an email message.
+* email connector::             Send email throuch a process in
+                                background.
+@end menu
+
+@c page
+@node email plain
+@appendixsec Just send an email message
+
+
+The script below can be found in @file{examples/email-plain.sh}.  It
+just sends a hardcoded email message, from a hardcoded address to a
+hardcoded address.  It makes no use of @mbfl{}.
+
+
+@defun main
+Drive the script controlling the @smtp{} protocol.  It should be obvious
+what it does once we understand the following functions.
+@end defun
+
+
+@defun open_session @var{hostname}
+Open a connection to the @smtp{} server using a fake device that Bash
+gives us as interface to the network.  For the @code{localhost}, it ends
+up being:
+
+@example
+/dev/tcp/localhost/25
+@end example
+
+@noindent
+where 25 is the @tcp{} port which is officially assigned to the @smtp{}
+service.  To open the connection we use the idiom:
+
+@example
+exec 3<>/dev/tcp/localhost/25
+@end example
+
+@noindent
+which means: open a read and write connection to the selected hostname,
+using file descriptor number 3.  There is nothing special in number 3,
+it is just the first free file descriptor number after 0 (standard
+input), 1 (standard output) and 2 (standard error).
+
+The line:
+
+@example
+trap 'exec 3<&-' EXIT
+@end example
+
+@noindent
+means: close file descriptor 3 whenever the script terminates.  This is
+redundant in such a simple script, but it is there for completeness.
+@end defun
+
+
+@defun send @var{pattern}
+@defunx send @var{pattern} @var{arg} @dots{}
+Send a string to the @smtp{} server.  Use @bfunc{printf} to format the
+string @var{pattern} with the optional arguments @var{arg}, then write
+the resulting string to the file descriptor 3.  The string written out
+is ended with the sequence @code{\r\n} as mandated by the @smtp{}
+protocol.
+@end defun
+
+
+@defun recv @var{expected_code}
+Read a line (a sequence of characters up until the first @code{\n}) from
+the file descriptor 3.  The line is interpreted as a message from the
+@smtp{} server: the first three characters are a numeric code.  If the
+code is different from @var{expected_code}, raise an error.
+@end defun
+
+
+@smallexample
+# email-plain.sh --
+#
+
+PROGNAME=email-plain.sh
+
+function main () @{
+    local HOSTNAME=localhost
+    local SMTP_PORT=25
+    local FROM_ADDRESS=marco@@localhost
+    local TO_ADDRESS=root@@localhost
+    local BODY='From: marco@@localhost
+To: root@@localhost
+Subject: proof
+
+This is a text proof.
+-- \nMarco
+'
+    local LOGGING_TO_STDERR=yes
+
+    open_session localhost
+    recv 220
+    send 'HELO %s' 127.0.0.1
+    recv 250
+    send 'MAIL FROM:<%s>' "$@{FROM_ADDRESS@}"
+    recv 250
+    send 'RCPT TO:<%s>' "$@{TO_ADDRESS@}"
+    recv 250
+    send %s DATA
+    recv 354
+    send "$@{BODY@}"
+    send %s .
+    recv 250
+    send %s QUIT
+    recv 221
+@}
+function open_session () @{
+    local HOSTNAME=$@{1:?@}
+    exec 3<>/dev/tcp/$@{HOSTNAME@}/$@{SMTP_PORT@}
+    trap 'exec 3<&-' EXIT
+@}
+function recv () @{
+    local EXPECTED_CODE=$@{1:?@}
+    local line=
+    read line <&3
+    test "$LOGGING_TO_STDERR" = yes && \
+        printf '%s log: recv: %s\n' "$@{PROGNAME@}" "$@{line@}"
+    if test "$@{line:0:3@}" != "$EXPECTED_CODE"
+    then
+        send %s QUIT
+        exit 2
+    fi
+@}
+function send () @{
+    local pattern=$@{1:?@}
+    shift
+    local line=$(printf "$@{pattern@}" "$@@")
+    printf '%s\r\n' "$@{line@}" >&3
+    test "$LOGGING_TO_STDERR" = yes && \
+        printf '%s log: sent: %s\n' "$@{PROGNAME@}" "$@{line@}"
+@}
+
+main
+
+### end of file
+@end smallexample
+
+@c page
+@node email connector
+@appendixsec Send email throuch a process in background
+
+
+The script below can be found in @file{examples/email-connector.sh}.  It
+just sends a hardcoded email message, from a hardcoded address to a
+hardcoded address.  It makes no use of @mbfl{}.
+
+The purpose the script is to understand how to send a message through a
+process in background.  It does the same things of the example described
+in @ref{email plain, Just send an email message}.  The main difference
+is that the single function @bfunc{open_session} is replaced by the two
+functions @bfunc{open_session} and @bfunc{connector}.
+
+What is important to understand, is how @bfunc{open_session} runs
+@bfunc{connector} in background and sets up two file descriptors to talk
+to it.  In the real world we never use this technique; this example
+script makes use of @bfunc{connector} as a replacement for an external
+program that can establish sophisticated connections to remote hosts,
+for example using the @tls{}/@ssl{} protocols.
+
+
+@defun open_session @var{hostname}
+Open a connection to the @smtp{} server spawning a background process
+represented by the @bfunc{connector} function.  It makes use of two
+@fifo{}s (First In, First Out).
+
+If we were to do it from a C language program: we would use the
+@cfunc{pipe} function to create two pipes connecting script's process to
+the background process.
+
+@example
+ ---------  out pipe  -----------  socket  --------
+| script  |--------->| connector |<======>| SMTP   |
+| process |<---------| process   |        | server |
+ ---------  in pipe   -----------          --------
+@end example
+
+Bash has no way to create a pipe using the @cfunc{pipe} system function,
+so we use two @fifo{} channels created by the @command{mkfifo} program:
+
+@example
+local INPIPE=/tmp/marco/in.$$
+local OUPIPE=/tmp/marco/out.$$
+
+mkfifo $INPIPE $OUPIPE
+@end example
+
+@noindent
+the script will use the @code{INPIPE} @fifo{} to read characters from
+@bfunc{connector}, and the @code{OUPIPE} @fifo{} to send characters to
+@bfunc{connector} .
+
+Once the @fifo{}s exist on the file system, we run @bfunc{connector} in
+background connecting its standard input and output to the @fifo{}s:
+
+@example
+connector $HOSTNAME $SMTP_PORT <$OUPIPE >$INPIPE &
+@end example
+
+@noindent
+be careful in selecting the redirections.  Notice that, in this simple
+example, we ignore errors running @bfunc{connector}.
+
+Now we open file descriptors connecting them to the @fifo{}s:
+
+@example
+exec 3<>$INPIPE 4>$OUPIPE
+@end example
+
+@noindent
+the script will use file descriptor 3 to read characters from
+@bfunc{connector}, and file descriptor 4 to send characters to
+@bfunc{connector}.  We open the input @fifo{} for both reading and
+writing, else @code{exec} will block waiting for the first char.
+
+We have connected both the ends of both the @fifo{}s, so we can remove
+them from the file system:
+
+@example
+rm $INPIPE $OUPIPE
+@end example
+
+@noindent
+the @fifo{}s will continue to exist in the OS kernel until the file
+descriptors are closed.
+
+Finally we register a clean up handler that closes the descriptors:
+
+@example
+trap 'exec 3<&- 4>&-' EXIT
+@end example
+@end defun
+
+
+@defun connector @var{hostname}
+Establish a connection to the @smtp{} server at @var{hostname}.  It is
+not important here to fully understand how this function works; suffice
+it to say that it reads lines from stdin, and echoes them to the server;
+it reads lines from the server, and echoes them to stdout.
+@end defun
+
+
+@smallexample
+# email-connector.sh --
+#
+
+PROGNAME=email-connector.sh
+
+function main () @{
+    local HOSTNAME=localhost
+    local SMTP_PORT=$SMTP_PORT
+    local FROM_ADDRESS=marco@@localhost
+    local TO_ADDRESS=root@@localhost
+    local BODY='From: marco@@localhost
+To: root@@localhost
+Subject: proof
+
+This is a text proof.
+-- \nMarco
+'
+    local LOGGING_TO_STDERR=yes
+
+    open_session localhost
+    recv 220
+    send 'HELO %s' 127.0.0.1
+    recv 250
+    send 'MAIL FROM:<%s>' "$FROM_ADDRESS"
+    recv 250
+    send 'RCPT TO:<%s>' "$TO_ADDRESS"
+    recv 250
+    send %s DATA
+    recv 354
+    send "$BODY"
+    send %s .
+    recv 250
+    send %s QUIT
+    recv 221
+@}
+function open_session () @{
+    local HOSTNAME=$@{1:?@}
+    local INPIPE=/tmp/marco/in.$$
+    local OUPIPE=/tmp/marco/out.$$
+    mkfifo $INPIPE $OUPIPE
+    connector $HOSTNAME <$OUPIPE >$INPIPE &
+    exec 3<>$INPIPE 4>$OUPIPE
+    rm $INPIPE $OUPIPE
+    trap 'exec 3<&- 4>&-' EXIT
+@}
+function recv () @{
+    local EXPECTED_CODE=$@{1:?@}
+    local line=
+    read line <&3
+    test "$LOGGING_TO_STDERR" = yes && \
+        printf '%s log: recv: %s\n' "$PROGNAME" "$line"
+    if test "$@{line:0:3@}" != "$EXPECTED_CODE"
+    then
+        send %s QUIT
+        exit 2
+    fi
+@}
+function send () @{
+    local pattern=$@{1:?@}
+    shift
+    local line=$(printf "$pattern" "$@")
+    printf '%s\r\n' "$line" >&4
+    test "$LOGGING_TO_STDERR" = yes && \
+        printf '%s log: sent: %s\n' "$PROGNAME" "$line"
+@}
+function connector () @{
+    local HOSTNAME=$@{1:?@} query= answer= line=
+    exec 3<>/dev/tcp/$@{HOSTNAME@}/$SMTP_PORT
+    # Read the  greetings from the server, echo  them to the
+    # client.
+    read answer <&3
+    printf '%s\n' "$answer"
+    # Read the query from the client, echo it to the server.
+    while read query
+    do
+        printf '%s\r\n' "$query" >&3
+        # Read the  answer from the  server, echo it  to the
+        # client.
+        read answer <&3
+        printf '%s\n' "$answer"
+        # Test special queries.
+        test "$query" = QUIT$'\r' && exit
+        test "$query" = DATA$'\r' && @{
+            # Read data lines from  the client, echo them to
+            # the server up until ".\r" is read.
+            while read line
+            do
+                printf '%s\n' "$line" >&3
+                test "$@{line:0:2@}" = .$'\r' && break
+            done
+            # Read the answer to  data from the server, echo
+            # it to the client.
+            read answer <&3
+            printf '%s\n' "$answer"
+        @}
+    done
+    # We should never come here.
+    exit 1
+@}
+
+main
+
+### end of file
+@end smallexample
 
 @c page
 @c ------------------------------------------------------------
