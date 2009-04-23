@@ -47,7 +47,7 @@ This is a text proof.
 '
     local LOGGING_TO_STDERR=yes
 
-    open_session localhost
+    open_session "$HOSTNAME"
     recv 220
     send 'HELO %s' 127.0.0.1
     recv 250
@@ -65,7 +65,7 @@ This is a text proof.
 }
 function open_session () {
     local HOSTNAME=${1:?}
-    exec 3<>/dev/tcp/${HOSTNAME}/${SMTP_PORT}
+    exec 3<>"/dev/tcp/${HOSTNAME}/${SMTP_PORT}"
     trap 'exec 3<&-' EXIT
 }
 function recv () {

@@ -48,7 +48,7 @@ This is a text proof.
 '
     local LOGGING_TO_STDERR=yes
 
-    open_session localhost
+    open_session "$HOSTNAME"
     recv 220
     send 'HELO %s' 127.0.0.1
     recv 250
@@ -71,7 +71,7 @@ function open_session () {
     # Bash  has  no  operation  equivalent to  the  C  level
     # "pipe()" function, so we have to use FIFOs.
     mkfifo $INPIPE $OUPIPE
-    connector $HOSTNAME <$OUPIPE >$INPIPE &
+    connector "$HOSTNAME" <$OUPIPE >$INPIPE &
     # Open the input FIFO for both reading and writing, else
     # "exec" will block waiting for the first char.
     exec 3<>$INPIPE 4>$OUPIPE
@@ -104,7 +104,7 @@ function send () {
 }
 function connector () {
     local HOSTNAME=${1:?} query= answer= line=
-    exec 3<>/dev/tcp/${HOSTNAME}/$SMTP_PORT
+    exec 3<>"/dev/tcp/${HOSTNAME}/$SMTP_PORT"
     # Read the  greetings from the server, echo  them to the
     # client.
     read answer <&3

@@ -4308,8 +4308,10 @@ distribution under the @file{examples} directory.
 
 @menu
 * email plain::                 Just send an email message.
-* email connector::             Send email throuch a process in
+* email connector::             Send email through a process in
                                 background.
+* email send::                  Sending email.
+* email gmail::                 Sending email with Gmail.
 @end menu
 
 @c page
@@ -4401,7 +4403,7 @@ This is a text proof.
 '
     local LOGGING_TO_STDERR=yes
 
-    open_session localhost
+    open_session "$HOSTNAME"
     recv 220
     send 'HELO %s' 127.0.0.1
     recv 250
@@ -4419,7 +4421,7 @@ This is a text proof.
 @}
 function open_session () @{
     local HOSTNAME=$@{1:?@}
-    exec 3<>/dev/tcp/$@{HOSTNAME@}/$@{SMTP_PORT@}
+    exec 3<>"/dev/tcp/$@{HOSTNAME@}/$@{SMTP_PORT@}"
     trap 'exec 3<&-' EXIT
 @}
 function recv () @{
@@ -4450,7 +4452,7 @@ main
 
 @c page
 @node email connector
-@appendixsec Send email throuch a process in background
+@appendixsec Send email through a process in background
 
 
 The script below can be found in @file{examples/email-connector.sh}.  It
@@ -4572,7 +4574,7 @@ This is a text proof.
 '
     local LOGGING_TO_STDERR=yes
 
-    open_session localhost
+    open_session "$HOSTNAME"
     recv 220
     send 'HELO %s' 127.0.0.1
     recv 250
@@ -4593,7 +4595,7 @@ function open_session () @{
     local INPIPE=/tmp/marco/in.$$
     local OUPIPE=/tmp/marco/out.$$
     mkfifo $INPIPE $OUPIPE
-    connector $HOSTNAME <$OUPIPE >$INPIPE &
+    connector "$HOSTNAME" <$OUPIPE >$INPIPE &
     exec 3<>$INPIPE 4>$OUPIPE
     rm $INPIPE $OUPIPE
     trap 'exec 3<&- 4>&-' EXIT
@@ -4620,7 +4622,7 @@ function send () @{
 @}
 function connector () @{
     local HOSTNAME=$@{1:?@} query= answer= line=
-    exec 3<>/dev/tcp/$@{HOSTNAME@}/$SMTP_PORT
+    exec 3<>"/dev/tcp/$@{HOSTNAME@}/$SMTP_PORT"
     # Read the  greetings from the server, echo  them to the
     # client.
     read answer <&3
@@ -4657,6 +4659,139 @@ main
 
 ### end of file
 @end smallexample
+
+@c page
+@node email send
+@appendixsec Sending email
+
+
+This section documents the example script @file{examples/mbfl-mail.sh},
+which makes use of @mbfl{} to send an email message.  The synopsis is:
+
+@smallexample
+mbfl-mail.sh \
+    --from=@meta{ADDRESS} --to=@meta{ADDRESS} \
+    --body=@meta{SOURCE} [options]
+@end smallexample
+
+@noindent
+the script sends an email address, and it works very much like the
+example script in @ref{email plain, Just send an email message}.
+
+@table @code
+@item -F @var{address}
+@itemx --from @var{address}
+Select the @code{MAIL FROM} envelope address.
+
+@item -T @var{address}
+@itemx --to @var{address}
+Select the @code{RCPT TO} envelope address.
+
+@item -B @var{source}
+@item --body @var{source}
+Select the source from which read the whole email message, headers and
+body.  If @var{source} is a file pathname, that file is read and used as
+data; if @var{source} is @code{-}, the message is read from the standard
+input channel.  It defaults to @code{-}.
+
+@item -n @var{host}
+@itemx --hostname @var{host}
+Select the @smtp{} server host name.  It defaults to @code{localhost}.
+
+@item -p @var{port}
+@itemx --port @var{port}
+Select the @smtp{} server @tcp{} port.  It defaults to @code{25}.
+@end table
+
+Usage example using stdin as message source:
+
+@example
+BODY='From: marco@@localhost
+To: root@@localhost
+Subject: ciao
+
+This is text.
+'
+
+echo "$BODY" | mbfl-mail.sh \
+                 --from=marco@@localhost --to=root@@localhost \
+                 --verbose --debug
+@end example
+
+@noindent
+usage example using a file as message source:
+
+@example
+BODY='From: marco@@localhost
+To: root@@localhost
+Subject: ciao
+
+This is text.
+'
+
+FILE=$(tempfile)
+trap "rm '$FILE'" EXIT
+
+echo "$BODY" >"$FILE"
+mbfl-mail.sh \
+    --from=marco@@localhost --to=root@@localhost --body="$FILE" \
+    --verbose --debug
+@end example
+
+@c page
+@node email gmail
+@appendixsec Sending email with Gmail
+
+
+This section documents the example script
+@file{examples/mbfl-smtp-gmail.sh}, which makes use of @mbfl{} to send
+an email message using the Gmail server.
+
+The @smtp{} service at Gmail has hostname @code{smtp.gmail.com} and port
+number 587; it makes use of the @tls{} protocol.  Obviously, to make use
+of the script we have to open an account at Gmail.
+
+The synopsis is:
+
+@example
+mbfl-smtp-gmail.sh \
+    --from=@meta{ADDRESS} --to=@meta{ADDRESS} \
+    --body=@meta{SOURCE} --auth-file=@meta{AUTH_FILE}
+    [options]
+@end example
+
+@noindent
+the script works very much like the example described in @ref{email
+connector, Send email through a process in background}.
+
+
+@table @code
+@item -F @var{address}
+@itemx --from @var{address}
+Select the @code{MAIL FROM} envelope address.
+
+@item -T @var{address}
+@itemx --to @var{address}
+Select the @code{RCPT TO} envelope address.
+
+@item -B @var{source}
+@item --body @var{source}
+Select the source from which read the whole email message, headers and
+body.  If @var{source} is a file pathname, that file is read and used as
+data; if @var{source} is @code{-}, the message is read from the standard
+input channel.  It defaults to @code{-}.
+
+@item -n @var{host}
+@itemx --hostname @var{host}
+Select the @smtp{} server host name.  It defaults to @code{localhost}.
+
+@item -p @var{port}
+@itemx --port @var{port}
+Select the @smtp{} server @tcp{} port.  It defaults to @code{25}.
+@end table
+
+
+
 
 @c page
 @c ------------------------------------------------------------
