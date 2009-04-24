@@ -2787,21 +2787,27 @@ error and it returns true.
 
 
 @deffn Function mbfl_set_option_test
-Enable the script test option.  After this a script should not do
-anything on the system, just print messages describing the operations.
+Enable the script test option.  After this: a script must not mutate the
+system in any way, it should just print messages describing the
+operations.
+
+However, the script is allowed to acquire informations from the system;
+for example it can acquire the list of files in a directory or load the
+contents of a file.
+
 This function is invoked when the predefined option @option{--test} is
 used on the command line.
 @end deffn
 
 
 @deffn Function mbfl_unset_option_test
-Disable the script test option.  After this a script should perform
-normal operations.
+Disable the script test option.  After this a script must perform normal
+operations.
 @end deffn
 
 
 @deffn Function mbfl_option_test
-Return true if test execution is enabled, else returns false.
+Return true if test execution is enabled, else return false.
 @end deffn
 
 
@@ -2822,16 +2828,14 @@ type -ap @var{program}
 @end example
 
 @noindent
-that looks for a program in the current search path: prints the full
-pathname of the program found, or prints an empty string if nothing is
-found.
+that looks for a program in the current search path.  It prints the full
+pathname of the program found, or an empty string if nothing is found.
 
-@var{program} may be a program name with no directory part (exmaples:
-@command{sed}, @command{grep}), or a full or relative pathname
+@var{program} may be a program name with no directory part (examples:
+@command{sed}, @command{grep}), or an absolute or relative pathname
 (examples: @file{/bin/sed}, @file{../bin/grep}).  If @var{program} is a
 relative pathname and it is an executable file: the output of the
-function is exactly @var{program}, the pathname is @strong{not}
-normalised.
+function is exactly @var{program}, it is @strong{not} normalised.
 
 If an alias exists for a program, @code{type -p @var{program}} will
 return the empty string; that is why we have to use @code{type -ap
@@ -2840,17 +2844,17 @@ return the empty string; that is why we have to use @code{type -ap
 If the environment variable @env{PATH} holds the same directory more
 than once, or there exist programs with the same name in more than one
 @env{PATH} elements: @code{type -ap $program} will return more than one
-line of output, one for each executable file found.  The first value is
-the selected one.
+line of output, one for each executable file found.  The first value
+(the first line) is the one selected by this function.
 @end deffn
 
 
-@strong{The use of the following function is deprecated.}
-
 @deffn Function mbfl_program_check @var{program} ?@var{program} ...?
+@strong{The use of this function is deprecated.}
+
 Check the availability of programs.  All the pathnames on the command
 line are checked: if one is not executable an error message is printed
-on stderr.  Return false if a program can't be found, true otherwise.
+on stderr.  Return false if a program cannot be found, true otherwise.
 @end deffn
 
 @c page
@@ -2858,7 +2862,7 @@ on stderr.  Return false if a program can't be found, true otherwise.
 @section Executing a program
 
 
-This module provides functions to execute a program under the privileges
+This module provides an @api{} to execute a program under the privileges
 of the current user or under a more or less privileged user; it makes
 use of @command{sudo}, to allow one to execute a program as a different
 user (optionally without entering a password): refer to the
@@ -2868,14 +2872,14 @@ The functions described here must be used in the following way:
 
 @itemize
 @item
-to execute a program under the current user privileges:
+To execute a program under the current user privileges:
 
 @example
 mbfl_program_exec ls /bin
 @end example
 
 @item
-to execute a program under a more or less privileged user:
+To execute a program under a more or less privileged user:
 
 @example
 # At the beginning of the script:
@@ -2890,17 +2894,37 @@ mbfl_program_exec ls /root
 Every time we execute a program with @command{sudo}: we have to select
 the user under which to execute it; if we do not do it: the internally
 registered user defaults to @code{nosudo}, which tells the function not
-to use @command{sudo}.
+to use @command{sudo}.  So the following script works as commented:
+
+@example
+mbfl_program_enable_sudo
+
+# This is executed with the privileges of the user that
+# launched the script.
+mbfl_program_exec ls /bin
+
+mbfl_program_declare_sudo_user root
+# This is executed with root privileges.
+mbfl_program_exec ls /root
+
+# This is executed with the privileges of the user that
+# launched the script.
+mbfl_program_exec ls /bin
+@end example
 
 
-@deffn Function mbfl_program_exec @var{arg} ...
-Evaluate a command line.
+@deffn Function mbfl_program_exec @var{program}
+@deffnx Function mbfl_program_exec @var{program} @var{arg} ...
+Evaluate a command line.  @var{program} identifies an executable file:
+it can be the program name, or a relative or absolute pathname.  The
+optional @var{arg} values are command line arguments that are handed to
+the program unchanged.
 
 If usage of @command{sudo} was requested, the command is executed with
 it; then the @command{sudo} request is reset.  This means that this
 function ``consumes'' a @command{sudo} request.
 
-See below for the redirection of stderr.
+See below for the redirection of the standard error channel.
 
 If the function @bfunc{mbfl_option_test} returns true: instead of
 evaluation, the command line is sent to stderr.
@@ -2932,18 +2956,18 @@ by @command{whoami}, @command{sudo} is not used.
 @end deffn
 
 @deffn Function mbfl_program_reset_sudo_user
-Resets the previously requested @command{sudo} user to a value that will
-cause @command{sudo} not to be used in the next program invocation.  This
-is useful to abort a user request.
+Reset the previously requested @command{sudo} user to a value that will
+cause @command{sudo} not to be used in the next program invocation.
+This is useful to abort a user request.
 @end deffn
 
 @deffn Function mbfl_program_sudo_user
-Prints the current @command{sudo} user.
+Print the current @command{sudo} user.
 @end deffn
 
 @deffn Function mbfl_program_requested_sudo
-Returns with code true if the usage of @command{sudo} has been requested
-for the next command execution.
+Return true if the usage of @command{sudo} has been requested for the
+next command execution.
 @end deffn
 
 @c ------------------------------------------------------------
@@ -2966,21 +2990,26 @@ library at start up, from the built in variable @code{BASH}.
 
 @c ------------------------------------------------------------
 
-@subsubheading Redirecting the standard error
+@subsubheading Redirecting the standard error channel
 
 There are programs that output useful informations on their stderr
 channel (example: the @command{at} command).
 
+
 @deffn Function mbfl_program_redirect_stderr_to_stdout
 Just for the next invocation to @bfunc{mbfl_program_exec} redirect
-stderr to stdout, that is use the @code{2>&1} redirection.
+stderr to stdout, that is: use the @code{2>&1} redirection for the
+executed program.
 @end deffn
+
 
 This is useful because redirecting the output of
 @bfunc{mbfl_program_exec}:
 
 @example
-echo ls | mbfl_program_exec at 'now +25 minutes' 2>&1 | while read
+echo ls | \
+    mbfl_program_exec at 'now +25 minutes' 2>&1 | \
+    while read
 @end example
 
 @noindent
@@ -2990,14 +3019,15 @@ description of @bfunc{mbfl_program_exec}).  Instead By using:
 
 @example
 mbfl_program_redirect_stderr_to_stdout
-echo ls | mbfl_program_exec at 'now +25 minutes' | while read
+echo ls | \
+    mbfl_program_exec at 'now +25 minutes' | \
+    while read
 @end example
 
 @noindent
 the ``show program'' output goes to stderr and the stderr output of the
 @command{at} command is, internally, redirected to the stdout of
 @bfunc{mbfl_program_exec}.
-
 
 @c page
 @node program declaring
@@ -3071,18 +3101,20 @@ from the command line the option @option{--verbose} must be used before
 @deffn Function mbfl_program_found @var{program}
 Print the pathname of the previously declared @var{program}.  Return
 zero if the program was found, otherwise print an error message and exit
-the script by invoking @bfunc{exit_because_program_not_found}.
+the current (sub)shell by invoking
+@bfunc{exit_because_program_not_found}.
 
 This function should be used to retrieve the pathname of the program to
 be used as first argument to @bfunc{mbfl_program_exec}:
 
 @example
 function program_wrapper () @{
-    local ARGUMENTl PROGNAME FLAGS
+    local ARGUMENT PROGNAME FLAGS
 
     ARGUMENT=$@{1:?"missing 'ARGUMENT'"@}
     shift
-    PROGNAME=$(mbfl_program_found 'myprog')
+    PROGNAME=$(mbfl_program_found 'myprog') || \
+        exit $?
     FLAGS
 
     mbfl_option_verbose_program && \
@@ -3091,6 +3123,17 @@ function program_wrapper () @{
        $@{FLAGS@} "$@{ARGUMENT@}" "$@@"
 @}
 @end example
+
+Remember that we cannot use:
+
+@example
+local PROGNAME=$(mbfl_program_found 'myprog') || \
+    exit $?
+@end example
+
+@noindent
+because @code{local} will return with code zero even if
+@bfunc{mbfl_program_found}, so the error will not be reported.
 @end deffn
 
 
