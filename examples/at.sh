@@ -96,24 +96,17 @@ function script_option_update_queue () {
 function script_before_parsing_options () {
     mbfl_at_select_queue ${script_option_QUEUE}
 }
-# function script_after_parsing_options () {
-#     echo $mbfl_main_SCRIPT_FUNCTION
-# }
 function script_action_schedule () {
     local Q=$(mbfl_at_print_queue)
     local TIME=${script_option_TIME}
     local ID
-
     mbfl_message_verbose "scheduling a job in queue '${Q}'\n"
-    ID=$(mbfl_at_schedule : "${TIME}") && \
-        exit_failure
+    ID=$(mbfl_at_schedule : "${TIME}") && exit_failure
     mbfl_message_verbose "scheded job identifier '${ID}'\n"
     exit_success
 }
 function script_action_list () {
-    local Q=$(mbfl_at_print_queue)
-    local item
-
+    local Q=$(mbfl_at_print_queue) item
     mbfl_message_verbose "jobs in queue '${Q}': "
     for item in $(mbfl_at_queue_print_identifiers)
     do printf '%d ' "${item}"
@@ -124,6 +117,7 @@ function script_action_list_jobs () {
     mbfl_at_queue_print_jobs
 }
 function script_action_list_queues () {
+    local item
     mbfl_message_verbose "queues with pending jobs: "
     for item in $(mbfl_at_queue_print_queues)
     do printf '%c ' "${item}"
@@ -132,7 +126,6 @@ function script_action_list_queues () {
 }
 function script_action_drop () {
     local ID=${script_option_IDENTIFIER}
-
     if test -n "${ID}"
     then
         mbfl_message_verbose "dropping job '${ID}'\n"
@@ -144,7 +137,6 @@ function script_action_drop () {
 }
 function script_action_clean () {
     local Q=$(mbfl_at_print_queue)
-
     mbfl_message_verbose "cleaning queue '${Q}'\n"
     mbfl_at_queue_clean
 }

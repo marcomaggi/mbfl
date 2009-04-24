@@ -94,10 +94,8 @@ function script_before_parsing_options () {
 }
 function script_action_compress () {
     local item size
-
     mbfl_argv_all_files || \
         exit_because_wrong_command_line_arguments
-
     for item in "${ARGV[@]}"
     do
         test "${script_option_AUTO}" = yes && {
@@ -120,7 +118,6 @@ function script_action_compress () {
 }
 function script_action_decompress () {
     local item ext
-
     mbfl_argv_all_files || \
         exit_because_wrong_command_line_arguments
     for item in "${ARGV[@]}"

@@ -105,6 +105,9 @@ function script_after_parsing_options () {
     return 0
 }
 function main () {
+    mbfl_program_validate_declared || \
+        exit_because_program_not_found
+
     printf "arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
     exit_because_success
 }

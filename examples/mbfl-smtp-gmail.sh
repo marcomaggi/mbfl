@@ -108,6 +108,8 @@ function main () {
     local BODY= LOGIN_NAME= PASSWORD=
     local msg=
 
+    mbfl_program_validate_declared || \
+        exit_because_program_not_found
     trap cleanup_on_exit EXIT
 
     read_body || exit $?

@@ -108,6 +108,8 @@ function main () {
     local BODY= LOGIN_NAME= PASSWORD=
     local msg=
 
+    mbfl_program_validate_declared || \
+        exit_because_program_not_found
     trap cleanup_on_exit EXIT
 
     read_body || exit $?
@@ -159,7 +161,8 @@ function cleanup_on_exit () {
     if test -n "$GNUTLSCLI_PID"
     then kill -s SIGTERM "$GNUTLSCLI_PID"
     fi
-    exec 3<&- 4>&-
+    # Better to close the output channel first?
+    exec 4>&- 3<&-
 }
 
 #page
@@ -237,27 +240,27 @@ function auth_file_validate_word () {
 ## ------------------------------------------------------------
 
 function open_session () {
-    local MKFIFO=$(mbfl_program_found mkfifo)
-    local GNUTLSCLI=$(mbfl_program_found gnutls-cli)
-    local HOSTNAME=${script_option_HOST}
-    local PORT=${script_option_PORT}
-    local INPIPE=/tmp/marco/in.$$
-    local OUPIPE=/tmp/marco/out.$$
-    local msg=
+    local MKFIFO GNUTLSCLI msg
+    local HOSTNAME=${script_option_HOST} PORT=${script_option_PORT}
+    local GNUTLS_FLAGS=" --crlf --starttls --port $PORT"
+    local INPIPE=/tmp/marco/in.$$ OUPIPE=/tmp/marco/out.$$
+    MKFIFO=$(mbfl_program_found mkfifo)        || exit $?
+    GNUTLSCLI=$(mbfl_program_found gnutls-cli) || exit $?
     mbfl_program_exec "$MKFIFO" $INPIPE $OUPIPE || {
         mbfl_message_error 'unable to create FIFOs'
         exit_failure
     }
     msg=$(printf 'connecting to \"%s:%s\"' "$HOSTNAME" "$PORT")
     mbfl_message_verbose "$msg\n"
-    if ! mbfl_program_exec "$GNUTLSCLI" \
-        --debug 0 --crlf --starttls --port "$PORT" "$HOSTNAME" <$OUPIPE >$INPIPE &
+    if ! mbfl_program_execbg $OUPIPE $INPIPE "$GNUTLSCLI" $GNUTLS_FLAGS "$HOSTNAME"
     then
         msg=$(printf 'failed connection to \"%s:%s\"' "$HOSTNAME" "$PORT")
         mbfl_message_error "$msg"
         exit_failed_connection
     fi
-    GNUTLSCLI_PID=$!
+    GNUTLSCLI_PID=$mbfl_program_BGPID
+    mbfl_message_debug "pid of gnutls-cli: $GNUTLSCLI_PID"
+    mbfl_message_verbose 'connection succeeded\n'
     exec 3<>$INPIPE 4>$OUPIPE
     mbfl_file_remove $INPIPE
     mbfl_file_remove $OUPIPE

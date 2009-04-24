@@ -63,6 +63,7 @@ function mbfl_program_find () {
 declare mbfl_program_SUDO_USER='nosudo'
 declare mbfl_program_STDERR_TO_STDOUT='no'
 declare mbfl_program_BASH=${BASH}
+declare mbfl_program_BGPID
 
 function mbfl_program_enable_sudo () {
     mbfl_declare_program sudo
@@ -84,20 +85,20 @@ function mbfl_program_requested_sudo () {
 function mbfl_program_redirect_stderr_to_stdout () {
     mbfl_program_STDERR_TO_STDOUT='yes'
 }
+# This function and the following 'mbfl_program_execbg' have
+# to be kept equal, with the exception of the stuff required
+# to execute the program in background!!!
 function mbfl_program_exec () {
     local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
     local STDERR_TO_STDOUT=no
     mbfl_program_SUDO_USER=nosudo
-
     test "${PERSONA}" = nosudo || {
         SUDO=$(mbfl_program_found sudo)     || exit $?
         WHOAMI=$(mbfl_program_found whoami) || exit $?
         USE_SUDO=yes
     }
-
     STDERR_TO_STDOUT=${mbfl_program_STDERR_TO_STDOUT}
     mbfl_program_STDERR_TO_STDOUT='no'
-
     { mbfl_option_test || mbfl_option_show_program; } && {
         if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}"
         then echo "${SUDO}" -u "${PERSONA}" "${@}" >&2
@@ -105,7 +106,6 @@ function mbfl_program_exec () {
         fi
     }
     mbfl_option_test || {
-##if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}" ; then
         if test "${USE_SUDO}" = yes
         then
             # Putting  this test  inside  here avoids  using
@@ -124,6 +124,47 @@ function mbfl_program_exec () {
         fi
     }
 }
+function mbfl_program_execbg () {
+    mandatory_parameter(INCHAN, 1, input channel)
+    mandatory_parameter(OUCHAN, 2, output channel)
+    shift 2
+    local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
+    local STDERR_TO_STDOUT=no
+    mbfl_program_SUDO_USER=nosudo
+    test "${PERSONA}" = nosudo || {
+        SUDO=$(mbfl_program_found sudo)     || exit $?
+        WHOAMI=$(mbfl_program_found whoami) || exit $?
+        USE_SUDO=yes
+    }
+    STDERR_TO_STDOUT=${mbfl_program_STDERR_TO_STDOUT}
+    mbfl_program_STDERR_TO_STDOUT='no'
+    { mbfl_option_test || mbfl_option_show_program; } && {
+        if test "${USE_SUDO}" = 'yes' -a "${PERSONA}" != "${USER}"
+        then echo "${SUDO}" -u "${PERSONA}" "${@}" >&2
+        else echo "${@}" >&2
+        fi
+    }
+    mbfl_option_test || {
+        if test "${USE_SUDO}" = yes
+        then
+            # Putting  this test  inside  here avoids  using
+            # "whoami" when "sudo" is not required.
+            test "${PERSONA}" = $("${WHOAMI}") || {
+                if test "${STDERR_TO_STDOUT}" = yes
+                then "${SUDO}" -u "${PERSONA}" "${@}" <$INCHAN >$OUCHAN 2>&1 &
+                else "${SUDO}" -u "${PERSONA}" "${@}" <$INCHAN >$OUCHAN &
+                fi
+                mbfl_program_BGPID=$!
+            }
+        else
+            if test "${STDERR_TO_STDOUT}" = yes
+            then "$@" <$INCHAN >$OUCHAN 2>&1 &
+            else "$@" <$INCHAN >$OUCHAN &
+            fi
+            mbfl_program_BGPID=$!
+        fi
+    }
+}
 function mbfl_program_bash_command () {
     mandatory_parameter(COMMAND, 1, command)
     mbfl_program_exec "${mbfl_program_BASH}" -c "${COMMAND}"
@@ -137,8 +178,9 @@ function mbfl_program_bash () {
 ## Program finding functions.
 ## ------------------------------------------------------------
 
-test "${mbfl_INTERACTIVE}" != 'yes' && \
+test "$mbfl_INTERACTIVE" = yes || \
     declare -a mbfl_program_NAMES mbfl_program_PATHS
+
 function mbfl_declare_program () {
     mandatory_parameter(PROGRAM, 1, program)
     local pathname

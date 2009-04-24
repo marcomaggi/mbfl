@@ -2934,6 +2934,38 @@ command line is sent to stderr, then it is executed.
 @end deffn
 
 
+@deffn Function mbfl_program_execbg @var{program}
+@deffnx Function mbfl_program_execbg @var{program} @var{arg} ...
+Does all the same things of @bfunc{mbfl_program_exec}, but additionally:
+
+@enumerate
+@item
+Append @code{&} to the command line of the executed program, so running
+it in background.
+@item
+Set the global variable @code{mbfl_program_BGPID} to the process id of
+the background process; that is: @code{mbfl_program_BGPID} is the value
+of @code{$!} right after the process execution.
+@end enumerate
+
+Using this function is different than calling:
+
+@example
+mbfl_program_exec ls &
+@end example
+
+@noindent
+because doing so puts in the background the function call in a subhell,
+and then runs the program.
+@end deffn
+
+
+@defvar mbfl_program_BGPID
+Used by @bfunc{mbfl_program_execbg} to store the process id of the
+program executed in background.
+@end defvar
+
+
 @deffn Function mbfl_program_enable_sudo
 Declare the intention to use @command{sudo} and other commands required
 to use it.  @ref{program declaring, Declaring the intention to use a

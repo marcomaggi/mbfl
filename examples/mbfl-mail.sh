@@ -72,8 +72,8 @@ function main () {
     local TO_ADDRESS=$script_option_TO
     local BODY=
 
-    read_body
-    open_session
+    read_body           || exit $?
+    open_session        || exit $?
     recv 220
     send 'HELO %s' 127.0.0.1
     recv 250
@@ -91,7 +91,6 @@ function main () {
 
     exit_because_success
 }
-
 function read_body () {
     if test "$script_option_BODY" = -
     then
@@ -116,7 +115,7 @@ function open_session () {
     local SMTP_PORT=$script_option_PORT
     local msg=$(printf 'connecting to %s:%d' "$HOSTNAME" "$SMTP_PORT")
     mbfl_message_verbose "$msg\n"
-    exec 3<>/dev/tcp/${HOSTNAME}/$SMTP_PORT || {
+    exec 3<>"/dev/tcp/${HOSTNAME}/$SMTP_PORT" || {
         mbfl_message_error \
             $(printf 'failed establishing connection to %s:%d' "$HOSTNAME" "$SMTP_PORT")
         exit_because_failed_connection
