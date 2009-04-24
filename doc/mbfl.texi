@@ -2783,7 +2783,7 @@ implies, in the @mbfl{} model, that no external program is executed.
 
 When this feature is turned on: @bfunc{mbfl_program_exec} does not
 execute the program, instead it prints the command line on standard
-error and returns true.
+error and it returns true.
 
 
 @deffn Function mbfl_set_option_test
@@ -3078,10 +3078,12 @@ be used as first argument to @bfunc{mbfl_program_exec}:
 
 @example
 function program_wrapper () @{
-    local ARGUMENT=$@{1:?"missing 'ARGUMENT'"@}
+    local ARGUMENTl PROGNAME FLAGS
+
+    ARGUMENT=$@{1:?"missing 'ARGUMENT'"@}
     shift
-    local PROGNAME=$(mbfl_program_found 'myprog')
-    local FLAGS
+    PROGNAME=$(mbfl_program_found 'myprog')
+    FLAGS
 
     mbfl_option_verbose_program && \
        FLAGS="$@{FLAGS@} --verbose"

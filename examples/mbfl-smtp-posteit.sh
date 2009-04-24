@@ -1,11 +1,11 @@
 # Part of: Marco's BASH Functions Library
-# Contents: example script that sends an email message with Gmail
+# Contents: example script that sends an email message with Poste.it
 # Date: Thu Apr 23, 2009
 #
 # Abstract
 #
 #	This script shows how an MBFL script can send email using
-#	"gnutls-cli" and the Gmail server.
+#	"gnutls-cli" and the Poste.it server.
 #
 # Copyright (c) 2009 Marco Maggi <marcomaggi@gna.org>
 #
@@ -30,7 +30,7 @@
 ## MBFL's related options and variables.
 ## ------------------------------------------------------------
 
-script_PROGNAME=mbfl-smtp-gmail.sh
+script_PROGNAME=mbfl-smtp-posteit.sh
 script_VERSION=1.0
 script_COPYRIGHT_YEARS='2009'
 script_AUTHOR='Marco Maggi'
@@ -55,11 +55,11 @@ mbfl_declare_option BODY -  B body witharg 'select file/body of the message'
 
 mbfl_declare_option AUTH_FILE "$HOME/.authinfo" A auth-file witharg 'select the authorisation file'
 mbfl_declare_option AUTH_USER '' U auth-user witharg 'select the authorisation user'
-mbfl_declare_option AUTH_PLAIN yes '' auth-plain noarg 'select the plain authorisation type'
-mbfl_declare_option AUTH_LOGIN no  '' auth-login noarg 'select the login authorisation type'
+mbfl_declare_option AUTH_PLAIN no  '' auth-plain noarg 'select the plain authorisation type'
+mbfl_declare_option AUTH_LOGIN yes '' auth-login noarg 'select the login authorisation type'
 
-mbfl_declare_option HOST 'smtp.gmail.com' n hostname witharg 'select the server hostname'
-mbfl_declare_option PORT 587 p port witharg 'select the server port'
+mbfl_declare_option HOST 'relay.poste.it' n hostname witharg 'select the server hostname'
+mbfl_declare_option PORT 465 p port witharg 'select the server port'
 
 #page
 ## ------------------------------------------------------------
@@ -87,7 +87,7 @@ mbfl_main_declare_exit_code 5 invalid_auth_file
 ## Option update functions.
 ## ------------------------------------------------------------
 
-AUTH_TYPE=AUTH_PLAIN
+AUTH_TYPE=AUTH_LOGIN
 GNUTLSCLI_PID=
 
 function script_option_update_AUTH_PLAIN () {
@@ -113,13 +113,11 @@ function main () {
     read_body || exit $?
     read_auth || exit $?
     open_session || exit $?
-    send 'EHLO %s' localhost
-    multirecv 250
-    send %s STARTTLS
-    recv 220
+    recv_gnutls_cli_greetings
     # Tell gnutls to start a TLS session
     kill -s SIGALRM $GNUTLSCLI_PID
-    send 'EHLO %s' 127.0.0.1
+    recv_server_greetings
+    send 'EHLO %s' localhost
     multirecv 250
     case "$AUTH_TYPE" in
         AUTH_PLAIN)
@@ -239,11 +237,13 @@ function auth_file_validate_word () {
 ## ------------------------------------------------------------
 
 function open_session () {
-    local MKFIFO GNUTLSCLI msg
-    local HOSTNAME=${script_option_HOST} PORT=${script_option_PORT}
-    local INPIPE=/tmp/marco/in.$$ OUPIPE=/tmp/marco/out.$$
-    MKFIFO=$(mbfl_program_found mkfifo) || exit $?
-    GNUTLSCLI=$(mbfl_program_found gnutls-cli) || exit $?
+    local MKFIFO=$(mbfl_program_found mkfifo)
+    local GNUTLSCLI=$(mbfl_program_found gnutls-cli)
+    local HOSTNAME=${script_option_HOST}
+    local PORT=${script_option_PORT}
+    local INPIPE=/tmp/marco/in.$$
+    local OUPIPE=/tmp/marco/out.$$
+    local msg=
     mbfl_program_exec "$MKFIFO" $INPIPE $OUPIPE || {
         mbfl_message_error 'unable to create FIFOs'
         exit_failure
@@ -261,12 +261,22 @@ function open_session () {
     exec 3<>$INPIPE 4>$OUPIPE
     mbfl_file_remove $INPIPE
     mbfl_file_remove $OUPIPE
-
+}
+function recv_gnutls_cli_greetings () {
+    local i
+    for ((i=0; $i < 5; ++i)); do
+        read line <&3
+        msg=$(printf 'drop line from gnutls-cli: %s' "$line")
+        mbfl_message_debug "$msg"
+    done
+    mbfl_message_debug 'consumed lines from gnutls-cli greetings'
+}
+function recv_server_greetings () {
     # Consume lines until 220
     local line=
     while read line <&3
     do
-        msg=$(printf 'drop line from gnutls-cli: %s' "$line")
+        msg=$(printf 'drop greetings line from server: %s' "$line")
         mbfl_message_debug "$msg"
         test "${line:0:3}" = 220 && break
     done
