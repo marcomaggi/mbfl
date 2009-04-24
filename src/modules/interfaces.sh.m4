@@ -9,7 +9,6 @@
 #
 # Copyright (c) 2005, 2009 Marco Maggi <marcomaggi@gna.org>
 #
-#
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
 # Free Software  Foundation; either version  3.0 of the License,  or (at
@@ -44,65 +43,61 @@ function mbfl_at_validate_queue_letter () {
     test ${#QUEUE} -eq 1 && mbfl_string_is_alpha_char "${QUEUE}"
 }
 function mbfl_at_validate_selected_queue () {
-    if ! mbfl_at_check_queue_letter "${QUEUE}" ; then
+    mbfl_at_check_queue_letter "${QUEUE}" || {
         mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
         return 1
-    fi
+    }
 }
 function mbfl_at_select_queue () {
     mandatory_parameter(QUEUE, 1, queue letter)
-
-    if ! mbfl_at_validate_queue_letter "${QUEUE}" ; then
+    mbfl_at_validate_queue_letter "${QUEUE}" || {
         mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
         return 1
-    fi
+    }
     mbfl_p_at_queue_letter=${QUEUE}
 }
 function mbfl_at_schedule () {
+    local AT QUEUE=${mbfl_p_at_queue_letter}
     mandatory_parameter(SCRIPT, 1, script)
     mandatory_parameter(TIME, 2, time)
-    local QUEUE=${mbfl_p_at_queue_letter}
-    local AT=$(mbfl_program_found at)
-
+    AT=$(mbfl_program_found at) || exit $?
     # The return code of this function is the return code of the
     # following pipe.
     printf %s "${SCRIPT}" | {
         mbfl_program_redirect_stderr_to_stdout
-        if ! mbfl_program_exec "${AT}" -q ${QUEUE} ${TIME} ; then
+        mbfl_program_exec "${AT}" -q ${QUEUE} ${TIME} || {
             mbfl_message_error \
                 "scheduling command execution '${SCRIPT}' at time '${TIME}'"
             return 1
-        fi
+        }
     } | {
-        if ! { read; read; } ; then
+        { read; read; } || {
             mbfl_message_error "reading output of 'at'"
             mbfl_message_error \
                 "while scheduling command execution '${SCRIPT}' at time '${TIME}'"
             return 1
-        fi
-
-        set -- ${REPLY}
+        }
+        set -- $REPLY
         printf %d "$2"
     }
 }
 function mbfl_at_queue_print_identifiers () {
     local QUEUE=${mbfl_p_at_queue_letter}
-
-    mbfl_p_at_program_atq "${QUEUE}" | while read LINE ; do
-        set -- ${LINE}
-        printf '%d ' "${1}"
+    mbfl_p_at_program_atq "$QUEUE" | while read LINE
+    do
+        set -- $LINE
+        printf '%d ' "$1"
     done
 }
 function mbfl_at_queue_print_queues () {
-    local ATQ=$(mbfl_program_found atq)
-    local SORT=$(mbfl_program_found sort)
-
-    {
-        mbfl_program_exec "${ATQ}" | while read LINE ; do
+    local ATQ SORT
+    ATQ=$(mbfl_program_found atq)   || exit $?
+    SORT=$(mbfl_program_found sort) || exit $?
+    { mbfl_program_exec "${ATQ}" | while read LINE
+        do
             set -- ${LINE}
             printf '%c\n' "${4}"
-        done
-    } | mbfl_program_exec "${SORT}" -u
+        done } | mbfl_program_exec "${SORT}" -u
 }
 function mbfl_at_queue_print_jobs () {
     local QUEUE=${mbfl_p_at_queue_letter}
@@ -113,23 +108,21 @@ function mbfl_at_print_queue () {
     printf '%c' "${QUEUE}"
 }
 function mbfl_at_drop () {
+    local ATRM
     mandatory_parameter(ID, 1, script identifier)
-    local ATRM=$(mbfl_program_found atrm)
-
+    ATRM=$(mbfl_program_found atrm) || exit $?
     mbfl_program_exec "${ATRM}" "${ID}"
 }
 function mbfl_at_queue_clean () {
-    local QUEUE=${mbfl_p_at_queue_letter}
-    local item
-
-    for item in $(mbfl_at_queue_print_identifiers "${QUEUE}") ; do
-        mbfl_at_drop "${item}"
+    local item QUEUE=${mbfl_p_at_queue_letter}
+    for item in $(mbfl_at_queue_print_identifiers "${QUEUE}")
+    do mbfl_at_drop "${item}"
     done
 }
-
 function mbfl_p_at_program_atq () {
+    local ATQ
     mandatory_parameter(QUEUE, 1, job queue)
-    local ATQ=$(mbfl_program_found atq)
+    ATQ=$(mbfl_program_found atq) || exit $?
     mbfl_program_exec "${ATQ}" -q "${QUEUE}"
 }
 

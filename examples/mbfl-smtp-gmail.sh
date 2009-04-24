@@ -207,7 +207,7 @@ function read_auth () {
         mbfl_message_error "$msg"
         exit_because_unknown_auth_user
     }
-    set $line
+    set -- $line
     auth_file_validate_word "$1" machine        first   || exit $?
     auth_file_validate_word "$2" "$HOSTNAME"    second  || exit $?
     auth_file_validate_word "$3" login          third   || exit $?

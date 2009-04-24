@@ -31,13 +31,12 @@
 ## Generic variables.
 ## ------------------------------------------------------------
 
-if test "${mbfl_INTERACTIVE}" != 'yes'
-then
+test "$mbfl_INTERACTIVE" != yes && {
     mbfl_option_TMPDIR="${TMPDIR:-/tmp/${USER}}"
-    mbfl_ORG_PWD="${PWD}"
+    mbfl_ORG_PWD=$PWD
     mbfl_main_SCRIPT_FUNCTION=main
     mbfl_main_PRIVATE_SCRIPT_FUNCTION=
-fi
+}
 
 function mbfl_main_set_main () {
     mbfl_main_SCRIPT_FUNCTION="${1:?}"
@@ -50,17 +49,17 @@ function mbfl_main_set_private_main () {
 ## Exit codes management.
 ## ------------------------------------------------------------
 
-if test "${mbfl_INTERACTIVE}" != 'yes'; then
+test "$mbfl_INTERACTIVE" != yes && {
     declare -a mbfl_main_EXIT_CODES mbfl_main_EXIT_NAMES
     mbfl_main_EXIT_CODES[0]=0
-    mbfl_main_EXIT_NAMES[0]='success'
+    mbfl_main_EXIT_NAMES[0]=success
     mbfl_main_EXIT_CODES[1]=1
-    mbfl_main_EXIT_NAMES[1]='failure'
+    mbfl_main_EXIT_NAMES[1]=failure
     mbfl_main_EXIT_CODES[2]=99
-    mbfl_main_EXIT_NAMES[2]='program_not_found'
+    mbfl_main_EXIT_NAMES[2]=program_not_found
     mbfl_main_EXIT_CODES[3]=98
-    mbfl_main_EXIT_NAMES[3]='wrong_num_args'
-fi
+    mbfl_main_EXIT_NAMES[3]=wrong_num_args
+}
 
 function exit_success () {
     exit_because_success
@@ -77,37 +76,33 @@ function mbfl_main_declare_exit_code () {
 }
 function mbfl_main_create_exit_functions () {
     local i name
-
-    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i)); do
+    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    do
         name=exit_because_${mbfl_main_EXIT_NAMES[${i}]}
         eval function "${name}" "()" "{ exit ${mbfl_main_EXIT_CODES[${i}]}; }"
     done
 }
 function mbfl_main_list_exit_codes () {
     local i
-
-    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i)); do
-        printf '%d %s\n' ${mbfl_main_EXIT_CODES[${i}]} ${mbfl_main_EXIT_NAMES[${i}]}
+    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    do printf '%d %s\n' ${mbfl_main_EXIT_CODES[${i}]} ${mbfl_main_EXIT_NAMES[${i}]}
     done
 }
 function mbfl_main_print_exit_code () {
     mandatory_parameter(NAME, 1, exit code name)
     local i
-
-    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i)); do
-        if test "${mbfl_main_EXIT_NAMES[${i}]}" = "${NAME}"; then
-            printf '%d\n' ${mbfl_main_EXIT_CODES[${i}]}
-        fi
+    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    do test "${mbfl_main_EXIT_NAMES[${i}]}" = "${NAME}" && \
+        printf '%d\n' ${mbfl_main_EXIT_CODES[${i}]}
     done
 }
 function mbfl_main_print_exit_code_names () {
     mandatory_parameter(CODE, 1, exit code)
     local i
-
-    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i)); do
-        if test "${mbfl_main_EXIT_CODES[${i}]}" = "${CODE}"; then
+    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    do
+        test "${mbfl_main_EXIT_CODES[${i}]}" = "${CODE}" && \
             printf '%s\n' ${mbfl_main_EXIT_NAMES[${i}]}
-        fi
     done
 }
 
@@ -218,7 +213,7 @@ fi
 ## Version message variables.
 ## ------------------------------------------------------------
 
-if test "${mbfl_INTERACTIVE}" != 'yes'; then
+test "$mbfl_INTERACTIVE" != yes && {
 
 mbfl_message_VERSION="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
@@ -228,7 +223,7 @@ copying conditions.  There is NO warranty; not  even for MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.
 "
 
-fi
+}
 
 #PAGE
 ## ------------------------------------------------------------
@@ -237,21 +232,22 @@ fi
 
 function mbfl_main () {
     local exit_code=0 action_func item code
-
     mbfl_message_set_progname "${script_PROGNAME}"
     mbfl_main_create_exit_functions
     mbfl_invoke_script_function script_before_parsing_options
     mbfl_getopts_parse
     mbfl_invoke_script_function script_after_parsing_options
-    if test -n "${mbfl_main_PRIVATE_SCRIPT_FUNCTION}" ; then
-        mbfl_invoke_script_function ${mbfl_main_PRIVATE_SCRIPT_FUNCTION}
-    else
-        mbfl_invoke_script_function ${mbfl_main_SCRIPT_FUNCTION}
+    if test -n "${mbfl_main_PRIVATE_SCRIPT_FUNCTION}"
+    then mbfl_invoke_script_function ${mbfl_main_PRIVATE_SCRIPT_FUNCTION}
+    else mbfl_invoke_script_function ${mbfl_main_SCRIPT_FUNCTION}
     fi
 }
 function mbfl_invoke_script_function () {
     mandatory_parameter(item, 1, function name)
-    if test "$(type -t ${item})" = "function"; then ${item}; else return 0; fi
+    if test "$(type -t $item)" = function
+    then $item
+    else return 0
+    fi
 }
 
 ### end of file

@@ -35,13 +35,13 @@
 function mbfl_string_chars () {
     mandatory_parameter(STRING, 1, string)
     local i j ch
-
-    for ((i=0, j=0; $i < "${#STRING}"; ++i, ++j)) ; do
+    for ((i=0, j=0; $i < "${#STRING}"; ++i, ++j))
+    do
         ch=
-        if test "${STRING:$i:1}" = \\ ; then
+        test "${STRING:$i:1}" = \\ && {
             test $i != "${#STRING}" && ch=\\
             let ++i
-        fi
+        }
         SPLITFIELD[$j]="${ch}${STRING:$i:1}"
         ch=
     done
@@ -54,11 +54,10 @@ function mbfl_string_equal_substring () {
     mandatory_parameter(POSITION, 2, position)
     mandatory_parameter(PATTERN, 3, pattern)
     local i
-
     test $(($POSITION+${#PATTERN})) -gt ${#STRING} && return 1
-    for ((i=0; $i < "${#PATTERN}"; ++i)) ; do
-        test "${PATTERN:$i:1}" != "${STRING:$(($POSITION+$i)):1}" && \
-            return 1
+    for ((i=0; $i < "${#PATTERN}"; ++i))
+    do test "${PATTERN:$i:1}" != "${STRING:$(($POSITION+$i)):1}" && \
+        return 1
     done
     return 0
 }
@@ -66,9 +65,8 @@ function mbfl_string_split () {
     mandatory_parameter(STRING, 1, string)
     mandatory_parameter(SEPARATOR, 2, separator)
     local i j k=0 first=0
-
-
-    for ((i=0; $i < "${#STRING}"; ++i)) ; do
+    for ((i=0; $i < "${#STRING}"; ++i))
+    do
         test $(($i+${#SEPARATOR})) -gt ${#STRING} && break
         mbfl_string_equal_substring "${STRING}" $i "${SEPARATOR}" && {
             # here $i is the index of the first char in the separator
@@ -92,9 +90,8 @@ function mbfl_string_first () {
     mandatory_parameter(CHAR, 2, char)
     optional_parameter(BEGIN, 3, 0)
     local i
-
-    for ((i=$BEGIN; $i < ${#STRING}; ++i)) ; do
-        test "${STRING:$i:1}" = "$CHAR" && {
+    for ((i=$BEGIN; $i < ${#STRING}; ++i))
+    do test "${STRING:$i:1}" = "$CHAR" && {
             printf "$i\n"
             return 0
         }
@@ -105,9 +102,8 @@ function mbfl_string_last () {
     mandatory_parameter(STRING, 1, string)
     mandatory_parameter(CHAR, 2, char)
     local i="${3:-${#STRING}}"
-
-    for ((; $i >= 0; --i)) ; do
-        test "${STRING:$i:1}" = "$CHAR" && {
+    for ((; $i >= 0; --i))
+    do test "${STRING:$i:1}" = "$CHAR" && {
             printf "$i\n"
             return 0
         }
@@ -149,10 +145,9 @@ function mbfl_p_string_is () {
     mandatory_parameter(CLASS, 1, class)
     mandatory_parameter(STRING, 2, string)
     local i
-
     test "${#STRING}" = 0 && return 1
-    for ((i=0; $i < ${#STRING}; ++i));  do
-	"mbfl_string_is_${CLASS}_char" "${STRING:$i:1}" || return 1
+    for ((i=0; $i < ${#STRING}; ++i))
+    do "mbfl_string_is_${CLASS}_char" "${STRING:$i:1}" || return 1
     done
     return 0
 }
@@ -165,7 +160,6 @@ function mbfl_string_range () {
     mandatory_parameter(STRING, 1, string)
     mandatory_parameter(BEGIN, 2, begin)
     optional_parameter(END, 3)
-
     if test -z "$END" -o "$END" = "end" -o "$END" = "END"
     then printf "${STRING:$BEGIN}\n"
     else printf "${STRING:$BEGIN:$END}\n"
@@ -175,7 +169,6 @@ function mbfl_string_replace () {
     mandatory_parameter(STRING, 1, string)
     mandatory_parameter(PATTERN, 2, pattern)
     optional_parameter(SUBST, 3)
-
     printf "${STRING//$PATTERN/$SUBST}\n"
 }
 function mbfl_string_skip () {
@@ -183,7 +176,6 @@ function mbfl_string_skip () {
     mandatory_parameter(POSNAME, 2, position)
     mandatory_parameter(CHAR, 3, char)
     local position=${!POSNAME}
-
     while test "${STRING:$position:1}" = "$CHAR" ; do let ++position ; done
     eval $POSNAME=$position
 }
@@ -198,22 +190,20 @@ function mbfl_p_string_uplo () {
     mandatory_parameter(MODE, 1, mode)
     optional_parameter(STRING, 2)
     local ch lower upper flag=0
-
-
     test "${#STRING}" = 0 && return 0
-
     for ch in \
         a A b B c C d D e E f F g G h H i I j J k K l L m M \
-        n N o O p P q Q r R s S t T u U v V w W x X y Y z Z ; do
-      if test $flag = 0; then
+        n N o O p P q Q r R s S t T u U v V w W x X y Y z Z
+    do
+      if test $flag = 0
+      then
           lower=$ch
           flag=1
       else
           upper=$ch
-          if test "${MODE}" = toupper ; then
-              STRING="${STRING//$lower/$upper}"
-          else
-              STRING="${STRING//$upper/$lower}"
+          if test "${MODE}" = toupper
+          then STRING="${STRING//$lower/$upper}"
+          else STRING="${STRING//$upper/$lower}"
           fi
           flag=0
       fi
@@ -227,7 +217,6 @@ function mbfl_sprintf () {
     local FORMAT="${2:?missing format parameter in ${FUNCNAME}}"
     local OUTPUT=
     shift 2
-
     OUTPUT=$(printf "${FORMAT}" "$@")
     eval "${VARNAME}"=\'"${OUTPUT}"\'
 }
@@ -236,14 +225,12 @@ function mbfl_string_is_equal_unquoted_char () {
     local STRING="${1:?missing string parameter to ${FUNCNAME}}"
     local pos="${2:?missing position parameter to ${FUNCNAME}}"
     local char="${3:?missing known char parameter to ${FUNCNAME}}"
-
     test "${STRING:$pos:1}" = "$char" || mbfl_string_is_quoted_char "$STRING" $pos
 }
 function mbfl_string_is_quoted_char () {
     local STRING="${1:?missing string parameter to ${FUNCNAME}}"
     local i="${2:?missing position parameter to ${FUNCNAME}}"
     local count
-
     let --i
     for ((count=0; $i >= 0; --i))
       do
@@ -257,9 +244,8 @@ function mbfl_string_is_quoted_char () {
 function mbfl_string_quote () {
     mandatory_parameter(STRING, 1, string)
     local i ch
-
-
-    for ((i=0; $i < "${#STRING}"; ++i)) ; do
+    for ((i=0; $i < "${#STRING}"; ++i))
+    do
         ch="${STRING:$i:1}"
         test "$ch" = \\ && ch=\\\\
         printf '%s' "$ch"

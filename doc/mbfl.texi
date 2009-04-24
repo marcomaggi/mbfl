@@ -3551,6 +3551,13 @@ if not given: It defaults to the value of @code{script_PROGNAME}.
 @end deffn
 
 
+@deffn Function mbfl_dialog_enable_programs
+Declare the usage of the external program @command{stty}, which is used
+by @bfunc{mbfl_dialog_ask_password} to turn of password echoing on the
+terminal.
+@end deffn
+
+
 @deffn Function mbfl_dialog_ask_password @var{prompt}
 Print @var{prompt} followed by a colon and a space, then reads a
 password from the terminal.  Print the password.
