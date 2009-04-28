@@ -4379,7 +4379,7 @@ dotest mytest-
 @end example
 
 @c page
-@node email
+@node sendmail
 @appendix Examples for sending email
 
 
@@ -4391,16 +4391,16 @@ the documentation of the example scripts that come in the @mbfl{}
 distribution under the @file{examples} directory.
 
 @menu
-* email message::               How to compose a test email message.
-* email plain::                 Just send an email message.
-* email connector::             Send email through a process in
+* sendmail message::            How to compose a test email message.
+* sendmail plain::              Just send an email message.
+* sendmail connector::          Send email through a process in
                                 background.
-* email send::                  Sending email.
-* email gmail::                 Sending email with Gmail.
+* sendmail send::               Sending email.
+* sendmail gmail::              Sending email with Gmail.
 @end menu
 
 @c page
-@node email message
+@node sendmail message
 @appendixsec How to compose a test email message
 
 
@@ -4412,11 +4412,11 @@ like this:
 Sender: marco@@localhost
 From: marco@@localhost
 To: root@@localhost
-Subject: proof from email-plain.sh
+Subject: proof from sendmail-plain.sh
 Message-ID: <15704-6692-23464@@this.hostname>
 Date: Tue, 28 Apr 2009 06:16:01 +0200
 
-This is a text proof from the email-plain.sh script.
+This is a text proof from the sendmail-plain.sh script.
 --
 Marco
 @end example
@@ -4533,11 +4533,11 @@ there is a single output variable, too.  To prevent word splitting, we
 set @code{IFS} to the empty string.
 
 @c page
-@node email plain
+@node sendmail plain
 @appendixsec Just send an email message
 
 
-The script below can be found in @file{examples/email-plain.sh}.  It
+The script below can be found in @file{examples/sendmail-plain.sh}.  It
 just sends a hardcoded email message, from a hardcoded address to a
 hardcoded address.  It makes no use of @mbfl{}.
 
@@ -4609,7 +4609,7 @@ code is different from @var{expected_code}, raise an error.
 
 
 @smallexample
-# email-plain.sh --
+# sendmail-plain.sh --
 #
 
 PROGNAME=$@{0##*/@}
@@ -4702,12 +4702,12 @@ main
 @end smallexample
 
 @c page
-@node email connector
+@node sendmail connector
 @appendixsec Send email through a process in background
 
 
-The script below can be found in @file{examples/email-connector.sh}.  It
-just sends a hardcoded email message, from a hardcoded address to a
+The script below can be found in @file{examples/sendmail-connector.sh}.
+It just sends a hardcoded email message, from a hardcoded address to a
 hardcoded address.  It makes no use of @mbfl{}.
 
 The purpose the script is to understand how to send a message through a
@@ -4813,7 +4813,7 @@ it reads lines from the server, and echoes them to stdout.
 
 
 @smallexample
-# email-connector.sh --
+# sendmail-connector.sh --
 #
 
 PROGNAME=$@{0##*/@}
@@ -4949,7 +4949,7 @@ main
 @end smallexample
 
 @c page
-@node email send
+@node sendmail send
 @appendixsec Sending email
 
 
@@ -5027,7 +5027,7 @@ mbfl-mail.sh \
 @end example
 
 @c page
-@node email gmail
+@node sendmail gmail
 @appendixsec Sending email with Gmail
 
 
