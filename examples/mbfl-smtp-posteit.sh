@@ -102,15 +102,15 @@ function script_option_update_AUTH_LOGIN () {
 ## ------------------------------------------------------------
 
 function main () {
-    local BASE64=$(mbfl_program_found base64) || exit $?
+    local BASE64 BODY LOGIN_NAME PASSWORD msg
     local FROM_ADDRESS=$script_option_FROM
     local TO_ADDRESS=$script_option_TO
-    local BODY= LOGIN_NAME= PASSWORD=
-    local msg=
 
     mbfl_program_validate_declared || \
         exit_because_program_not_found
     trap cleanup_on_exit EXIT
+
+    BASE64=$(mbfl_program_found base64) || exit $?
 
     read_body || exit $?
     read_auth || exit $?
@@ -149,7 +149,7 @@ function main () {
     recv 250
     send %s DATA
     recv 354
-    send "${BODY}"
+    send_body "${BODY}"
     send %s .
     recv 250
     send %s QUIT
@@ -265,25 +265,6 @@ function open_session () {
     mbfl_file_remove $INPIPE
     mbfl_file_remove $OUPIPE
 }
-function recv_gnutls_cli_greetings () {
-    local i
-    for ((i=0; $i < 5; ++i)); do
-        read line <&3
-        msg=$(printf 'drop line from gnutls-cli: %s' "$line")
-        mbfl_message_debug "$msg"
-    done
-    mbfl_message_debug 'consumed lines from gnutls-cli greetings'
-}
-function recv_server_greetings () {
-    # Consume lines until 220
-    local line=
-    while read line <&3
-    do
-        msg=$(printf 'drop greetings line from server: %s' "$line")
-        mbfl_message_debug "$msg"
-        test "${line:0:3}" = 220 && break
-    done
-}
 function send () {
     local pattern=${1:?}
     shift
@@ -291,6 +272,14 @@ function send () {
     printf '%s\r\n' "${line}" >&4
     local msg=$(printf 'sent: %s\n' "${line}")
     mbfl_message_debug "$msg"
+}
+function send_body () {
+    local line
+    printf "$BODY" | while read line
+    do
+        line=$(printf %s "$line")
+        printf '%s\r\n' "$line" >&4
+    done
 }
 function recv () {
     local EXPECTED_CODE=${1:?}
@@ -327,6 +316,25 @@ function multirecv () {
             exit 2
         fi
         test "${line:0:4}" = "$EXPECTED_CODE " && break
+    done
+}
+function recv_gnutls_cli_greetings () {
+    local i
+    for ((i=0; $i < 5; ++i)); do
+        read line <&3
+        msg=$(printf 'drop line from gnutls-cli: %s' "$line")
+        mbfl_message_debug "$msg"
+    done
+    mbfl_message_debug 'consumed lines from gnutls-cli greetings'
+}
+function recv_server_greetings () {
+    # Consume lines until 220
+    local line=
+    while read line <&3
+    do
+        msg=$(printf 'drop greetings line from server: %s' "$line")
+        mbfl_message_debug "$msg"
+        test "${line:0:3}" = 220 && break
     done
 }
 

@@ -62,8 +62,16 @@ mbfl_declare_action_argument four four no yes 'do action four'
 ## Declare external programs usage.
 ## ------------------------------------------------------------
 
-mbfl_file_enable_make_directory
-mbfl_declare_program woah
+#mbfl_file_enable_make_compress
+#mbfl_file_enable_make_copy
+#mbfl_file_enable_make_directory
+#mbfl_file_enable_make_listing
+#mbfl_file_enable_make_move
+#mbfl_file_enable_make_permissions
+#mbfl_file_enable_make_remove
+#mbfl_file_enable_make_symlink
+#mbfl_file_enable_make_tar
+#mbfl_declare_program ls
 
 #page
 ## ------------------------------------------------------------
@@ -81,7 +89,7 @@ mbfl_main_declare_exit_code 3 fourth_error
 ## ------------------------------------------------------------
 
 function script_option_update_beta () {
-    printf 'option beta: %s\n' "${script_option_BETA}"
+    printf 'option beta: %s\n' "$script_option_BETA"
 }
 function script_option_update_alpha () {
     printf 'option alpha\n'
@@ -93,21 +101,19 @@ function script_option_update_alpha () {
 ## ------------------------------------------------------------
 
 function script_before_parsing_options () {
-    mbfl_message_verbose "${FUNCNAME}\n"
+    mbfl_message_verbose "$FUNCNAME\n"
 
-    if test -n "${script_option_BETA}";	then
-	printf 'option beta: %s\n' "${script_option_BETA}"
+    if test -n "$script_option_BETA"
+    then printf 'option beta: %s\n' "$script_option_BETA"
     fi
     return 0
 }
 function script_after_parsing_options () {
-    mbfl_message_verbose "${FUNCNAME}\n"
+    mbfl_message_verbose "$FUNCNAME\n"
     return 0
 }
 function main () {
-    mbfl_program_validate_declared || \
-        exit_because_program_not_found
-
+    mbfl_program_validate_declared ||   exit_because_program_not_found
     printf "arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
     exit_because_success
 }

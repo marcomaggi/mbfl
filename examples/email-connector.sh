@@ -32,20 +32,13 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-PROGNAME=email-connector.sh
+PROGNAME=${0##*/}
 
 function main () {
     local HOSTNAME=localhost
     local SMTP_PORT=25
     local FROM_ADDRESS=marco@localhost
     local TO_ADDRESS=root@localhost
-    local BODY='From: marco@localhost
-To: root@localhost
-Subject: proof
-
-This is a text proof.
--- \nMarco
-'
     local LOGGING_TO_STDERR=yes
 
     open_session "$HOSTNAME"
@@ -58,39 +51,60 @@ This is a text proof.
     recv 250
     send %s DATA
     recv 354
-    send "${BODY}"
+    print_message | read_and_send_message
     send %s .
     recv 250
     send %s QUIT
     recv 221
 }
+function print_message () {
+    local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
+    LOCAL_HOSTNAME=$(hostname --fqdn) || exit 2
+    DATE=$(date --rfc-2822) || exit 2
+    MESSAGE_ID=$(printf '%d-%d-%d@%s' \
+        $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME")
+    MESSAGE="Sender: $FROM_ADDRESS
+From: $FROM_ADDRESS
+To: $TO_ADDRESS
+Subject: proof from $PROGNAME
+Message-ID: <$MESSAGE_ID>
+Date: $DATE
+
+This is a text proof from the $PROGNAME script.
+--\x20
+Marco
+"
+    printf "$MESSAGE"
+}
 function open_session () {
     local HOSTNAME=${1:?}
-    local INPIPE=/tmp/marco/in.$$
-    local OUPIPE=/tmp/marco/out.$$
+    local INFIFO=/tmp/marco/in.$$
+    local OUFIFO=/tmp/marco/out.$$
     # Bash  has  no  operation  equivalent to  the  C  level
     # "pipe()" function, so we have to use FIFOs.
-    mkfifo $INPIPE $OUPIPE
-    connector "$HOSTNAME" <$OUPIPE >$INPIPE &
+    mkfifo $INFIFO $OUFIFO
+    connector "$HOSTNAME" <$OUFIFO >$INFIFO &
     # Open the input FIFO for both reading and writing, else
     # "exec" will block waiting for the first char.
-    exec 3<>$INPIPE 4>$OUPIPE
+    exec 3<>$INFIFO 4>$OUFIFO
     # We have connected both the  ends of both the FIFOs, so
     # we  can remove them  from the  file system:  the FIFOs
     # will continue to exist  until the file descriptors are
     # closed.
-    rm $INPIPE $OUPIPE
+    rm $INFIFO $OUFIFO
     trap 'exec 3<&- 4>&-' EXIT
 }
 function recv () {
     local EXPECTED_CODE=${1:?}
     local line=
-    read line <&3
+    IFS= read line <&3
     test "$LOGGING_TO_STDERR" = yes && \
         printf '%s log: recv: %s\n' "$PROGNAME" "$line"
     if test "${line:0:3}" != "$EXPECTED_CODE"
     then
         send %s QUIT
+        # It may be  cleaner to wait for the  reply from the
+        # server.
         exit 2
     fi
 }
@@ -102,12 +116,24 @@ function send () {
     test "$LOGGING_TO_STDERR" = yes && \
         printf '%s log: sent: %s\n' "$PROGNAME" "$line"
 }
+function read_and_send_message () {
+    local line
+    local -i count=0
+    while IFS= read line
+    do
+        printf '%s\r\n' "$line" >&4
+        let ++count
+    done
+    test "$LOGGING_TO_STDERR" = yes && \
+        printf '%s log: sent message (%d lines)\n' "$PROGNAME" $count
+}
 function connector () {
     local HOSTNAME=${1:?} query= answer= line=
-    exec 3<>"/dev/tcp/${HOSTNAME}/$SMTP_PORT"
+    local DEVICE=$(printf '/dev/tcp/%s/%d' "$HOSTNAME" $SMTP_PORT)
+    exec 3<>"$DEVICE"
     # Read the  greetings from the server, echo  them to the
     # client.
-    read answer <&3
+    IFS= read answer <&3
     printf '%s\n' "$answer"
     # Read the query from the client, echo it to the server.
     while read query
@@ -115,21 +141,25 @@ function connector () {
         printf '%s\r\n' "$query" >&3
         # Read the  answer from the  server, echo it  to the
         # client.
-        read answer <&3
+        IFS= read answer <&3
         printf '%s\n' "$answer"
         # Test special queries.
-        test "$query" = QUIT$'\r' && exit
+        test "$query" = QUIT$'\r' && {
+            IFS= read answer <&3
+            printf '%s\n' "$answer"
+            exit
+        }
         test "$query" = DATA$'\r' && {
             # Read data lines from  the client, echo them to
             # the server up until ".\r" is read.
-            while read line
+            while IFS= read line
             do
                 printf '%s\n' "$line" >&3
                 test "${line:0:2}" = .$'\r' && break
             done
             # Read the answer to  data from the server, echo
             # it to the client.
-            read answer <&3
+            IFS= read answer <&3
             printf '%s\n' "$answer"
         }
     done

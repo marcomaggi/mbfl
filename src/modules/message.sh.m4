@@ -33,44 +33,44 @@
 ## Message module variables.
 ## ------------------------------------------------------------
 
-mbfl_message_PROGNAME="${script_PROGNAME}"
+mbfl_message_PROGNAME=$script_PROGNAME
 mbfl_message_CHANNEL="2"
 
 function mbfl_message_set_progname () {
-    mbfl_message_PROGNAME="${1:?${FUNCNAME} error: missing program name argument}"
+    mbfl_message_PROGNAME=${1:?$FUNCNAME error: missing program name argument}
 }
 function mbfl_message_set_channel () {
-    mbfl_message_CHANNEL="${1:?${FUNCNAME} error: missing channel argument}"
+    mbfl_message_CHANNEL=${1:?$FUNCNAME error: missing channel argument}
 }
 #PAGE
 function mbfl_message_p_print () {
-    printf "${2:?${1} error: missing argument}" >&${mbfl_message_CHANNEL}
+    printf "${2:?$1 error: missing argument}" >&$mbfl_message_CHANNEL
 }
 function mbfl_message_p_print_prefix () {
-    mbfl_message_p_print ${1} "${mbfl_message_PROGNAME}: ${2}"
+    mbfl_message_p_print $1 "$mbfl_message_PROGNAME: $2"
 }
 function mbfl_message_string () {
-    mbfl_message_p_print ${FUNCNAME} "$1"
+    mbfl_message_p_print $FUNCNAME "$1"
     return 0
 }
 function mbfl_message_verbose () {
-    mbfl_option_verbose && mbfl_message_p_print_prefix ${FUNCNAME} "$1"
+    mbfl_option_verbose && mbfl_message_p_print_prefix $FUNCNAME "$1"
     return 0
 }
 function mbfl_message_verbose_end () {
-    mbfl_option_verbose && mbfl_message_p_print ${FUNCNAME} "$1\n"
+    mbfl_option_verbose && mbfl_message_p_print $FUNCNAME "$1\n"
     return 0
 }
 function mbfl_message_debug () {
-    mbfl_option_debug && mbfl_message_p_print_prefix ${FUNCNAME} "debug: $1\n"
+    mbfl_option_debug && mbfl_message_p_print_prefix $FUNCNAME "debug: $1\n"
     return 0
 }
 function mbfl_message_warning () {
-    mbfl_message_p_print_prefix ${FUNCNAME} "warning: $1\n"
+    mbfl_message_p_print_prefix $FUNCNAME "warning: $1\n"
     return 0
 }
 function mbfl_message_error () {
-    mbfl_message_p_print_prefix ${FUNCNAME} "error: $1\n"
+    mbfl_message_p_print_prefix $FUNCNAME "error: $1\n"
     return 0
 }
 
