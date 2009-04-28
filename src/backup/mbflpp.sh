@@ -1,32 +1,33 @@
-#!/usr/bin/bash
 #!/bin/bash
 # mbflpp.sh --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: script preprocessor
 # Date: Tue Mar 29, 2005
-# 
+#
 # Abstract
-# 
+#
 #	Preprocessor for BASH scripts using MBFL.
-# 
-# Copyright (c) 2005 Marco Maggi
-# 
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
+#
+# Copyright (c) 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
+#
+# This  program  is free  software:  you  can redistribute  it
+# and/or modify it  under the terms of the  GNU General Public
+# License as published by the Free Software Foundation, either
+# version  3 of  the License,  or (at  your option)  any later
 # version.
-# 
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
-# 
+#
+# This  program is  distributed in  the hope  that it  will be
+# useful, but  WITHOUT ANY WARRANTY; without  even the implied
+# warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
+# PURPOSE.   See  the  GNU  General Public  License  for  more
+# details.
+#
+# You should  have received a  copy of the GNU  General Public
+# License   along   with    this   program.    If   not,   see
+# <http://www.gnu.org/licenses/>.
+#
 
 #page
 ## ------------------------------------------------------------
@@ -34,10 +35,10 @@
 ## ------------------------------------------------------------
 
 script_PROGNAME=mbflpp.sh
-script_VERSION='1.2a35'
-script_COPYRIGHT_YEARS=2005
+script_VERSION='__PACKAGE_VERSION__'
+script_COPYRIGHT_YEARS='2005, 2009'
 script_AUTHOR='Marco Maggi'
-script_LICENSE=GPL
+script_LICENSE=GPL3
 script_USAGE="usage: ${script_PROGNAME} [options] <INFILE >OUTFILE"
 script_DESCRIPTION='Script preprocessor for MBFL.'
 script_EXAMPLES="Usage examples:
@@ -75,7 +76,7 @@ mbfl_main_declare_exit_code 2 wrong_command_line_arguments
 ## Global variables.
 ## ------------------------------------------------------------
 
-hidden_option_DATADIR='///share/mbfl/1.2a35'
+hidden_option_DATADIR='__PKGDATADIR__'
 
 declare symbols libraries includes
 
@@ -103,10 +104,10 @@ function main () {
     local M4_FLAGS='--prefix-builtins'
     local libfile=${hidden_option_DATADIR}/preprocessor.m4
 
-    
+
     M4_FLAGS="${M4_FLAGS} ${includes} ${symbols}"
     mbfl_file_is_readable "${libfile}" && M4_FLAGS="${M4_FLAGS} ${libfile}"
-    M4_FLAGS="${M4_FLAGS} ${libraries}"    
+    M4_FLAGS="${M4_FLAGS} ${libraries}"
 
     if ! {
         if test $ARGC -eq 0 ; then
@@ -145,7 +146,7 @@ function main () {
 
 function filter_drop_comments () {
     program_grep --invert-match -e '^[ \t]*#' -e '^$' | \
-        program_sed -e 's/^:blank:\+//'
+        program_sed -e 's/^[ \t]\+//g'
 }
 
 #page

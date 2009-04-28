@@ -430,10 +430,9 @@ the main purpose of this document is to provide an Info version.
 
 @copying
 This document describes version @version{} of @value{PACKAGE}, a library
-of functions for the @gnu{} Bash shell.
-
-The package is distributed under the terms of the @gnu{} Lesser General
-Public License (@lgpl{}) and can be downloaded from:
+of functions for the @gnu{} Bash shell.  The package is distributed
+under the terms of the @gnu{} Lesser General Public License (@lgpl{})
+and can be downloaded from:
 
 @center @url{http://gna.org/projects/mbfl}
 
@@ -515,7 +514,7 @@ entitled ``@gnu{} Free Documentation License''.
 
 Appendices
 
-* email::                       Examples for sending email.
+* sendmail::                    Examples for sending email.
 * Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
 * references::                  Bibliography and references.
@@ -525,8 +524,130 @@ Indexes
 * concept index::               An entry for each concept.
 * function index::              An entry for each function.
 * variable index::              An entry for each variable.
-* type index::                  An entry for each type.
+@c * type index::                  An entry for each type.
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Overview of the package
+
+* overview quick::              Quick runtime loading.
+* overview reliable::           Reliable runtime loading.
+* overview direct::             Direct inclusion.
+* overview notes::              Notes.
+
+Using the script preprocessor
+
+* preprocessor invoking::       Invoking the preprocessor.
+* preprocessor macros::         Macros library.
+
+Manipulating files and pathnames
+
+* file names::                  Manipulating file names.
+* file commands::               Manipulating files with external
+                                commands.
+* file testing::                Testing file existence and the like.
+* file read and write::         Reading and writing files with
+                                privileges.
+* file misc::                   Miscellaneous commands.
+
+File names
+
+* file name parts::             Splitting a file name into its
+                                components.
+* file name path::              Handling relative pathnames.
+* file name system::            Finding pathnames on the system.
+
+File Commands
+
+* file commands listing::       Retrieving informations.
+* file commands mkdir::         Creating directories.
+* file commands copy::          Copying files.
+* file commands move::          Moving files.
+* file commands removing::      Removing files and directories.
+* file commands tar::           Manipulating tar archives.
+* file commands symlink::       Creating symbolic links.
+* file commands perms::         Set/get file permissions.
+* file commands compress::      Compressing files.
+
+Parsing command line options
+
+* getopts arguments::           Arguments.
+* getopts usage::               Using the module.
+* getopts options::             Predefined options.
+* getopts interface::           Interface functions.
+
+Using external programs
+
+* program testing::             Testing a script and running programs.
+* program checking::            Checking programs existence.
+* program executing::           Executing a program.
+* program declaring::           Declaring the intention to use a
+                                program.
+
+Interfaces to external programs
+
+* interfaces at::               Scheduling jobs for later execution.
+
+Manipulating strings
+
+* string quote::                Quoted characters.
+* string inspection::           Inspecting a string.
+* string splitting::            Splitting a string.
+* string case::                 Converting between upper and lower case.
+* string class::                Matching a string with a class.
+* string misc::                 Miscellaneous functions.
+
+Manipulating variables
+
+* variables arrays::            Manipulating arrays.
+* variables colon::             Manipulating colon variables.
+
+Interfacing with the system
+
+* system user id::              Converting user identifiers.
+* system file perms::           Converting file permissions.
+
+Main function
+
+* main function::               Driving script execution.
+* main exit::                   Declaring exit codes.
+
+Building test suites
+
+* testing intro::               A way to organise a test suite.
+* testing shell::               A script to run tests.
+* testing config::              Configuring the package.
+* testing running::             Running tests.
+* testing compare::             Validating results by comparing.
+* testing output::              Validating results by output.
+* testing messages::            Printing messages from test functions.
+* testing files::               Handling files in tests.
+
+Handling files in tests
+
+* testing files directories::   Directories.
+* testing files files::         Files.
+* testing files examples::      Examples.
+
+Examples for sending email
+
+* sendmail message::            How to compose a test email message.
+* sendmail plain::              Just send an email message.
+* sendmail connector::          Send email through a process in
+                                background.
+* sendmail gnutls::             Using @command{gnutls-cli} connector.
+* sendmail send::               Sending email.
+* sendmail gmail::              Sending email with Gmail.
+
+Using @command{gnutls-cli} connector
+
+* sendmail gnutls now::         Immediate encrypted bridge.
+* sendmail gnutls delay::       Delayed encrypted bridge.
+
+@end detailmenu
 @end menu
+
 @end ifnottex
 
 @c page
@@ -535,14 +656,9 @@ Indexes
 
 
 This package is an attempt to make @gnu{} Bash a viable solution for
-medium sized scripts.  A problem with Bash is that it does not provide
-encapsulation of any sort beside functions.  This problem is partly
-solved by writing subscripts and invoking them in the main script, but
-this is not always the best solution.
-
-A set of modules implementing common operations and a script template
-are offered by this package and the author has used them with success in
-implementing non--small scripts.
+medium sized scripts.  A set of modules implementing common operations
+and a script template are offered by this package and the author has
+used them with success in implementing non--small scripts.
 
 The philosophy of @mbfl{} is to do the work as much as possible without
 external commands.  For example: string manipulation is done using the
@@ -568,9 +684,9 @@ true for the options parsing module.
 @section Quick runtime loading
 
 
-The best way to use the library is to include at runtime the library
-file @file{libmbfl.sh} in the script; this is possible by installing
-@mbfl{} on the system and using this code in the scripts:
+The easiest way to use the library is to include at runtime the library
+file @file{libmbfl.sh} in the script.  To do it, we install the package
+on the system and use this code in the scripts:
 
 @example
 source "$@{MBFL_LIBRARY:=$(mbfl-config)@}"
@@ -583,39 +699,40 @@ Required user defined variables}.
 This code will read the full pathname of the library from the
 environment variable @env{MBFL_LIBRARY}; if this variable is not set:
 the script @command{mbfl-config} is invoked with no arguments to acquire
-the pathname of the library.  @command{mbfl-config} is installed by the
-package in the @code{$(bindir)} directory.
+the pathname.  @command{mbfl-config} is installed by the package in the
+@code{$(bindir)} directory, which we must include in the @env{PATH}
+environment variable.
 
 @c page
 @node overview reliable
 @section Reliable runtime loading
 
 
-A more reliable solution is:
+A more reliable way to load the library is:
 
-@example
-script_PROGNAME=...
-mbfl_INTERACTIVE='no'
-mbfl_LOADED='no'
-INSTALLED_MBFL="$(mbfl-config)" &>/dev/null
+@smallexample
+mbfl_INTERACTIVE=no
+mbfl_LOADED=no
+mbfl_INSTALLED=$(mbfl-config) &>/dev/null
+mbfl_HARDCODED=./some/dir/libmbfl.sh
 for item in \
-    "$@{MBFL_LIBRARY@}" ./some/dir/libmbfl.sh "$@{INSTALLED_MBFL@}"
-    do
-    if test -n "$@{item@}" -a -f "$@{item@}" -a -r "$@{item@}"
-    then
-        if ! source "$@{item@}" &>/dev/null
-        then
-            printf '%s error: evaluating MBFL "%s"\n' \
-                "$@{script_PROGNAME@}" "$@{item@}" >&2
+    "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
+do
+    test -n "$item" -a -f "$item" -a -r "$item" && @{
+        source "$item" &>/dev/null || @{
+            printf '%s error: loading MBFL file "%s"\n' \
+                "$script_PROGNAME" "$item" >&2
             exit 2
-        fi
-    fi
+        @}
+    @}
 done
-if test "$@{mbfl_LOADED@}" != 'yes' ; then
-    printf '%s error: loading MBFL\n' "$@{script_PROGNAME@}" >&2
+unset -v item
+test "$mbfl_LOADED" = yes || @{
+    printf '%s error: incorrect evaluation of MBFL\n' \
+        "$script_PROGNAME" >&2
     exit 2
-fi
-@end example
+@}
+@end smallexample
 
 @noindent
 where the optional @file{./some/dir/libmbfl.sh} can be the pathname of a
@@ -650,13 +767,12 @@ pointing the finger of blame.
 
 @item
 An error in the evaluation of the library code can be replicated because
-the evaluation does not heavily depends on the environment, so we can
+the evaluation does not heavily depend on the environment, so we can
 track down library errors later.
 @end itemize
 
 This code is included in the @mbfl{} distribution in the
-@file{loader.sh} file.
-
+@file{src/lib/loader.sh} file.
 
 @c page
 @node overview direct
@@ -664,14 +780,16 @@ This code is included in the @mbfl{} distribution in the
 
 
 Another solution is to directly include the library in the script; this
-is easy if we preprocess our scripts with @gnu{} M4.  We only need:
+is easy if we preprocess our scripts with @gnu{} M4.  We only need to
+put the following in the script:
 
 @example
 m4_changequote([[,]])
 m4_include(libmbfl.sh)
 @end example
 
-We can preprocess the script with:
+@noindent
+then preprocess the script with:
 
 @example
 $ m4 --prefix-builtins --include=/path/to/library \
@@ -679,8 +797,9 @@ $ m4 --prefix-builtins --include=/path/to/library \
 @end example
 
 @noindent
-easy to do in a @file{Makefile}.  The installation pathname of the
-library is the output of @code{mbfl-config --libpath}.
+easy to do in a @file{Makefile}.  The installation directory pathname of
+the library (@file{/path/to/library} in the example) is the output of
+@code{mbfl-config --libpath}.
 
 It is also interesting to process the script with the following rule of
 @gnu{} Make: assuming that the source scripts are in the
@@ -747,11 +866,14 @@ variables with name starting with such a prefix.
 
 @item
 It is possible, but not recommended, to source the library in an
-interactive shell, though some modules must be disabled.  To do this
-execute the following code in the shell before sourcing the library:
+interactive shell, though some modules must be disabled.  The purpose of
+interactive loading is only to test and debug the functions by hand.
+
+To do this execute the following code in the shell before sourcing the
+library:
 
 @example
-mbfl_INTERACTIVE='yes'
+mbfl_INTERACTIVE=yes
 @end example
 
 @noindent
@@ -759,9 +881,9 @@ whitout exporting the variable.  The ``dangerous'' blocks of code in the
 library are surrounded by:
 
 @example
-if test "$@{mbfl_INTERACTIVE@}" != 'yes'; then
-...
-fi
+test "$mbfl_INTERACTIVE" = yes || @{
+    ...
+@}
 @end example
 
 @noindent
@@ -769,9 +891,6 @@ so they are not executed.  Disabled modules are: main, getopts, signal;
 ``disabled'' does not mean that the functions are not there: only the
 global variable declarations are excluded; this is a little dirty, but,
 at present, it should work.
-
-The purpose of interactive loading is only to test and debug the
-functions by hand.
 @end itemize
 
 
@@ -804,10 +923,10 @@ The use of the preprocessor is fully optional: every feature of the
 
 The basic synopsis is:
 
-@example
+@smallexample
 mbflpp.sh [options] <INFILE >OUTFILE
-mbflpp.sh [options] --outfile=OUTFILE INFILE1 INFILE2 ...
-@end example
+mbflpp.sh [options] --outfile=OUTFILE [--] INFILE1 INFILE2 ...
+@end smallexample
 
 @noindent
 all the @code{INFILE} pathnames are interpreted as files to concatenate
@@ -1007,12 +1126,12 @@ the escape sequences are evaluated.
 The following example shows how to declare the variables.
 
 @example
-script_PROGNAME='myscript.sh'
+script_PROGNAME=myscript.sh
 script_AUTHOR='Marco Maggi and Marco Maggi'
 script_COPYRIGHT_YEARS='2002, 2003, 2004'
-script_VERSION='1.0'
+script_VERSION=1.0
 script_LICENSE=GPL3
-script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
+script_USAGE="usage: $script_PROGNAME [options] ..."
 script_DESCRIPTION='Does this and that.'
 script_EXAMPLES='Examples:
 
@@ -1041,7 +1160,7 @@ Read a line from its stdin and store it in a variable named
 character is used as terminator, like in:
 
 @example
-read -d $'\x00'
+IFS= read -d $'\x00'
 @end example
 @end deffn
 
@@ -1885,8 +2004,9 @@ following:
 ARGC=0
 declare -a ARGV ARGV1
 
-for ((ARGC1=0; $# > 0; ++ARGC1)); do
-    ARGV1[$ARGC1]="$1"
+for ((ARGC1=0; $# > 0; ++ARGC1))
+do
+    ARGV1[$ARGC1]=$1
     shift
 done
 @end example
@@ -1915,7 +2035,8 @@ arguments are processed and some action is performed to register them.
 We can access the non--option arguments with the following code:
 
 @example
-for ((i=0; $i < $ARGC; ++i)); do
+for ((i=0; $i < $ARGC; ++i))
+do
     # do something with $@{ARGV[$i]@}
 done
 @end example
@@ -3145,14 +3266,14 @@ function program_wrapper () @{
 
     ARGUMENT=$@{1:?"missing 'ARGUMENT'"@}
     shift
-    PROGNAME=$(mbfl_program_found 'myprog') || \
+    PROGNAME=$(mbfl_program_found myprog) || \
         exit $?
     FLAGS
 
     mbfl_option_verbose_program && \
-       FLAGS="$@{FLAGS@} --verbose"
-    mbfl_program_exec "$@{PROGNAME@}" \
-       $@{FLAGS@} "$@{ARGUMENT@}" "$@@"
+       FLAGS="$FLAGS --verbose"
+    mbfl_program_exec "$PROGNAME" \
+       $FLAGS "$ARGUMENT" "$@@"
 @}
 @end example
 
@@ -3165,7 +3286,7 @@ local PROGNAME=$(mbfl_program_found 'myprog') || \
 
 @noindent
 because @code{local} will return with code zero even if
-@bfunc{mbfl_program_found}, so the error will not be reported.
+@bfunc{mbfl_program_found} fails, so the error will not be reported.
 @end deffn
 
 
@@ -3550,7 +3671,7 @@ to the empty string.
 
 @deffn Function mbfl_sprintf @var{varname} @var{format} ...
 Make use of @code{printf} to format the string @var{format} with the
-additional arguments, then stores the result in @var{varname}: If this
+additional arguments, then store the result in @var{varname}: If this
 name is local in the scope of the caller, this has the effect of filling
 the variable in that scope.
 @end deffn
@@ -4395,6 +4516,7 @@ distribution under the @file{examples} directory.
 * sendmail plain::              Just send an email message.
 * sendmail connector::          Send email through a process in
                                 background.
+* sendmail gnutls::             Using @command{gnutls-cli} as connector.
 * sendmail send::               Sending email.
 * sendmail gmail::              Sending email with Gmail.
 @end menu
@@ -4712,9 +4834,9 @@ hardcoded address.  It makes no use of @mbfl{}.
 
 The purpose the script is to understand how to send a message through a
 process in background.  It does the same things of the example described
-in @ref{email plain, Just send an email message}.  The main difference
-is that the single function @bfunc{open_session} is replaced by the two
-functions @bfunc{open_session} and @bfunc{connector}.
+in @ref{sendmail plain, Just send an email message}.  The main
+difference is that the single function @bfunc{open_session} is replaced
+by the two functions @bfunc{open_session} and @bfunc{connector}.
 
 What is important to understand, is how @bfunc{open_session} runs
 @bfunc{connector} in background and sets up two file descriptors to talk
@@ -4949,22 +5071,175 @@ main
 @end smallexample
 
 @c page
+@node sendmail gnutls
+@appendixsec Using @command{gnutls-cli} as connector
+
+
+@gnu{} @tls{} is a library implementing the @tls{} protocol; it can be
+used to establish encrypted and authenticated connections to a remote
+host.  The @smtp{} protocol has extensions to allow usage of a @tls{}
+connection.
+
+A @gnu{} @tls{} installation comes with a command line test program,
+@command{gnutls-cli}, that can be used to establish an encrypted
+connection by a shell script.  This command can be used as the
+``connector'' modeled in @ref{sendmail connector, Send email through a
+process in background}.  It as a manual page, which we may want to read.
+
+When handling an encrypted connection we have to know in advance how the
+remote @smtp{} server behaves.  Let's see first the simpler example,
+using the a human driven interactive session; the we will describe an
+more complex interaction.
+
+@menu
+* sendmail gnutls now::         Immediate encrypted bridge.
+* sendmail gnutls delay::       Delayed encrypted bridge.
+@end menu
+
+@c page
+@node sendmail gnutls now
+@appendixsubsec Immediate encrypted bridge
+
+
+We use as example the server @code{relay.poste.it}, port @code{465}.
+You have to have an account there to use it; do not bomb this server
+with fake connections.
+
+The server requests us to build the encrypted bridge immediately after
+the connection has been established, without waiting for any line of
+greetings from the server.
+
+The server supports the @code{AUTH LOGIN} authentication mechanism,
+which requires the base64 encoding of the user name and password; we can
+perform it with the external program @command{base64} (which comes with
+@gnu{} Coreutils) like this:
+
+@example
+ENCODED_USERNAME=$(echo -n 'the-user-name' | base64)
+ENCODED_PASSWORD=$(echo -n 'the-pass-word' | base64)
+@end example
+
+The authentication dialogue goes like this:
+
+@enumerate
+@item
+We send @code{AUTH LOGIN}, to start the authentication.
+
+@item
+It replies with @code{334 VXNlcm5hbWU6} which is the request for the
+username.  The string @code{VXNlcm5hbWU6} is the base64 encoding of the
+string @code{Username:} (without ending newline); we can verify this
+with:
+
+@example
+$ echo -n Username: | base64
+@end example
+
+@item
+We send the login user name encoded in base64.
+
+@item
+It checks the user name and, if correct, replies with @code{334
+UGFzc3dvcmQ6}.  The string @code{UGFzc3dvcmQ6} is the base64 encoding of
+the string @code{Password:} (without ending newline); we can verify this
+with:
+
+@example
+$ echo -n Password: | base64
+@end example
+
+@item
+We send the login password encoded in base64.
+
+@item
+It checks it and, if correct, replies with a line starting with code
+@code{235}.
+@end enumerate
+
+@noindent
+Beware that if we are not quick to send the encoded password after the
+encoded user name, the server may reset the authentication process as if
+we sent a wrong user name.
+
+So, we start the connector like this:
+
+@example
+$ gnutls-cli --crlf --port 465 relay.poste.it
+@end example
+
+@noindent
+if the connection succeeds: @command{gnutls-cli} prints a lot of message
+lines on its standard output explaining what is going on; at last comes
+the line of greetings from the server, wich begins with code @code{220}.
+
+So we can do the @smtp{} dialogue by hand as follows; lines starting
+with @code{recv>} are the ones received from the server, lines starting
+with @code{send>} are the ones we send to the server, the ellipses
+@code{...} are replacements for server text we are not interested in:
+
+@example
+recv> 220 ... ESMTP Service ...
+send> ehlo localhost.localdomain
+recv> 250-...
+recv> 250-DSN
+recv> 250-8BITMIME
+recv> 250-PIPELINING
+recv> 250-HELP
+recv> 250-AUTH=LOGIN
+recv> 250-AUTH LOGIN CRAM-MD5 DIGEST-MD5 PLAIN
+recv> 250-DELIVERBY 300
+recv> 250 SIZE
+send> auth login
+recv> 334 VXNlcm5hbWU6
+send> <the-base64-username>
+recv> 334 UGFzc3dvcmQ6
+send> <the-base64-password>
+recv> 235 login authentication successful
+send> mail from:<from-address@@poste.it>
+recv> 250 MAIL FROM:<from-address@@some-host.it> OK
+send> rcpt to:<to-address@@other-host.it>
+recv> 250 RCPT TO:<to-address@@other-host.it> OK
+send> data
+recv> 354 Start mail input; end with <CRLF>.<CRLF>
+send> From: <from-address@@some-host.it>
+send> To: <to-address@@other-host.it>
+send> Subject: interactive attempt
+send>
+send> Text for interactive attempt.
+send> --
+send> Marco
+send> .
+recv> 250 ... Mail accepted
+send> quit
+recv> 221 ... QUIT
+recv> - Peer has closed the GNUTLS connection
+@end example
+
+@c page
+@node sendmail gnutls delay
+@appendixsubsec Delayed encrypted bridge
+
+
+
+@c page
 @node sendmail send
 @appendixsec Sending email
 
 
-This section documents the example script @file{examples/mbfl-mail.sh},
-which makes use of @mbfl{} to send an email message.  The synopsis is:
+This section documents the example script
+@file{examples/sendmail-mbfl.sh}, which makes use of @mbfl{} to send an
+email message.  The synopsis is:
 
 @smallexample
-mbfl-mail.sh \
+sendmail-mbfl.sh \
     --from=@meta{ADDRESS} --to=@meta{ADDRESS} \
-    --body=@meta{SOURCE} [options]
+    [--message=@meta{SOURCE} | --test-message]
+    [options]
 @end smallexample
 
 @noindent
 the script sends an email address, and it works very much like the
-example script in @ref{email plain, Just send an email message}.
+example script in @ref{sendmail plain, Just send an email message}.
 
 @table @code
 @item -F @var{address}
@@ -4975,12 +5250,15 @@ Select the @code{MAIL FROM} envelope address.
 @itemx --to @var{address}
 Select the @code{RCPT TO} envelope address.
 
-@item -B @var{source}
-@item --body @var{source}
+@item -M @var{source}
+@itemx --message @var{source}
 Select the source from which read the whole email message, headers and
 body.  If @var{source} is a file pathname, that file is read and used as
 data; if @var{source} is @code{-}, the message is read from the standard
 input channel.  It defaults to @code{-}.
+
+@item --test-message
+Send a test message with a hardcoded body part.
 
 @item -n @var{host}
 @itemx --hostname @var{host}
@@ -4994,34 +5272,24 @@ Select the @smtp{} server @tcp{} port.  It defaults to @code{25}.
 Usage example using stdin as message source:
 
 @example
-BODY='From: marco@@localhost
-To: root@@localhost
-Subject: ciao
-
-This is text.
-'
-
-echo "$BODY" | mbfl-mail.sh \
+print_message | mbfl-mail.sh \
                  --from=marco@@localhost --to=root@@localhost \
                  --verbose --debug
 @end example
 
 @noindent
-usage example using a file as message source:
+the function @bfunc{print_message} prints a test message and it is
+described in @ref{sendmail message, How to compose a test email
+message}.
+
+Usage example using a file as message source:
 
 @example
-BODY='From: marco@@localhost
-To: root@@localhost
-Subject: ciao
-
-This is text.
-'
-
 FILE=$(tempfile)
 trap "rm '$FILE'" EXIT
+print_message >"$FILE"
 
-echo "$BODY" >"$FILE"
-mbfl-mail.sh \
+sendmail-mbfl.sh \
     --from=marco@@localhost --to=root@@localhost --body="$FILE" \
     --verbose --debug
 @end example
@@ -5049,7 +5317,7 @@ mbfl-smtp-gmail.sh \
 @end example
 
 @noindent
-the script works very much like the example described in @ref{email
+the script works very much like the example described in @ref{sendmail
 connector, Send email through a process in background}.
 
 
@@ -5113,8 +5381,8 @@ Select the @smtp{} server @tcp{} port.  It defaults to @code{25}.
 
 @printindex vr
 
-@node type index
-@appendix An entry for each type.
+@c @node type index
+@c @appendix An entry for each type.
 
 @printindex tp
 

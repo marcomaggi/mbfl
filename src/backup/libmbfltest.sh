@@ -1,32 +1,33 @@
 # libmbfltest.sh --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: test functions
 # Date: Mon Oct  4, 2004
-# 
+#
 # Abstract
-# 
+#
 #	This file defines a set of functions to be used to drive
 #	the test suite. It must be sources at the beginning of
 #	all the test files.
-# 
-# Copyright (c) 2004, 2005 Marco Maggi
 #
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
-# version.
-# 
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# Copyright (c) 2004-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+#
+#
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  3.0 of the License,  or (at
+# your option) any later version.
+#
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
-# 
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
-# 
+# Lesser General Public License for more details.
+#
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
+#
 
 #page
 ## ------------------------------------------------------------
@@ -172,7 +173,7 @@ function dotest-output () {
     IFS="${ORGIFS}"
 
     if test -z "${expected_output}" ; then
-	if test ! -z "${output}" ; then
+	if test ! -z "${output}" -a ${#output} -eq 0 ; then
 	    echo "   expected output of zero length" >&2
 	    echo "   got:      '$output'" >&2
 	    return 1
@@ -309,7 +310,7 @@ function dotest-program-exec () {
 	echo "$@"
     else
 	if ! "$@"
-            then 
+            then
 	    dotest-clean-files
 	    exit 2
         fi

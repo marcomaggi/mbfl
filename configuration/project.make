@@ -7,7 +7,7 @@ vpath	%.sh.m4		$(srcdir)/src/lib
 vpath	%.sh.m4		$(srcdir)/examples
 vpath	%.sh.m4		$(builddir)
 
-MBFL_LIBRARY	= $(srcdir)/backup/libmbfl.sh
+MBFL_LIBRARY	= $(srcdir)/src/backup/libmbfl.sh
 MBFLPP_SCRIPT	= $(srcdir)/src/scripts/mbflpp.sh
 MBFLPP		= MBFL_LIBRARY=$(MBFL_LIBRARY) $(BASH_PROGRAM) $(MBFLPP_SCRIPT)
 

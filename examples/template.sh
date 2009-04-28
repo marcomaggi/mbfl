@@ -41,8 +41,36 @@ script_EXAMPLES="Usage examples:
 
 \t${script_PROGNAME} --alpha"
 
-mbfl_INTERACTIVE='no'
-source "${MBFL_LIBRARY:=$(mbfl-config)}"
+#page
+## ------------------------------------------------------------
+## Library loading.
+## ------------------------------------------------------------
+
+mbfl_INTERACTIVE=no
+mbfl_LOADED=no
+mbfl_HARDCODED=
+mbfl_INSTALLED=$(mbfl-config) &>/dev/null
+for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
+do
+    test -n "$item" -a -f "$item" -a -r "$item" && {
+        source "$item" &>/dev/null || {
+            printf '%s error: loading MBFL file "%s"\n' \
+                "$script_PROGNAME" "$item" >&2
+            exit 2
+        }
+    }
+done
+unset -v item
+test "$mbfl_LOADED" = yes || {
+    printf '%s error: incorrect evaluation of MBFL\n' \
+        "$script_PROGNAME" >&2
+    exit 2
+}
+
+#page
+## ------------------------------------------------------------
+## Script options.
+## ------------------------------------------------------------
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ALPHA no a alpha noarg 'selects action alpha'
