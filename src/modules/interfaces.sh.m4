@@ -71,7 +71,7 @@ function mbfl_at_schedule () {
             return 1
         }
     } | {
-        { read; read; } || {
+        { IFS= read; IFS= read; } || {
             mbfl_message_error "reading output of 'at'"
             mbfl_message_error \
                 "while scheduling command execution '${SCRIPT}' at time '${TIME}'"
@@ -83,7 +83,7 @@ function mbfl_at_schedule () {
 }
 function mbfl_at_queue_print_identifiers () {
     local QUEUE=${mbfl_p_at_queue_letter}
-    mbfl_p_at_program_atq "$QUEUE" | while read LINE
+    mbfl_p_at_program_atq "$QUEUE" | while IFS= read LINE
     do
         set -- $LINE
         printf '%d ' "$1"
@@ -93,7 +93,7 @@ function mbfl_at_queue_print_queues () {
     local ATQ SORT
     ATQ=$(mbfl_program_found atq)   || exit $?
     SORT=$(mbfl_program_found sort) || exit $?
-    { mbfl_program_exec "${ATQ}" | while read LINE
+    { mbfl_program_exec "${ATQ}" | while IFS= read LINE
         do
             set -- ${LINE}
             printf '%c\n' "${4}"

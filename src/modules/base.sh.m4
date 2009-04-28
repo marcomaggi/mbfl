@@ -53,10 +53,9 @@ function mbfl_set_maybe () {
 function mbfl_read_maybe_null () {
     mandatory_parameter(VARNAME, 1, variable name)
 
-    if mbfl_option_null ; then
-	read -d $'\x00' $VARNAME
-    else
-	read $VARNAME
+    if mbfl_option_null
+    then IFS= read -d $'\x00' $VARNAME
+    else IFS= read $VARNAME
     fi
 }
 

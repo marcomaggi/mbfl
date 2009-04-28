@@ -36,14 +36,13 @@
 ## Global variables.
 ## ------------------------------------------------------------
 
-if test "${mbfl_INTERACTIVE}" != 'yes'
-then
+test "$mbfl_INTERACTIVE" = yes || {
     declare -i ARGC=0
     declare -a ARGV ARGV1
 
     for ((ARGC1=0; $# > 0; ++ARGC1))
     do
-        ARGV1[$ARGC1]="$1"
+        ARGV1[$ARGC1]=$1
         shift
     done
 
@@ -62,14 +61,14 @@ then
     declare -a mbfl_getopts_actargs_STRINGS
     declare -a mbfl_getopts_actargs_SKIPOPTS
     declare -a mbfl_getopts_actargs_DESCRIPTION
-fi
+}
 
 #page
 ## ------------------------------------------------------------
 ## Default options description.
 ## ------------------------------------------------------------
 
-if test "${mbfl_INTERACTIVE}" != 'yes' ; then
+test "$mbfl_INTERACTIVE" = yes || {
 
 mbfl_message_DEFAULT_OPTIONS="
 \t--tmpdir=DIR
@@ -120,7 +119,7 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\toptions, then exit
 "
 
-fi
+}
 
 #page
 function mbfl_declare_option () {
@@ -132,7 +131,6 @@ function mbfl_declare_option () {
     local description="$6"
     local index=$(($mbfl_getopts_INDEX + 1))
 
-
     mbfl_p_declare_option_test_length $keyword keyword $index
     mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=$(mbfl_string_toupper "$keyword")
     mbfl_getopts_BRIEFS[$mbfl_getopts_INDEX]=$brief
@@ -141,14 +139,14 @@ function mbfl_declare_option () {
     mbfl_p_declare_option_test_length $hasarg hasarg $index
     test "$hasarg" != witharg -a "$hasarg" != noarg && {
         mbfl_message_error \
-            "wrong value '$hasarg' to hasarg field in option declaration number ${index}"
+            "wrong value '$hasarg' to hasarg field in option declaration number $index"
         exit 2
     }
     mbfl_getopts_HASARG[$mbfl_getopts_INDEX]=$hasarg
 
     test "$hasarg" = noarg -a "$default" != yes -a "$default" != no && {
         mbfl_message_error \
-            "wrong value '$default' as default for option with no argument number ${index}"
+            "wrong value '$default' as default for option with no argument number $index"
         exit 2
     }
     mbfl_getopts_DEFAULTS[$mbfl_getopts_INDEX]=$default
@@ -159,24 +157,23 @@ function mbfl_declare_option () {
     mbfl_getopts_INDEX=$index
 
     # Create the global option variable
-    eval script_option_$(mbfl_string_toupper ${keyword})=\'"${default}"\'
+    eval script_option_$(mbfl_string_toupper $keyword)=\'"$default"\'
 
     # Process action option.
-    test ${keyword:0:7} = 'ACTION_' && {
-        if test "${hasarg}" = 'noarg'
-        then test "${default}" = 'yes' && \
-            mbfl_main_set_main script_$(mbfl_string_tolower ${keyword})
-        else mbfl_message_error "action option must be with no argument '${keyword}'"
+    test ${keyword:0:7} = ACTION_ && {
+        if test "${hasarg}" = noarg
+        then test "${default}" = yes && \
+            mbfl_main_set_main script_$(mbfl_string_tolower $keyword)
+        else mbfl_message_error "action option must be with no argument '$keyword'"
         fi
     }
 }
 function mbfl_p_declare_option_test_length () {
-    local value="${1}"
-    local value_name="${2}"
-    local option_number=${3}
-
+    local value=$1
+    local value_name=$2
+    local option_number=$3
     test -z "$value" && {
-        mbfl_message_error "null ${value_name} in declared option number ${option_number}"
+        mbfl_message_error "null $value_name in declared option number $option_number"
         exit 2
     }
 }
@@ -190,40 +187,40 @@ function mbfl_declare_action_argument () {
     mandatory_parameter(description,5,description)
     local index=$(($mbfl_getopts_actargs_INDEX + 1))
 
-    test -z "${keyword}" && {
-        mbfl_message_error "null keyword in declared action argument number ${index}"
+    test -z "$keyword" && {
+        mbfl_message_error "null keyword in declared action argument number $index"
         exit 2
     }
     mbfl_getopts_actargs_KEYWORDS[$mbfl_getopts_actargs_INDEX]="$keyword"
 
     mbfl_getopts_is_action_argument "${argument}" || {
-        mbfl_message_error "wrong value '$argument' as keyword for action argument number ${index}"
+        mbfl_message_error "wrong value '$argument' as keyword for action argument number $index"
         exit 2
     }
     mbfl_getopts_actargs_STRINGS[$mbfl_getopts_actargs_INDEX]="$argument"
 
-    test "$selected" != "yes" -a "$selected" != "no" && {
+    test "$selected" != yes -a "$selected" != no && {
         mbfl_message_error \
-            "wrong value '$selected' as selection for action argument number ${index}"
+            "wrong value '$selected' as selection for action argument number $index"
         exit 2
     }
 
-    test "$skipopts" != "yes" -a "$skipopts" != "no" && {
+    test "$skipopts" != yes -a "$skipopts" != no && {
         mbfl_message_error \
-            "wrong value '$skipopts' as skip options flag for action argument number ${index}"
+            "wrong value '$skipopts' as skip options flag for action argument number $index"
         exit 2
     }
     mbfl_getopts_actargs_SKIPOPTS[$mbfl_getopts_actargs_INDEX]="$skipopts"
 
     test -z "$description" && {
-        mbfl_message_error "null description in declared action argument number ${index}"
+        mbfl_message_error "null description in declared action argument number $index"
         exit 2
     }
     mbfl_getopts_actargs_DESCRIPTION[$mbfl_getopts_actargs_INDEX]=$description
 
     mbfl_getopts_actargs_INDEX=$index
 
-    test "${selected}" = 'yes' && mbfl_main_set_main script_action_${keyword}
+    test "$selected" = yes && mbfl_main_set_main script_action_$keyword
     return 0
 }
 #page
