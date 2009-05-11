@@ -4,26 +4,27 @@
 #
 # Abstract
 #
-#	This script shows how an MBFL script can send email.  It
-#	supports plain connections and encrypted connections using
-#	external programs.
+#	This script shows how an MBFL script can send email.
+#	It supports plain connections and encrypted
+#	connections using external programs.
 #
 # Copyright (c) 2009 Marco Maggi <marcomaggi@gna.org>
 #
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
+# This  program  is free  software:  you  can redistribute  it
+# and/or modify it  under the terms of the  GNU General Public
+# License as published by the Free Software Foundation, either
+# version  3 of  the License,  or (at  your option)  any later
 # version.
 #
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
+# This  program is  distributed in  the hope  that it  will be
+# useful, but  WITHOUT ANY WARRANTY; without  even the implied
+# warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
+# PURPOSE.   See  the  GNU  General Public  License  for  more
+# details.
 #
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
+# You should  have received a  copy of the GNU  General Public
+# License   along   with    this   program.    If   not,   see
+# <http://www.gnu.org/licenses/>.
 #
 
 #page
@@ -44,7 +45,8 @@ script_EXAMPLES="Usage examples:
 \tTo: root@localhost
 \tSubject: ciao
 
-\tHow do you do?' | ${script_PROGNAME} \\
+\tHow do you do?
+\t' | ${script_PROGNAME} \\
 \t\t--from=marco@localhost --to=root@localhost"
 
 #page
@@ -57,8 +59,7 @@ mbfl_LOADED=no
 mbfl_INSTALLED=$(mbfl-config) &>/dev/null
 mbfl_HARDCODED=
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
-do
-    test -n "$item" -a -f "$item" -a -r "$item" && {
+do test -n "$item" -a -f "$item" -a -r "$item" && {
         source "$item" &>/dev/null || {
             printf '%s error: loading MBFL file "%s"\n' \
                 "$script_PROGNAME" "$item" >&2
@@ -102,9 +103,9 @@ mbfl_declare_option OPENSSL_CONNECTOR \
     no '' openssl noarg 'use openssl for TLS'
 
 mbfl_declare_option AUTH_FILE \
-    "$HOME/.authinfo" A auth-file witharg 'select the authorisation file'
-mbfl_declare_option USERNAME \
-    '' U username witharg 'select the authorisation user'
+    "$HOME/.authinfo" '' auth-file witharg 'select the authorisation file'
+mbfl_declare_option AUTH_USER \
+    '' '' username witharg 'select the authorisation user'
 mbfl_declare_option AUTH_PLAIN \
     no  '' auth-plain noarg 'select the plain authorisation type'
 mbfl_declare_option AUTH_LOGIN \
@@ -140,10 +141,14 @@ mbfl_main_declare_exit_code 5 invalid_auth_file
 ## Option update functions.
 ## ------------------------------------------------------------
 
-# Selected ESMTP authorisation type.
+# Selected   ESMTP   authorisation   type.   Valid   values:
+# "AUTH_LOGIN", "AUTH_PLAIN".
 AUTH_TYPE=AUTH_LOGIN
 
-# The identifier for the program to use as TLS connector.
+# The identifier  for the program  to use as  TLS connector.
+# Valid  values: "GNUTLS",  "OPENSSL"; if  set to  the empty
+# string: no connector  is used, so the session  is in plain
+# text.
 CONNECTOR=
 
 function script_option_update_AUTH_PLAIN () {
@@ -162,31 +167,70 @@ function script_option_update_OPENSSL_CONNECTOR () {
 function main () {
     local FROM_ADDRESS=$script_option_FROM
     local TO_ADDRESS=$script_option_TO
+    local SMTP_HOST=$script_option_HOST
+    local SMTP_PORT=$script_option_PORT
     local MESSAGE
-    # Input and output file descriptors when using a connector
-    # subprocess.
-    local INFD OUFD
-    # This  is  for the  PID  of  the "gnutls-cli"  external
-    # program, executed as child process.
-    local GNUTLSCLI
+    # Input  and  output   file  descriptors  when  using  a
+    # connector subprocess.
+    local INFD= OUFD=
+    # This is for the PID of the connector external program,
+    # executed as child process.
+    local CONNECTOR_PID=
     # Pathnames of the FIFOs used to talk to the connector's
     # child process.
-    local INFIFO OUFIFO
+    local INFIFO= OUFIFO=
 
     validate_command_line_options       || exit $?
     read_message_from_selected_source   || exit $?
-    connect                             || exit $?
-    if test "$script_option_DELAYED_STARTTLS" = yes
-    then
-        esmtp_exchange_greetings        || exit $?
-    elif test "$script_option_STARTTLS" = yes
-    then
-        esmtp_exchange_greetings        || exit $?
-    else
-        esmtp_exchange_greetings        || exit $?
-    fi
+    {
+        local msg=$(printf 'connecting to \"%s:%d\"' "$SMTP_HOST" "$SMTP_PORT")
+        mbfl_message_verbose "$msg\n"
+
+        if test -z "$CONNECTOR"
+        then
+            connect_establish_plain_connection
+            smtp_exchange_greetings            || exit $?
+        elif test "$script_option_STARTTLS" = yes
+        then
+            connect_make_fifos_for_connector   || exit $?
+            case "$CONNECTOR" in
+                GNUTLS)
+                    connect_using_gnutls  || exit $?
+                    ;;
+                OPENSSL)
+                    connect_using_openssl || exit $?
+                    ;;
+                *)
+                    mbfl_message_error "internal: unknown connector $CONNECTOR"
+                    return 1
+                    ;;
+            esac
+            connect_establish_tls_connection
+            esmtp_exchange_greetings            || exit $?
+        elif test "$script_option_DELAYED_STARTTLS" = yes
+        then
+            connect_make_fifos_for_connector   || exit $?
+            case "$CONNECTOR" in
+                GNUTLS)
+                    connect_using_gnutls_delayed  || exit $?
+                    ;;
+                OPENSSL)
+                    connect_using_openssl_delayed || exit $?
+                    ;;
+                *)
+                    mbfl_message_error "internal: unknown connector $CONNECTOR"
+                    return 1
+                    ;;
+            esac
+            connect_establish_tls_connection
+            esmtp_exchange_greetings            || exit $?
+        fi
+        mbfl_message_verbose 'connection established\n'
+    } || exit_because_failed_connection
+    esmtp_authentication
     esmtp_send_message                  || exit $?
     esmtp_quit                          || exit $?
+    test -n "$CONNECTOR" && wait $CONNECTOR_PID
     exit_because_success
 }
 function validate_command_line_options () {
@@ -277,8 +321,8 @@ function print_test_message () {
     local HOSTNAME_PROGRAM DATE_PROGRAM
     HOSTNAME_PROGRAM=$(mbfl_program_found hostname)                     || exit $?
     DATE_PROGRAM=$(mbfl_program_found date)                             || exit $?
-    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn)      || exit 2
-    DATE=$(mbfl_program_exec "$DATE_PROGRAM" --rfc-2822)                || exit 2
+    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn)      || exit_failure
+    DATE=$(mbfl_program_exec "$DATE_PROGRAM" --rfc-2822)                || exit_failure
     MESSAGE_ID=$(printf '%d-%d-%d@%s' $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME")
     MESSAGE="Sender: $FROM_ADDRESS
 From: $FROM_ADDRESS
@@ -295,32 +339,51 @@ Copyright $script_COPYRIGHT_YEARS $script_AUTHOR
     printf "$MESSAGE"
 }
 #page
-function connect () {
-    local SMTP_HOST=$script_option_HOST
-    local SMTP_PORT=$script_option_PORT
-    local msg
-    if test "$script_option_STARTTLS" = no -a "$script_option_DELAYED_STARTTLS" = no
-    then connect_establish_plain_connection     || return $?
-    else
-        connect_make_fifos_for_connector        || return $?
-        connect_using_selected_connector        || return $?
-        connect_open_file_descriptors_to_fifos  || return $?
-    fi
-}
 function connect_establish_plain_connection () {
-    local DEVICE
-    msg=$(printf 'connecting to \"%s:%d\"' "$SMTP_HOST" "$SMTP_PORT")
-    mbfl_message_verbose "$msg\n"
-    DEVICE=$(printf '/dev/tcp/%s/%d' "$SMTP_HOST" "$SMTP_PORT")
+    local DEVICE=$(printf '/dev/tcp/%s/%d' "$SMTP_HOST" "$SMTP_PORT")
     INFD=3
     OUFD=$INFD
     exec 3<>"$DEVICE" || {
         msg=$(printf 'failed establishing connection to %s:%d' "$SMTP_HOST" $SMTP_PORT)
         mbfl_message_error "$msg"
-        exit_because_failed_connection
+        return 1
     }
-    mbfl_message_verbose 'connection established\n'
 }
+function connect_using_gnutls () {
+    local GNUTLS GNUTLS_FLAGS=" --crlf --port $SMTP_PORT"
+    GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
+    mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOST" || {
+        msg=$(printf 'failed connection to \"%s:%s\"' "$SMTP_HOST" "$SMTP_PORT")
+        mbfl_message_error "$msg"
+        exit_failed_connection
+    }
+    CONNECTOR_PID=$mbfl_program_BGPID
+    mbfl_message_debug "pid of gnutls: $CONNECTOR_PID"
+    return 0
+}
+function connect_using_gnutls_delayed () {
+    local GNUTLS GNUTLS_FLAGS=" --crlf --starttls --port $SMTP_PORT"
+    GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
+    mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOST" || {
+        msg=$(printf 'failed connection to \"%s:%s\"' "$SMTP_HOST" "$SMTP_PORT")
+        mbfl_message_error "$msg"
+        exit_failed_connection
+    }
+    CONNECTOR_PID=$mbfl_program_BGPID
+    mbfl_message_debug "pid of gnutls: $CONNECTOR_PID"
+    esmtp_exchange_greetings
+    kill -SIGALRM $CONNECTOR_PID
+    return 0
+}
+function connect_using_openssl () {
+# $ openssl s_client -connect smtp.myhost.com:25 -starttls smtp
+# $ openssl s_client -connect smtp.myhost.com:465
+    return 1
+}
+function connect_using_openssl_delayed () {
+    return 1
+}
+#page
 function connect_make_fifos_for_connector () {
     local MKFIFO
     TMPDIR=$(mbfl_file_find_tmpdir) || {
@@ -342,39 +405,6 @@ function connect_cleanup_fifos () {
     mbfl_file_remove "$INFIFO" &>/dev/null || true
     mbfl_file_remove "$OUFIFO" &>/dev/null || true
 }
-function connect_using_selected_connector () {
-    msg=$(printf 'connecting to \"%s:%s\"' "$SMTP_HOST" "$SMTP_PORT")
-    mbfl_message_verbose "$msg\n"
-    case "$CONNECTOR" in
-        GNUTLS)
-            connect_using_gnutls  || return $?
-            ;;
-        OPENSSL)
-            connect_using_openssl || return $?
-            ;;
-        *)
-            mbfl_message_error "internal: unknown connector $CONNECTOR"
-            exit_failure
-            ;;
-    esac
-    mbfl_message_verbose 'connection established\n'
-    return 0
-}
-function connect_using_gnutls () {
-    local GNUTLS GNUTLS_FLAGS=" --crlf --starttls --port $SMTP_PORT"
-    GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
-    mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOST" || {
-        msg=$(printf 'failed connection to \"%s:%s\"' "$SMTP_HOST" "$SMTP_PORT")
-        mbfl_message_error "$msg"
-        exit_failed_connection
-    }
-    GNUTLS_PID=$mbfl_program_BGPID
-    mbfl_message_debug "pid of gnutls: $GNUTLS_PID"
-    return 0
-}
-function connect_using_openssl () {
-    return 1
-}
 function connect_open_file_descriptors_to_fifos () {
     INFD=3
     OUFD=4
@@ -390,20 +420,19 @@ function recv () {
     IFS= read line <&$INFD
     msg=$(printf 'recv: %s\n' "$line")
     mbfl_message_debug "$msg"
-    if test "${line:0:3}" != "$EXPECTED_CODE"
-    then
+    test "${line:0:3}" = "$EXPECTED_CODE" || {
         send %s QUIT
         IFS=read -t 3 line <$INFD
         msg=$(printf 'recv: %s\n' "$line")
-        exit 2
-    fi
+        exit_failure
+    }
 }
 function send () {
     local pattern=${1:?}
     shift
-    local line=$(printf "${pattern}" "$@")
-    printf '%s\r\n' "${line}" >&$OUFD
-    local msg=$(printf 'sent: %s\n' "${line}")
+    local line=$(printf "$pattern" "$@")
+    printf '%s\r\n' "$line" >&$OUFD
+    local msg=$(printf 'sent: %s\n' "$line")
     mbfl_message_debug "$msg"
 }
 function read_and_send_message () {
@@ -418,13 +447,50 @@ function read_and_send_message () {
     mbfl_message_debug "$msg"
 }
 #page
-function esmtp_exchange_greetings () {
+function smtp_exchange_greetings () {
+    local HOSTNAME_PROGRAM
+    HOSTNAME_PROGRAM=$(mbfl_program_found hostname)                     || exit $?
+    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn)      || exit_failure
     mbfl_message_verbose 'esmtp: exchanging greetings with server\n'
     recv 220
-    send 'HELO %s' 127.0.0.1
+    send 'HELO %s' "$LOCAL_HOSTNAME"
+    recv 250
+}
+function esmtp_exchange_greetings () {
+    local HOSTNAME_PROGRAM
+    HOSTNAME_PROGRAM=$(mbfl_program_found hostname)                     || exit $?
+    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn)      || exit_failure
+    mbfl_message_verbose 'esmtp: exchanging greetings with server\n'
+    recv 220
+    send 'EHLO %s' "$LOCAL_HOSTNAME"
     recv 250
 }
 function esmtp_authentication () {
+    local BASE64 LOGIN_NAME= PASSWORD= msg=
+    BASE64=$(mbfl_program_found base64) || exit $?
+    auth_read_credentials
+    case "$AUTH_TYPE" in
+        AUTH_PLAIN)
+            mbfl_message_verbose 'performing AUTH PLAIN authentication\n'
+            send 'AUTH PLAIN %s' \
+                $(printf "\x00${LOGIN_NAME}\x00${PASSWORD}" | mbfl_program_exec "$BASE64")
+            recv 235
+            ;;
+        AUTH_LOGIN)
+            mbfl_message_verbose 'performing AUTH LOGIN authentication\n'
+            send 'AUTH LOGIN'
+            recv 334
+            send $(echo -n "$LOGIN_NAME" | mbfl_program_exec "$BASE64")
+            recv 334
+            send $(echo -n "$PASSWORD"   | mbfl_program_exec "$BASE64")
+            recv 235
+            ;;
+        *)
+            local msg=$(printf 'unknown authorisation type: %s' "$AUTH_TYPE")
+            mbfl_message_error "$msg"
+            exit_failure
+            ;;
+    esac
     return 0
 }
 function esmtp_send_message () {
@@ -446,6 +512,54 @@ function esmtp_quit () {
     recv 221
     return 0
 }
+#page
+## ------------------------------------------------------------
+## Auth file.
+## ------------------------------------------------------------
+
+function auth_read_credentials () {
+    local auth_user=$script_option_AUTH_USER
+    local auth_file=$script_option_AUTH_FILE
+    local HOSTNAME=$script_option_HOST
+    local line= GREP
+    GREP=$(mbfl_program_found grep) || exit $?
+    mbfl_message_verbose 'reading auth file\n'
+    mbfl_file_is_readable "$auth_file" || {
+        local msg=$(printf 'unreadable auth file \"%s\"' "$auth_file")
+        mbfl_message_error "$msg"
+        exit_because_unreadable_auth_file
+    }
+    line=$(mbfl_program_exec "${GREP}" "$auth_user" "$auth_file") || {
+        local msg=$(printf 'unknown auth user name \"%s\"' "$LOGIN_NAME")
+        mbfl_message_error "$msg"
+        exit_because_unknown_auth_user
+    }
+    set -- $line
+    auth_file_validate_word "$1" machine        first   || exit $?
+    auth_file_validate_word "$2" "$HOSTNAME"    second  || exit $?
+    auth_file_validate_word "$3" login          third   || exit $?
+    auth_file_validate_word "$5" password       fifth   || exit $?
+    LOGIN_NAME=$4
+    PASSWORD=$6
+# This is reserved information so do not print it on the terminal!!!
+#     local msg=$(printf 'username %s, password %s' "$LOGIN_NAME" "$PASSWORD")
+#     mbfl_message_debug "$msg"
+    return 0
+}
+function auth_file_validate_word () {
+    local GOT=${1:?} EXPECTED=${2:?} POSITION=${3:?} msg=
+    if test "$GOT" = "$EXPECTED"
+    then
+        msg=$(printf 'good %s word of auth record (%s)' $POSITION $GOT)
+        mbfl_message_verbose "$msg\n"
+    else
+        msg=$(printf 'expected \"%s\" as %s word of auth record, got \"%s\"' \
+            "$EXPECTED" "$POSITION" "$GOT")
+        mbfl_message_error "$msg"
+        exit_because_invalid_auth_file
+    fi
+}
+
 #page
 
 mbfl_main

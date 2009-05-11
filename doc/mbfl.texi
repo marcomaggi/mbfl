@@ -636,11 +636,10 @@ Examples for sending email
 * sendmail plain::              Just send an email message.
 * sendmail connector::          Send email through a process in
                                 background.
-* sendmail gnutls::             Using @command{gnutls-cli} connector.
+* sendmail gnutls::             Using @command{gnutls-cli} as connector.
 * sendmail send::               Sending email.
-* sendmail gmail::              Sending email with Gmail.
 
-Using @command{gnutls-cli} connector
+Using @command{gnutls-cli} as connector
 
 * sendmail gnutls now::         Immediate encrypted bridge.
 * sendmail gnutls delay::       Delayed encrypted bridge.
@@ -4525,7 +4524,6 @@ keyword in @strong{not} used in this appendix.
                                 background.
 * sendmail gnutls::             Using @command{gnutls-cli} as connector.
 * sendmail send::               Sending email.
-* sendmail gmail::              Sending email with Gmail.
 @end menu
 
 @c page
@@ -5171,8 +5169,8 @@ sendmail-mbfl.sh \
 @end smallexample
 
 @noindent
-the script sends an email address, and it works very much like the
-example script in @ref{sendmail plain, Just send an email message}.
+the script sends an email address, and it can do a plain session or use
+a connector.  Options description follows.
 
 @table @code
 @item -F @var{address}
@@ -5185,13 +5183,14 @@ Select the @code{RCPT TO} envelope address.
 
 @item -M @var{source}
 @itemx --message @var{source}
-Select the source from which read the whole email message, headers and
-body.  If @var{source} is a file pathname, that file is read and used as
-data; if @var{source} is @code{-}, the message is read from the standard
-input channel.  It defaults to @code{-}.
+Select the source of the whole email message.  If @var{source} is a file
+pathname, that file is read and used as data; if @var{source} is
+@code{-}, the message is read from the standard input channel.  It
+defaults to @code{-}.
 
 @item --test-message
-Send a test message with a hard--coded body part.
+Send a test message with a hard--coded body part.  This option
+supersedes @option{--message}.
 
 @item -n @var{host}
 @itemx --hostname @var{host}
@@ -5200,87 +5199,35 @@ Select the @smtp{} server host name.  It defaults to @code{localhost}.
 @item -p @var{port}
 @itemx --port @var{port}
 Select the @smtp{} server @tcp{} port.  It defaults to @code{25}.
+
+@item --starttls
+Establish a @tls{} bridge immediately, right after the connection.
+
+@item --delayed-starttls
+Establish a @tls{} bridge after server greetings.
+
+@item --gnutls
+Use @command{gnutls-cli} as connector for encrypted sessions.  This is
+the default when @option{--starttls} or @option{--delayed-starttls} are
+used.
+
+@item --openssl
+Use @command{gnutls-cli} as connector for encrypted sessions.
+
+@item --auth-file @var{file}
+Select the file, in @code{netrc} format, from which read the
+authorisation credentials.  Defaults to @file{~/.authinfo}.
+
+@item --username @var{user}
+Specify a string used to select an account in the authorisation file.
+
+@item --auth-plain
+Select the @code{AUTH PLAIN} authorisation type.  This is the default
+when @option{--starttls} or @option{--delayed-starttls} are used.
+
+@item --auth-login
+Select the @code{AUTH LOGIN} authorisation type.
 @end table
-
-Usage example using stdin as message source:
-
-@example
-print_message | mbfl-mail.sh \
-                 --from=marco@@localhost --to=root@@localhost \
-                 --verbose --debug
-@end example
-
-@noindent
-the function @bfunc{print_message} prints a test message and it is
-described in @ref{sendmail message, How to compose a test email
-message}.
-
-Usage example using a file as message source:
-
-@example
-FILE=$(tempfile)
-trap "rm '$FILE'" EXIT
-print_message >"$FILE"
-
-sendmail-mbfl.sh \
-    --from=marco@@localhost --to=root@@localhost --body="$FILE" \
-    --verbose --debug
-@end example
-
-@c page
-@node sendmail gmail
-@appendixsec Sending email with Gmail
-
-
-This section documents the example script
-@file{examples/mbfl-smtp-gmail.sh}, which makes use of @mbfl{} to send
-an email message using the Gmail server.
-
-The @smtp{} service at Gmail has hostname @code{smtp.gmail.com} and port
-number 587; it makes use of the @tls{} protocol.  Obviously, to make use
-of the script we have to open an account at Gmail.
-
-The synopsis is:
-
-@example
-mbfl-smtp-gmail.sh \
-    --from=@meta{ADDRESS} --to=@meta{ADDRESS} \
-    --body=@meta{SOURCE} --auth-file=@meta{AUTH_FILE}
-    [options]
-@end example
-
-@noindent
-the script works very much like the example described in @ref{sendmail
-connector, Send email through a process in background}.
-
-
-@table @code
-@item -F @var{address}
-@itemx --from @var{address}
-Select the @code{MAIL FROM} envelope address.
-
-@item -T @var{address}
-@itemx --to @var{address}
-Select the @code{RCPT TO} envelope address.
-
-@item -B @var{source}
-@item --body @var{source}
-Select the source from which read the whole email message, headers and
-body.  If @var{source} is a file pathname, that file is read and used as
-data; if @var{source} is @code{-}, the message is read from the standard
-input channel.  It defaults to @code{-}.
-
-@item -n @var{host}
-@itemx --hostname @var{host}
-Select the @smtp{} server host name.  It defaults to @code{localhost}.
-
-@item -p @var{port}
-@itemx --port @var{port}
-Select the @smtp{} server @tcp{} port.  It defaults to @code{25}.
-@end table
-
-
-
 
 @c page
 @c ------------------------------------------------------------
