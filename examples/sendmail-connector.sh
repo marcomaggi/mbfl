@@ -33,6 +33,7 @@
 #
 
 PROGNAME=${0##*/}
+: ${TMPDIR:=/tmp}
 
 function main () {
     local HOSTNAME=localhost
@@ -78,8 +79,8 @@ Marco
 }
 function open_session () {
     local HOSTNAME=${1:?}
-    local INFIFO=/tmp/marco/in.$$
-    local OUFIFO=/tmp/marco/out.$$
+    local INFIFO=${TMPDIR}/in.$$
+    local OUFIFO=${TMPDIR}/out.$$
     # Bash  has  no  operation  equivalent to  the  C  level
     # "pipe()" function, so we have to use FIFOs.
     mkfifo $INFIFO $OUFIFO
@@ -103,8 +104,11 @@ function recv () {
     if test "${line:0:3}" != "$EXPECTED_CODE"
     then
         send %s QUIT
-        # It may be  cleaner to wait for the  reply from the
+        # It is cleaner to wait for the reply from the
         # server.
+        IFS= read line <&3
+        test "$LOGGING_TO_STDERR" = yes && \
+            printf '%s log: recv: %s\n' "$PROGNAME" "$line"
         exit 2
     fi
 }

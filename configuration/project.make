@@ -11,6 +11,9 @@ MBFL_LIBRARY	= $(srcdir)/src/backup/libmbfl.sh
 MBFLPP_SCRIPT	= $(srcdir)/src/scripts/mbflpp.sh
 MBFLPP		= MBFL_LIBRARY=$(MBFL_LIBRARY) $(BASH_PROGRAM) $(MBFLPP_SCRIPT)
 
+# This is to include example scripts in the documentation.
+texi_MORE_FLAGS	= -I$(srcdir)/examples
+
 #page
 MODULES	= base encode file getopts message program signal \
 	  string dialog main variable system interfaces

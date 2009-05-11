@@ -709,7 +709,8 @@ ds_texi_SOURCES		= $$(call ds-glob,ds_texi,*.texi)
 
 DS_TEXI_FLAGS		= -I $$(ds_texi_SRCDIR)		\
 			  -I $$(ds_texi_BUILDDIR)	\
-			  -I $$(infrastructuredir)
+			  -I $$(infrastructuredir)	\
+			  $$(texi_MORE_FLAGS)
 DS_TEXI2INFO_FLAGS	= $$(DS_TEXI_FLAGS) --no-split
 DS_TEXI2HTML_FLAGS	= $$(DS_TEXI_FLAGS) --no-split --html
 DS_TEXI2DVI_FLAGS	= $$(DS_TEXI_FLAGS) --dvi --tidy \

@@ -88,13 +88,15 @@ function recv () {
     IFS= read line <&3
     test "$LOGGING_TO_STDERR" = yes && \
         printf '%s log: recv: %s\n' "$PROGNAME" "$line"
-    if test "${line:0:3}" != "$EXPECTED_CODE"
-    then
+    test "${line:0:3}" = "$EXPECTED_CODE" || {
         send %s QUIT
-        # It may be  cleaner to wait for the  reply from the
+        # It is cleaner to wait for the reply from the
         # server.
+        IFS= read line <&3
+        test "$LOGGING_TO_STDERR" = yes && \
+            printf '%s log: recv: %s\n' "$PROGNAME" "$line"
         exit 2
-    fi
+    }
 }
 function send () {
     local pattern=${1:?}

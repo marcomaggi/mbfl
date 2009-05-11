@@ -3002,6 +3002,12 @@ Texinfo source will be created.
 @end deffn
 
 
+@defvr {Makefile Variable} texi_MORE_FLAGS
+Customisable variable meant to hold flags for the command line of all
+the @command{makeinfo} invocations.  For example: it is the place to
+select additional include directories.
+@end defvr
+
 @c page
 @node make modules texinfo info
 @subsubsection Documenation in Info format

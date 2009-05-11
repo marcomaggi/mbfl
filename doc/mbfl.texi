@@ -4504,12 +4504,19 @@ dotest mytest-
 @appendix Examples for sending email
 
 
-In this appendix we review some example that can be used to send email
-from a Bash script.  First we examine some plain script, making no use
-of @mbfl{}, to understand the basics of how to handle the @smtp{}
-protocol and how to ``talk'' to a process in background.  Then we see
-the documentation of the example scripts that come in the @mbfl{}
+In this appendix we review some examples that can be used to send email
+from a Bash script.  First we examine plain scripts (making no use of
+@mbfl{}) to understand the basics of how to handle the @smtp{} protocol
+and how to ``talk'' to a process in background.  Then we see the
+documentation of the example scripts that come in the @mbfl{}
 distribution under the @file{examples} directory.
+
+@quotation
+Bash version 4 introduced the new keyword @code{coproc}, which can be
+used to spawn processes in background and talk to them via pipes.  This
+keyword in @strong{not} used in this appendix.
+@end quotation
+
 
 @menu
 * sendmail message::            How to compose a test email message.
@@ -4546,7 +4553,7 @@ Marco
 We have to remember that the @smtp{} server receiving the message may
 rewrite the addresses, for example: replacing @code{localhost} with the
 fully qualified local host name (the output of the command
-@command{hostname --fqdn}).  So when reading the delivered message, we
+@command{hostname --fqdn}); so, when reading the delivered message, we
 do not have to be surprised to find changed addresses.
 
 We want to notice the following:
@@ -4566,7 +4573,7 @@ do not confuse this value with the host name of the @smtp{} server!
 @item
 The value of the @code{Message-ID} header must be enclosed in angular
 parentheses, and it must contain an address--like string with random
-characters in the name portion.  It can be generated with:
+characters in the name part.  It can be generated with:
 
 @example
 MESSAGE_ID=$(printf '%d-%d-%d@@%s' \
@@ -4708,9 +4715,10 @@ redundant in such a simple script, it is there for completeness.
 @defun send @var{pattern}
 @defunx send @var{pattern} @var{arg} @dots{}
 Send a string to the @smtp{} server.  Use @bfunc{printf} to format the
-string @var{pattern} with the optional arguments @var{arg}, then write
-the resulting string to file descriptor 3.  The string written out is
-ended with the sequence @code{\r\n} as mandated by the @smtp{} protocol.
+string @var{pattern} with the optional arguments, then write the
+resulting string to file descriptor 3.  The string written out is
+terminated with the sequence @code{\r\n} as mandated by the @smtp{}
+protocol.
 @end defun
 
 
@@ -4729,98 +4737,8 @@ the file descriptor 3.  The line is interpreted as a message from the
 code is different from @var{expected_code}, raise an error.
 @end defun
 
-
 @smallexample
-# sendmail-plain.sh --
-#
-
-PROGNAME=$@{0##*/@}
-
-function main () @{
-    local HOSTNAME=localhost
-    local SMTP_PORT=25
-    local FROM_ADDRESS=marco@@localhost
-    local TO_ADDRESS=root@@localhost
-    local LOGGING_TO_STDERR=yes
-
-    open_session "$HOSTNAME"
-    recv 220
-    send 'HELO %s' 127.0.0.1
-    recv 250
-    send 'MAIL FROM:<%s>' "$FROM_ADDRESS"
-    recv 250
-    send 'RCPT TO:<%s>' "$TO_ADDRESS"
-    recv 250
-    send %s DATA
-    recv 354
-    print_message | read_and_send_message
-    send %s .
-    recv 250
-    send %s QUIT
-    recv 221
-@}
-function print_message () @{
-    local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
-    LOCAL_HOSTNAME=$(hostname --fqdn) || exit 2
-    DATE=$(date --rfc-2822) || exit 2
-    MESSAGE_ID=$(printf '%d-%d-%d@@%s' \
-        $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME") || exit 2
-    MESSAGE="Sender: $FROM_ADDRESS
-From: $FROM_ADDRESS
-To: $TO_ADDRESS
-Subject: proof from $PROGNAME
-Message-ID: <$MESSAGE_ID>
-Date: $DATE
-
-This is a text proof from the $PROGNAME script.
---\x20
-Marco
-"
-    printf "$MESSAGE"
-@}
-function open_session () @{
-    local HOSTNAME=$@{1:?@}
-    local DEVICE=$(printf '/dev/tcp/%s/%d' "$HOSTNAME" $SMTP_PORT)
-    exec 3<>"$DEVICE"
-    trap 'exec 3<&-' EXIT
-@}
-function recv () @{
-    local EXPECTED_CODE=$@{1:?@}
-    local line=
-    IFS= read line <&3
-    test "$LOGGING_TO_STDERR" = yes && \
-        printf '%s log: recv: %s\n' "$PROGNAME" "$line"
-    if test "$@{line:0:3@}" != "$EXPECTED_CODE"
-    then
-        send %s QUIT
-        # It may be cleaner to wait for the reply
-        # from the server.
-        exit 2
-    fi
-@}
-function send () @{
-    local pattern=$@{1:?@}
-    shift
-    local line=$(printf "$pattern" "$@@")
-    printf '%s\r\n' "$line" >&3
-    test "$LOGGING_TO_STDERR" = yes && \
-        printf '%s log: sent: %s\n' "$PROGNAME" "$line"
-@}
-function read_and_send_message () @{
-    local line
-    local -i count=0
-    while IFS= read line
-    do
-        printf '%s\r\n' "$line" >&3
-        let ++count
-    done
-    test "$LOGGING_TO_STDERR" = yes && \
-        printf '%s log: sent message (%d lines)\n' "$PROGNAME" $count
-@}
-
-main
-
-### end of file
+@verbatiminclude sendmail-plain.sh
 @end smallexample
 
 @c page
@@ -4832,18 +4750,18 @@ The script below can be found in @file{examples/sendmail-connector.sh}.
 It just sends a hard--coded email message, from a hard--coded address to a
 hard--coded address.  It makes no use of @mbfl{}.
 
-The purpose the script is to understand how to send a message through a
-process in background.  It does the same things of the example described
-in @ref{sendmail plain, Just send an email message}.  The main
+The purpose of the script is to understand how to send a message through
+a process in background.  It does the same things of the example
+described in @ref{sendmail plain, Just send an email message}.  The main
 difference is that the single function @bfunc{open_session} is replaced
 by the two functions @bfunc{open_session} and @bfunc{connector}.
 
 What is important to understand, is how @bfunc{open_session} runs
 @bfunc{connector} in background and sets up two file descriptors to talk
-to it.  In the real world we never use this technique; this example
-script makes use of @bfunc{connector} as a replacement for an external
-program that can establish sophisticated connections to remote hosts,
-for example using the @tls{}/@ssl{} protocols.
+to it.  In the real world we never use this technique with a function;
+this example script makes use of @bfunc{connector} as a replacement for
+an external program that can establish sophisticated connections to
+remote hosts, for example using the @tls{}/@ssl{} protocols.
 
 
 @defun open_session @var{hostname}
@@ -4862,19 +4780,21 @@ process to the background process.
  ---------  in pipe   -----------          --------
 @end example
 
-Bash has no way to create a pipe using the @cfunc{pipe} system function,
-so we use two @fifo{} channels created by the @command{mkfifo} program:
+Bash has no way to create a pipe using the @cfunc{pipe} system function
+(up until version 4), so we use two @fifo{} channels created by the
+@command{mkfifo} program:
 
 @example
-local INFIFO=/tmp/marco/in.$$
-local OUFIFO=/tmp/marco/out.$$
+: $@{TMPDIR:=/tmp@}
+local INFIFO=$@{TMPDIR@}/in.$$
+local OUFIFO=$@{TMPDIR@}/out.$$
 
 mkfifo $INFIFO $OUFIFO
 @end example
 
 @noindent
-the script will use the @code{INFIFO} @fifo{} to read characters from
-@bfunc{connector}, and the @code{OUFIFO} @fifo{} to send characters to
+the script will use @code{INFIFO} to read characters from
+@bfunc{connector}, and @code{OUFIFO} to send characters to
 @bfunc{connector}.
 
 @example
@@ -4885,7 +4805,7 @@ the script will use the @code{INFIFO} @fifo{} to read characters from
 @end example
 
 Once the @fifo{}s exist on the file system, we run @bfunc{connector} in
-background connecting its standard input and output to the @fifo{}s:
+background, connecting its standard input and output to the @fifo{}s:
 
 @example
 connector $HOSTNAME $SMTP_PORT <$OUFIFO >$INFIFO &
@@ -4935,139 +4855,7 @@ it reads lines from the server, and echoes them to stdout.
 
 
 @smallexample
-# sendmail-connector.sh --
-#
-
-PROGNAME=$@{0##*/@}
-
-function main () @{
-    local HOSTNAME=localhost
-    local SMTP_PORT=25
-    local FROM_ADDRESS=marco@@localhost
-    local TO_ADDRESS=root@@localhost
-    local LOGGING_TO_STDERR=yes
-
-    open_session "$HOSTNAME"
-    recv 220
-    send 'HELO %s' 127.0.0.1
-    recv 250
-    send 'MAIL FROM:<%s>' "$FROM_ADDRESS"
-    recv 250
-    send 'RCPT TO:<%s>' "$TO_ADDRESS"
-    recv 250
-    send %s DATA
-    recv 354
-    print_message | read_and_send_message
-    send %s .
-    recv 250
-    send %s QUIT
-    recv 221
-@}
-function print_message () @{
-    local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
-    LOCAL_HOSTNAME=$(hostname --fqdn) || exit 2
-    DATE=$(date --rfc-2822) || exit 2
-    MESSAGE_ID=$(printf '%d-%d-%d@@%s' \
-        $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME")
-    MESSAGE="Sender: $FROM_ADDRESS
-From: $FROM_ADDRESS
-To: $TO_ADDRESS
-Subject: proof from $PROGNAME
-Message-ID: <$MESSAGE_ID>
-Date: $DATE
-
-This is a text proof from the $PROGNAME script.
---\x20
-Marco
-"
-    printf "$MESSAGE"
-@}
-function open_session () @{
-    local HOSTNAME=$@{1:?@}
-    local INFIFO=/tmp/marco/in.$$
-    local OUFIFO=/tmp/marco/out.$$
-    mkfifo $INFIFO $OUFIFO
-    connector "$HOSTNAME" <$OUFIFO >$INFIFO &
-    exec 3<>$INFIFO 4>$OUFIFO
-    rm $INFIFO $OUFIFO
-    trap 'exec 3<&- 4>&-' EXIT
-@}
-function recv () @{
-    local EXPECTED_CODE=$@{1:?@}
-    local line=
-    IFS= read line <&3
-    test "$LOGGING_TO_STDERR" = yes && \
-        printf '%s log: recv: %s\n' "$PROGNAME" "$line"
-    if test "$@{line:0:3@}" != "$EXPECTED_CODE"
-    then
-        send %s QUIT
-        # It may be cleaner to wait for the reply
-        # from the server.
-        exit 2
-    fi
-@}
-function send () @{
-    local pattern=$@{1:?@}
-    shift
-    local line=$(printf "$pattern" "$@@")
-    printf '%s\r\n' "$line" >&4
-    test "$LOGGING_TO_STDERR" = yes && \
-        printf '%s log: sent: %s\n' "$PROGNAME" "$line"
-@}
-function read_and_send_message () @{
-    local line
-    local -i count=0
-    while IFS= read line
-    do
-        printf '%s\r\n' "$line" >&4
-        let ++count
-    done
-    test "$LOGGING_TO_STDERR" = yes && \
-        printf '%s log: sent message (%d lines)\n' "$PROGNAME" $count
-@}
-function connector () @{
-    local HOSTNAME=$@{1:?@} query= answer= line=
-    local DEVICE=$(printf '/dev/tcp/%s/%d' "$HOSTNAME" $SMTP_PORT)
-    exec 3<>"$DEVICE"
-    # Read the  greetings from the server, echo  them to the
-    # client.
-    IFS= read answer <&3
-    printf '%s\n' "$answer"
-    # Read the query from the client, echo it to the server.
-    while read query
-    do
-        printf '%s\r\n' "$query" >&3
-        # Read the  answer from the  server, echo it  to the
-        # client.
-        IFS= read answer <&3
-        printf '%s\n' "$answer"
-        # Test special queries.
-        test "$query" = QUIT$'\r' && @{
-            IFS= read answer <&3
-            printf '%s\n' "$answer"
-            exit
-        @}
-        test "$query" = DATA$'\r' && @{
-            # Read data lines from  the client, echo them to
-            # the server up until ".\r" is read.
-            while IFS= read line
-            do
-                printf '%s\n' "$line" >&3
-                test "$@{line:0:2@}" = .$'\r' && break
-            done
-            # Read the answer to  data from the server, echo
-            # it to the client.
-            IFS= read answer <&3
-            printf '%s\n' "$answer"
-        @}
-    done
-    # We should never come here.
-    exit 1
-@}
-
-main
-
-### end of file
+@verbatiminclude sendmail-connector.sh
 @end smallexample
 
 @c page
@@ -5084,11 +4872,12 @@ A @gnu{} @tls{} installation comes with a command line test program,
 @command{gnutls-cli}, that can be used to establish an encrypted
 connection by a shell script.  This command can be used as the
 ``connector'' modeled in @ref{sendmail connector, Send email through a
-process in background}.  It as a manual page, which we may want to read.
+process in background}.  It has a manual page, which we may want to
+read.
 
 When handling an encrypted connection we have to know in advance how the
 remote @smtp{} server behaves.  Let's see first the simpler example,
-using the a human driven interactive session; the we will describe an
+using the a human driven interactive session; then we will describe a
 more complex interaction.
 
 @menu
@@ -5119,6 +4908,14 @@ ENCODED_USERNAME=$(echo -n 'the-user-name' | base64)
 ENCODED_PASSWORD=$(echo -n 'the-pass-word' | base64)
 @end example
 
+@noindent
+@gnu{} Emacs users can do it with:
+
+@example
+(setq my-usr (base64-encode-string "the-user-name"))
+(setq my-pwd (base64-encode-string "the-pass-word"))
+@end example
+
 The authentication dialogue goes like this:
 
 @enumerate
@@ -5135,11 +4932,18 @@ with:
 $ echo -n Username: | base64
 @end example
 
+@noindent
+or in the Emacs' scratch buffer:
+
+@example
+(base64-encode-string "Username:")
+@end example
+
 @item
 We send the login user name encoded in base64.
 
 @item
-It checks the user name and, if correct, replies with @code{334
+It checks the user name and, if correct, it replies with @code{334
 UGFzc3dvcmQ6}.  The string @code{UGFzc3dvcmQ6} is the base64 encoding of
 the string @code{Password:} (without ending newline); we can verify this
 with:
@@ -5148,11 +4952,18 @@ with:
 $ echo -n Password: | base64
 @end example
 
+@noindent
+or in the Emacs' scratch buffer:
+
+@example
+(base64-encode-string "Password:")
+@end example
+
 @item
 We send the login password encoded in base64.
 
 @item
-It checks it and, if correct, replies with a line starting with code
+It checks it and, if correct, it replies with a line starting with code
 @code{235}.
 @end enumerate
 
@@ -5172,12 +4983,13 @@ if the connection succeeds: @command{gnutls-cli} prints a lot of message
 lines on its standard output explaining what is going on; at last comes
 the line of greetings from the server, which begins with code @code{220}.
 
-So we can do the @smtp{} dialogue by hand as follows; lines starting
-with @code{recv>} are the ones received from the server, lines starting
-with @code{send>} are the ones we send to the server, the ellipses
-@code{...} are replacements for server text we are not interested in:
+So we can do the @smtp{} dialogue reported below by hand (which is an
+edited log of a session under Emacs' eshell); lines starting with
+@code{recv>} are the ones received from the server, lines starting with
+@code{send>} are the ones we send to the server, the ellipses @code{...}
+are replacements for server text we are not interested in.
 
-@example
+@smallexample
 recv> 220 ... ESMTP Service ...
 send> ehlo localhost.localdomain
 recv> 250-...
@@ -5213,13 +5025,134 @@ recv> 250 ... Mail accepted
 send> quit
 recv> 221 ... QUIT
 recv> - Peer has closed the GNUTLS connection
-@end example
+@end smallexample
 
 @c page
 @node sendmail gnutls delay
 @appendixsubsec Delayed encrypted bridge
 
 
+We use as example the server @code{smtp.gmail.com}, port @code{587}.
+You have to have an account there to use it; do not bomb this server
+with fake connections.
+
+The server requests us to start an @code{ESMTP} dialogue, then issue the
+@code{STARTTLS} command and build the encrypted bridge; once the bridge
+is set up, we restart an @code{ESMTP} dialogue and do the authentication
+and the message delivery.
+
+We start the connector like this:
+
+@example
+$ gnutls-cli --crlf --starttls --port 587 smtp.gmail.com
+@end example
+
+@noindent
+if the connection succeeds: @command{gnutls-cli} prints message lines on
+its standard output explaining what is going on; at last comes the line
+of greetings from the server, which begins with code @code{220}.
+
+The @option{--starttls} option tells @command{gnutls-cli} @strong{not}
+to build the encrypted bridge immediately; rather, it waits for a
+@code{SIGALRM} signal, which we must deliver to it when we are ready.
+So, after sending the @code{STARTTLS} command and receiving the
+@code{220} reply: we deliver a @code{SIGALRM} signal to the process and
+it will react building the bridge.
+
+The server supports the @code{AUTH PLAIN} authentication mechanism,
+which requires the base64 encoding of the user name and password stored
+in a special record; we can do it it with the external program
+@command{base64} (which comes with @gnu{} Coreutils) like this:
+
+@example
+ENCAUTH=$(printf "\x00$@{LOGIN_NAME@}\x00$@{PASSWORD@}" | base64)
+@end example
+
+@noindent
+@gnu{} Emacs users can do it with:
+
+@example
+(setq my-auth (base64-encode-string
+   (format "%c%s%c%s" 0 "the-user-name" 0 "the-pass-word")))
+@end example
+
+@noindent
+The authentication dialogue goes like this:
+
+@enumerate
+@item
+We send @code{AUTH PLAIN} followed by the encoded credentials.
+
+@item
+It checks the user name and password and, if correct, it replies with
+code @code{235}.
+@end enumerate
+
+So we can do the @smtp{} dialogue reported below by hand (which is an
+edited log of a session under Emacs' eshell); lines starting with
+@code{recv>} are the ones received from the server, lines starting with
+@code{send>} are the ones we send to the server, the ellipses @code{...}
+are replacements for server text we are not interested in.
+
+@smallexample
+recv> 220 ... ESMTP ...
+send> ehlo localhost.localdomain
+recv> 250-...
+recv> 250-SIZE 35651584
+recv> 250-8BITMIME
+recv> 250-STARTTLS
+send> 250-ENHANCEDSTATUSCODES
+recv> 250 PIPELINING
+send> starttls
+recv> 220 2.0.0 Ready to start TLS
+
+=== here we deliver SIGALRM to the gnutls-cli process
+
+recv> *** Starting TLS handshake
+recv> - Certificate type: X.509
+recv>  - Got a certificate list of 1 certificates.
+recv>
+recv>  - Certificate[0] info:
+recv>  # The hostname in the certificate matches 'smtp.gmail.com'.
+recv>  # valid since: ..
+recv>  # expires at: ...
+recv>  # fingerprint: ...
+recv>  # Subject's DN: ...
+recv>  # Issuer's DN: ...
+recv>
+recv>
+recv> - Peer's certificate issuer is unknown
+recv> - Peer's certificate is NOT trusted
+recv> - Version: TLS1.0
+recv> - Key Exchange: RSA
+recv> - Cipher: ARCFOUR-128
+recv> - MAC: MD5
+recv> - Compression: NULL
+send> ehlo rapitore.luna
+recv> 250-...
+recv> 250-SIZE 35651584
+recv> 250-8BITMIME
+recv> 250-AUTH LOGIN PLAIN
+recv> 250-ENHANCEDSTATUSCODES
+recv> 250 PIPELINING
+send> auth plain <the-encoded-auth-credentials>
+recv> 235 2.7.0 Accepted
+send> mail from:<from-address@@gmail.com>
+recv> 250 2.1.0 OK ...
+send> rcpt to:<to-address@@poste.it>
+recv> 250 2.1.5 OK ...
+send> data
+recv> 354  Go ahead ...
+send> From: from-address@@gmail.com
+send> To: to-address@@poste.it
+send> Subject: interactive proof from gmail
+send>
+send> proof
+send> .
+recv> 250 2.0.0 OK ...
+send> quit
+recv> 221 2.0.0 closing connection ...
+@end smallexample
 
 @c page
 @node sendmail send
@@ -5363,6 +5296,11 @@ Select the @smtp{} server @tcp{} port.  It defaults to @code{25}.
 
 
 @xref{Top,bash,@gnu{} Bash,@gnu{} Bash}.
+
+
+Lots of interesting stuff at the following site:
+
+@center @url{http://www.bash-hackers.org/wiki/}
 
 
 @c page
