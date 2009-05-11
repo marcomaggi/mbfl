@@ -30,8 +30,8 @@
 function mbfl_variable_find_in_array () {
     mandatory_parameter(ELEMENT, 1, element parameter)
     declare -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
-    for ((i=0; $i < ${ARRAY_DIM}; ++i))
-    do test "${mbfl_FIELDS[$i]}" = "${ELEMENT}" && { printf "$i\n"; return 0; }
+    for ((i=0; $i < $ARRAY_DIM; ++i))
+    do test "${mbfl_FIELDS[$i]}" = "$ELEMENT" && { printf "$i\n"; return 0; }
     done
     return 1
 }
@@ -42,9 +42,10 @@ function mbfl_variable_element_is_in_array () {
 #page
 function mbfl_variable_colon_variable_to_array () {
     mandatory_parameter(COLON_VARIABLE, 1, colon variable)
-    local ORGIFS="${IFS}"
+    # Here we NEED to save IFS, else it will be left set to ":".
+    local ORGIFS="$IFS"
     IFS=: mbfl_FIELDS=(${!COLON_VARIABLE})
-    IFS="${ORGIFS}"
+    IFS="$ORGIFS"
 
 # The  following is  an  old version.   It  passed the  test
 # suite.  I am keeping it here just in case.
@@ -63,12 +64,12 @@ function mbfl_variable_array_to_colon_variable () {
     mandatory_parameter(COLON_VARIABLE, 1, colon variable)
     declare -i i dimension=${#mbfl_FIELDS[*]}
 
-    if test ${dimension} = 0
-    then eval ${COLON_VARIABLE}=
+    if test $dimension = 0
+    then eval $COLON_VARIABLE=
     else
 	eval ${COLON_VARIABLE}=\'"${mbfl_FIELDS[0]}"\'
-	for ((i=1; $i < ${dimension}; ++i))
-        do eval ${COLON_VARIABLE}=\'"${!COLON_VARIABLE}:${mbfl_FIELDS[$i]}"\'
+	for ((i=1; $i < $dimension; ++i))
+        do eval $COLON_VARIABLE=\'"${!COLON_VARIABLE}:${mbfl_FIELDS[$i]}"\'
 	done
     fi
     return 0
@@ -79,21 +80,21 @@ function mbfl_variable_colon_variable_drop_duplicate () {
     declare -a mbfl_FIELDS FIELDS
     declare -i dimension count i
 
-    mbfl_variable_colon_variable_to_array "${COLON_VARIABLE}"
+    mbfl_variable_colon_variable_to_array "$COLON_VARIABLE"
     dimension=${#mbfl_FIELDS[*]}
 
     FIELDS=("${mbfl_FIELDS[@]}")
     mbfl_FIELDS=()
 
-    for ((i=0, count=0; $i < ${dimension}; ++i))
+    for ((i=0, count=0; $i < $dimension; ++i))
     do
 	item="${FIELDS[$i]}"
-	mbfl_variable_element_is_in_array "${item}" && continue
-	mbfl_FIELDS[${count}]="${item}"
+	mbfl_variable_element_is_in_array "$item" && continue
+	mbfl_FIELDS[$count]=$item
 	let ++count
     done
 
-    mbfl_variable_array_to_colon_variable ${COLON_VARIABLE}
+    mbfl_variable_array_to_colon_variable $COLON_VARIABLE
     return 0
 }
 

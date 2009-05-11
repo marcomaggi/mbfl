@@ -1,3 +1,4 @@
+#! /bin/bash
 # signal.sh --
 #
 # Part of: Marco's BASH Functions Library
@@ -44,7 +45,7 @@ function mbfl_signal_map_signame_to_signum () {
     local i name
     for ((i=0; $i < $mbfl_signal_MAX_SIGNUM; ++i))
     do
-        test "SIG$(kill -l $i)" = "${SIGSPEC}" && {
+        test "SIG$(kill -l $i)" = "$SIGSPEC" && {
             echo $i
             return 0
         }
@@ -55,24 +56,24 @@ function mbfl_signal_attach () {
     mandatory_parameter(SIGSPEC, 1, signal name)
     mandatory_parameter(HANDLER, 2, function name)
     local signum
-    signum=$(mbfl_signal_map_signame_to_signum "${SIGSPEC}") || return 1
-    if test -z ${mbfl_signal_HANDLERS[${signum}]}
-    then mbfl_signal_HANDLERS[${signum}]=${HANDLER}
-    else mbfl_signal_HANDLERS[${signum}]="${mbfl_signal_HANDLERS[${signum}]}:${HANDLER}"
+    signum=$(mbfl_signal_map_signame_to_signum "$SIGSPEC") || return 1
+    if test -z ${mbfl_signal_HANDLERS[$signum]}
+    then mbfl_signal_HANDLERS[$signum]=$HANDLER
+    else mbfl_signal_HANDLERS[$signum]="${mbfl_signal_HANDLERS[$signum]}:$HANDLER"
     fi
-    mbfl_message_debug "attached '$HANDLER' to signal ${SIGSPEC}"
-    trap -- "mbfl_signal_invoke_handlers ${signum}" ${signum}
+    mbfl_message_debug "attached '$HANDLER' to signal $SIGSPEC"
+    trap -- "mbfl_signal_invoke_handlers $signum" $signum
 }
 function mbfl_signal_invoke_handlers () {
     mandatory_parameter(SIGNUM, 1, signal number)
     local handler ORGIFS="$IFS"
-    mbfl_message_debug "received signal 'SIG$(kill -l ${SIGNUM})'"
+    mbfl_message_debug "received signal 'SIG$(kill -l $SIGNUM)'"
     IFS=:
     for handler in ${mbfl_signal_HANDLERS[$SIGNUM]}
     do
         IFS="$ORGIFS"
-        mbfl_message_debug "registered handler: ${handler}"
-        test -n "${handler}" && eval ${handler}
+        mbfl_message_debug "registered handler: $handler"
+        test -n "$handler" && eval $handler
     done
     IFS="$ORGIFS"
     return 0

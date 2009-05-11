@@ -48,7 +48,7 @@ mbfl_LOADED='yes'
 ## ------------------------------------------------------------
 
 function mbfl_set_maybe () {
-    test -n "${1}" && eval ${1}=\'"${2}"\'
+    test -n "$1" && eval $1=\'"$2"\'
 }
 function mbfl_read_maybe_null () {
     mandatory_parameter(VARNAME, 1, variable name)
@@ -84,7 +84,7 @@ function mbfl_option_test_save () {
     mbfl_unset_option_test
 }
 function mbfl_option_test_restore () {
-    test "${mbfl_save_option_TEST}" = "yes" && mbfl_set_option_test
+    test "$mbfl_save_option_TEST" = "yes" && mbfl_set_option_test
 }
 
 ### end of file

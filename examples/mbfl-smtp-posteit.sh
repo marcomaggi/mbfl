@@ -1,4 +1,4 @@
-# Part of: Marco's BASH Functions Library
+# Part of: Marco's Bash Functions Library
 # Contents: example script that sends an email message with Poste.it
 # Date: Thu Apr 23, 2009
 #
