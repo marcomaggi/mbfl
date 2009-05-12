@@ -2,3 +2,8 @@
 
   More tests for signal handling.
 
+* Sendmail
+
+  Understand if the  gsasl executable installed by GNU  SASL can be used
+  to implement the other authentication mechanism.
+

@@ -175,7 +175,7 @@ function main () {
     local LOGIN_NAME= PASSWORD= MESSAGE=
     # Input  and  output   file  descriptors  when  using  a
     # connector subprocess.
-    local INFD= OUFD=
+    local INFD=3 OUFD=4
     # This is for the PID of the connector external program,
     # executed as child process.
     local CONNECTOR_PID=
@@ -190,7 +190,7 @@ function main () {
         if test "$script_option_STARTTLS" = no -a "$script_option_DELAYED_STARTTLS" = no
         then
             connect_establish_plain_connection
-            smtp_exchange_greetings
+            esmtp_exchange_greetings helo
         else
             auth_read_credentials
             connect_make_fifos_for_connector
@@ -207,7 +207,7 @@ function main () {
                     OPENSSL)    connect_using_openssl_delayed ;;
                 esac
             fi
-            esmtp_exchange_greetings
+            esmtp_exchange_greetings ehlo
             esmtp_authentication
         fi
         mbfl_message_verbose 'connection established\n'
@@ -387,7 +387,9 @@ Copyright $script_COPYRIGHT_YEARS $script_AUTHOR
 #
 #  Establish  a  plain  connection  with the  selected  SMTP
 #  server: the hostname must be in the variable "SMTP_HOST",
-#  the port must be in the variable "SMTP_PORT".
+#  the port  must be in the variable  "SMTP_PORT".  Read the
+#  first line of greetings from the server, expecting a line
+#  starting with "220".
 #
 #  Errors  are  detected when  opening  the file  descriptor
 #  connected to the device representing the remote host.
@@ -400,6 +402,7 @@ function connect_establish_plain_connection () {
         mbfl_message_error_printf 'failed establishing connection to %s:%d' "$SMTP_HOST" $SMTP_PORT
         exit_because_failed_connection
     }
+    recv 220
     return 0
 }
 # Synopsis:
@@ -448,11 +451,52 @@ function connect_using_gnutls () {
     }
     return 0
 }
+# Synopsis:
+#
+#       connect_using_gnutls_delayed
+#
+# Description:
+#
+#  Establish an encrypted  connection with the selected host
+#  using  the   "gnutls-cli"  program  as   connector.   The
+#  hostname must  be in  the variable "SMTP_HOST",  the port
+#  must be in the variable "SMTP_PORT".
+#
+#  The  process is  executed  in background  with stdin  and
+#  stdout connected  to FIFOs,  which are then  connected to
+#  file  descriptors.  The  FIFOs pathnames  must be  in the
+#  variables "OUFIFO" and "INFIFO"; the file descriptors are
+#  in the variables "INFD" and "OUFD".
+#
+#  Text from the process is  read until a line starting with
+#  "220" is  found: this is  the line of greetings  from the
+#  remote  server.   If end-of-file  comes  first: exit  the
+#  script with an error code.
+#
+#  The   encrypted  bridge  is   built  after   sending  the
+#  "starttls"  command,  by  delivering  a  SIGALRM  to  the
+#  connector process.
+#
 function connect_using_gnutls_delayed () {
     local GNUTLS GNUTLS_FLAGS=" --crlf --starttls --port $SMTP_PORT"
-
-    esmtp_exchange_greetings
+    mbfl_message_verbose_printf 'connecting with gnutls, delayed encrypted bridge\n'
+    GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
+    mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOST" || {
+        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOST" "$SMTP_PORT"
+        exit_failed_connection
+    }
+    CONNECTOR_PID=$mbfl_program_BGPID
+    mbfl_message_debug "pid of gnutls: $CONNECTOR_PID"
+    connect_open_file_descriptors_to_fifos
+    trap terminate_and_wait_for_connector_process EXIT
+    recv_until_string 220
+    esmtp_exchange_greetings ehlo
+    send starttls
+    recv 220
+    sleep 1
     kill -SIGALRM $CONNECTOR_PID
+    sleep 1
+    esmtp_exchange_greetings ehlo
     return 0
 }
 function connect_using_openssl () {
@@ -510,9 +554,9 @@ function wait_for_connector_process () {
 function terminate_and_wait_for_connector_process () {
     test -n "$CONNECTOR_PID" && {
         mbfl_message_debug_printf 'forcing termination of connector process (pid %s)' $CONNECTOR_PID
-        kill -SIGTERM $CONNECTOR_PID
+        kill -SIGTERM $CONNECTOR_PID &>/dev/null
         mbfl_message_debug_printf 'waiting for connector process (pid %s)' $CONNECTOR_PID
-        wait $CONNECTOR_PID
+        wait $CONNECTOR_PID &>/dev/null
         mbfl_message_debug_printf 'gathered connector process'
     }
     CONNECTOR_PID=
@@ -567,11 +611,13 @@ function connect_make_fifos_for_connector () {
 #
 #  Connect the FIFOs to the connector to the selected file
 #  descriptors.
+#
+#  Notice  the strange  quoting needed  to  perform variable
+#  expansion for file descriptors: that is the way it is for
+#  redirections under the Bourne shells.
+#
 function connect_open_file_descriptors_to_fifos () {
-    INFD=3
-    OUFD=4
-    #exec ${INFD}<>${INFIFO} ${OUFD}>${OUFIFO}
-    exec 3<>$INFIFO 4>$OUFIFO
+    eval "exec ${INFD}<>\"\$INFIFO\" ${OUFD}>\"\$OUFIFO\""
     connect_cleanup_fifos
     trap "" EXIT
     return 0
@@ -596,7 +642,7 @@ function connect_cleanup_fifos () {
 
 # Synopsis:
 #
-#       recv expected_code
+#       recv <expected_code>
 #
 # Description:
 #
@@ -616,7 +662,6 @@ function recv () {
     test "${line:0:3}" = "$EXPECTED_CODE" || {
         send %s QUIT
         IFS= read -t 3 line <&$INFD
-        force_termination_of_connector_process
         mbfl_message_debug_printf 'recv: %s' "$line"
         exit_because_wrong_server_answer
     }
@@ -624,7 +669,7 @@ function recv () {
 }
 # Synopsis:
 #
-#       recv_string expected_string
+#       recv_string <expected_string>
 #
 # Description:
 #
@@ -644,7 +689,6 @@ function recv_string () {
     test "${line:0:$len}" = "$EXPECTED_STRING" || {
         send %s QUIT
         IFS= read -t 3 line <&$INFD
-        force_termination_of_connector_process
         mbfl_message_debug_printf 'recv: %s' "$line"
         exit_because_wrong_server_answer
     }
@@ -652,7 +696,7 @@ function recv_string () {
 }
 # Synopsis:
 #
-#       recv_until_string expected_string
+#       recv_until_string <expected_string>
 #
 # Description:
 #
@@ -680,7 +724,6 @@ function recv_until_string () {
         }
     done
     test $success = no && {
-        force_termination_of_connector_process
         mbfl_message_error_printf 'failed to receive string \"%s\" from server' "$EXPECTED_STRING"
         exit_because_wrong_server_answer
     }
@@ -693,8 +736,8 @@ function recv_until_string () {
 
 # Synopsis:
 #
-#       send string
-#       send pattern arg ...
+#       send <string>
+#       send <pattern> <arg> ...
 #
 # Description:
 #
@@ -712,8 +755,8 @@ function send () {
 }
 # Synopsis:
 #
-#       send_no_log string
-#       send_no_log pattern arg ...
+#       send_no_log <string>
+#       send_no_log <pattern> <arg> ...
 #
 # Description:
 #
@@ -756,19 +799,19 @@ function read_and_send_message () {
 ## SMTP/ESMTP protocol.
 ## ------------------------------------------------------------
 
-function smtp_exchange_greetings () {
-    local HOSTNAME_PROGRAM
-    HOSTNAME_PROGRAM=$(mbfl_program_found hostname) || exit $?
-    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn) || {
-        mbfl_message_error 'unable to acquire local hostname'
-        exit_failure
-    }
-    mbfl_message_verbose 'esmtp: exchanging greetings with server\n'
-    recv 220
-    send 'HELO %s' "$LOCAL_HOSTNAME"
-    recv 250
-}
+# Synopsis:
+#
+#        esmtp_exchange_greetings helo
+#        esmtp_exchange_greetings ehlo
+#
+# Description:
+#
+#  Exchange  greetings with  the server.   Send a  "HELO" or
+#  "EHLO" line and read  lines until the first starting with
+#  "250 ".
+#
 function esmtp_exchange_greetings () {
+    local TYPE=${1:?"missing type of greetings parameter to '$FUNCNAME'"}
     local HOSTNAME_PROGRAM
     HOSTNAME_PROGRAM=$(mbfl_program_found hostname) || exit $?
     LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn) || {
@@ -776,12 +819,31 @@ function esmtp_exchange_greetings () {
         exit_failure
     }
     mbfl_message_verbose 'esmtp: exchanging greetings with server\n'
-    send 'EHLO %s' "$LOCAL_HOSTNAME"
+    case $TYPE in
+        helo) send 'HELO %s' "$LOCAL_HOSTNAME" ;;
+        ehlo) send 'EHLO %s' "$LOCAL_HOSTNAME" ;;
+    esac
     recv_until_string '250 '
 }
 function pipe_base64 () {
     mbfl_program_exec "$BASE64"
 }
+# Synopsis:
+#
+#       esmtp_authentication
+#
+# Description:
+#
+#  Do the  selected authentication process  with credentials
+#  already read from the selected authinfo file.
+#
+#  The  selected  authentication  must  be in  the  variable
+#  "AUTH_TYPE", the  login name and the password  must be in
+#  the variables "LOGIN_NAME" and "PASSWORD".
+#
+#  Notice that  the secrets are not logged  by the debugging
+#  functions.
+#
 function esmtp_authentication () {
     local BASE64 ENCODED_STRING=
     BASE64=$(mbfl_program_found base64) || exit $?
@@ -819,6 +881,14 @@ function esmtp_authentication () {
     esac
     return 0
 }
+# Synopsis:
+#
+#       esmtp_send_message
+#
+# Description:
+#
+#  Do the SMTP dialog required to send a message.
+#
 function esmtp_send_message () {
     mbfl_message_verbose 'esmtp: sending message\n'
     send 'MAIL FROM:<%s>' "$FROM_ADDRESS"
@@ -832,6 +902,14 @@ function esmtp_send_message () {
     recv 250
     return 0
 }
+# Synopsis:
+#
+#       esmtp_quit
+#
+# Description:
+#
+#  Quit an SMTP session.
+#
 function esmtp_quit () {
     mbfl_message_verbose 'esmtp: end dialogue\n'
     send %s QUIT
@@ -839,6 +917,29 @@ function esmtp_quit () {
     return 0
 }
 #page
+## ------------------------------------------------------------
+## Authentication.
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#       auth_read_credentials
+#
+# Description:
+#
+#  Read  the credentials  from the  selected  authinfo file.
+#  The authinfo  file, user key  and host name are  from the
+#  command line options.
+#
+#  The login name and the password are left in the variables
+#  "LOGIN_NAME" and "PASSWORD".
+#
+#  The autinfo file is meant to have lines like:
+#
+#       machine smtp.gmail.com login the-user-name password the-pass-word
+#
+#  and it is searched with a grep regular expression.
+#
 function auth_read_credentials () {
     local auth_user=$script_option_AUTH_USER
     local auth_file=$script_option_AUTH_FILE
@@ -846,10 +947,6 @@ function auth_read_credentials () {
     local line= GREP
     GREP=$(mbfl_program_found grep) || exit $?
     mbfl_message_verbose 'reading auth file\n'
-    mbfl_file_is_readable "$auth_file" || {
-        mbfl_message_error_printf 'unreadable auth file \"%s\"' "$auth_file"
-        exit_because_unreadable_auth_file
-    }
     line=$(mbfl_program_exec "${GREP}" "${SMTP_HOST}.\\+${auth_user}" "$auth_file") || {
         mbfl_message_error_printf 'unknown auth user name \"%s\"' "$LOGIN_NAME"
         exit_because_unknown_auth_user
@@ -875,7 +972,6 @@ function auth_file_validate_word () {
         exit_because_invalid_auth_file
     fi
 }
-
 #page
 
 mbfl_main
