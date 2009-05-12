@@ -72,12 +72,33 @@ function mbfl_message_debug () {
     mbfl_option_debug && mbfl_message_p_print_prefix $FUNCNAME "debug: $1\n"
     return 0
 }
+function mbfl_message_debug_printf () {
+    mbfl_option_debug && {
+        printf '%s: debug: ' "$mbfl_message_PROGNAME" >&$mbfl_message_CHANNEL
+        printf "$@" >&$mbfl_message_CHANNEL
+    }
+    return 0
+}
 function mbfl_message_warning () {
     mbfl_message_p_print_prefix $FUNCNAME "warning: $1\n"
     return 0
 }
+function mbfl_message_warning_printf () {
+    mbfl_option_warning && {
+        printf '%s: warning: ' "$mbfl_message_PROGNAME" >&$mbfl_message_CHANNEL
+        printf "$@" >&$mbfl_message_CHANNEL
+    }
+    return 0
+}
 function mbfl_message_error () {
     mbfl_message_p_print_prefix $FUNCNAME "error: $1\n"
+    return 0
+}
+function mbfl_message_error_printf () {
+    mbfl_option_error && {
+        printf '%s: error: ' "$mbfl_message_PROGNAME" >&$mbfl_message_CHANNEL
+        printf "$@" >&$mbfl_message_CHANNEL
+    }
     return 0
 }
 

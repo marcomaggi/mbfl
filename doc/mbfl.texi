@@ -2860,6 +2860,18 @@ characters supported by @code{printf} are allowed in @var{string}.
 @end defun
 
 
+@defun mbfl_message_debug_printf @var{string}
+@defunx mbfl_message_debug_printf @var{pattern} @var{arg} ...
+Format the arguments in the same way @code{printf} would do; output the
+resulting string to the selected output channel, but only if the
+evaluation of the function @bfunc{mbfl_option_debug} returns true.
+
+Echo a string composed of: the selected program name, a colon, a space,
+the string @code{debug}, a colon, a space, the formatting result.  No
+newline character is appended to the message.
+@end defun
+
+
 @defun mbfl_message_verbose_printf @var{string}
 @defunx mbfl_message_verbose_printf @var{pattern} @var{arg} ...
 Format the arguments in the same way @code{printf} would do; output the
@@ -2880,12 +2892,36 @@ Escape characters supported by @code{printf} are allowed in
 @end defun
 
 
+@defun mbfl_message_warning_printf @var{string}
+@defunx mbfl_message_warning_printf @var{pattern} @var{arg} ...
+Format the arguments in the same way @code{printf} would do; output the
+resulting string to the selected output channel, but only if the
+evaluation of the function @bfunc{mbfl_option_warning} returns true.
+
+Echo a string composed of: the selected program name, a colon, a space,
+the string @code{warning}, a colon, a space, the formatting result.  No
+newline character is appended to the message.
+@end defun
+
+
 @defun mbfl_message_error @var{string}
 Output an error message to the selected output channel.  Echo a string
 composed of: the selected program name, a colon, a space, the string
 @code{error}, a colon, a space, @var{string}, a newline character.
 Escape characters supported by @code{printf} are allowed in
 @var{string}.
+@end defun
+
+
+@defun mbfl_message_error_printf @var{string}
+@defunx mbfl_message_error_printf @var{pattern} @var{arg} ...
+Format the arguments in the same way @code{printf} would do; output the
+resulting string to the selected output channel, but only if the
+evaluation of the function @bfunc{mbfl_option_error} returns true.
+
+Echo a string composed of: the selected program name, a colon, a space,
+the string @code{error}, a colon, a space, the formatting result.  No
+newline character is appended to the message.
 @end defun
 
 @c page

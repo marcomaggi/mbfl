@@ -301,7 +301,7 @@ function validate_command_line_options () {
 }
 #page
 function read_message_from_selected_source () {
-    local line msg
+    local line
     local -i count=0
     if test "$script_option_TEST_MESSAGE" = yes
     then
@@ -372,8 +372,7 @@ function connect_establish_plain_connection () {
     INFD=3
     OUFD=$INFD
     exec 3<>"$DEVICE" || {
-        msg=$(printf 'failed establishing connection to %s:%d' "$SMTP_HOST" $SMTP_PORT)
-        mbfl_message_error "$msg"
+        mbfl_message_error_printf 'failed establishing connection to %s:%d' "$SMTP_HOST" $SMTP_PORT
         exit_because_failed_connection
     }
     return 0
@@ -382,8 +381,7 @@ function connect_using_gnutls () {
     local GNUTLS GNUTLS_FLAGS=" --crlf --port $SMTP_PORT"
     GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
     mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOST" || {
-        msg=$(printf 'failed connection to \"%s:%s\"' "$SMTP_HOST" "$SMTP_PORT")
-        mbfl_message_error "$msg"
+        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOST" "$SMTP_PORT"
         exit_failed_connection
     }
     CONNECTOR_PID=$mbfl_program_BGPID
@@ -394,8 +392,7 @@ function connect_using_gnutls_delayed () {
     local GNUTLS GNUTLS_FLAGS=" --crlf --starttls --port $SMTP_PORT"
     GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
     mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOST" || {
-        msg=$(printf 'failed connection to \"%s:%s\"' "$SMTP_HOST" "$SMTP_PORT")
-        mbfl_message_error "$msg"
+        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOST" "$SMTP_PORT"
         exit_failed_connection
     }
     CONNECTOR_PID=$mbfl_program_BGPID
@@ -445,14 +442,13 @@ function connect_open_file_descriptors_to_fifos () {
 #page
 function recv () {
     local EXPECTED_CODE=${1:?}
-    local line msg
+    local line
     IFS= read line <&$INFD
-    msg=$(printf 'recv: %s\n' "$line")
-    mbfl_message_debug "$msg"
+    mbfl_message_debug_printf 'recv: %s\n' "$line"
     test "${line:0:3}" = "$EXPECTED_CODE" || {
         send %s QUIT
         IFS=read -t 3 line <$INFD
-        msg=$(printf 'recv: %s\n' "$line")
+        mbfl_message_debug_printf 'recv: %s\n' "$line"
         exit_failure
     }
     return 0
@@ -462,20 +458,18 @@ function send () {
     shift
     local line=$(printf "$pattern" "$@")
     printf '%s\r\n' "$line" >&$OUFD
-    local msg=$(printf 'sent: %s\n' "$line")
-    mbfl_message_debug "$msg"
+    mbfl_message_debug_printf 'sent: %s\n' "$line"
     return 0
 }
 function read_and_send_message () {
-    local line msg
+    local line
     local -i count=0
     while IFS= read line
     do
         printf '%s\r\n' "$line" >&$OUFD
         let ++count
     done
-    msg=$(printf 'sent message (%d lines)' $count)
-    mbfl_message_debug "$msg"
+    mbfl_message_debug_printf 'sent message (%d lines)' $count
     return 0
 }
 #page
@@ -507,7 +501,7 @@ function pipe_base64 () {
     mbfl_program_exec "$BASE64"
 }
 function esmtp_authentication () {
-    local BASE64 LOGIN_NAME= PASSWORD= msg= ENCODED_STRING=
+    local BASE64 LOGIN_NAME= PASSWORD= ENCODED_STRING=
     BASE64=$(mbfl_program_found base64) || exit $?
     auth_read_credentials
     case "$AUTH_TYPE" in
@@ -541,8 +535,7 @@ function esmtp_authentication () {
             recv 235
             ;;
         *)
-            local msg=$(printf 'internal error, unknown authorisation type: %s' "$AUTH_TYPE")
-            mbfl_message_error "$msg"
+            mbfl_message_error_printf 'internal error, unknown authorisation type: %s' "$AUTH_TYPE"
             exit_failure
             ;;
     esac
@@ -580,13 +573,11 @@ function auth_read_credentials () {
     GREP=$(mbfl_program_found grep) || exit $?
     mbfl_message_verbose 'reading auth file\n'
     mbfl_file_is_readable "$auth_file" || {
-        local msg=$(printf 'unreadable auth file \"%s\"' "$auth_file")
-        mbfl_message_error "$msg"
+        mbfl_message_error_printf 'unreadable auth file \"%s\"' "$auth_file"
         exit_because_unreadable_auth_file
     }
     line=$(mbfl_program_exec "${GREP}" "$auth_user" "$auth_file") || {
-        local msg=$(printf 'unknown auth user name \"%s\"' "$LOGIN_NAME")
-        mbfl_message_error "$msg"
+        mbfl_message_error_printf 'unknown auth user name \"%s\"' "$LOGIN_NAME"
         exit_because_unknown_auth_user
     }
     set -- $line
@@ -597,18 +588,16 @@ function auth_read_credentials () {
     LOGIN_NAME=$4
     PASSWORD=$6
 # This is reserved information so do not print it on the terminal!!!
-#     local msg=$(printf 'username %s, password %s' "$LOGIN_NAME" "$PASSWORD")
-#     mbfl_message_debug "$msg"
+#     mbfl_message_debug_printf 'username %s, password %s' "$LOGIN_NAME" "$PASSWORD"
     return 0
 }
 function auth_file_validate_word () {
-    local GOT=${1:?} EXPECTED=${2:?} POSITION=${3:?} msg=
+    local GOT=${1:?} EXPECTED=${2:?} POSITION=${3:?}
     if test "$GOT" = "$EXPECTED"
     then mbfl_message_verbose_printf 'good %s word of auth record (%s)' $POSITION $GOT
     else
-        msg=$(printf 'expected \"%s\" as %s word of auth record, got \"%s\"' \
-            "$EXPECTED" "$POSITION" "$GOT")
-        mbfl_message_error "$msg"
+        mbfl_message_error_printf 'expected \"%s\" as %s word of auth record, got \"%s\"' \
+            "$EXPECTED" "$POSITION" "$GOT"
         exit_because_invalid_auth_file
     fi
 }
