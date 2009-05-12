@@ -131,10 +131,13 @@ mbfl_declare_program openssl
 ## Declare exit codes.
 ## ------------------------------------------------------------
 
+mbfl_main_declare_exit_code 2 invalid_option
+mbfl_main_declare_exit_code 3 invalid_message_source
 mbfl_main_declare_exit_code 2 failed_connection
 mbfl_main_declare_exit_code 3 unknown_auth_user
 mbfl_main_declare_exit_code 4 unreadable_auth_file
 mbfl_main_declare_exit_code 5 invalid_auth_file
+
 
 #page
 ## ------------------------------------------------------------
@@ -180,114 +183,118 @@ function main () {
     # child process.
     local INFIFO= OUFIFO=
 
-    validate_command_line_options       || exit $?
-    read_message_from_selected_source   || exit $?
+    validate_command_line_options
+    read_message_from_selected_source
     {
-        local msg=$(printf 'connecting to \"%s:%d\"' "$SMTP_HOST" "$SMTP_PORT")
-        mbfl_message_verbose "$msg\n"
+        mbfl_message_verbose_printf 'connecting to \"%s:%d\"\n' "$SMTP_HOST" "$SMTP_PORT"
 
         if test -z "$CONNECTOR"
         then
             connect_establish_plain_connection
-            smtp_exchange_greetings            || exit $?
-        elif test "$script_option_STARTTLS" = yes
-        then
-            connect_make_fifos_for_connector   || exit $?
-            case "$CONNECTOR" in
-                GNUTLS)
-                    connect_using_gnutls  || exit $?
-                    ;;
-                OPENSSL)
-                    connect_using_openssl || exit $?
-                    ;;
-                *)
-                    mbfl_message_error "internal: unknown connector $CONNECTOR"
-                    return 1
-                    ;;
-            esac
-            connect_establish_tls_connection
-            esmtp_exchange_greetings            || exit $?
-        elif test "$script_option_DELAYED_STARTTLS" = yes
-        then
-            connect_make_fifos_for_connector   || exit $?
-            case "$CONNECTOR" in
-                GNUTLS)
-                    connect_using_gnutls_delayed  || exit $?
-                    ;;
-                OPENSSL)
-                    connect_using_openssl_delayed || exit $?
-                    ;;
-                *)
-                    mbfl_message_error "internal: unknown connector $CONNECTOR"
-                    return 1
-                    ;;
-            esac
-            connect_establish_tls_connection
-            esmtp_exchange_greetings            || exit $?
+            smtp_exchange_greetings
+        else
+            if test "$script_option_STARTTLS" = yes
+            then
+                connect_make_fifos_for_connector
+                case "$CONNECTOR" in
+                    GNUTLS)
+                        connect_using_gnutls
+                        ;;
+                    OPENSSL)
+                        connect_using_openssl
+                        ;;
+                    *)
+                        mbfl_message_error "internal: unknown connector $CONNECTOR"
+                        exit_failure
+                        ;;
+                esac
+                connect_establish_tls_connection
+                esmtp_exchange_greetings
+                esmtp_authentication
+            elif test "$script_option_DELAYED_STARTTLS" = yes
+            then
+                connect_make_fifos_for_connector
+                case "$CONNECTOR" in
+                    GNUTLS)
+                        connect_using_gnutls_delayed
+                        ;;
+                    OPENSSL)
+                        connect_using_openssl_delayed
+                        ;;
+                    *)
+                        mbfl_message_error "internal: unknown connector $CONNECTOR"
+                        exit_failure
+                        ;;
+                esac
+                connect_establish_tls_connection
+                esmtp_exchange_greetings
+                esmtp_authentication
+            fi
         fi
         mbfl_message_verbose 'connection established\n'
     } || exit_because_failed_connection
-    esmtp_authentication
-    esmtp_send_message                  || exit $?
-    esmtp_quit                          || exit $?
+    esmtp_send_message
+    esmtp_quit
     test -n "$CONNECTOR" && wait $CONNECTOR_PID
     exit_because_success
 }
 function validate_command_line_options () {
     test -n "$script_option_FROM" || {
         mbfl_message_error 'empty string as MAIL FROM envelope address'
-        return 1
+        exit_because_invalid_option
     }
     test -n "$script_option_TO" || {
         mbfl_message_error 'empty string as RCPT TO envelope address'
-        return 1
+        exit_because_invalid_option
     }
     test "$script_option_TEST_MESSAGE" = no && {
         test -n "$script_option_MESSAGE" || {
             mbfl_message_error 'missing selection of mail message source'
-            return 1
+            exit_because_invalid_option
         }
-        mbfl_file_is_file "$script_option_MESSAGE" || {
-            mbfl_message_error 'selected message file does not exist'
-            return 1
-        }
-        mbfl_file_is_readable "$script_option_MESSAGE" || {
-            mbfl_message_error 'selected message file is not readable'
-            return 1
+        test "$script_option_MESSAGE" = - || {
+            mbfl_file_is_file "$script_option_MESSAGE" || {
+                mbfl_message_error 'selected message file does not exist'
+                exit_because_invalid_option
+            }
+            mbfl_file_is_readable "$script_option_MESSAGE" || {
+                mbfl_message_error 'selected message file is not readable'
+                exit_because_invalid_option
+            }
         }
     }
     test -n "$script_option_HOST" || {
         mbfl_message_error 'empty string as SMTP server hostname'
-        return 1
+        exit_because_invalid_option
     }
     mbfl_string_is_noblank "$script_option_HOST" || {
         mbfl_message_error 'selected hostname string has blank character in it'
-        return 1
+        exit_because_invalid_option
     }
     test -n "$script_option_PORT" || {
         mbfl_message_error 'empty string as SMTP server port number'
-        return 1
+        exit_because_invalid_option
     }
     mbfl_string_is_digit "$script_option_PORT" || {
         mbfl_message_error 'selected port string is not numeric'
-        return 1
+        exit_because_invalid_option
     }
     test "$script_option_STARTTLS" = yes -o "$script_option_DELAYED_STARTTLS" = yes && {
         test -n "$script_option_AUTH_FILE" || {
             mbfl_message_error 'empty string as auth file pathname'
-            return 1
+            exit_because_invalid_option
         }
         mbfl_file_is_file "$script_option_AUTH_FILE" || {
             mbfl_message_error 'selected auth file does not exist'
-            return 1
+            exit_because_invalid_option
         }
         mbfl_file_is_readable "$script_option_AUTH_FILE" || {
             mbfl_message_error 'selected auth file is not readable'
-            return 1
+            exit_because_invalid_option
         }
         test -n "$script_option_USERNAME" || {
             mbfl_message_error 'empty string as auth username'
-            return 1
+            exit_because_invalid_option
         }
     }
     return 0
@@ -297,32 +304,53 @@ function read_message_from_selected_source () {
     local line msg
     local -i count=0
     if test "$script_option_TEST_MESSAGE" = yes
-    then exec 5< <(print_test_message) || return $?
-    elif test "$script_option_MESSAGE" = -
-    then exec 5<&0
-    else exec 5<"$script_option_MESSAGE" || return $?
-    fi
-    while IFS= read line <&5
-    do
-        if test -z "$MESSAGE"
-        then MESSAGE="$line"
-        else MESSAGE="$MESSAGE\n$line"
+    then
+        # Here we can detect  an error through the exit code
+        # of "print_test_message".
+        MESSAGE=$(print_test_message) || {
+            mbfl_message_error 'unable to compose test message'
+            exit_because_invalid_message_source
+        }
+        mbfl_message_verbose 'composed test message\n'
+    else
+        if test "$script_option_MESSAGE" = -
+        then
+            mbfl_message_verbose 'reading message from stdin'
+            exec 5<&0
+        else
+            mbfl_message_verbose 'reading message from file'
+            exec 5<"$script_option_MESSAGE"
         fi
-        let ++count
-    done
+        # Here  it is impossible  to distinguish  between an
+        # error reading the source and an the end of file.
+        while IFS= read line <&5
+        do
+            if test -z "$MESSAGE"
+            then MESSAGE="$line"
+            else MESSAGE="$MESSAGE\n$line"
+            fi
+            let ++count
+        done
+        exec 5<&-
+        mbfl_message_verbose_printf 'read message (%d lines)\n' $count
+    fi
+    # Append a newline just to be sure
     MESSAGE="$MESSAGE\n"
-    exec 5<&-
-    msg=$(printf 'read message (%d lines)' $count)
-    mbfl_message_verbose "$msg\n"
     return 0
 }
 function print_test_message () {
     local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
     local HOSTNAME_PROGRAM DATE_PROGRAM
-    HOSTNAME_PROGRAM=$(mbfl_program_found hostname)                     || exit $?
-    DATE_PROGRAM=$(mbfl_program_found date)                             || exit $?
-    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn)      || exit_failure
-    DATE=$(mbfl_program_exec "$DATE_PROGRAM" --rfc-2822)                || exit_failure
+    HOSTNAME_PROGRAM=$(mbfl_program_found hostname)     || exit $?
+    DATE_PROGRAM=$(mbfl_program_found date)             || exit $?
+    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn) || {
+        mbfl_message_error 'unable to determine fully qualified hostname for test message'
+        exit_failure
+    }
+    DATE=$(mbfl_program_exec "$DATE_PROGRAM" --rfc-2822) || {
+        mbfl_message_error 'unable to determine date in RFC-2822 format for test message'
+        exit_failure
+    }
     MESSAGE_ID=$(printf '%d-%d-%d@%s' $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME")
     MESSAGE="Sender: $FROM_ADDRESS
 From: $FROM_ADDRESS
@@ -346,8 +374,9 @@ function connect_establish_plain_connection () {
     exec 3<>"$DEVICE" || {
         msg=$(printf 'failed establishing connection to %s:%d' "$SMTP_HOST" $SMTP_PORT)
         mbfl_message_error "$msg"
-        return 1
+        exit_because_failed_connection
     }
+    return 0
 }
 function connect_using_gnutls () {
     local GNUTLS GNUTLS_FLAGS=" --crlf --port $SMTP_PORT"
@@ -378,10 +407,10 @@ function connect_using_gnutls_delayed () {
 function connect_using_openssl () {
 # $ openssl s_client -connect smtp.myhost.com:25 -starttls smtp
 # $ openssl s_client -connect smtp.myhost.com:465
-    return 1
+    exit_because_failed_connection
 }
 function connect_using_openssl_delayed () {
-    return 1
+    exit_because_failed_connection
 }
 #page
 function connect_make_fifos_for_connector () {
@@ -392,7 +421,7 @@ function connect_make_fifos_for_connector () {
     }
     INFIFO=$TMPDIR/in.$RANDOM.$$
     OUFIFO=$TMPDIR/out.$RANDOM.$$
-    MKFIFO=$(mbfl_program_found mkfifo) || return $?
+    MKFIFO=$(mbfl_program_found mkfifo) || exit $?
     mbfl_message_debug 'creating FIFOs for connector subprocess'
     trap connect_cleanup_fifos EXIT
     mbfl_program_exec "$MKFIFO" --mode=0600 "$INFIFO" "$OUFIFO" || {
@@ -408,7 +437,7 @@ function connect_cleanup_fifos () {
 function connect_open_file_descriptors_to_fifos () {
     INFD=3
     OUFD=4
-    exec $INFD<>$INFIFO $OUFD>$OUFIFO || return $?
+    exec $INFD<>$INFIFO $OUFD>$OUFIFO
     cleanup_fifos
     trap "" EXIT
     return 0
@@ -426,6 +455,7 @@ function recv () {
         msg=$(printf 'recv: %s\n' "$line")
         exit_failure
     }
+    return 0
 }
 function send () {
     local pattern=${1:?}
@@ -434,6 +464,7 @@ function send () {
     printf '%s\r\n' "$line" >&$OUFD
     local msg=$(printf 'sent: %s\n' "$line")
     mbfl_message_debug "$msg"
+    return 0
 }
 function read_and_send_message () {
     local line msg
@@ -445,12 +476,16 @@ function read_and_send_message () {
     done
     msg=$(printf 'sent message (%d lines)' $count)
     mbfl_message_debug "$msg"
+    return 0
 }
 #page
 function smtp_exchange_greetings () {
     local HOSTNAME_PROGRAM
-    HOSTNAME_PROGRAM=$(mbfl_program_found hostname)                     || exit $?
-    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn)      || exit_failure
+    HOSTNAME_PROGRAM=$(mbfl_program_found hostname) || exit $?
+    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn) || {
+        mbfl_message_error 'unable to acquire local hostname'
+        exit_failure
+    }
     mbfl_message_verbose 'esmtp: exchanging greetings with server\n'
     recv 220
     send 'HELO %s' "$LOCAL_HOSTNAME"
@@ -458,35 +493,55 @@ function smtp_exchange_greetings () {
 }
 function esmtp_exchange_greetings () {
     local HOSTNAME_PROGRAM
-    HOSTNAME_PROGRAM=$(mbfl_program_found hostname)                     || exit $?
-    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn)      || exit_failure
+    HOSTNAME_PROGRAM=$(mbfl_program_found hostname) || exit $?
+    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn) || {
+        mbfl_message_error 'unable to acquire local hostname'
+        exit_failure
+    }
     mbfl_message_verbose 'esmtp: exchanging greetings with server\n'
     recv 220
     send 'EHLO %s' "$LOCAL_HOSTNAME"
     recv 250
 }
+function pipe_base64 () {
+    mbfl_program_exec "$BASE64"
+}
 function esmtp_authentication () {
-    local BASE64 LOGIN_NAME= PASSWORD= msg=
+    local BASE64 LOGIN_NAME= PASSWORD= msg= ENCODED_STRING=
     BASE64=$(mbfl_program_found base64) || exit $?
     auth_read_credentials
     case "$AUTH_TYPE" in
         AUTH_PLAIN)
             mbfl_message_verbose 'performing AUTH PLAIN authentication\n'
-            send 'AUTH PLAIN %s' \
-                $(printf "\x00${LOGIN_NAME}\x00${PASSWORD}" | mbfl_program_exec "$BASE64")
+            ENCODED_STRING=$(printf '\x00%s\x00%s' "$LOGIN_NAME" "$PASSWORD" | pipe_base64)
+            test ${PIPESTATUS[1]} -eq 0 || {
+                mbfl_message_error 'unable to encode string for authentication'
+                exit_failure
+            }
+            send 'AUTH PLAIN %s' "$ENCODED_STRING"
             recv 235
             ;;
         AUTH_LOGIN)
             mbfl_message_verbose 'performing AUTH LOGIN authentication\n'
             send 'AUTH LOGIN'
             recv 334
-            send $(echo -n "$LOGIN_NAME" | mbfl_program_exec "$BASE64")
+            ENCODED_STRING=$(echo -n "$LOGIN_NAME" | pipe_base64)
+            test ${PIPESTATUS[1]} -eq 0 || {
+                mbfl_message_error 'unable to encode string for authentication'
+                exit_failure
+            }
+            send "$ENCODED_STRING"
             recv 334
-            send $(echo -n "$PASSWORD"   | mbfl_program_exec "$BASE64")
+            ENCODED_STRING=$(echo -n "$PASSWORD"   | pipe_base64)
+            test ${PIPESTATUS[1]} -eq 0 || {
+                mbfl_message_error 'unable to encode string for authentication'
+                exit_failure
+            }
+            send "$ENCODED_STRING"
             recv 235
             ;;
         *)
-            local msg=$(printf 'unknown authorisation type: %s' "$AUTH_TYPE")
+            local msg=$(printf 'internal error, unknown authorisation type: %s' "$AUTH_TYPE")
             mbfl_message_error "$msg"
             exit_failure
             ;;
@@ -549,9 +604,7 @@ function auth_read_credentials () {
 function auth_file_validate_word () {
     local GOT=${1:?} EXPECTED=${2:?} POSITION=${3:?} msg=
     if test "$GOT" = "$EXPECTED"
-    then
-        msg=$(printf 'good %s word of auth record (%s)' $POSITION $GOT)
-        mbfl_message_verbose "$msg\n"
+    then mbfl_message_verbose_printf 'good %s word of auth record (%s)' $POSITION $GOT
     else
         msg=$(printf 'expected \"%s\" as %s word of auth record, got \"%s\"' \
             "$EXPECTED" "$POSITION" "$GOT")

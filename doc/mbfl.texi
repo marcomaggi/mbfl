@@ -2860,6 +2860,17 @@ characters supported by @code{printf} are allowed in @var{string}.
 @end defun
 
 
+@defun mbfl_message_verbose_printf @var{string}
+@defunx mbfl_message_verbose_printf @var{pattern} @var{arg} ...
+Format the arguments in the same way @code{printf} would do; output the
+resulting string to the selected output channel, but only if the
+evaluation of the function @bfunc{mbfl_option_verbose} returns true.
+
+Echo a string composed of: the selected program name, a colon, a space,
+the formatting result.  No newline character is appended to the message.
+@end defun
+
+
 @defun mbfl_message_warning @var{string}
 Output a warning message to the selected output channel.  Echo a string
 composed of: the selected program name, a colon, a space, the string

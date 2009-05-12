@@ -61,6 +61,13 @@ function mbfl_message_verbose_end () {
     mbfl_option_verbose && mbfl_message_p_print $FUNCNAME "$1\n"
     return 0
 }
+function mbfl_message_verbose_printf () {
+    mbfl_option_verbose && {
+        printf '%s: ' "$mbfl_message_PROGNAME" >&$mbfl_message_CHANNEL
+        printf "$@" >&$mbfl_message_CHANNEL
+    }
+    return 0
+}
 function mbfl_message_debug () {
     mbfl_option_debug && mbfl_message_p_print_prefix $FUNCNAME "debug: $1\n"
     return 0
