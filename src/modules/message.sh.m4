@@ -34,7 +34,7 @@
 ## ------------------------------------------------------------
 
 mbfl_message_PROGNAME=$script_PROGNAME
-mbfl_message_CHANNEL="2"
+mbfl_message_CHANNEL=2
 
 function mbfl_message_set_progname () {
     mbfl_message_PROGNAME=${1:?$FUNCNAME error: missing program name argument}
@@ -74,8 +74,11 @@ function mbfl_message_debug () {
 }
 function mbfl_message_debug_printf () {
     mbfl_option_debug && {
-        printf '%s: debug: ' "$mbfl_message_PROGNAME" >&$mbfl_message_CHANNEL
-        printf "$@" >&$mbfl_message_CHANNEL
+        {
+            printf '%s: debug: ' "$mbfl_message_PROGNAME"
+            printf "$@"
+            echo
+        } >&$mbfl_message_CHANNEL
     }
     return 0
 }
@@ -84,10 +87,11 @@ function mbfl_message_warning () {
     return 0
 }
 function mbfl_message_warning_printf () {
-    mbfl_option_warning && {
-        printf '%s: warning: ' "$mbfl_message_PROGNAME" >&$mbfl_message_CHANNEL
-        printf "$@" >&$mbfl_message_CHANNEL
-    }
+    {
+        printf '%s: warning: ' "$mbfl_message_PROGNAME"
+        printf "$@"
+        echo
+    } >&$mbfl_message_CHANNEL
     return 0
 }
 function mbfl_message_error () {
@@ -95,10 +99,11 @@ function mbfl_message_error () {
     return 0
 }
 function mbfl_message_error_printf () {
-    mbfl_option_error && {
-        printf '%s: error: ' "$mbfl_message_PROGNAME" >&$mbfl_message_CHANNEL
-        printf "$@" >&$mbfl_message_CHANNEL
-    }
+    {
+        printf '%s: error: ' "$mbfl_message_PROGNAME"
+        printf "$@"
+        echo
+    } >&$mbfl_message_CHANNEL
     return 0
 }
 

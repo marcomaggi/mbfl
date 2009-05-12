@@ -2895,8 +2895,7 @@ Escape characters supported by @code{printf} are allowed in
 @defun mbfl_message_warning_printf @var{string}
 @defunx mbfl_message_warning_printf @var{pattern} @var{arg} ...
 Format the arguments in the same way @code{printf} would do; output the
-resulting string to the selected output channel, but only if the
-evaluation of the function @bfunc{mbfl_option_warning} returns true.
+resulting string to the selected output channel.
 
 Echo a string composed of: the selected program name, a colon, a space,
 the string @code{warning}, a colon, a space, the formatting result.  No
@@ -2916,8 +2915,7 @@ Escape characters supported by @code{printf} are allowed in
 @defun mbfl_message_error_printf @var{string}
 @defunx mbfl_message_error_printf @var{pattern} @var{arg} ...
 Format the arguments in the same way @code{printf} would do; output the
-resulting string to the selected output channel, but only if the
-evaluation of the function @bfunc{mbfl_option_error} returns true.
+resulting string to the selected output channel.
 
 Echo a string composed of: the selected program name, a colon, a space,
 the string @code{error}, a colon, a space, the formatting result.  No
