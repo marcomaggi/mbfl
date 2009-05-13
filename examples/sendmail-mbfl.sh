@@ -89,9 +89,9 @@ mbfl_declare_option TEST_MESSAGE \
     no '' test-message noarg 'send a test message'
 
 mbfl_declare_option HOST \
-    localhost n host witharg 'select the server hostname'
+    localhost '' host witharg 'select the server hostname'
 mbfl_declare_option PORT \
-    25        p port witharg 'select the server port'
+    ''        p port witharg 'select the server port'
 mbfl_declare_option HOST_INFO \
     "$HOME/.hostinfo" '' host-info witharg 'select the hostinfo file'
 
@@ -135,11 +135,17 @@ mbfl_declare_program openssl
 
 mbfl_main_declare_exit_code 2 invalid_option
 mbfl_main_declare_exit_code 3 invalid_message_source
-mbfl_main_declare_exit_code 4 failed_connection
-mbfl_main_declare_exit_code 5 unknown_auth_user
-mbfl_main_declare_exit_code 6 unreadable_auth_file
-mbfl_main_declare_exit_code 7 invalid_auth_file
-mbfl_main_declare_exit_code 8 wrong_server_answer
+
+mbfl_main_declare_exit_code 4 unreadable_host_file
+mbfl_main_declare_exit_code 5 invalid_host_file
+mbfl_main_declare_exit_code 6 unknown_host
+
+mbfl_main_declare_exit_code 7 unreadable_auth_file
+mbfl_main_declare_exit_code 8 invalid_auth_file
+mbfl_main_declare_exit_code 9 unknown_auth_user
+
+mbfl_main_declare_exit_code 10 failed_connection
+mbfl_main_declare_exit_code 11 wrong_server_answer
 
 #page
 ## ------------------------------------------------------------
@@ -170,6 +176,8 @@ function script_option_update_openssl_connector () {
 }
 #page
 function main () {
+    validate_command_line_options
+
     local FROM_ADDRESS=$script_option_FROM
     local TO_ADDRESS=$script_option_TO
     local SMTP_HOST=$script_option_HOST
@@ -187,7 +195,6 @@ function main () {
     # child process.
     local INFIFO= OUFIFO=
 
-    validate_command_line_options
     read_message_from_selected_source
     {
         mbfl_message_verbose_printf 'connecting to \"%s:%d\"\n' "$SMTP_HOST" "$SMTP_PORT"
@@ -252,17 +259,26 @@ function validate_command_line_options () {
         exit_because_invalid_option
     }
     mbfl_string_is_noblank "$script_option_HOST" || {
-        mbfl_message_error 'selected hostname string has blank character in it'
+        mbfl_message_error 'selected hostname string has blank characters in it'
         exit_because_invalid_option
     }
-    test -n "$script_option_PORT" || {
-        mbfl_message_error 'empty string as SMTP server port number'
-        exit_because_invalid_option
-    }
-    mbfl_string_is_digit "$script_option_PORT" || {
-        mbfl_message_error 'selected port string is not numeric'
-        exit_because_invalid_option
-    }
+    if test -n "$script_option_PORT"
+    then mbfl_string_is_digit "$script_option_PORT" || {
+            mbfl_message_error 'selected port string is not numeric'
+            exit_because_invalid_option
+        }
+    else
+        hostinfo_read
+        test -n "$script_option_HOST" || {
+            mbfl_message_error 'empty string as SMTP server hostname'
+            exit_because_invalid_option
+        }
+        test -n "$script_option_PORT" || script_option_PORT=25
+        mbfl_string_is_digit "$script_option_PORT" || {
+            mbfl_message_error 'selected port string is not numeric'
+            exit_because_invalid_option
+        }
+    fi
     test "$script_option_STARTTLS" = yes -o "$script_option_DELAYED_STARTTLS" = yes && {
         test -n "$script_option_AUTH_FILE" || {
             mbfl_message_error 'empty string as auth file pathname'
@@ -317,10 +333,10 @@ function read_message_from_selected_source () {
     else
         if test "$script_option_MESSAGE" = -
         then
-            mbfl_message_verbose 'reading message from stdin'
+            mbfl_message_verbose 'reading message from stdin\n'
             exec 5<&0
         else
-            mbfl_message_verbose 'reading message from file'
+            mbfl_message_verbose 'reading message from file\n'
             exec 5<"$script_option_MESSAGE"
         fi
         # Here  it is impossible  to distinguish  between an
@@ -1042,6 +1058,57 @@ function auth_file_validate_word () {
     then mbfl_message_debug_printf 'good %s word of auth record (%s)' $POSITION $GOT
     else
         mbfl_message_error_printf 'expected \"%s\" as %s word of auth record, got \"%s\"' \
+            "$EXPECTED" "$POSITION" "$GOT"
+        exit_because_invalid_auth_file
+    fi
+}
+#page
+## ------------------------------------------------------------
+## Hostinfo file.
+## ------------------------------------------------------------
+
+# Synopsis:
+#
+#       hostinfo_read
+#
+# Description:
+#
+#  Read the  hostinfo file to  select the port  number.  The
+#  host    name    key    must    be   in    the    variable
+#  "script_option_HOST", the host name and the host port are
+#  stored   in   the   variables  "script_option_HOST"   and
+#  "script_option_PORT".
+#
+function hostinfo_read () {
+    local HOSTINFO=$script_option_HOST_INFO
+    local rex='^[ \t]*'
+    rex+='machine[ \t]\+.*%s.*[ \t]\+'
+    rex+='service[ \t]\+smtp[ \t]\+'
+    rex+='port[ \t]\+[0-9]\+'
+    rex+='[ \t]*$'
+    rex=$(printf "$rex" "$script_option_HOST")
+    mbfl_message_debug_printf 'reading hostinfo file: %s' "$HOSTINFO"
+    local line
+    line=$(grep "$rex" "$HOSTINFO") || {
+        mbfl_message_error_printf 'selected host (%s) is unknown to hostinfo file (%s)' \
+            "$script_option_HOST" "$HOSTINFO"
+        exit_because_unknown_host
+    }
+    set -- $line
+    host_file_validate_word "$1" machine first   || exit $?
+    host_file_validate_word "$3" service third   || exit $?
+    host_file_validate_word "$5" port    fifth   || exit $?
+    script_option_HOST=$2
+    script_option_PORT=$6
+    mbfl_message_debug_printf 'data from hostinfo: %s:%s' "$script_option_HOST" "$script_option_PORT"
+    return 0
+}
+function host_file_validate_word () {
+    local GOT=${1:?} EXPECTED=${2:?} POSITION=${3:?}
+    if test "$GOT" = "$EXPECTED"
+    then mbfl_message_debug_printf 'good %s word of hostinfo record (%s)' $POSITION $GOT
+    else
+        mbfl_message_error_printf 'expected \"%s\" as %s word of hostinfo record, got \"%s\"' \
             "$EXPECTED" "$POSITION" "$GOT"
         exit_because_invalid_auth_file
     fi

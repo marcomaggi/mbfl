@@ -5209,6 +5209,7 @@ or @tls{} sessions, and it can use both OpenSSL and @gnu{} @tls{}.
 
 @menu
 * sendmail script invoking::    Command line options.
+* sendmail script hostinfo::    Reading host informations from file.
 @end menu
 
 @c page
@@ -5250,8 +5251,7 @@ defaults to @code{-}.
 Send a test message with a hard--coded body part.  This option
 supersedes @option{--message}.
 
-@item -n @var{host}
-@itemx --host @var{host}
+@item --host @var{host}
 Select the @smtp{} server host name.  It defaults to @code{localhost}.
 
 @item --host-info @var{file}
@@ -5290,6 +5290,98 @@ when @option{--starttls} or @option{--delayed-starttls} are used.
 @item --auth-login
 Select the @code{AUTH LOGIN} authorisation type.
 @end table
+
+@c page
+@node sendmail script hostinfo
+@appendixsubsec Reading host informations from file
+
+
+There are two ways to specify the @smtp{} host and port:
+
+@itemize
+@item
+use both the command line options @option{--host} and @option{--port},
+as in:
+
+@example
+$ sendmail-mbfl.sh --host=smtp.gmail.org --port=587 ...
+@end example
+
+@item
+use the hostinfo file and the option @option{--host} to select a record
+into it, as in:
+
+@example
+$ sendmail-mbfl.sh --host=smtp.gmail.org ...
+
+$ sendmail-mbfl.sh --host=smtp.gmail.org \
+    --host-info=~/.hostrc ...
+@end example
+@end itemize
+
+@noindent
+If only @option{--host} is used: the script automatically looks into the
+default hostinfo file; when the options @option{--host}, @option{--port}
+and @option{--host-info} are used together, @option{--host-info} is
+ignored.
+
+The default pathname for the hostinfo file is @file{$HOME/.hostinfo};
+the format of this file is line oriented: blank lines are ignored, lines
+starting with a @code{#} character are comments, lines starting with
+@code{machine} are host records.
+
+Each record line must have the format:
+
+@example
+machine <the-host> service <name> port <number>
+@end example
+
+@noindent
+for example:
+
+@example
+# ~/.hostinfo --
+#
+
+# smtp servers
+machine localhost           service smtp    port 25
+machine relay.poste.it      service smtp    port 465
+machine smtp.gmail.com      service smtp    port 587
+
+# pop3 servers
+machine pop.tiscali.it      service pop3    port 110
+machine relay.poste.it      service pop3    port 995
+machine pop.googlemail.com  service pop3    port 995
+
+### end of file
+@end example
+
+@noindent
+so that we can extract a record with the following script:
+
+@example
+file=~/.hostinfo
+host=gmail
+service=smtp
+
+rex='^[ \t]*'
+rex+='machine[ \t]\+.*%s.*[ \t]\+'
+rex+='service[ \t]\+%s[ \t]\+'
+rex+='port[ \t]\+[0-9]\+'
+rex+='[ \t]*$'
+rex=$(printf "$rex" $host $service)
+
+set -- $(grep "$rex" "$file'')
+echo machine $2
+echo service $4
+echo port    $6
+@end example
+
+@noindent
+This is exactly what @command{sendmail-mbfl.sh} does with the file.
+
+Notice that when using the hostinfo file, the value of the
+@option{--host} option can be a substring of the host name.
 
 @c page
 @c ------------------------------------------------------------

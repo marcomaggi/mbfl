@@ -2,7 +2,7 @@
 #
 
 # These will use gnutls.
-false && {
+true && {
     true && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                        \
         --delayed-starttls                                      \
@@ -21,7 +21,7 @@ false && {
 }
 
 true && {
-    false && bash sendmail-mbfl.sh \
+    true && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                        \
         --openssl --delayed-starttls                            \
         --host=smtp.gmail.com --port=587                        \
