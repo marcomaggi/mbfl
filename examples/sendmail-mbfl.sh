@@ -513,7 +513,7 @@ function connect_using_gnutls_delayed () {
     trap terminate_and_wait_for_connector_process EXIT
     recv_until_string 220
     esmtp_exchange_greetings ehlo
-    send starttls
+    send STARTTLS
     recv 220
     kill -SIGALRM $CONNECTOR_PID
     esmtp_exchange_greetings ehlo
@@ -1034,9 +1034,13 @@ function auth_read_credentials () {
     local GREP line= regexp=
     GREP=$(mbfl_program_found grep) || exit $?
     mbfl_message_verbose 'reading auth file\n'
-    regexp=$(printf '^machine[[:blank:]]\+%s[[:blank:]]\+.*login[[:blank:]]\+%s' \
-        "$SMTP_HOST" "$AUTH_USER")
-    line=$(mbfl_program_exec "$GREP" "$regexp" "$AUTH_FILE") || {
+    local rex='^[ \t]*'
+    rex+='machine[ \t]\+.*%s.*[ \t]\+'
+    rex+='login[ \t]\+.*%s.*[ \t]\+'
+    rex+='password[ \t]\+.*'
+    rex+='[ \t]*$'
+    rex=$(printf "$rex" "$SMTP_HOST" "$AUTH_USER")
+    line=$(mbfl_program_exec "$GREP" "$rex" "$AUTH_FILE") || {
         mbfl_message_error_printf 'unknown authorisation information for \"%s@%s\"' \
             "$AUTH_USER" "$SMTP_HOST"
         exit_because_unknown_auth_user

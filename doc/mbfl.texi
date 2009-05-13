@@ -5210,6 +5210,8 @@ or @tls{} sessions, and it can use both OpenSSL and @gnu{} @tls{}.
 @menu
 * sendmail script invoking::    Command line options.
 * sendmail script hostinfo::    Reading host informations from file.
+* sendmail script authinfo::    Reading authentication credentials
+                                from file.
 @end menu
 
 @c page
@@ -5382,6 +5384,63 @@ This is exactly what @command{sendmail-mbfl.sh} does with the file.
 
 Notice that when using the hostinfo file, the value of the
 @option{--host} option can be a substring of the host name.
+
+@c page
+@node sendmail script authinfo
+@appendixsubsec Reading authentication credentials from file
+
+
+The only way the script has to acquire the user name and password to log
+into the remote server, is by reading the authinfo file.  By default,
+its pathname is @file{$HOME/.authinfo}.
+
+Its format is a simplified version of the @code{netrc} file format:
+blank lines are ignored, lines starting with a @code{#} character are
+comments, lines starting with @code{machine} are host records.
+
+Each record must have the format:
+
+@example
+machine <hostname> login <user-name> password <pass-word>
+@end example
+
+@noindent
+for example:
+
+@example
+machine smtp.gmail.com login one@@gmail.com password abcdefghilm
+machine relay.poste.it login two@@poste.it  password 0123456789
+@end example
+
+@noindent
+so that we can extract a record with the following script:
+
+@example
+file=~/.authinfo
+host=poste
+username=marco
+
+rex='^[ \t]*'
+rex+='machine[ \t]\+.*%s.*[ \t]\+'
+rex+='login[ \t]\+.*%s.*[ \t]\+'
+rex+='password[ \t]\+.*'
+rex+='[ \t]*$'
+rex=$(printf "$rex" $host $username)
+echo $rex
+
+line=$(grep "$rex" $file)
+set -- $line
+echo machine  $2
+echo username $4
+echo password $6
+@end example
+
+@noindent
+and this is exactly what @command{sendmail-mbfl.sh} does.
+
+The host name and the user name are selected by the command line options
+@option{--host} and @option{--username}.  Notice that the values for
+these options can be substrings of the values in the authinfo file.
 
 @c page
 @c ------------------------------------------------------------

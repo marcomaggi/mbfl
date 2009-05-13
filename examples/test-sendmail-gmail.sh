@@ -11,7 +11,7 @@ true && {
         --envelope-to=marco.maggi-ipsu@poste.it                 \
         --username=mrc.mgg --auth-plain
 
-    true && bash sendmail-mbfl.sh \
+    false && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                        \
         --gnutls --delayed-starttls                             \
         --host=smtp.gmail.com --port=587                        \
@@ -20,8 +20,8 @@ true && {
         --username=mrc.mgg --auth-login
 }
 
-true && {
-    true && bash sendmail-mbfl.sh \
+false && {
+    false && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                        \
         --openssl --delayed-starttls                            \
         --host=smtp.gmail.com --port=587                        \
@@ -29,7 +29,7 @@ true && {
         --envelope-to=marco.maggi-ipsu@poste.it                 \
         --username=mrc.mgg --auth-plain
 
-    true && bash sendmail-mbfl.sh \
+    false && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                        \
         --openssl --delayed-starttls                            \
         --host=smtp.gmail.com --port=587                        \
