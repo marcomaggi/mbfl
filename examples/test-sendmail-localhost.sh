@@ -26,23 +26,26 @@ Marco
 
 true && bash sendmail-mbfl.sh                   \
     --debug --verbose --test-message            \
-    --hostname=localhost --port=25              \
-    --from=$FROM_ADDRESS --to=$TO_ADDRESS
+    --host=localhost --port=25                  \
+    --envelope-from=$FROM_ADDRESS               \
+    --envelope-to=$TO_ADDRESS
 
 true && print_message | bash sendmail-mbfl.sh   \
     --debug --verbose --message=-               \
-    --hostname=localhost --port=25              \
-    --from=$FROM_ADDRESS --to=$TO_ADDRESS
+    --host=localhost --port=25                  \
+    --envelope-from=$FROM_ADDRESS               \
+    --envelope-to=$TO_ADDRESS
 
 true && {
     : ${TMPDIR:=/tmp}
     PATHNAME=${TMPDIR}/message.$RANDOM.$$
     print_message >$PATHNAME
     trap "rm -f '$PATHNAME'" EXIT
-    bash sendmail-mbfl.sh   \
+    bash sendmail-mbfl.sh                       \
         --debug --verbose --message=$PATHNAME   \
-        --hostname=localhost --port=25          \
-        --from=$FROM_ADDRESS --to=$TO_ADDRESS
+        --host=localhost --port=25              \
+        --envelope-from=$FROM_ADDRESS           \
+        --envelope-to=$TO_ADDRESS
 }
 
 ### end of file

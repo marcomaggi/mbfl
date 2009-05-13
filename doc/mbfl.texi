@@ -637,7 +637,7 @@ Examples for sending email
 * sendmail connector::          Send email through a process in
                                 background.
 * sendmail gnutls::             Using @command{gnutls-cli} as connector.
-* sendmail send::               Sending email.
+* sendmail script::             Sending email.
 
 Using @command{gnutls-cli} as connector
 
@@ -4568,7 +4568,7 @@ keyword in @strong{not} used in this appendix.
 * sendmail connector::          Send email through a process in
                                 background.
 * sendmail gnutls::             Using @command{gnutls-cli} as connector.
-* sendmail send::               Sending email.
+* sendmail script::             Sending email.
 @end menu
 
 @c page
@@ -5198,17 +5198,30 @@ recv> 221 2.0.0 closing connection ...
 @end smallexample
 
 @c page
-@node sendmail send
+@node sendmail script
 @appendixsec Sending email
 
 
 This section documents the example script
 @file{examples/sendmail-mbfl.sh}, which makes use of @mbfl{} to send an
-email message.  The synopsis is:
+email message.  The script sends already composed messages using plain
+or @tls{} sessions, and it can use both OpenSSL and @gnu{} @tls{}.
+
+@menu
+* sendmail script invoking::    Command line options.
+@end menu
+
+@c page
+@node sendmail script invoking
+@appendixsubsec Command line options
+
+
+The synopsis is:
 
 @smallexample
 sendmail-mbfl.sh \
-    --from=@meta{ADDRESS} --to=@meta{ADDRESS} \
+    --envelope-from=@meta{ADDRESS}              \
+    --envelope-to=@meta{ADDRESS}                \
     [--message=@meta{SOURCE} | --test-message]
     [options]
 @end smallexample
@@ -5219,11 +5232,11 @@ a connector.  Options description follows.
 
 @table @code
 @item -F @var{address}
-@itemx --from @var{address}
+@itemx --envelope-from @var{address}
 Select the @code{MAIL FROM} envelope address.
 
 @item -T @var{address}
-@itemx --to @var{address}
+@itemx --envelope-to @var{address}
 Select the @code{RCPT TO} envelope address.
 
 @item -M @var{source}
@@ -5238,12 +5251,16 @@ Send a test message with a hard--coded body part.  This option
 supersedes @option{--message}.
 
 @item -n @var{host}
-@itemx --hostname @var{host}
+@itemx --host @var{host}
 Select the @smtp{} server host name.  It defaults to @code{localhost}.
+
+@item --host-info @var{file}
+Select a file from which read host and port informations.
 
 @item -p @var{port}
 @itemx --port @var{port}
-Select the @smtp{} server @tcp{} port.  It defaults to @code{25}.
+Select the @smtp{} server @tcp{} port; this option supersedes
+@option{--host-info}.  It defaults to @code{25}.
 
 @item --starttls
 Establish a @tls{} bridge immediately, right after the connection.
@@ -5259,7 +5276,7 @@ used.
 @item --openssl
 Use @command{gnutls-cli} as connector for encrypted sessions.
 
-@item --auth-file @var{file}
+@item --auth-info @var{file}
 Select the file, in @code{netrc} format, from which read the
 authorisation credentials.  Defaults to @file{~/.authinfo}.
 
