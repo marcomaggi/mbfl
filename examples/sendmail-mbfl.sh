@@ -152,6 +152,11 @@ mbfl_main_declare_exit_code 11 wrong_server_answer
 ## Option update functions.
 ## ------------------------------------------------------------
 
+# The number of recipients  and the zero-based array holding
+# them.
+declare -i RECIPIENTS_COUNT=0
+declare -a RECIPIENTS
+
 # Selected   ESMTP   authorisation   type.   Valid   values:
 # "AUTH_LOGIN", "AUTH_PLAIN".
 AUTH_TYPE=AUTH_LOGIN
@@ -162,6 +167,10 @@ AUTH_TYPE=AUTH_LOGIN
 # text.
 CONNECTOR=GNUTLS
 
+function script_option_update_to () {
+    RECIPIENTS[$RECIPIENTS_COUNT]=$script_option_TO
+    let ++RECIPIENTS_COUNT
+}
 function script_option_update_auth_plain () {
     AUTH_TYPE=AUTH_PLAIN
 }
@@ -980,11 +989,15 @@ function esmtp_authentication () {
 #  Do the SMTP dialog required to send a message.
 #
 function esmtp_send_message () {
+    local -i i
     mbfl_message_verbose 'esmtp: sending message\n'
     send 'MAIL FROM:<%s>' "$FROM_ADDRESS"
     recv 250
-    send 'RCPT TO:<%s>' "$TO_ADDRESS"
-    recv 250
+    for ((i=0; $i < $RECIPIENTS_COUNT; ++i))
+    do
+        send 'RCPT TO:<%s>' "${RECIPIENTS[$i]}"
+        recv 250
+    done
     send %s DATA
     recv 354
     printf "$MESSAGE" | read_and_send_message

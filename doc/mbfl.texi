@@ -5236,11 +5236,13 @@ a connector.  Options description follows.
 @table @code
 @item -F @var{address}
 @itemx --envelope-from @var{address}
-Select the @code{MAIL FROM} envelope address.
+Select the @code{MAIL FROM} envelope address.  If this option is used
+multiple times: the last one wins.
 
 @item -T @var{address}
 @itemx --envelope-to @var{address}
-Select the @code{RCPT TO} envelope address.
+Select the @code{RCPT TO} envelope address.  This option can be used
+multiple times: each @var{address} is appended to a list of recipients.
 
 @item -M @var{source}
 @itemx --message @var{source}

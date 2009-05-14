@@ -24,13 +24,13 @@ Marco
     printf "$MESSAGE"
 }
 
-false && bash sendmail-mbfl.sh                   \
+true && bash sendmail-mbfl.sh                   \
     --debug --verbose --test-message            \
     --host=localhost --port=25                  \
     --envelope-from=$FROM_ADDRESS               \
     --envelope-to=$TO_ADDRESS
 
-false && print_message | bash sendmail-mbfl.sh   \
+true && print_message | bash sendmail-mbfl.sh   \
     --debug --verbose --message=-               \
     --host=localhost --port=25                  \
     --envelope-from=$FROM_ADDRESS               \
@@ -45,6 +45,7 @@ true && {
         --debug --verbose --message=$PATHNAME   \
         --host=localhost                        \
         --envelope-from=$FROM_ADDRESS           \
+        --envelope-to=$FROM_ADDRESS             \
         --envelope-to=$TO_ADDRESS
 }
 

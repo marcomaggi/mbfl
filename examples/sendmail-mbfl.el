@@ -74,7 +74,7 @@
   :type 'string
   :group 'sendmail-mbfl)
 
-(defcustom sendmail-mbfl-extra-args nil
+(defcustom sendmail-mbfl-extra-args '("--verbose" "--debug")
   "Extra arguments to `sendmail-mbfl.sh'."
   :type '(repeat string)
   :group 'senmdail-mbfl)
@@ -232,31 +232,46 @@ format:
 			    (message "sendmail-mbfl: creting temporary file...")
 			    (make-temp-file "sendmail-mbfl"))))
     (unwind-protect
-	(unwind-protect
-	    (let* ((message-buffer (current-buffer))
-		   (FROM-ADDRESS (sendmail-mbfl-envelope-from-function))
-		   (TO-ADDRESS (sendmail-mbfl-envelope-to-function)))
-	      ;; remove the bcc header
-	      (save-excursion
-		(save-restriction
-		  (message-narrow-to-headers-or-head)
-		  (message-remove-header "Bcc")))
-	      ;; write the buffer to the file
-	      (let* ((process-connection-type starttls-process-connection-type)
-		     (process (progn
-				(message "sendmail-mbfl: running script...")
-				(apply #'start-process "sendmail-mbfl"
-				       "output from sendmail-mbfl"
-				       sendmail-mbfl-program
-				       "--message" message-tempfile
-				       "--envelope-from" FROM-ADDRESS
-				       "--envelope-to" TO-ADDRESS
-				       sendmail-mbfl-extra-args))))
-		(message "sendmail-mbfl: message sent")
-		(while (and (processp process)
-			    (eq (process-status process) 'run))
-		  (accept-process-output process 0 100 t))))
-	  (delete-process process))
+	(let* ((FROM-ADDRESS (funcall sendmail-mbfl-envelope-from-function))
+	       (TO-ADDRESS (funcall sendmail-mbfl-envelope-to-function)))
+	  (message "sendmail-mbfl: from address: %s" FROM-ADDRESS)
+	  (dolist (address TO-ADDRESS)
+	    (message "sendmail-mbfl: to address: %s" address))
+	  ;; remove the bcc header
+	  (save-excursion
+	    (save-restriction
+	      (message-narrow-to-headers-or-head)
+	      (message-remove-header "Bcc")))
+	  ;; write the buffer to the file
+	  (write-region nil nil message-tempfile)
+	  (let* ((process-connection-type starttls-process-connection-type)
+		 (process-buffer (generate-new-buffer "*output from sendmail-mbfl*"))
+		 (args (nconc (list (concat "--message=" message-tempfile)
+				    (concat "--envelope-from=" FROM-ADDRESS))
+			      (mapcar '(lambda (ADDRESS)
+					 (concat "--envelope-to=" ADDRESS))
+				      TO-ADDRESS)
+			      sendmail-mbfl-extra-args))
+		 (process (progn
+			    (message "sendmail-mbfl: running script...")
+			    (with-current-buffer process-buffer
+			      (insert sendmail-mbfl-program " "
+				      (mapconcat '(lambda (x) x) args " ")
+				      "\n"))
+			    (apply #'start-process "sendmail-mbfl"
+				   process-buffer sendmail-mbfl-program args))))
+	    (unwind-protect
+		(progn
+		  (message "sendmail-mbfl: message sent")
+		  (sit-for 0.1)
+		  (accept-process-output process 0 100 t)
+		  (while (and (processp process)
+			      (eq (process-status process) 'run))
+		    (accept-process-output process 0 100 t)
+		    (sit-for 0.1)))
+	      (delete-process process)
+	      (with-current-buffer process-buffer
+		(setq buffer-read-only t)))))
       (delete-file message-tempfile))))
 
 (provide 'sendmail-mbfl)
