@@ -1,3 +1,19 @@
+* General
+
+** Change the values of the  boolean script options from "yes" and "no"
+   to "true" and "false", that way we can test them with:
+
+   if $script_option_STUFF
+   then do_something
+   fi
+
+   or even:
+
+   $script_option_STUFF && do_something
+
+   this is a change  in the interface, so it should be  done with a bump
+   in the major version number: do it for 2.0?
+
 * Testing
 
   More tests for signal handling.
