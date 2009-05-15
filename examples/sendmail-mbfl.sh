@@ -247,6 +247,9 @@ function main () {
     # This is for the PID of the connector external program,
     # executed as child process.
     local CONNECTOR_PID=
+    # Timeout,  in seconds,  for the  read operation  on the  input file
+    # descriptor.
+    local READ_TIMEOUT=5
 
     validate_and_normalise_configuration
     read_message_from_selected_source
@@ -291,7 +294,7 @@ function validate_and_normalise_configuration () {
     local hostinfo_ALREADY_READ=false
 
     # Informations from the hostinfo file are stored in these variables.
-    local hostinfo_HOST= hostinfo_PORT= hostinfo_SESSION_TYPE=
+    local hostinfo_HOST= hostinfo_PORT= hostinfo_SESSION_TYPE= hostinfo_AUTH_TYPE=
 
     # Email addresses are selected with command line options.
     if test -n "$script_option_FROM"
@@ -364,6 +367,7 @@ function validate_and_normalise_configuration () {
     # hostinfo file, else defaults to "none".
     test -z "$AUTH_TYPE" && {
         hostinfo_read
+        AUTH_TYPE=$hostinfo_AUTH_TYPE
         test -z "$AUTH_TYPE" && AUTH_TYPE=none
     }
     test "$AUTH_TYPE" = none || {
@@ -820,12 +824,19 @@ function connect_cleanup_fifos () {
 function recv () {
     local EXPECTED_CODE=${1:?}
     local line
-    IFS= read line <&$INFD
+    IFS= read -t $READ_TIMEOUT line <&$INFD
+    if test 128 < $?
+    then
+        mbfl_message_error_printf 'read timeout exceeded'
+        exit_because_wrong_server_answer
+    fi
     mbfl_message_debug_printf 'recv: %s' "$line"
     test "${line:0:3}" = "$EXPECTED_CODE" || {
         send %s QUIT
-        IFS= read -t 3 line <&$INFD
-        mbfl_message_debug_printf 'recv: %s' "$line"
+        IFS= read -t $READ_TIMEOUT line <&$INFD
+        if test $? < 128
+        then mbfl_message_debug_printf 'recv: %s' "$line"
+        fi
         exit_because_wrong_server_answer
     }
     return 0
@@ -847,11 +858,16 @@ function recv () {
 function recv_string () {
     local EXPECTED_STRING=${1:?}
     local line len=${#EXPECTED_STRING}
-    IFS= read line <&$INFD
+    IFS= read -t $READ_TIMEOUT line <&$INFD
+    if test 128 < $?
+    then
+        mbfl_message_error_printf 'read timeout exceeded'
+        exit_because_wrong_server_answer
+    fi
     mbfl_message_debug_printf 'recv: %s' "$line"
     test "${line:0:$len}" = "$EXPECTED_STRING" || {
         send %s QUIT
-        IFS= read -t 3 line <&$INFD
+        IFS= read -t $READ_TIMEOUT line <&$INFD
         mbfl_message_debug_printf 'recv: %s' "$line"
         exit_because_wrong_server_answer
     }
@@ -878,7 +894,7 @@ function recv_string () {
 function recv_until_string () {
     local EXPECTED_STRING=${1:?}
     local line len=${#EXPECTED_STRING} success=no
-    while IFS= read line <&$INFD
+    while IFS= read -t $READ_TIMEOUT line <&$INFD
     do
         mbfl_message_debug_printf 'recv: %s' "$line"
         test "${line:0:$len}" = "$EXPECTED_STRING" && {
@@ -886,6 +902,11 @@ function recv_until_string () {
             break
         }
     done
+    if test 128 < $?
+    then
+        mbfl_message_error_printf 'read timeout exceeded'
+        exit_because_wrong_server_answer
+    fi
     test $success = no && {
         mbfl_message_error_printf 'failed to receive string \"%s\" from server' "$EXPECTED_STRING"
         exit_because_wrong_server_answer
@@ -1176,7 +1197,8 @@ function hostinfo_read () {
     rex+='machine[ \t]\+.*%s.*[ \t]\+'
     rex+='service[ \t]\+smtp[ \t]\+'
     rex+='port[ \t]\+[0-9]\+[ \t]\+'
-    rex+='session[ \t]\+\(plain\|tls\|starttls\)'
+    rex+='session[ \t]\+\(plain\|tls\|starttls\)[ \t]\+'
+    rex+='auth[ \t]\+\(none\|plain\|login\)'
     rex+='[ \t]*$'
     rex=$(printf "$rex" "$script_option_HOST")
     mbfl_message_debug_printf 'reading hostinfo file: %s' "$HOSTINFO"
@@ -1191,10 +1213,13 @@ function hostinfo_read () {
     host_file_validate_word "$3" service third   || exit $?
     host_file_validate_word "$5" port    fifth   || exit $?
     host_file_validate_word "$7" session sixth   || exit $?
+    host_file_validate_word "$9" auth    seventh || exit $?
     hostinfo_ALREADY_READ=true
     hostinfo_HOST=$2
     hostinfo_PORT=$6
     hostinfo_SESSION_TYPE=$8
+    shift 9
+    hostinfo_AUTH_TYPE=$1
     mbfl_message_debug_printf 'data from hostinfo: %s:%s, %s' \
         "$hostinfo_HOST" "$hostinfo_PORT" "$hostinfo_SESSION_TYPE"
     return 0

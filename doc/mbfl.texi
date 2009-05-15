@@ -5248,10 +5248,6 @@ $ sendmail-mbfl.sh \
 by default the @smtp{} server name is set to @code{localhost} and the
 @tcp{} port to @code{25}.  The default session is plain, without @tls{}.
 
-@c ------------------------------------------------------------
-
-@subsubheading Selecting server host and port on the command line
-
 Port number @code{25} is officially assigned to the @smtp{} protocol; if
 the localhost uses a different @tcp{} port, we can select it with the
 @option{--port} option:
@@ -5274,54 +5270,11 @@ $ sendmail-mbfl.sh \
     --message=message.mail
 @end example
 
-@c ------------------------------------------------------------
-
-@subsubheading Selecting server host and port from configuration file
-
-Host and port can be also selected by reading a configuration file
-called @file{~/.hostinfo}, with self explaining format:
-
-@smallexample
-# ~/.hostinfo --
-
-machine localhost           service smtp  port 25   session plain
-machine relay.poste.it      service smtp  port 465  session tls
-machine smtp.gmail.com      service smtp  port 587  session starttls
-machine pop.tiscali.it      service pop3  port 110  session plain
-machine relay.poste.it      service pop3  port 995  session tls
-machine pop.googlemail.com  service pop3  port 995  session tls
-
-### end of file
-@end smallexample
-
-@noindent
-@command{sendmail-mbfl.sh} is interested only in lines with
-@code{service smtp}, and we can select the host with the option
-@option{--host}:
-
-@example
-$ sendmail-mbfl.sh --host=gmail       \
-    --envelope-from=marco@@gmail.com   \
-    --envelope-to=marco@@spiffy.it     \
-    --message=message.mail
-@end example
-
-@noindent
-notice that the value of @option{--host} can be a string that uniquely
-identifies the host, without the need to write its full name.
-
-@c ------------------------------------------------------------
-
-@subsubheading Encrypted sessions
-
-
 Mail services may offer encrypted sessions to their @smtp{} servers.
 Encryption with the @tls{} protocol is supported by
-@command{sendmail-mbfl.sh} through external programs.
-
-Whether a server requires an encrypted session, can be specified in the
-@file{~/.hostinfo} file or by using the @option{--plain}, @option{--tls}
-or @option{--starttls} options.  The options supersed the hostinfo file.
+@command{sendmail-mbfl.sh} through external programs.  Whether a server
+requires an encrypted session, can be specified using the
+@option{--plain}, @option{--tls} or @option{--starttls} options.
 
 To establish an encrypted session, the script needs to acquire the
 credentials of the user.  These can be stored in a configuration file
@@ -5336,22 +5289,11 @@ machine relay.poste.it login marco@@poste.it  password 0123456789
 so that a line/record can be uniquely identified with values of the
 @option{--host} and @option{--username} options.
 
-So using the hostinfo file, we can do:
+So we can do:
 
 @example
 $ sendmail-mbfl.sh --host=gmail       \
-    --username=marco                  \
-    --envelope-from=marco@@gmail.com   \
-    --envelope-to=marco@@spiffy.it     \
-    --message=message.mail
-@end example
-
-@noindent
-while with explicit selection, we can do:
-
-@example
-$ sendmail-mbfl.sh --host=gmail       \
-    --starttls --username=marco        \
+    --username=marco --starttls        \
     --envelope-from=marco@@gmail.com   \
     --envelope-to=marco@@spiffy.it     \
     --message=message.mail
@@ -5377,18 +5319,18 @@ the script sends an email address, and it can do a plain session or use
 a connector.  Options description follows.
 
 @table @code
-@item -F @var{address}
-@itemx --envelope-from @var{address}
+@item -F@var{address}
+@itemx --envelope-from=@var{address}
 Select the @code{MAIL FROM} envelope address.  If this option is used
 multiple times: the last one wins.
 
-@item -T @var{address}
-@itemx --envelope-to @var{address}
+@item -T@var{address}
+@itemx --envelope-to=@var{address}
 Select the @code{RCPT TO} envelope address.  This option can be used
 multiple times: each @var{address} is appended to a list of recipients.
 
-@item -M @var{source}
-@itemx --message @var{source}
+@item -M@var{source}
+@itemx --message=@var{source}
 Select the source of the whole email message.  If @var{source} is a file
 pathname, that file is read and used as data; if @var{source} is
 @code{-}, the message is read from the standard input channel.  It
@@ -5398,14 +5340,14 @@ defaults to @code{-}.
 Send a test message with a hard--coded body part.  This option
 supersedes @option{--message}.
 
-@item --host @var{host}
+@item --host=@var{host}
 Select the @smtp{} server host name.  It defaults to @code{localhost}.
 
-@item --host-info @var{file}
+@item --host-info=@var{file}
 Select a file from which read host and port informations.
 
-@item -p @var{port}
-@itemx --port @var{port}
+@item -p@var{port}
+@itemx --port=@var{port}
 Select the @smtp{} server @tcp{} port; this option supersedes
 @option{--host-info}.  It defaults to @code{25}.
 
@@ -5424,19 +5366,18 @@ used.
 @item --openssl
 Use @command{gnutls-cli} as connector for encrypted sessions.
 
-@item --auth-info @var{file}
+@item --auth-info=@var{file}
 Select the file, in @code{netrc} format, from which read the
 authorisation credentials.  Defaults to @file{~/.authinfo}.
 
-@item --username @var{user}
+@item --username=@var{user}
 Specify a string used to select an account in the authorisation file.
 
-@item --auth-plain
-Select the @code{AUTH PLAIN} authorisation type.  This is the default
-when @option{--tls} or @option{--starttls} are used.
-
-@item --auth-login
-Select the @code{AUTH LOGIN} authorisation type.
+@item --auth-none
+@itemx --auth-plain
+@itemx --auth-login
+Perform no authorisation, the @code{AUTH PLAIN} authorisation or the
+@code{AUTH LOGIN} authorisation.
 @end table
 
 @c page
@@ -5444,19 +5385,23 @@ Select the @code{AUTH LOGIN} authorisation type.
 @appendixsubsec Reading host informations from file
 
 
-There are two ways to specify the @smtp{} host and port:
+For each @smtp{} server we need the following informations: the
+hostname, the port number, the session type, the authorisation method.
+There are two ways to specify these:
 
 @itemize
 @item
-use both the command line options @option{--host} and @option{--port},
-as in:
+Use the command line options as in:
 
 @example
-$ sendmail-mbfl.sh --host=smtp.gmail.org --port=587 ...
+$ sendmail-mbfl.sh \
+    --host=smtp.gmail.org --port=587    \
+    --tls --auth-login                  \
+    ...
 @end example
 
 @item
-use the hostinfo file and the option @option{--host} to select a record
+Use the hostinfo file and the option @option{--host} to select a record
 into it, as in:
 
 @example
@@ -5468,21 +5413,23 @@ $ sendmail-mbfl.sh --host=smtp.gmail.org \
 @end itemize
 
 @noindent
-If only @option{--host} is used: the script automatically looks into the
-default hostinfo file; when the options @option{--host}, @option{--port}
-and @option{--host-info} are used together, @option{--host-info} is
-ignored.
+If @option{--host} is not used: the hostname defaults to
+@code{localhost}.  If the selection of port, session type or
+authorisation type is left unspecified: The script automatically looks
+into the default hostinfo file.  Informations from command line options
+supersede informations from the hostinfo file.
 
-The default pathname for the hostinfo file is @file{$HOME/.hostinfo};
-the format of this file is line oriented: blank lines are ignored, lines
-starting with a @code{#} character are comments, lines starting with
-@code{machine} are host records.
+The default pathname for the hostinfo file is @file{$HOME/.hostinfo} and
+can be overridden by the @option{--host-info} option.  The format of
+this file is line oriented: Blank lines are ignored, lines starting with
+a @code{#} character are comments, lines starting with @code{machine}
+are host records.
 
 Each record line must have the format:
 
-@example
-machine <the-host> service <name> port <number> session <type>
-@end example
+@smallexample
+machine <host> service <name> port <number> session <type> auth <type>
+@end smallexample
 
 @noindent
 for example:
@@ -5492,14 +5439,14 @@ for example:
 #
 
 # SMTP servers
-machine localhost           service smtp  port 25   session plain
-machine relay.poste.it      service smtp  port 465  session tls
-machine smtp.gmail.com      service smtp  port 587  session starttls
+machine localhost service smtp port 25 session plain auth none
+machine relay.poste.it service smtp port 465 session tls auth login
+machine smtp.gmail.com service smtp port 587 session starttls auth plain
 
 # POP3 servers
-machine pop.tiscali.it      service pop3  port 110  session plain
-machine relay.poste.it      service pop3  port 995  session tls
-machine pop.googlemail.com  service pop3  port 995  session tls
+machine pop.tiscali.it service pop3 port 110 session plain auth userpass
+machine relay.poste.it service pop3 port 995 session tls auth userpass
+machine pop.googlemail.com service pop3 port 995  session tls auth userpass
 
 ### end of file
 @end smallexample
@@ -5516,7 +5463,8 @@ rex='^[ \t]*'
 rex+='machine[ \t]\+.*%s.*[ \t]\+'
 rex+='service[ \t]\+%s[ \t]\+'
 rex+='port[ \t]\+[0-9]\+[ \t]\+'
-rex+='session[ \t]\+\(plain\|tls\|starttls\)'
+rex+='session[ \t]\+\(plain\|tls\|starttls\)[ \t]\+'
+rex+='auth[ \t]\+\(none\|plain\|login\)'
 rex+='[ \t]*$'
 rex=$(printf "$rex" $host $service)
 
@@ -5525,10 +5473,12 @@ echo machine $2
 echo service $4
 echo port    $6
 echo session $8
+shift 9
+echo auth    $1
 @end example
 
 @noindent
-This is exactly what @command{sendmail-mbfl.sh} does with the file.
+this is exactly what @command{sendmail-mbfl.sh} does with the file.
 
 Notice that when using the hostinfo file, the value of the
 @option{--host} option can be a substring of the host name.
@@ -5540,7 +5490,8 @@ Notice that when using the hostinfo file, the value of the
 
 The only way the script has to acquire the user name and password to log
 into the remote server, is by reading the authinfo file.  By default,
-its pathname is @file{$HOME/.authinfo}.
+its pathname is @file{$HOME/.authinfo}, it can be overridden with the
+@option{--auth-info} option.
 
 Its format is a simplified version of the @code{netrc} file format:
 blank lines are ignored, lines starting with a @code{#} character are
@@ -5574,7 +5525,6 @@ rex+='login[ \t]\+.*%s.*[ \t]\+'
 rex+='password[ \t]\+.*'
 rex+='[ \t]*$'
 rex=$(printf "$rex" $host $username)
-echo $rex
 
 line=$(grep "$rex" $file)
 set -- $line
