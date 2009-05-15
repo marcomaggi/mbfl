@@ -5,7 +5,7 @@
 true && {
     true && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                        \
-        --delayed-starttls                                      \
+        --starttls                                      \
         --host=smtp.gmail.com --port=587                        \
         --envelope-from=mrc.mgg@gmail.com                       \
         --envelope-to=marco.maggi-ipsu@poste.it                 \
@@ -13,7 +13,7 @@ true && {
 
     false && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                        \
-        --gnutls --delayed-starttls                             \
+        --gnutls --starttls                             \
         --host=smtp.gmail.com --port=587                        \
         --envelope-from=mrc.mgg@gmail.com                       \
         --envelope-to=marco.maggi-ipsu@poste.it                 \
@@ -23,7 +23,7 @@ true && {
 false && {
     false && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                        \
-        --openssl --delayed-starttls                            \
+        --openssl --starttls                            \
         --host=smtp.gmail.com --port=587                        \
         --envelope-from=mrc.mgg@gmail.com                       \
         --envelope-to=marco.maggi-ipsu@poste.it                 \
@@ -31,7 +31,7 @@ false && {
 
     false && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                        \
-        --openssl --delayed-starttls                            \
+        --openssl --starttls                            \
         --host=smtp.gmail.com --port=587                        \
         --envelope-from=mrc.mgg@gmail.com                       \
         --envelope-to=marco.maggi-ipsu@poste.it                 \

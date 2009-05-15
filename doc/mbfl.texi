@@ -5208,11 +5208,154 @@ email message.  The script sends already composed messages using plain
 or @tls{} sessions, and it can use both OpenSSL and @gnu{} @tls{}.
 
 @menu
+* sendmail script examples::    Usage examples.
 * sendmail script invoking::    Command line options.
 * sendmail script hostinfo::    Reading host informations from file.
 * sendmail script authinfo::    Reading authentication credentials
                                 from file.
 @end menu
+
+@c page
+@node sendmail script examples
+@appendixsubsec Usage examples
+
+
+Let's say we have a file named @file{message.mail} holding a fully
+composed email message:
+
+@example
+Sender: marco@@localhost
+From: marco@@localhost
+To: root@@localhost
+Subject: server on fire?
+
+I noticed flames raising from the server room...
+--
+Marco
+@end example
+
+@noindent
+basically, to send it with @command{sendmail-mbfl.sh} we have to do:
+
+@example
+$ sendmail-mbfl.sh \
+    --envelope-from=marco@@localhost  \
+    --envelope-to=root@@localhost     \
+    --message=message.mail
+@end example
+
+@noindent
+by default the @smtp{} server name is set to @code{localhost} and the
+@tcp{} port to @code{25}.  The default session is plain, without @tls{}.
+
+@c ------------------------------------------------------------
+
+@subsubheading Selecting server host and port on the command line
+
+Port number @code{25} is officially assigned to the @smtp{} protocol; if
+the localhost uses a different @tcp{} port, we can select it with the
+@option{--port} option:
+
+@example
+$ sendmail-mbfl.sh --port=587         \
+    --envelope-from=marco@@localhost   \
+    --envelope-to=root@@localhost      \
+    --message=message.mail
+@end example
+
+To send mail to a remote @smtp{} server, we select its hostname with the
+@option{--host} option:
+
+@example
+$ sendmail-mbfl.sh \
+    --host=smtp.gmail.com --port=587  \
+    --envelope-from=marco@@gmail.com   \
+    --envelope-to=marco@@spiffy.it     \
+    --message=message.mail
+@end example
+
+@c ------------------------------------------------------------
+
+@subsubheading Selecting server host and port from configuration file
+
+Host and port can be also selected by reading a configuration file
+called @file{~/.hostinfo}, with self explaining format:
+
+@smallexample
+# ~/.hostinfo --
+
+machine localhost           service smtp  port 25   session plain
+machine relay.poste.it      service smtp  port 465  session tls
+machine smtp.gmail.com      service smtp  port 587  session starttls
+machine pop.tiscali.it      service pop3  port 110  session plain
+machine relay.poste.it      service pop3  port 995  session tls
+machine pop.googlemail.com  service pop3  port 995  session tls
+
+### end of file
+@end smallexample
+
+@noindent
+@command{sendmail-mbfl.sh} is interested only in lines with
+@code{service smtp}, and we can select the host with the option
+@option{--host}:
+
+@example
+$ sendmail-mbfl.sh --host=gmail       \
+    --envelope-from=marco@@gmail.com   \
+    --envelope-to=marco@@spiffy.it     \
+    --message=message.mail
+@end example
+
+@noindent
+notice that the value of @option{--host} can be a string that uniquely
+identifies the host, without the need to write its full name.
+
+@c ------------------------------------------------------------
+
+@subsubheading Encrypted sessions
+
+
+Mail services may offer encrypted sessions to their @smtp{} servers.
+Encryption with the @tls{} protocol is supported by
+@command{sendmail-mbfl.sh} through external programs.
+
+Whether a server requires an encrypted session, can be specified in the
+@file{~/.hostinfo} file or by using the @option{--plain}, @option{--tls}
+or @option{--starttls} options.  The options supersed the hostinfo file.
+
+To establish an encrypted session, the script needs to acquire the
+credentials of the user.  These can be stored in a configuration file
+named @file{~/.authinfo}, which looks like this:
+
+@smallexample
+machine smtp.gmail.com login marco@@gmail.com password abcdefghilm
+machine relay.poste.it login marco@@poste.it  password 0123456789
+@end smallexample
+
+@noindent
+so that a line/record can be uniquely identified with values of the
+@option{--host} and @option{--username} options.
+
+So using the hostinfo file, we can do:
+
+@example
+$ sendmail-mbfl.sh --host=gmail       \
+    --username=marco                  \
+    --envelope-from=marco@@gmail.com   \
+    --envelope-to=marco@@spiffy.it     \
+    --message=message.mail
+@end example
+
+@noindent
+while with explicit selection, we can do:
+
+@example
+$ sendmail-mbfl.sh --host=gmail       \
+    --starttls --username=marco        \
+    --envelope-from=marco@@gmail.com   \
+    --envelope-to=marco@@spiffy.it     \
+    --message=message.mail
+@end example
 
 @c page
 @node sendmail script invoking
@@ -5266,11 +5409,12 @@ Select a file from which read host and port informations.
 Select the @smtp{} server @tcp{} port; this option supersedes
 @option{--host-info}.  It defaults to @code{25}.
 
-@item --starttls
-Establish a @tls{} bridge immediately, right after the connection.
-
-@item --delayed-starttls
-Establish a @tls{} bridge after server greetings.
+@item --plain
+@itemx --tls
+@itemx --starttls
+Establish a plain session, @tls{} session with immediate bridge
+construction or @tls{} session with bridge construction after
+@code{STARTTLS} command.
 
 @item --gnutls
 Use @command{gnutls-cli} as connector for encrypted sessions.  This is
@@ -5289,7 +5433,7 @@ Specify a string used to select an account in the authorisation file.
 
 @item --auth-plain
 Select the @code{AUTH PLAIN} authorisation type.  This is the default
-when @option{--starttls} or @option{--delayed-starttls} are used.
+when @option{--tls} or @option{--starttls} are used.
 
 @item --auth-login
 Select the @code{AUTH LOGIN} authorisation type.
@@ -5337,28 +5481,28 @@ starting with a @code{#} character are comments, lines starting with
 Each record line must have the format:
 
 @example
-machine <the-host> service <name> port <number>
+machine <the-host> service <name> port <number> session <type>
 @end example
 
 @noindent
 for example:
 
-@example
+@smallexample
 # ~/.hostinfo --
 #
 
-# smtp servers
-machine localhost           service smtp    port 25
-machine relay.poste.it      service smtp    port 465
-machine smtp.gmail.com      service smtp    port 587
+# SMTP servers
+machine localhost           service smtp  port 25   session plain
+machine relay.poste.it      service smtp  port 465  session tls
+machine smtp.gmail.com      service smtp  port 587  session starttls
 
-# pop3 servers
-machine pop.tiscali.it      service pop3    port 110
-machine relay.poste.it      service pop3    port 995
-machine pop.googlemail.com  service pop3    port 995
+# POP3 servers
+machine pop.tiscali.it      service pop3  port 110  session plain
+machine relay.poste.it      service pop3  port 995  session tls
+machine pop.googlemail.com  service pop3  port 995  session tls
 
 ### end of file
-@end example
+@end smallexample
 
 @noindent
 so that we can extract a record with the following script:
@@ -5371,14 +5515,16 @@ service=smtp
 rex='^[ \t]*'
 rex+='machine[ \t]\+.*%s.*[ \t]\+'
 rex+='service[ \t]\+%s[ \t]\+'
-rex+='port[ \t]\+[0-9]\+'
+rex+='port[ \t]\+[0-9]\+[ \t]\+'
+rex+='session[ \t]\+\(plain\|tls\|starttls\)'
 rex+='[ \t]*$'
 rex=$(printf "$rex" $host $service)
 
-set -- $(grep "$rex" "$file'')
+set -- $(grep "$rex" "$file")
 echo machine $2
 echo service $4
 echo port    $6
+echo session $8
 @end example
 
 @noindent

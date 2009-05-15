@@ -8,7 +8,7 @@ true && {
         --host=relay.poste.it --port=465                \
         --envelope-from=marco.maggi-ipsu@poste.it       \
         --envelope-to=mrc.mgg@gmail.com                 \
-        --starttls --username=marco.maggi --auth-plain
+        --tls --username=marco.maggi --auth-plain
 
     true && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                \
@@ -16,7 +16,7 @@ true && {
         --host=relay.poste.it --port=465                \
         --envelope-from=marco.maggi-ipsu@poste.it       \
         --envelope-to=mrc.mgg@gmail.com                 \
-        --starttls --username=marco.maggi --auth-login
+        --tls --username=marco.maggi --auth-login
 }
 
 # These will use openssl.
@@ -27,7 +27,7 @@ true && {
         --host=relay.poste.it --port=465                \
         --envelope-from=marco.maggi-ipsu@poste.it       \
         --envelope-to=mrc.mgg@gmail.com                 \
-        --starttls --username=marco.maggi --auth-plain
+        --tls --username=marco.maggi --auth-plain
 
     true && bash sendmail-mbfl.sh \
         --debug --verbose --test-message                \
@@ -35,7 +35,7 @@ true && {
         --host=relay.poste.it --port=465                \
         --envelope-from=marco.maggi-ipsu@poste.it       \
         --envelope-to=mrc.mgg@gmail.com                 \
-        --starttls --username=marco.maggi --auth-login
+        --tls --username=marco.maggi --auth-login
 }
 
 ### end of file
