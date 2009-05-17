@@ -85,14 +85,22 @@ function open_session () {
 function recv () {
     local EXPECTED_CODE=${1:?}
     local line=
-    IFS= read line <&3
+    IFS= read -t 5 line <&3
+    test 127 -lt $? && {
+        printf '%s: connection timed out\n' "$PROGNAME" >&2
+        exit 2
+    }
     test "$LOGGING_TO_STDERR" = yes && \
         printf '%s log: recv: %s\n' "$PROGNAME" "$line"
     test "${line:0:3}" = "$EXPECTED_CODE" || {
         send %s QUIT
         # It is cleaner to wait for the reply from the
         # server.
-        IFS= read line <&3
+        IFS= read -t 5 line <&3
+        test 127 -lt $? && {
+            printf '%s: connection timed out\n' "$PROGNAME" >&2
+            exit 2
+        }
         test "$LOGGING_TO_STDERR" = yes && \
             printf '%s log: recv: %s\n' "$PROGNAME" "$line"
         exit 2

@@ -1,4 +1,3 @@
-#! /bin/bash
 # signal.sh --
 #
 # Part of: Marco's BASH Functions Library

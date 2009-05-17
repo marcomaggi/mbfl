@@ -889,6 +889,38 @@ so they are not executed.  Disabled modules are: main, getopts, signal;
 ``disabled'' does not mean that the functions are not there: only the
 global variable declarations are excluded; this is a little dirty, but,
 at present, it should work.
+
+@item
+The @code{read} built in does word splitting on the text it reads, even
+when there is a single output variable.  We can verify it with:
+
+@example
+printf '\tciao\n' | @{
+    read line
+    echo line was "'$line'"
+@}
+@print{} line was 'ciao'
+@end example
+
+@noindent
+we see that the initial tabulation character has been stripped, because
+it is a character in the deafult value of @code{IFS}.  Word splitting
+does not happen when we set @code{IFS} to the empty string:
+
+@example
+printf '\tciao\n' | @{
+    IFS= read line
+    echo line was "'$line'"
+@}
+@print{} line was '        ciao'
+@end example
+
+To avoid the mutation of text read with @code{read}, @mbfl{} always sets
+@code{IFS} to the empty string in the environment in which @code{read}
+is evalulated.  This happens in functions like
+@bfunc{mbfl_read_maybe_null} and @bfunc{mbfl_dialog_ask_password};
+notice, though, that these functions @strong{do not} mutate the
+@code{IFS} value in the environment of the caller.
 @end itemize
 
 
@@ -4548,19 +4580,12 @@ dotest mytest-
 @appendix Examples for sending email
 
 
-In this appendix we review some examples that can be used to send email
-from a Bash script.  First we examine plain scripts (making no use of
-@mbfl{}) to understand the basics of how to handle the @smtp{} protocol
-and how to ``talk'' to a process in background.  Then we see the
-documentation of the example scripts that come in the @mbfl{}
+In this appendix we review some example scripts that can be used to send
+email from a Bash script.  First we examine plain scripts (making no use
+of @mbfl{}) to understand the basics of how to handle the @smtp{}
+protocol and how to ``talk'' to a process in background; then we see the
+documentation of a complex script.  All the scripts are in the @mbfl{}
 distribution under the @file{examples} directory.
-
-@quotation
-Bash version 4 introduced the new keyword @code{coproc}, which can be
-used to spawn processes in background and talk to them via pipes.  This
-keyword in @strong{not} used in this appendix.
-@end quotation
-
 
 @menu
 * sendmail message::            How to compose a test email message.
@@ -4568,6 +4593,7 @@ keyword in @strong{not} used in this appendix.
 * sendmail connector::          Send email through a process in
                                 background.
 * sendmail gnutls::             Using @command{gnutls-cli} as connector.
+* sendmail openssl::            Using @command{openssl} as connector.
 * sendmail script::             Sending email.
 @end menu
 
@@ -4621,6 +4647,17 @@ characters in the name part.  It can be generated with:
 @example
 MESSAGE_ID=$(printf '%d-%d-%d@@%s' \
     $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME")
+@end example
+
+@noindent
+or with:
+
+@example
+MESSAGE_ID=$(printf '%s@@%s'                    \
+    $(@{ IFS= read -n 15 line </dev/random      \
+         echo "$line" ; @} |                    \
+         md5sum --binary | cut -f1 -d' ')      \
+    "$LOCAL_HOSTNAME")
 @end example
 
 @item
@@ -4755,7 +4792,7 @@ redundant in such a simple script, it is there for completeness.
 @end defun
 
 
-@defun send @var{pattern}
+@defun send @var{string}
 @defunx send @var{pattern} @var{arg} @dots{}
 Send a string to the @smtp{} server.  Use @bfunc{printf} to format the
 string @var{pattern} with the optional arguments, then write the
@@ -4768,14 +4805,14 @@ protocol.
 @defun read_and_send_message
 Read an email message from stdin line by line (newline terminator), and
 rewrite it to file descriptor 3 terminating each line with the sequence
-carriage return, line feed.  With the exception of the terminating
+carriage return/line feed.  With the exception of the terminating
 sequence, the lines are left unchanged.
 @end defun
 
 
 @defun recv @var{expected_code}
 Read a line (a sequence of characters up until the first @code{\n}) from
-the file descriptor 3.  The line is interpreted as a message from the
+file descriptor 3.  The line is interpreted as a message from the
 @smtp{} server: the first three characters are a numeric code.  If the
 code is different from @var{expected_code}, raise an error.
 @end defun
@@ -4792,6 +4829,12 @@ code is different from @var{expected_code}, raise an error.
 The script below can be found in @file{examples/sendmail-connector.sh}.
 It just sends a hard--coded email message, from a hard--coded address to a
 hard--coded address.  It makes no use of @mbfl{}.
+
+@quotation
+Bash version 4 introduced the new keyword @code{coproc}, which can be
+used to spawn processes in background and talk to them via pipes.  This
+keyword in @strong{not} used in this appendix.
+@end quotation
 
 The purpose of the script is to understand how to send a message through
 a process in background.  It does the same things of the example
@@ -4832,7 +4875,7 @@ Bash has no way to create a pipe using the @cfunc{pipe} system function
 local INFIFO=$@{TMPDIR@}/in.$$
 local OUFIFO=$@{TMPDIR@}/out.$$
 
-mkfifo $INFIFO $OUFIFO
+mkfifo --mode=0600 $INFIFO $OUFIFO
 @end example
 
 @noindent
@@ -4909,7 +4952,7 @@ it reads lines from the server, and echoes them to stdout.
 @gnu{} @tls{} is a library implementing the @tls{} protocol; it can be
 used to establish encrypted and authenticated connections to a remote
 host.  The @smtp{} protocol has extensions to allow usage of a @tls{}
-connection.
+layer.
 
 A @gnu{} @tls{} installation comes with a command line test program,
 @command{gnutls-cli}, that can be used to establish an encrypted
@@ -4935,11 +4978,20 @@ more complex interaction.
 
 We use as example the server @code{relay.poste.it}, port @code{465}.
 You have to have an account there to use it; do not bomb this server
-with fake connections.
+with fake connections.  This server requests us to build the encrypted
+bridge immediately after the connection has been established, without
+waiting for any line of greetings from the server.
 
-The server requests us to build the encrypted bridge immediately after
-the connection has been established, without waiting for any line of
-greetings from the server.
+So, we start the connector like this:
+
+@example
+$ gnutls-cli --crlf --port 465 relay.poste.it
+@end example
+
+@noindent
+if the connection succeeds: @command{gnutls-cli} prints a lot of message
+lines on its standard output explaining what is going on; at last comes
+the line of greetings from the server, which begins with code @code{220}.
 
 The server supports the @code{AUTH LOGIN} authentication mechanism,
 which requires the base64 encoding of the user name and password; we can
@@ -4959,6 +5011,7 @@ ENCODED_PASSWORD=$(echo -n 'the-pass-word' | base64)
 (setq my-pwd (base64-encode-string "the-pass-word"))
 @end example
 
+@noindent
 The authentication dialogue goes like this:
 
 @enumerate
@@ -4968,7 +5021,7 @@ We send @code{AUTH LOGIN}, to start the authentication.
 @item
 It replies with @code{334 VXNlcm5hbWU6} which is the request for the
 username.  The string @code{VXNlcm5hbWU6} is the base64 encoding of the
-string @code{Username:} (without ending newline); we can verify this
+string @code{Username:} (without trailing newline); we can verify this
 with:
 
 @example
@@ -4986,10 +5039,11 @@ or in the Emacs' scratch buffer:
 We send the login user name encoded in base64.
 
 @item
-It checks the user name and, if correct, it replies with @code{334
-UGFzc3dvcmQ6}.  The string @code{UGFzc3dvcmQ6} is the base64 encoding of
-the string @code{Password:} (without ending newline); we can verify this
-with:
+It checks the string and, if the format is correct, it replies with
+@code{334 UGFzc3dvcmQ6} (this should happen even if the username is
+unknown to the server).  The string @code{UGFzc3dvcmQ6} is the base64
+encoding of the string @code{Password:} (without ending newline); we can
+verify this with:
 
 @example
 $ echo -n Password: | base64
@@ -5015,16 +5069,6 @@ Beware that if we are not quick to send the encoded password after the
 encoded user name, the server may reset the authentication process as if
 we sent a wrong user name.
 
-So, we start the connector like this:
-
-@example
-$ gnutls-cli --crlf --port 465 relay.poste.it
-@end example
-
-@noindent
-if the connection succeeds: @command{gnutls-cli} prints a lot of message
-lines on its standard output explaining what is going on; at last comes
-the line of greetings from the server, which begins with code @code{220}.
 
 So we can do the @smtp{} dialogue reported below by hand (which is an
 edited log of a session under Emacs' eshell); lines starting with
@@ -5051,12 +5095,12 @@ recv> 334 UGFzc3dvcmQ6
 send> <the-base64-password>
 recv> 235 login authentication successful
 send> mail from:<from-address@@poste.it>
-recv> 250 MAIL FROM:<from-address@@some-host.it> OK
+recv> 250 MAIL FROM:<from-address@@poste.it> OK
 send> rcpt to:<to-address@@other-host.it>
 recv> 250 RCPT TO:<to-address@@other-host.it> OK
 send> data
 recv> 354 Start mail input; end with <CRLF>.<CRLF>
-send> From: <from-address@@some-host.it>
+send> From: <from-address@@poste.it>
 send> To: <to-address@@other-host.it>
 send> Subject: interactive attempt
 send>
@@ -5077,12 +5121,10 @@ recv> - Peer has closed the GNUTLS connection
 
 We use as example the server @code{smtp.gmail.com}, port @code{587}.
 You have to have an account there to use it; do not bomb this server
-with fake connections.
-
-The server requests us to start an @code{ESMTP} dialogue, then issue the
-@code{STARTTLS} command and build the encrypted bridge; once the bridge
-is set up, we restart an @code{ESMTP} dialogue and do the authentication
-and the message delivery.
+with fake connections.  This server requests us to start an @code{ESMTP}
+dialogue, then issue the @code{STARTTLS} command and build the encrypted
+bridge; once the bridge is set up, we restart an @code{ESMTP} dialogue
+and do the authentication and the message delivery.
 
 We start the connector like this:
 
@@ -5098,17 +5140,24 @@ of greetings from the server, which begins with code @code{220}.
 The @option{--starttls} option tells @command{gnutls-cli} @strong{not}
 to build the encrypted bridge immediately; rather, it waits for a
 @code{SIGALRM} signal, which we must deliver to it when we are ready.
-So, after sending the @code{STARTTLS} command and receiving the
-@code{220} reply: we deliver a @code{SIGALRM} signal to the process and
-it will react building the bridge.
+The quickest way to send such a signal, when there is only one
+@command{gnutls-cli} process running, is:
+
+@example
+$ kill -SIGALRM $(/sbin/pidof gnutls-cli)
+@end example
+
+@noindent
+beware that @command{pidof} may be installed in other places on your
+system.
 
 The server supports the @code{AUTH PLAIN} authentication mechanism,
 which requires the base64 encoding of the user name and password stored
-in a special record; we can do it it with the external program
+in a special record; we can do it with the external program
 @command{base64} (which comes with @gnu{} Coreutils) like this:
 
 @example
-ENCAUTH=$(printf "\x00$@{LOGIN_NAME@}\x00$@{PASSWORD@}" | base64)
+SECRETS=$(printf "\x00$@{LOGIN_NAME@}\x00$@{PASSWORD@}" | base64)
 @end example
 
 @noindent
@@ -5131,7 +5180,7 @@ It checks the user name and password and, if correct, it replies with
 code @code{235}.
 @end enumerate
 
-So we can do the @smtp{} dialogue reported below by hand (which is an
+So, we can do the @smtp{} dialogue reported below by hand (which is an
 edited log of a session under Emacs' eshell); lines starting with
 @code{recv>} are the ones received from the server, lines starting with
 @code{send>} are the ones we send to the server, the ellipses @code{...}
@@ -5196,6 +5245,43 @@ recv> 250 2.0.0 OK ...
 send> quit
 recv> 221 2.0.0 closing connection ...
 @end smallexample
+
+@c page
+@node sendmail openssl
+@appendixsec Using @command{openssl} as connector
+
+
+OpenSSL is a library implementing the @ssl{}/@tls{} protocol; it can be
+used to establish encrypted and authenticated connections to a remote
+host.
+
+An OpenSSL installation comes with a command line test program,
+@command{openssl}, that can be used to establish an encrypted connection
+by a shell script.  This command can be used as the ``connector''
+modeled in @ref{sendmail connector, Send email through a process in
+background}.  It has a manual page, which we may want to read.
+
+Here we see how we can use the @command{openssl} program in place of the
+@command{gnutls-cli} program described in @ref{sendmail gnutls, Using
+@command{gnutls-cli} as connector}.  The two methods have a lot in
+common (the @esmtp{} protocol is the same), we only have to understand
+the command line of the program.
+
+@menu
+* sendmail openssl now::        Immediate encrypted bridge.
+* sendmail openssl delay::      Delayed encrypted bridge.
+@end menu
+
+@c page
+@node sendmail openssl now
+@appendixsubsec Immediate encrypted bridge
+
+
+@c page
+@node sendmail openssl delay
+@appendixsubsec Delayed encrypted bridge
+
+
 
 @c page
 @node sendmail script

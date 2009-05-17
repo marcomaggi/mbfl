@@ -83,7 +83,7 @@ function open_session () {
     local OUFIFO=${TMPDIR}/out.$$
     # Bash  has  no  operation  equivalent to  the  C  level
     # "pipe()" function, so we have to use FIFOs.
-    mkfifo $INFIFO $OUFIFO
+    mkfifo --mode=0600 $INFIFO $OUFIFO
     connector "$HOSTNAME" <$OUFIFO >$INFIFO &
     # Open the input FIFO for both reading and writing, else
     # "exec" will block waiting for the first char.
@@ -137,7 +137,11 @@ function connector () {
     exec 3<>"$DEVICE"
     # Read the  greetings from the server, echo  them to the
     # client.
-    IFS= read answer <&3
+    IFS= read -t 5 answer <&3
+    test 127 -lt $? && {
+        printf '%s: connection timed out\n' "$PROGNAME" >&2
+        exit 2
+    }
     printf '%s\n' "$answer"
     # Read the query from the client, echo it to the server.
     while read query
@@ -145,11 +149,19 @@ function connector () {
         printf '%s\r\n' "$query" >&3
         # Read the  answer from the  server, echo it  to the
         # client.
-        IFS= read answer <&3
+        IFS= read -t 5 answer <&3
+        test 127 -lt $? && {
+            printf '%s: connection timed out\n' "$PROGNAME" >&2
+            exit 2
+        }
         printf '%s\n' "$answer"
         # Test special queries.
         test "$query" = QUIT$'\r' && {
-            IFS= read answer <&3
+            IFS= read -t 5 answer <&3
+            test 127 -lt $? && {
+                printf '%s: connection timed out\n' "$PROGNAME" >&2
+                exit 2
+            }
             printf '%s\n' "$answer"
             exit
         }
@@ -163,7 +175,11 @@ function connector () {
             done
             # Read the answer to  data from the server, echo
             # it to the client.
-            IFS= read answer <&3
+            IFS= read -t 5 answer <&3
+            test 127 -lt $? && {
+                printf '%s: connection timed out\n' "$PROGNAME" >&2
+                exit 2
+            }
             printf '%s\n' "$answer"
         }
     done

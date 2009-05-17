@@ -1,3 +1,4 @@
+#! /bin/bash
 # interface.sh.m4 --
 #
 # Part of: Marco's BASH Functions Library
@@ -65,16 +66,15 @@ function mbfl_at_schedule () {
     # following pipe.
     printf %s "${SCRIPT}" | {
         mbfl_program_redirect_stderr_to_stdout
-        mbfl_program_exec "${AT}" -q ${QUEUE} ${TIME} || {
+        mbfl_program_exec "$AT" -q $QUEUE $TIME || {
             mbfl_message_error \
-                "scheduling command execution '${SCRIPT}' at time '${TIME}'"
+                "scheduling command execution '$SCRIPT' at time '$TIME'"
             return 1
         }
     } | {
-        { IFS= read; IFS= read; } || {
+        { read; read; } || {
             mbfl_message_error "reading output of 'at'"
-            mbfl_message_error \
-                "while scheduling command execution '${SCRIPT}' at time '${TIME}'"
+            mbfl_message_error "while scheduling command execution '$SCRIPT' at time '$TIME'"
             return 1
         }
         set -- $REPLY
@@ -90,40 +90,40 @@ function mbfl_at_queue_print_identifiers () {
     done
 }
 function mbfl_at_queue_print_queues () {
-    local ATQ SORT
+    local ATQ SORT line
     ATQ=$(mbfl_program_found atq)   || exit $?
     SORT=$(mbfl_program_found sort) || exit $?
-    { mbfl_program_exec "${ATQ}" | while IFS= read LINE
+    { mbfl_program_exec "${ATQ}" | while IFS= read line
         do
-            set -- ${LINE}
-            printf '%c\n' "${4}"
-        done } | mbfl_program_exec "${SORT}" -u
+            set -- $line
+            printf '%c\n' "$4"
+        done } | mbfl_program_exec "$SORT" -u
 }
 function mbfl_at_queue_print_jobs () {
     local QUEUE=${mbfl_p_at_queue_letter}
-    mbfl_p_at_program_atq "${QUEUE}"
+    mbfl_p_at_program_atq "$QUEUE"
 }
 function mbfl_at_print_queue () {
-    local QUEUE=${mbfl_p_at_queue_letter}
-    printf '%c' "${QUEUE}"
+    local QUEUE=$mbfl_p_at_queue_letter
+    printf '%c' "$QUEUE"
 }
 function mbfl_at_drop () {
     local ATRM
     mandatory_parameter(ID, 1, script identifier)
     ATRM=$(mbfl_program_found atrm) || exit $?
-    mbfl_program_exec "${ATRM}" "${ID}"
+    mbfl_program_exec "$ATRM" "$ID"
 }
 function mbfl_at_queue_clean () {
     local item QUEUE=${mbfl_p_at_queue_letter}
-    for item in $(mbfl_at_queue_print_identifiers "${QUEUE}")
-    do mbfl_at_drop "${item}"
+    for item in $(mbfl_at_queue_print_identifiers "$QUEUE")
+    do mbfl_at_drop "$item"
     done
 }
 function mbfl_p_at_program_atq () {
     local ATQ
     mandatory_parameter(QUEUE, 1, job queue)
     ATQ=$(mbfl_program_found atq) || exit $?
-    mbfl_program_exec "${ATQ}" -q "${QUEUE}"
+    mbfl_program_exec "$ATQ" -q "$QUEUE"
 }
 
 

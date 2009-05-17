@@ -252,7 +252,6 @@ function main () {
     local READ_TIMEOUT=5
 
     validate_and_normalise_configuration
-    read_message_from_selected_source
     {
         mbfl_message_verbose_printf 'connecting to \"%s:%d\"\n' "$SERVER_HOSTNAME" "$SERVER_PORT"
         mbfl_message_verbose_printf 'session type: %s, authentication %s\n' \
@@ -390,111 +389,6 @@ function validate_and_normalise_configuration () {
         auth_read_credentials
     }
     return 0
-}
-#page
-## ------------------------------------------------------------
-## Email message acquisition.
-## ------------------------------------------------------------
-
-# Synopsis:
-#
-#       read_message_from_selected_source
-#
-# Description:
-#
-#  Acquire the  email message  from the selected  source and
-#  store  it  in  the  "MESSAGE" variable.   The  source  is
-#  selected by the command line parameters.
-#
-#  Just to  be safe: a  newline is appended to  the message;
-#  this  allows  the  message  to  read  by  "read"  without
-#  discarding the last line.
-#
-function read_message_from_selected_source () {
-    local line
-    local -i count=0
-    if test "$script_option_TEST_MESSAGE" = yes
-    then
-        # Here we can detect  an error through the exit code
-        # of "print_test_message".
-        MESSAGE=$(print_test_message) || {
-            mbfl_message_error 'unable to compose test message'
-            exit_because_invalid_message_source
-        }
-        mbfl_message_verbose 'composed test message\n'
-    else
-        if test "$script_option_MESSAGE" = -
-        then
-            mbfl_message_verbose 'reading message from stdin\n'
-            exec 5<&0
-        else
-            mbfl_message_verbose 'reading message from file\n'
-            exec 5<"$script_option_MESSAGE"
-        fi
-        # Here  it is impossible  to distinguish  between an
-        # error reading the source and an the end of file.
-        while IFS= read line <&5
-        do
-            if test -z "$MESSAGE"
-            then MESSAGE="$line"
-            else MESSAGE="$MESSAGE\n$line"
-            fi
-            let ++count
-        done
-        exec 5<&-
-        mbfl_message_verbose_printf 'read message (%d lines)\n' $count
-    fi
-    # Append a newline just to be sure
-    MESSAGE="$MESSAGE\n"
-    return 0
-}
-# Synopsis:
-#
-#       print_test_message
-#
-# Description:
-#
-#  Compose and  print to stdout  a test email  message.  The
-#  addresses  must be  in the  variables  "FROM_ADDRESS" and
-#  "TO_ADDRESS".
-#
-function print_test_message () {
-    local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
-    local HOSTNAME_PROGRAM DATE_PROGRAM
-    HOSTNAME_PROGRAM=$(mbfl_program_found hostname)     || exit $?
-    DATE_PROGRAM=$(mbfl_program_found date)             || exit $?
-    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn) || {
-        mbfl_message_error 'unable to determine fully qualified hostname for test message'
-        exit_failure
-    }
-    DATE=$(mbfl_program_exec "$DATE_PROGRAM" --rfc-2822) || {
-        mbfl_message_error 'unable to determine date in RFC-2822 format for test message'
-        exit_failure
-    }
-    MESSAGE_ID=$(printf '%d-%d-%d@%s' $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME")
-    MESSAGE="Sender: $FROM_ADDRESS
-From: $FROM_ADDRESS
-To: $TO_ADDRESS
-Subject: test message from $script_PROGNAME
-Message-ID: <$MESSAGE_ID>
-Date: $DATE
-
-This is a test message from the $script_PROGNAME script.
-Configuration:
-\timmediate starttls:\t\t$script_option_STARTTLS
-\tdelayed starttls:\t\t$script_option_STARTTLS_STARTTLS
-\tuse gnutls-cli connector:\t$script_option_GNUTLS_CONNECTOR
-\tuse openssl connector:\t$script_option_OPENSSL_CONNECTOR
-\tselected connector:\t\t$CONNECTOR
-\tauth file:\t\t\t'$script_option_AUTH_FILE'
-\tauth user:\t\t\t'$script_option_AUTH_USER'
-\tauth method plain:\t\t$script_option_AUTH_PLAIN
-\tauth method login:\t\t$script_option_AUTH_LOGIN
---\x20
-The $script_PROGNAME script
-Copyright $script_COPYRIGHT_YEARS $script_AUTHOR
-"
-    printf "$MESSAGE"
 }
 #page
 ## ------------------------------------------------------------
@@ -825,7 +719,7 @@ function recv () {
     local EXPECTED_CODE=${1:?}
     local line
     IFS= read -t $READ_TIMEOUT line <&$INFD
-    if test 128 < $?
+    if test 127 -lt $?
     then
         mbfl_message_error_printf 'read timeout exceeded'
         exit_because_wrong_server_answer
@@ -834,7 +728,7 @@ function recv () {
     test "${line:0:3}" = "$EXPECTED_CODE" || {
         send %s QUIT
         IFS= read -t $READ_TIMEOUT line <&$INFD
-        if test $? < 128
+        if test $? -lt 128
         then mbfl_message_debug_printf 'recv: %s' "$line"
         fi
         exit_because_wrong_server_answer
@@ -859,7 +753,7 @@ function recv_string () {
     local EXPECTED_STRING=${1:?}
     local line len=${#EXPECTED_STRING}
     IFS= read -t $READ_TIMEOUT line <&$INFD
-    if test 128 < $?
+    if test 127 -lt $?
     then
         mbfl_message_error_printf 'read timeout exceeded'
         exit_because_wrong_server_answer
@@ -902,7 +796,7 @@ function recv_until_string () {
             break
         }
     done
-    if test 128 < $?
+    if test 127 -lt $?
     then
         mbfl_message_error_printf 'read timeout exceeded'
         exit_because_wrong_server_answer
@@ -956,6 +850,11 @@ function send_no_log () {
     mbfl_message_debug_printf 'sent: secrets line'
     return 0
 }
+#page
+## ------------------------------------------------------------
+## Email message.
+## ------------------------------------------------------------
+
 #
 # Synopsis:
 #
@@ -963,21 +862,107 @@ function send_no_log () {
 #
 # Description:
 #
-#  Read the email message from stdin line by line, and write
-#  it to  $OUFD line by line appending  the carriage return,
-#  line feed sequence.  If debugging mode is on: Log a line.
+#  Acquire the  email message from the  selected source and  write it to
+#  $OUFD.  The source is selected by the command line parameters.
+#
+#  Just to  be safe: a newline  is appended to the  message; this allows
+#  the message to read by "read" without discarding the last line.
+#
+#  Read the email message from stdin line by line, and write it to $OUFD
+#  line by line  appending the carriage return, line  feed sequence.  If
+#  debugging mode is on: Log a line.
 #
 function read_and_send_message () {
-    local line
-    local -i lines_count=0 bytes_count=0
-    while IFS= read line
-    do
-        printf '%s\r\n' "$line" >&$OUFD
-        let ++lines_count
-        bytes_count=$(($bytes_count+${#line}+2))
-    done
-    mbfl_message_debug_printf 'sent message (%d lines, %d bytes)' $lines_count $bytes_count
-    return 0
+    {
+        local line
+        if test "$script_option_TEST_MESSAGE" = yes
+        then
+            # Here  we can  detect an  error  through the  exit code  of
+            # "print_test_message".
+            print_test_message || {
+                mbfl_message_error 'unable to compose test message'
+                exit_because_invalid_message_source
+            }
+            mbfl_message_verbose 'composed test message\n'
+        else
+            if test "$script_option_MESSAGE" = -
+            then
+                mbfl_message_verbose 'reading message from stdin\n'
+                exec 5<&0
+            else
+                mbfl_message_verbose 'reading message from file\n'
+                exec 5<"$script_option_MESSAGE"
+            fi
+            # Here  it is  impossible  to distinguish  between an  error
+            # reading the source and an the end of file.
+            while IFS= read line <&5
+            do printf '%s\n' "$line"
+            done
+            exec 5<&-
+        fi
+     } | {
+        local line
+        local -i lines_count=0 bytes_count=0
+        while IFS= read line
+        do
+            printf '%s\r\n' "$line" >&$OUFD
+            let ++lines_count
+            bytes_count=$(($bytes_count+${#line}+2))
+        done
+        mbfl_message_debug_printf 'sent message (%d lines, %d bytes)' $lines_count $bytes_count
+    }
+    if test $? -eq 0
+    then return 0
+    else exit $?
+    fi
+}
+# Synopsis:
+#
+#       print_test_message
+#
+# Description:
+#
+#  Compose and  print to stdout  a test email  message.  The
+#  addresses  must be  in the  variables  "FROM_ADDRESS" and
+#  "TO_ADDRESS".
+#
+function print_test_message () {
+    local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
+    local HOSTNAME_PROGRAM DATE_PROGRAM
+    HOSTNAME_PROGRAM=$(mbfl_program_found hostname)     || exit $?
+    DATE_PROGRAM=$(mbfl_program_found date)             || exit $?
+    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn) || {
+        mbfl_message_error 'unable to determine fully qualified hostname for test message'
+        exit_failure
+    }
+    DATE=$(mbfl_program_exec "$DATE_PROGRAM" --rfc-2822) || {
+        mbfl_message_error 'unable to determine date in RFC-2822 format for test message'
+        exit_failure
+    }
+    MESSAGE_ID=$(printf '%d-%d-%d@%s' $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME")
+    MESSAGE="Sender: $FROM_ADDRESS
+From: $FROM_ADDRESS
+To: $TO_ADDRESS
+Subject: test message from $script_PROGNAME
+Message-ID: <$MESSAGE_ID>
+Date: $DATE
+
+This is a test message from the $script_PROGNAME script.
+Configuration:
+\timmediate starttls:\t\t$script_option_STARTTLS
+\tdelayed starttls:\t\t$script_option_STARTTLS_STARTTLS
+\tuse gnutls-cli connector:\t$script_option_GNUTLS_CONNECTOR
+\tuse openssl connector:\t$script_option_OPENSSL_CONNECTOR
+\tselected connector:\t\t$CONNECTOR
+\tauth file:\t\t\t'$script_option_AUTH_FILE'
+\tauth user:\t\t\t'$script_option_AUTH_USER'
+\tauth method plain:\t\t$script_option_AUTH_PLAIN
+\tauth method login:\t\t$script_option_AUTH_LOGIN
+--\x20
+The $script_PROGNAME script
+Copyright $script_COPYRIGHT_YEARS $script_AUTHOR
+"
+    printf "$MESSAGE"
 }
 #page
 ## ------------------------------------------------------------
@@ -1087,7 +1072,7 @@ function esmtp_send_message () {
     done
     send %s DATA
     recv 354
-    printf "$MESSAGE" | read_and_send_message
+    read_and_send_message
     send %s .
     recv 250
     return 0
