@@ -5264,7 +5264,7 @@ background}.  It has a manual page, which we may want to read.
 Here we see how we can use the @command{openssl} program in place of the
 @command{gnutls-cli} program described in @ref{sendmail gnutls, Using
 @command{gnutls-cli} as connector}.  The two methods have a lot in
-common (the @esmtp{} protocol is the same), we only have to understand
+common (the @smtp{} protocol is the same), we only have to understand
 the command line of the program.
 
 @menu
@@ -5277,11 +5277,34 @@ the command line of the program.
 @appendixsubsec Immediate encrypted bridge
 
 
+To build the encrypted bridge right after the connection, without
+exchanging greetings with the server, we do:
+
+@example
+$ openssl s_client -quiet -crlf -connect relay.poste.it:465
+@end example
+
+@noindent
+then we start the @smtp{} dialogue as outlined in @ref{sendmail gnutls
+now, Immediate encrypted bridge}.
+
 @c page
 @node sendmail openssl delay
 @appendixsubsec Delayed encrypted bridge
 
 
+To first exchange greetings, then send @code{STARTTLS} and finally build
+the encrypted bridge, we do:
+
+@example
+$ openssl s_client -quiet -crlf -starttls smtp \
+    -connect smtp.gmail.com:587
+@end example
+
+@noindent
+then we start the @smtp{} dialogue as outlined in @ref{sendmail gnutls
+now, Immediate encrypted bridge}.  @command{openssl} knows how to start
+an @smtp{} dialogue, and it does it automatically.
 
 @c page
 @node sendmail script
@@ -5299,6 +5322,7 @@ or @tls{} sessions, and it can use both OpenSSL and @gnu{} @tls{}.
 * sendmail script hostinfo::    Reading host informations from file.
 * sendmail script authinfo::    Reading authentication credentials
                                 from file.
+* sendmail script emacs::       Interfacing with @gnu{} Emacs.
 @end menu
 
 @c page
@@ -5625,6 +5649,130 @@ and this is exactly what @command{sendmail-mbfl.sh} does.
 The host name and the user name are selected by the command line options
 @option{--host} and @option{--username}.  Notice that the values for
 these options can be substrings of the values in the authinfo file.
+
+@c page
+@node sendmail script emacs
+@appendixsubsec Interfacing with @gnu{} Emacs
+
+
+@menu
+* sendmail script emacs vars::  Customisable variables.
+* sendmail script emacs func::  Functions.
+@end menu
+
+@c page
+@node sendmail script emacs vars
+@appendixsubsubsec Customisable variables
+
+
+A customisation group called @code{sendmail-mbfl} is available to
+configure the library.
+
+
+@defvar sendmail-mbfl-program
+A string representing the name of the @mbfl{} shell script.  By default
+set to @code{sendmail-mbfl.sh}.
+@end defvar
+
+
+@defvar sendmail-mbfl-extra-args
+A list of strings representing extra arguments for the command line of
+@command{sendmail-mbfl.sh'}.  By default set to:
+
+@example
+("--verbose" "--debug")
+@end example
+@end defvar
+
+
+@defvar sendmail-mbfl-envelope-from-function
+Function to call to acquire from the current buffer the envelope email
+address of the sender, to be used in the @code{MAIL FROM} @smtp{}
+command.  This function is used by @code{send-mail-with-mbfl}.
+
+The selected function must return a single string representing the email
+address.  If no suitable address is found: it must raise an error.
+
+By default it is set to @code{sendmail-mbfl-envelope-from}.
+@end defvar
+
+
+@defvar sendmail-mbfl-extract-addresses-function 'sendmail-mbfl-extract-addresses
+Function to call to extract a list of email addresses from the current
+buffer, to be used in the @code{RCPT TO} @smtp{} command.  It is invoked
+with the buffer narrowed to the header to examine.  This function is
+used by @code{send-mail-with-mbfl}.
+
+It must return a list of email addresses or nil.
+@end defvar
+
+
+@c page
+@node sendmail script emacs func
+@appendixsubsubsec Functions
+
+
+@defun send-mail-with-mbfl
+Send the email message in the current buffer using the
+@command{sendmail-mbfl.sh} script selected with the customisable
+variable @code{sendmail-mbfl-program}.
+
+This function can be invoked directly from the minibuffer, or used as
+value for @code{message-send-mail-function}.
+@end defun
+
+
+@defun sendmail-mbfl-envelope-from
+Interpret the current buffer as an email message and search the contents
+for an email address to be used as envelope sender.
+
+Return a single string representing the email address.  If no suitable
+address is found: an error is raised.
+
+This function assumes that the function @code{message-field-value} from
+@file{message.el} can extract header values from the buffer."
+@end defun
+
+
+@defun sendmail-mbfl-envelope-from/message
+Wrapper for @code{sendmail-mbfl-envelope-from} that prints the result to
+the @code{*Message*} buffer.
+@end defun
+
+
+@defun sendmail-mbfl-envelope-to
+Interpret the current buffer as an email message and search the contents
+for email addresses to be used as envelope receivers.
+
+Return a list of strings representing email addresses.  If no suitable
+address is found: an error is raised.
+
+This function assumes that the function @code{message-field-value} from
+@file{message.el} can extract header values from the buffer.
+@end defun
+
+
+@defun sendmail-mbfl-envelope-to/message
+Wrapper for @code{sendmail-mbfl-envelope-to} that prints the result to
+the @code{*Message*} buffer.
+@end defun
+
+
+@defun sendmail-mbfl-extract-address-trampoline @var{header}
+Move to the specified header and use the selected function to extract
+email addresses from the field.  Return the list of addresses or nil.
+
+Addresses are extracted through the funciton in
+@code{sendmail-mbfl-extract-addresses-function}.
+@end defun
+
+
+@defun sendmail-mbfl-extract-addresses
+Extract a list of email addresses from the current buffer.  It must be
+invoked with the buffer narrowed to the header to examine.  It must
+return a list of email addresses or nil.
+@end defun
+
 
 @c page
 @c ------------------------------------------------------------

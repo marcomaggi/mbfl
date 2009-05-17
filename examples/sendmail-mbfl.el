@@ -167,7 +167,7 @@ from `message.el' can extract header values from the buffer."
 extract  email addresses  from  the field.   Return  the list  of
 addresses or nil.
 
-Addresses    are    extracted    through    the    funciton    in
+Addresses    are    extracted    through    the    function    in
 `sendmail-mbfl-extract-addresses-function'."
   (save-excursion
     (save-restriction
@@ -179,7 +179,7 @@ Addresses    are    extracted    through    the    funciton    in
   "Extract a list of email addresses from the current buffer.  It
 must  be  invoked with  the  buffer  narrowed  to the  header  to
 examine.  It must return a list of email addresses or nil."
-  (message "looking for addresses")
+;;;  (message "looking for addresses")
   (let ((addresses nil)
 	(rex (concat "[[:space:]]*<?[[:space:]]*"
 		     "\\([^[:space:]]+@[^[:space:]>,]+\\)"
