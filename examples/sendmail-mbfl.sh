@@ -442,7 +442,7 @@ function connect_establish_plain_connection () {
 #  end-of-file comes first: exit the script with an error code.
 #
 function connect_using_gnutls () {
-    local GNUTLS GNUTLS_FLAGS="--debug 0 --crlf --port $SERVER_PORT" success=no
+    local GNUTLS GNUTLS_FLAGS="--debug 0 --port $SERVER_PORT" success=no
     mbfl_message_verbose_printf 'connecting with gnutls, immediate encrypted bridge\n'
     GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
     mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SERVER_HOSTNAME" || {
@@ -479,7 +479,7 @@ function connect_using_gnutls () {
 #  end-of-file comes first: exit the script with an error code.
 #
 function connect_using_gnutls_starttls () {
-    local GNUTLS GNUTLS_FLAGS="--debug 0 --crlf --starttls --port $SERVER_PORT"
+    local GNUTLS GNUTLS_FLAGS="--debug 0 --starttls --port $SERVER_PORT"
     mbfl_message_verbose_printf 'connecting with gnutls, delayed encrypted bridge\n'
     GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
     mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SERVER_HOSTNAME" || {
@@ -518,7 +518,7 @@ function connect_using_gnutls_starttls () {
 #  end-of-file comes first: exit the script with an error code.
 #
 function connect_using_openssl () {
-    local OPENSSL OPENSSL_FLAGS="s_client -quiet -crlf -connect $SERVER_HOSTNAME:$SERVER_PORT" success=no
+    local OPENSSL OPENSSL_FLAGS="s_client -quiet -connect $SERVER_HOSTNAME:$SERVER_PORT" success=no
     mbfl_message_verbose_printf 'connecting with openssl, immediate encrypted bridge\n'
     OPENSSL=$(mbfl_program_found openssl) || exit $?
     mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS || {
@@ -554,7 +554,7 @@ function connect_using_openssl () {
 #  end-of-file comes first: exit the script with an error code.
 #
 function connect_using_openssl_starttls () {
-    local OPENSSL OPENSSL_FLAGS="s_client -quiet -crlf -starttls smtp -connect $SERVER_HOSTNAME:$SERVER_PORT"
+    local OPENSSL OPENSSL_FLAGS="s_client -quiet -starttls smtp -connect $SERVER_HOSTNAME:$SERVER_PORT"
     local success=no
     mbfl_message_verbose_printf 'connecting with openssl, delayed encrypted bridge\n'
     OPENSSL=$(mbfl_program_found openssl) || exit $?

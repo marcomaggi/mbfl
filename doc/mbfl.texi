@@ -4966,6 +4966,23 @@ remote @smtp{} server behaves.  Let's see first the simpler example,
 using the a human driven interactive session; then we will describe a
 more complex interaction.
 
+@quotation
+Notice that @command{gnutls-cli} has a @option{--crlf} option that will
+cause all the lines sent to the server to be terminated by a carriage
+return/line feed sequence (@code{\r\n} or @code{\x0d\x0a}).  If we write
+a script that terminates by itself the lines with this sequence, for
+example:
+
+@example
+printf 'ehlo localhost.localdomain\r\n'
+@end example
+
+@noindent
+we must @strong{avoid} this option, else @smtp{} protocol violation
+errors may occur.  However, if we try a hand--driven interactive
+session, we want to use this option to send protocol--compliant lines.
+@end quotation
+
 @menu
 * sendmail gnutls now::         Immediate encrypted bridge.
 * sendmail gnutls delay::       Delayed encrypted bridge.
@@ -4985,7 +5002,7 @@ waiting for any line of greetings from the server.
 So, we start the connector like this:
 
 @example
-$ gnutls-cli --crlf --port 465 relay.poste.it
+$ gnutls-cli --port 465 relay.poste.it
 @end example
 
 @noindent
@@ -5077,6 +5094,8 @@ edited log of a session under Emacs' eshell); lines starting with
 are replacements for server text we are not interested in.
 
 @smallexample
+$ gnutls-cli --crlf --port 465 relay.poste.it
+
 recv> 220 ... ESMTP Service ...
 send> ehlo localhost.localdomain
 recv> 250-...
@@ -5129,7 +5148,7 @@ and do the authentication and the message delivery.
 We start the connector like this:
 
 @example
-$ gnutls-cli --crlf --starttls --port 587 smtp.gmail.com
+$ gnutls-cli --starttls --port 587 smtp.gmail.com
 @end example
 
 @noindent
@@ -5187,6 +5206,8 @@ edited log of a session under Emacs' eshell); lines starting with
 are replacements for server text we are not interested in.
 
 @smallexample
+$ gnutls-cli --crlf --starttls --port 587 smtp.gmail.com
+
 recv> 220 ... ESMTP ...
 send> ehlo localhost.localdomain
 recv> 250-...
@@ -5267,6 +5288,23 @@ Here we see how we can use the @command{openssl} program in place of the
 common (the @smtp{} protocol is the same), we only have to understand
 the command line of the program.
 
+@quotation
+Notice that @command{openssl} has a @option{-crlf} option that will
+cause all the lines sent to the server to be terminated by a carriage
+return/line feed sequence (@code{\r\n} or @code{\x0d\x0a}).  If we write
+a script that terminates by itself the lines with this sequence, for
+example:
+
+@example
+printf 'ehlo localhost.localdomain\r\n'
+@end example
+
+@noindent
+we must @strong{avoid} this option, else @smtp{} protocol violation
+errors may occur.  However, if we try a hand--driven interactive
+session, we want to use this option to send protocol--compliant lines.
+@end quotation
+
 @menu
 * sendmail openssl now::        Immediate encrypted bridge.
 * sendmail openssl delay::      Delayed encrypted bridge.
@@ -5281,7 +5319,7 @@ To build the encrypted bridge right after the connection, without
 exchanging greetings with the server, we do:
 
 @example
-$ openssl s_client -quiet -crlf -connect relay.poste.it:465
+$ openssl s_client -quiet -connect relay.poste.it:465
 @end example
 
 @noindent
@@ -5297,7 +5335,7 @@ To first exchange greetings, then send @code{STARTTLS} and finally build
 the encrypted bridge, we do:
 
 @example
-$ openssl s_client -quiet -crlf -starttls smtp \
+$ openssl s_client -quiet -starttls smtp \
     -connect smtp.gmail.com:587
 @end example
 
