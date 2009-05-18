@@ -1132,7 +1132,6 @@ function auth_read_credentials () {
     }
     set -- $line
     auth_file_validate_word "$1" machine        first   || exit $?
-    auth_file_validate_word "$2" "$SERVER_HOSTNAME"   second  || exit $?
     auth_file_validate_word "$3" login          third   || exit $?
     auth_file_validate_word "$5" password       fifth   || exit $?
     LOGIN_NAME=$4

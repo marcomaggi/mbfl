@@ -5828,6 +5828,12 @@ By default it is set to @file{~/.authinfo}.
 @end defvr
 
 
+@defvr {Customisable Variable} sendmail-mbfl-connector
+Select the external program to use to establish the @tls{} transport
+layer.  Valid values are the strings: @code{gnutls}, @code{openssl}.
+The default is @code{gnutls}.
+@end defvr
+
 @c page
 @node sendmail script emacs func
 @appendixsubsubsec Functions
@@ -5837,8 +5843,8 @@ By default it is set to @file{~/.authinfo}.
 Send the email message in the current buffer using the program selected
 with the customisable variable @code{sendmail-mbfl-program}.
 
-This function can be invoked directly from the minibuffer, or used as
-value for @code{message-send-mail-function}.
+This function can be invoked directly from the minibuffer, or, better,
+used as value for @code{message-send-mail-function}.
 @end defun
 
 
@@ -5848,8 +5854,8 @@ value for @code{message-send-mail-function}.
 email message and searches the contents for an email address to be used
 as envelope sender.
 
-It examines the headers @code{Sender} and @code{From}, in this order.
-It returns a single string representing the email address.  If no
+It examines the headers @code{From} and @code{Sender}, in this order and
+it returns a single string representing the email address; if no
 suitable address is found: it raises an error.  The address is extracted
 from the headers using the function selected by the customisable
 variable @code{sendmail-mbfl-extract-addresses-function}.
@@ -5866,10 +5872,10 @@ variable @code{sendmail-mbfl-extract-addresses-function}.
 email message and searches the contents for email addresses to be used
 as envelope receivers.
 
-It examines the headers @code{To}, @code{Cc} and @code{Bcc}.  It returns
-a list of strings representing email addresses.  If no suitable address
-is found: it raises an error.  The addresses are extracted from the
-headers using the function selected by the customisable variable
+It examines the headers @code{To}, @code{Cc} and @code{Bcc} and it
+returns a list of strings representing email addresses; if no suitable
+address is found: it raises an error.  The addresses are extracted from
+the headers using the function selected by the customisable variable
 @code{sendmail-mbfl-extract-addresses-function}.
 
 @code{sendmail-mbfl-envelope-to/message} is an interactive wrapper for
@@ -5891,9 +5897,10 @@ list of email addresses as strings, or nil if no address is found.
 hostname of the @smtp{} server to be used to send the message.  The
 result is used as search key in the selected hostinfo file.
 
-The function is invoked with no arguments and it returns a string
-representing the hostname; if it is unable to determine the hostname: it
-raises an error.
+It returns a string representing the hostname else, if unable to
+determine the hostname, it raises an error.  The hostname is the
+hostname part of the value returned by
+@code{sendmail-mbfl-envelope-from}.
 
 @code{sendmail-mbfl-hostname/message} is an interactive wrapper for
 @code{sendmail-mbfl-hostname} that prints the result to the
@@ -5904,12 +5911,13 @@ raises an error.
 @defun sendmail-mbfl-username
 @defunx sendmail-mbfl-username/message
 @code{sendmail-mbfl-username} extracts, from the current buffer, the
-username with which to login to the @smtp{} server.  The result is used
-as search key in the selected authinfo file.
+username with which login to the @smtp{} server.  The result is used as
+search key in the selected authinfo file.
 
-The function is invoked with no arguments and it returns a string
-representing the username; if it is unable to determine the username: it
-raises an error.
+It returns a string representing the username else, if unable to
+determine the username, it raises an error.  The username is the
+username part of the value returned by
+@code{sendmail-mbfl-envelope-from}.
 
 @code{sendmail-mbfl-username/message} is an interactive wrapper for
 @code{sendmail-mbfl-username} that prints the result to the

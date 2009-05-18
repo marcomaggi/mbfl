@@ -151,8 +151,8 @@ default it is set to `sendmail-mbfl-hostname'."
 
 (defcustom sendmail-mbfl-username-function 'sendmail-mbfl-username
   "Select a function  to call to extract the  username with which
-to login into the SMTP server.   The result is used as search key
-in the selected authinfo file.
+login to  the SMTP server.  The  result is used as  search key in
+the selected authinfo file.
 
 The function  is invoked with no  arguments and it  must return a
 string representing  the username; if  it is unable  to determine
@@ -177,18 +177,26 @@ accounts at SMTP servers."
   :type 'string
   :group 'sendmail-mbfl)
 
+(defcustom sendmail-mbfl-connector "gnutls"
+  "Select  the  external program  to  use  to  establish the  TLS
+transport  layer.   Valid  values  are the  strings:  \"gnutls\",
+\"openssl\".  The default is \"gnutls\"."
+  :version "22.3"
+  :type 'string
+  :group 'sendmail-mbfl)
+
 (defun sendmail-mbfl-envelope-from ()
   "Interpret the  current buffer as  an email message  and search
 the contents for an email  address to be used as envelope sender.
-It examines the headers \"Sender\" and \"From\", in this order.
+It examines the headers \"From\" and \"Sender\", in this order.
 
 Return  a single string  representing the  email address.   If no
 suitable address is found: an error is raised."
   (let ((addresses (cond
-		    ((message-field-value "Sender")
-		     (sendmail-mbfl-extract-address-trampoline "Sender"))
 		    ((message-field-value "From")
 		     (sendmail-mbfl-extract-address-trampoline "From"))
+		    ((message-field-value "Sender")
+		     (sendmail-mbfl-extract-address-trampoline "Sender"))
 		    (t
 		     (error "Unable to find a sender address")))))
     (if (null addresses)
@@ -379,6 +387,14 @@ format:
 					       (concat "--auth-info=" sendmail-mbfl-auth-info)
 					       (concat "--host=" HOSTNAME)
 					       (concat "--username=" USERNAME)
+					       (cond
+						((string-equal "gnutls" sendmail-mbfl-connector)
+						 "--gnutls")
+						((string-equal "openssl" sendmail-mbfl-connector)
+						 "--openssl")
+						(t
+						 (error "unknown TLS connector program: %s"
+							sendmail-mbfl-connector)))
 					       (concat "--message=" message-tempfile)
 					       (concat "--envelope-from=" FROM-ADDRESS))
 					 (mapcar '(lambda (ADDRESS)
