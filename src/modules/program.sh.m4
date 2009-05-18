@@ -150,7 +150,7 @@ function mbfl_program_execbg () {
             # "whoami" when "sudo" is not required.
             test "$PERSONA" = $("$WHOAMI") || {
                 if test "$STDERR_TO_STDOUT" = yes
-                then "$SUDO" -u "$PERSONA" "$@" <$INCHAN >$OUCHAN 2>&1 &
+                then "$SUDO" -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN &
                 else "$SUDO" -u "$PERSONA" "$@" <$INCHAN >$OUCHAN &
                 fi
                 mbfl_program_BGPID=$!

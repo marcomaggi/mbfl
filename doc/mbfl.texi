@@ -5834,6 +5834,12 @@ layer.  Valid values are the strings: @code{gnutls}, @code{openssl}.
 The default is @code{gnutls}.
 @end defvr
 
+
+@defvr {Customisable Variable} sendmail-mbfl-timeout
+Select the timeout in seconds for reading answers from the @smtp{}
+server.  The default is 5.
+@end defvr
+
 @c page
 @node sendmail script emacs func
 @appendixsubsubsec Functions

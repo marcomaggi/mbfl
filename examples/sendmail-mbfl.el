@@ -106,6 +106,7 @@ address is found: it must raise an error.
 The  selected  function  is  used by  `send-mail-with-mbfl'.   By
 default it is set to `sendmail-mbfl-envelope-from'."
   :version "22.3"
+  :type 'function
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-envelope-to-function 'sendmail-mbfl-envelope-to
@@ -120,6 +121,7 @@ address is found: it must raise an error.
 The  selected  function  is  used by  `send-mail-with-mbfl'.   By
 default it is set to `sendmail-mbfl-envelope-to'."
   :version "22.3"
+  :type 'function
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-extract-addresses-function 'sendmail-mbfl-extract-addresses
@@ -133,6 +135,7 @@ list of strings representing email addresses, or nil.
 The  selected function  is used  by `sendmail-mbfl-envelope-from'
 and `sendmail-mbfl-envelope-to'."
   :version "22.3"
+  :type 'function
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-hostname-function 'sendmail-mbfl-hostname
@@ -147,6 +150,7 @@ the hostname: it must raise an error.
 The  selected  function  is  used by  `send-mail-with-mbfl'.   By
 default it is set to `sendmail-mbfl-hostname'."
   :version "22.3"
+  :type 'function
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-username-function 'sendmail-mbfl-username
@@ -161,6 +165,7 @@ the username: it must raise an error.
 The  selected  function  is  used by  `send-mail-with-mbfl'.   By
 default it is set to `sendmail-mbfl-username'."
   :version "22.3"
+  :type 'function
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-host-info (expand-file-name "~/.hostinfo")
@@ -183,6 +188,13 @@ transport  layer.   Valid  values  are the  strings:  \"gnutls\",
 \"openssl\".  The default is \"gnutls\"."
   :version "22.3"
   :type 'string
+  :group 'sendmail-mbfl)
+
+(defcustom sendmail-mbfl-timeout 5
+  "Select  the timeout in  seconds for  reading answers  from the
+SMTP server.  The default is 5."
+  :version "22.3"
+  :type 'integer
   :group 'sendmail-mbfl)
 
 (defun sendmail-mbfl-envelope-from ()
@@ -381,12 +393,13 @@ format:
 	 (launch-async-process
 	  '(lambda (HOSTNAME USERNAME FROM-ADDRESS TO-ADDRESSES)
 	     (let* ((process-connection-type sendmail-mbfl-process-connection-type)
-		    (buffer (generate-new-buffer "*output from sendmail-mbfl*"))
+		    (buffer (generate-new-buffer "*Output from sendmail-mbfl*"))
 		    (command-line (nconc (list sendmail-mbfl-program
 					       (concat "--host-info=" sendmail-mbfl-host-info)
 					       (concat "--auth-info=" sendmail-mbfl-auth-info)
 					       (concat "--host=" HOSTNAME)
 					       (concat "--username=" USERNAME)
+					       (concat "--timeout=" sendmail-mbfl-timeout)
 					       (cond
 						((string-equal "gnutls" sendmail-mbfl-connector)
 						 "--gnutls")

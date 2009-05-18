@@ -1,3 +1,4 @@
+#! /bin/bash
 # Part of: Marco's Bash Functions Library
 # Contents: example script that sends an email message
 # Date: Thu Apr 23, 2009
@@ -94,6 +95,9 @@ mbfl_declare_option PORT \
     ''        p port witharg 'select the server port'
 mbfl_declare_option HOST_INFO \
     "$HOME/.hostinfo" '' host-info witharg 'select the hostinfo file'
+
+mbfl_declare_option TIMEOUT \
+    5 '' timeout witharg 'select the connection timeout in seconds'
 
 mbfl_declare_option SESSION_PLAIN \
     yes '' plain        noarg 'establish a plain connection (non-encrypted)'
@@ -249,7 +253,7 @@ function main () {
     local CONNECTOR_PID=
     # Timeout,  in seconds,  for the  read operation  on the  input file
     # descriptor.
-    local READ_TIMEOUT=5
+    local READ_TIMEOUT=$script_option_TIMEOUT
 
     validate_and_normalise_configuration
     {
@@ -294,6 +298,15 @@ function validate_and_normalise_configuration () {
 
     # Informations from the hostinfo file are stored in these variables.
     local hostinfo_HOST= hostinfo_PORT= hostinfo_SESSION_TYPE= hostinfo_AUTH_TYPE=
+
+    test -z "$script_option_TIMEOUT" && {
+        mbfl_message_error_printf 'null value as timeout'
+        exit_because_invalid_option
+    }
+    mbfl_string_is_digit "$script_option_TIMEOUT" || {
+        mbfl_message_error_printf 'invalid value as timeout: %s' "$script_option_TIMEOUT"
+        exit_because_invalid_option
+    }
 
     # Email addresses are selected with command line options.
     if test -n "$script_option_FROM"
