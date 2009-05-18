@@ -91,6 +91,24 @@ examples_INSTDIR	= $(pkgexampledir)
 $(eval $(call ds-module-install-rules,examples,dev))
 
 #page
+
+SENDMAIL_STUFF	= @SENDMAIL_STUFF@
+
+ifeq (yes,$(strip $(SENDMAIL_STUFF)))
+
+sendmail_emacs_INSTLST	= $(srcdir)/examples/sendmail-mbfl.el
+sendmail_emacs_INSTDIR	= $(datadir)/emacs/site-lisp
+
+$(eval $(call ds-module-install-rules,sendmail_emacs,bin))
+
+sendmail_script_INSTLST	= $(srcdir)/examples/sendmail-mbfl.sh
+sendmail_script_INSTDIR	= $(bindir)
+
+$(eval $(call ds-module-install-rules,sendmail_script,bin,BIN))
+
+endif
+
+#page
 mtests_SRCDIR	= $(srcdir)/tests
 mtests_FILES	= $(call ds-glob,mtests,*.test)
 mtests_TARGETS	= test-all

@@ -17,5 +17,6 @@ set -xe
     --with-abi=local-slackware                  \
     --enable-use-sudo                           \
     --enable-doc-pdf                            \
+    --enable-sendmail
 
 ### end of file

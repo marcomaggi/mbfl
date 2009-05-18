@@ -48,7 +48,7 @@ script_EXAMPLES="Usage examples:
 
 \tHow do you do?
 \t' | ${script_PROGNAME} \\
-\t\t--from=marco@localhost --to=root@localhost"
+\t\t--envelope-from=marco@localhost --envelope-to=root@localhost"
 
 #page
 ## ------------------------------------------------------------

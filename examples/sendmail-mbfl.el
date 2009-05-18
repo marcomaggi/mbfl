@@ -399,7 +399,8 @@ format:
 					       (concat "--auth-info=" sendmail-mbfl-auth-info)
 					       (concat "--host=" HOSTNAME)
 					       (concat "--username=" USERNAME)
-					       (concat "--timeout=" sendmail-mbfl-timeout)
+					       (concat "--timeout="
+						       (number-to-string sendmail-mbfl-timeout))
 					       (cond
 						((string-equal "gnutls" sendmail-mbfl-connector)
 						 "--gnutls")
@@ -458,6 +459,12 @@ format:
 			  (set-window-buffer (selected-window) buffer)))))
 		(funcall cleanup-process PROCESS)))))
 	(delete-file message-tempfile))))
+
+(defun sendmail-mbfl-activate ()
+  "Set  `message-send-mail-function' so  that  `message.el' sends
+mail using `send-mail-with-mbfl'."
+  (interactive)
+  (setq message-send-mail-function 'send-mail-with-mbfl))
 
 (provide 'sendmail-mbfl)
 ;;; sendmail-mbfl.el ends here
