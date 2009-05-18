@@ -37,7 +37,7 @@ function mbfl_dialog_yes_or_no () {
     optional_parameter(PROGNAME, 2, ${script_PROGNAME})
     local PROMPT="${PROGNAME}: ${STRING}? (yes/no) "
     local ANS=
-    while IFS= read -e -p "$PROMPT" ANS && \
+    while IFS= read -r -e -p "$PROMPT" ANS && \
         test "$ANS" != 'yes' -a "$ANS" != 'no'
     do echo "${PROGNAME}: please answer yes or no."
     done
@@ -49,7 +49,7 @@ function mbfl_dialog_ask_password () {
     STTY=$(mbfl_program_found stty) || exit $?
     echo -n "${prompt}: " >&2
     "$STTY" cbreak -echo </dev/tty >/dev/tty 2>&1
-    IFS= read PASSWORD
+    IFS= read -rs PASSWORD
     "$STTY" -cbreak echo </dev/tty >/dev/tty 2>&1
     echo >&2
     printf %s "${PASSWORD}"

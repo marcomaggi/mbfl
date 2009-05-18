@@ -417,6 +417,7 @@ format:
 					 sendmail-mbfl-extra-args)))
 	       (message "sendmail-mbfl: running script...")
 	       (funcall log-command-line buffer command-line)
+	       ;;;(set-window-buffer (selected-window) buffer)
 	       (apply #'start-process "sendmail-mbfl" buffer command-line))))
 
 	 (receive-process-output

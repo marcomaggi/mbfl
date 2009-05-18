@@ -458,6 +458,7 @@ function connect_using_gnutls () {
     local GNUTLS GNUTLS_FLAGS="--debug 0 --port $SERVER_PORT" success=no
     mbfl_message_verbose_printf 'connecting with gnutls, immediate encrypted bridge\n'
     GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
+    mbfl_program_redirect_stderr_to_stdout
     mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SERVER_HOSTNAME" || {
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SERVER_HOSTNAME" "$SERVER_PORT"
         exit_failed_connection
@@ -495,6 +496,7 @@ function connect_using_gnutls_starttls () {
     local GNUTLS GNUTLS_FLAGS="--debug 0 --starttls --port $SERVER_PORT"
     mbfl_message_verbose_printf 'connecting with gnutls, delayed encrypted bridge\n'
     GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
+    mbfl_program_redirect_stderr_to_stdout
     mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SERVER_HOSTNAME" || {
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SERVER_HOSTNAME" "$SERVER_PORT"
         exit_failed_connection
@@ -534,6 +536,8 @@ function connect_using_openssl () {
     local OPENSSL OPENSSL_FLAGS="s_client -quiet -connect $SERVER_HOSTNAME:$SERVER_PORT" success=no
     mbfl_message_verbose_printf 'connecting with openssl, immediate encrypted bridge\n'
     OPENSSL=$(mbfl_program_found openssl) || exit $?
+    mbfl_program_redirect_stderr_to_stdout
+    echo ping >$INFIFO
     mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS || {
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SERVER_HOSTNAME" "$SERVER_PORT"
         exit_failed_connection
@@ -571,6 +575,7 @@ function connect_using_openssl_starttls () {
     local success=no
     mbfl_message_verbose_printf 'connecting with openssl, delayed encrypted bridge\n'
     OPENSSL=$(mbfl_program_found openssl) || exit $?
+    mbfl_program_redirect_stderr_to_stdout
     mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS || {
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SERVER_HOSTNAME" "$SERVER_PORT"
         exit_failed_connection
@@ -731,7 +736,7 @@ function connect_cleanup_fifos () {
 function recv () {
     local EXPECTED_CODE=${1:?}
     local line
-    IFS= read -t $READ_TIMEOUT line <&$INFD
+    IFS= read -rs -t $READ_TIMEOUT line <&$INFD
     if test 127 -lt $?
     then
         mbfl_message_error_printf 'read timeout exceeded'
@@ -740,7 +745,7 @@ function recv () {
     mbfl_message_debug_printf 'recv: %s' "$line"
     test "${line:0:3}" = "$EXPECTED_CODE" || {
         send %s QUIT
-        IFS= read -t $READ_TIMEOUT line <&$INFD
+        IFS= read -rs -t $READ_TIMEOUT line <&$INFD
         if test $? -lt 128
         then mbfl_message_debug_printf 'recv: %s' "$line"
         fi
@@ -765,7 +770,7 @@ function recv () {
 function recv_string () {
     local EXPECTED_STRING=${1:?}
     local line len=${#EXPECTED_STRING}
-    IFS= read -t $READ_TIMEOUT line <&$INFD
+    IFS= read -rs -t $READ_TIMEOUT line <&$INFD
     if test 127 -lt $?
     then
         mbfl_message_error_printf 'read timeout exceeded'
@@ -774,7 +779,7 @@ function recv_string () {
     mbfl_message_debug_printf 'recv: %s' "$line"
     test "${line:0:$len}" = "$EXPECTED_STRING" || {
         send %s QUIT
-        IFS= read -t $READ_TIMEOUT line <&$INFD
+        IFS= read -rs -t $READ_TIMEOUT line <&$INFD
         mbfl_message_debug_printf 'recv: %s' "$line"
         exit_because_wrong_server_answer
     }
@@ -801,7 +806,8 @@ function recv_string () {
 function recv_until_string () {
     local EXPECTED_STRING=${1:?}
     local line len=${#EXPECTED_STRING} success=no
-    while IFS= read -t $READ_TIMEOUT line <&$INFD
+    mbfl_message_debug_printf 'reading (tm %s)' $READ_TIMEOUT
+    while IFS= read -rs -t $READ_TIMEOUT line <&$INFD
     do
         mbfl_message_debug_printf 'recv: %s' "$line"
         test "${line:0:$len}" = "$EXPECTED_STRING" && {
@@ -908,7 +914,7 @@ function read_and_send_message () {
             fi
             # Here  it is  impossible  to distinguish  between an  error
             # reading the source and an the end of file.
-            while IFS= read line <&5
+            while IFS= read -rs line <&5
             do printf '%s\n' "$line"
             done
             exec 5<&-
@@ -916,7 +922,7 @@ function read_and_send_message () {
      } | {
         local line
         local -i lines_count=0 bytes_count=0
-        while IFS= read line
+        while IFS= read -rs line
         do
             printf '%s\r\n' "$line" >&$OUFD
             let ++lines_count

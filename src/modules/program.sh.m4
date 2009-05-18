@@ -157,7 +157,7 @@ function mbfl_program_execbg () {
             }
         else
             if test "$STDERR_TO_STDOUT" = yes
-            then "$@" <$INCHAN >$OUCHAN 2>&1 &
+            then "$@" <$INCHAN 2>&1 >$OUCHAN &
             else "$@" <$INCHAN >$OUCHAN &
             fi
             mbfl_program_BGPID=$!

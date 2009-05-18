@@ -83,7 +83,7 @@ function mbfl_at_schedule () {
 }
 function mbfl_at_queue_print_identifiers () {
     local QUEUE=${mbfl_p_at_queue_letter}
-    mbfl_p_at_program_atq "$QUEUE" | while IFS= read LINE
+    mbfl_p_at_program_atq "$QUEUE" | while IFS= read -r LINE
     do
         set -- $LINE
         printf '%d ' "$1"
@@ -93,7 +93,7 @@ function mbfl_at_queue_print_queues () {
     local ATQ SORT line
     ATQ=$(mbfl_program_found atq)   || exit $?
     SORT=$(mbfl_program_found sort) || exit $?
-    { mbfl_program_exec "${ATQ}" | while IFS= read line
+    { mbfl_program_exec "${ATQ}" | while IFS= read -r line
         do
             set -- $line
             printf '%c\n' "$4"
