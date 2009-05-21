@@ -431,8 +431,13 @@ the main purpose of this document is to provide an Info version.
 @copying
 This document describes version @version{} of @value{PACKAGE}, a library
 of functions for the @gnu{} Bash shell.  The package is distributed
-under the terms of the @gnu{} Lesser General Public License (@lgpl{})
-and can be downloaded from:
+under the terms of the @gnu{} Lesser General Public License (@lgpl{});
+the home page is at:
+
+@center @url{http://marcomaggi.github.com/mbfl.html}
+
+@noindent
+and stable packages can be downloaded from:
 
 @center @url{http://gna.org/projects/mbfl}
 
@@ -4581,11 +4586,19 @@ dotest mytest-
 
 
 In this appendix we review some example scripts that can be used to send
-email from a Bash script.  First we examine plain scripts (making no use
-of @mbfl{}) to understand the basics of how to handle the @smtp{}
-protocol and how to ``talk'' to a process in background; then we see the
-documentation of a complex script.  All the scripts are in the @mbfl{}
+email from a Bash script.  All the scripts are in the @mbfl{}
 distribution under the @file{examples} directory.
+
+First we examine plain scripts (making no use of @mbfl{}) to understand
+the basics of how to handle the @smtp{} protocol and how to ``talk'' to
+a process in background.
+
+Then we see the documentation of a complex script,
+@command{sendmail-mbfl.sh}, which can be used to send mail with plain or
+encrypted connections.
+
+Finally we see how to use the @gnu{} Emacs interface to the script,
+@file{sendmail-mbfl.el}.  @ref{sendmail script emacs}.
 
 @menu
 * sendmail message::            How to compose a test email message.
@@ -5832,7 +5845,8 @@ By default it is set to @file{~/.authinfo}.
 @defvr {Customisable Variable} sendmail-mbfl-connector
 Select the external program to use to establish the @tls{} transport
 layer.  Valid values are the strings: @code{gnutls}, @code{openssl}.
-The default is @code{gnutls}.
+The default is @code{openssl} because it is more likely to be installed
+on any system.
 @end defvr
 
 

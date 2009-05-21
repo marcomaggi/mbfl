@@ -188,10 +188,10 @@ accounts at SMTP servers."
   :type 'string
   :group 'sendmail-mbfl)
 
-(defcustom sendmail-mbfl-connector "gnutls"
+(defcustom sendmail-mbfl-connector "openssl"
   "Select  the  external program  to  use  to  establish the  TLS
 transport  layer.   Valid  values  are the  strings:  \"gnutls\",
-\"openssl\".  The default is \"gnutls\"."
+\"openssl\".  The default is \"openssl\"."
   :version "22.3"
   :type 'string
   :group 'sendmail-mbfl)
