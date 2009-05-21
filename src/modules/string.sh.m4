@@ -1,3 +1,4 @@
+#! /bin/bash
 # string.sh --
 #
 # Part of: Marco's BASH functions library
@@ -35,15 +36,19 @@
 function mbfl_string_chars () {
     mandatory_parameter(STRING, 1, string)
     local i j ch
-    for ((i=0, j=0; $i < "${#STRING}"; ++i, ++j))
+    for ((i=0, j=0; $i < ${#STRING}; ++i, ++j))
     do
-        ch=
-        test "${STRING:$i:1}" = \\ && {
-            test $i != "${#STRING}" && ch=\\
+        ch=${STRING:$i:1}
+        if test "$ch" != $'\\'
+        then SPLITFIELD[$j]=$ch
+        else
             let ++i
-        }
-        SPLITFIELD[$j]="${ch}${STRING:$i:1}"
-        ch=
+            if test $i != "${#STRING}"
+            then SPLITFIELD[$j]=${ch}${STRING:$i:1}
+            else
+                SPLITFIELD[$j]=$ch
+            fi
+        fi
     done
     SPLITCOUNT=$j
     return 0

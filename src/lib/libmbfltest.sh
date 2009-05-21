@@ -1,3 +1,4 @@
+#! /bin/bash
 # libmbfltest.sh --
 #
 # Part of: Marco's BASH Functions Library
@@ -11,7 +12,6 @@
 #	all the test files.
 #
 # Copyright (c) 2004-2005, 2009 Marco Maggi <marcomaggi@gna.org>
-#
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -194,7 +194,8 @@ function dotest-equal () {
     local expected="$1"
     local got="$2"
 
-    if test "$expected" != "$got" ; then
+    if test "$expected" != "$got"
+    then
 	echo "   expected: '$expected'" >&2
 	echo "   got:      '$got'" >&2
 	return 1
