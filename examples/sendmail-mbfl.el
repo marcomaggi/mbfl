@@ -70,7 +70,9 @@
 ;;; Code:
 
 (require 'message)
+(require 'sendmail)
 
+
 (defgroup sendmail-mbfl nil
   "Send mail using the \"sendmail-mbfl.sh\" GNU Bash script."
   :version "22.3"
@@ -197,6 +199,24 @@ SMTP server.  The default is 5."
   :type 'integer
   :group 'sendmail-mbfl)
 
+
+(defmacro compensation (vars &rest BODY)
+  ;; Example:
+  ;;
+  ;;  (compensation ((buf (generate-new-buffer "*this*")
+  ;;			  (kill-buffer buf)))
+  ;;     (with-current-buffer buf
+  ;;       ...))
+  ;;
+  (let ((NAME		(caar vars))
+	(ACQUIRE	(car (cdar vars)))
+	(RELEASE	(cadr (cdar vars))))
+    `(let ((,NAME ,ACQUIRE))
+       (unwind-protect
+	   (progn ,@BODY)
+	 ,RELEASE))))
+
+
 (defun sendmail-mbfl-envelope-from ()
   "Interpret the  current buffer as  an email message  and search
 the contents for an email  address to be used as envelope sender.
@@ -267,6 +287,7 @@ no address is found."
       (setq addresses (cons (match-string 1) addresses)))
     addresses))
 
+
 (defun sendmail-mbfl-hostname ()
   "Extract,  from the current  buffer, the  hostname of  the SMTP
 server to  be used to  send the message.   The result is  used as
@@ -303,6 +324,242 @@ determine the username: raise an error."
   (interactive)
   (message "Username: %s" (sendmail-mbfl-username)))
 
+
+(defun sendmail-mbfl-normalise-message ()
+  "Normalise the email  message in the current buffer  so that it
+is ready to be posted or delivered.  Scan the headers for invalid
+lines  and try  to  fix  them.  Scan  the  message for  mandatory
+headers and, if missing, add  them; this may require querying the
+user for informations.
+
+It is to be called BEFORE acquiring sender and receiver addresses
+from  the headers.   It is  an  interactive function:  it can  be
+explicitly applied to a buffer by the user any number of times.
+
+This function does NOT remove the headers/body separator."
+  (interactive)
+  (message "sendmail-mbfl: normalising message...")
+  (save-excursion
+    ;; Move point to the headers delimiter.
+    (rfc822-goto-eoh)
+    (let ((delimline (point-marker)))
+      ;; Require one newline at the end of the message.
+      (goto-char (point-max))
+      (or (= ?\n (preceding-char)) (insert ?\n))
+      ;; Expand mail aliases.
+      (if mail-aliases
+	  (expand-mail-aliases (point-min) delimline))
+      ;; Remove blank lines from the headers.
+      (goto-char (point-min))
+      (while (and (re-search-forward "\n\n\n*" delimline t)
+		  (< (point) delimline))
+	(replace-match "\n"))
+      ;; Insert an extra newline if we  need it to work around Sun's bug
+      ;; that swallows newlines.
+      (goto-char (1+ delimline))
+      (when (eval mail-mailer-swallows-blank-line)
+	(newline))))
+  (message "sendmail-mbfl: completed message normalisation."))
+
+(defun sendmail-mbfl-prepare-message-for-mta ()
+  "Prepare the email message in  the current buffer to be sent to
+an MTA.  Headers like \"Fcc\"  and \"Bcc\" are removed.  It is to
+be called AFTER acquiring  sender and receiver addresses from the
+headers."
+  (message "sendmail-mbfl: preparing message...")
+  (save-excursion
+    (save-restriction
+      (message-narrow-to-headers-or-head)
+      (message-remove-header "Bcc")
+      (message-remove-header "Fcc"))
+    (mail-sendmail-undelimit-header)))
+
+
+(defun sendmail-mbfl-delivery ()
+  "Perform special  delivery of the email message  in the current
+buffer.   If  the  message  has  an \"Fcc\"  header,  deliver  is
+performed relying on `mail-do-fcc' from `sendmail.el'.
+
+It is to be  called after `sendmail-mbfl-normalise-message' or an
+equivalent normalisation has been applied to the message."
+  (interactive)
+  (message "sendmail-mbfl: performing special deliveries...")
+  ;; Move point to the headers delimiter.
+  (save-excursion
+    (rfc822-goto-eoh)
+    (let ((delimline (point-marker)))
+      ;; Find and handle any FCC fields.
+      (goto-char (point-min))
+      (when (re-search-forward "^FCC:" delimline t)
+	(compensation ((buffer (generate-new-buffer "*sendmail-mbfl special delivery message*")
+			       (kill-buffer buffer)))
+	  (sendmail-mbfl-copy-message-buffer buffer (current-buffer))
+	  (with-current-buffer buffer
+	    (let ((coding-system-for-write (select-message-coding-system)))
+	      (mail-do-fcc delimline)))))))
+  (message "sendmail-mbfl: special deliveries completed."))
+
+
+(defun sendmail-mbfl-post ()
+  "Post the  email message  in the current  buffer using  an MTA.
+Posting     involves:
+
+1. Preparing the message with `sendmail-mbfl-prepare-message-for-mta'.
+
+2. Saving the message into a temporary file.
+
+3. Sending the file using the script selected with the customisable
+   variable `sendmail-mbfl-program'.
+
+It is to be  called after `sendmail-mbfl-normalise-message' or an
+equivalent normalisation has been applied to the message."
+  (interactive)
+  (let* ((main
+	  '(lambda ()
+	     (let ((mail-buffer (current-buffer)))
+	       (compensation ((message-buffer (generate-new-buffer "*sendmail-mbfl temporary message*")
+					      (kill-buffer message-buffer)))
+		 (with-current-buffer message-buffer
+		   (sendmail-mbfl-copy-message-buffer message-buffer mail-buffer)
+		   (let* ((FROM-ADDRESS	(funcall acquire-from-address))
+			  (TO-ADDRESSES	(funcall acquire-to-addresses))
+			  (HOSTNAME	(funcall acquire-hostname))
+			  (USERNAME	(funcall acquire-username)))
+		     (sendmail-mbfl-prepare-message-for-mta)
+		     (compensation ((message-tempfile (funcall create-message-file)
+						      (delete-file message-tempfile)))
+		       (funcall write-message-buffer-to-message-file message-tempfile)
+		       (compensation ((PROCESS (funcall launch-async-process message-tempfile
+							HOSTNAME USERNAME FROM-ADDRESS TO-ADDRESSES)
+					       (funcall cleanup-process PROCESS)))
+			 (funcall show-process-buffer PROCESS)
+			 (funcall receive-process-output PROCESS)
+			 (if (and (= 0 (process-exit-status PROCESS))
+				  (eq 'exit (process-status PROCESS)))
+			     (progn
+			       (message "sendmail-mbfl: message delivered successfully")
+			       (funcall bury-process-buffer PROCESS))
+			   (message "sendmail-mbfl: message delivery error"))))))))))
+
+	 (create-message-file
+	  '(lambda ()
+	     (message "sendmail-mbfl: creating temporary file...")
+	     (make-temp-file "sendmail-mbfl")))
+
+	 (write-message-buffer-to-message-file
+	  '(lambda (TEMPFILE)
+	     (let ((coding-system-for-write (select-message-coding-system)))
+	       (write-region nil nil TEMPFILE))))
+
+	 (acquire-from-address
+	  '(lambda ()
+	     (let ((FROM-ADDRESS (funcall sendmail-mbfl-envelope-from-function)))
+	       (message "sendmail-mbfl: from address: %s" FROM-ADDRESS)
+	       FROM-ADDRESS)))
+
+	 (acquire-to-addresses
+	  '(lambda ()
+	     (let ((TO-ADDRESSES (funcall sendmail-mbfl-envelope-to-function)))
+	       (dolist (address TO-ADDRESSES)
+		 (message "sendmail-mbfl: to address: %s" address))
+	       TO-ADDRESSES)))
+
+	 (acquire-hostname
+	  '(lambda ()
+	     (let ((HOSTNAME (funcall sendmail-mbfl-hostname-function)))
+	       (message "sendmail-mbfl: hostname: %s" HOSTNAME)
+	       HOSTNAME)))
+
+	 (acquire-username
+	  '(lambda ()
+	     (let ((USERNAME (funcall sendmail-mbfl-username-function)))
+	       (message "sendmail-mbfl: username: %s" USERNAME)
+	       USERNAME)))
+
+	 (log-command-line
+	  '(lambda (buffer command-line)
+	     (with-current-buffer buffer
+	       (insert (mapconcat '(lambda (x) x) command-line "\t\\\n\t") "\n\n"))))
+
+	 (launch-async-process
+	  '(lambda (MESSAGE-FILE HOSTNAME USERNAME FROM-ADDRESS TO-ADDRESSES)
+	     (let* ((process-connection-type sendmail-mbfl-process-connection-type)
+		    (buffer (generate-new-buffer "*Output from sendmail-mbfl*"))
+		    (command-line (nconc (list sendmail-mbfl-program
+					       (concat "--host-info=" sendmail-mbfl-host-info)
+					       (concat "--auth-info=" sendmail-mbfl-auth-info)
+					       (concat "--host=" HOSTNAME)
+					       (concat "--username=" USERNAME)
+					       (concat "--timeout="
+						       (number-to-string sendmail-mbfl-timeout))
+					       (cond
+						((string-equal "gnutls" sendmail-mbfl-connector)
+						 "--gnutls")
+						((string-equal "openssl" sendmail-mbfl-connector)
+						 "--openssl")
+						(t
+						 (error "unknown TLS connector program: %s"
+							sendmail-mbfl-connector)))
+					       (concat "--message=" MESSAGE-FILE)
+					       (concat "--envelope-from=" FROM-ADDRESS))
+					 (mapcar '(lambda (ADDRESS)
+						    (concat "--envelope-to=" ADDRESS))
+						 TO-ADDRESSES)
+					 sendmail-mbfl-extra-args)))
+	       (message "sendmail-mbfl: running script...")
+	       (funcall log-command-line buffer command-line)
+;;;(set-window-buffer (selected-window) buffer)
+	       (apply #'start-process "sendmail-mbfl" buffer command-line))))
+
+	 (show-process-buffer
+	  '(lambda (PROCESS)
+	     (let ((buffer (process-buffer PROCESS)))
+	       (set-buffer buffer)
+	       (set-window-buffer (selected-window) buffer)
+	       (sit-for 0.1))))
+
+	 (bury-process-buffer
+	  '(lambda (PROCESS)
+	     (let* ((buffer (process-buffer PROCESS))
+		    (other  (other-buffer buffer)))
+	       (bury-buffer buffer)
+	       (set-window-buffer (selected-window) other)
+	       (sit-for 0.1))))
+
+	 (receive-process-output
+	  '(lambda (PROCESS)
+	     (message "sendmail-mbfl: sending message")
+	     (sit-for 0.1)
+	     (accept-process-output PROCESS 0 100 t)
+	     (while (and (processp PROCESS)
+			 (eq (process-status PROCESS) 'run))
+	       (accept-process-output PROCESS 0 100 t)
+	       (sit-for 0.1))))
+
+	 (cleanup-process
+	  '(lambda (PROCESS)
+	     (when (eq (process-status PROCESS) 'run)
+	       (delete-process PROCESS))
+	     (with-current-buffer (process-buffer PROCESS)
+	       (setq buffer-read-only t)))))
+
+    (funcall main)))
+
+
+(defun sendmail-mbfl-copy-message-buffer (DST-BUFFER SRC-BUFFER)
+  "Copy an email message from SRC-BUFFER to DST-BUFFER.
+
+Set   encoding  and   text  representation   properties   of  the
+destination buffer to be equal to the ones of the source buffer."
+  (with-current-buffer DST-BUFFER
+    (erase-buffer)
+    (setq coding-system-for-write (with-current-buffer SRC-BUFFER
+				    buffer-file-coding-system))
+    (set-buffer-multibyte (with-current-buffer SRC-BUFFER
+			    enable-multibyte-characters))
+    (insert-buffer-substring SRC-BUFFER)))
+
+
 (defun send-mail-with-mbfl ()
   "Implement a  method of sending email messages  to a SMTP/ESMTP
 server using an external program.  It supports plain SMTP session
@@ -344,122 +601,9 @@ format:
 
 \thttp://marcomaggi.github.com/docs/mbfl.html"
   (interactive)
-  (let* ((create-message-file
-	  '(lambda ()
-	     (message "sendmail-mbfl: creating temporary file...")
-	     (make-temp-file "sendmail-mbfl")))
-
-	 (acquire-from-address
-	  '(lambda ()
-	     (let ((FROM-ADDRESS (funcall sendmail-mbfl-envelope-from-function)))
-	       (message "sendmail-mbfl: from address: %s" FROM-ADDRESS)
-	       FROM-ADDRESS)))
-
-	 (acquire-to-addresses
-	  '(lambda ()
-	     (let ((TO-ADDRESSES (funcall sendmail-mbfl-envelope-to-function)))
-	       (dolist (address TO-ADDRESSES)
-		 (message "sendmail-mbfl: to address: %s" address))
-	       TO-ADDRESSES)))
-
-	 (acquire-hostname
-	  '(lambda ()
-	     (let ((HOSTNAME (funcall sendmail-mbfl-hostname-function)))
-	       (message "sendmail-mbfl: hostname: %s" HOSTNAME)
-	       HOSTNAME)))
-
-	 (acquire-username
-	  '(lambda ()
-	     (let ((USERNAME (funcall sendmail-mbfl-username-function)))
-	       (message "sendmail-mbfl: username: %s" USERNAME)
-	       USERNAME)))
-
-	 (remove-bcc-header
-	  '(lambda ()
-	     (save-excursion
-	       (save-restriction
-		 (message-narrow-to-headers-or-head)
-		 (message-remove-header "Bcc")))))
-
-	 (write-message-buffer-to-message-file
-	  '(lambda (TEMPFILE)
-	     (write-region nil nil TEMPFILE)))
-
-	 (log-command-line
-	  '(lambda (buffer command-line)
-	     (with-current-buffer buffer
-	       (insert (mapconcat '(lambda (x) x) command-line "\t\\\n\t") "\n\n"))))
-
-	 (launch-async-process
-	  '(lambda (HOSTNAME USERNAME FROM-ADDRESS TO-ADDRESSES)
-	     (let* ((process-connection-type sendmail-mbfl-process-connection-type)
-		    (buffer (generate-new-buffer "*Output from sendmail-mbfl*"))
-		    (command-line (nconc (list sendmail-mbfl-program
-					       (concat "--host-info=" sendmail-mbfl-host-info)
-					       (concat "--auth-info=" sendmail-mbfl-auth-info)
-					       (concat "--host=" HOSTNAME)
-					       (concat "--username=" USERNAME)
-					       (concat "--timeout="
-						       (number-to-string sendmail-mbfl-timeout))
-					       (cond
-						((string-equal "gnutls" sendmail-mbfl-connector)
-						 "--gnutls")
-						((string-equal "openssl" sendmail-mbfl-connector)
-						 "--openssl")
-						(t
-						 (error "unknown TLS connector program: %s"
-							sendmail-mbfl-connector)))
-					       (concat "--message=" message-tempfile)
-					       (concat "--envelope-from=" FROM-ADDRESS))
-					 (mapcar '(lambda (ADDRESS)
-						    (concat "--envelope-to=" ADDRESS))
-						 TO-ADDRESSES)
-					 sendmail-mbfl-extra-args)))
-	       (message "sendmail-mbfl: running script...")
-	       (funcall log-command-line buffer command-line)
-	       ;;;(set-window-buffer (selected-window) buffer)
-	       (apply #'start-process "sendmail-mbfl" buffer command-line))))
-
-	 (receive-process-output
-	  '(lambda (PROCESS)
-	     (message "sendmail-mbfl: sending message")
-	     (sit-for 0.1)
-	     (accept-process-output PROCESS 0 100 t)
-	     (while (and (processp PROCESS)
-			 (eq (process-status PROCESS) 'run))
-	       (accept-process-output PROCESS 0 100 t)
-	       (sit-for 0.1))))
-
-	 (cleanup-process
-	  '(lambda (PROCESS)
-	     (when (eq (process-status PROCESS) 'run)
-	       (delete-process PROCESS))
-	     (with-current-buffer (process-buffer PROCESS)
-	       (setq buffer-read-only t)))))
-
-    (let ((message-tempfile (funcall create-message-file)))
-      (unwind-protect
-	  (let* ((FROM-ADDRESS	(funcall acquire-from-address))
-		 (TO-ADDRESSES	(funcall acquire-to-addresses))
-		 (HOSTNAME	(funcall acquire-hostname))
-		 (USERNAME	(funcall acquire-username)))
-	    (funcall remove-bcc-header)
-	    (funcall write-message-buffer-to-message-file message-tempfile)
-	    (let* ((PROCESS (funcall launch-async-process
-				     HOSTNAME USERNAME FROM-ADDRESS TO-ADDRESSES)))
-	      (unwind-protect
-		  (progn
-		    (funcall receive-process-output PROCESS)
-		    (if (and (= 0 (process-exit-status PROCESS))
-			     (eq 'exit (process-status PROCESS)))
-			(message "sendmail-mbfl: message delivered successfully")
-		      (progn
-			(message "sendmail-mbfl: message delivery error")
-			(let ((buffer (process-buffer PROCESS)))
-			  (set-buffer buffer)
-			  (set-window-buffer (selected-window) buffer)))))
-		(funcall cleanup-process PROCESS)))))
-	(delete-file message-tempfile))))
+  (sendmail-mbfl-normalise-message)
+  (sendmail-mbfl-delivery)
+  (sendmail-mbfl-post))
 
 (defun sendmail-mbfl-activate ()
   "Set  `message-send-mail-function' so  that  `message.el' sends

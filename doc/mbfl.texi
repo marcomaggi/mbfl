@@ -5705,13 +5705,14 @@ in one of the directories in the load path of Emacs, then load it with:
 (require 'sendmail-mbfl)
 @end example
 
-The library assumes that @file{message.el} is available on the system;
-recent installations of Emacs should have it as part of the preinstalled
-Gnus environment.
+The library assumes that @file{message.el} and @file{sendmail.el} are
+available on the system; recent installations of Emacs should have them.
 
 @menu
 * sendmail script emacs vars::  Customisable variables.
-* sendmail script emacs func::  Functions.
+* sendmail script emacs send::  Sending and delivering functions.
+* sendmail script emacs insp::  Message inspection functions.
+* sendmail script emacs misc::  Miscellaneous functions.
 @end menu
 
 @c page
@@ -5841,17 +5842,61 @@ server.  The default is 5.
 @end defvr
 
 @c page
-@node sendmail script emacs func
-@appendixsubsubsec Functions
+@node sendmail script emacs send
+@appendixsubsubsec Sending and delivering functions
 
 
 @defun send-mail-with-mbfl
-Send the email message in the current buffer using the program selected
-with the customisable variable @code{sendmail-mbfl-program}.
+Send the email message in the current buffer.  This interactive function
+can be invoked directly by the user, or, better, used as value for
+@code{message-send-mail-function}.  Sending involves:
 
-This function can be invoked directly from the minibuffer, or, better,
-used as value for @code{message-send-mail-function}.
+@enumerate
+@item
+Normalising the message with @code{sendmail-mbfl-normalise-message}.
+
+@item
+Performing special deliveries with @code{sendmail-mbfl-delivery}.
+
+@item
+Posting the message to an @acronym{MTA} using @code{sendmail-mbfl-post}.
+@end enumerate
 @end defun
+
+
+@defun sendmail-mbfl-delivery
+Perform special deliveries of the email message in the current buffer.
+If the message has an @code{Fcc} header, deliver is performed relying on
+@code{mail-do-fcc} from @file{sendmail.el}.
+
+It is to be called after @code{sendmail-mbfl-normalise-message} or an
+equivalent normalisation has been applied to the message.
+@end defun
+
+
+@defun sendmail-mbfl-post
+Post the email message in the current buffer using an @acronym{MTA}.
+Posting involves:
+
+@enumerate
+@item
+Preparing the message with @code{sendmail-mbfl-prepare-message-for-mta}.
+
+@item
+Saving the message into a temporary file.
+
+@item
+Sending the file using the program selected with the customisable
+variable @code{sendmail-mbfl-program}.
+@end enumerate
+
+It is to be called after @code{sendmail-mbfl-normalise-message} or an
+equivalent normalisation has been applied to the message.
+@end defun
+
+@c page
+@node sendmail script emacs insp
+@appendixsubsubsec Message inspection functions
 
 
 @defun sendmail-mbfl-envelope-from
@@ -5930,6 +5975,44 @@ username part of the value returned by
 @code{*Message*} buffer.
 @end defun
 
+@c page
+@node sendmail script emacs misc
+@appendixsubsubsec Miscellaneous functions
+
+
+@defun sendmail-mbfl-activate
+Set @code{message-send-mail-function} so that functions from
+@file{message.el} send mail using @code{send-mail-with-mbfl}.
+@end defun
+
+
+@defun sendmail-mbfl-normalise-message
+Normalise the email message in the current buffer so that it is ready to
+be posted or delivered.  Scan the headers for invalid lines and try to
+fix them.  Scan the message for mandatory headers and, if missing, add
+them; this may require querying the user for informations.
+
+It is to be called @strong{before} acquiring sender and receiver
+addresses from the headers.  It is an interactive function: it can be
+explicitly applied to a buffer by the user any number of times.
+
+This function does @strong{not} remove the headers/body separator.
+@end defun
+
+
+@defun sendmail-mbfl-prepare-message-for-mta
+Prepare the email message in the current buffer to be sent to a Mail
+Transport Agent.  Headers like @code{Fcc} and @code{Bcc} are removed;
+the headers/body separator line is removed.  It is to be called
+@strong{after} acquiring sender and receiver addresses from the headers.
+@end defun
+
+
+@defun sendmail-mbfl-copy-message-buffer @var{dst-buffer} @var{src-buffer}
+Copy an email message from @var{src-buffer} to @var{dst-buffer}.  Set
+encoding and text representation properties of the destination buffer to
+be equal to the ones of the source buffer.
+@end defun
 
 @c page
 @c ------------------------------------------------------------

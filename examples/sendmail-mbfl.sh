@@ -339,7 +339,12 @@ function validate_and_normalise_configuration () {
     }
 
     # Server host and  port selection is done with  command line options
-    # or reading the hostinfo file.
+    # or  reading the  hostinfo file.
+    #
+    # After "hostinfo_read" we  always update "SERVER_HOSTNAME" with the
+    # value from the  hostinfo file; this is because  the value from the
+    # command line option may be just  a search key in the file, not the
+    # full server hostname.
     if test -n "$script_option_HOST"
     then SERVER_HOSTNAME="$script_option_HOST"
     else
@@ -357,6 +362,7 @@ function validate_and_normalise_configuration () {
     then SERVER_PORT="$script_option_PORT"
     else
         hostinfo_read
+        test -n "$hostinfo_HOST" && SERVER_HOSTNAME="$hostinfo_HOST"
         if test -n "$hostinfo_PORT"
         then SERVER_PORT="$hostinfo_PORT"
         else SERVER_PORT=25
@@ -371,6 +377,7 @@ function validate_and_normalise_configuration () {
     # file, else defaults to "plain".
     test -z "$SESSION_TYPE" && {
         hostinfo_read
+        test -n "$hostinfo_HOST" && SERVER_HOSTNAME="$hostinfo_HOST"
         SESSION_TYPE=$hostinfo_SESSION_TYPE
         test -z "$SESSION_TYPE" && SESSION_TYPE=plain
     }
@@ -379,6 +386,7 @@ function validate_and_normalise_configuration () {
     # hostinfo file, else defaults to "none".
     test -z "$AUTH_TYPE" && {
         hostinfo_read
+        test -n "$hostinfo_HOST" && SERVER_HOSTNAME="$hostinfo_HOST"
         AUTH_TYPE=$hostinfo_AUTH_TYPE
         test -z "$AUTH_TYPE" && AUTH_TYPE=none
     }
@@ -537,7 +545,6 @@ function connect_using_openssl () {
     mbfl_message_verbose_printf 'connecting with openssl, immediate encrypted bridge\n'
     OPENSSL=$(mbfl_program_found openssl) || exit $?
     mbfl_program_redirect_stderr_to_stdout
-    echo ping >$INFIFO
     mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS || {
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SERVER_HOSTNAME" "$SERVER_PORT"
         exit_failed_connection
