@@ -1,15 +1,19 @@
 ;;; sendmail-mbfl.el --- send mail with sendmail-mbfl.sh
 
 ;; Copyright (C) 2009  Marco Maggi <marcomaggi@gna.org>
-;; Copyright (C) 1999,  2000, 2001, 2002, 2003, 2004,  2005, 2006, 2007,
-;; 2008 Free Software Foundation, Inc.
+;; Copyright (C) 1995,  1996, 1999, 2000, 2001, 2002,  2003, 2004, 2005,
+;; 2006, 2007, 2008 Free Software Foundation, Inc.
 
 ;; Author: Marco Maggi <marcomaggi@gna.org>
 ;; Keywords: mail
 
-;; This library is modeled after  some bits of the library "starttls.el"
-;; by    Daiki   Ueno    <ueno@unixuser.org>    and   Simon    Josefsson
-;; <simon@josefsson.org>, which comes with GNU Emacs 22.3.
+;; Bits  of   this  library  are   from  "starttls.el"  by   Daiki  Ueno
+;; <ueno@unixuser.org> and  Simon Josefsson <simon@josefsson.org>, which
+;; comes with GNU Emacs 22.3.
+
+;; Bits  of  this library  are  from  "smtpmail.el"  by Tomoji  Kagatani
+;; <kagatani@rbc.ncl.omron.co.jp>   maintained    by   Simon   Josefsson
+;; <simon@josefsson.org> with hacking from various people.
 
 ;; This file is free software;  you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by the
@@ -336,7 +340,10 @@ It is to be called BEFORE acquiring sender and receiver addresses
 from  the headers.   It is  an  interactive function:  it can  be
 explicitly applied to a buffer by the user any number of times.
 
-This function does NOT remove the headers/body separator."
+This function does NOT remove the headers/body separator.
+
+Large  pieces of  this  function are  from `smtpmail-send-it'  in
+`smtpmail.el'."
   (interactive)
   (message "sendmail-mbfl: normalising message...")
   (save-excursion
@@ -358,7 +365,40 @@ This function does NOT remove the headers/body separator."
       ;; that swallows newlines.
       (goto-char (1+ delimline))
       (when (eval mail-mailer-swallows-blank-line)
-	(newline))))
+	(newline))
+      ;; Don't send out a blank subject line.
+      (dolist (HEADER '("From" "To" "Subject"))
+	(goto-char (point-min))
+	(when (or (re-search-forward (concat "^" HEADER ":\\([ \t]*\n\\)+\\b") delimline t)
+		  ;; This one matches just before the header delimiter.
+		  (and (re-search-forward (concat "^" HEADER ":\\([ \t]*\n\\)+" HEADER) delimline t)
+		       (= (match-end 0) delimline)))
+	  (error "sendmail-mbfl: error empty \"%s\" header" HEADER)))
+      ;; Insert a `Message-Id:' field if there isn't one yet.
+      (goto-char (point-min))
+      (unless (re-search-forward "^Message-I[dD]:" delimline t)
+	(insert "Message-ID: " (message-make-message-id) "\n"))
+      ;; Insert a `Date:' field if there isn't one yet.
+      (goto-char (point-min))
+      (unless (re-search-forward "^Date:" delimline t)
+	(insert "Date: " (message-make-date) "\n"))
+      ;; Possibly add a MIME header for the current coding system
+      (let (charset)
+	(goto-char (point-min))
+	(and (eq mail-send-nonascii 'mime)
+	     (not (re-search-forward "^MIME-version:" delimline t))
+	     (progn (skip-chars-forward "\0-\177")
+		    (/= (point) (point-max)))
+	     smtpmail-code-conv-from
+	     (setq charset
+		   (coding-system-get smtpmail-code-conv-from
+				      'mime-charset))
+	     (goto-char delimline)
+	     (insert "MIME-version: 1.0\n"
+		     "Content-type: text/plain; charset="
+		     (symbol-name charset)
+		     "\nContent-Transfer-Encoding: 8bit\n")))
+      ))
   (message "sendmail-mbfl: completed message normalisation."))
 
 (defun sendmail-mbfl-prepare-message-for-mta ()
