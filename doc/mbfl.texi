@@ -5708,7 +5708,7 @@ these options can be substrings of the values in the authinfo file.
 
 This section documents an Emacs interface to the
 @command{sendmail-mbfl.sh} script that can be used to send mail.  It
-consista of an Emacs Lisp library that allows us to send mail with all
+consists of an Emacs Lisp library that allows us to send mail with all
 the methods supported by the script.
 
 To use it we have to install the file @file{examples/sendmail-mbfl.el}
