@@ -5745,7 +5745,7 @@ set to @code{sendmail-mbfl.sh}.
 
 @defvr {Customisable Variable} sendmail-mbfl-extra-args
 A list of strings representing extra arguments for the command line of
-@command{sendmail-mbfl.sh'}.  By default set to:
+@command{sendmail-mbfl.sh}.  By default set to:
 
 @example
 ("--verbose" "--debug")
