@@ -18,6 +18,7 @@ Message-ID: <$MESSAGE_ID>
 Date: $DATE
 
 This is a text proof from the $PROGNAME script.
+.This is a line starting with a dot.
 --\x20
 Marco
 "

@@ -3346,9 +3346,7 @@ function program_wrapper () @{
 
     ARGUMENT=$@{1:?"missing 'ARGUMENT'"@}
     shift
-    PROGNAME=$(mbfl_program_found myprog) || \
-        exit $?
-    FLAGS
+    PROGNAME=$(mbfl_program_found myprog) || exit $?
 
     mbfl_option_verbose_program && \
        FLAGS="$FLAGS --verbose"
@@ -4734,6 +4732,9 @@ Be careful in not to wrongly modify it.
 @item
 Send it one line at a time, terminating each line with a carriage
 return, line feed sequence (@code{\r\n}).
+
+@item
+Quote with a dot lines starting with a dot.
 @end itemize
 
 So we can use an equivalent of the following chunk of code, assuming
@@ -4741,7 +4742,11 @@ So we can use an equivalent of the following chunk of code, assuming
 
 @example
 print_message | while IFS= read line
-do printf '%s\r\n' "$line" >&3
+do
+    if test "$@{line:0:1@}" = '.'
+    then printf '.%s\r\n' "$line" >&3
+    else printf  '%s\r\n' "$line" >&3
+    fi
 done
 @end example
 

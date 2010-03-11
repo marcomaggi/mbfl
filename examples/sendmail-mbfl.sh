@@ -9,7 +9,7 @@
 #	It supports plain connections and encrypted
 #	connections using external programs.
 #
-# Copyright (c) 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2009, 2010 Marco Maggi <marcomaggi@gna.org>
 #
 # This  program  is free  software:  you  can redistribute  it
 # and/or modify it  under the terms of the  GNU General Public
@@ -35,7 +35,7 @@
 
 script_PROGNAME=sendmail-mbfl.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2009'
+script_COPYRIGHT_YEARS='2009, 2010'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
@@ -922,7 +922,11 @@ function read_and_send_message () {
             # Here  it is  impossible  to distinguish  between an  error
             # reading the source and an the end of file.
             while IFS= read -rs line <&5
-            do printf '%s\n' "$line"
+            do
+                if test "${line:0:1}" = '.'
+                then printf '.%s\n' "$line"
+                else printf  '%s\n' "$line"
+                fi
             done
             exec 5<&-
         fi

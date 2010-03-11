@@ -13,7 +13,7 @@
 #         The purpose of this script is to understand how to
 #       handle the SMTP protocol.
 #
-# Copyright (c) 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2009, 2010 Marco Maggi <marcomaggi@gna.org>
 #
 # This  program  is free  software:  you  can redistribute  it
 # and/or modify it  under the terms of the  GNU General Public
@@ -119,7 +119,10 @@ function read_and_send_message () {
     local -i count=0
     while IFS= read line
     do
-        printf '%s\r\n' "$line" >&3
+        if test "${line:0:1}" = '.'
+        then printf '.%s\r\n' "$line" >&3
+        else printf  '%s\r\n' "$line" >&3
+        fi
         let ++count
     done
     test "$LOGGING_TO_STDERR" = yes && \
