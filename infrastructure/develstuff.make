@@ -11,7 +11,7 @@
 #	have  received  a documentation  file  in  Texinfo format  named
 #	"infrastructure.texi".
 #
-# Copyright (c) 2007-2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2007-2010 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This program is  free software: you can redistribute  it and/or modify
 # it under the  terms of the GNU General Public  License as published by
@@ -709,8 +709,7 @@ ds_texi_SOURCES		= $$(call ds-glob,ds_texi,*.texi)
 
 DS_TEXI_FLAGS		= -I $$(ds_texi_SRCDIR)		\
 			  -I $$(ds_texi_BUILDDIR)	\
-			  -I $$(infrastructuredir)	\
-			  $$(texi_MORE_FLAGS)
+			  -I $$(infrastructuredir)
 DS_TEXI2INFO_FLAGS	= $$(DS_TEXI_FLAGS) --no-split
 DS_TEXI2HTML_FLAGS	= $$(DS_TEXI_FLAGS) --no-split --html
 DS_TEXI2DVI_FLAGS	= $$(DS_TEXI_FLAGS) --dvi --tidy \
@@ -1783,13 +1782,11 @@ private-slackware-make-$(1): slackware-builddir
 		$$(ds_slackware_PACKAGE_BUILDDIR)/install
 	$$(ds_archive_SUDO) $$(MAKE) slackware-aux-$(1)
 	cd $$(ds_slackware_PACKAGE_BUILDDIR);					\
-	$$(ds_slackware_MAKEPKG) $$(ds_slackware_$(1)_PACKAGE_NAME);		\
-	$$(ds_archive_SUDO) $$(MV)						\
-		$$(ds_slackware_$(1)_PACKAGE_NAME) $$(ds_slackware_BUILDDIR)
+	$$(ds_slackware_MAKEPKG) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
 
 private-slackware-install-$(1):
 	cd $$(ds_slackware_BUILDDIR); \
-	$$(ds_slackware_INSTALLPKG) $$(ds_slackware_$(1)_PACKAGE_NAME)
+	$$(ds_slackware_INSTALLPKG) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
 
 private-slackware-remove-$(1):
 	$$(ds_slackware_REMOVEPKG) $$(ds_archive_$(1)_PREFIX)
@@ -1799,7 +1796,7 @@ private-slackware-upgrade-$(1):
 		$$(call ds-slackware-get-installed-package,$$(ds_slackware_$(1)_INSTALLED_PACKAGE_SPEC))%$$(ds_slackware_$(1)_PACKAGE_NAME)
 
 private-slackware-clean-builddir-$(1):
-	-$$(ds_archive_SUDO) $$(RM) $$(ds_slackware_$(1)_PACKAGE_NAME)
+	-$$(ds_archive_SUDO) $$(RM) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
 
 .PHONY: slackware-aux-$(1)
 
@@ -1850,6 +1847,9 @@ ds_slackware_BUILDDIR		= $$(abspath $$(builddir)/slackware.d)
 ds_slackware_REGISTRY		?=
 ds_slackware_REGISTRY_DIR	= /var/log/packages
 ds_slackware_ENV		?=
+ds_slackware_bin_PACKAGE_PATHNAME = $$(ds_slackware_BUILDDIR)/$$(ds_slackware_bin_PACKAGE_NAME)
+ds_slackware_doc_PACKAGE_PATHNAME = $$(ds_slackware_BUILDDIR)/$$(ds_slackware_doc_PACKAGE_NAME)
+ds_slackware_dev_PACKAGE_PATHNAME = $$(ds_slackware_BUILDDIR)/$$(ds_slackware_dev_PACKAGE_NAME)
 
 ds_slackware_MAKEPKG_PROGRAM	?= @ds_slackware_MAKEPKG_PROGRAM@
 ifeq ($$(ds_config_SLACKWARE_CHOWN),yes)

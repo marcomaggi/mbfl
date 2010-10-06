@@ -3759,7 +3759,9 @@ Other rules and variables are generated.
 @deffn {Makefile Section} ds-srcdir @var{identifier}
 @deffnx {Makefile Section} ds-srcdir @var{identifier} @var{directory_pathname}
 Test if the source directory of the module exists in the source tree;
-this function makes use of @func{ds-assert-srcdir}.
+this function makes use of @func{ds-assert-srcdir}.  The check for the
+source directory existence is performed every time the library is
+loaded.
 
 The module @var{identifier} is the one used when defining a module with
 @func{ds-module}, the optional directory pathname defaults to
@@ -3813,9 +3815,9 @@ The variable @code{<IDENTIFIER>_BUILDDIR} is set to the build directory
 pathname.  The assignment is performed with the @code{?=} operator, so
 if the variable is already defined: it will @strong{not} be overwritten.
 
-The phony rule @code{<IDENTIFIER>-make-builddir} is defined to apply
-@func{ds-make-builddir} to @var{identifier}; the rule is added as
-prerequisite to the rule @code{<IDENTIFIER>-all}.
+The phony rule @code{<IDENTIFIER>-make-builddir} is defined to create
+the directory; the rule is added as prerequisite to the rule
+@code{<IDENTIFIER>-all}.
 
 Examples:
 
@@ -3838,29 +3840,6 @@ $(eval $(call ds-builddir,mine,$(builddir)/objects.d))
 @end itemize
 @end deffn
 
-
-@deffn {Makefile Function} ds-make-builddir @var{identifier}
-If the directory pathname in the variable @code{<IDENTIFIER>_BUILDDIR}
-does not exists: create it using @code{$(MKDIR)}.  If the pathname is
-the empty string: an error is signalled.  Notice that this function has
-to be called without indentation in the makefile, for example:
-
-@example
-mine_BUILDDIR = $(builddir)/mine.d)
-
-.PHONY: mine-make-builddir
-
-mine-make-builddir:
-$(call ds-make-builddir,mine)
-@end example
-
-@noindent
-alternatively:
-
-@example
-mine-make-builddir: ; $(call ds-make-builddir,mine)
-@end example
-@end deffn
 
 @c page
 @node make transformers define
