@@ -417,11 +417,11 @@ the main purpose of this document is to provide an Info version.
 
 @c To be used as @value{AUTHOR_EMAIL} whenever we need to include the
 @c email of the *single* author of this document.
-@set AUTHOR_EMAIL               @email{marcomaggi@@gna.org}
+@set AUTHOR_EMAIL               @email{marco.maggi-ipsu@@poste.it}
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009
+@set COPYRIGHT_YEARS            2003-2005, 2009, 2010
 
 @c page
 @c ------------------------------------------------------------
@@ -3946,6 +3946,10 @@ functions.
 @c page
 @node main function
 @section Driving script execution
+
+
+@findex script_after_parsing_options
+@findex script_after_parsing_options
 
 
 @defun mbfl_main

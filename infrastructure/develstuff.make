@@ -709,7 +709,8 @@ ds_texi_SOURCES		= $$(call ds-glob,ds_texi,*.texi)
 
 DS_TEXI_FLAGS		= -I $$(ds_texi_SRCDIR)		\
 			  -I $$(ds_texi_BUILDDIR)	\
-			  -I $$(infrastructuredir)
+			  -I $$(infrastructuredir)	\
+			  $$(ds_texi_MORE_FLAGS)
 DS_TEXI2INFO_FLAGS	= $$(DS_TEXI_FLAGS) --no-split
 DS_TEXI2HTML_FLAGS	= $$(DS_TEXI_FLAGS) --no-split --html
 DS_TEXI2DVI_FLAGS	= $$(DS_TEXI_FLAGS) --dvi --tidy \
@@ -1852,10 +1853,11 @@ ds_slackware_doc_PACKAGE_PATHNAME = $$(ds_slackware_BUILDDIR)/$$(ds_slackware_do
 ds_slackware_dev_PACKAGE_PATHNAME = $$(ds_slackware_BUILDDIR)/$$(ds_slackware_dev_PACKAGE_NAME)
 
 ds_slackware_MAKEPKG_PROGRAM	?= @ds_slackware_MAKEPKG_PROGRAM@
+ds_slackware_MAKEPKG_FLAGS	= --root $$(ds_slackware_ROOT)
 ifeq ($$(ds_config_SLACKWARE_CHOWN),yes)
-ds_slackware_MAKEPKG_FLAGS	= --chown y
+ds_slackware_MAKEPKG_FLAGS	+= --chown y
 else
-ds_slackware_MAKEPKG_FLAGS	= --chown n
+ds_slackware_MAKEPKG_FLAGS	+= --chown n
 endif
 ifeq ($$(ds_config_SLACKWARE_LINKADD),yes)
 ds_slackware_MAKEPKG_FLAGS	+= --prepend --linkadd y
@@ -1865,15 +1867,15 @@ endif
 ds_slackware_MAKEPKG		= $$(ds_slackware_ENV) $$(ds_archive_SUDO) $$(ds_slackware_MAKEPKG_PROGRAM) $$(ds_slackware_MAKEPKG_FLAGS)
 
 ds_slackware_INSTALLPKG_PROGRAM	?= @ds_slackware_INSTALLPKG_PROGRAM@
-ds_slackware_INSTALLPKG_FLAGS	?=
+ds_slackware_INSTALLPKG_FLAGS	?= --root $$(ds_slackware_ROOT)
 ds_slackware_INSTALLPKG	= $$(ds_slackware_ENV) $$(ds_archive_SUDO) $$(ds_slackware_INSTALLPKG_PROGRAM) $$(ds_slackware_INSTALLPKG_FLAGS)
 
 ds_slackware_REMOVEPKG_PROGRAM	?= @ds_slackware_REMOVEPKG_PROGRAM@
-ds_slackware_REMOVEPKG_FLAGS	?=
+ds_slackware_REMOVEPKG_FLAGS	?= --root $$(ds_slackware_ROOT)
 ds_slackware_REMOVEPKG		= $$(ds_slackware_ENV) $$(ds_archive_SUDO) $$(ds_slackware_REMOVEPKG_PROGRAM) $$(ds_slackware_REMOVEPKG_FLAGS)
 
 ds_slackware_UPGRADEPKG_PROGRAM	?= @ds_slackware_UPGRADEPKG_PROGRAM@
-ds_slackware_UPGRADEPKG_FLAGS	?= --verbose --reinstall
+ds_slackware_UPGRADEPKG_FLAGS	?= --root $$(ds_slackware_ROOT) --verbose --reinstall
 ds_slackware_UPGRADEPKG	= $$(ds_slackware_ENV) $$(ds_archive_SUDO) $$(ds_slackware_UPGRADEPKG_PROGRAM) $$(ds_slackware_UPGRADEPKG_FLAGS)
 
 ds_local_slackware_MAKEPKG_PROGRAM	= @ds_local_slackware_MAKEPKG_PROGRAM@
@@ -1931,6 +1933,8 @@ ds_slackware_MAKEPKG_PROGRAM=$$(ds_local_slackware_MAKEPKG_PROGRAM)		\
 ds_slackware_INSTALLPKG_PROGRAM=$$(ds_local_slackware_INSTALLPKG_PROGRAM)	\
 ds_slackware_REMOVEPKG_PROGRAM=$$(ds_local_slackware_REMOVEPKG_PROGRAM)		\
 ds_slackware_UPGRADEPKG_PROGRAM=$$(ds_local_slackware_UPGRADEPKG_PROGRAM)
+
+ds_slackware_ROOT=$$(prefix)
 
 .PHONY: local-slackware        local-slackware-install
 .PHONY: local-slackware-remove local-slackware-upgrade

@@ -1,7 +1,7 @@
 dnl @configure_input@
 dnl
 
-AC_INIT([mbfl],[1.3b6],[marcomaggi@gna.org])
+AC_INIT([mbfl],[1.3b7],[marco.maggi-ipsu@poste.it])
 DS_BEGIN([./src/modules/base.sh.m4])
 DS_INCLUDE_SECTION([DEV_RULES])
 DS_EXCLUDE_SECTION([META_SCRIPTS])
