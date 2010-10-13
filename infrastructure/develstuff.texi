@@ -512,7 +512,241 @@ Indexes
 * Function Index::              An entry for each function.
 * Variable Index::              An entry for each variable.
 @c * Type Index::                  An entry for each type.
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Overview of the infrastructure
+
+* overview intro::              Introduction and examples.
+* overview conventions::        Conventions.
+* overview layout::             Project layout.
+
+Conventions
+
+* overview conventions files::  File names.
+* overview conventions config:: Autoconf library names.
+* overview conventions make::   Makefile library names.
+
+Project layout
+
+* overview layout intro::       Layout introduction.
+* overview layout dirs::        Directories and files.
+* overview layout config::      Configuration files.
+* overview layout make::        Makefiles.
+
+General configuration
+
+* config intro::                Introduction.
+* config preamble::             Preamble configuration.
+* config conclusion::           Conclusion.
+* config sections::             Selection of feature sets.
+* config options::              Configuration options.
+* config modules::              Configuration modules.
+* config packaging::            Packaging support.
+* config helpers::              Helper macros.
+
+Configuration options
+
+* config options packaging::    Packaging options.
+* config options doc::          Documentation options.
+* config options misc::         Miscellaneous options.
+
+Packaging support
+
+* config packaging slackware::  Slackware packaging.
+
+Helper macros
+
+* config helpers init::         Opening and closing macros.
+* config helpers options::      Command line options.
+* config helpers programs::     Finding programs.
+* config helpers tmpfile::      Temporary files.
+* config helpers misc::         Miscellaneous helpers.
+
+Command line options
+
+* config helpers options enable::       Enabling options.
+* config helpers options with::         With component options.
+
+The makefile library
+
+* make rules::                  Organisation of main rules.
+* make global::                 Global variables.
+* make fs::                     Handling files and directories.
+* make modules::                Predefined modules.
+* make transformers::           Make's modules to process files.
+* make dist::                   Source and binary distributions.
+* make misc::                   Miscellaneous functions.
+
+Organisation of main rules
+
+* make rules intro::            Introduction.
+* make rules main::             Main rules.
+* make rules sets::             Sets of rules.
+* make rules abi::              Build, install, upgrade.
+* make rules misc::             Miscellaneous rules.
+
+Generic functions and modules
+
+* make global package::         Package variables.
+* make global dirs::            Predefined directory variables.
+* make global programs::        Program variables.
+
+Predefined directory variables
+
+* make global dirs service::    Service variables.
+* make global dirs autoconf::   Predefined Autoconf directories.
+* make global dirs develstuff:: Predefined DevelStuff directories.
+
+Predefined modules
+
+* make modules gendoc::         Generic documentation.
+* make modules texinfo::        Texinfo documentation.
+* make modules meta::           Meta scripts.
+* make modules pkgconfig::      Support for @command{pkg-config}.
+* make modules autoconf::       Detecting this package with Autoconf.
+* make modules inspect::        Configuration inspection scripts.
+* make modules uninstall::      Uninstallation scripts.
+
+Texinfo documentation
+
+* make modules texinfo gen::    Generic variables and rules.
+* make modules texinfo info::   Documenation in Info format.
+* make modules texinfo html::   Documenation in @acronym{HTML} format.
+* make modules texinfo dvi::    Documenation in @acronym{DVI} format.
+* make modules texinfo pdf::    Documenation in @acronym{PDF} format.
+* make modules texinfo ps::     Documenation in PostScript format.
+
+Make's modules to process files
+
+* make transformers intro::     Introduction to the usage of modules.
+* make transformers srcdir::    Handling source directories.
+* make transformers builddir::  Handling build directories.
+* make transformers define::    Defining a module.
+* make transformers clean::     Removing target files.
+* make transformers install::   Module installation code sections
+                                and functions.
+
+Module installation code sections and functions
+
+* make transformers install funcs::     Installing files and directories.
+* make transformers install install::   Installing module's files and
+                                        directories.
+* make transformers install uninstall:: Uninstalling a module's files
+                                        and directories.
+* make transformers install layout::    Inspecting module's installation
+                                        layout.
+* make transformers install scripts::   Producing uninstall scripts.
+
+Source and binary distributions
+
+* make dist variables::         Packaging variables.
+* make dist source::            Source distribution.
+* make dist binary::            Binary distribution.
+* make dist slackware::         Slackware packaging.
+
+Binary distribution
+
+* make dist binary rules::      Phony rules.
+* make dist binary variables::  Variables.
+* make dist binary functions::  Auxiliary functions.
+
+Slackware packaging
+
+* make dist slackware dirs::            Build directories.
+* make dist slackware standard::        Standard packages.
+* make dist slackware local::           Local packages.
+* make dist slackware aux::             Auxiliary rules.
+
+Generic support for compiling
+
+* compilers options::           Command line options.
+* compilers setup::             Setting up the environment.
+
+C language support
+
+* clang intro::                 Introduction to C language support.
+* clang config::                Configuration.
+* clang language::              Language configuration.
+* clang variables::             Makefile variables.
+* clang invocation::            Invoking the compiler and the linker.
+* clang module::                Compiler modules.
+* clang misc::                  Miscellaneous modules.
+
+Makefile variables
+
+* clang variables args::        Command line variables.
+* clang variables prog::        Programs.
+* clang variables misc::        Other compiler variables.
+
+Invoking the compiler and the linker
+
+* clang invocation objects::     Preprocessing and compiling
+                                 source files.
+* clang invocation programs::    Linking programs.
+* clang invocation libraries::   Linking shared libraries.
+
+Compiler modules
+
+* clang module objects::        Compiling object files.
+* clang module libs::           Building libraries.
+* clang module progs::          Building programs.
+
+Building libraries
+
+* clang module libs intro::     Introduction to building libraries.
+* clang module libs macros::    Autoconf macros defining libraries.
+* clang module libs shared::    Building shared libraries.
+* clang module libs static::    Building static libraries.
+* clang module libs misc::      Miscellaneous makefile sections.
+
+Building programs
+
+* clang module progs intro::    Introduction.
+* clang module progs single::   Linking several object files
+                                into a single program.
+* clang module progs multi::    Linking several programs.
+* clang module progs examples:: Building example programs.
+* clang module progs tests::    Building test programs.
+
+C++ language support
+
+* cxxlang language::            Language configuration.
+* cxxlang variables::           Makefile variables.
+* cxxlang invocation::          Invoking the compiler and the linker.
+* cxxlang module::              Compiler modules.
+* cxxlang misc::                Miscellaneous modules.
+
+Invoking the compiler and the linker
+
+* cxxlang invocation objects::   Preprocessing and compiling
+                                 source files.
+* cxxlang invocation programs::  Linking programs.
+* cxxlang invocation libraries:: Linking shared libraries.
+
+Compiler modules
+
+* cxxlang module objects::      Compiling object files.
+* cxxlang module libs::         Building libraries.
+* cxxlang module progs::        Building programs.
+
+Building libraries
+
+* cxxlang module libs shared::  Building shared libraries.
+* cxxlang module libs misc::    Miscellaneous makefile sections.
+
+Building programs
+
+* cxxlang module progs single::   Linking several object files
+                                  into a single program.
+* cxxlang module progs multi::    Linking several programs.
+* cxxlang module progs examples:: Building example programs.
+* cxxlang module progs tests::    Building test programs.
+
+@end detailmenu
 @end menu
+
 @end ifnottex
 
 @c page
@@ -4817,8 +5051,6 @@ be evaluated as:
 @example
 $(eval $(call ds-source-distribution))
 @end example
-
-This module is included by @func{ds-full-tail}.
 @end deffn
 
 
@@ -5102,24 +5334,23 @@ $(ds_bindist_DESTDIR)/@var{archive_name}
 @subsection Slackware packaging
 
 
-Slackware packages can be separately built for the @code{bin},
-@code{doc} and @code{dev} sections.  Additionally a full Slackware
-distribution archive can be built, including all the enabled sections.
-
-If the makefile variable @code{ds_include_SLACKWARE_DISTRIBUTION} is set
-to @code{yes}: the makefile section @code{ds-slackware-distribution} is
-automatically evaluated in the makefile library.
+Slackware binary packages can be separately built for the @code{bin},
+@code{doc} and @code{dev} sections.  @strong{No} support for a single
+full package is included; @strong{no} support for source packages is
+included.
 
 
 @deffn {Makefile Section} ds-slackware-distribution
-Include targets and rules to build the slackware distribution archives.  To
-be evaluated as:
+Include variables and rules to build the slackware distribution
+archives.  To be evaluated as:
 
 @example
 $(eval $(call ds-slackware-distribution))
 @end example
 
-This module is included by @func{ds-full-tail}.
+If the makefile variable @code{ds_include_SLACKWARE_DISTRIBUTION} is set
+to @code{yes}: the makefile section @code{ds-slackware-distribution} is
+automatically evaluated in the makefile library.
 @end deffn
 
 
@@ -5128,8 +5359,6 @@ This module is included by @func{ds-full-tail}.
 * make dist slackware standard::        Standard packages.
 * make dist slackware local::           Local packages.
 * make dist slackware aux::             Auxiliary rules.
-* make dist slackware variables::       Variables.
-* make dist slackware functions::       Auxiliary functions.
 @end menu
 
 @c page
@@ -5137,7 +5366,7 @@ This module is included by @func{ds-full-tail}.
 @subsubsection Build directories
 
 
-@deffn {Makefile Rule} slackware-builddir
+@deffn {Makefile Rule} slackware-repository
 Create the build directory in which the archive files file be stored.
 @end deffn
 
@@ -5148,7 +5377,7 @@ temporarily installed to build the archive files.
 @end deffn
 
 
-@deffn {Makefile Rule} slackware-clean-builddir
+@deffn {Makefile Rule} slackware-clean-repository
 Remove all the contents of the archive files directory.
 @end deffn
 
@@ -5159,10 +5388,9 @@ Remove all the contents of the temporary installation directory.
 
 
 @deffn {Makefile Rule} slackware-clean
-Invokes both @code{slackware-clean-builddir} and
+Invokes both @code{slackware-clean-repository} and
 @code{slackware-clean-top-builddir}.
 @end deffn
-
 
 @c page
 @node make dist slackware standard
@@ -5172,7 +5400,7 @@ Invokes both @code{slackware-clean-builddir} and
 A standard Slackware package is very similar to a package that comes
 with the Slackware distribution itself.  The registry of the packages is
 @file{/var/log/packages} and the archive holds the file and directory
-pathnames relative to the root directorym, @file{/}.
+pathnames relative to the root directory, @file{/}.
 
 
 @deffn {Makefile Rule} slackware
@@ -5198,14 +5426,16 @@ Upgrade the Slackware packages for all the enabled makefile sections.
 This rule removes installed Slackware packages and installs the new ones
 using @command{upgradepkg}.
 
-The package to remove is selected by the function
-@func{ds-slackware-get-installed-package}.  We have to be careful in
-using this rule and remember that we can try a dry run to see what will
-happen:
+We have to be careful in using this rule because the wrong package to
+remove may be selected in some situations; remember that we can try a
+dry run to see what will happen:
 
 @example
 $ make slackware-upgrade -n
 @end example
+
+If a suitable already installed package is not found, the new package is
+just installed using @command{installpkg}.
 @end deffn
 
 
@@ -5263,7 +5493,9 @@ ROOT=$(prefix)
 @end example
 
 @noindent
-in the system environment when running the Slackware packaging tools.
+in the system environment when running the Slackware packaging tools,
+with the exception of @command{installpkg} which requires the
+@option{--root} option.
 
 
 @deffn {Makefile Rule} local-slackware
@@ -5289,14 +5521,16 @@ Upgrade the Slackware packages for all the enabled makefile sections.
 This rule removes installed Slackware packages and installs the new ones
 using @command{upgradepkg}.
 
-The package to remove is selected by the function
-@func{ds-slackware-get-installed-package}.  We have to be careful in
-using this rule and remember that we can try a dry run to see what will
-happen:
+We have to be careful in using this rule because the wrong package to
+remove may be selected in some situations; remember that we can try a
+dry run to see what will happen:
 
 @example
 $ make local-slackware-upgrade -n
 @end example
+
+If a suitable already installed package is not found, the new package is
+just installed using @command{installpkg}.
 @end deffn
 
 
@@ -5348,242 +5582,6 @@ invocation of @command{makepkg}.
 The rule is empty and we can define it to do whatever to the installed
 files.
 @end deffn
-
-@c page
-@node make dist slackware variables
-@subsubsection Variables
-
-
-@defvr {Makefile Variable} ds_slackware_bin_PACKAGE_NAME
-@defvrx {Makefile Variable} ds_slackware_doc_PACKAGE_NAME
-@defvrx {Makefile Variable} ds_slackware_dev_PACKAGE_NAME
-The names of the makefile sections package files; the default values
-are:
-
-@example
-$(ds_archive_bin_PREFIX).tgz
-$(ds_archive_doc_PREFIX).tgz
-$(ds_archive_dev_PREFIX).tgz
-@end example
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_PACKAGE_TOP_BUILDDIR
-The pathname of the directory in which the files will be temporarily
-installed to build the package; it is set to:
-
-@example
-$(TMPDIR)/$(PKG_ID)
-@end example
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_PACKAGE_BUILDDIR
-The pathname of the package root directory under the temporary
-installation tree; everything under this directory is included in the
-package.  When building a standard package it is set to:
-
-@example
-$(ds_slackware_PACKAGE_TOP_BUILDDIR)
-@end example
-
-@noindent
-while when building a local package is is set to:
-
-@example
-$(ds_slackware_PACKAGE_TOP_BUILDDIR)/$(prefix)
-@end example
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_BUILDDIR
-The pathname of the directory in which the package files will be stored;
-defaults to:
-
-@example
-$(abspath $(builddir)/slackware.d)
-@end example
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_REGISTRY_DIR
-The pathname of the Slackware package registry; it is set to:
-
-@example
-/var/log/packages
-@end example
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_REGISTRY
-The pathname of the Slackware package registry in which to look for
-already installed packages; it is used when upgrading an installed
-package.  When acting upon a standard package it is set to:
-
-@example
-$(ds_slackware_REGISTRY_DIR)
-@end example
-
-@noindent
-while when acting upon a local package it is set to:
-
-@example
-$(prefix)$(ds_slackware_REGISTRY_DIR)
-@end example
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_ENV
-Holds the system environment to be set when building the packages.  It
-is for internal use to configure the differences between a standard and
-local package.
-@end defvr
-
-
-@subsubheading Invoking @command{makepkg}
-
-
-@defvr {Makefile Variable} ds_slackware_MAKEPKG_PROGRAM
-The pathname to the system @command{makepkg} program; it is used both
-when building a standard and local package.  It should be
-@file{/sbin/makepkg}, but can be overwritten when building a local
-package.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_local_slackware_MAKEPKG_PROGRAM
-The pathname to the @command{makepkg} program to use to build a local
-package; it is used to reset @code{ds_slackware_MAKEPKG_PROGRAM}.
-Through a command line option to @command{configure}, this value can be
-set to a script under the @code{$(prefix)} directory.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_MAKEPKG_FLAGS
-The flags for the @command{makepkg} invocation.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_MAKEPKG
-The command line for the @command{makepkg} invocation.
-@end defvr
-
-
-@subsubheading Invoking @command{installpkg}
-
-
-@defvr {Makefile Variable} ds_slackware_INSTALLPKG_PROGRAM
-The pathname to the system @command{makepkg} program; it is used both
-when installing a standard and local package.  It should be
-@file{/sbin/installpkg}, but can be overwritten when installing a local
-package.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_local_slackware_INSTALLPKG_PROGRAM
-The pathname to the @command{installpkg} program to use to install a
-local package; it is used to reset
-@code{ds_slackware_INSTALLPKG_PROGRAM}.  Through a command line option
-to @command{configure}, this value can be set to a script under the
-@code{$(prefix)} directory.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_INSTALLPKG_FLAGS
-The flags for the @command{installpkg} invocation.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_INSTALLPKG
-The command line for the @command{installpkg} invocation.
-@end defvr
-
-
-@subsubheading Invoking @command{removepkg}
-
-
-@defvr {Makefile Variable} ds_slackware_REMOVEPKG_PROGRAM
-The pathname to the system @command{removepkg} program; it is used both
-when removing a standard and local package.  It should be
-@file{/sbin/removepkg}, but can be overwritten when removing a local
-package.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_local_slackware_REMOVEKG_PROGRAM
-The pathname to the @command{makepkg} program to use to remove a local
-package; it is used to reset @code{ds_slackware_REMOVEPKG_PROGRAM}.
-Through a command line option to @command{configure}, this value can be
-set to a script under the @code{$(prefix)} directory.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_REMOVEPKG_FLAGS
-The flags for the @command{removepkg} invocation.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_REMOVEPKG
-The command line for the @command{removepkg} invocation.
-@end defvr
-
-
-@subsubheading Invoking @command{upgradepkg}
-
-
-@defvr {Makefile Variable} ds_slackware_UPGRADEPKG_PROGRAM
-The pathname to the system @command{upgradepkg} program; it is used both
-when upgrading a standard and local package.  It should be
-@file{/sbin/upgradepkg}, but can be overwritten when upgrading a local
-package.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_local_slackware_UPGRADEPKG_PROGRAM
-The pathname to the @command{upgradepkg} program to use to upgrade a
-local package; it is used to reset
-@code{ds_slackware_UPGRADEPKG_PROGRAM}.  Through a command line option
-to @command{configure}, this value can be set to a script under the
-@code{$(prefix)} directory.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_UPGRADEPKG_FLAGS
-The flags for the @command{upgradepkg} invocation.
-@end defvr
-
-
-@defvr {Makefile Variable} ds_slackware_UPGRADEPKG
-The command line for the @command{upgradepkg} invocation.
-@end defvr
-
-@c page
-@node make dist slackware functions
-@subsubsection Auxiliary functions
-
-
-@deffn {Makefile Function} ds-slackware-get-installed-package @var{package_spec}
-Expands to the name of an installed Slackware package; it is used when
-upgrading a package.  The package is searched under the registry
-selected by @code{$(ds_slackware_REGISTRY)}.
-
-It should be invoked as:
-
-@example
-$(call ds-slackware-get-installed-package,$(PACKAGE_NAME))
-$(call ds-slackware-get-installed-package,$(PACKAGE_NAME)-doc)
-$(call ds-slackware-get-installed-package,$(PACKAGE_NAME)-dev)
-@end example
-
-The implementation is equivalent to:
-
-@example
-$(notdir \
-  $(firstword \
-    $(wildcard $(ds_slackware_REGISTRY)/@var{package_spec}-[0-9]*)))
-@end example
-@end deffn
-
 
 @c page
 @node make misc

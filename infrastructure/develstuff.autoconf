@@ -14,7 +14,7 @@ dnl         m4_include(infrastructure/develstuff.autoconf)
 dnl
 dnl     in the "aclocal.m4" file.
 dnl
-dnl Copyright (c) 2003, 2007-2009 Marco Maggi <marcomaggi@gna.org>
+dnl Copyright (c) 2003, 2007-2010 Marco Maggi <marco.maggi-ipsu@poste.it>
 dnl
 dnl This program is  free software: you can redistribute  it and/or modify
 dnl it under the  terms of the GNU General Public  License as published by
@@ -290,7 +290,7 @@ AC_DEFUN_ONCE([DS_PACKAGING],
   [DS_PACKAGING_SLACKWARE])
 
 AC_DEFUN_ONCE([DS_PACKAGING_SLACKWARE],
-  [DS_ENABLE_OPTION([DS_CONFIG_SLACKWARE_CHOWN],[slackware-chown],[yes],
+  [DS_ENABLE_OPTION([DS_CONFIG_SLACKWARE_CHOWN],[slackware-chown],[no],
      [whether Slackware packages will be created with root as file owner],
      [enable creation of Slackware packages with root as file owner])
   DS_ENABLE_OPTION([DS_CONFIG_SLACKWARE_LINKADD],[slackware-linkadd],[yes],
@@ -300,29 +300,29 @@ AC_DEFUN_ONCE([DS_PACKAGING_SLACKWARE],
      [slackware-prefix-tools],[no],
      [whether Slackware tools under installation prefix will be used for local packages],
      [use Slackware tools under installation prefix for local packages])
-   DS_WITH_SAVED_VARIABLE([PATH],
+  DS_WITH_SAVED_VARIABLE([PATH],
      [PATH=/sbin:${PATH}
-      DS_PROGRAM([ds_slackware_MAKEPKG_PROGRAM],
+      DS_PROGRAM([ds_slackware_STD_MAKEPKG_PROGRAM],
         [makepkg],[the Slackware package maker])
-      DS_PROGRAM([ds_slackware_INSTALLPKG_PROGRAM],
+      DS_PROGRAM([ds_slackware_STD_INSTALLPKG_PROGRAM],
         [installpkg],[the Slackware package installer])
-      DS_PROGRAM([ds_slackware_REMOVEPKG_PROGRAM],
+      DS_PROGRAM([ds_slackware_STD_REMOVEPKG_PROGRAM],
         [removepkg],[the Slackware package remover])
-      DS_PROGRAM([ds_slackware_UPGRADEPKG_PROGRAM],
+      DS_PROGRAM([ds_slackware_STD_UPGRADEPKG_PROGRAM],
         [upgradepkg],[the Slackware package upgrader])])
-   DS_WITH_SAVED_VARIABLE([PATH],
+  DS_WITH_SAVED_VARIABLE([PATH],
      [if test "${DS_CONFIG_SLACKWARE_USE_PREFIX_TOOLS}" = yes ; then
          PATH=${prefix}/sbin:${PATH}
       else
          PATH=/sbin:${PATH}
       fi
-      DS_PROGRAM([ds_local_slackware_MAKEPKG_PROGRAM],
+      DS_PROGRAM([ds_slackware_LOC_MAKEPKG_PROGRAM],
         [makepkg],[the Slackware local package maker])
-      DS_PROGRAM([ds_local_slackware_INSTALLPKG_PROGRAM],
+      DS_PROGRAM([ds_slackware_LOC_INSTALLPKG_PROGRAM],
         [installpkg],[the Slackware local package installer])
-      DS_PROGRAM([ds_local_slackware_REMOVEPKG_PROGRAM],
+      DS_PROGRAM([ds_slackware_LOC_REMOVEPKG_PROGRAM],
         [removepkg],[the Slackware local package remover])
-      DS_PROGRAM([ds_local_slackware_UPGRADEPKG_PROGRAM],
+      DS_PROGRAM([ds_slackware_LOC_UPGRADEPKG_PROGRAM],
         [upgradepkg],[the Slackware local package upgrader])])])
 
 dnl page

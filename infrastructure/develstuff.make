@@ -711,8 +711,10 @@ DS_TEXI_FLAGS		= -I $$(ds_texi_SRCDIR)		\
 			  -I $$(ds_texi_BUILDDIR)	\
 			  -I $$(infrastructuredir)	\
 			  $$(ds_texi_MORE_FLAGS)
-DS_TEXI2INFO_FLAGS	= $$(DS_TEXI_FLAGS) --no-split
-DS_TEXI2HTML_FLAGS	= $$(DS_TEXI_FLAGS) --no-split --html
+DS_TEXI2INFO_SPLIT_FLAGS	?= --no-split
+DS_TEXI2HTML_SPLIT_FLAGS	?= --no-split
+DS_TEXI2INFO_FLAGS	= $$(DS_TEXI_FLAGS) $$(DS_TEXI2INFO_SPLIT_FLAGS)
+DS_TEXI2HTML_FLAGS	= $$(DS_TEXI_FLAGS) $$(DS_TEXI2HTML_SPLIT_FLAGS) --html
 DS_TEXI2DVI_FLAGS	= $$(DS_TEXI_FLAGS) --dvi --tidy \
 				--build-dir=$$(ds_texi_BUILDDIR)
 DS_TEXI2PDF_FLAGS	= $$(DS_TEXI_FLAGS) --dvipdf --tidy \
@@ -1750,206 +1752,249 @@ endef
 ## Slackware packaging.
 ## ---------------------------------------------------------------------
 
-# define ds-slackware-get-installed-package
-# $(shell ls $(ds_slackware_REGISTRY) | grep '$(1)-[0-9]' | head)
-# endef
-define ds-slackware-get-installed-package
-$(notdir $(firstword $(wildcard $(ds_slackware_REGISTRY)/$(1)-[0-9]*)))
-endef
-
-define ds-private-slackware-targets
-
-ifeq ($(1),bin)
-ds_slackware_$(1)_INSTALLED_PACKAGE_SPEC	= $$(PACKAGE_NAME)
-else
-ds_slackware_$(1)_INSTALLED_PACKAGE_SPEC	= $$(PACKAGE_NAME)-$(1)
-endif
-
-.PHONY: private-slackware-make-$(1)   private-slackware-install-$(1)
-.PHONY: private-slackware-remove-$(1) private-slackware-upgrade-$(1)
-
-private-slackware-make-$(1): slackware-builddir
-	@$$(MAKE) private-slackware-clean-builddir-$(1)
-	$$(ds_archive_SUDO) $$(MAKE) $(1)-install \
-		DESTDIR=$$(ds_slackware_PACKAGE_TOP_BUILDDIR)
-	$$(ds_archive_SUDO) $$(INSTALL_DIR) \
-		$$(ds_slackware_PACKAGE_BUILDDIR)/install
-	$$(ds_archive_SUDO) $$(INSTALL_DATA)					\
-		$$(ds_meta_builddir)/slackware/$(1)/slack-desc			\
-		$$(ds_slackware_PACKAGE_BUILDDIR)/install
-	-test -f $$(ds_meta_builddir)/slackware/$(1)/doinst.sh &&		\
-	$$(ds_archive_SUDO) $$(INSTALL_DATA)					\
-		$$(ds_meta_builddir)/slackware/$(1)/doinst.sh			\
-		$$(ds_slackware_PACKAGE_BUILDDIR)/install
-	$$(ds_archive_SUDO) $$(MAKE) slackware-aux-$(1)
-	cd $$(ds_slackware_PACKAGE_BUILDDIR);					\
-	$$(ds_slackware_MAKEPKG) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
-
-private-slackware-install-$(1):
-	cd $$(ds_slackware_BUILDDIR); \
-	$$(ds_slackware_INSTALLPKG) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
-
-private-slackware-remove-$(1):
-	$$(ds_slackware_REMOVEPKG) $$(ds_archive_$(1)_PREFIX)
-
-private-slackware-upgrade-$(1):
-	cd $$(ds_slackware_BUILDDIR); $$(ds_slackware_UPGRADEPKG) \
-		$$(call ds-slackware-get-installed-package,$$(ds_slackware_$(1)_INSTALLED_PACKAGE_SPEC))%$$(ds_slackware_$(1)_PACKAGE_NAME)
-
-private-slackware-clean-builddir-$(1):
-	-$$(ds_archive_SUDO) $$(RM) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
-
-.PHONY: slackware-aux-$(1)
-
-slackware-aux-$(1):
-
-.PHONY: slackware-make-$(1)   slackware-install-$(1)
-.PHONY: slackware-remove-$(1) slackware-upgrade-$(1)
-
-slackware-make-$(1):
-	$$(MAKE) private-slackware-make-$(1)	$$(ds_slackware_STANDARD_ENV)
-	$$(MAKE) slackware-clean-top-builddir	$$(ds_slackware_STANDARD_ENV)
-
-slackware-install-$(1):
-	$$(MAKE) private-slackware-install-$(1)	$$(ds_slackware_STANDARD_ENV)
-
-slackware-remove-$(1):
-	$$(MAKE) private-slackware-remove-$(1)	$$(ds_slackware_STANDARD_ENV)
-
-slackware-upgrade-$(1):
-	$$(MAKE) private-slackware-upgrade-$(1)	$$(ds_slackware_STANDARD_ENV)
-
-.PHONY: local-slackware-make-$(1)   local-slackware-install-$(1)
-.PHONY: local-slackware-remove-$(1) local-slackware-upgrade-$(1)
-
-local-slackware-make-$(1):
-	$$(MAKE) private-slackware-make-$(1)	$$(ds_slackware_LOCAL_ENV)
-	$$(MAKE) slackware-clean-top-builddir	$$(ds_slackware_LOCAL_ENV)
-
-local-slackware-install-$(1):
-	$$(MAKE) private-slackware-install-$(1)	$$(ds_slackware_LOCAL_ENV)
-
-local-slackware-remove-$(1):
-	$$(MAKE) private-slackware-remove-$(1)	$$(ds_slackware_LOCAL_ENV)
-
-local-slackware-upgrade-$(1):
-	$$(MAKE) private-slackware-upgrade-$(1)	$$(ds_slackware_LOCAL_ENV)
-
-endef
-
 define ds-slackware-distribution
+# Define everything  needed to build binary Slackware  packages, one for
+# each Makefile section.
 
-ds_slackware_bin_PACKAGE_NAME	= $$(ds_archive_bin_PREFIX).tgz
-ds_slackware_doc_PACKAGE_NAME	= $$(ds_archive_doc_PREFIX).tgz
-ds_slackware_dev_PACKAGE_NAME	= $$(ds_archive_dev_PREFIX).tgz
-ds_slackware_PACKAGE_TOP_BUILDDIR = $$(TMPDIR)/$$(PKG_ID)
-ds_slackware_PACKAGE_BUILDDIR	?=
-ds_slackware_BUILDDIR		= $$(abspath $$(builddir)/slackware.d)
-ds_slackware_REGISTRY		?=
-ds_slackware_REGISTRY_DIR	= /var/log/packages
-ds_slackware_ENV		?=
-ds_slackware_bin_PACKAGE_PATHNAME = $$(ds_slackware_BUILDDIR)/$$(ds_slackware_bin_PACKAGE_NAME)
-ds_slackware_doc_PACKAGE_PATHNAME = $$(ds_slackware_BUILDDIR)/$$(ds_slackware_doc_PACKAGE_NAME)
-ds_slackware_dev_PACKAGE_PATHNAME = $$(ds_slackware_BUILDDIR)/$$(ds_slackware_dev_PACKAGE_NAME)
+# The type of package to create.  Must be one among "tgz" and "txz".
+ds_slackware_TYPE		?= tgz
 
-ds_slackware_MAKEPKG_PROGRAM	?= @ds_slackware_MAKEPKG_PROGRAM@
-ds_slackware_MAKEPKG_FLAGS	= --root $$(ds_slackware_ROOT)
-ifeq ($$(ds_config_SLACKWARE_CHOWN),yes)
-ds_slackware_MAKEPKG_FLAGS	+= --chown y
+# The directory in which new package files will be stored.
+ds_slackware_REPOSITORY		= $$(abspath $$(builddir)/slackware.d)
+
+# The top directory under which  files will be temporarily installed for
+# package building.
+ds_slackware_TOP_BUILDDIR	= $$(TMPDIR)/$$(PKG_ID)
+
+# The  top directory in  the temporary  installation in  which "makepkg"
+# will be executed.
+ds_slackware_STD_PACKAGE_TOPDIR	= $$(ds_slackware_TOP_BUILDDIR)
+ds_slackware_LOC_PACKAGE_TOPDIR	= $$(ds_slackware_TOP_BUILDDIR)$$(prefix)
+
+# The root directory for standard and "local" packages.
+ds_slackware_STD_ROOT		= /
+ds_slackware_LOC_ROOT		= $$(prefix)/
+
+# The pathnames of the Slackware package registry.
+ds_slackware_REGISTRY_DIR	= var/log/packages
+ds_slackware_STD_REGISTRY	= $$(ds_slackware_STD_ROOT)$$(ds_slackware_REGISTRY_DIR)
+ds_slackware_LOC_REGISTRY	= $$(ds_slackware_LOC_ROOT)$$(ds_slackware_REGISTRY_DIR)
+
+# "makepkg" related variables
+ds_slackware_STD_MAKEPKG_PROGRAM	?= @ds_slackware_STD_MAKEPKG_PROGRAM@
+ds_slackware_LOC_MAKEPKG_PROGRAM	?= @ds_slackware_LOC_MAKEPKG_PROGRAM@
+ifeq (yes,$$(ds_config_SLACKWARE_CHOWN))
+ds_slackware_MAKEPKG_FLAGS	= --chown y
 else
-ds_slackware_MAKEPKG_FLAGS	+= --chown n
+ds_slackware_MAKEPKG_FLAGS	= --chown n
 endif
-ifeq ($$(ds_config_SLACKWARE_LINKADD),yes)
+ifeq (yes,$$(ds_config_SLACKWARE_LINKADD))
 ds_slackware_MAKEPKG_FLAGS	+= --prepend --linkadd y
 else
 ds_slackware_MAKEPKG_FLAGS	+= --linkadd n
 endif
-ds_slackware_MAKEPKG		= $$(ds_slackware_ENV) $$(ds_archive_SUDO) $$(ds_slackware_MAKEPKG_PROGRAM) $$(ds_slackware_MAKEPKG_FLAGS)
+ds_slackware_STD_MAKEPKG	= \
+	$$(ds_slackware_STD_MAKEPKG_PROGRAM) $$(ds_slackware_MAKEPKG_FLAGS)
+ds_slackware_LOC_MAKEPKG	= ROOT=$$(ds_slackware_LOC_ROOT) \
+	$$(ds_slackware_LOC_MAKEPKG_PROGRAM) $$(ds_slackware_MAKEPKG_FLAGS)
 
-ds_slackware_INSTALLPKG_PROGRAM	?= @ds_slackware_INSTALLPKG_PROGRAM@
-ds_slackware_INSTALLPKG_FLAGS	?= --root $$(ds_slackware_ROOT)
-ds_slackware_INSTALLPKG	= $$(ds_slackware_ENV) $$(ds_archive_SUDO) $$(ds_slackware_INSTALLPKG_PROGRAM) $$(ds_slackware_INSTALLPKG_FLAGS)
+# "installpkg" related variables
+ds_slackware_STD_INSTALLPKG_PROGRAM	?= @ds_slackware_STD_INSTALLPKG_PROGRAM@
+ds_slackware_LOC_INSTALLPKG_PROGRAM	?= @ds_slackware_LOC_INSTALLPKG_PROGRAM@
+ds_slackware_INSTALLPKG_FLAGS	?=
+ds_slackware_STD_INSTALLPKG	= \
+	$$(ds_slackware_STD_INSTALLPKG_PROGRAM) $$(ds_slackware_INSTALLPKG_FLAGS)
+ds_slackware_LOC_INSTALLPKG	= ROOT=$$(ds_slackware_LOC_ROOT) \
+	$$(ds_slackware_LOC_INSTALLPKG_PROGRAM) --root $$(ds_slackware_LOC_ROOT) \
+		$$(ds_slackware_INSTALLPKG_FLAGS)
 
-ds_slackware_REMOVEPKG_PROGRAM	?= @ds_slackware_REMOVEPKG_PROGRAM@
-ds_slackware_REMOVEPKG_FLAGS	?= --root $$(ds_slackware_ROOT)
-ds_slackware_REMOVEPKG		= $$(ds_slackware_ENV) $$(ds_archive_SUDO) $$(ds_slackware_REMOVEPKG_PROGRAM) $$(ds_slackware_REMOVEPKG_FLAGS)
+# "removepkg" related variables
+ds_slackware_STD_REMOVEPKG_PROGRAM	?= @ds_slackware_STD_REMOVEPKG_PROGRAM@
+ds_slackware_LOC_REMOVEPKG_PROGRAM	?= @ds_slackware_LOC_REMOVEPKG_PROGRAM@
+ds_slackware_REMOVEPKG_FLAGS	?=
+ds_slackware_STD_REMOVEPKG	= \
+	$$(ds_slackware_STD_REMOVEPKG_PROGRAM) $$(ds_slackware_REMOVEPKG_FLAGS)
+ds_slackware_LOC_REMOVEPKG	= ROOT=$$(ds_slackware_LOC_ROOT) \
+	$$(ds_slackware_LOC_REMOVEPKG_PROGRAM) $$(ds_slackware_REMOVEPKG_FLAGS)
 
-ds_slackware_UPGRADEPKG_PROGRAM	?= @ds_slackware_UPGRADEPKG_PROGRAM@
-ds_slackware_UPGRADEPKG_FLAGS	?= --root $$(ds_slackware_ROOT) --verbose --reinstall
-ds_slackware_UPGRADEPKG	= $$(ds_slackware_ENV) $$(ds_archive_SUDO) $$(ds_slackware_UPGRADEPKG_PROGRAM) $$(ds_slackware_UPGRADEPKG_FLAGS)
+# "upgradepkg" related variables
+ds_slackware_STD_UPGRADEPKG_PROGRAM	?= @ds_slackware_STD_UPGRADEPKG_PROGRAM@
+ds_slackware_LOC_UPGRADEPKG_PROGRAM	?= @ds_slackware_LOC_UPGRADEPKG_PROGRAM@
+ds_slackware_UPGRADEPKG_FLAGS	?= --verbose --reinstall
+ds_slackware_STD_UPGRADEPKG	= \
+	$$(ds_slackware_STD_UPGRADEPKG_PROGRAM) $$(ds_slackware_UPGRADEPKG_FLAGS)
+ds_slackware_LOC_UPGRADEPKG	= ROOT=$$(ds_slackware_LOC_ROOT) \
+	$$(ds_slackware_LOC_UPGRADEPKG_PROGRAM) $$(ds_slackware_UPGRADEPKG_FLAGS)
 
-ds_local_slackware_MAKEPKG_PROGRAM	= @ds_local_slackware_MAKEPKG_PROGRAM@
-ds_local_slackware_INSTALLPKG_PROGRAM	= @ds_local_slackware_INSTALLPKG_PROGRAM@
-ds_local_slackware_REMOVEPKG_PROGRAM	= @ds_local_slackware_REMOVEPKG_PROGRAM@
-ds_local_slackware_UPGRADEPKG_PROGRAM	= @ds_local_slackware_UPGRADEPKG_PROGRAM@
+ds_slackware_STD_RECURSIVE_MAKE_ENV	= \
+	TMPDIR=$$(TMPDIR)						\
+	DESTDIR=$$(ds_slackware_TOP_BUILDDIR)				\
+	ds_slackware_PACKAGE_TOPDIR=$$(ds_slackware_STD_PACKAGE_TOPDIR)	\
+	ds_slackware_REGISTRY=$$(ds_slackware_STD_REGISTRY)
 
-## ---------------------------------------------------------------------
+ds_slackware_LOC_RECURSIVE_MAKE_ENV	= \
+	TMPDIR=$$(TMPDIR)						\
+	DESTDIR=$$(ds_slackware_TOP_BUILDDIR)				\
+	ds_slackware_PACKAGE_TOPDIR=$$(ds_slackware_LOC_PACKAGE_TOPDIR)	\
+	ds_slackware_REGISTRY=$$(ds_slackware_LOC_REGISTRY)
 
-.PHONY: slackware-builddir slackware-top-builddir
-.PHONY: slackware-clean slackware-clean-top-builddir slackware-clean-builddir
-
-slackware-builddir:
-	-test -d $$(ds_slackware_BUILDDIR) || \
-		$$(MKDIR) $$(ds_slackware_BUILDDIR)
-
-slackware-top-builddir:
-	-test -d $$(ds_slackware_PACKAGE_TOP_BUILDDIR) || \
-		$$(MKDIR) $$(ds_slackware_PACKAGE_TOP_BUILDDIR)
-
-slackware-clean: slackware-clean-top-builddir slackware-clean-builddir
-
-slackware-clean-top-builddir:
-	-$$(ds_archive_SUDO) $$(RM) $$(ds_slackware_PACKAGE_TOP_BUILDDIR)
-
-slackware-clean-builddir:
-	-$$(ds_archive_SUDO) $$(RM) $$(ds_slackware_BUILDDIR)/*.tgz
-
-## ---------------------------------------------------------------------
-
-# PATH is  required when doing  upgrade, because upgradepkg  invokes the
-# other scripts.
-ds_slackware_STANDARD_ENV	= \
-PATH=/sbin:$$(PATH)							\
-ds_slackware_PACKAGE_BUILDDIR=$$(ds_slackware_PACKAGE_TOP_BUILDDIR)	\
-ds_slackware_REGISTRY=$$(ds_slackware_REGISTRY_DIR)
-
-.PHONY: slackware slackware-install slackware-remove slackware-upgrade
+.PHONY: slackware			slackware-install		\
+	slackware-remove		slackware-upgrade		\
+	local-slackware			local-slackware-install		\
+	local-slackware-remove		local-slackware-upgrade		\
+	slackware-repository		slackware-top-builddir		\
+	slackware-clean-repository	slackware-clean-top-builddir	\
+	slackware-clean
 
 slackware:		$(addprefix slackware-make-,	  $(ds_RULESETS))
 slackware-install:	$(addprefix slackware-install-,	  $(ds_RULESETS))
 slackware-remove:	$(addprefix slackware-remove-,	  $(ds_RULESETS))
 slackware-upgrade:	$(addprefix slackware-upgrade-,	  $(ds_RULESETS))
 
-## --------------------------------------------------------------------
-
-# PATH is  required when doing  upgrade, because upgradepkg  invokes the
-# other scripts.
-ds_slackware_LOCAL_ENV	= \
-PATH=$$(prefix)/sbin:/sbin:$$(PATH)						\
-ds_slackware_PACKAGE_BUILDDIR=$$(ds_slackware_PACKAGE_TOP_BUILDDIR)/$$(prefix)	\
-ds_slackware_REGISTRY=$$(prefix)$$(ds_slackware_REGISTRY_DIR)			\
-ds_slackware_ENV=ROOT=$$(prefix)						\
-ds_slackware_MAKEPKG_PROGRAM=$$(ds_local_slackware_MAKEPKG_PROGRAM)		\
-ds_slackware_INSTALLPKG_PROGRAM=$$(ds_local_slackware_INSTALLPKG_PROGRAM)	\
-ds_slackware_REMOVEPKG_PROGRAM=$$(ds_local_slackware_REMOVEPKG_PROGRAM)		\
-ds_slackware_UPGRADEPKG_PROGRAM=$$(ds_local_slackware_UPGRADEPKG_PROGRAM)
-
-ds_slackware_ROOT=$$(prefix)
-
-.PHONY: local-slackware        local-slackware-install
-.PHONY: local-slackware-remove local-slackware-upgrade
-
 local-slackware:	$(addprefix local-slackware-make-,	  $(ds_RULESETS))
 local-slackware-install:$(addprefix local-slackware-install-,	  $(ds_RULESETS))
 local-slackware-remove:	$(addprefix local-slackware-remove-,	  $(ds_RULESETS))
 local-slackware-upgrade:$(addprefix local-slackware-upgrade-,	  $(ds_RULESETS))
 
+slackware-repository:
+	-test -d $$(ds_slackware_REPOSITORY)   || $$(MKDIR) $$(ds_slackware_REPOSITORY)
+
+slackware-top-builddir:
+	-test -d $$(ds_slackware_TOP_BUILDDIR) || $$(MKDIR) $$(ds_slackware_TOP_BUILDDIR)
+
+slackware-clean-repository:
+	-$$(ds_archive_SUDO) $$(RM) $$(ds_slackware_REPOSITORY)/*
+
+slackware-clean-top-builddir:
+	-$$(ds_archive_SUDO) $$(RM) $$(ds_slackware_TOP_BUILDDIR)
+
+slackware-clean: slackware-clean-top-builddir slackware-clean-builddir
+
+$$(eval $$(call ds-slackware-section-package,bin))
+$$(eval $$(call ds-slackware-section-package,doc))
+$$(eval $$(call ds-slackware-section-package,dev))
+
+endef
+
 ## --------------------------------------------------------------------
 
-$$(eval $$(call ds-private-slackware-targets,bin))
-$$(eval $$(call ds-private-slackware-targets,doc))
-$$(eval $$(call ds-private-slackware-targets,dev))
+define ds-slackware-section-package
+#Define everything needed to build a section's Slackware binary package.
+#
+# 1 - the section: bin, doc, dev
+#
 
+ds_slackware_$(1)_PACKAGE_SPEC		= $$(ds_archive_$(1)_PREFIX)
+ds_slackware_$(1)_PACKAGE_NAME		= $$(ds_slackware_$(1)_PACKAGE_SPEC).$$(ds_slackware_TYPE)
+ds_slackware_$(1)_PACKAGE_TMPNAME	= $$(TMPDIR)/$$(ds_slackware_$(1)_PACKAGE_NAME)
+ds_slackware_$(1)_PACKAGE_PATHNAME	= $$(ds_slackware_REPOSITORY)/$$(ds_slackware_$(1)_PACKAGE_NAME)
+ifeq (bin,$$(strip $(1)))
+ds_slackware_$(1)_PACKAGE_PATTERN	= $$(PACKAGE_NAME)-[0-9]*
+else
+ds_slackware_$(1)_PACKAGE_PATTERN	= $$(PACKAGE_NAME)-$(1)-[0-9]*
+endif
+ds_slackware_$(1)_STD_INSTALLED_PACKAGE	= $$(notdir $$(firstword $$(wildcard \
+	$$(ds_slackware_STD_REGISTRY)/$$(ds_slackware_$(1)_PACKAGE_PATTERN))))
+ds_slackware_$(1)_LOC_INSTALLED_PACKAGE	= $$(notdir $$(firstword $$(wildcard \
+	$$(ds_slackware_LOC_REGISTRY)/$$(ds_slackware_$(1)_PACKAGE_PATTERN))))
+
+.PHONY: slackware-make-$(1)		slackware-install-$(1)		\
+	slackware-remove-$(1)		slackware-upgrade-$(1)		\
+	local-slackware-make-$(1)	local-slackware-install-$(1)	\
+	local-slackware-remove-$(1)	local-slackware-upgrade-$(1)	\
+	slackware-aux-$(1)
+
+# We create the package in  a temporary location under "sudo", then copy
+# it in the  repository, so we end with a package  file having owner and
+# group equal to the id of the user.
+
+slackware-make-$(1): slackware-repository
+	$$(ds_archive_SUDO) $$(MAKE) private-slackware-make-$(1) $$(ds_slackware_STD_RECURSIVE_MAKE_ENV)
+	test -f $$(ds_slackware_$(1)_PACKAGE_TMPNAME) && {				      \
+		$$(RM) $$(ds_slackware_$(1)_PACKAGE_PATHNAME) ;				      \
+		$$(CP) $$(ds_slackware_$(1)_PACKAGE_TMPNAME) $$(ds_slackware_REPOSITORY); }
+
+local-slackware-make-$(1): slackware-repository
+	$$(ds_archive_SUDO) $$(MAKE) private-local-slackware-make-$(1) $$(ds_slackware_LOC_RECURSIVE_MAKE_ENV)
+	test -f $$(ds_slackware_$(1)_PACKAGE_TMPNAME) && {				      \
+		$$(RM) $$(ds_slackware_$(1)_PACKAGE_PATHNAME) ;				      \
+		$$(CP) $$(ds_slackware_$(1)_PACKAGE_TMPNAME) $$(ds_slackware_REPOSITORY); }
+
+private-slackware-make-$(1):
+	$$(call ds-private-slackware-make-package,$(1),ds_slackware_STD_MAKEPKG,ds_slackware_STD_RECURSIVE_MAKE_ENV,ds_slackware_STD_PACKAGE_TOPDIR)
+
+private-local-slackware-make-$(1):
+	$$(call ds-private-slackware-make-package,$(1),ds_slackware_LOC_MAKEPKG,ds_slackware_LOC_RECURSIVE_MAKE_ENV,ds_slackware_LOC_PACKAGE_TOPDIR)
+
+slackware-install-$(1):
+	$$(ds_archive_SUDO) $$(ds_slackware_STD_INSTALLPKG) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
+
+local-slackware-install-$(1):
+	$$(ds_archive_SUDO) $$(ds_slackware_LOC_INSTALLPKG) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
+
+slackware-remove-$(1):
+	$$(ds_archive_SUDO) $$(ds_slackware_STD_REMOVEPKG) $$(ds_slackware_$(1)_PACKAGE_SPEC)
+
+local-slackware-remove-$(1):
+	$$(ds_archive_SUDO) $$(ds_slackware_LOC_REMOVEPKG) $$(ds_slackware_$(1)_PACKAGE_SPEC)
+
+slackware-upgrade-$(1):
+ifeq (,$$(ds_slackware_$(1)_STD_INSTALLED_PACKAGE))
+	$$(ds_archive_SUDO) $$(ds_slackware_STD_INSTALLPKG) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
+else
+	$$(ds_archive_SUDO) $$(ds_slackware_STD_UPGRADEPKG) \
+		$$(ds_slackware_$(1)_STD_INSTALLED_PACKAGE)%$$(ds_slackware_$(1)_PACKAGE_PATHNAME)
+endif
+
+local-slackware-upgrade-$(1):
+ifeq (,$$(ds_slackware_$(1)_LOC_INSTALLED_PACKAGE))
+	$$(ds_archive_SUDO) $$(ds_slackware_LOC_INSTALLPKG) $$(ds_slackware_$(1)_PACKAGE_PATHNAME)
+else
+	$$(ds_archive_SUDO) $$(ds_slackware_LOC_UPGRADEPKG) \
+		$$(ds_slackware_$(1)_LOC_INSTALLED_PACKAGE)%$$(ds_slackware_$(1)_PACKAGE_PATHNAME)
+endif
+
+slackware-aux-$(1):
+
+endef
+
+# Build the Slackware  binary package for a section.   Install the files
+# in a temporary location, then
+#
+# This  function should  be  called  under "sudo"  in  a recursive  MAKE
+# execution.
+#
+# Arguments:
+#
+# 1 - the section: bin, doc, dev
+# 2 - the name of the variable holding the MAKEPKG to use
+# 3 - the name of the ENV variable to use for recursive MAKE invocation
+# 4 - the name of the variable holding the package top directory
+#
+define ds-private-slackware-make-package
+$(RM) $(ds_slackware_$(1)_PACKAGE_TMPNAME)
+$(RM) $(ds_slackware_TOP_BUILDDIR)
+$(MAKE) $(1)-install $($(3))
+$(INSTALL_DIR) $(ds_slackware_PACKAGE_TOPDIR)/install
+(test -f $(ds_meta_builddir)/slackware/$(1)/slack-desc &&		\
+	$(INSTALL_DATA)						\
+		$(ds_meta_builddir)/slackware/$(1)/slack-desc		\
+		$($(4))/install) || true
+(test -f $(ds_meta_builddir)/slackware/$(1)/doinst.sh &&		\
+	$(INSTALL_DATA)						\
+		$(ds_meta_builddir)/slackware/$(1)/doinst.sh		\
+		$($(4))/install) || true
+(test -f $(ds_meta_builddir)/slackware/$(1)/setup.$(PACKAGE_NAME) &&		\
+	$(INSTALL_DATA)							\
+		$(ds_meta_builddir)/slackware/$(1)/setup.$(PACKAGE_NAME)	\
+		$($(4))/var/log/setup) || true
+(test -f $(ds_meta_builddir)/slackware/$(1)/setup.onlyonce.$(PACKAGE_NAME) &&		\
+	$(INSTALL_DATA)								\
+		$(ds_meta_builddir)/slackware/$(1)/setup.onlyonce.$(PACKAGE_NAME)	\
+		$($(4))/var/log/setup) || true
+$(MAKE) slackware-aux-$(1) $($(3))
+cd $($(4)) && $($(2)) $(ds_slackware_$(1)_PACKAGE_TMPNAME)
+$(RM) $(ds_slackware_TOP_BUILDDIR)
 endef
 
 #page
