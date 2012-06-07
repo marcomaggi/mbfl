@@ -1,6 +1,6 @@
 # *DO NOT* use quotes for the values of the variables.
 
-PACKAGE_NAME=@PACKAGE_NAME@
+PACKAGE=@PACKAGE@
 PACKAGE_VERSION=@PACKAGE_VERSION@
 
 prefix=@prefix@
@@ -24,21 +24,11 @@ sbindir=@sbindir@
 sharedstatedir=@sharedstatedir@
 sysconfdir=@sysconfdir@
 
-PKG_DIR=@PKG_DIR@
-pkgdatadir=@pkgdatadir@
-pkgdocdir=@pkgdocdir@
-pkgexampledir=@pkgexampledir@
-pkghtmldir=@pkghtmldir@
-pkgincludedir=@pkgincludedir@
-pkglibdir=@pkglibdir@
-pkglibexecdir=@pkglibexecdir@
-pkgsysconfdir=@pkgsysconfdir@
-
 ## ------------------------------------------------------------
 
-Name: MBFL
+Name: @PACKAGE_NAME@
 Description: collection of functions for GNU Bash
-Version: ${PACKAGE_VERSION}
+Version: @PACKAGE_VERSION@
 
 ### end of file
 # Local Variables:

@@ -1,5 +1,5 @@
 #
-# Part of: mbfl
+# Part of: Marco's Bash Functions Library (MBFL)
 # Contents: support for GNU Autoconf
 # Date: Mon Apr 13, 2009
 #
@@ -7,7 +7,8 @@
 #
 #
 #
-# Copyright (c) 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2009, 2012 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This  program  is free  software:  you  can redistribute  it
 # and/or modify it  under the terms of the  GNU General Public

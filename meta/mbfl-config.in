@@ -9,7 +9,8 @@
 #
 #
 #
-# Copyright (c) 2004, 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2004, 2005, 2009, 2012 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -35,14 +36,14 @@
 DEFAULT_OPTION='--library'
 OPTION="${1:-${DEFAULT_OPTION}}"
 
-PACKAGE_NAME='@PACKAGE_NAME@'
+PACKAGE='@PACKAGE@'
 PACKAGE_VERSION='@PACKAGE_VERSION@'
 
 prefix="@prefix@"
 datarootdir="@datarootdir@"
 datadir="@datadir@"
 PKG_DIR="@PKG_DIR@"
-pkgdatadir="@pkgdatadir@"
+pkgdatadir="${datadir}/${PACKAGE}/${PACKAGE_VERSION}"
 
 USAGE="usage: mbfl-config [option]
 Marco's BASH Functions Library configuration script
@@ -67,13 +68,13 @@ case "${OPTION}" in
 	echo "${pkgdatadir}/libmbfltest.sh"
 	;;
     --libpath)
-        echo "${pkgdatadir}"
+        echo "$pkgdatadir"
         ;;
     --version)
-	echo "${PACKAGE_VERSION}"
+	echo "$PACKAGE_VERSION"
 	;;
     *)
-	echo "${USAGE}"
+	echo "$USAGE"
 	;;
 esac
 
