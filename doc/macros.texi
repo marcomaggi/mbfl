@@ -14,6 +14,10 @@
 @acronym{GPL}
 @end macro
 
+@macro lgpl{}
+@acronym{LGPL}
+@end macro
+
 @macro fdl{}
 @acronym{FDL}
 @end macro

@@ -2,7 +2,7 @@
 #
 
 AC_PREREQ([2.69])
-AC_INIT([Marcos Bash Functions Library],[1.3.0],[marco.maggi-ipsu@poste.it],
+AC_INIT([Marcos Bash Functions Library],[1.3b8],[marco.maggi-ipsu@poste.it],
   [mbfl],[http://github.com/marcomaggi/mbfl])
 AC_CONFIG_SRCDIR([src/])
 AM_INIT_AUTOMAKE
