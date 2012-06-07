@@ -34,7 +34,7 @@ source setup.sh
 
 function script () {
     MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/libmbfl.sh} \
-        "${BASH}" ../examples/template.sh "$@"
+        "${BASH}" "$examplesdir"/template.sh "$@"
 }
 
 #PAGE

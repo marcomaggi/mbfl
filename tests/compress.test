@@ -1,32 +1,32 @@
 # compress.test --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: tests for the compress.sh example script
 # Date: Tue Aug 16, 2005
-# 
+#
 # Abstract
-# 
+#
 #	To select the tests in this file:
 #
 #		$ TESTMATCH=compress- make all test
-# 
-# Copyright (c) 2005 Marco Maggi
-# 
+#
+# Copyright (c) 2005, 2012 Marco Maggi
+#
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
 # Software Foundation; either  version 2, or (at your  option) any later
 # version.
-# 
+#
 # This  file is  distributed in  the hope  that it  will be  useful, but
 # WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
 # General Public License for more details.
-# 
+#
 # You  should have received  a copy  of the  GNU General  Public License
 # along with this file; see the file COPYING.  If not, write to the Free
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
-# 
+#
 
 #PAGE
 ## ------------------------------------------------------------
@@ -39,9 +39,9 @@ function compress () {
     top_srcdir=${top_srcdir:=${PWD}/..}
 
     if false ; then
-        ${BASH} ${top_srcdir}/tests/compress.sh --debug -v "$@"
+        ${BASH} "$examplesdir"/compress.sh --debug -v "$@"
     else
-        ${BASH} ${top_srcdir}/tests/compress.sh "$@"
+        ${BASH} "$examplesdir"/compress.sh "$@"
     fi
 }
 
