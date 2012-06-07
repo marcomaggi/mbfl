@@ -1,24 +1,9 @@
 ## Process this file with automake to produce Makefile.in
 
-EXTRA_DIST	=
-
-BASH_PROGRAM	= @BASH_PROGRAM@
-
-MBFL_LIBRARY	= $(srcdir)/backup/libmbfl.sh
-MBFLPP_ENV	= MBFL_LIBRARY=$(MBFL_LIBRARY)
-MBFLPP_SCRIPT	= $(srcdir)/scripts/mbflpp.sh
-MBFLPP_RUN	= $(MBFLPP_ENV) $(BASH_PROGRAM) $(MBFLPP_SCRIPT)
-
-## --------------------------------------------------------------------
-
-mbfldatadir		= $(datadir)/$(PACKAGE)/$(PACKAGE_VERSION)
-dist_mbfldata_DATA	= \
-	$(srcdir)/lib/preprocessor.m4	\
-	$(srcdir)/lib/libmbfltest.sh
-
-## --------------------------------------------------------------------
-
-EXTRA_DIST	+= \
+EXTRA_DIST	= \
+	scripts/mbflpp.sh		\
+	scripts/mbfltest.sh		\
+	\
 	modules/base.sh.m4		\
 	modules/encode.sh.m4		\
 	modules/file.sh.m4		\
@@ -33,47 +18,94 @@ EXTRA_DIST	+= \
 	modules/system.sh.m4		\
 	modules/interfaces.sh.m4
 
-# MBFLPP_MODULES_FLAGS	= --include=$(srcdir)/macros				\
-# 			  --library=preprocessor.m4	 			\
-# 			  --define=__PKGDATADIR__=$(mbfldatadir)		\
-# 			  --define=__PACKAGE_NAME__=$(PACKAGE)			\
-# 			  --define=__PACKAGE_VERSION__=$(PACKAGE_VERSION)
+MBFL_MODULES		= \
+	base.sh		encode.sh	file.sh		\
+	getopts.sh	message.sh	program.sh	\
+	signal.sh	string.sh	dialog.sh	\
+	main.sh		variable.sh	system.sh	\
+	interfaces.sh
 
-# $(modules_TARGETS): $(modules_BUILDDIR)/%.sh: $(modules_SRCDIR)/%.sh.m4 preprocessor.m4
-# 	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+MBFL_PREPRO		= $(srcdir)/lib/preprocessor.m4
 
-#page
-# $(eval $(call ds-srcdir,libs,$(srcdir)/src/lib))
-# $(eval $(call ds-builddir,libs))
+mbfldatadir		= $(datadir)/$(PACKAGE)/$(PACKAGE_VERSION)
+dist_mbfldata_DATA	= \
+	$(MBFL_PREPRO)	\
+	$(srcdir)/lib/libmbfltest.sh	\
+	libmbfl.sh
 
-# libs_TARGETS	= $(libs_BUILDDIR)/libmbfl.sh
-# libs_INSTLST	= $(libs_TARGETS)
-# libs_INSTDIR	= $(pkgdatadir)
+bin_SCRIPTS		= mbflpp.sh mbfltest.sh
 
-# $(eval $(call ds-default-clean-variables,libs))
-# $(eval $(call ds-module,libs,bin))
+clean-local:
+	-rm -f mbflpp.sh mbfltest.sh libmbfl.sh $(MBFL_MODULES)
 
-# MBFLPP_LIBS_FLAGS	= --include=$(modules_BUILDDIR) --preserve-comments
+## --------------------------------------------------------------------
 
-# $(libs_BUILDDIR)/%.sh: $(libs_SRCDIR)/%.sh.m4 preprocessor.m4 $(modules_TARGETS)
-# 	$(MBFLPP) $(MBFLPP_LIBS_FLAGS) <$(<) >$(@)
+BASH_PROGRAM	= @BASH_PROGRAM@
 
-#page
-# $(eval $(call ds-srcdir,scripts,$(srcdir)/src/scripts))
-# $(eval $(call ds-builddir,scripts))
+MBFL_LIBRARY	= $(srcdir)/backup/libmbfl.sh
+MBFLPP_ENV	= MBFL_LIBRARY=$(MBFL_LIBRARY)
+MBFLPP_SCRIPT	= $(srcdir)/scripts/mbflpp.sh
+MBFLPP_RUN	= $(MBFLPP_ENV) $(BASH_PROGRAM) $(MBFLPP_SCRIPT)
 
-# SCRIPTS		= mbflpp.sh mbfltest.sh
-# scripts_SOURCES	= $(addprefix $(scripts_SRCDIR)/,$(SCRIPTS))
-# scripts_TARGETS	= $(call ds-replace-dir,$(scripts_BUILDDIR),$(scripts_SOURCES))
+## --------------------------------------------------------------------
 
-# $(eval $(call ds-default-install-variables,scripts,$(bindir)))
-# $(eval $(call ds-default-clean-variables,scripts))
-# $(eval $(call ds-module,scripts,dev,BIN))
+MBFLPP_MODULES_FLAGS	= --include=$(srcdir)/lib				\
+			  --library=preprocessor.m4	 			\
+			  --define=__PKGDATADIR__=$(mbfldatadir)		\
+			  --define=__PACKAGE_NAME__=$(PACKAGE)			\
+			  --define=__PACKAGE_VERSION__=$(PACKAGE_VERSION)
+MBFLPP_LIBS_FLAGS	= --include=. --preserve-comments
+MBFLPP_SCRIPTS_FLAGS	= $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments
 
-# MBFLPP_SCRIPTS_FLAGS	= $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments
+base.sh		: $(srcdir)/modules/base.sh.m4		$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
 
-# $(scripts_BUILDDIR)/%.sh: $(scripts_SRCDIR)/%.sh
-# 	$(MBFLPP) $(MBFLPP_SCRIPTS_FLAGS) <$(<) >$(@)
+encode.sh	: $(srcdir)/modules/encode.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+file.sh		: $(srcdir)/modules/file.sh.m4		$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+getopts.sh	: $(srcdir)/modules/getopts.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+message.sh	: $(srcdir)/modules/message.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+program.sh	: $(srcdir)/modules/program.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+signal.sh	: $(srcdir)/modules/signal.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+string.sh	: $(srcdir)/modules/string.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+dialog.sh	: $(srcdir)/modules/dialog.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+main.sh		: $(srcdir)/modules/main.sh.m4		$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+variable.sh	: $(srcdir)/modules/variable.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+system.sh	: $(srcdir)/modules/system.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+interfaces.sh	: $(srcdir)/modules/interfaces.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+## --------------------------------------------------------------------
+
+libmbfl.sh: $(srcdir)/lib/libmbfl.sh.m4 $(MBFL_PREPRO) $(MBFL_MODULES)
+	$(MBFLPP_RUN) $(MBFLPP_LIBS_FLAGS) <$< >$@
+
+mbflpp.sh : $(srcdir)/scripts/mbflpp.sh
+	$(MBFLPP_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
+
+mbfltest.sh : $(srcdir)/scripts/mbfltest.sh
+	$(MBFLPP_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
 
 
 ### end of file
