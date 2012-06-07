@@ -13,8 +13,15 @@ AC_PROG_MAKE_SET
 
 AC_ARG_WITH([sendmail],
   AS_HELP_STRING([--with-sendmail],[enable installation of sendmail example script and emacs interface]),
-  [true],[with_sendmail=false])
-AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_iconv = xyes])
+  [true],[with_sendmail=no])
+AC_MSG_CHECKING([whether sendmail support will be installed])
+if test x$with_sendmail = xyes
+then
+  AC_MSG_RESULT([yes])
+else
+  AC_MSG_RESULT([no])
+fi
+AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 
 AC_CHECK_PROG([BASH_PROGRAM],[bash],[bash],[:])
 

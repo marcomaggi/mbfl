@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 examplesdir		= $(datadir)/$(PACKAGE)/$(PACKAGE_VERSION)/examples
-dist_examples_DATA	= at.sh compress.sh
+dist_examples_DATA	= at.sh compress.sh template.sh
 
 if WANT_SENDMAIL
 
