@@ -1,18 +1,27 @@
-dnl @configure_input@
-dnl
+# @configure_input@
+#
 
-AC_INIT([mbfl],[1.3b7],[marco.maggi-ipsu@poste.it])
-DS_BEGIN([./src/modules/base.sh.m4])
-DS_INCLUDE_SECTION([DEV_RULES])
-DS_EXCLUDE_SECTION([META_SCRIPTS])
-DS_ENABLE_OPTION([SENDMAIL_STUFF],[sendmail],[no],
-   [whether to install sendmail example script and emacs interface],
-   [enable installation of sendmail example script and emacs interface])
-DS_CONFIG_FILE_INSPECTION_SCRIPT
-DS_CONFIG_FILE_PKGCONFIG
-DS_CONFIG_FILE_SLACKWARE_BIN_DESC
-DS_CONFIG_FILE_SLACKWARE_DOC_DESC
-DS_CONFIG_FILE_SLACKWARE_DEV_DESC
-DS_END
+AC_PREREQ([2.69])
+AC_INIT([Marcos Bash Functions Library],[1.3.0],[marco.maggi-ipsu@poste.it],
+  [mbfl],[http://github.com/marcomaggi/mbfl])
+AC_CONFIG_SRCDIR([src/])
+AM_INIT_AUTOMAKE
 
-dnl end of file
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+
+AC_ARG_WITH([sendmail],
+  AS_HELP_STRING([--with-sendmail],[enable installation of sendmail example script and emacs interface]),
+  [true],[with_sendmail=false])
+AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_iconv = xyes])
+
+AC_CONFIG_FILES([Makefile
+  src/Makefile doc/Makefile tests/Makefile])
+AC_OUTPUT
+
+### end of file
+# Local Variables:
+# mode: autoconf
+# page-delimiter: "^#page"
+# End:

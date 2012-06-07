@@ -1,5 +1,5 @@
 
-	       Marco's BASH Functions Library
+	       Marco's Bash Functions Library
 	       ==============================
 
 
@@ -26,7 +26,7 @@ solution for medium sized scripts.
 2. License
 ----------
 
-Copyright (c) 2003-2005, 2009-2010 Marco Maggi.
+Copyright (c) 2003-2005, 2009-2010, 2012 Marco Maggi.
 
 This is free software; you can redistribute it and/or modify
 it under the terms of  the GNU Lesser General Public License
@@ -48,12 +48,11 @@ Boston, MA 02111-1307 USA.
 3. Install
 ----------
 
-See  the "README.build"  file  for the  requirements of  the
-building infrastructure.  Do this:
+This package makes use of the GNU Autotools.  Do this:
 
-    $ cd mbfl-1.3b1
-    $ mkdir "=build"
-    $ cd "=build"
+    $ cd mbfl-1.3.0
+    $ mkdir build
+    $ cd build
 
 to inspect the available configuration options:
 
@@ -63,7 +62,7 @@ then do it:
 
     $ ../configure [options]
     $ make
-    $ make tests
+    $ make check
     $ make install
 
   The Makefile supports  the DESTDIR environment variable to
@@ -76,25 +75,13 @@ to really do it:
 
     $ make install DESTDIR=/tmp/marco/mbfl
 
-  The "make  tests" invocation will run all  the tests under
-the "$(srcdir)/tests"  directory.  To select a  set of tests
-set the  "TESTMATCH" variable to  a string that  matches the
-test names (the  names of the functions in  the test files);
-for example, the following runs the getopts tests:
-
-    $ make tests TESTMATCH=getopts
-
-and the following runs only the "getopts-2.4" test:
-
-    $ make tests TESTMATCH=getopts-2.4
-
 
 4. Usage
 --------
 
-Read  the documentation  in Texinfo  format.   Briefely: the
-best way  to use  the library is  to include at  runtime the
-library file "libmbfl.sh" in the script; this is possible by
+Read the documentation in Texinfo format.  Briefly: the best
+way to use the library  is to include at runtime the library
+file  "libmbfl.sh"  in  the  script;  this  is  possible  by
 installing MBFL  on the  system and using  this code  in the
 scripts:
 
@@ -116,8 +103,8 @@ uses all the time.
 B. Bugs
 -------
 
-Bug  reports  are  appreciated:   You  should  use  the  bug
-reporting interface at the GNA! site.
+Bug  reports  are  appreciated:  You should  use  the  issue
+tracker at the Github site.
 
 
 C. Resources
@@ -131,13 +118,9 @@ the MBFL home page is at:
 
 	  <http://marcomaggi.github.com/mbfl.html>
 
-the latest version of MBFL should be found here:
-
-	    <http://gna.org/projects/mbfl/>
-
 development takes place at:
 
-      <http://github.com/marcomaggi/mbfl/tree/master>
+	    <http://github.com/marcomaggi/mbfl/>
 
 the Freshmeat page is:
 
