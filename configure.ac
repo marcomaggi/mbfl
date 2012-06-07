@@ -17,7 +17,7 @@ AC_ARG_WITH([sendmail],
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_iconv = xyes])
 
 AC_CONFIG_FILES([Makefile
-  src/Makefile doc/Makefile tests/Makefile
+  src/Makefile doc/Makefile tests/Makefile meta/Makefile
   meta/mbfl-config meta/mbfl.pc])
 AC_OUTPUT
 
