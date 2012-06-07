@@ -16,8 +16,11 @@ AC_ARG_WITH([sendmail],
   [true],[with_sendmail=false])
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_iconv = xyes])
 
-AC_CONFIG_FILES([Makefile
-  src/Makefile doc/Makefile tests/Makefile meta/Makefile
+AC_CHECK_PROG([BASH_PROGRAM],[bash],[bash],[:])
+
+AC_CONFIG_FILES([Makefile meta/Makefile
+  src/Makefile doc/Makefile tests/Makefile
+  examples/Makefile
   meta/mbfl-config meta/mbfl.pc])
 AC_OUTPUT
 
