@@ -329,6 +329,7 @@ environment variable.
 A more reliable way to load the library is:
 
 @smallexample
+script_PROGNAME=this-script
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
 mbfl_INSTALLED=$(mbfl-config) &>/dev/null
@@ -454,7 +455,7 @@ m4_include(realscript.sh)
 @end example
 
 @noindent
-and processing it with the following make rule:
+and processing it with the following makefile rule:
 
 @example
 M4      = ...
@@ -474,6 +475,8 @@ At this point, though, it is better to use the @mbfl{} preprocessor.
 @node overview notes
 @section Notes
 
+
+When using @mbfl{} we want to be aware of the following:
 
 @itemize
 @item
