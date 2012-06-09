@@ -15,6 +15,14 @@
 @code{\NAME\}
 @end macro
 
+@macro bashref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,bash}
+@end macro
+
+@macro mfour{}
+@command{m4}
+@end macro
+
 @c page
 @c ------------------------------------------------------------
 @c Values.
@@ -399,8 +407,8 @@ This code is included in the @mbfl{} distribution in the
 
 
 Another solution is to directly include the library in the script; this
-is easy if we preprocess our scripts with @gnu{} M4.  We only need to
-put the following in the script:
+is easy if we preprocess our scripts with @gnu{} @mfour{}.  We only need
+to put the following in the script:
 
 @example
 m4_changequote([[,]])
@@ -557,8 +565,8 @@ The @mbfl{} script preprocessor is a command line program named
 @mbfl{} library.  It can remove comments, blank lines, blank characters
 at the beginning of lines, and it can expand macros.
 
-The macro preprocessing is done with the @gnu{} m4 program, using a
-library of macros called @file{preprocessor.m4} which is installed on
+The macro preprocessing is done with the @gnu{} @mfour{} program, using
+a library of macros called @file{preprocessor.m4} which is installed on
 the system with the @mbfl{} package.
 
 The use of the preprocessor is fully optional: every feature of the
@@ -593,20 +601,21 @@ additionally the following options are supported.
 Do not filter out comments.
 
 @item --add-bash
-Add @code{#!/usr/local/bin/bash} at the beginning of the output.
+Add @code{#!$BASH} at the beginning of the output, where @code{BASH} is
+the built--in variable of Bash, @bashref{Bash Variables, BASH}.
 
 @item --define=VALUE
-Define a new symbols (M4 syntax).  This is equivalent to the
-@option{--define} option of M4.
+Define a new symbol (@mfour{} syntax).  This is equivalent to the
+@option{--define} option of @mfour{}.
 
 @item --include=VALUE
 Add a search path for files.  @code{VALUE} must be a directory pathname
-and it is handed to M4 to search for macro files.  Can be used multiple
-times.
+and it is handed to @mfour{} to search for macro files.  Can be used
+multiple times.
 
 @item --library=VALUE
-Include an M4 library.  @code{VALUE} must be the name of an M4 macro
-file which is evaluated before the input files.
+Include an @mfour{} library.  @code{VALUE} must be the name of an
+@mfour{} macro file which is evaluated before the input files.
 
 @item -oVALUE
 @itemx --output=VALUE
@@ -614,7 +623,7 @@ Select an output file, @code{-} for stdout.
 
 @item -e
 @itemx --eval
-If used evaluates the output script in bash, instead of printing it.
+If used evaluates the output script in @bash{}, instead of printing it.
 @end table
 
 @c page
@@ -622,9 +631,9 @@ If used evaluates the output script in bash, instead of printing it.
 @section Macros library
 
 
-The M4 preprocessor is invoked by @command{mbflpp.sh} with the
-@option{--prefix-builtins} option; so all the M4 built in macros and
-directives are available prefixed with @code{m4_}.
+The @mfour{} preprocessor is invoked by @command{mbflpp.sh} with the
+@option{--prefix-builtins} option; so all the @mfour{} built in macros
+and directives are available prefixed with @code{m4_}.
 
 
 @deffn {Preprocessor Macro} mandatory_parameter @var{varname} @var{number} @var{name}
@@ -643,7 +652,7 @@ mandatory_parameter(PATHNAME, 2, file pathname)
 is expanded to:
 
 @smallexample
-local PATHNAME=$@{2:?"missing file pathname parameter to '$@{FUNCNAME@}'"@}
+local PATHNAME=$@{2:?"missing file pathname parameter to '$FUNCNAME'"@}
 @end smallexample
 
 Another example the following function:
@@ -653,7 +662,7 @@ function message () @{
   mandatory_parameter(PROGNAME, 1, program name)
   mandatory_parameter(STRING,   2, message string)
 
-  printf '%s: %s\n' "$@{PROGNAME@}" "$@{STRING@}"
+  printf '%s: %s\n' "$PROGNAME" "$STRING"
 @}
 @end example
 
@@ -662,10 +671,10 @@ is expanded to:
 
 @smallexample
 function message () @{
-  local PROGNAME=$@{1:?"missing program name parameter to '$@{FUNCNAME@}'"@}
-  local STRING=$@{2:?"missing message string parameter to '$@{FUNCNAME@}'"@}
+  local PROGNAME=$@{1:?"missing program name parameter to '$FUNCNAME'"@}
+  local STRING=$@{2:?"missing message string parameter to '$FUNCNAME'"@}
 
-  printf '%s: %s\n' "$@{PROGNAME@}" "$@{STRING@}"
+  printf '%s: %s\n' "$PROGNAME" "$STRING"
 @}
 @end smallexample
 
@@ -690,7 +699,7 @@ optional_parameter(COUNT, 2, 123)
 is expanded to:
 
 @smallexample
-local count=$@{2:-123@}"
+local COUNT=$@{2:-123@}"
 @end smallexample
 @end deffn
 
@@ -762,15 +771,13 @@ used) just after the content of @code{script_USAGE}.
 One or more lines of text to be displayed at the end of the help screen,
 after the options description.  It should contain examples of common
 invocations for the script.
-
-The string is used as first argument to @bfunc{printf}, so escape
-sequences like @code{\t} and @code{\n} are expanded.
 @end defvar
 
 All the text in these variables is used as argument to the @code{printf}
 built--in command; in particular: @code{script_DESCRIPTION} and
 @code{script_EXAMPLES} are used as first argument to @code{printf}, so
-the escape sequences are evaluated.
+the escape sequences (in particular @code{\t} and @code{\n}) are
+expanded.
 
 @c ------------------------------------------------------------
 
@@ -810,7 +817,7 @@ is not the empty string.
 @defun mbfl_read_maybe_null @var{varname}
 Read a line from its stdin and store it in a variable named
 @var{varname}.  If @bfunc{mbfl_option_null} returns true: the null
-character is used as terminator, like in:
+character is used as terminator, as in:
 
 @example
 IFS= read -d $'\x00'
@@ -831,16 +838,16 @@ This problem can arise when using scripting languages with some sort of
 
 The solution is to encode the argument string in hexadecimal or octal
 format strings, so that all the damned characters are converted to
-``good'' ones.  The the Bash script can convert them back.
+``good'' ones.  The Bash script can convert them back.
 
 
-@defun mbfl_decode_hex @var{string}
-Decodes a hex string and outputs it on stdout.
+@defun mbfl_decode_hex @var{hex_string}
+Decode a hex string and outputs it on stdout.
 @end defun
 
 
-@defun mbfl_decode_oct @var{string}
-Decodes a oct string and outputs it on stdout.
+@defun mbfl_decode_oct @var{oct_string}
+Decode a oct string and outputs it on stdout.
 @end defun
 
 

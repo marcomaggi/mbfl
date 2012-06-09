@@ -7,7 +7,8 @@
 #	This script shows how an MBFL script should be organised
 #	to use MBFL.
 #
-# Copyright (c) 2004, 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2004, 2005, 2009, 2012 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -32,7 +33,7 @@
 
 script_PROGNAME=template.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2004, 2005, 2009'
+script_COPYRIGHT_YEARS='2004, 2005, 2009, 2012'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
