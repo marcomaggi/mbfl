@@ -988,7 +988,7 @@ return code is zero; else the return code is one.
 
 @defun mbfl_file_is_absolute @var{pathname}
 Return true if the first character in @var{pathname} is a slash
-(@code{/}); else returns false.
+(@code{/}); else return false.
 @end defun
 
 
