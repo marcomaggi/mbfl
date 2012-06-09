@@ -75,6 +75,14 @@ to really do it:
 
     $ make install DESTDIR=/tmp/marco/mbfl
 
+  Notice  that, when  running  "make check",  we can  select
+which test  to run by  redefining the "TESTS"  variable; for
+example:
+
+    $ make check TESTS=../tests/program.test
+
+will run only the "program.test" file.
+
 
 4. Usage
 --------
