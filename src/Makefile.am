@@ -16,7 +16,18 @@ EXTRA_DIST	= \
 	modules/main.sh.m4		\
 	modules/variable.sh.m4		\
 	modules/system.sh.m4		\
-	modules/interfaces.sh.m4
+	modules/interfaces.sh.m4	\
+	\
+	lib/libmbfl.sh.m4		\
+	lib/libmbfltest.sh		\
+	lib/loader.sh			\
+	lib/preprocessor.m4		\
+	\
+	backup/libmbfl.sh		\
+	backup/libmbfltest.sh		\
+	backup/mbflpp.sh		\
+	backup/mbfltest.sh		\
+	backup/preprocessor.m4
 
 MBFL_MODULES		= \
 	base.sh		encode.sh	file.sh		\
