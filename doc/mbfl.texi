@@ -7,6 +7,11 @@
 @include version.texi
 @include macros.texi
 
+@c page
+@c ------------------------------------------------------------
+@c Custom macros.
+@c ------------------------------------------------------------
+
 @macro mbfl{}
 @acronym{MBFL}
 @end macro
@@ -21,6 +26,12 @@
 
 @macro mfour{}
 @command{m4}
+@end macro
+
+@macro CindexCommand{COMMAND}
+@cindex @command{\COMMAND\}, command
+@cindex Command @command{\COMMAND\}
+@cindex Executing command @command{\COMMAND\}
 @end macro
 
 @c page
@@ -1044,16 +1055,32 @@ false otherwise.
 * file commands copy::          Copying files.
 * file commands move::          Moving files.
 * file commands removing::      Removing files and directories.
-* file commands tar::           Manipulating tar archives.
 * file commands symlink::       Creating symbolic links.
+* file commands tar::           Manipulating tar archives.
 * file commands perms::         Set/get file permissions.
 * file commands compress::      Compressing files.
 @end menu
 
-
 @c page
 @node file commands listing
 @subsection Retrieving informations
+
+
+@cindex Files, listing
+@cindex Files, owner
+@cindex Files, group
+@cindex Files, size
+@cindex Listing files
+@cindex Owner of files
+@cindex Group of files
+@cindex Size of files
+@cindex Getting owner of files
+@cindex Getting group of files
+@cindex Getting size of files
+@CindexCommand{ls}
+@CindexCommand{readlink}
+@CindexCommand{chmod}
+@CindexCommand{chown}
 
 
 @defun mbfl_file_enable_listing
@@ -1099,7 +1126,7 @@ directory).  Echo to stdout the normalised pathname.
 The command line of @command{readlink} is:
 
 @example
-readlink -fn $@var{pathname}
+readlink -fn "$@var{pathname}"
 @end example
 @end defun
 
@@ -1112,6 +1139,11 @@ referenced by @var{pathname}, then print it.
 @c page
 @node file commands mkdir
 @subsection Creating directories
+
+
+@cindex Creating directories
+@cindex Directories, creating
+@CindexCommand{mkdir}
 
 
 @defun mbfl_file_enable_make_directory
@@ -1145,6 +1177,11 @@ even if no command has been executed.
 @c page
 @node file commands copy
 @subsection Copying files
+
+
+@cindex Copying files
+@cindex Files, copying
+@CindexCommand{cp}
 
 
 At present, copying of directories is not supported; we have to create
@@ -1184,6 +1221,11 @@ value is 1.
 @subsection Moving files
 
 
+@cindex Moving files
+@cindex Files, moving
+@CindexCommand{mv}
+
+
 @defun mbfl_file_enable_move
 Declare the commands required to move files and directories.
 @ref{program declaring, Declaring the intention to use a program}
@@ -1217,7 +1259,12 @@ value is 1.
 @subsection Removing files and directories
 
 
-@noindent
+@cindex Removing files
+@cindex Files, removing
+@CindexCommand{rm}
+@CindexCommand{rmdir}
+
+
 Files removal is forced: the @code{--force} option to @command{rm} is
 always used.  It is responsibility of the caller to validate the
 operation before invoking these functions.
@@ -1277,6 +1324,12 @@ the directory is not empty.
 @subsection Creating symbolic links
 
 
+@cindex Files, symbolic links
+@cindex Symbolic links
+@cindex Creating symbolic links
+@CindexCommand{ln}
+
+
 @defun mbfl_file_enable_symlink
 Declare the commands required to create symbolic links.  @ref{program
 declaring, Declaring the intention to use a program}
@@ -1289,10 +1342,15 @@ The programs are: @command{ln}.
 Create a symbolic link.
 @end defun
 
-
 @c page
 @node file commands tar
 @subsection Manipulating tar archives
+
+
+@cindex @command{tar} archives
+@cindex Creating tar archives
+@cindex Archives, @command{tar}
+@CindexCommand{tar}
 
 
 Remember that when we execute a script with the @option{--test} option:
