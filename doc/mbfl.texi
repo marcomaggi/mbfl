@@ -1712,6 +1712,11 @@ print a message.
 @chapter Parsing command line options
 
 
+@cindex Parsing command line options
+@cindex Command line options, parsing
+@cindex Program command line options, parsing
+
+
 The getopt module defines a set of procedures to be used to process
 command line arguments with the following format:
 
