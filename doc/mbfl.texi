@@ -1419,6 +1419,12 @@ return 1.
 @subsection Set/get file permissions
 
 
+@cindex Files, permissions
+@cindex Getting file permissions
+@cindex Permissions of files
+@CindexCommand{chmod}
+
+
 @defun mbfl_file_enable_permissions
 Declare the intention to use the programs required to get/set file
 permissions.  @ref{program declaring, Declaring the intention to use a
@@ -1447,6 +1453,12 @@ form accepted by @command{chmod}.
 @c page
 @node file commands compress
 @subsection Compressing files
+
+
+@cindex Files, compression
+@cindex Compressing files
+@CindexCommand{gzip}
+@CindexCommand{bzip2}
 
 
 This module has an internal state, stored in global variables.  The
@@ -1524,7 +1536,11 @@ compressor program.
 @section Testing file existence and the like
 
 
-When using the following functions: The optional argument
+@cindex Files, existence and permissions
+@cindex Existence of files
+
+
+When using the following functions: the optional argument
 @var{PRINT_ERROR} will cause an error message to be printed with
 @bfunc{mbfl_message_error} if the test fails; the argument value must be
 @code{print_error}.
@@ -1629,6 +1645,11 @@ executable.
 @section Reading and writing files with privileges
 
 
+@cindex Files, reading and writing
+@cindex Reading and writing files
+@cindex Writing and reading files
+
+
 The following functions perform actions that can normally be done
 directly with the redirection operators of Bash:
 
@@ -1668,6 +1689,11 @@ Read and print @strong{all} the contents of @var{filename}.
 @c page
 @node file misc
 @section Miscellaneous commands
+
+
+@cindex Changing directory
+@cindex Directory, changing
+@cindex Files, changing directory
 
 
 @defun mbfl_change_directory @var{dirname} ?...?
