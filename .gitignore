@@ -41,3 +41,4 @@ missing
 mkinstalldirs
 ltmain.sh
 m4/
+test-driver
