@@ -1,6 +1,6 @@
 ;;; sendmail-mbfl.el --- send mail with sendmail-mbfl.sh
 
-;; Copyright (C) 2009  Marco Maggi <marcomaggi@gna.org>
+;; Copyright (C) 2009, 2013  Marco Maggi <marcomaggi@gna.org>
 ;; Copyright (C) 1995,  1996, 1999, 2000, 2001, 2002,  2003, 2004, 2005,
 ;; 2006, 2007, 2008 Free Software Foundation, Inc.
 
@@ -94,15 +94,16 @@
   :group 'senmdail-mbfl)
 
 (defcustom sendmail-mbfl-process-connection-type nil
-  "*Value  for  `process-connection-type'  to use  when  starting
-sendmail-mbfl process."
+  "*Value for `process-connection-type' to use when starting sendmail-mbfl process."
   :version "22.3"
   :type 'boolean
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-envelope-from-function 'sendmail-mbfl-envelope-from
-  "Select a function  to call to acquire, from  the current buffer,
-the  envelope email  address of  the sender,  to be  used  in the
+  "Select a function to find the sender of an email message.
+
+Select a  function to call  to acquire, from the  current buffer,
+the  envelope email  address of  the sender,  to be  used in  the
 \"MAIL FROM\" SMTP command.
 
 The function  is invoked with no  arguments and it  must return a
@@ -116,8 +117,10 @@ default it is set to `sendmail-mbfl-envelope-from'."
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-envelope-to-function 'sendmail-mbfl-envelope-to
-  "Select a function  to call to acquire, from  the current buffer,
-the envelope email addresses of  the receivers, to be used in the
+  "Select a function to find the receiver of an email message.
+
+Select a  function to call  to acquire, from the  current buffer,
+the envelope email addresses of the  receivers, to be used in the
 \"RCPT TO\" SMTP command.
 
 The function  is invoked with no  arguments and it  must return a
@@ -131,11 +134,11 @@ default it is set to `sendmail-mbfl-envelope-to'."
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-extract-addresses-function 'sendmail-mbfl-extract-addresses
-  "Select a function to call to extract a list of email addresses
-from an  email header.  It is  invoked with no  arguments and the
-buffer narrowed to the header to examine.
+  "Select a function to extract email addresses.
 
-The function  is invoked with no  arguments and it  must return a
+Select a  function to call to  extract a list of  email addresses
+from an email header.  It is  invoked with the buffer narrowed to
+the header  to examine, with  no arguments  and it must  return a
 list of strings representing email addresses, or nil.
 
 The  selected function  is used  by `sendmail-mbfl-envelope-from'
@@ -145,7 +148,9 @@ and `sendmail-mbfl-envelope-to'."
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-hostname-function 'sendmail-mbfl-hostname
-  "Select a function to call  to extract the hostname of the SMTP
+  "Select a function to extract the hostname from a hostinfo file.
+
+Select a  function to call  to extract  the hostname of  the SMTP
 server to used.  The result is used as search key in the selected
 hostinfo file.
 
@@ -160,7 +165,9 @@ default it is set to `sendmail-mbfl-hostname'."
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-username-function 'sendmail-mbfl-username
-  "Select a function  to call to extract the  username with which
+  "Select a function to extract the username from an authinfo file.
+
+Select  a function  to call  to extract  the username  with which
 login to  the SMTP server.  The  result is used as  search key in
 the selected authinfo file.
 
@@ -175,30 +182,29 @@ default it is set to `sendmail-mbfl-username'."
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-host-info (expand-file-name "~/.hostinfo")
-  "The pathname of the file holding informations about known SMTP
-servers."
+  "The pathname of the file holding informations about known SMTP servers."
   :version "22.3"
   :type 'string
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-auth-info (expand-file-name "~/.authinfo")
-  "The  pathname of  the  file holding  informations about  known
-accounts at SMTP servers."
+  "The pathname of the file holding informations about known accounts at SMTP servers."
   :version "22.3"
   :type 'string
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-connector "openssl"
-  "Select  the  external program  to  use  to  establish the  TLS
-transport  layer.   Valid  values  are the  strings:  \"gnutls\",
-\"openssl\".  The default is \"openssl\"."
+  "Select the external program used to establish a TLS transport layer.
+
+Select the external program to use to establish the TLS transport
+layer.  Valid  values are  the strings:  \"gnutls\", \"openssl\".
+The default is \"openssl\"."
   :version "22.3"
   :type 'string
   :group 'sendmail-mbfl)
 
 (defcustom sendmail-mbfl-timeout 5
-  "Select  the timeout in  seconds for  reading answers  from the
-SMTP server.  The default is 5."
+  "Select the timeout in seconds for reading answers from the SMTP server. The default is 5."
   :version "22.3"
   :type 'integer
   :group 'sendmail-mbfl)
@@ -222,11 +228,13 @@ SMTP server.  The default is 5."
 
 
 (defun sendmail-mbfl-envelope-from ()
-  "Interpret the  current buffer as  an email message  and search
-the contents for an email  address to be used as envelope sender.
-It examines the headers \"From\" and \"Sender\", in this order.
+  "Extract the sender address.
 
-Return  a single string  representing the  email address.   If no
+Interpret the current  buffer as an email message  and search the
+contents for an email address to  be used as envelope sender.  It
+examines the headers \"From\" and \"Sender\", in this order.
+
+Return a  single string  representing the  email address.   If no
 suitable address is found: an error is raised."
   (let ((addresses (cond
 		    ((message-field-value "From")
@@ -244,19 +252,21 @@ suitable address is found: an error is raised."
   (message "Envelope sender address: %s" (sendmail-mbfl-envelope-from)))
 
 (defun sendmail-mbfl-envelope-to ()
-  "Interpret the  current buffer as  an email message  and search
-the  contents  for  email   addresses  to  be  used  as  envelope
-receivers.  It examines the headers \"To\", \"Cc\" and \"Bcc\".
+  "Find an email receiver in the current buffer.
 
-Return  a list of  strings representing  email addresses.   If no
+Interpret the current  buffer as an email message  and search the
+contents for  email addresses to  be used as  envelope receivers.
+It examines the headers \"To\", \"Cc\" and \"Bcc\".
+
+Return a  list of  strings representing  email addresses.   If no
 suitable address is found: an error is raised."
   (let* ((receivers (apply 'nconc
-			   (mapcar '(lambda (HEADER)
-				      (when (message-field-value HEADER)
-					(sendmail-mbfl-extract-address-trampoline HEADER)))
+			   (mapcar (function (lambda (HEADER)
+					       (when (message-field-value HEADER)
+						 (sendmail-mbfl-extract-address-trampoline HEADER))))
 				   '("To" "Cc" "Bcc")))))
     (if (null receivers)
-	(error "Unable to find receivers addresses.")
+	(error "unable to find receivers addresses")
       receivers)))
 
 (defun sendmail-mbfl-envelope-to/message ()
@@ -264,8 +274,10 @@ suitable address is found: an error is raised."
   (message "Envelope receiver address: %s" (sendmail-mbfl-envelope-to)))
 
 (defun sendmail-mbfl-extract-address-trampoline (HEADER)
-  "Move to the specified  HEADER and extract email addresses from
-the field.  Return the list of  addresses as strings or nil if no
+  "Move to the specified HEADER and extract email addresses from the field.
+
+Move to the specified HEADER and extract email addresses from the
+field.  Return  the list  of addresses  as strings  or nil  if no
 addresses are found.
 
 Addresses  are  extracted  using  the function  selected  by  the
@@ -277,9 +289,11 @@ customisable variable `sendmail-mbfl-extract-addresses-function'."
       (funcall sendmail-mbfl-extract-addresses-function))))
 
 (defun sendmail-mbfl-extract-addresses ()
-  "Extract a list of email addresses from the current buffer.  It
+  "Extract a list of email addresses from the current buffer.
+
+Extract a  list of email  addresses from the current  buffer.  It
 must  be  invoked with  the  buffer  narrowed  to the  header  to
-examine.  Return a list of  email addresses as strings, or nil if
+examine.  Return a list of email  addresses as strings, or nil if
 no address is found."
   (let ((addresses nil)
 	(rex (concat "[[:space:]]*<?[[:space:]]*"
@@ -293,9 +307,11 @@ no address is found."
 
 
 (defun sendmail-mbfl-hostname ()
-  "Extract,  from the current  buffer, the  hostname of  the SMTP
-server to  be used to  send the message.   The result is  used as
-search key in the selected hostinfo file.
+  "Extract the hostname of the SMTP server to be used to send the message.
+
+Extract, from the current buffer, the hostname of the SMTP server
+to be used to send the message.  The result is used as search key
+in the selected hostinfo file.
 
 Return a  string representing  the hostname; if  it is  unable to
 determine the hostname: raise an error."
@@ -303,15 +319,16 @@ determine the hostname: raise an error."
 	 (ell		(split-string address "@" t)))
     (if (= 2 (length ell))
 	(cadr ell)
-      (error "unable to extract hostname from address: %s"
-	     from-address))))
+      (error "unable to extract hostname from address: %s" address))))
 
 (defun sendmail-mbfl-hostname/message ()
   (interactive)
   (message "Hostname: %s" (sendmail-mbfl-hostname)))
 
 (defun sendmail-mbfl-username ()
-  "Extract, from  the current buffer, the username  with which to
+  "Extract the username with which to login to the SMTP server.
+
+Extract,  from the  current buffer,  the username  with which  to
 login to  the SMTP server.  The  result is used as  search key in
 the selected authinfo file.
 
@@ -321,8 +338,7 @@ determine the username: raise an error."
 	 (ell		(split-string address "@" t)))
     (if (= 2 (length ell))
 	(car ell)
-      (error "unable to extract username from address: %s"
-	     from-address))))
+      (error "unable to extract username from address: %s" address))))
 
 (defun sendmail-mbfl-username/message ()
   (interactive)
@@ -330,8 +346,10 @@ determine the username: raise an error."
 
 
 (defun sendmail-mbfl-normalise-message ()
-  "Normalise the email  message in the current buffer  so that it
-is ready to be posted or delivered.  Scan the headers for invalid
+  "Normalise the email message in the current buffer.
+
+Normalise the email  message in the current buffer so  that it is
+ready to  be posted or  delivered.  Scan the headers  for invalid
 lines  and try  to  fix  them.  Scan  the  message for  mandatory
 headers and, if missing, add  them; this may require querying the
 user for informations.
@@ -402,9 +420,11 @@ Large  pieces of  this  function are  from `smtpmail-send-it'  in
   (message "sendmail-mbfl: completed message normalisation."))
 
 (defun sendmail-mbfl-prepare-message-for-mta ()
-  "Prepare the email message in  the current buffer to be sent to
-an MTA.  Headers like \"Fcc\"  and \"Bcc\" are removed.  It is to
-be called AFTER acquiring  sender and receiver addresses from the
+  "Prepare the email message in the current buffer to be sent to an MTA.
+
+Prepare the email message in the  current buffer to be sent to an
+MTA.  Headers like \"Fcc\" and \"Bcc\"  are removed.  It is to be
+called  AFTER acquiring  sender and  receiver addresses  from the
 headers."
   (message "sendmail-mbfl: preparing message...")
   (save-excursion
@@ -416,8 +436,10 @@ headers."
 
 
 (defun sendmail-mbfl-delivery ()
-  "Perform special  delivery of the email message  in the current
-buffer.   If  the  message  has  an \"Fcc\"  header,  deliver  is
+  "Perform special delivery of the email message in the current buffer.
+
+Perform  special delivery  of the  email message  in the  current
+buffer.   If  the  message  has an  \"Fcc\"  header,  deliver  is
 performed relying on `mail-do-fcc' from `sendmail.el'.
 
 It is to be  called after `sendmail-mbfl-normalise-message' or an
@@ -441,8 +463,9 @@ equivalent normalisation has been applied to the message."
 
 
 (defun sendmail-mbfl-post ()
-  "Post the  email message  in the current  buffer using  an MTA.
-Posting     involves:
+  "Post the email message in the current buffer using an MTA.
+
+Posting involves:
 
 1. Preparing the message with `sendmail-mbfl-prepare-message-for-mta'.
 
@@ -601,9 +624,10 @@ destination buffer to be equal to the ones of the source buffer."
 
 
 (defun send-mail-with-mbfl ()
-  "Implement a  method of sending email messages  to a SMTP/ESMTP
-server using an external program.  It supports plain SMTP session
-as well as sessions encrypted with the SSL/TLS protocol.
+  "Implement a method of sending email messages to a SMTP/ESMTP server using an external program.
+
+It supports plain SMTP session as well as sessions encrypted with
+the SSL/TLS protocol.
 
 To handle  the encrypted  layer it can  use both  the \"openssl\"
 program,  distributed   with  OpenSSL,  and   the  \"gnutls-cli\"

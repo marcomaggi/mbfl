@@ -12,9 +12,7 @@ dist_examples_DATA	= at.sh compress.sh template.sh
 
 if WANT_SENDMAIL
 
-sendmailemacsdir	= $(datadir)/emacs/site-lisp
-dist_sendmailemacs_DATA	= sendmail-mbfl.el
-
+dist_lisp_LISP		= sendmail-mbfl.el
 dist_bin_SCRIPTS	= sendmail-mbfl.sh
 
 endif

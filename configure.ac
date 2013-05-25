@@ -2,7 +2,7 @@
 #
 
 AC_PREREQ([2.69])
-AC_INIT([Marcos Bash Functions Library],[1.3b9],[marco.maggi-ipsu@poste.it],
+AC_INIT([Marcos Bash Functions Library],[1.3b10],[marco.maggi-ipsu@poste.it],
   [mbfl],[http://github.com/marcomaggi/mbfl])
 AC_CONFIG_SRCDIR([src/])
 AM_INIT_AUTOMAKE
@@ -22,6 +22,7 @@ else
   AC_MSG_RESULT([no])
 fi
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
+AM_PATH_LISPDIR
 
 AC_CHECK_PROG([BASH_PROGRAM],[bash],[bash],[:])
 
