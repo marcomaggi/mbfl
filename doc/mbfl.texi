@@ -60,7 +60,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009, 2010, 2012
+@set COPYRIGHT_YEARS            2003-2005, 2009, 2010, 2012-2013
 
 @c page
 @c ------------------------------------------------------------

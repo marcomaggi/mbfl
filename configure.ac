@@ -5,11 +5,16 @@ AC_PREREQ([2.69])
 AC_INIT([Marcos Bash Functions Library],[1.3b10],[marco.maggi-ipsu@poste.it],
   [mbfl],[http://github.com/marcomaggi/mbfl])
 AC_CONFIG_SRCDIR([src/])
-AM_INIT_AUTOMAKE
+AC_CONFIG_MACRO_DIR([autotools])
+AC_CONFIG_AUX_DIR([autotools])
+AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip])
+AM_MAINTAINER_MODE
 
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AC_CHECK_PROG([BASH_PROGRAM],[bash],[bash],[:])
+AM_PATH_LISPDIR
 
 AC_ARG_WITH([sendmail],
   AS_HELP_STRING([--with-sendmail],[enable installation of sendmail example script and emacs interface]),
@@ -22,9 +27,6 @@ else
   AC_MSG_RESULT([no])
 fi
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
-AM_PATH_LISPDIR
-
-AC_CHECK_PROG([BASH_PROGRAM],[bash],[bash],[:])
 
 AC_CONFIG_FILES([Makefile meta/Makefile
   src/Makefile doc/Makefile tests/Makefile

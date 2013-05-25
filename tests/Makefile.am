@@ -17,20 +17,29 @@ EXTRA_DIST		= \
 	signal.sh		\
 	signaltest.sh
 
-BASH_PROGRAM		= @BASH_PROGRAM@
-
 # Resetting the PATH allows us to load files with the "source" command.
-MBFL_TESTS_ENV		= PATH=$(srcdir):$(builddir)/../src:$(srcdir)/../src/lib:$(PATH)
+MBFL_TESTS_ENV		= PATH=$(srcdir):$(builddir)/../src:$(srcdir)/../src/lib:$(PATH); export PATH;
 # This is because  I mount the "/tmp" directory  on a separate partition
 # with "noexec" attribute; this  causes tests for executability of files
 # to fail if the temporary test files are created under "/tmp".
-MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp examplesdir=$(srcdir)/../examples
-MBFL_TESTS_ENV		+= MBFL_LIBRARY=$(builddir)/../src/libmbfl.sh
-MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH)
-MBFL_TESTS_VERBENV	= TESTSUCCESS=yes TESTSTART=yes
+MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp examplesdir=$(srcdir)/../examples; export TMPDIR;
+MBFL_TESTS_ENV		+= MBFL_LIBRARY=$(builddir)/../src/libmbfl.sh; export MBFL_LIBRARY;
+MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
+MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
 MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(BASH_PROGRAM)
 
-TESTS_ENVIRONMENT	= $(MBFL_TESTS_RUN)
+#page
+#### interface to "make check"
+
+# Read "Parallel Test Harness" in the documentation of GNU Automake to
+# understand how to use this interface for "make check".
+#
+# We must make sure that this ends with a semicolon!!!
+AM_TESTS_ENVIRONMENT	= $(MBFL_TESTS_VERBENV) $(MBFL_TESTS_ENV)
+TEST_EXTENSIONS		= .test
+TEST_LOG_COMPILER	= $(BASH_PROGRAM)
+AM_TEST_LOG_FLAGS	= $(user_flags)
+
 TESTS			=	\
 	encode.test		\
 	file.test		\
