@@ -1,0 +1,17 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	url = /home/{git}/devel-bash/mbfl.git
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[marcomaggi]
+	package-name = mbfl
+	backup-section = devel-bash
+[remote "github"]
+	url = git@github.com:marcomaggi/mbfl.git
+	fetch = +refs/heads/*:refs/remotes/github/*
