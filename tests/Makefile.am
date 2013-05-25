@@ -17,19 +17,19 @@ EXTRA_DIST		= \
 	signal.sh		\
 	signaltest.sh
 
+#page
+#### interface to "make check"
+
 # Resetting the PATH allows us to load files with the "source" command.
 MBFL_TESTS_ENV		= PATH=$(srcdir):$(builddir)/../src:$(srcdir)/../src/lib:$(PATH); export PATH;
 # This is because  I mount the "/tmp" directory  on a separate partition
 # with "noexec" attribute; this  causes tests for executability of files
 # to fail if the temporary test files are created under "/tmp".
-MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp examplesdir=$(srcdir)/../examples; export TMPDIR;
+MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp; export TMPDIR; examplesdir=$(srcdir)/../examples; export examplesdir;
 MBFL_TESTS_ENV		+= MBFL_LIBRARY=$(builddir)/../src/libmbfl.sh; export MBFL_LIBRARY;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
 MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(BASH_PROGRAM)
-
-#page
-#### interface to "make check"
 
 # Read "Parallel Test Harness" in the documentation of GNU Automake to
 # understand how to use this interface for "make check".
@@ -53,5 +53,15 @@ TESTS			=	\
 	script.test		\
 	compress.test
 
+#page
+#### interface to "make installcheck"
+
+MBFL_INSTCHECK_FLAGS	= $(user_flags)
+MBFL_INSTCHECK_ENV	= PATH=$(srcdir):"`mbfl-config --libpath`":$(PATH); export PATH;
+MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR; examplesdir=$(srcdir)/../examples; export examplesdir;
+MBFL_INSTCHECK_RUN	= $(MBFL_INSTCHECK_ENV) $(BASH_PROGRAM) $(MBFL_INSTCHECK_FLAGS)
+
+installcheck-local:
+	@for f in $(TESTS); do $(MBFL_INSTCHECK_RUN) $(srcdir)/$$f; done
 
 ### end of file
