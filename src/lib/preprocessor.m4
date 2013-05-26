@@ -9,7 +9,7 @@ m4_divert(-1)m4_dnl
 #
 #	Library of macros to preprocess BASH scripts using MBFL.
 #
-# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -29,10 +29,10 @@ m4_divert(-1)m4_dnl
 
 m4_changequote(`[[', `]]')
 
-m4_define([[mandatory_parameter]],[[local $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])
-m4_define([[optional_parameter]],[[local $1="${$2:-$3}"]])
+m4_define([[mbfl_mandatory_parameter]],[[local $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])
+m4_define([[mbfl_optional_parameter]],[[local $1="${$2:-$3}"]])
 
-m4_define([[command_line_argument]],[[local $1="${ARGV[$2]}"]])
+m4_define([[mbfl_command_line_argument]],[[local $1="${ARGV[$2]}"]])
 
 ### end of file
 # Local Variables:

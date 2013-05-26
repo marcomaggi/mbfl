@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2004-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -68,8 +68,8 @@ function exit_failure () {
     exit_because_failure
 }
 function mbfl_main_declare_exit_code () {
-    mandatory_parameter(CODE, 1, exit code)
-    mandatory_parameter(DESCRIPTION, 2, exit code name)
+    mbfl_mandatory_parameter(CODE, 1, exit code)
+    mbfl_mandatory_parameter(DESCRIPTION, 2, exit code name)
     local i=${#mbfl_main_EXIT_CODES[@]}
     mbfl_main_EXIT_NAMES[$i]=$DESCRIPTION
     mbfl_main_EXIT_CODES[$i]=$CODE
@@ -89,7 +89,7 @@ function mbfl_main_list_exit_codes () {
     done
 }
 function mbfl_main_print_exit_code () {
-    mandatory_parameter(NAME, 1, exit code name)
+    mbfl_mandatory_parameter(NAME, 1, exit code name)
     local i
     for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do test "${mbfl_main_EXIT_NAMES[${i}]}" = "$NAME" && \
@@ -97,7 +97,7 @@ function mbfl_main_print_exit_code () {
     done
 }
 function mbfl_main_print_exit_code_names () {
-    mandatory_parameter(CODE, 1, exit code)
+    mbfl_mandatory_parameter(CODE, 1, exit code)
     local i
     for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do test "${mbfl_main_EXIT_CODES[${i}]}" = "$CODE" && \
@@ -242,7 +242,7 @@ function mbfl_main () {
     fi
 }
 function mbfl_invoke_script_function () {
-    mandatory_parameter(item, 1, function name)
+    mbfl_mandatory_parameter(item, 1, function name)
     if test "$(type -t $item)" = function
     then $item
     else return 0

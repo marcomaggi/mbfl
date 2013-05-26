@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -37,7 +37,7 @@ function mbfl_system_enable_programs () {
 }
 function mbfl_system_numerical_user_id_to_name () {
     local GREP CUT RESULT
-    mandatory_parameter(ID, 1, numerical user id)
+    mbfl_mandatory_parameter(ID, 1, numerical user id)
     GREP=$(mbfl_program_found grep) || exit $?
     CUT=$(mbfl_program_found cut)   || exit $?
     mbfl_program_exec ${GREP} "^[^:]\+:[^:]\+:${ID}:" /etc/passwd | \
@@ -45,7 +45,7 @@ function mbfl_system_numerical_user_id_to_name () {
 }
 function mbfl_system_user_name_to_numerical_id () {
     local GREP CUT
-    mandatory_parameter(NAME, 1, user name)
+    mbfl_mandatory_parameter(NAME, 1, user name)
     GREP=$(mbfl_program_found grep) || exit $?
     CUT=$(mbfl_program_found cut)   || exit $?
     mbfl_program_exec ${GREP} "^${NAME}" /etc/passwd | \
@@ -68,7 +68,7 @@ mbfl_symbolic_permissions[6]='rw-'
 mbfl_symbolic_permissions[7]='rwx'
 
 function mbfl_system_symbolic_to_octal_permissions () {
-    mandatory_parameter(MODE, 1, symbolic permissions)
+    mbfl_mandatory_parameter(MODE, 1, symbolic permissions)
     for ((i=0; $i < 8; ++i))
     do test "${mbfl_symbolic_permissions[$i]}" = "${MODE}" && {
             printf "${i}\n"
@@ -78,7 +78,7 @@ function mbfl_system_symbolic_to_octal_permissions () {
     return 1
 }
 function mbfl_system_octal_to_symbolic_permissions () {
-    mandatory_parameter(MODE, 1, symbolic permissions)
+    mbfl_mandatory_parameter(MODE, 1, symbolic permissions)
     printf "${mbfl_symbolic_permissions[${MODE}]}\n"
 }
 

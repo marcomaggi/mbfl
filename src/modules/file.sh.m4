@@ -8,7 +8,7 @@
 #
 #       This is a collection of file functions for the GNU BASH shell.
 #
-# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -32,14 +32,14 @@
 ## ------------------------------------------------------------
 
 function mbfl_cd () {
-    mandatory_parameter(DIRECTORY, 1, directory)
+    mbfl_mandatory_parameter(DIRECTORY, 1, directory)
     shift 1
     DIRECTORY=$(mbfl_file_normalise "${DIRECTORY}")
     mbfl_message_verbose "entering directory: '${DIRECTORY}'\n"
     mbfl_change_directory "${DIRECTORY}" "$@"
 }
 function mbfl_change_directory () {
-    mandatory_parameter(DIRECTORY, 1, directory)
+    mbfl_mandatory_parameter(DIRECTORY, 1, directory)
     shift 1
     cd "$@" "${DIRECTORY}" &>/dev/null
 }
@@ -55,7 +55,7 @@ function mbfl_change_directory () {
 # not correctly handled.
 
 function mbfl_file_extension () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
 #     PATHNAME=${PATHNAME##*/}
 #     PATHNAME=${PATHNAME#*.}
 #     printf '%s\n' "${PATHNAME}"
@@ -72,7 +72,7 @@ function mbfl_file_extension () {
     done
 }
 function mbfl_file_dirname () {
-    optional_parameter(PATHNAME, 1, '')
+    mbfl_optional_parameter(PATHNAME, 1, '')
     local i=
     # Do not change "${PATHNAME:$i:1}" with "$ch"!! We need to extract the
     # char at each loop iteration.
@@ -95,8 +95,8 @@ function mbfl_file_dirname () {
     return 0
 }
 function mbfl_file_subpathname () {
-    mandatory_parameter(PATHNAME, 1, pathname)
-    mandatory_parameter(BASEDIR, 2, base directory)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(BASEDIR, 2, base directory)
     test "${BASEDIR:$((${#BASEDIR}-1))}" = '/' && \
         BASEDIR="${BASEDIR:0:$((${#BASEDIR}-1))}"
     if test "${PATHNAME}" = "${BASEDIR}"
@@ -111,7 +111,7 @@ function mbfl_file_subpathname () {
     fi
 }
 function mbfl_p_file_remove_dots_from_pathname () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local item i
     local SPLITPATH SPLITCOUNT; declare -a SPLITPATH
     local output output_counter=0; declare -a output
@@ -138,7 +138,7 @@ function mbfl_p_file_remove_dots_from_pathname () {
     printf '%s\n' "${PATHNAME}"
 }
 function mbfl_file_rootname () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local i="${#PATHNAME}"
     test $i = 1 && {
         printf '%s\n' "${PATHNAME}"
@@ -164,7 +164,7 @@ function mbfl_file_rootname () {
     return 0
 }
 function mbfl_file_split () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local i=0 last_found=0
     mbfl_string_skip "${PATHNAME}" i /
     last_found=$i
@@ -182,7 +182,7 @@ function mbfl_file_split () {
     return 0
 }
 function mbfl_file_tail () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local i=
     for ((i="${#PATHNAME}"; $i >= 0; --i))
     do
@@ -247,7 +247,7 @@ function mbfl_p_file_normalise2 () {
     cd - >/dev/null
 }
 function mbfl_file_strip_trailing_slash () {
-    mandatory_parameter(pathname, 1, pathname)
+    mbfl_mandatory_parameter(pathname, 1, pathname)
     local len=${#pathname}
     test "${pathname:$len}" = '/' && \
         pathname=${pathname:1:$(($len-1))}
@@ -290,7 +290,7 @@ function mbfl_file_enable_remove () {
     mbfl_declare_program rmdir
 }
 function mbfl_file_remove () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force --recursive"
     mbfl_option_test || {
         mbfl_file_exists "${PATHNAME}" || {
@@ -301,7 +301,7 @@ function mbfl_file_remove () {
     mbfl_exec_rm "${PATHNAME}" ${FLAGS}
 }
 function mbfl_file_remove_file () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force"
     mbfl_option_test || {
         mbfl_file_is_file "${PATHNAME}" || {
@@ -312,7 +312,7 @@ function mbfl_file_remove_file () {
     mbfl_exec_rm "${PATHNAME}" ${FLAGS}
 }
 function mbfl_file_remove_symlink () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force"
     mbfl_option_test || {
         mbfl_file_is_symlink "${PATHNAME}" || {
@@ -323,7 +323,7 @@ function mbfl_file_remove_symlink () {
     mbfl_exec_rm "${PATHNAME}" ${FLAGS}
 }
 function mbfl_file_remove_file_or_symlink () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force"
     mbfl_option_test || {
         mbfl_file_is_file "${PATHNAME}" && ! mbfl_file_is_symlink "${PATHNAME}" || {
@@ -335,7 +335,7 @@ function mbfl_file_remove_file_or_symlink () {
 }
 function mbfl_exec_rm () {
     local RM FLAGS
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
     RM=$(mbfl_program_found rm) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
@@ -351,8 +351,8 @@ function mbfl_file_enable_copy () {
     mbfl_declare_program cp
 }
 function mbfl_file_copy () {
-    mandatory_parameter(SOURCE, 1, source pathname)
-    mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
+    mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
     mbfl_option_test || {
         mbfl_file_is_readable "${SOURCE}" || {
@@ -370,8 +370,8 @@ function mbfl_file_copy () {
     mbfl_exec_cp "${SOURCE}" "${TARGET}" "$@"
 }
 function mbfl_file_copy_to_directory () {
-    mandatory_parameter(SOURCE, 1, source pathname)
-    mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
+    mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
     mbfl_option_test || {
         { mbfl_file_is_readable    "${SOURCE}" print_error && \
@@ -386,8 +386,8 @@ function mbfl_file_copy_to_directory () {
 }
 function mbfl_exec_cp () {
     local CP FLAGS
-    mandatory_parameter(SOURCE, 1, source pathname)
-    mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
+    mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
     CP=$(mbfl_program_found cp) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
@@ -395,8 +395,8 @@ function mbfl_exec_cp () {
 }
 function mbfl_exec_cp_to_dir () {
     local CP FLAGS
-    mandatory_parameter(SOURCE, 1, source pathname)
-    mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
+    mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
     CP=$(mbfl_program_found cp) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
@@ -412,8 +412,8 @@ function mbfl_file_enable_move () {
     mbfl_declare_program mv
 }
 function mbfl_file_move () {
-    mandatory_parameter(SOURCE, 1, source pathname)
-    mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
+    mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
     mbfl_option_test || {
         mbfl_file_pathname_is_readable "${SOURCE}" print_error || {
@@ -424,8 +424,8 @@ function mbfl_file_move () {
     mbfl_exec_mv "${SOURCE}" "${TARGET}" "$@"
 }
 function mbfl_file_move_to_directory () {
-    mandatory_parameter(SOURCE, 1, source pathname)
-    mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
+    mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
     mbfl_option_test || {
         { mbfl_file_pathname_is_readable "${SOURCE}" print_error && \
@@ -440,8 +440,8 @@ function mbfl_file_move_to_directory () {
 }
 function mbfl_exec_mv () {
     local MV FLAGS
-    mandatory_parameter(SOURCE, 1, source pathname)
-    mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
+    mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
     MV=$(mbfl_program_found mv) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
@@ -449,8 +449,8 @@ function mbfl_exec_mv () {
 }
 function mbfl_exec_mv_to_dir () {
     local MV FLAGS
-    mandatory_parameter(SOURCE, 1, source pathname)
-    mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
+    mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
     MV=$(mbfl_program_found mv) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
@@ -463,8 +463,8 @@ function mbfl_exec_mv_to_dir () {
 ## ------------------------------------------------------------
 
 function mbfl_file_remove_directory () {
-    mandatory_parameter(PATHNAME, 1, pathname)
-    optional_parameter(REMOVE_SILENTLY, 2, no)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_optional_parameter(REMOVE_SILENTLY, 2, no)
     local FLAGS=
     mbfl_file_is_directory "${PATHNAME}" || {
         mbfl_message_error "pathname is not a directory '${PATHNAME}'"
@@ -479,7 +479,7 @@ function mbfl_file_remove_directory_silently () {
 }
 function mbfl_exec_rmdir () {
     local RMDIR FLAGS
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
     RMDIR=$(mbfl_program_found rmdir) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
@@ -496,16 +496,16 @@ function mbfl_file_enable_make_directory () {
 }
 function mbfl_file_make_directory () {
     local MKDIR FLAGS
-    mandatory_parameter(PATHNAME, 1, pathname)
-    optional_parameter(PERMISSIONS, 2, 0775)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_optional_parameter(PERMISSIONS, 2, 0775)
     MKDIR=$(mbfl_program_found mkdir) || exit $?
     FLAGS="--parents --mode=${PERMISSIONS}"
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec "${MKDIR}" $FLAGS "${PATHNAME}"
 }
 function mbfl_file_make_if_not_directory () {
-    mandatory_parameter(PATHNAME, 1, pathname)
-    optional_parameter(PERMISSIONS, 2, 0775)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_optional_parameter(PERMISSIONS, 2, 0775)
     mbfl_file_is_directory   "${PATHNAME}" || \
     mbfl_file_make_directory "${PATHNAME}" "${PERMISSIONS}"
     mbfl_program_reset_sudo_user
@@ -521,8 +521,8 @@ function mbfl_file_enable_symlink () {
 }
 function mbfl_file_symlink () {
     local LN FLAGS="--symbolic"
-    mandatory_parameter(ORIGINAL_NAME, 1, original name)
-    mandatory_parameter(SYMLINK_NAME, 2, symbolic link name)
+    mbfl_mandatory_parameter(ORIGINAL_NAME, 1, original name)
+    mbfl_mandatory_parameter(SYMLINK_NAME, 2, symbolic link name)
     LN=$(mbfl_program_found ln) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
     mbfl_program_exec "${LN}" ${FLAGS} "${ORIGINAL_NAME}" "${SYMLINK_NAME}"
@@ -539,18 +539,18 @@ function mbfl_file_enable_listing () {
 }
 function mbfl_file_listing () {
     local LS
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift 1
     LS=$(mbfl_program_found ls) || exit $?
     mbfl_program_exec ${LS} "$@" "${PATHNAME}"
 }
 function mbfl_file_long_listing () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local LS_FLAGS='-l'
     mbfl_file_listing "${PATHNAME}" "${LS_FLAGS}"
 }
 function mbfl_file_get_owner () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local LS_FLAGS="-l" OWNER
     set -- $(mbfl_file_p_invoke_ls) || return 1
     OWNER=$3
@@ -561,7 +561,7 @@ function mbfl_file_get_owner () {
     printf '%s\n' "${OWNER}"
 }
 function mbfl_file_get_group () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local LS_FLAGS="-l" GROUP
     set -- $(mbfl_file_p_invoke_ls) || return 1
     GROUP=$4
@@ -572,7 +572,7 @@ function mbfl_file_get_group () {
     printf '%s\n' "${GROUP}"
 }
 function mbfl_file_get_size () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
 ##    local LS_FLAGS="--block-size=1 --size"
     local output LS_FLAGS="-l"
     output=$(mbfl_file_p_invoke_ls) || return 1
@@ -587,13 +587,13 @@ function mbfl_file_p_invoke_ls () {
 }
 function mbfl_file_normalise_link () {
     local READLINK
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     READLINK=$(mbfl_program_found readlink) || exit $?
     mbfl_program_exec "${READLINK}" -fn "${PATHNAME}"
 }
 function mbfl_file_read_link () {
     local READLINK
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     READLINK=$(mbfl_program_found readlink) || exit $?
     mbfl_program_exec "${READLINK}" "${PATHNAME}"
 }
@@ -694,8 +694,8 @@ function mbfl_file_directory_is_executable () {
 }
 function mbfl_file_directory_validate_writability () {
     local code
-    mandatory_parameter(DIRECTORY, 1, directory pathname)
-    mandatory_parameter(DESCRIPTION, 2, directory description)
+    mbfl_mandatory_parameter(DIRECTORY, 1, directory pathname)
+    mbfl_mandatory_parameter(DESCRIPTION, 2, directory description)
     mbfl_message_verbose "validating ${DESCRIPTION} directory '${DIRECTORY}'\n"
     mbfl_file_is_directory              "${DIRECTORY}" print_error && \
     mbfl_file_directory_is_writable     "${DIRECTORY}" print_error
@@ -721,15 +721,15 @@ function mbfl_file_is_symlink () {
 ## ------------------------------------------------------------
 
 function mbfl_file_is_absolute () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     test "${PATHNAME:0:1}" = /
 }
 function mbfl_file_is_absolute_dirname () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_file_is_directory "${PATHNAME}" && mbfl_file_is_absolute "${PATHNAME}"
 }
 function mbfl_file_is_absolute_filename () {
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_file_is_file "${PATHNAME}" && mbfl_file_is_absolute "${PATHNAME}"
 }
 
@@ -742,31 +742,31 @@ function mbfl_file_enable_tar () {
     mbfl_declare_program tar
 }
 function mbfl_tar_create_to_stdout () {
-    mandatory_parameter(DIRECTORY, 1, directory name)
+    mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     shift
     mbfl_tar_exec --directory="${DIRECTORY}" --create --file=- "$@" .
 }
 function mbfl_tar_extract_from_stdin () {
-    mandatory_parameter(DIRECTORY, 1, directory name)
+    mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     shift
     mbfl_tar_exec --directory="${DIRECTORY}" --extract --file=- "$@"
 }
 function mbfl_tar_extract_from_file () {
-    mandatory_parameter(DIRECTORY, 1, directory name)
-    mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
+    mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
+    mbfl_mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
     mbfl_tar_exec --directory="${DIRECTORY}" --extract --file="${ARCHIVE_FILENAME}" "$@"
 }
 function mbfl_tar_create_to_file () {
-    mandatory_parameter(DIRECTORY, 1, directory name)
-    mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
+    mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
+    mbfl_mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
     mbfl_tar_exec --directory="${DIRECTORY}" --create --file="${ARCHIVE_FILENAME}" "$@" .
 }
 function mbfl_tar_archive_directory_to_file () {
     local PARENT DIRNAME
-    mandatory_parameter(DIRECTORY, 1, directory name)
-    mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
+    mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
+    mbfl_mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
     PARENT=$(mbfl_file_dirname "${DIRECTORY}")
     DIRNAME=$(mbfl_file_tail "${DIRECTORY}")
@@ -774,7 +774,7 @@ function mbfl_tar_archive_directory_to_file () {
         --file="${ARCHIVE_FILENAME}" "$@" "${DIRNAME}"
 }
 function mbfl_tar_list () {
-    mandatory_parameter(ARCHIVE_FILENAME, 1, archive pathname)
+    mbfl_mandatory_parameter(ARCHIVE_FILENAME, 1, archive pathname)
     shift
     mbfl_tar_exec --list --file="${ARCHIVE_FILENAME}" "$@"
 }
@@ -796,7 +796,7 @@ function mbfl_file_enable_permissions () {
 }
 function mbfl_file_get_permissions () {
     local LS CUT SYMBOLIC OWNER GROUP OTHER
-    mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     LS=$(mbfl_program_found ls)   || exit $?
     CUT=$(mbfl_program_found cut) || exit $?
     # Here we use '-d' even with files: it appears to work with GNU ls.
@@ -813,8 +813,8 @@ function mbfl_file_get_permissions () {
 }
 function mbfl_file_set_permissions () {
     local CHMOD
-    mandatory_parameter(PERMISSIONS, 1, permissions)
-    mandatory_parameter(PATHNAME, 2, pathname)
+    mbfl_mandatory_parameter(PERMISSIONS, 1, permissions)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     CHMOD=$(mbfl_program_found chmod) || exit $?
     mbfl_program_exec ${CHMOD} "${PERMISSIONS}" "${PATHNAME}"
 }
@@ -825,17 +825,17 @@ function mbfl_file_set_permissions () {
 ## ------------------------------------------------------------
 
 function mbfl_file_append () {
-    mandatory_parameter(STRING, 1, string)
-    mandatory_parameter(FILENAME, 2, file name)
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_mandatory_parameter(FILENAME, 2, file name)
     mbfl_program_bash_command "printf '%s' '${STRING}' >>'${FILENAME}'"
 }
 function mbfl_file_write () {
-    mandatory_parameter(STRING, 1, string)
-    mandatory_parameter(FILENAME, 2, file name)
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_mandatory_parameter(FILENAME, 2, file name)
     mbfl_program_bash_command "printf '%s' '${STRING}' >'${FILENAME}'"
 }
 function mbfl_file_read () {
-    mandatory_parameter(FILENAME, 1, file name)
+    mbfl_mandatory_parameter(FILENAME, 1, file name)
     mbfl_program_bash_command "printf '%s' \"\$(<${FILENAME})\""
 }
 
@@ -865,18 +865,18 @@ function mbfl_file_compress_select_bzip () {
     mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_bzip
 }
 function mbfl_file_compress () {
-    mandatory_parameter(FILE, 1, target file)
+    mbfl_mandatory_parameter(FILE, 1, target file)
     shift
     mbfl_p_file_compress compress "${FILE}" "$@"
 }
 function mbfl_file_decompress () {
-    mandatory_parameter(FILE, 1, target file)
+    mbfl_mandatory_parameter(FILE, 1, target file)
     shift
     mbfl_p_file_compress decompress "${FILE}" "$@"
 }
 function mbfl_p_file_compress () {
-    mandatory_parameter(MODE, 1, compression/decompression mode)
-    mandatory_parameter(FILE, 2, target file)
+    mbfl_mandatory_parameter(MODE, 1, compression/decompression mode)
+    mbfl_mandatory_parameter(FILE, 2, target file)
     shift 2
     mbfl_file_is_file "${FILE}" || {
         mbfl_message_error "compression target is not a file '${FILE}'"
@@ -892,8 +892,8 @@ function mbfl_p_file_compress () {
 
 function mbfl_p_file_compress_gzip () {
     local COMPRESSOR FLAGS DEST
-    mandatory_parameter(COMPRESS, 1, compress/decompress mode)
-    mandatory_parameter(SOURCE, 2, target file)
+    mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
+    mbfl_mandatory_parameter(SOURCE, 2, target file)
     shift 2
     COMPRESSOR=$(mbfl_program_found gzip) || exit $?
     case "${COMPRESS}" in
@@ -925,8 +925,8 @@ function mbfl_p_file_compress_gzip () {
 }
 function mbfl_p_file_compress_bzip () {
     local COMPRESSOR FLAGS DEST
-    mandatory_parameter(COMPRESS, 1, compress/decompress mode)
-    mandatory_parameter(SOURCE, 2, target file)
+    mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
+    mbfl_mandatory_parameter(SOURCE, 2, target file)
     shift 2
     COMPRESSOR=$(mbfl_program_found bzip2) || exit $?
     case "${COMPRESS}" in

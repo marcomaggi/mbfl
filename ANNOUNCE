@@ -1,0 +1,33 @@
+Subject: [announce] MBFL revision 2.0d0
+
+	       Marco's Bash Functions Library
+	       ==============================
+
+
+The MBFL is a collection of shell functions for the GNU Bash
+shell.  This  package is  an attempt to  make Bash  a viable
+solution for medium sized scripts.
+
+  The MBFL home page is at:
+
+	  <http://marcomaggi.github.com/mbfl.html>
+
+development takes place at:
+
+	    <http://github.com/marcomaggi/mbfl/>
+
+  This package makes use of the GNU Autotools.
+
+
+Notes for revision 2.0d0
+------------------------
+
+* BACKWARDS INCOMPATIBILITY The  preprocessor macros are now
+  prefixed with "mbfl_".
+
+
+
+### end of file
+# Local Variables:
+# mode: text
+# End:

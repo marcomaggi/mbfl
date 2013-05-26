@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -27,7 +27,7 @@
 #
 
 function mbfl_decode_hex () {
-    mandatory_parameter(INPUT, 1, input string)
+    mbfl_mandatory_parameter(INPUT, 1, input string)
 
     for ((i=0; $i < ${#INPUT}; i=$(($i + 2)))) ; do
         echo -en "\\x${INPUT:$i:2}"
@@ -36,7 +36,7 @@ function mbfl_decode_hex () {
 }
 
 function mbfl_decode_oct () {
-    mandatory_parameter(INPUT, 1, input string)
+    mbfl_mandatory_parameter(INPUT, 1, input string)
 
     for ((i=0; $i < ${#INPUT}; i=$(($i + 3)))) ; do
         echo -en "\\0${INPUT:$i:3}"

@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -43,7 +43,7 @@ function mbfl_program_check () {
     return 0
 }
 function mbfl_program_find () {
-    mandatory_parameter(PROGRAM, 1, program)
+    mbfl_mandatory_parameter(PROGRAM, 1, program)
     local item
     for item in $(type -ap "$PROGRAM")
     do mbfl_file_is_executable "$item" && {
@@ -69,7 +69,7 @@ function mbfl_program_enable_sudo () {
     mbfl_declare_program whoami
 }
 function mbfl_program_declare_sudo_user () {
-    mandatory_parameter(PERSONA, 1, sudo user name)
+    mbfl_mandatory_parameter(PERSONA, 1, sudo user name)
     mbfl_program_SUDO_USER=${PERSONA}
 }
 function mbfl_program_reset_sudo_user () {
@@ -124,8 +124,8 @@ function mbfl_program_exec () {
     }
 }
 function mbfl_program_execbg () {
-    mandatory_parameter(INCHAN, 1, input channel)
-    mandatory_parameter(OUCHAN, 2, output channel)
+    mbfl_mandatory_parameter(INCHAN, 1, input channel)
+    mbfl_mandatory_parameter(OUCHAN, 2, output channel)
     shift 2
     local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
     local STDERR_TO_STDOUT=no
@@ -165,7 +165,7 @@ function mbfl_program_execbg () {
     }
 }
 function mbfl_program_bash_command () {
-    mandatory_parameter(COMMAND, 1, command)
+    mbfl_mandatory_parameter(COMMAND, 1, command)
     mbfl_program_exec "$mbfl_program_BASH" -c "$COMMAND"
 }
 function mbfl_program_bash () {
@@ -181,7 +181,7 @@ test "$mbfl_INTERACTIVE" = yes || \
     declare -a mbfl_program_NAMES mbfl_program_PATHS
 
 function mbfl_declare_program () {
-    mandatory_parameter(PROGRAM, 1, program)
+    mbfl_mandatory_parameter(PROGRAM, 1, program)
     local pathname
     local next_free_index=${#mbfl_program_NAMES[@]}
 
@@ -209,7 +209,7 @@ function mbfl_program_validate_declared () {
     return $retval
 }
 function mbfl_program_found () {
-    mandatory_parameter(PROGRAM, 1, program name)
+    mbfl_mandatory_parameter(PROGRAM, 1, program name)
     local number_of_programs=${#mbfl_program_NAMES[@]} i=
     test "$PROGRAM" = : || {
         for ((i=0; $i < ${number_of_programs}; ++i))

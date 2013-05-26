@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2004-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -51,7 +51,7 @@ function mbfl_set_maybe () {
     test -n "$1" && eval $1=\'"$2"\'
 }
 function mbfl_read_maybe_null () {
-    mandatory_parameter(VARNAME, 1, variable name)
+    mbfl_mandatory_parameter(VARNAME, 1, variable name)
 
     if mbfl_option_null
     then IFS= read -rs -d $'\x00' $VARNAME

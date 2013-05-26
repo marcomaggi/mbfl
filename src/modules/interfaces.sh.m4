@@ -8,7 +8,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -40,7 +40,7 @@ function mbfl_at_enable () {
     mbfl_declare_program sort
 }
 function mbfl_at_validate_queue_letter () {
-    mandatory_parameter(QUEUE, 1, queue letter)
+    mbfl_mandatory_parameter(QUEUE, 1, queue letter)
     test ${#QUEUE} -eq 1 && mbfl_string_is_alpha_char "${QUEUE}"
 }
 function mbfl_at_validate_selected_queue () {
@@ -50,7 +50,7 @@ function mbfl_at_validate_selected_queue () {
     }
 }
 function mbfl_at_select_queue () {
-    mandatory_parameter(QUEUE, 1, queue letter)
+    mbfl_mandatory_parameter(QUEUE, 1, queue letter)
     mbfl_at_validate_queue_letter "${QUEUE}" || {
         mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
         return 1
@@ -59,8 +59,8 @@ function mbfl_at_select_queue () {
 }
 function mbfl_at_schedule () {
     local AT QUEUE=${mbfl_p_at_queue_letter}
-    mandatory_parameter(SCRIPT, 1, script)
-    mandatory_parameter(TIME, 2, time)
+    mbfl_mandatory_parameter(SCRIPT, 1, script)
+    mbfl_mandatory_parameter(TIME, 2, time)
     AT=$(mbfl_program_found at) || exit $?
     # The return code of this function is the return code of the
     # following pipe.
@@ -109,7 +109,7 @@ function mbfl_at_print_queue () {
 }
 function mbfl_at_drop () {
     local ATRM
-    mandatory_parameter(ID, 1, script identifier)
+    mbfl_mandatory_parameter(ID, 1, script identifier)
     ATRM=$(mbfl_program_found atrm) || exit $?
     mbfl_program_exec "$ATRM" "$ID"
 }
@@ -121,7 +121,7 @@ function mbfl_at_queue_clean () {
 }
 function mbfl_p_at_program_atq () {
     local ATQ
-    mandatory_parameter(QUEUE, 1, job queue)
+    mbfl_mandatory_parameter(QUEUE, 1, job queue)
     ATQ=$(mbfl_program_found atq) || exit $?
     mbfl_program_exec "$ATQ" -q "$QUEUE"
 }

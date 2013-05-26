@@ -12,8 +12,7 @@
 #         Support for encoded argument values is provided and requires
 #       the "encode.sh" file to be included in the script.
 #
-# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
-#
+# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -180,11 +179,11 @@ function mbfl_p_declare_option_test_length () {
 
 #page
 function mbfl_declare_action_argument () {
-    mandatory_parameter(keyword,1,keyword)
-    mandatory_parameter(argument,2,identifier)
-    mandatory_parameter(selected,3,selection)
-    mandatory_parameter(skipopts,4,skip options)
-    mandatory_parameter(description,5,description)
+    mbfl_mandatory_parameter(keyword,1,keyword)
+    mbfl_mandatory_parameter(argument,2,identifier)
+    mbfl_mandatory_parameter(selected,3,selection)
+    mbfl_mandatory_parameter(skipopts,4,skip options)
+    mbfl_mandatory_parameter(description,5,description)
     local index=$(($mbfl_getopts_actargs_INDEX + 1))
 
     test -z "$keyword" && {
@@ -281,8 +280,8 @@ function mbfl_getopts_parse () {
 }
 #page
 function mbfl_getopts_p_process_script_option () {
-    mandatory_parameter(OPT, 1, option name)
-    optional_parameter(OPTARG, 2)
+    mbfl_mandatory_parameter(OPT, 1, option name)
+    mbfl_optional_parameter(OPTARG, 2)
     local i=0 value brief long hasarg keyword tolower_keyword update_procedure state_variable
 
     for ((i=0; $i < $mbfl_getopts_INDEX; ++i))
@@ -443,7 +442,7 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
 }
 #page
 function mbfl_getopts_print_usage_screen () {
-    mandatory_parameter(BRIEF_OR_LONG,1,brief or long selection)
+    mbfl_mandatory_parameter(BRIEF_OR_LONG,1,brief or long selection)
     local i=0 item brief long description long_hasarg long_hasarg default
 
     printf '%s\n' "${script_USAGE}"
@@ -510,8 +509,8 @@ function mbfl_getopts_print_usage_screen () {
 }
 #PAGE
 function mbfl_getopts_islong () {
-    mandatory_parameter(ARGUMENT, 1, argument)
-    optional_parameter(OPTION_VARIABLE_NAME, 2)
+    mbfl_mandatory_parameter(ARGUMENT, 1, argument)
+    mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
     local len="${#ARGUMENT}" i ch
 
 
@@ -524,9 +523,9 @@ function mbfl_getopts_islong () {
     return 0
 }
 function mbfl_getopts_islong_with () {
-    mandatory_parameter(ARGUMENT, 1, argument)
-    optional_parameter(OPTION_VARIABLE_NAME, 2)
-    optional_parameter(VALUE_VARIABLE_NAME, 3)
+    mbfl_mandatory_parameter(ARGUMENT, 1, argument)
+    mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
+    mbfl_optional_parameter(VALUE_VARIABLE_NAME, 3)
     local len="${#ARGUMENT}" equal_position
 
     # The min length of a long option with is 5 (example: --o=1).
@@ -548,8 +547,8 @@ function mbfl_p_getopts_not_char_in_long_option_name () {
 }
 #PAGE
 function mbfl_getopts_isbrief () {
-    mandatory_parameter(COMMAND_LINE_ARGUMENT, 1, command line argument)
-    optional_parameter(OPTION_VARIABLE_NAME, 2)
+    mbfl_mandatory_parameter(COMMAND_LINE_ARGUMENT, 1, command line argument)
+    mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
     local ch
 
     test "${#COMMAND_LINE_ARGUMENT}" = 2 -a \
@@ -562,9 +561,9 @@ function mbfl_getopts_isbrief () {
     return 0
 }
 function mbfl_getopts_isbrief_with () {
-    mandatory_parameter(COMMAND_LINE_ARGUMENT, 1, command line argument)
-    optional_parameter(OPTION_VARIABLE_NAME, 2)
-    optional_parameter(VALUE_VARIABLE_NAME, 3)
+    mbfl_mandatory_parameter(COMMAND_LINE_ARGUMENT, 1, command line argument)
+    mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
+    mbfl_optional_parameter(VALUE_VARIABLE_NAME, 3)
 
     test "${#COMMAND_LINE_ARGUMENT}" -gt 2 -a \
         "${COMMAND_LINE_ARGUMENT:0:1}" = "-" || return 1
@@ -585,7 +584,7 @@ function mbfl_p_getopts_not_char_in_brief_option_name () {
 }
 #page
 function mbfl_getopts_is_action_argument () {
-    mandatory_parameter(ARGUMENT, 1, command line argument)
+    mbfl_mandatory_parameter(ARGUMENT, 1, command line argument)
     local len="${#ARGUMENT}" i ch
 
     ch="${ARGUMENT:0:1}"
@@ -612,8 +611,8 @@ function mbfl_p_getopts_not_char_in_action_argument_name () {
 }
 #PAGE
 function mbfl_wrong_num_args () {
-    mandatory_parameter(required, 1, required number of args)
-    mandatory_parameter(argc, 2, given number of args)
+    mbfl_mandatory_parameter(required, 1, required number of args)
+    mbfl_mandatory_parameter(argc, 2, given number of args)
 
     test $required != $argc && {
         mbfl_message_error "number of arguments required: $required"
@@ -622,9 +621,9 @@ function mbfl_wrong_num_args () {
     return 0
 }
 function mbfl_wrong_num_args_range () {
-    mandatory_parameter(min_required, 1, minimum required number of args)
-    mandatory_parameter(max_required, 2, maximum required number of args)
-    mandatory_parameter(argc, 3, given number of args)
+    mbfl_mandatory_parameter(min_required, 1, minimum required number of args)
+    mbfl_mandatory_parameter(max_required, 2, maximum required number of args)
+    mbfl_mandatory_parameter(argc, 3, given number of args)
 
     test $min_required -gt $argc -o $max_required -lt $argc && {
         mbfl_message_error \
