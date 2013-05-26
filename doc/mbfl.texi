@@ -348,7 +348,7 @@ environment variable.
 A more reliable way to load the library is:
 
 @smallexample
-script_PROGNAME=this-script
+script_PROGNAME=script.sh
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
 mbfl_INSTALLED=$(mbfl-config) &>/dev/null
