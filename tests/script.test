@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003, 2004, 2005, 2009 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -33,8 +33,12 @@
 source setup.sh
 
 function script () {
-    MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/libmbfl.sh} \
-        "${BASH}" "$examplesdir"/template.sh "$@"
+    export MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/../src/libmbfl.sh}
+    "${BASH}" "$examplesdir"/template.sh "$@"
+}
+function script_with_actions () {
+    export MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/../src/libmbfl.sh}
+    "${BASH}" "$examplesdir"/template-actions.sh "$@"
 }
 
 #PAGE
@@ -86,7 +90,7 @@ function script-3.1 () {
 
 function script-4.1 () {
     script --list-exit-codes | dotest-output \
-        "0 success\n1 failure\n99 program_not_found\n98 wrong_num_args\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
+        "0 success\n1 failure\n99 program_not_found\n98 wrong_num_args\n97 invalid_action_set\n96 invalid_action_declaration\n95 invalid_action_argument\n94 missing_action_function\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
 }
 function script-4.2 () {
     script --print-exit-code=second_error | dotest-output 2
@@ -118,34 +122,35 @@ function script-4.10 () {
 
 #page
 
-function script-5.1 () {
-    script --print-action-arguments | dotest-output 'one two three four'
-}
+# function script-5.1 () {
+#     script --print-action-arguments | dotest-output 'one two three four'
+# }
 
 function script-6.1 () {
-    script one | dotest-output 'action one'
+    script --one | dotest-output 'action one'
 }
 function script-6.2 () {
-    script two | dotest-output 'action two'
+    script --two | dotest-output 'action two'
 }
 function script-6.3 () {
-    script three | dotest-output "action three, arguments: 0, ''"
+    script --three | dotest-output "action three, arguments: 0, ''"
 }
 function script-6.4 () {
-    script three a b c | dotest-output "action three, arguments: 3, 'a b c'"
+    script --three a b c | dotest-output "action three, arguments: 3, 'a b c'"
 }
 function script-6.5 () {
-    script four a b c | dotest-output "action four, arguments: 3, 'a b c'"
+    script --four a b c | dotest-output "action four, arguments: 3, 'a b c'"
 }
 function script-6.6 () {
-    script four a --verbose b c | \
-        dotest-output "action four, arguments: 4, 'a --verbose b c'"
-}
-function script-6.7 () {
-    script four a b --license c | \
-        dotest-output "action four, arguments: 4, 'a b --license c'"
+    script --four a --verbose b c | \
+        dotest-output "action four, arguments: 3, 'a b c'"
 }
 
+#page
+
+function script-action-1.1 () {
+    script_with_actions one green solid | dotest-output "action one green solid *"
+}
 
 #PAGE
 ## ---------------------------------------------------------
@@ -153,6 +158,7 @@ function script-6.7 () {
 ## ---------------------------------------------------------
 
 dotest script-
+dotest-final-report
 
 ### end of file
 # Local Variables:

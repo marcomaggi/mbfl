@@ -10,7 +10,7 @@
 #
 #		$ TESTMATCH=getopts- bash getopts.test
 #
-# Copyright (c) 2003, 2004, 2005, 2009 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -140,57 +140,8 @@ function getopts-7.1 () {
 
 #page
 
-function getopts-8.1 () { mbfl_getopts_is_action_argument alpha; }
-function getopts-8.2 () { mbfl_getopts_is_action_argument alpha-beta; }
-function getopts-8.3 () { mbfl_getopts_is_action_argument alpha-beta123; }
-function getopts-8.4 () { ! mbfl_getopts_is_action_argument 123alpha; }
-function getopts-8.5 () { ! mbfl_getopts_is_action_argument -a; }
-function getopts-8.6 () { ! mbfl_getopts_is_action_argument -a123; }
-function getopts-8.7 () { ! mbfl_getopts_is_action_argument --alpha; }
-function getopts-8.8 () { ! mbfl_getopts_is_action_argument --alpha=123; }
-
-#page
-
-function getopts-9.1 () {
-    mbfl_declare_action_argument A a yes no 'an option'
-}
-function getopts-9.2 () {
-    mbfl_declare_action_argument A a no no 'an option'
-}
-
-# The following are commented out because "mbfl_declare_action_argument()"
-# does not validate the values for speed problems.
-
-# function getopts-9.3 () {
-#     mbfl_declare_action_argument A a wappa no 'an option' 2>&1 | dotest-output \
-# 	"<unknown>: error: wrong value 'wappa' as selection for action argument number 1"
-# }
-# function getopts-9.4 () {
-#     mbfl_declare_action_argument A 123 wappa no 'an option' 2>&1 | dotest-output \
-# 	"<unknown>: error: wrong value '123' as keyword for action argument number 1"
-# }
-# function getopts-9.5 () {
-#     mbfl_declare_action_argument A a no wappa 'an option' 2>&1 | dotest-output \
-# 	"<unknown>: error: wrong value 'wappa' as skip options flag for action argument number 1"
-# }
-
-#page
-
-function getopts-10.1 () {
-    mbfl_declare_action_argument A a yes no 'an option'
-    mbfl_declare_action_argument B b no  no 'an option'
-    mbfl_getopts_print_action_arguments | dotest-output 'a b'
-}
-function getopts-10.2 () {
-    mbfl_declare_action_argument A alpha yes no 'an option'
-    mbfl_declare_action_argument B beta no no 'an option'
-    mbfl_getopts_print_action_arguments | dotest-output 'alpha beta'
-}
-
-
-#page
-
 dotest getopts-
+dotest-final-report
 
 ### end of file
 # Local Variables:

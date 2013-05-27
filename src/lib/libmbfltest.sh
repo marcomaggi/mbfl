@@ -11,7 +11,7 @@
 #	the test suite. It must be sources at the beginning of
 #	all the test files.
 #
-# Copyright (c) 2004-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2004-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -323,7 +323,7 @@ function dotest-program-exec () {
 ## Final report.
 ## ------------------------------------------------------------
 
-trap dotest-final-report EXIT
+trap dotest-clean-files EXIT
 
 test -z ${dotest_TEST_NUMBER} && declare -i dotest_TEST_NUMBER=0
 test -z ${dotest_TEST_FAILED_NUMBER} && declare -i dotest_TEST_FAILED_NUMBER=0
@@ -331,9 +331,8 @@ test -z ${dotest_TEST_FAILED} && dotest_TEST_FAILED=
 
 function dotest-final-report () {
     local item
-
-
-    if test ${dotest_TEST_NUMBER} -ne 0 ; then
+    if test ${dotest_TEST_NUMBER} -ne 0
+    then
         printf '\n'
         printf "Test file '${mbfl_TEST_FILE:-$0}'\n"
         printf "\tNumber of executed tests: ${dotest_TEST_NUMBER}\n"
@@ -346,7 +345,10 @@ function dotest-final-report () {
         fi
         printf '\n'
     fi
-    dotest-clean-files
+    if test ${dotest_TEST_FAILED_NUMBER} -eq 0
+    then exit 0
+    else exit 1
+    fi
 }
 
 ### end of file

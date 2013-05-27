@@ -1,32 +1,32 @@
 # variable.test --
-# 
+#
 # Part of: Marco's BASH Functions Library
 # Contents: tests for the variable manipulation functions
 # Date: Wed Apr 23, 2003
-# 
+#
 # Abstract
-# 
+#
 #	To select the tests in this file:
 #
 #		$ make all test TESTMATCH=variable-
-# 
-# Copyright (c) 2004, 2005 Marco Maggi
-# 
+#
+# Copyright (c) 2004, 2005, 2013 Marco Maggi
+#
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
 # Software Foundation; either  version 2, or (at your  option) any later
 # version.
-# 
+#
 # This  file is  distributed in  the hope  that it  will be  useful, but
 # WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
 # General Public License for more details.
-# 
+#
 # You  should have received  a copy  of the  GNU General  Public License
 # along with this file; see the file COPYING.  If not, write to the Free
 # Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 # 02111-1307, USA.
-# 
+#
 
 #PAGE
 ## ------------------------------------------------------------
@@ -103,6 +103,7 @@ function variable-4.1 () {
 #PAGE
 
 dotest variable-
+dotest-final-report
 
 ### end of file
 # Local Variables:

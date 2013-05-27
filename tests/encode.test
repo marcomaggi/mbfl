@@ -10,7 +10,7 @@
 #
 #		$ TESTMATCH=encode- make all tests
 #
-# Copyright (c) 2003, 2004, 2005, 2009 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -55,6 +55,7 @@ function decode-oct-1.1 () {
 
 dotest encode-
 dotest decode-
+dotest-final-report
 
 ### end of file
 # Local Variables:

@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2004, 2005, 2012 Marco Maggi
+# Copyright (c) 2004, 2005, 2012, 2013 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -116,6 +116,7 @@ function program-4.2 () {
 ## ---------------------------------------------------------
 
 dotest program-
+dotest-final-report
 
 ### end of file
 # Local Variables:
