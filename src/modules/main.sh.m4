@@ -53,12 +53,27 @@ test "$mbfl_INTERACTIVE" = yes || {
     declare -a mbfl_main_EXIT_CODES mbfl_main_EXIT_NAMES
     mbfl_main_EXIT_CODES[0]=0
     mbfl_main_EXIT_NAMES[0]=success
+
     mbfl_main_EXIT_CODES[1]=1
     mbfl_main_EXIT_NAMES[1]=failure
+
     mbfl_main_EXIT_CODES[2]=99
     mbfl_main_EXIT_NAMES[2]=program_not_found
+
     mbfl_main_EXIT_CODES[3]=98
     mbfl_main_EXIT_NAMES[3]=wrong_num_args
+
+    mbfl_main_EXIT_CODES[4]=97
+    mbfl_main_EXIT_NAMES[4]=invalid_action_set
+
+    mbfl_main_EXIT_CODES[5]=96
+    mbfl_main_EXIT_NAMES[5]=invalid_action_declaration
+
+    mbfl_main_EXIT_CODES[6]=95
+    mbfl_main_EXIT_NAMES[6]=invalid_action_argument
+
+    mbfl_main_EXIT_CODES[7]=94
+    mbfl_main_EXIT_NAMES[7]=missing_action_function
 }
 
 function exit_success () {
@@ -233,6 +248,9 @@ function mbfl_main () {
     local exit_code=0 action_func item code
     mbfl_message_set_progname "$script_PROGNAME"
     mbfl_main_create_exit_functions
+    if test -n "${mbfl_action_sets_EXISTS[MAIN]}" -a "${mbfl_action_sets_EXISTS[MAIN]}" = yes
+    then mbfl_actions_dispatch MAIN
+    fi
     mbfl_invoke_script_function script_before_parsing_options
     mbfl_getopts_parse
     mbfl_invoke_script_function script_after_parsing_options

@@ -9,7 +9,7 @@
 #	This is the library file of MBFL. It must be sourced in shell
 #	scripts at the beginning of evaluation.
 #
-# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -35,6 +35,7 @@ m4_include(base.sh)
 m4_include(string.sh)
 m4_include(encode.sh)
 m4_include(file.sh)
+m4_include(actions.sh)
 m4_include(getopts.sh)
 m4_include(message.sh)
 m4_include(program.sh)

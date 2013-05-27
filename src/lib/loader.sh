@@ -3,7 +3,7 @@
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
 mbfl_HARDCODED=
-mbfl_INSTALLED=$(mbfl-config) &>/dev/null
+mbfl_INSTALLED=$(test -x mbfl-config && mbfl-config) &>/dev/null
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do
     test -n "$item" -a -f "$item" -a -r "$item" && {

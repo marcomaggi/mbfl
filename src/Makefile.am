@@ -8,6 +8,7 @@ EXTRA_DIST	= \
 	modules/encode.sh.m4		\
 	modules/file.sh.m4		\
 	modules/getopts.sh.m4		\
+	modules/actions.sh.m4		\
 	modules/message.sh.m4		\
 	modules/program.sh.m4		\
 	modules/signal.sh.m4		\
@@ -31,10 +32,10 @@ EXTRA_DIST	= \
 
 MBFL_MODULES		= \
 	base.sh		encode.sh	file.sh		\
-	getopts.sh	message.sh	program.sh	\
-	signal.sh	string.sh	dialog.sh	\
-	main.sh		variable.sh	system.sh	\
-	interfaces.sh
+	getopts.sh	actions.sh	message.sh	\
+	program.sh	signal.sh	string.sh	\
+	dialog.sh	main.sh		variable.sh	\
+	system.sh	interfaces.sh
 
 MBFL_PREPRO		= $(srcdir)/lib/preprocessor.m4
 
@@ -78,6 +79,9 @@ file.sh		: $(srcdir)/modules/file.sh.m4		$(MBFL_PREPRO)
 	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
 
 getopts.sh	: $(srcdir)/modules/getopts.sh.m4	$(MBFL_PREPRO)
+	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+
+actions.sh	: $(srcdir)/modules/actions.sh.m4	$(MBFL_PREPRO)
 	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
 
 message.sh	: $(srcdir)/modules/message.sh.m4	$(MBFL_PREPRO)

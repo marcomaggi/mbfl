@@ -7,7 +7,7 @@
 #	This script shows how an MBFL script should be organised
 #	to use MBFL.
 #
-# Copyright (c) 2004, 2005, 2009, 2012 Marco Maggi
+# Copyright (c) 2004, 2005, 2009, 2012, 2013 Marco Maggi
 # <marco.maggi-ipsu@poste.it>
 #
 # This is free  software you can redistribute it  and/or modify it under
@@ -50,7 +50,7 @@ script_EXAMPLES="Usage examples:
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
 mbfl_HARDCODED=
-mbfl_INSTALLED=$(mbfl-config) &>/dev/null
+mbfl_INSTALLED=$(test -x mbfl-config && mbfl-config) &>/dev/null
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do
     test -n "$item" -a -f "$item" -a -r "$item" && {
@@ -74,17 +74,18 @@ test "$mbfl_LOADED" = yes || {
 ## ------------------------------------------------------------
 
 # keyword default-value brief-option long-option has-argument description
+mbfl_declare_option ACTION_ONE   no '' one   noarg 'selects action one'
+mbfl_declare_option ACTION_TWO   no '' two   noarg 'selects action two'
+mbfl_declare_option ACTION_THREE no '' three noarg 'selects action three'
+mbfl_declare_option ACTION_FOUR  no '' four  noarg 'selects action four'
+
+# keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ALPHA no a alpha noarg 'selects action alpha'
 mbfl_declare_option BETA '' b beta  witharg 'selects option beta'
 mbfl_declare_option VALUE '' '' value witharg 'selects a value'
 mbfl_declare_option FILE '' f file witharg 'selects a file'
 mbfl_declare_option ENABLE no e enable noarg 'enables a feature'
 mbfl_declare_option DISABLE no d disable noarg 'disables a feature'
-
-mbfl_declare_action_argument one one no no 'do action one'
-mbfl_declare_action_argument two two no no 'do action two'
-mbfl_declare_action_argument three three no no 'do action three'
-mbfl_declare_action_argument four four no yes 'do action four'
 
 #page
 ## ------------------------------------------------------------

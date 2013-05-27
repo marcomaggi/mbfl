@@ -351,7 +351,7 @@ A more reliable way to load the library is:
 script_PROGNAME=script.sh
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
-mbfl_INSTALLED=$(mbfl-config) &>/dev/null
+mbfl_INSTALLED=$(test -x mbfl-config && mbfl-config) &>/dev/null
 mbfl_HARDCODED=./some/dir/libmbfl.sh
 for item in \
     "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
@@ -3757,6 +3757,7 @@ the exit code name.  The function may be used in the script to exit the
 process.
 @end defun
 
+
 By default the exit code @code{0} is associated to the name
 @code{success} and the exit code @code{1} is associated to the name
 @code{failure}; so the following functions exist.
@@ -3850,6 +3851,7 @@ function module-featureB-1.1 () @{ ... @}
 function module-featureB-1.2 () @{ ... @}
 
 dotest module-
+dotest-final-report
 
 ### end of file
 @end example
@@ -4020,6 +4022,13 @@ false.
 @c page
 @node testing running
 @section Running test functions
+
+
+@defun dotest-final-report
+This function must be invoked as last command in the test file to report
+errors and correctly exit the test script (in a way compatible with the
+requirements of @gnu{} Automake).
+@end defun
 
 
 @defun dotest @var{pattern}
@@ -4294,6 +4303,7 @@ function mytest-1.2 () @{
 @}
 
 dotest mytest-
+dotest-final-report
 @end example
 
 @c page
