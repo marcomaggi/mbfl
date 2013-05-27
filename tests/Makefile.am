@@ -22,6 +22,7 @@ EXTRA_DIST		= \
 
 # Resetting the PATH allows us to load files with the "source" command.
 MBFL_TESTS_ENV		= PATH=$(srcdir):$(builddir)/../src:$(srcdir)/../src/lib:$(PATH); export PATH;
+MBFL_TESTS_ENV		+= srcdir=$(srcdir); export srcdir; builddir=$(builddir); export builddir;
 # This is because  I mount the "/tmp" directory  on a separate partition
 # with "noexec" attribute; this  causes tests for executability of files
 # to fail if the temporary test files are created under "/tmp".
