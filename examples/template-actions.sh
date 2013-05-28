@@ -171,10 +171,12 @@ function script_action_one_green_solid () {
 	"$script_option_A" "$script_option_B" "$script_option_C" "$ARGC" "${ARGV[*]}"
 }
 function script_action_one_green_liquid () {
-    printf "action one green liquid $script_option_D $script_option_E $script_option_F\n"
+    printf "action one green liquid: D='%s' E='%s' F='%s' ARGC=%s ARGV='%s'\n" \
+	"$script_option_D" "$script_option_E" "$script_option_F" "$ARGC" "${ARGV[*]}"
 }
 function script_action_one_green_gas () {
-    printf "action one green gas $script_option_G $script_option_H $script_option_I\n"
+    printf "action one green gas: G='%s' H='%s' I='%s' ARGC=%s ARGV='%s'\n" \
+	"$script_option_G" "$script_option_H" "$script_option_I" "$ARGC" "${ARGV[*]}"
 }
 
 ## --------------------------------------------------------------------

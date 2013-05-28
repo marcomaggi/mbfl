@@ -202,8 +202,10 @@ function mbfl_getopts_parse () {
             mbfl_getopts_isbrief_with "${argument}" p_OPT p_OPTARG || \
             mbfl_getopts_islong_with  "${argument}" p_OPT p_OPTARG
         then
-            if ! mbfl_getopts_p_process_predefined_option_with_arg "${p_OPT}" "${p_OPTARG}"
-            then return $?
+            mbfl_getopts_p_process_predefined_option_with_arg "${p_OPT}" "${p_OPTARG}"
+            retval=$?
+            if test $retval != 0
+            then return $retval
             fi
         else
             test $i = 0 && found_possible_action_argument=1
@@ -231,8 +233,9 @@ function mbfl_getopts_p_process_script_option () {
         brief="${mbfl_getopts_BRIEFS[$i]}"
         long="${mbfl_getopts_LONGS[$i]}"
         hasarg="${mbfl_getopts_HASARG[$i]}"
-        test \( -n "$OPT" \) -a \( \( -n "$brief" -a "$brief" = "$OPT" \) -o \
-            \( -n "$long"  -a "$long"  = "$OPT" \) \) && {
+        test \( -n "$OPT" \) -a \
+            \( \( -n "$brief" -a "$brief" = "$OPT" \) -o \
+               \( -n "$long"  -a "$long"  = "$OPT" \) \) && {
           if test "$hasarg" = "witharg"
           then
               if test -z "$OPTARG"

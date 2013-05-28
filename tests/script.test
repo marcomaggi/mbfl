@@ -147,7 +147,7 @@ function script-6.6 () {
 }
 
 #page
-#### script with actions
+#### script with actions: options parsing
 
 function script-action-1.1.1 () {
     script_with_actions one green solid | dotest-output "action one green solid: A='no' B='' C='' ARGC=0 ARGV=''"
@@ -191,6 +191,137 @@ function script-action-1.4.1 () {
 function script-action-1.5.1 () {
     script_with_actions one green solid alpha --a-opt beta --b-opt=2 gamma --c-opt=3 | \
 	dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=3 ARGV='alpha beta gamma'"
+}
+
+### --------------------------------------------------------------------
+
+# brief option wrongly without argument
+function script-action-1.6.1 () {
+    script_with_actions one green solid -b | \
+	dotest-output "template-actions.sh: error: expected non-empty argument for option: \"b\""
+}
+function script-action-1.6.2 () {
+    script_with_actions one green solid -b
+    dotest-equal 92 $?
+}
+
+# long option wrongly without argument
+function script-action-1.7.1 () {
+    script_with_actions one green solid --b-opt | \
+	dotest-output "template-actions.sh: error: expected non-empty argument for option: \"b-opt\""
+}
+function script-action-1.7.2 () {
+    script_with_actions one green solid --b-opt
+    dotest-equal 92 $?
+}
+
+#page
+#### script with actions: all the actions
+
+function script-action-2.1.1 () {
+    script_with_actions one green solid  | dotest-output "action one green solid: A='no' B='' C='' ARGC=0 ARGV=''"
+}
+function script-action-2.1.2 () {
+    script_with_actions one green liquid | dotest-output "action one green liquid: D='no' E='' F='' ARGC=0 ARGV=''"
+}
+function script-action-2.1.3 () {
+    script_with_actions one green gas    | dotest-output "action one green gas: G='no' H='' I='' ARGC=0 ARGV=''"
+}
+
+### --------------------------------------------------------------------
+
+function script-action-2.2.1 () {
+    script_with_actions one white solid  | dotest-output "action script_action_one_white_solid"
+}
+function script-action-2.2.2 () {
+    script_with_actions one white liquid | dotest-output "action script_action_one_white_liquid"
+}
+function script-action-2.2.3 () {
+    script_with_actions one white gas    | dotest-output "action script_action_one_white_gas"
+}
+
+### --------------------------------------------------------------------
+
+function script-action-2.3.1 () {
+    script_with_actions one red solid  | dotest-output "action script_action_one_red_solid"
+}
+function script-action-2.3.2 () {
+    script_with_actions one red liquid | dotest-output "action script_action_one_red_liquid"
+}
+function script-action-2.3.3 () {
+    script_with_actions one red gas    | dotest-output "action script_action_one_red_gas"
+}
+
+### --------------------------------------------------------------------
+
+function script-action-3.1.1 () {
+    script_with_actions two green solid  | dotest-output "action script_action_two_green_solid"
+}
+function script-action-3.1.2 () {
+    script_with_actions two green liquid | dotest-output "action script_action_two_green_liquid"
+}
+function script-action-3.1.3 () {
+    script_with_actions two green gas    | dotest-output "action script_action_two_green_gas"
+}
+
+### --------------------------------------------------------------------
+
+function script-action-3.2.1 () {
+    script_with_actions two white solid  | dotest-output "action script_action_two_white_solid"
+}
+function script-action-3.2.2 () {
+    script_with_actions two white liquid | dotest-output "action script_action_two_white_liquid"
+}
+function script-action-3.2.3 () {
+    script_with_actions two white gas    | dotest-output "action script_action_two_white_gas"
+}
+
+### --------------------------------------------------------------------
+
+function script-action-3.3.1 () {
+    script_with_actions two red solid  | dotest-output "action script_action_two_red_solid"
+}
+function script-action-3.3.2 () {
+    script_with_actions two red liquid | dotest-output "action script_action_two_red_liquid"
+}
+function script-action-3.3.3 () {
+    script_with_actions two red gas    | dotest-output "action script_action_two_red_gas"
+}
+
+### --------------------------------------------------------------------
+
+function script-action-4.1.1 () {
+    script_with_actions three green solid  | dotest-output "action script_action_three_green_solid"
+}
+function script-action-4.1.2 () {
+    script_with_actions three green liquid | dotest-output "action script_action_three_green_liquid"
+}
+function script-action-4.1.3 () {
+    script_with_actions three green gas    | dotest-output "action script_action_three_green_gas"
+}
+
+### --------------------------------------------------------------------
+
+function script-action-4.2.1 () {
+    script_with_actions three white solid  | dotest-output "action script_action_three_white_solid"
+}
+function script-action-4.2.2 () {
+    script_with_actions three white liquid | dotest-output "action script_action_three_white_liquid"
+}
+function script-action-4.2.3 () {
+    script_with_actions three white gas    | dotest-output "action script_action_three_white_gas"
+}
+
+### --------------------------------------------------------------------
+
+function script-action-4.3.1 () {
+    script_with_actions three red solid  | dotest-output "action script_action_three_red_solid"
+}
+function script-action-4.3.2 () {
+    script_with_actions three red liquid | dotest-output "action script_action_three_red_liquid"
+}
+function script-action-4.3.3 () {
+    script_with_actions three red gas    | dotest-output "action script_action_three_red_gas"
 }
 
 #PAGE
