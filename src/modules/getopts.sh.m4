@@ -151,13 +151,19 @@ function mbfl_declare_option () {
     eval script_option_$(mbfl_string_toupper $keyword)=\'"$default"\'
 
     # Process action option.
-    test ${keyword:0:7} = ACTION_ && {
+    if test ${keyword:0:7} = ACTION_
+    then
         if test "${hasarg}" = noarg
-        then test "${default}" = yes && \
-            mbfl_main_set_main script_$(mbfl_string_tolower $keyword)
-        else mbfl_message_error "action option must be with no argument '$keyword'"
+        then
+            if test "${default}" = yes
+            then mbfl_main_set_main script_$(mbfl_string_tolower $keyword)
+            fi
+        else
+            mbfl_message_error "action option must be with no argument '$keyword'"
+            return 1
         fi
-    }
+    fi
+    return 0
 }
 function mbfl_p_declare_option_test_length () {
     local value=$1

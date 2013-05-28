@@ -294,7 +294,10 @@ function mbfl_main () {
     mbfl_message_set_progname "$script_PROGNAME"
     mbfl_main_create_exit_functions
     if test -n "${mbfl_action_sets_EXISTS[MAIN]}" -a "${mbfl_action_sets_EXISTS[MAIN]}" = yes
-    then mbfl_actions_dispatch MAIN
+    then
+	if ! mbfl_actions_dispatch MAIN
+	then exit_failure
+	fi
     fi
     mbfl_invoke_script_function $mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS || exit_failure
     mbfl_getopts_parse || exit_because_invalid_option_argument
@@ -303,6 +306,7 @@ function mbfl_main () {
     then mbfl_invoke_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
     else mbfl_invoke_script_function $mbfl_main_SCRIPT_FUNCTION
     fi
+    exit_success
 }
 function mbfl_invoke_script_function () {
     mbfl_mandatory_parameter(item, 1, function name)

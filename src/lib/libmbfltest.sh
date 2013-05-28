@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 # libmbfltest.sh --
 #
 # Part of: Marco's BASH Functions Library

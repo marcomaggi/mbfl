@@ -149,36 +149,48 @@ function script-6.6 () {
 #page
 #### script with actions
 
-function script-action-1.1 () {
-    script_with_actions one green solid | dotest-output "action one green solid: A='no' B='' C='' ARGV=''"
+function script-action-1.1.1 () {
+    script_with_actions one green solid | dotest-output "action one green solid: A='no' B='' C='' ARGC=0 ARGV=''"
 }
-function script-action-1.2 () {
-    script_with_actions one green solid alpha beta| dotest-output "action one green solid: A='no' B='' C='' ARGV='alpha beta'"
+function script-action-1.1.2 () {
+    script_with_actions one green solid alpha beta | dotest-output "action one green solid: A='no' B='' C='' ARGC=2 ARGV='alpha beta'"
 }
 
 # brief options
-function script-action-2.1 () {
-    script_with_actions one green solid -a -b 2 -c 3 | dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+function script-action-1.2.1 () {
+    script_with_actions one green solid -a -b2 -c3 | dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=0 ARGV=''"
 }
-function script-action-2.2 () {
-    script_with_actions one green solid -b 2 -a -c 3 | dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+function script-action-1.2.2 () {
+    script_with_actions one green solid -b2 -a -c3 | dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=0 ARGV=''"
 }
-function script-action-2.3 () {
-    script_with_actions one green solid -b 2 -c 3 -a | dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+function script-action-1.2.3 () {
+    script_with_actions one green solid -b2 -c3 -a | dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=0 ARGV=''"
 }
 
 # long options
-function script-action-3.1 () {
+function script-action-1.3.1 () {
     script_with_actions one green solid --a-opt --b-opt=2 --c-opt=3 | \
-	dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+	dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=0 ARGV=''"
 }
-function script-action-3.2 () {
+function script-action-1.3.2 () {
     script_with_actions one green solid --b-opt=2 --a-opt --c-opt=3 | \
-	dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+	dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=0 ARGV=''"
 }
-function script-action-3.3 () {
+function script-action-1.3.3 () {
     script_with_actions one green solid --b-opt=2 --c-opt=3 --a-opt | \
-	dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+	dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=0 ARGV=''"
+}
+
+# brief options and arguments
+function script-action-1.4.1 () {
+    script_with_actions one green solid alpha -a beta -b2 gamma -c3 | \
+	dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=3 ARGV='alpha beta gamma'"
+}
+
+# long options and arguments
+function script-action-1.5.1 () {
+    script_with_actions one green solid alpha --a-opt beta --b-opt=2 gamma --c-opt=3 | \
+	dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=3 ARGV='alpha beta gamma'"
 }
 
 #PAGE
