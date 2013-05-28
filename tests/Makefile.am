@@ -28,6 +28,7 @@ MBFL_TESTS_ENV		+= srcdir=$(srcdir); export srcdir; builddir=$(builddir); export
 # to fail if the temporary test files are created under "/tmp".
 MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp; export TMPDIR; examplesdir=$(srcdir)/../examples; export examplesdir;
 MBFL_TESTS_ENV		+= MBFL_LIBRARY=$(builddir)/../src/libmbfl.sh; export MBFL_LIBRARY;
+MBFL_TESTS_ENV		+= MBFLTEST_LIBRARY=$(srcdir)/../src/lib/libmbfltest.sh; export MBFLTEST_LIBRARY;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
 MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(BASH_PROGRAM)

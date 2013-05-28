@@ -139,6 +139,187 @@ function getopts-7.1 () {
 }
 
 #page
+#### parsing tests: brief options
+
+# brief options with no argument
+
+function getopts-8.1.1 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	no		a		alpha		noarg	      'an option'
+    mbfl_declare_option B	no		b		beta		noarg	      'an option'
+    local -a ARGV1=()
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal no "$script_option_A"	\
+	&& dotest-equal no "$script_option_B"	\
+	&& dotest-equal 0  ${#ARGV[@]}		\
+	&& dotest-equal 0  ${ARGC}
+}
+function getopts-8.1.2 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	no		a		alpha		noarg	      'an option'
+    mbfl_declare_option B	no		b		beta		noarg	      'an option'
+    local -a ARGV1=("-a" "-b")
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal yes "$script_option_A"		\
+	&& dotest-equal yes "$script_option_B"		\
+	&& dotest-equal 0   ${#ARGV[@]}			\
+	&& dotest-equal 0   ${ARGC}
+}
+
+## --------------------------------------------------------------------
+## brief options with argument
+
+function getopts-8.2.1 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	_		a		alpha		witharg	      'an option'
+    mbfl_declare_option B	_		b		beta		witharg	      'an option'
+    local -a ARGV1=()
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal _ "$script_option_A"	\
+	&& dotest-equal _ "$script_option_B"	\
+	&& dotest-equal 0 ${#ARGV[@]}		\
+	&& dotest-equal 0 ${ARGC} 0
+}
+function getopts-8.2.2 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	_		a		alpha		witharg	      'an option'
+    mbfl_declare_option B	_		b		beta		witharg	      'an option'
+    local -a ARGV1=("-a123" "-b456")
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal 123 "$script_option_A"	\
+	&& dotest-equal 456 "$script_option_B"	\
+	&& dotest-equal 0 ${#ARGV[@]}		\
+	&& dotest-equal 0 ${ARGC}
+}
+function getopts-8.2.3 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	_		a		alpha		witharg	      'an option'
+    mbfl_declare_option B	_		b		beta		witharg	      'an option'
+    local -a ARGV1=("-b456")
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal _   "$script_option_A"	\
+	&& dotest-equal 456 "$script_option_B"	\
+	&& dotest-equal 0   ${#ARGV[@]}		\
+	&& dotest-equal 0   ${ARGC}
+}
+function getopts-8.2.4 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	_		a		alpha		witharg	      'an option'
+    mbfl_declare_option B	_		b		beta		witharg	      'an option'
+    local -a ARGV1=("-b")
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal 1 $?
+}
+
+#page
+#### parsing tests: brief options
+
+## long options with no argument
+
+function getopts-9.1.1 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	no		a		alpha		noarg	      'an option'
+    mbfl_declare_option B	no		b		beta		noarg	      'an option'
+    local -a ARGV1=()
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal no "$script_option_A"	\
+	&& dotest-equal no "$script_option_B"	\
+	&& dotest-equal 0  ${#ARGV[@]}		\
+	&& dotest-equal 0  ${ARGC}
+}
+function getopts-9.1.2 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	no		a		alpha		noarg	      'an option'
+    mbfl_declare_option B	no		b		beta		noarg	      'an option'
+    local -a ARGV1=("--alpha" "--beta")
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal yes "$script_option_A"		\
+	&& dotest-equal yes "$script_option_B"		\
+	&& dotest-equal 0   ${#ARGV[@]}			\
+	&& dotest-equal 0   ${ARGC}
+}
+
+### --------------------------------------------------------------------
+
+# long options with argument
+
+function getopts-9.2.1 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	_		a		alpha		witharg	      'an option'
+    mbfl_declare_option B	_		b		beta		witharg	      'an option'
+    local -a ARGV1=()
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal _ "$script_option_A"	\
+	&& dotest-equal _ "$script_option_B"	\
+	&& dotest-equal 0 ${#ARGV[@]}		\
+	&& dotest-equal 0 ${ARGC} 0
+}
+function getopts-9.2.2 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	_		a		alpha		witharg	      'an option'
+    mbfl_declare_option B	_		b		beta		witharg	      'an option'
+    local -a ARGV1=("--alpha=123" "--beta=456")
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal 123 "$script_option_A"	\
+	&& dotest-equal 456 "$script_option_B"	\
+	&& dotest-equal 0 ${#ARGV[@]}		\
+	&& dotest-equal 0 ${ARGC}
+}
+function getopts-9.2.3 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	_		a		alpha		witharg	      'an option'
+    mbfl_declare_option B	_		b		beta		witharg	      'an option'
+    local -a ARGV1=("--beta=456")
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal $? 0 \
+	&& dotest-equal _   "$script_option_A"	\
+	&& dotest-equal 456 "$script_option_B"	\
+	&& dotest-equal 0   ${#ARGV[@]}		\
+	&& dotest-equal 0   ${ARGC}
+}
+function getopts-9.2.4 () {
+    #                   keyword	default-value	brief-option	long-option	has-argument  description
+    mbfl_declare_option A	_		a		alpha		witharg	      'an option'
+    mbfl_declare_option B	_		b		beta		witharg	      'an option'
+    local -a ARGV1=("--beta")
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    dotest-equal 1 $?
+}
+
+#page
 
 dotest getopts-
 dotest-final-report

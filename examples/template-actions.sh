@@ -167,136 +167,110 @@ function script_before_parsing_options_one_green_gas () {
 #### script action main functions
 
 function script_action_one_green_solid () {
-    printf 'action one green solid $script_option_A $script_option_B $script_option_C\n'
-    exit_because_success
+    printf "action one green solid: A='%s' B='%s' C='%s' ARGV='%s'\n" \
+	"$script_option_A" "$script_option_B" "$script_option_C" "${ARGV[@]}"
 }
 function script_action_one_green_liquid () {
-    printf 'action one green liquid $script_option_D $script_option_E $script_option_F\n'
-    exit_because_success
+    printf "action one green liquid $script_option_D $script_option_E $script_option_F\n"
 }
 function script_action_one_green_gas () {
-    printf 'action one green gas $script_option_G $script_option_H $script_option_I\n'
-    exit_because_success
+    printf "action one green gas $script_option_G $script_option_H $script_option_I\n"
 }
 
 ## --------------------------------------------------------------------
 
 function script_action_one_white_solid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_one_white_liquid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_one_white_gas () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 
 ## --------------------------------------------------------------------
 
 function script_action_one_red_solid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_one_red_liquid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_one_red_gas () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 
 ## --------------------------------------------------------------------
 
 function script_action_two_green_solid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_two_green_liquid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_two_green_gas () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 
 ## --------------------------------------------------------------------
 
 function script_action_two_white_solid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_two_white_liquid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_two_white_gas () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 
 ## --------------------------------------------------------------------
 
 function script_action_two_red_solid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_two_red_liquid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_two_red_gas () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 
 ## --------------------------------------------------------------------
 
 function script_action_three_green_solid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_three_green_liquid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_three_green_gas () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 
 ## --------------------------------------------------------------------
 
 function script_action_three_white_solid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_three_white_liquid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_three_white_gas () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 
 ## --------------------------------------------------------------------
 
 function script_action_three_red_solid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_three_red_liquid () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 function script_action_three_red_gas () {
     printf "action ${FUNCNAME}\n"
-    exit_because_success
 }
 
 #page

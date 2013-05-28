@@ -122,31 +122,18 @@ function mbfl_actions_dispatch () {
         if test "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" = yes
         then
             local IDENTIFIER=${ARGV1[$ARG1ST]}
-        let ++ARG1ST
+            let ++ARG1ST
             ACTION_SUBSET=${mbfl_action_sets_SUBSETS[${ACTION_SET}-${IDENTIFIER}]}
             if test -n "${ACTION_SUBSET}" -a "${ACTION_SUBSET}" != NONE
-            then
-                # The  selected  action  has  a subset  of  actions,  so
-                # dispatch them.
-                mbfl_actions_dispatch "${ACTION_SUBSET}"
+            # The selected action  has a subset of  actions, so dispatch
+            # them.
+            then mbfl_actions_dispatch "${ACTION_SUBSET}"
+            # The selected action is a leaf in the tree.
             else
-                # The selected action is a leaf in the tree.
                 local KEYWORD=${mbfl_action_sets_KEYWORDS[${ACTION_SET}-${IDENTIFIER}]}
-                local BEFORE=script_before_parsing_option_$KEYWORD;
-                local AFTER=script_after_parsing_option_$KEYWORD;
-                local MAIN=script_action_$KEYWORD;
-                if test "$(type -t $BEFORE)" = function
-                then alias script_before_parsing_option=$BEFORE
-                fi
-                if test "$(type -t $AFTER)" = function
-                then alias script_after_parsing_option=$AFTER
-                fi
-                if test "$(type -t $MAIN)" = function
-                then mbfl_main_set_main $MAIN
-                else
-                    mbfl_message_error "main function for action '$KEY' not defined: $MAIN"
-                    exit_because_missing_action_function
-                fi
+                mbfl_main_set_before_parsing_options "script_before_parsing_options_$KEYWORD"
+                mbfl_main_set_after_parsing_options  "script_after_parsing_options_$KEYWORD"
+                mbfl_main_set_main "script_action_$KEYWORD"
             fi
         else
             mbfl_message_error "invalid action identifier: $IDENTIFIER"

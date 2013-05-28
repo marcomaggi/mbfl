@@ -34,15 +34,54 @@
 test "$mbfl_INTERACTIVE" = yes || {
     mbfl_option_TMPDIR="${TMPDIR:-/tmp/${USER}}"
     mbfl_ORG_PWD=$PWD
+
+    # The name of the main function  to be called when no special action
+    # is requested.  This  value can be customised by both  the MBFL and
+    # the user script by calling the function "mbfl_main_set_main()".
+    #
     mbfl_main_SCRIPT_FUNCTION=main
+
+    # The name of  the main function to be called  whtn a special action
+    # is requested, for example: printing the required external programs
+    # then exit.   This value  is for  internal use only  and it  can be
+    # changed      by     MBFL      by     calling      the     function
+    # "mbfl_main_set_private_main()".
+    #
+    # When  this variable  is  not set  to the  empty  string: it  takes
+    # precedence over the value selected by "mbfl_main_SCRIPT_FUNCTION".
+    #
     mbfl_main_PRIVATE_SCRIPT_FUNCTION=
+
+    # The name of the function to be called right before parsing command
+    # line options.  This  value can be customised by both  the MBFL and
+    # the      user     script      by     calling      the     function
+    # "mbfl_main_set_before_parsing_options()".
+    #
+    mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS=script_before_parsing_options
+
+    # The name of the function to  be called right after parsing command
+    # line options.  This  value can be customised by both  the MBFL and
+    # the      user     script      by     calling      the     function
+    # "mbfl_main_set_before_parsing_options()".
+    #
+    mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=script_after_parsing_options
 }
 
 function mbfl_main_set_main () {
-    mbfl_main_SCRIPT_FUNCTION=${1:?}
+    mbfl_mandatory_parameter(FUNC,1,main function name)
+    mbfl_main_SCRIPT_FUNCTION=${FUNC}
 }
 function mbfl_main_set_private_main () {
-    mbfl_main_PRIVATE_SCRIPT_FUNCTION=${1:?}
+    mbfl_mandatory_parameter(FUNC,1,main function name)
+    mbfl_main_PRIVATE_SCRIPT_FUNCTION=${FUNC}
+}
+function mbfl_main_set_before_parsing_options () {
+    mbfl_mandatory_parameter(FUNC,1,main function name)
+    mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS=${FUNC}
+}
+function mbfl_main_set_after_parsing_options () {
+    mbfl_mandatory_parameter(FUNC,1,main function name)
+    mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=${FUNC}
 }
 #page
 ## ------------------------------------------------------------
@@ -74,6 +113,12 @@ test "$mbfl_INTERACTIVE" = yes || {
 
     mbfl_main_EXIT_CODES[7]=94
     mbfl_main_EXIT_NAMES[7]=missing_action_function
+
+    mbfl_main_EXIT_CODES[8]=93
+    mbfl_main_EXIT_NAMES[8]=invalid_option_declaration
+
+    mbfl_main_EXIT_CODES[9]=92
+    mbfl_main_EXIT_NAMES[9]=invalid_option_argument
 }
 
 function exit_success () {
@@ -251,9 +296,9 @@ function mbfl_main () {
     if test -n "${mbfl_action_sets_EXISTS[MAIN]}" -a "${mbfl_action_sets_EXISTS[MAIN]}" = yes
     then mbfl_actions_dispatch MAIN
     fi
-    mbfl_invoke_script_function script_before_parsing_options
-    mbfl_getopts_parse
-    mbfl_invoke_script_function script_after_parsing_options
+    mbfl_invoke_script_function $mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS || exit_failure
+    mbfl_getopts_parse || exit_because_invalid_option_argument
+    mbfl_invoke_script_function $mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS || exit_failure
     if test -n "$mbfl_main_PRIVATE_SCRIPT_FUNCTION"
     then mbfl_invoke_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
     else mbfl_invoke_script_function $mbfl_main_SCRIPT_FUNCTION

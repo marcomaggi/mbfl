@@ -107,7 +107,7 @@ function program-4.2 () {
     mbfl_program_enable_sudo
     mbfl_program_declare_sudo_user woah
     echo 123 | mbfl_program_exec cat 2>&1 | \
-        dotest-output 'sudo: unknown user: woah'
+        dotest-output 'sudo: unknown user: woah*'
 }
 
 #PAGE

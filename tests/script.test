@@ -34,11 +34,11 @@ source setup.sh
 
 function script () {
     export MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/../src/libmbfl.sh}
-    "${BASH}" "$examplesdir"/template.sh "$@"
+    "${BASH}" "$examplesdir"/template.sh "$@" 2>&1
 }
 function script_with_actions () {
     export MBFL_LIBRARY=${MBFL_LIBRARY:=${builddir}/../src/libmbfl.sh}
-    "${BASH}" "$examplesdir"/template-actions.sh "$@"
+    "${BASH}" "$examplesdir"/template-actions.sh "$@" 2>&1
 }
 
 #PAGE
@@ -90,7 +90,7 @@ function script-3.1 () {
 
 function script-4.1 () {
     script --list-exit-codes | dotest-output \
-        "0 success\n1 failure\n99 program_not_found\n98 wrong_num_args\n97 invalid_action_set\n96 invalid_action_declaration\n95 invalid_action_argument\n94 missing_action_function\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
+        "0 success\n1 failure\n99 program_not_found\n98 wrong_num_args\n97 invalid_action_set\n96 invalid_action_declaration\n95 invalid_action_argument\n94 missing_action_function\n93 invalid_option_declaration\n92 invalid_option_argument\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
 }
 function script-4.2 () {
     script --print-exit-code=second_error | dotest-output 2
@@ -143,19 +143,46 @@ function script-6.5 () {
 }
 function script-6.6 () {
     script --four a --verbose b c | \
-        dotest-output "action four, arguments: 3, 'a b c'"
+        dotest-output "template.sh: script_after_parsing_options\naction four, arguments: 3, 'a b c'"
 }
 
 #page
+#### script with actions
 
 function script-action-1.1 () {
-    script_with_actions one green solid | dotest-output "action one green solid *"
+    script_with_actions one green solid | dotest-output "action one green solid: A='no' B='' C='' ARGV=''"
+}
+function script-action-1.2 () {
+    script_with_actions one green solid alpha beta| dotest-output "action one green solid: A='no' B='' C='' ARGV='alpha beta'"
+}
+
+# brief options
+function script-action-2.1 () {
+    script_with_actions one green solid -a -b 2 -c 3 | dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+}
+function script-action-2.2 () {
+    script_with_actions one green solid -b 2 -a -c 3 | dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+}
+function script-action-2.3 () {
+    script_with_actions one green solid -b 2 -c 3 -a | dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+}
+
+# long options
+function script-action-3.1 () {
+    script_with_actions one green solid --a-opt --b-opt=2 --c-opt=3 | \
+	dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+}
+function script-action-3.2 () {
+    script_with_actions one green solid --b-opt=2 --a-opt --c-opt=3 | \
+	dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
+}
+function script-action-3.3 () {
+    script_with_actions one green solid --b-opt=2 --c-opt=3 --a-opt | \
+	dotest-output "action one green solid: A='yes' B='2' C='3' ARGV=''"
 }
 
 #PAGE
-## ---------------------------------------------------------
-## End of "::test" namespace.
-## ---------------------------------------------------------
+#### let's go
 
 dotest script-
 dotest-final-report

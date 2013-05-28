@@ -25,6 +25,13 @@ Notes for revision 2.0d0
 * BACKWARDS INCOMPATIBILITY The  preprocessor macros are now
   prefixed with "mbfl_".
 
+* BACKWARDS  INCOMPATIBILITY The  getopts  module raises  an
+  error if  an option  with argument is  used with  an empty
+  value.
+
+* The global variables: ARGC1, ARGV1, ARGC, ARGV are no more
+  read-only; ugly, but it allows test suites to use them.
+
 
 
 ### end of file

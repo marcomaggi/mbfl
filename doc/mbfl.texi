@@ -2303,49 +2303,6 @@ A one--line string briefly describing the option.
 @end defun
 
 
-@defun mbfl_declare_action_argument @var{keyword} @var{string} @var{selected} @var{skipopts} @var{description}
-Declare an action argument.  Arguments description follows.
-
-@table @var
-@item keyword
-A string identifying the argument; internally it is used to build a
-function name.  It must be a valid Bash function identifier.
-
-@item string
-The string that identifies the argument on the command line of the
-string.  It has limitations in format:
-
-@itemize
-@item
-Its first character must be a letter in the range @code{a-z} or
-@code{A-Z}.
-
-@item
-All the characters but the first must be: letters in the range
-@code{a-z} or @code{A-Z}; numbers in the range @code{0-9}; dash
-characters @code{-}.
-@end itemize
-
-@item selected
-A boolean value that can be @code{yes} or @code{no}.  If @code{yes} the
-function associated to this action argument is selected by default as
-main action of the script.  The function name is built by concatenating
-@code{script_action_} with @var{keyword}.
-
-@item skipopts
-A boolean value that can be @code{yes} or @code{no}.  If @code{no}:
-command line options are parsed as usual; if @code{yes} when this action
-argument is found as first parameter to the script, the rest of the
-arguments are not parsed, but copied as is to the @code{ARGV} and
-@code{ARGC} variables.  This allows to hand options not recognised by
-the script to some external program.
-
-@item description
-A one--line string briefly describing the argument.
-@end table
-@end defun
-
-
 @defun mbfl_getopts_parse
 Parse a set of command line options.  The options are handed to user
 defined functions.  The global array @code{ARGV1} and the global
@@ -2354,9 +2311,7 @@ and the number of command line arguments.  Non--option arguments are
 left in the global array @code{ARGV}, the global variable @code{ARGC}
 holds the number of elements in @code{ARGV}.
 
-If an action argument is recognised as the first element in
-@code{ARGV1}: it is processed but @strong{not} added to @code{ARGV} and
-@strong{not} counted in @code{ARGC}.
+If successful return @code{0}, else return @code{1}.
 @end defun
 
 
@@ -3676,22 +3631,30 @@ Register the value of the variable @code{script_PROGNAME} in the message
 module using the function @bfunc{mbfl_message_set_progname}.
 
 @item
-Invoke @bfunc{mbfl_main_create_exit_aliases}.  @ref{main exit, Declaring
-exit codes}.
+Invoke @bfunc{mbfl_main_create_exit_functions}.  @ref{main exit,
+Declaring exit codes}.
 
 @item
-If it exists: Invoke the function @bfunc{script_before_parsing_options}.
+Invoke the command line arguments according to the command actions
+configuration; this step may change the selection of: main function,
+``before parsing options'' function, ``after parsing options''
+function.  If no command actions are configured: nothing is done.
+
+@item
+If it exists: invoke the function @bfunc{script_before_parsing_options}
+or the one selected by @func{mbfl_main_set_before_parsing_options}.
 
 @item
 Parse command line options with @bfunc{mbfl_getopts_parse}.
 
 @item
-If it exists: Invoke the function @bfunc{script_after_parsing_options}.
+If it exists: invoke the function @bfunc{script_after_parsing_options}
+or the one selected by @func{mbfl_main_set_after_parsing_options}.
 
 @item
 Invoke the function whose name is stored in the global variable
 @code{mbfl_main_SCRIPT_FUNCTION}, if it exists, with no arguments; if
-its return value is non--zero: Exit the script with the same code.  The
+its return value is non--zero: exit the script with the same code.  The
 default value is @code{main}.
 
 @item
@@ -3720,6 +3683,24 @@ Select the main function storing @var{funcname} into
 @defvar mbfl_main_SCRIPT_FUNCTION
 Global variable that holds the name of the custom main script function.
 @end defvar
+
+
+@defun mbfl_main_set_before_parsing_options @var{funcname}
+The name of the function to be called right before parsing command line
+options.  This value can be customised by both the @mbfl{} and the user
+script.
+
+The default function name is: @func{script_before_parsing_options}.
+@end defun
+
+
+@defun mbfl_main_set_after_parsing_options @var{funcname}
+The name of the function to be called right after parsing command line
+options.  This value can be customised by both the @mbfl{} and the user
+script.
+
+The default function name is: @func{script_after_parsing_options}.
+@end defun
 
 @c page
 @node main exit
@@ -4128,7 +4109,7 @@ dotest mytest-
 
 
 @defun dotest-output
-@defunx Function dotest-output @var{string}
+@defunx dotest-output @var{string}
 Read all the available lines from stdin accumulating them into a local
 variable, separated by @code{\n}; then compare the input with
 @var{string}, or the empty string if @var{string} is not present, and
