@@ -1,12 +1,12 @@
 Subject: [announce] MBFL revision 2.0d0
 
-	       Marco's Bash Functions Library
-	       ==============================
+		     Marco's Bash Functions Library
+		     ==============================
 
 
-The MBFL is a collection of shell functions for the GNU Bash
-shell.  This  package is  an attempt to  make Bash  a viable
-solution for medium sized scripts.
+The MBFL  is a  collection of  shell functions for  the GNU  Bash shell.
+This package  is an attempt  to make Bash  a viable solution  for medium
+sized scripts.
 
   The MBFL home page is at:
 
@@ -22,19 +22,24 @@ development takes place at:
 Notes for revision 2.0d0
 ------------------------
 
-* BACKWARDS INCOMPATIBILITY The  preprocessor macros are now
-  prefixed with "mbfl_".
+* BACKWARDS  INCOMPATIBILITY The  preprocessor macros  are now  prefixed
+  with "mbfl_".
 
-* BACKWARDS  INCOMPATIBILITY The  getopts  module raises  an
-  error if  an option  with argument is  used with  an empty
-  value.
+* BACKWARDS INCOMPATIBILITY  The getopts  module raises  an error  if an
+  option with argument is used with an empty value.
 
-* The global variables: ARGC1, ARGV1, ARGC, ARGV are no more
-  read-only; ugly, but it allows test suites to use them.
+* BACKWARDS  INCOMPATIBILITY   The  predefined  command   line  argument
+  --print-action-arguments does not exist anymore.
+
+* The global variables: ARGC1, ARGV1,  ARGC, ARGV are no more read-only;
+  ugly, but it allows test suites to use them.
 
 
 
 ### end of file
 # Local Variables:
 # mode: text
+# coding: utf-8-unix
+# fill-column: 72
+# paragraph-start: "*"
 # End:

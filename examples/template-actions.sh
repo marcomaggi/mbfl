@@ -66,33 +66,8 @@ test "$mbfl_LOADED" = yes || {
 #page
 #### declaration of script actions tree
 
-mbfl_declare_action_set MAIN
-#                   action-set	keyword		subset		identifier	description
-mbfl_declare_action MAIN	MAIN_ONE	ONE		one		'do main action one'
-mbfl_declare_action MAIN	MAIN_TWO	TWO		two		'do main action two'
-mbfl_declare_action MAIN	MAIN_THREE	THREE		three		'do main action three'
-
-### --------------------------------------------------------------------
-
-mbfl_declare_action_set ONE
-#                   action-set	keyword		subset		identifier	description
-mbfl_declare_action ONE		ONE_GREEN	ONE_GREEN	green		'do main action one green'
-mbfl_declare_action ONE		ONE_WHITE	ONE_WHITE	white		'do main action one white'
-mbfl_declare_action ONE		ONE_RED		ONE_RED		red		'do main action one red'
-
-mbfl_declare_action_set TWO
-mbfl_declare_action TWO		TWO_GREEN	TWO_GREEN	green		'do main action two green'
-mbfl_declare_action TWO		TWO_WHITE	TWO_WHITE	white		'do main action two white'
-mbfl_declare_action TWO		TWO_RED		TWO_RED		red		'do main action two red'
-
-mbfl_declare_action_set THREE
-mbfl_declare_action THREE	THREE_GREEN	THREE_GREEN	green		'do main action three green'
-mbfl_declare_action THREE	THREE_WHITE	THREE_WHITE	white		'do main action three white'
-mbfl_declare_action THREE	THREE_RED	THREE_RED	red		'do main action three red'
-
-### --------------------------------------------------------------------
-
 mbfl_declare_action_set ONE_GREEN
+#                   action-set	keyword		subset		identifier	description
 mbfl_declare_action ONE_GREEN	one_green_solid		NONE	solid		'do main action one green solid'
 mbfl_declare_action ONE_GREEN	one_green_liquid	NONE	liquid		'do main action one green liquid'
 mbfl_declare_action ONE_GREEN	one_green_gas		NONE	gas		'do main action one green gas'
@@ -110,6 +85,7 @@ mbfl_declare_action ONE_RED	one_red_gas		NONE	gas		'do main action one red gas'
 ### --------------------------------------------------------------------
 
 mbfl_declare_action_set TWO_GREEN
+#                   action-set	keyword		subset		identifier	description
 mbfl_declare_action TWO_GREEN	two_green_solid		NONE	solid		'do main action two green solid'
 mbfl_declare_action TWO_GREEN	two_green_liquid	NONE	liquid		'do main action two green liquid'
 mbfl_declare_action TWO_GREEN	two_green_gas		NONE	gas		'do main action two green gas'
@@ -141,8 +117,41 @@ mbfl_declare_action THREE_RED	three_red_solid		NONE	solid		'do main action three
 mbfl_declare_action THREE_RED	three_red_liquid	NONE	liquid		'do main action three red liquid'
 mbfl_declare_action THREE_RED	three_red_gas		NONE	gas		'do main action three red gas'
 
+### --------------------------------------------------------------------
+
+mbfl_declare_action_set ONE
+#                   action-set	keyword		subset		identifier	description
+mbfl_declare_action ONE		ONE_GREEN	ONE_GREEN	green		'do main action one green'
+mbfl_declare_action ONE		ONE_WHITE	ONE_WHITE	white		'do main action one white'
+mbfl_declare_action ONE		ONE_RED		ONE_RED		red		'do main action one red'
+
+mbfl_declare_action_set TWO
+mbfl_declare_action TWO		TWO_GREEN	TWO_GREEN	green		'do main action two green'
+mbfl_declare_action TWO		TWO_WHITE	TWO_WHITE	white		'do main action two white'
+mbfl_declare_action TWO		TWO_RED		TWO_RED		red		'do main action two red'
+
+mbfl_declare_action_set THREE
+mbfl_declare_action THREE	THREE_GREEN	THREE_GREEN	green		'do main action three green'
+mbfl_declare_action THREE	THREE_WHITE	THREE_WHITE	white		'do main action three white'
+mbfl_declare_action THREE	THREE_RED	THREE_RED	red		'do main action three red'
+
+### --------------------------------------------------------------------
+
+mbfl_declare_action_set MAIN
+#                   action-set	keyword		subset		identifier	description
+mbfl_declare_action MAIN	MAIN_ONE	ONE		one		'do main action one'
+mbfl_declare_action MAIN	MAIN_TWO	TWO		two		'do main action two'
+mbfl_declare_action MAIN	MAIN_THREE	THREE		three		'do main action three'
+
 #page
 #### script action options declarations
+
+function script_before_parsing_options () {
+    # keyword default-value brief-option long-option has-argument description
+    mbfl_declare_option X no x x-opt noarg   'selects option x'
+    mbfl_declare_option Y '' y y-opt witharg 'selects option y'
+    mbfl_declare_option Z '' z z-opt witharg 'selects option z'
+}
 
 function script_before_parsing_options_one_green_solid () {
     # keyword default-value brief-option long-option has-argument description
@@ -165,6 +174,40 @@ function script_before_parsing_options_one_green_gas () {
 
 #page
 #### script action main functions
+
+function main () {
+    printf "action main: X='%s' Y='%s' Z='%s' ARGC=%s ARGV='%s'\n" \
+	"$script_option_X" "$script_option_Y" "$script_option_Z" "$ARGC" "${ARGV[*]}"
+}
+
+### --------------------------------------------------------------------
+
+function script_action_one () {
+    :
+}
+function script_action_one_green () {
+    :
+}
+function script_action_one_white () {
+    :
+}
+function script_action_one_red () {
+    :
+}
+function script_action_two () {
+    :
+}
+function script_action_two_green () {
+    :
+}
+function script_action_two_white () {
+    :
+}
+function script_action_two_red () {
+    :
+}
+
+### --------------------------------------------------------------------
 
 function script_action_one_green_solid () {
     printf "action one green solid: A='%s' B='%s' C='%s' ARGC=%s ARGV='%s'\n" \
@@ -300,6 +343,7 @@ function script_action_three_red_gas () {
 #page
 #### start
 
+#mbfl_set_option_debug
 mbfl_main
 
 ### end of file

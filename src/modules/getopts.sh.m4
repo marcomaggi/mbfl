@@ -36,15 +36,6 @@
 ## ------------------------------------------------------------
 
 test "$mbfl_INTERACTIVE" = yes || {
-    declare -i ARGC=0 ARG1ST=0
-    declare -a ARGV ARGV1
-
-    for ((ARGC1=0; $# > 0; ++ARGC1))
-    do
-        ARGV1[$ARGC1]=$1
-        shift
-    done
-
     declare -i mbfl_getopts_INDEX=0
     declare -a mbfl_getopts_KEYWORDS
     declare -a mbfl_getopts_DEFAULTS
@@ -101,8 +92,6 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\tprint license informations and exit
 \t--print-options
 \t\tprint a list of long option switches
-\t--print-action-arguments
-\t\tprint a list of action arguments
 \t-h --help --usage
 \t\tprint usage informations and exit
 \t-H --brief-help --brief-usage
@@ -349,10 +338,6 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	    ;;
         print-options)
             mbfl_getopts_print_long_switches
-            exit 0
-            ;;
-        print-action-arguments)
-            mbfl_getopts_print_action_arguments
             exit 0
             ;;
 	*)

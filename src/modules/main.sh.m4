@@ -35,6 +35,15 @@ test "$mbfl_INTERACTIVE" = yes || {
     mbfl_option_TMPDIR="${TMPDIR:-/tmp/${USER}}"
     mbfl_ORG_PWD=$PWD
 
+    declare -i ARGC=0 ARG1ST=0
+    declare -a ARGV ARGV1
+
+    for ((ARGC1=0; $# > 0; ++ARGC1))
+    do
+        ARGV1[$ARGC1]=$1
+        shift
+    done
+
     # The name of the main function  to be called when no special action
     # is requested.  This  value can be customised by both  the MBFL and
     # the user script by calling the function "mbfl_main_set_main()".
@@ -119,6 +128,9 @@ test "$mbfl_INTERACTIVE" = yes || {
 
     mbfl_main_EXIT_CODES[9]=92
     mbfl_main_EXIT_NAMES[9]=invalid_option_argument
+
+    mbfl_main_EXIT_CODES[10]=91
+    mbfl_main_EXIT_NAMES[10]=invalid_function_name
 }
 
 function exit_success () {
@@ -293,7 +305,7 @@ function mbfl_main () {
     local exit_code=0 action_func item code
     mbfl_message_set_progname "$script_PROGNAME"
     mbfl_main_create_exit_functions
-    if test -n "${mbfl_action_sets_EXISTS[MAIN]}" -a "${mbfl_action_sets_EXISTS[MAIN]}" = yes
+    if mbfl_actions_set_exists MAIN
     then
 	if ! mbfl_actions_dispatch MAIN
 	then exit_failure
@@ -303,16 +315,25 @@ function mbfl_main () {
     mbfl_getopts_parse || exit_because_invalid_option_argument
     mbfl_invoke_script_function $mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS || exit_failure
     if test -n "$mbfl_main_PRIVATE_SCRIPT_FUNCTION"
-    then mbfl_invoke_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
-    else mbfl_invoke_script_function $mbfl_main_SCRIPT_FUNCTION
+    then mbfl_invoke_existent_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
+    else mbfl_invoke_existent_script_function $mbfl_main_SCRIPT_FUNCTION
     fi
     exit_success
 }
 function mbfl_invoke_script_function () {
-    mbfl_mandatory_parameter(item, 1, function name)
-    if test "$(type -t $item)" = function
-    then $item
+    mbfl_mandatory_parameter(FUNC, 1, function name)
+    if test "$(type -t $FUNC)" = function
+    then $FUNC
     else return 0
+    fi
+}
+function mbfl_invoke_existent_script_function () {
+    mbfl_mandatory_parameter(FUNC, 1, function name)
+    if test "$(type -t $FUNC)" = function
+    then $FUNC
+    else
+	mbfl_message_error "internal error: request to call non-existent function \"$FUNC\""
+	exit_because_invalid_function_name
     fi
 }
 

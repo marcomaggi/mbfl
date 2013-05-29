@@ -139,6 +139,7 @@ entitled ``@gnu{} Free Documentation License''.
 * base::                        Some base functions.
 * encoding::                    Encoding and decoding strings.
 * file::                        Manipulating files and pathnames.
+* actions::                     Selecting actions to perform.
 * getopts::                     Parsing command line options.
 * message::                     Printing messages to the console.
 * program::                     Using external programs.
@@ -1708,6 +1709,151 @@ print a message.
 @end defun
 
 @c page
+@node actions
+@chapter Selecting actions to perform
+
+
+@menu
+* actions declare::             Declaring actions and action sets.
+* actions dispatch::            Dispatching action arguments.
+* actions inspect::             Inspecting action trees.
+@end menu
+
+@c page
+@node actions declare
+@section Declaring actions and action sets
+
+
+The structure of the action sets tree is stored in global variables
+defined by default; we should never try to access such variables
+directly.
+
+
+@defun mbfl_declare_action_set @var{action-set}
+Declare a new action set.  @var{action-set} must be a non--empty string
+representing the identifier of the action set.
+@end defun
+
+
+@defun mbfl_declare_action @var{action-set} @var{keyword} @var{subset} @var{identifier} @var{description}
+Declare a new action belonging to an action set.  The arguments are:
+
+@table @var
+@item action-set
+A string representing the name of the action set this action belongs to.
+The action set must have been previously declared with a call to
+@func{mbfl_declare_action_set}.
+
+@item keyword
+A unique string (in this script) identifying this action.  The ``main'',
+``before parsing options'' and ``after parsing options'' function names
+associated to this action are built as:
+
+@example
+script_action_$@var{keyword}
+script_before_parsing_options_$@var{keyword}
+script_after_parsing_options_$@var{keyword}
+@end example
+
+@item subset
+If @var{subset} is the string @code{NONE} it means that this action is a
+leaf and it will set the main function to run; else @var{subset} must be
+the identifier of an action set subordinate to @var{action-set}: this
+function is recursively called to process it.
+
+@item identifier
+A string representing the argument on the command line used to select
+this action.  This string must be unique for this @var{action-set}.
+
+@item description
+A string describing this action, to be used to compose the help screen.
+@end table
+@end defun
+
+@c page
+@node actions dispatch
+@section Dispatching action arguments
+
+
+@defun mbfl_actions_dispatch @var{action-set}
+Parse the next command line argument and select accordingly the
+functions for the main module making use of the functions:
+
+@example
+mbfl_main_set_before_parsing_options
+mbfl_main_set_after_parsing_options
+mbfl_main_set_main
+@end example
+
+@noindent
+If successful return @code{0}, else return @code{1} and print an error
+message to @code{stderr}.  This function recursively calls itself,
+parsing command line arguments and traversing the tree of declared
+actions.
+
+@var{action-set} must be the identifier of an action set previously
+declared with @func{mbfl_declare_action}.  It is an error if this
+function is called with an @var{action-set} identifier specifying a
+non--existent action set.  If there are no command line arguments left
+upon entering this function: the values previously selected are silently
+accepted.
+
+Upon entering this function, the following global variables must exist
+and have the specified values:
+
+@table @code
+@item ARGV1
+An array containing all the command line argument.
+
+@item ARGC1
+An integer representing the number of values in @code{ARGV1}.
+
+@item ARG1ST
+An integer representing the index in @code{ARGV1} of the next argument
+to be processed.
+@end table
+
+@noindent
+all these variables are created by default by the @mbfl{} @code{main}
+module, @ref{main variables, Command line arguments variables}.
+@end defun
+
+@c page
+@node actions inspect
+@section Inspecting action trees
+
+
+@defun mbfl_actions_set_exists @var{action-set}
+Return @code{0} if @var{action-set} is the identifier of an existent
+action set; else return @code{1}.
+@end defun
+
+
+@defun mbfl_actions_set_exists_or_none @var{action-set}
+Return @code{0} if @var{action-set} is the identifier of an existent
+action set or it is the string @code{NONE}; else return @code{1}.
+@end defun
+
+@c ------------------------------------------------------------
+
+@defun mbfl_actions_valid_string_as_action_set_identifier @var{str}
+Return @code{0} if @var{str} is a valid string to be used as action set
+identifier; else return @code{1}.
+@end defun
+
+
+@defun mbfl_actions_valid_string_as_action_argument @var{str}
+Return @code{0} if @var{str} is a valid string to be used as action
+selector argument; else return @code{1}.
+@end defun
+
+
+@defun mbfl_actions_valid_string_as_keyword_identifier @var{str}
+Return @code{0} if @var{str} is a valid string to be used as action
+keyword; else return @code{1}.
+@end defun
+
+@c page
 @node getopts
 @chapter Parsing command line options
 
@@ -1717,8 +1863,8 @@ print a message.
 @cindex Program command line options, parsing
 
 
-The getopt module defines a set of procedures to be used to process
-command line arguments with the following format:
+The @code{getopts} module defines a set of procedures to be used to
+process command line arguments with the following format:
 
 @table @code
 @item -a
@@ -2158,11 +2304,6 @@ examples are not displayed.
 Print all the long options with
 @bfunc{mbfl_getopts_print_long_switches}, then exit the script with code
 zero.
-
-@item --print-action-arguments
-Print all the action arguments with
-@bfunc{mbfl_getopts_print_action_arguments}, then exit the script with
-code zero.
 @end table
 
 
@@ -3608,9 +3749,35 @@ functions.
 
 
 @menu
+* main variables::              Command line arguments variables.
 * main function::               Driving script execution.
 * main exit::                   Declaring exit codes.
 @end menu
+
+@c page
+@node main variables
+@section Command line arguments variables
+
+
+The following global variables are defined by default.
+
+
+@defvar ARGV1
+An array containing all the command line argument.  When no command line
+arguments are present: this array is empty.
+@end defvar
+
+
+@defvar ARGC1
+An integer representing the number of values in @code{ARGV1}.  When no
+command line arguments are present: this variable is set to zero.
+@end defvar
+
+
+@defvar ARG1ST
+An integer representing the index in @code{ARGV1} of the next argument
+to be processed.  It is initialised to zero.
+@end defvar
 
 @c page
 @node main function
@@ -3664,13 +3831,19 @@ Exit the script with the return code of the action function or zero.
 
 
 @defun mbfl_invoke_script_function @var{funcname}
-If @var{funcname} is the name of an existing function: It is invoked
-with no arguments; the return value is the one of the function.  The
-existence test is performed with:
+If @var{funcname} is the name of an existing function: it is invoked
+with no arguments; the return value is the one of the called function.
+The existence test is performed with:
 
 @example
 type -t @var{FUNCNAME} = function
 @end example
+@end defun
+
+
+@defun mbfl_invoke_existent_script_function @var{funcname}
+Like @func{mbfl_invoke_script_function}, but if the function does not
+exist: print an error message to @code{stderr} and exit with failure.
 @end defun
 
 

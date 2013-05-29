@@ -43,105 +43,105 @@ function script_with_actions () {
 
 #PAGE
 
-function script-1.1 () {
+function script-template-1.1 () {
     script --usage | dotest-output "usage: template.sh *"
 }
-function script-1.2 () {
+function script-template-1.2 () {
     script --help | dotest-output "usage: template.sh *"
 }
-function script-1.3 () {
+function script-template-1.3 () {
     script -h | dotest-output "usage: template.sh *"
 }
-function script-1.4 () {
+function script-template-1.4 () {
     script --license | dotest-output "template.sh version *"
 }
-function script-1.5 () {
+function script-template-1.5 () {
     script --version | dotest-output "template.sh version *"
 }
-function script-1.6 () {
+function script-template-1.6 () {
     script --version-only | dotest-output 1.0
 }
 
 #PAGE
 
-function script-2.1 () {
+function script-template-2.1 () {
     script --beta=123 | dotest-output "option beta: 123\narguments: 0, ''"
 }
-function script-2.2 () {
+function script-template-2.2 () {
     script --beta=123\\ | dotest-output "option beta: 123\\\narguments: 0, ''"
 }
-function script-2.3 () {
+function script-template-2.3 () {
     script --beta="1 2" | dotest-output "option beta: 1 2\narguments: 0, ''"
 }
-function script-2.4 () {
+function script-template-2.4 () {
     script --beta=123\\\\ | dotest-output "option beta: 123\\\\\narguments: 0, ''"
 }
-function script-2.5 () {
+function script-template-2.5 () {
     script --alpha | dotest-output "option alpha\narguments: 0, ''"
 }
 
 #page
 
-function script-3.1 () {
+function script-template-3.1 () {
     script a b c | dotest-output "arguments: 3, 'a b c'"
 }
 
 #page
 
-function script-4.1 () {
+function script-template-4.1 () {
     script --list-exit-codes | dotest-output \
-        "0 success\n1 failure\n99 program_not_found\n98 wrong_num_args\n97 invalid_action_set\n96 invalid_action_declaration\n95 invalid_action_argument\n94 missing_action_function\n93 invalid_option_declaration\n92 invalid_option_argument\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
+        "0 success\n1 failure\n99 program_not_found\n98 wrong_num_args\n97 invalid_action_set\n96 invalid_action_declaration\n95 invalid_action_argument\n94 missing_action_function\n93 invalid_option_declaration\n92 invalid_option_argument\n91 invalid_function_name\n2 second_error\n8 eighth_error\n3 third_error\n3 fourth_error"
 }
-function script-4.2 () {
+function script-template-4.2 () {
     script --print-exit-code=second_error | dotest-output 2
 }
-function script-4.3 () {
+function script-template-4.3 () {
     script --print-exit-code=eighth_error | dotest-output 8
 }
-function script-4.4 () {
+function script-template-4.4 () {
     script --print-exit-code=third_error | dotest-output 3
 }
-function script-4.5 () {
+function script-template-4.5 () {
     script --print-exit-code=unexistent | dotest-output ""
 }
-function script-4.6 () {
+function script-template-4.6 () {
     script --print-exit-code=success | dotest-output 0
 }
-function script-4.7 () {
+function script-template-4.7 () {
     script --print-exit-code-names=1 | dotest-output "failure"
 }
-function script-4.8 () {
+function script-template-4.8 () {
     script --print-exit-code-names=8 | dotest-output "eighth_error"
 }
-function script-4.9 () {
+function script-template-4.9 () {
     script --print-exit-code-names=3 | dotest-output "third_error\nfourth_error"
 }
-function script-4.10 () {
+function script-template-4.10 () {
     script --print-exit-code-names=0 | dotest-output "success"
 }
 
 #page
 
-# function script-5.1 () {
+# function script-template-5.1 () {
 #     script --print-action-arguments | dotest-output 'one two three four'
 # }
 
-function script-6.1 () {
+function script-template-6.1 () {
     script --one | dotest-output 'action one'
 }
-function script-6.2 () {
+function script-template-6.2 () {
     script --two | dotest-output 'action two'
 }
-function script-6.3 () {
+function script-template-6.3 () {
     script --three | dotest-output "action three, arguments: 0, ''"
 }
-function script-6.4 () {
+function script-template-6.4 () {
     script --three a b c | dotest-output "action three, arguments: 3, 'a b c'"
 }
-function script-6.5 () {
+function script-template-6.5 () {
     script --four a b c | dotest-output "action four, arguments: 3, 'a b c'"
 }
-function script-6.6 () {
+function script-template-6.6 () {
     script --four a --verbose b c | \
         dotest-output "template.sh: script_after_parsing_options\naction four, arguments: 3, 'a b c'"
 }
@@ -155,6 +155,9 @@ function script-action-1.1.1 () {
 function script-action-1.1.2 () {
     script_with_actions one green solid alpha beta | dotest-output "action one green solid: A='no' B='' C='' ARGC=2 ARGV='alpha beta'"
 }
+function script-action-1.1.3 () {
+    script_with_actions | dotest-output "action main: X='no' Y='' Z='' ARGC=0 ARGV=''"
+}
 
 # brief options
 function script-action-1.2.1 () {
@@ -165,6 +168,9 @@ function script-action-1.2.2 () {
 }
 function script-action-1.2.3 () {
     script_with_actions one green solid -b2 -c3 -a | dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=0 ARGV=''"
+}
+function script-action-1.2.4 () {
+    script_with_actions -x -y2 -z3 | dotest-output "action main: X='yes' Y='2' Z='3' ARGC=0 ARGV=''"
 }
 
 # long options
@@ -179,6 +185,9 @@ function script-action-1.3.2 () {
 function script-action-1.3.3 () {
     script_with_actions one green solid --b-opt=2 --c-opt=3 --a-opt | \
 	dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=0 ARGV=''"
+}
+function script-action-1.3.4 () {
+    script_with_actions --x-opt --y-opt=2 --z-opt=3 | dotest-output "action main: X='yes' Y='2' Z='3' ARGC=0 ARGV=''"
 }
 
 # brief options and arguments
@@ -341,19 +350,33 @@ function script-action-5.1.3 () {
 
 # long options
 
-function script-action-5.1.1 () {
+function script-action-5.2.1 () {
     script_with_actions one green solid  --a-opt --b-opt=2 --c-opt=3 | \
 	dotest-output "action one green solid: A='yes' B='2' C='3' ARGC=0 ARGV=''"
 }
-function script-action-5.1.2 () {
+function script-action-5.2.2 () {
     script_with_actions one green liquid --d-opt --e-opt=2 --f-opt=3 | \
 	dotest-output "action one green liquid: D='yes' E='2' F='3' ARGC=0 ARGV=''"
 }
-function script-action-5.1.3 () {
+function script-action-5.2.3 () {
     script_with_actions one green gas    --g-opt --h-opt=2 --i-opt=3 | \
 	dotest-output "action one green gas: G='yes' H='2' I='3' ARGC=0 ARGV=''"
 }
 
+#page
+#### script with actions: action errors
+
+# Missing last action identifier
+function script-action-6.1.1 () {
+    script_with_actions one green | \
+	dotest-output "template-actions.sh: error: invalid number of arguments while parsing action identifier"
+}
+
+# Missing two last action identifier
+function script-action-6.1.2 () {
+    script_with_actions one | \
+	dotest-output "template-actions.sh: error: invalid number of arguments while parsing action identifier"
+}
 
 #PAGE
 #### let's go

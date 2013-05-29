@@ -36,7 +36,12 @@ test "$mbfl_INTERACTIVE" = yes || {
 
 function mbfl_declare_action_set () {
     mbfl_mandatory_parameter(ACTION_SET,1,action set)
-    mbfl_action_sets_EXISTS[${ACTION_SET}]=yes
+    if mbfl_actions_valid_string_as_action_set_identifier "$ACTION_SET"
+    then mbfl_action_sets_EXISTS[${ACTION_SET}]=yes
+    else
+        mbfl_message_error "invalid action set identifier. \"$ACTION_SET\""
+        exit_because_invalid_action_declaration
+    fi
 }
 
 #page
@@ -55,43 +60,58 @@ function mbfl_declare_action () {
     mbfl_mandatory_parameter(ACTION_SUBSET,3,subset)
 
     # A string  representing the  argument on the  command line  used to
-    # select this section.
+    # select this action.
     #
     mbfl_mandatory_parameter(ACTION_IDENTIFIER,4,identifier)
 
-    # A string describing this action, to be used for the help screen.
+    # A string  describing this action, to  be used to compose  the help
+    # screen.
     #
     mbfl_mandatory_parameter(ACTION_DESCRIPTION,5,description)
 
-    if mbfl_actions_is_action_argument "$ACTION_IDENTIFIER"
-    then mbfl_action_sets_EXISTS[${ACTION_SET}]=yes
-    else
+    local KEY="${ACTION_SET}-${ACTION_IDENTIFIER}"
+
+    if ! mbfl_actions_valid_string_as_action_argument "$ACTION_IDENTIFIER"
+    then
         mbfl_message_error "internal error: invalid action identifier: $ACTION_IDENTIFIER"
         exit_because_invalid_action_declaration
     fi
 
-    if test -n "$ACTION_KEYWORD"
-    then mbfl_action_sets_KEYWORDS[${ACTION_SET}-${ACTION_IDENTIFIER}]=${ACTION_KEYWORD}
+    if mbfl_actions_valid_string_as_keyword_identifier "$ACTION_KEYWORD"
+    then mbfl_action_sets_KEYWORDS[${KEY}]=${ACTION_KEYWORD}
     else
-        mbfl_message_error "internal error: null keyword for action: $ACTION_IDENTIFIER"
+        mbfl_message_error "internal error: invalid keyword for action \"$ACTION_IDENTIFIER\": \"$ACTION_KEYWORD\""
         exit_because_invalid_action_declaration
     fi
 
-    if test -n "$ACTION_SUBSET"
-    then mbfl_action_sets_SUBSETS[${ACTION_SET}-${ACTION_IDENTIFIER}]=$ACTION_SUBSET
+    if mbfl_actions_set_exists_or_none "$ACTION_SUBSET"
+    then mbfl_action_sets_SUBSETS[${KEY}]=$ACTION_SUBSET
     else
-        mbfl_message_error "internal error: null subset identifier for action: $ACTION_IDENTIFIER"
+        mbfl_message_error \
+            "internal error: invalid or non-existent action subset identifier for action \"$ACTION_IDENTIFIER\": \"$ACTION_SUBSET\""
         exit_because_invalid_action_declaration
     fi
 
-    mbfl_action_sets_DESCRIPTIONS[${ACTION_SET}-${ACTION_IDENTIFIER}]=$ACTION_DESCRIPTION
+    mbfl_action_sets_DESCRIPTIONS[${KEY}]=$ACTION_DESCRIPTION
     return 0
 }
 #page
-function mbfl_actions_is_action_argument () {
-    mbfl_mandatory_parameter(ARGUMENT, 1, command line argument)
+function mbfl_actions_valid_string_as_action_set_identifier () {
+    mbfl_p_actions_valid_string_as_identifier "$1"
+}
+function mbfl_actions_valid_string_as_keyword_identifier () {
+    mbfl_p_actions_valid_string_as_identifier "$1"
+}
+function mbfl_actions_valid_string_as_action_argument () {
+    mbfl_p_actions_valid_string_as_identifier "$1"
+}
+function mbfl_p_actions_valid_string_as_identifier () {
+    # Return  0 if  ARGUMENT is  a  valid string  to be  used as  action
+    # selector argument; else return 1.
+    #
+    mbfl_mandatory_parameter(ARGUMENT, 1, string)
     local len="${#ARGUMENT}" i ch
-
+    test $len = 0 && return 1
     ch="${ARGUMENT:0:1}"
     mbfl_p_actions_not_first_char_in_action_argument_name "$ch" && return 1
     for ((i=1; $i < $len; ++i))
@@ -99,7 +119,6 @@ function mbfl_actions_is_action_argument () {
         ch="${ARGUMENT:$i:1}"
         mbfl_p_actions_not_char_in_action_argument_name "$ch" && return 1
     done
-
     return 0
 }
 function mbfl_p_actions_not_first_char_in_action_argument_name () {
@@ -112,36 +131,90 @@ function mbfl_p_actions_not_char_in_action_argument_name () {
         \( "$1" \< A -o Z \< "$1" \) -a \
         \( "$1" \< a -o z \< "$1" \) -a \
         \( "$1" \< 0 -o 9 \< "$1" \) -a \
-        \( "$1" != '-' \)
+        \( "$1" != '-' \)            -a \
+        \( "$1" != '_' \)
+}
+#page
+function mbfl_actions_set_exists () {
+    # Return 0  if ACTION_SET  is the identifier  of an  existent action
+    # set; else return 1.
+    #
+    mbfl_mandatory_parameter(ACTION_SET,1,action set)
+    mbfl_actions_valid_string_as_action_set_identifier "$ACTION_SET" \
+        && test "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" \
+        -a "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" = yes
+}
+function mbfl_actions_set_exists_or_none () {
+    # Return 0 if ACTION_SET is the identifier of an existent action set
+    # or it is the string "NONE"; else return 1.
+    #
+    mbfl_mandatory_parameter(ACTION_SET,1,action set)
+    mbfl_actions_valid_string_as_action_set_identifier "$ACTION_SET" \
+        && test \
+        "$ACTION_SET" = NONE \
+        -o \( "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" \
+              -a "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" = yes \)
 }
 #page
 function mbfl_actions_dispatch () {
+    # Parse the  next command line  argument and select  accordingly the
+    # functions for the main module.
+    #
+    # Upon entering this function: the  global variable ARGV1 must be an
+    # array  containing  all  the  command line  arguments;  the  global
+    # variable  ARGC1 must  be  an integer  representing  the number  of
+    # values in  ARGV1; the  global variable ARG1ST  must be  an integer
+    # representing  the  index in  ARGV1  of  the  next argument  to  be
+    # processed.
+    #
     mbfl_mandatory_parameter(ACTION_SET,1,action set)
-    if test 1 -le $(($ARGC1 - $ARG1ST))
+
+    # It  is an  error if  this function  is called  with an  action set
+    # identifier specifying a non-existent action set.
+    if ! mbfl_actions_set_exists "${ACTION_SET}"
     then
-        if test "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" = yes
-        then
-            local IDENTIFIER=${ARGV1[$ARG1ST]}
-            let ++ARG1ST
-            ACTION_SUBSET=${mbfl_action_sets_SUBSETS[${ACTION_SET}-${IDENTIFIER}]}
-            if test -n "${ACTION_SUBSET}" -a "${ACTION_SUBSET}" != NONE
-            # The selected action  has a subset of  actions, so dispatch
-            # them.
-            then mbfl_actions_dispatch "${ACTION_SUBSET}"
-            # The selected action is a leaf in the tree.
-            else
-                local KEYWORD=${mbfl_action_sets_KEYWORDS[${ACTION_SET}-${IDENTIFIER}]}
-                mbfl_main_set_before_parsing_options "script_before_parsing_options_$KEYWORD"
-                mbfl_main_set_after_parsing_options  "script_after_parsing_options_$KEYWORD"
-                mbfl_main_set_main "script_action_$KEYWORD"
-            fi
-        else
-            mbfl_message_error "invalid action identifier: $IDENTIFIER"
-            exit_because_invalid_action_argument
-        fi
+        mbfl_message_error "invalid action identifier: \"${ACTION_SET}\""
+        return 1
+    fi
+
+    # If  there are  no  more  command lin  arguments:  just accept  the
+    # previously selected values for the functions.
+    if test $ARG1ST = $ARGC1
+    then return 0
+    fi
+
+    local IDENTIFIER=${ARGV1[$ARG1ST]}
+    local KEY="${ACTION_SET}-${IDENTIFIER}"
+    local ACTION_SUBSET=${mbfl_action_sets_SUBSETS[${KEY}]}
+    local ACTION_KEYWORD=${mbfl_action_sets_KEYWORDS[${KEY}]}
+    #mbfl_message_debug "processing argument '$IDENTIFIER' for action selection"
+    if test -z "${ACTION_KEYWORD}"
+    then
+        # The next  argument from  the command line  is *not*  an action
+        # identifier:  just leave  it alone.   We accept  the previously
+        # selected functions and return success.
+        #mbfl_message_debug "argument '$IDENTIFIER' is not an action identifier"
+        return 0
     else
-        mbfl_message_error 'invalid number of arguments while parsing action identifier'
-        exit_because_wrong_num_args
+        # The  next  argument  from  the command  line  *is*  an  action
+        # identifier: consume it and select its functions.
+        let ++ARG1ST
+        mbfl_main_set_before_parsing_options "script_before_parsing_options_$ACTION_KEYWORD"
+        mbfl_main_set_after_parsing_options  "script_after_parsing_options_$ACTION_KEYWORD"
+        mbfl_main_set_main "script_action_$ACTION_KEYWORD"
+        if test "${ACTION_SUBSET}" != NONE
+        then
+            # The selected action has a  subset of actions: dispatch the
+            # subset.
+            #mbfl_message_debug "argument '$IDENTIFIER' is an action identifier with action subset"
+            mbfl_actions_dispatch "${ACTION_SUBSET}"
+        else
+            # The selected  action has *no*  subset of actions: it  is a
+            # leaf  in  the actions  tree.   Stop  recursing and  return
+            # success.
+            #mbfl_message_debug "argument '$IDENTIFIER' is an action identifier without action subset"
+            return 0
+        fi
     fi
 }
 
