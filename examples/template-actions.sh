@@ -182,28 +182,28 @@ function main () {
 
 ### --------------------------------------------------------------------
 
-function script_action_one () {
+function script_action_ONE () {
     :
 }
-function script_action_one_green () {
+function script_action_ONE_GREEN () {
     :
 }
-function script_action_one_white () {
+function script_action_ONE_WHITE () {
     :
 }
-function script_action_one_red () {
+function script_action_ONE_RED () {
     :
 }
-function script_action_two () {
+function script_action_TWO () {
     :
 }
-function script_action_two_green () {
+function script_action_TWO_GREEN () {
     :
 }
-function script_action_two_white () {
+function script_action_TWO_WHITE () {
     :
 }
-function script_action_two_red () {
+function script_action_TWO_RED () {
     :
 }
 

@@ -28,8 +28,14 @@ Notes for revision 2.0d0
 * BACKWARDS INCOMPATIBILITY  The getopts  module raises  an error  if an
   option with argument is used with an empty value.
 
-* BACKWARDS  INCOMPATIBILITY   The  predefined  command   line  argument
-  --print-action-arguments does not exist anymore.
+* BACKWARDS   INCOMPATIBILITY  The   predefined   command  line   option
+  "--print-action-arguments" does not exist anymore.
+
+* BACKWARDS   INCOMPATIBILITY  The   predefined  command   line  options
+  "--license", "--version", etc. do not  exit immediately in the getopts
+  module;  rather they  register a  function to  be called  by the  main
+  module.  So  the selected "after  parsing options" function  is called
+  before exiting.
 
 * The global variables: ARGC1, ARGV1,  ARGC, ARGV are no more read-only;
   ugly, but it allows test suites to use them.

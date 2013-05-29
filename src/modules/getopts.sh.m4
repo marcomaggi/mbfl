@@ -293,40 +293,16 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
             mbfl_main_set_private_main mbfl_program_main_validate_programs
             ;;
         list-exit-codes)
-            mbfl_main_list_exit_codes
-	    exit 0
+            mbfl_main_set_private_main mbfl_main_list_exit_codes
             ;;
 	version)
-	    echo -e "${mbfl_message_VERSION}"
-	    exit 0
+            mbfl_main_set_private_main mbfl_main_print_version_number
 	    ;;
 	version-only)
-	    echo -e "${script_VERSION}"
-	    exit 0
+            mbfl_main_set_private_main mbfl_main_print_version_number_only
 	    ;;
 	license)
-            case "${script_LICENSE}" in
-                GPL|GPL2)
-                    echo -e "${mbfl_message_LICENSE_GPL}"
-                    ;;
-                GPL3)
-                    echo -e "${mbfl_message_LICENSE_GPL3}"
-                    ;;
-                LGPL|LGPL2)
-                    echo -e "${mbfl_message_LICENSE_LGPL}"
-                    ;;
-                LGPL3)
-                    echo -e "${mbfl_message_LICENSE_LGPL3}"
-                    ;;
-                BSD)
-                    echo -e "${mbfl_message_LICENSE_BSD}"
-                    ;;
-                *)
-                    mbfl_message_error "unknown license: \"${script_LICENSE}\""
-                    exit 2
-                    ;;
-            esac
-	    exit 0
+            mbfl_main_set_private_main mbfl_main_print_license
 	    ;;
 	h|help|usage)
             mbfl_getopts_print_usage_screen long
@@ -337,8 +313,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	    exit 0
 	    ;;
         print-options)
-            mbfl_getopts_print_long_switches
-            exit 0
+            mbfl_main_set_private_main mbfl_getopts_print_long_switches
             ;;
 	*)
             mbfl_getopts_p_process_script_option "${OPT}"
