@@ -355,11 +355,10 @@ function mbfl_getopts_print_usage_screen () {
     mbfl_mandatory_parameter(BRIEF_OR_LONG,1,brief or long selection)
     local i=0 item brief long description long_hasarg long_hasarg default
 
-    if test $mbfl_getopts_INDEX != 0 -o ${BRIEF_OR_LONG} = long
-    then printf 'Options:\n'
-    fi
-    if test $mbfl_getopts_INDEX != 0
-    then
+    printf 'Options:\n'
+    if test $mbfl_getopts_INDEX = 0
+    then printf '\tNo script-specific options.\n'
+    else
         for ((i=0; $i < $mbfl_getopts_INDEX; ++i))
         do
             if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
@@ -404,11 +403,16 @@ function mbfl_getopts_print_usage_screen () {
             fi
         done
     fi
+    printf '\n'
 
     # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
     # characters.
-    test ${BRIEF_OR_LONG} = long && printf "${mbfl_message_DEFAULT_OPTIONS}"
-    printf '\n'
+    if test ${BRIEF_OR_LONG} = long
+    then
+	printf 'Common options:\n'
+	printf "${mbfl_message_DEFAULT_OPTIONS}"
+	printf '\n'
+    fi
 }
 #PAGE
 function mbfl_getopts_islong () {
