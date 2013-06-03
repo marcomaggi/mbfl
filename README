@@ -79,9 +79,21 @@ to really do it:
 which test  to run by  redefining the "TESTS"  variable; for
 example:
 
-    $ make check TESTS=../tests/program.test
+    $ make check TESTS=program.test
 
 will run only the "program.test" file.
+
+  After building  the package, and before  installing it, we
+can test the example scripts as follows:
+
+    $ make test-template MFLAGS='--help'
+
+will run "examples/template.sh" with the flags "--help";
+
+    $ make test-template-actions MFLAGS='--help'
+
+will  run  "examples/template-actions.sh"   with  the  flags
+"--help".
 
 
 4. Usage
