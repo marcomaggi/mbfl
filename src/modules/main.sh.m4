@@ -331,11 +331,36 @@ function mbfl_main_print_license () {
     esac
     exit_success
 }
+function mbfl_main_print_usage_screen_long () {
+    printf '%s\n' "${script_USAGE}"
+    # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
+    # characters.
+    test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"
+    mbfl_actions_print_usage_screen
+    mbfl_getopts_print_usage_screen long
+    # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
+    # characters.
+    test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+    exit_success
+}
+function mbfl_main_print_usage_screen_brief () {
+    printf '%s\n' "${script_USAGE}"
+    # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
+    # characters.
+    test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"
+    mbfl_actions_print_usage_screen
+    mbfl_getopts_print_usage_screen brief
+    # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
+    # characters.
+    test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+    exit_success
+}
 #PAGE
-## ------------------------------------------------------------
-## Main function.
-## ------------------------------------------------------------
+#### main function
 
+# This is  the main function  of the MBFL:  it must be  invoked (without
+# aruments) as the last command in the script.
+#
 function mbfl_main () {
     local exit_code=0 action_func item code
     mbfl_message_set_progname "$script_PROGNAME"
@@ -355,6 +380,9 @@ function mbfl_main () {
     fi
     exit_success
 }
+# Called with a  function name argument: if such  function exists invoke
+# it, else return with success.
+#
 function mbfl_invoke_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
     if test "$(type -t $FUNC)" = function
@@ -362,6 +390,9 @@ function mbfl_invoke_script_function () {
     else return 0
     fi
 }
+# Called with a  function name argument: if such  function exists invoke
+# it, else print an error message and exit.
+#
 function mbfl_invoke_existent_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
     if test "$(type -t $FUNC)" = function

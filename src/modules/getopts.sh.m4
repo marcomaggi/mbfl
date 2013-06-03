@@ -305,12 +305,10 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
             mbfl_main_set_private_main mbfl_main_print_license
 	    ;;
 	h|help|usage)
-            mbfl_getopts_print_usage_screen long
-	    exit 0
+            mbfl_main_set_private_main mbfl_main_print_usage_screen_long
 	    ;;
 	H|brief-help|brief-usage)
-            mbfl_getopts_print_usage_screen brief
-	    exit 0
+            mbfl_main_set_private_main mbfl_main_print_usage_screen_brief
 	    ;;
         print-options)
             mbfl_main_set_private_main mbfl_getopts_print_long_switches
@@ -357,19 +355,11 @@ function mbfl_getopts_print_usage_screen () {
     mbfl_mandatory_parameter(BRIEF_OR_LONG,1,brief or long selection)
     local i=0 item brief long description long_hasarg long_hasarg default
 
-    printf '%s\n' "${script_USAGE}"
-    test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n"
-
-    # test $mbfl_getopts_actargs_INDEX != 0 && {
-    #     printf 'actions:\n'
-    #     for ((i=0; $i < $mbfl_getopts_actargs_INDEX; ++i))
-    #     do printf '\t%s %s [options] [-- [other-args]]\n\t\t%s\n\n' \
-    #         "${script_PROGNAME}" "${mbfl_getopts_actargs_STRINGS[$i]}" \
-    #         "${mbfl_getopts_actargs_DESCRIPTION[$i]}"
-    #     done
-    # }
-    test $mbfl_getopts_INDEX != 0 -o ${BRIEF_OR_LONG} = long && printf 'options:\n'
-    test $mbfl_getopts_INDEX != 0 && {
+    if test $mbfl_getopts_INDEX != 0 -o ${BRIEF_OR_LONG} = long
+    then printf 'Options:\n'
+    fi
+    if test $mbfl_getopts_INDEX != 0
+    then
         for ((i=0; $i < $mbfl_getopts_INDEX; ++i))
         do
             if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
@@ -405,19 +395,20 @@ function mbfl_getopts_print_usage_screen () {
                 fi
                 printf '\t\t(default: %s)\n' "${default}"
             else
-                test ${mbfl_getopts_KEYWORDS[$i]:0:7} = ACTION_ && {
+                if test ${mbfl_getopts_KEYWORDS[$i]:0:7} = ACTION_
+		then
                     if test "${mbfl_getopts_DEFAULTS[$i]}" = 'yes'
                     then printf '\t\t(default action)\n'
                     fi
-                }
+		fi
             fi
         done
-    }
+    fi
 
-    # Do  it as  first argument  of "printf"  to  expand the
-    # escaped characters.
+    # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
+    # characters.
     test ${BRIEF_OR_LONG} = long && printf "${mbfl_message_DEFAULT_OPTIONS}"
-    test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+    printf '\n'
 }
 #PAGE
 function mbfl_getopts_islong () {

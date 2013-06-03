@@ -33,11 +33,6 @@ script_VERSION=1.0
 script_COPYRIGHT_YEARS='2013'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=BSD
-script_USAGE="usage: ${script_PROGNAME} action ... [options] ..."
-script_DESCRIPTION='This is an example script showing action arguments.'
-script_EXAMPLES="Usage examples:
-
-\t${script_PROGNAME} --alpha"
 
 #page
 #### library loading
@@ -68,146 +63,303 @@ test "$mbfl_LOADED" = yes || {
 
 mbfl_declare_action_set ONE_GREEN
 #                   action-set	keyword		subset		identifier	description
-mbfl_declare_action ONE_GREEN	one_green_solid		NONE	solid		'do main action one green solid'
-mbfl_declare_action ONE_GREEN	one_green_liquid	NONE	liquid		'do main action one green liquid'
-mbfl_declare_action ONE_GREEN	one_green_gas		NONE	gas		'do main action one green gas'
+mbfl_declare_action ONE_GREEN	one_green_solid		NONE	solid		'Do main action one green solid.'
+mbfl_declare_action ONE_GREEN	one_green_liquid	NONE	liquid		'Do main action one green liquid.'
+mbfl_declare_action ONE_GREEN	one_green_gas		NONE	gas		'Do main action one green gas.'
 
 mbfl_declare_action_set ONE_WHITE
-mbfl_declare_action ONE_WHITE	one_white_solid		NONE	solid		'do main action one white solid'
-mbfl_declare_action ONE_WHITE	one_white_liquid	NONE	liquid		'do main action one white liquid'
-mbfl_declare_action ONE_WHITE	one_white_gas		NONE	gas		'do main action one white gas'
+mbfl_declare_action ONE_WHITE	one_white_solid		NONE	solid		'Do main action one white solid.'
+mbfl_declare_action ONE_WHITE	one_white_liquid	NONE	liquid		'Do main action one white liquid.'
+mbfl_declare_action ONE_WHITE	one_white_gas		NONE	gas		'Do main action one white gas.'
 
 mbfl_declare_action_set ONE_RED
-mbfl_declare_action ONE_RED	one_red_solid		NONE	solid		'do main action one red solid'
-mbfl_declare_action ONE_RED	one_red_liquid		NONE	liquid		'do main action one red liquid'
-mbfl_declare_action ONE_RED	one_red_gas		NONE	gas		'do main action one red gas'
+mbfl_declare_action ONE_RED	one_red_solid		NONE	solid		'Do main action one red solid.'
+mbfl_declare_action ONE_RED	one_red_liquid		NONE	liquid		'Do main action one red liquid.'
+mbfl_declare_action ONE_RED	one_red_gas		NONE	gas		'Do main action one red gas.'
 
 ### --------------------------------------------------------------------
 
 mbfl_declare_action_set TWO_GREEN
 #                   action-set	keyword		subset		identifier	description
-mbfl_declare_action TWO_GREEN	two_green_solid		NONE	solid		'do main action two green solid'
-mbfl_declare_action TWO_GREEN	two_green_liquid	NONE	liquid		'do main action two green liquid'
-mbfl_declare_action TWO_GREEN	two_green_gas		NONE	gas		'do main action two green gas'
+mbfl_declare_action TWO_GREEN	two_green_solid		NONE	solid		'Do main action two green solid.'
+mbfl_declare_action TWO_GREEN	two_green_liquid	NONE	liquid		'Do main action two green liquid.'
+mbfl_declare_action TWO_GREEN	two_green_gas		NONE	gas		'Do main action two green gas.'
 
 mbfl_declare_action_set TWO_WHITE
-mbfl_declare_action TWO_WHITE	two_white_solid		NONE	solid		'do main action two white solid'
-mbfl_declare_action TWO_WHITE	two_white_liquid	NONE	liquid		'do main action two white liquid'
-mbfl_declare_action TWO_WHITE	two_white_gas		NONE	gas		'do main action two white gas'
+mbfl_declare_action TWO_WHITE	two_white_solid		NONE	solid		'Do main action two white solid.'
+mbfl_declare_action TWO_WHITE	two_white_liquid	NONE	liquid		'Do main action two white liquid.'
+mbfl_declare_action TWO_WHITE	two_white_gas		NONE	gas		'Do main action two white gas.'
 
 mbfl_declare_action_set TWO_RED
-mbfl_declare_action TWO_RED	two_red_solid		NONE	solid		'do main action two red solid'
-mbfl_declare_action TWO_RED	two_red_liquid		NONE	liquid		'do main action two red liquid'
-mbfl_declare_action TWO_RED	two_red_gas		NONE	gas		'do main action two red gas'
+mbfl_declare_action TWO_RED	two_red_solid		NONE	solid		'Do main action two red solid.'
+mbfl_declare_action TWO_RED	two_red_liquid		NONE	liquid		'Do main action two red liquid.'
+mbfl_declare_action TWO_RED	two_red_gas		NONE	gas		'Do main action two red gas.'
 
 ### --------------------------------------------------------------------
 
 mbfl_declare_action_set THREE_GREEN
-mbfl_declare_action THREE_GREEN	three_green_solid	NONE	solid		'do main action three green solid'
-mbfl_declare_action THREE_GREEN	three_green_liquid	NONE	liquid		'do main action three green liquid'
-mbfl_declare_action THREE_GREEN	three_green_gas		NONE	gas		'do main action three green gas'
+mbfl_declare_action THREE_GREEN	three_green_solid	NONE	solid		'Do main action three green solid.'
+mbfl_declare_action THREE_GREEN	three_green_liquid	NONE	liquid		'Do main action three green liquid.'
+mbfl_declare_action THREE_GREEN	three_green_gas		NONE	gas		'Do main action three green gas.'
 
 mbfl_declare_action_set THREE_WHITE
-mbfl_declare_action THREE_WHITE	three_white_solid	NONE	solid		'do main action three white solid'
-mbfl_declare_action THREE_WHITE	three_white_liquid	NONE	liquid		'do main action three white liquid'
-mbfl_declare_action THREE_WHITE	three_white_gas		NONE	gas		'do main action three white gas'
+mbfl_declare_action THREE_WHITE	three_white_solid	NONE	solid		'Do main action three white solid.'
+mbfl_declare_action THREE_WHITE	three_white_liquid	NONE	liquid		'Do main action three white liquid.'
+mbfl_declare_action THREE_WHITE	three_white_gas		NONE	gas		'Do main action three white gas.'
 
 mbfl_declare_action_set THREE_RED
-mbfl_declare_action THREE_RED	three_red_solid		NONE	solid		'do main action three red solid'
-mbfl_declare_action THREE_RED	three_red_liquid	NONE	liquid		'do main action three red liquid'
-mbfl_declare_action THREE_RED	three_red_gas		NONE	gas		'do main action three red gas'
+mbfl_declare_action THREE_RED	three_red_solid		NONE	solid		'Do main action three red solid.'
+mbfl_declare_action THREE_RED	three_red_liquid	NONE	liquid		'Do main action three red liquid.'
+mbfl_declare_action THREE_RED	three_red_gas		NONE	gas		'Do main action three red gas.'
 
 ### --------------------------------------------------------------------
 
 mbfl_declare_action_set ONE
-#                   action-set	keyword		subset		identifier	description
-mbfl_declare_action ONE		ONE_GREEN	ONE_GREEN	green		'do main action one green'
-mbfl_declare_action ONE		ONE_WHITE	ONE_WHITE	white		'do main action one white'
-mbfl_declare_action ONE		ONE_RED		ONE_RED		red		'do main action one red'
+#                   action-set	keyword			subset		identifier	description
+mbfl_declare_action ONE		MAIN_ONE_GREEN		ONE_GREEN	green		'Do main action one green.'
+mbfl_declare_action ONE		MAIN_ONE_WHITE		ONE_WHITE	white		'Do main action one white.'
+mbfl_declare_action ONE		MAIN_ONE_RED		ONE_RED		red		'Do main action one red.'
 
 mbfl_declare_action_set TWO
-mbfl_declare_action TWO		TWO_GREEN	TWO_GREEN	green		'do main action two green'
-mbfl_declare_action TWO		TWO_WHITE	TWO_WHITE	white		'do main action two white'
-mbfl_declare_action TWO		TWO_RED		TWO_RED		red		'do main action two red'
+mbfl_declare_action TWO		MAIN_TWO_GREEN		TWO_GREEN	green		'Do main action two green.'
+mbfl_declare_action TWO		MAIN_TWO_WHITE		TWO_WHITE	white		'Do main action two white.'
+mbfl_declare_action TWO		MAIN_TWO_RED		TWO_RED		red		'Do main action two red.'
 
 mbfl_declare_action_set THREE
-mbfl_declare_action THREE	THREE_GREEN	THREE_GREEN	green		'do main action three green'
-mbfl_declare_action THREE	THREE_WHITE	THREE_WHITE	white		'do main action three white'
-mbfl_declare_action THREE	THREE_RED	THREE_RED	red		'do main action three red'
+mbfl_declare_action THREE	MAIN_THREE_GREEN	THREE_GREEN	green		'Do main action three green.'
+mbfl_declare_action THREE	MAIN_THREE_WHITE	THREE_WHITE	white		'Do main action three white.'
+mbfl_declare_action THREE	MAIN_THREE_RED		THREE_RED	red		'Do main action three red.'
 
 ### --------------------------------------------------------------------
 
 mbfl_declare_action_set MAIN
 #                   action-set	keyword		subset		identifier	description
-mbfl_declare_action MAIN	MAIN_ONE	ONE		one		'do main action one'
-mbfl_declare_action MAIN	MAIN_TWO	TWO		two		'do main action two'
-mbfl_declare_action MAIN	MAIN_THREE	THREE		three		'do main action three'
+mbfl_declare_action MAIN	MAIN_ONE	ONE		one		'Do main action one.'
+mbfl_declare_action MAIN	MAIN_TWO	TWO		two		'Do main action two.'
+mbfl_declare_action MAIN	MAIN_THREE	THREE		three		'Do main action three.'
 
 #page
-#### script action options declarations
+#### script actions tree: non-leaf help screen
+#
+# For  every non-leaf  node  in the  actions  tree we  want  to print  a
+# meaningful help screen.
+#
 
+# When the script is executed without action arguments: we still want to
+# print a meaningful help screen and to offer some option.
+#
 function script_before_parsing_options () {
+    script_USAGE="usage: ${script_PROGNAME} [action] [options]"
+    script_DESCRIPTION='This is an example script showing action arguments.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} --x-opt"
+
     # keyword default-value brief-option long-option has-argument description
-    mbfl_declare_option X no x x-opt noarg   'selects option x'
-    mbfl_declare_option Y '' y y-opt witharg 'selects option y'
-    mbfl_declare_option Z '' z z-opt witharg 'selects option z'
+    mbfl_declare_option X no x x-opt noarg   'Selects option x.'
+    mbfl_declare_option Y '' y y-opt witharg 'Selects option y.'
+    mbfl_declare_option Z '' z z-opt witharg 'Selects option z.'
 }
+
+## --------------------------------------------------------------------
+
+function script_before_parsing_options_MAIN_ONE () {
+    script_USAGE="usage: ${script_PROGNAME} one [action] [options]"
+    script_DESCRIPTION='Example action tree: one.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one green solid"
+}
+function script_before_parsing_options_MAIN_TWO () {
+    script_USAGE="usage: ${script_PROGNAME} two [action] [options]"
+    script_DESCRIPTION='Example action tree: two.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two green solid"
+}
+function script_before_parsing_options_MAIN_THREE () {
+    script_USAGE="usage: ${script_PROGNAME} three [action] [options]"
+    script_DESCRIPTION='Example action tree: three.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} three green solid"
+}
+
+## --------------------------------------------------------------------
+
+function script_before_parsing_options_MAIN_ONE_GREEN () {
+    script_USAGE="usage: ${script_PROGNAME} one green [action] [options]"
+    script_DESCRIPTION='Example action tree: one green.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one green solid"
+}
+function script_before_parsing_options_MAIN_ONE_WHITE () {
+    script_USAGE="usage: ${script_PROGNAME} one white [action] [options]"
+    script_DESCRIPTION='Example action tree: one white.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one white solid"
+}
+function script_before_parsing_options_MAIN_ONE_RED () {
+    script_USAGE="usage: ${script_PROGNAME} one red [action] [options]"
+    script_DESCRIPTION='Example action tree: one red.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one red solid"
+}
+
+## --------------------------------------------------------------------
+
+function script_before_parsing_options_MAIN_TWO_GREEN () {
+    script_USAGE="usage: ${script_PROGNAME} two green [action] [options]"
+    script_DESCRIPTION='Example action tree: two green.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two green solid"
+}
+function script_before_parsing_options_MAIN_TWO_WHITE () {
+    script_USAGE="usage: ${script_PROGNAME} two white [action] [options]"
+    script_DESCRIPTION='Example action tree: two white.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two white solid"
+}
+function script_before_parsing_options_MAIN_TWO_RED () {
+    script_USAGE="usage: ${script_PROGNAME} two red [action] [options]"
+    script_DESCRIPTION='Example action tree: two red.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two red solid"
+}
+
+## --------------------------------------------------------------------
+
+function script_before_parsing_options_MAIN_THREE_GREEN () {
+    script_USAGE="usage: ${script_PROGNAME} three green [action] [options]"
+    script_DESCRIPTION='Example action tree: three green.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} three green solid"
+}
+function script_before_parsing_options_MAIN_THREE_WHITE () {
+    script_USAGE="usage: ${script_PROGNAME} three white [action] [options]"
+    script_DESCRIPTION='Example action tree: three white.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} three white solid"
+}
+function script_before_parsing_options_MAIN_THREE_RED () {
+    script_USAGE="usage: ${script_PROGNAME} three red [action] [options]"
+    script_DESCRIPTION='Example action tree: three red.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} three red solid"
+}
+
+#page
+#### script actions tree: options and help screen for leaf nodes
+#
+# For every leaf node in the actions  tree we want to print a meaningful
+# help screen and declare action-specific options.
+#
 
 function script_before_parsing_options_one_green_solid () {
+    script_USAGE="usage: ${script_PROGNAME} one green solid [options]"
+    script_DESCRIPTION='Example action: one green solid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one green solid --a-opt"
+
     # keyword default-value brief-option long-option has-argument description
-    mbfl_declare_option A no a a-opt noarg   'selects option a'
-    mbfl_declare_option B '' b b-opt witharg 'selects option b'
-    mbfl_declare_option C '' c c-opt witharg 'selects option c'
+    mbfl_declare_option A no a a-opt noarg   'Selects option a.'
+    mbfl_declare_option B '' b b-opt witharg 'Selects option b.'
+    mbfl_declare_option C '' c c-opt witharg 'Selects option c.'
 }
 function script_before_parsing_options_one_green_liquid () {
+    script_USAGE="usage: ${script_PROGNAME} one green liquid [options]"
+    script_DESCRIPTION='Example action: one green liquid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one green liquid --d-opt"
+
     # keyword default-value brief-option long-option has-argument description
-    mbfl_declare_option D no d d-opt noarg   'selects option d'
-    mbfl_declare_option E '' e e-opt witharg 'selects option e'
-    mbfl_declare_option F '' f f-opt witharg 'selects option f'
+    mbfl_declare_option D no d d-opt noarg   'Selects option d.'
+    mbfl_declare_option E '' e e-opt witharg 'Selects option e.'
+    mbfl_declare_option F '' f f-opt witharg 'Selects option f.'
 }
 function script_before_parsing_options_one_green_gas () {
+    script_USAGE="usage: ${script_PROGNAME} one green gas [options]"
+    script_DESCRIPTION='Example action: one green gas.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one green gas --d-opt"
+
     # keyword default-value brief-option long-option has-argument description
-    mbfl_declare_option G no g g-opt noarg   'selects option d'
-    mbfl_declare_option H '' h h-opt witharg 'selects option e'
-    mbfl_declare_option I '' i i-opt witharg 'selects option f'
+    mbfl_declare_option G no g g-opt noarg   'Selects option d.'
+    mbfl_declare_option H '' h h-opt witharg 'Selects option e.'
+    mbfl_declare_option I '' i i-opt witharg 'Selects option f.'
 }
 
 #page
-#### script action main functions
+#### script actions tree: main functions
 
+# This is the default main function.   It is invoked whenever the script
+# is executed without action arguments.
+#
 function main () {
     printf "action main: X='%s' Y='%s' Z='%s' ARGC=%s ARGV='%s'\n" \
 	"$script_option_X" "$script_option_Y" "$script_option_Z" "$ARGC" "${ARGV[*]}"
 }
 
-### --------------------------------------------------------------------
+## --------------------------------------------------------------------
+## These are  the main functions for  each non-leaf node in  the actions
+## tree.  For  each of them: we  want to print a  meaningful help screen
+## then exit.
 
-function script_action_ONE () {
-    :
+function script_action_MAIN_ONE () {
+    mbfl_main_print_usage_screen_brief
 }
-function script_action_ONE_GREEN () {
-    :
+function script_action_MAIN_TWO () {
+    mbfl_main_print_usage_screen_brief
 }
-function script_action_ONE_WHITE () {
-    :
-}
-function script_action_ONE_RED () {
-    :
-}
-function script_action_TWO () {
-    :
-}
-function script_action_TWO_GREEN () {
-    :
-}
-function script_action_TWO_WHITE () {
-    :
-}
-function script_action_TWO_RED () {
-    :
+function script_action_MAIN_THREE () {
+    mbfl_main_print_usage_screen_brief
 }
 
+function script_action_MAIN_ONE_GREEN () {
+    mbfl_main_print_usage_screen_brief
+}
+function script_action_MAIN_ONE_WHITE () {
+    mbfl_main_print_usage_screen_brief
+}
+function script_action_MAIN_ONE_RED () {
+    mbfl_main_print_usage_screen_brief
+}
+
+function script_action_MAIN_TWO_GREEN () {
+    mbfl_main_print_usage_screen_brief
+}
+function script_action_MAIN_TWO_WHITE () {
+    mbfl_main_print_usage_screen_brief
+}
+function script_action_MAIN_TWO_RED () {
+    mbfl_main_print_usage_screen_brief
+}
+
+function script_action_MAIN_THREE_GREEN () {
+    mbfl_main_print_usage_screen_brief
+}
+function script_action_MAIN_THREE_WHITE () {
+    mbfl_main_print_usage_screen_brief
+}
+function script_action_MAIN_THREE_RED () {
+    mbfl_main_print_usage_screen_brief
+}
+
 ### --------------------------------------------------------------------
+## These are the main functions for  the leaf nodes in the actions tree.
+## Each of the performs an action.
 
 function script_action_one_green_solid () {
     printf "action one green solid: A='%s' B='%s' C='%s' ARGC=%s ARGV='%s'\n" \

@@ -770,20 +770,51 @@ the @code{--license} option.  @ref{getopts options, Predefined options}
 @end defvar
 
 @defvar script_USAGE
-Must be a string describing the usage of the program.
+Must be a string, of one or more lines, describing the synopsis of the
+program.  It is usually something like:
+
+@example
+script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
+@end example
+
+@noindent
+if the script accepts either input from the stdin channel and input from
+a selected file, it is useful to present both cases:
+
+@example
+script_USAGE="usage: $@{script_PROGNAME@} [options] <INPUT-FILE
+usage: $@{script_PROGNAME@} [options] INPUT-FILE"
+@end example
+
+If the script defines multiple actions: it is better to define a
+synopsis description for every supported action, by setting this
+variable in the action--specific ``before parsing options'' function.
+@ref{actions} for details.
 @end defvar
+
 
 @defvar script_DESCRIPTION
 One line string providing a brief description of the program.  It is used
 in the help screen (the one echoed when the @option{--help} option is
 used) just after the content of @code{script_USAGE}.
+
+If the script defines multiple actions: it is better to define a usage
+description for every supported action, by setting this variable in the
+action--specific ``before parsing options'' function.  @ref{actions} for
+details.
 @end defvar
 
 @defvar script_EXAMPLES
 One or more lines of text to be displayed at the end of the help screen,
 after the options description.  It should contain examples of common
 invocations for the script.
+
+If the script defines multiple actions: it is better to define a set of
+examples description for every supported action, by setting this
+variable in the action--specific ``before parsing options'' function.
+@ref{actions} for details.
 @end defvar
+
 
 All the text in these variables is used as argument to the @code{printf}
 built--in command; in particular: @code{script_DESCRIPTION} and
@@ -2577,24 +2608,6 @@ mbfl_getopts_isbrief_with wappa         @result{} 1
 @end defun
 
 
-@defun mbfl_getopts_is_action_argument @var{string}
-Verify if a string has the format of an action argument.  @var{string}
-is the string to validate.  Return with code zero if the argument is an
-action argument, else return with code one.
-
-Usage examples:
-
-@example
-mbfl_getopts_action_argument alpha              @result{} 0
-mbfl_getopts_action_argument do-this            @result{} 0
-mbfl_getopts_action_argument -o                 @result{} 1
-mbfl_getopts_action_argument -o123              @result{} 1
-mbfl_getopts_action_argument --option           @result{} 1
-mbfl_getopts_action_argument --option=one       @result{} 1
-@end example
-@end defun
-
-
 @defun mbfl_wrong_num_args @var{required} @var{present}
 Validate the number of arguments.  @var{required} is the required number
 of arguments, @var{present} is the given number of arguments on the
@@ -2636,12 +2649,6 @@ and return with code 1.
 @defun mbfl_getopts_print_long_switches
 Print all the long switches in a row, separated by spaces.  This is
 useful to retrieve the option for Bash programmable completion.
-@end defun
-
-
-@defun mbfl_getopts_print_action_arguments
-Print all the action arguments strings in a row, separated by spaces.
-This is useful to retrieve the option for Bash programmable completion.
 @end defun
 
 @c page

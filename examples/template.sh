@@ -74,10 +74,10 @@ test "$mbfl_LOADED" = yes || {
 ## ------------------------------------------------------------
 
 # keyword default-value brief-option long-option has-argument description
-mbfl_declare_option ACTION_ONE   no '' one   noarg 'selects action one'
-mbfl_declare_option ACTION_TWO   no '' two   noarg 'selects action two'
-mbfl_declare_option ACTION_THREE no '' three noarg 'selects action three'
-mbfl_declare_option ACTION_FOUR  no '' four  noarg 'selects action four'
+mbfl_declare_option ACTION_ONE   yes '' one   noarg 'selects action one'
+mbfl_declare_option ACTION_TWO   no  '' two   noarg 'selects action two'
+mbfl_declare_option ACTION_THREE no  '' three noarg 'selects action three'
+mbfl_declare_option ACTION_FOUR  no  '' four  noarg 'selects action four'
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ALPHA no a alpha noarg 'selects action alpha'
