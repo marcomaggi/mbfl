@@ -301,6 +301,126 @@ function script_before_parsing_options_one_green_gas () {
     mbfl_declare_option I '' i i-opt witharg 'Selects option f.'
 }
 
+### --------------------------------------------------------------------
+
+function script_before_parsing_options_one_white_solid () {
+    script_USAGE="usage: ${script_PROGNAME} one white solid [options]"
+    script_DESCRIPTION='Example action: one white solid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one white solid"
+}
+function script_before_parsing_options_one_white_liquid () {
+    script_USAGE="usage: ${script_PROGNAME} one white liquid [options]"
+    script_DESCRIPTION='Example action: one white liquid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one white liquid"
+}
+function script_before_parsing_options_one_white_gas () {
+    script_USAGE="usage: ${script_PROGNAME} one white gas [options]"
+    script_DESCRIPTION='Example action: one white gas.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one white gas"
+}
+
+### --------------------------------------------------------------------
+
+function script_before_parsing_options_one_red_solid () {
+    script_USAGE="usage: ${script_PROGNAME} one red solid [options]"
+    script_DESCRIPTION='Example action: one red solid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one red solid"
+}
+function script_before_parsing_options_one_red_liquid () {
+    script_USAGE="usage: ${script_PROGNAME} one red liquid [options]"
+    script_DESCRIPTION='Example action: one red liquid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one red liquid"
+}
+function script_before_parsing_options_one_red_gas () {
+    script_USAGE="usage: ${script_PROGNAME} one red gas [options]"
+    script_DESCRIPTION='Example action: one red gas.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} one red gas"
+}
+
+### --------------------------------------------------------------------
+
+function script_before_parsing_options_two_green_solid () {
+    script_USAGE="usage: ${script_PROGNAME} two green solid [options]"
+    script_DESCRIPTION='Example action: two green solid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two green solid --a-opt"
+}
+function script_before_parsing_options_two_green_liquid () {
+    script_USAGE="usage: ${script_PROGNAME} two green liquid [options]"
+    script_DESCRIPTION='Example action: two green liquid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two green liquid --d-opt"
+}
+function script_before_parsing_options_two_green_gas () {
+    script_USAGE="usage: ${script_PROGNAME} two green gas [options]"
+    script_DESCRIPTION='Example action: two green gas.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two green gas --d-opt"
+}
+
+### --------------------------------------------------------------------
+
+function script_before_parsing_options_two_white_solid () {
+    script_USAGE="usage: ${script_PROGNAME} two white solid [options]"
+    script_DESCRIPTION='Example action: two white solid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two white solid"
+}
+function script_before_parsing_options_two_white_liquid () {
+    script_USAGE="usage: ${script_PROGNAME} two white liquid [options]"
+    script_DESCRIPTION='Example action: two white liquid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two white liquid"
+}
+function script_before_parsing_options_two_white_gas () {
+    script_USAGE="usage: ${script_PROGNAME} two white gas [options]"
+    script_DESCRIPTION='Example action: two white gas.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two white gas"
+}
+
+### --------------------------------------------------------------------
+
+function script_before_parsing_options_two_red_solid () {
+    script_USAGE="usage: ${script_PROGNAME} two red solid [options]"
+    script_DESCRIPTION='Example action: two red solid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two red solid"
+}
+function script_before_parsing_options_two_red_liquid () {
+    script_USAGE="usage: ${script_PROGNAME} two red liquid [options]"
+    script_DESCRIPTION='Example action: two red liquid.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two red liquid"
+}
+function script_before_parsing_options_two_red_gas () {
+    script_USAGE="usage: ${script_PROGNAME} two red gas [options]"
+    script_DESCRIPTION='Example action: two red gas.'
+    script_EXAMPLES="Usage examples:
+
+\t${script_PROGNAME} two red gas"
+}
+
 #page
 #### script actions tree: main functions
 
