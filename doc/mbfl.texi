@@ -748,20 +748,28 @@ own variables.
 
 
 @defvar script_PROGNAME
-The name of the script.
+The name of the script.  It is used, for example, in error and verbose
+messages.
 @end defvar
+
 
 @defvar script_AUTHOR
-The name of the script author(s).
+The name of the script author(s).  It is used in copyright statements.
 @end defvar
+
 
 @defvar script_COPYRIGHT_YEARS
-A comma separated list of years of copyright.
+A comma separated list of years of copyright.  It is used in copyright
+statements.
 @end defvar
 
+
 @defvar script_VERSION
-The version number of the script.
+The version number of the script.  It is used in copyright statements
+and it can be directly queried using the command line options
+@option{--version} and @option{--version-only}.
 @end defvar
+
 
 @defvar script_LICENSE
 The identifier of the license under which the script is released.
@@ -798,7 +806,7 @@ variable in the action--specific ``before parsing options'' function.
 @defvar script_DESCRIPTION
 One line string providing a brief description of the program.  It is used
 in the help screen (the one echoed when the @option{--help} option is
-used) just after the content of @code{script_USAGE}.
+used) right after the content of @code{script_USAGE}.
 
 If the script defines multiple actions: it is better to define a usage
 description for every supported action, by setting this variable in the
