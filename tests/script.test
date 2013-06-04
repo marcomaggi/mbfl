@@ -65,25 +65,25 @@ function script-template-1.6 () {
 #PAGE
 
 function script-template-2.1 () {
-    script --beta=123 | dotest-output "option beta: 123\narguments: 0, ''"
+    script --beta=123 | dotest-output "option beta: 123\naction one, arguments: 0, ''"
 }
 function script-template-2.2 () {
-    script --beta=123\\ | dotest-output "option beta: 123\\\narguments: 0, ''"
+    script --beta=123\\ | dotest-output "option beta: 123\\\naction one, arguments: 0, ''"
 }
 function script-template-2.3 () {
-    script --beta="1 2" | dotest-output "option beta: 1 2\narguments: 0, ''"
+    script --beta="1 2" | dotest-output "option beta: 1 2\naction one, arguments: 0, ''"
 }
 function script-template-2.4 () {
-    script --beta=123\\\\ | dotest-output "option beta: 123\\\\\narguments: 0, ''"
+    script --beta=123\\\\ | dotest-output "option beta: 123\\\\\naction one, arguments: 0, ''"
 }
 function script-template-2.5 () {
-    script --alpha | dotest-output "option alpha\narguments: 0, ''"
+    script --alpha | dotest-output "option alpha\naction one, arguments: 0, ''"
 }
 
 #page
 
 function script-template-3.1 () {
-    script a b c | dotest-output "arguments: 3, 'a b c'"
+    script a b c | dotest-output "action one, arguments: 3, 'a b c'"
 }
 
 #page
@@ -127,7 +127,7 @@ function script-template-4.10 () {
 # }
 
 function script-template-6.1 () {
-    script --one | dotest-output 'action one'
+    script --one | dotest-output "action one, arguments: 0, ''"
 }
 function script-template-6.2 () {
     script --two | dotest-output 'action two'
@@ -368,14 +368,14 @@ function script-action-5.2.3 () {
 
 # Missing last action identifier
 function script-action-6.1.1 () {
-    script_with_actions one green | \
-	dotest-output "template-actions.sh: error: invalid number of arguments while parsing action identifier"
+    script_with_actions one green
+    dotest-equal $? 0
 }
 
 # Missing two last action identifier
 function script-action-6.1.2 () {
-    script_with_actions one | \
-	dotest-output "template-actions.sh: error: invalid number of arguments while parsing action identifier"
+    script_with_actions one
+    dotest-equal $? 0
 }
 
 #PAGE

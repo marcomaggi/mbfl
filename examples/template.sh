@@ -148,7 +148,7 @@ function main () {
     exit_because_success
 }
 function script_action_one () {
-    printf 'action one\n'
+    printf "action one, arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
     exit_because_success
 }
 function script_action_two () {
