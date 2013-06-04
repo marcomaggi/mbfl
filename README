@@ -20,7 +20,7 @@ Topics
 
 The MBFL  is a  collection of  shell functions  for the  GNU Bash
 shell.  This package is an attempt to make Bash a viable solution
-for medium sized scripts.
+for medium sized scripts; it needs at least Bash version 4.
 
 
 2. License

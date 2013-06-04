@@ -60,7 +60,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009, 2010, 2012-2013
+@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2013
 
 @c page
 @c ------------------------------------------------------------
@@ -295,20 +295,23 @@ Using @command{gnutls-cli} as connector
 
 
 This package is an attempt to make @gnu{} Bash a viable solution for
-medium sized scripts.  A set of modules implementing common operations
-and a script template are offered by this package and the author has
-used them with success in implementing non--small scripts.
+medium sized scripts; it needs at least Bash version 4.  A set of
+modules implementing common operations and a script template are offered
+by this package and the author has used them with success in
+implementing non--small scripts.
 
 The philosophy of @mbfl{} is to do the work as much as possible without
 external commands.  For example: string manipulation is done using the
 special variable substitution provided by Bash, and no use is done of
 utilities like @command{sed}, @command{grep} and @command{ed}.
 
-The library is better used starting from the template script
-@file{examples/template.sh}.  This is because with @mbfl{} some choices
-have been made to reduce the application dependent part of the script to
-the smallest dimension; if we follow another schema, @mbfl{} modules may
-be inadequate.  This is especially true for the options parsing module.
+The library is better used starting from the template scripts in the
+@file{examples/} subdirectory of the distribution, especially
+@file{template.sh} and @file{template-actions.sh}.  This is because with
+@mbfl{} some choices have been made to reduce the application dependent
+part of the script to the smallest dimension; if we follow another
+schema, @mbfl{} modules may be inadequate.  This is especially true for
+the options parsing module.
 
 @menu
 * overview quick::              Quick run time loading.
@@ -528,10 +531,10 @@ test "$mbfl_INTERACTIVE" = yes || @{
 @end example
 
 @noindent
-so they are not executed.  Disabled modules are: main, getopts, signal;
-``disabled'' does not mean that the functions are not there: only the
-global variable declarations are excluded; this is a little dirty, but,
-at present, it should work.
+so they are not executed.  Disabled modules are: main, actions, getopts,
+signal; ``disabled'' does not mean that the functions are not there:
+only the global variable declarations are excluded; this is a little
+dirty, but, at present, it should work.
 
 @item
 The @code{read} built in does word splitting on the text it reads, even
@@ -547,7 +550,7 @@ printf '\tciao\n' | @{
 
 @noindent
 we see that the initial tabulation character has been stripped, because
-it is a character in the deafult value of @code{IFS}.  Word splitting
+it is a character in the default value of @code{IFS}.  Word splitting
 does not happen when we set @code{IFS} to the empty string:
 
 @example
@@ -560,12 +563,11 @@ printf '\tciao\n' | @{
 
 To avoid the mutation of text read with @code{read}, @mbfl{} always sets
 @code{IFS} to the empty string in the environment in which @code{read}
-is evalulated.  This happens in functions like
+is evaluated.  This happens in functions like
 @bfunc{mbfl_read_maybe_null} and @bfunc{mbfl_dialog_ask_password};
 notice, though, that these functions @strong{do not} mutate the
 @code{IFS} value in the environment of the caller.
 @end itemize
-
 
 @c page
 @node preprocessor
