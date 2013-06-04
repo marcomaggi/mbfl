@@ -863,7 +863,8 @@ Notice that @code{script_DESCRIPTION} and @code{script_EXAMPLES}
 
 @defun mbfl_set_maybe @var{name} @var{value}
 Set a variable named @var{name} to @var{value}, but only if @var{name}
-is not the empty string.
+is not the empty string; if @var{value} is the empty string: the old
+value of @var{name} is left untouched.
 @end defun
 
 
@@ -946,11 +947,11 @@ mbfl_decode_hex 414243
 
 
 @defun mbfl_file_extension @var{pathname}
-Extract the extension from a file name.  Search the last dot character
-in the argument string and echo to stdout the range of characters from
-the dot to the end, not including the dot.  If a slash character or the
-beginning of the string is found first: echoes to stdout the empty
-string.
+Extract the extension from a file name.  Starting from the end of the
+string @var{pathname}: search the last dot character in the argument
+string and echo to stdout the range of characters from the dot to the
+end, not including the dot.  If a slash character or the beginning of
+the string is found first: echoes to stdout the empty string.
 @end defun
 
 
