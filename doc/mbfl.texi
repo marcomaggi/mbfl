@@ -1795,20 +1795,109 @@ selected with its first argument: @samp{commit}, @samp{log},
 be customised with a specific set of dash and double--dash options.
 @mbfl{} implements this behaviour through the @code{actions} module.
 
-The following script @file{one-level-actions.sh}, available in the
-@file{examples/} directory of the source distribution, shows how to
-implement one--level actions.  Notice how the @samp{HELP} action
-function makes use of @func{mbfl_actions_fake_action_set} to print the
-same help screen of the main action.
+@c ------------------------------------------------------------
+
+@subsubheading One--level actions
+
+
+The script below (@file{one-level-actions.sh}, available in the
+@file{examples/} directory of the source distribution) shows how to
+implement one--level actions.  It implements the following behaviour:
+
+@table @code
+@item one-level-actions.sh
+With no action argument: print a generic help screen and exit.
+
+@item one-level-actions.sh one
+With the action argument @code{one}: perform the action @samp{ONE},
+possibly with the options @option{-a} and @option{-b}.
+
+@item one-level-actions.sh one -H
+With the action argument @code{one} and the option @option{-H}: print
+the brief help screen for the action @samp{ONE} and exit.
+
+@item one-level-actions.sh two
+With the action argument @code{two}: perform the action @samp{TWO},
+possibly with the options @option{-d} and @option{-g}.
+
+@item one-level-actions.sh two -H
+With the action argument @code{two} and the option @option{-H}: print
+the brief help screen for the action @samp{TWO} and exit.
+
+@item one-level-actions.sh help
+With the action argument @code{help}: print a generic help screen and
+exit.  Notice how the @samp{HELP} action function makes use of
+@func{mbfl_actions_fake_action_set} to print the same help screen of the
+main action.
+@end table
 
 @smallexample
 @verbatiminclude one-level-actions.sh
 @end smallexample
 
-The following script @file{two-levels-actions.sh}, available in the
-@file{examples/} directory of the source distribution, shows how to
-implement two--levels actions.  Notice how the action functions of the
-non--leaf nodes print the help screen.
+@c ------------------------------------------------------------
+
+@subsubheading Two--levels actions
+
+
+The script below (@file{two-levels-actions.sh}, available in the
+@file{examples/} directory of the source distribution) shows how to
+implement two--levels actions.  It implements the following behaviour:
+
+@table @code
+@item two-levels-actions.sh
+With no action argument: print a generic help screen and exit.
+
+@item two-levels-actions.sh help
+With the action argument @code{help}: print a generic help screen and
+exit.  Notice how the @samp{HELP} action function makes use of
+@func{mbfl_actions_fake_action_set} to print the same help screen of the
+main action.
+
+@item two-levels-actions.sh one
+With the non--leaf action argument @code{one}: print the help screen of
+the action @samp{ONE}.
+
+@item two-levels-actions.sh two
+With the non--leaf action argument @code{two}: print the help screen of
+the action @samp{TWO}.
+
+@item two-levels-actions.sh one red
+With the action arguments @code{one red}: perform the action @samp{RED},
+possibly with the options @option{-a} and @option{-b}.
+
+@item two-levels-actions.sh one red -H
+With the action argument @code{one red} and the option @option{-H}:
+print the brief help screen for the action @samp{RED} and exit.
+
+@item two-levels-actions.sh one blue
+With the action arguments @code{one blue}: perform the action
+@samp{BLUE}, possibly with the options @option{-a} and @option{-b}.
+
+@item two-levels-actions.sh one blue -H
+With the action argument @code{one blue} and the option @option{-H}:
+print the brief help screen for the action @samp{BLUE} and exit.
+
+@item two-levels-actions.sh two green
+With the action arguments @code{two green}: perform the action
+@samp{GREEN}, possibly with the options @option{-d} and @option{-g}.
+
+@item two-levels-actions.sh two green -H
+With the action argument @code{two green} and the option @option{-H}:
+print the brief help screen for the action @samp{GREEN} exit.
+
+@item two-levels-actions.sh two cyan
+With the action arguments @code{two cyan}: perform the action
+@samp{CYAN}, possibly with the options @option{-d} and @option{-g}.
+
+@item two-levels-actions.sh two cyan -H
+With the action argument @code{two cyan} and the option @option{-H}:
+print the brief help screen for the action @samp{CYAN} exit.
+@end table
+
+@noindent
+notice how the action functions of the non--leaf nodes print the help
+screen describing the subactions.
 
 @smallexample
 @verbatiminclude two-levels-actions.sh

@@ -37,11 +37,11 @@ function script_action_HELP () {
 }
 function script_action_ONE () {
     printf 'performing action one: alpha=%s, beta=%s\n' \
-	"$script_option_ALPHA" "$script_option_beta"
+        "$script_option_ALPHA" "$script_option_beta"
 }
 function script_action_TWO () {
     printf 'performing action two: delta=%s, gamma=%s\n' \
-	"$script_option_DELTA" "$script_option_GAMMA"
+        "$script_option_DELTA" "$script_option_GAMMA"
 }
 mbfl_main
 
