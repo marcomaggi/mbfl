@@ -1755,6 +1755,9 @@ print a message.
 @chapter Selecting actions to perform
 
 
+The @code{actions} module allows the command line selection of different
+actions a script can perform.
+
 @menu
 * actions intro::               Introduction to action trees.
 * actions declare::             Declaring actions and action sets.
@@ -1767,6 +1770,12 @@ print a message.
 @section Introduction to action trees
 
 
+Traditional Unix--style command line programs perform a single action,
+with behaviour variants selected by command line options.  For example
+@command{ls} prints a list of directory entries and the format of the
+output can be custommised with options like @option{-1} and
+@option{--color}.
+
 @c page
 @node actions declare
 @section Declaring actions and action sets
@@ -1778,10 +1787,9 @@ directly.
 
 
 @defun mbfl_declare_action_set @var{action-set}
-Declare a new action set.  @var{action-set} must be a non--empty string
-of characters in the ranges @samp{[A-Za-z0-9_-]}, the first being a
-letter, representing the identifier of the action set.  It is an error
-to declare the same action set twice.
+Declare a new action set.  @var{action-set} must be a string satisfying
+@func{mbfl_string_is_name} and representing the identifier of the action
+set.  It is an error to declare the same action set twice.
 @end defun
 
 
@@ -1795,9 +1803,10 @@ The action set must have been previously declared with a call to
 @func{mbfl_declare_action_set}.
 
 @item keyword
-A unique string (in this script) identifying this action.  The ``main'',
-``before parsing options'' and ``after parsing options'' function names
-associated to this action are built as:
+A unique string (in this script) satisfying @func{mbfl_string_is_name}
+and identifying this action.  The ``main'', ``before parsing options''
+and ``after parsing options'' function names associated to this action
+are built as:
 
 @example
 script_action_$@var{keyword}
@@ -1807,13 +1816,16 @@ script_after_parsing_options_$@var{keyword}
 
 @item subset
 If @var{subset} is the string @code{NONE} it means that this action is a
-leaf and it will set the main function to run; else @var{subset} must be
-the identifier of an action set subordinate to @var{action-set}: this
-function is recursively called to process it.
+leaf and it implements a script action; else @var{subset} must be the
+identifier of an action set subordinate to @var{action-set}: this
+function is recursively called to process it.  The subordinate action
+set must have been previously declared with a call to
+@func{mbfl_declare_action_set}.
 
 @item identifier
-A string representing the argument on the command line used to select
-this action.  This string must be unique for this @var{action-set}.
+A string satisfying @func{mbfl_string_is_identifier} and representing
+the argument on the command line used to select this action.  This
+string must be unique for this @var{action-set}.
 
 @item description
 A string describing this action, to be used to compose the help screen.
@@ -1836,31 +1848,34 @@ mbfl_main_set_main
 @end example
 
 @noindent
-If successful return @code{0}, else return @code{1} and print an error
-message to @code{stderr}.  This function recursively calls itself,
-parsing command line arguments and traversing the tree of declared
-actions.
+If successful return true, else return false and print an error message
+to @code{stderr}.  This function recursively calls itself, parsing
+command line arguments and traversing the tree of declared actions.
 
-@var{action-set} must be the identifier of an action set previously
-declared with @func{mbfl_declare_action}.  It is an error if this
-function is called with an @var{action-set} identifier specifying a
-non--existent action set.  If there are no command line arguments left
-upon entering this function: the values previously selected are silently
-accepted.
+@var{action-set} must be the name of an action set previously declared
+with @func{mbfl_declare_action_set}.  It is an error if this function is
+called with an @var{action-set} name specifying a non--existent action
+set.  If there are no command line arguments left upon entering this
+function: the values previously selected are silently accepted.
+
+The function @func{mbfl_main} verifies that the action set @code{MAIN}
+exists and, if it does, it calls this function with argument
+@code{MAIN}.
 
 Upon entering this function, the following global variables must exist
 and have the specified values:
 
 @table @code
 @item ARGV1
-An array containing all the command line argument.
+An array containing all the command line arguments.
 
 @item ARGC1
-An integer representing the number of values in @code{ARGV1}.
+A non--negative integer representing the number of values in
+@code{ARGV1}.
 
 @item ARG1ST
-An integer representing the index in @code{ARGV1} of the next argument
-to be processed.
+A non--negative integer representing the index in @code{ARGV1} of the
+next argument to be processed.
 @end table
 
 @noindent
@@ -1874,33 +1889,14 @@ module, @ref{main variables, Command line arguments variables}.
 
 
 @defun mbfl_actions_set_exists @var{action-set}
-Return @code{0} if @var{action-set} is the identifier of an existent
-action set; else return @code{1}.
+Return true if @var{action-set} is the identifier of an existent action
+set; else return false.
 @end defun
 
 
 @defun mbfl_actions_set_exists_or_none @var{action-set}
-Return @code{0} if @var{action-set} is the identifier of an existent
-action set or it is the string @code{NONE}; else return @code{1}.
-@end defun
-
-@c ------------------------------------------------------------
-
-@defun mbfl_actions_valid_string_as_action_set_identifier @var{str}
-Return @code{0} if @var{str} is a valid string to be used as action set
-identifier; else return @code{1}.
-@end defun
-
-
-@defun mbfl_actions_valid_string_as_action_argument @var{str}
-Return @code{0} if @var{str} is a valid string to be used as action
-selector argument; else return @code{1}.
-@end defun
-
-
-@defun mbfl_actions_valid_string_as_keyword_identifier @var{str}
-Return @code{0} if @var{str} is a valid string to be used as action
-keyword; else return @code{1}.
+Return true if @var{action-set} is the identifier of an existent action
+set or it is the string @code{NONE}; else return false.
 @end defun
 
 @c page
