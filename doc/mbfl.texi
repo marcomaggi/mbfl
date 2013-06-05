@@ -1763,6 +1763,7 @@ actions a script can perform.
 * actions declare::             Declaring actions and action sets.
 * actions dispatch::            Dispatching action arguments.
 * actions inspect::             Inspecting action trees.
+* actions misc::                Other functions.
 @end menu
 
 @c page
@@ -1793,6 +1794,25 @@ selected with its first argument: @samp{commit}, @samp{log},
 @samp{merge} and many others; the behaviour of each ``subcommand'' can
 be customised with a specific set of dash and double--dash options.
 @mbfl{} implements this behaviour through the @code{actions} module.
+
+The following script @file{one-level-actions.sh}, available in the
+@file{examples/} directory of the source distribution, shows how to
+implement one--level actions.  Notice how the @samp{HELP} action
+function makes use of @func{mbfl_actions_fake_action_set} to print the
+same help screen of the main action.
+
+@smallexample
+@verbatiminclude one-level-actions.sh
+@end smallexample
+
+The following script @file{two-levels-actions.sh}, available in the
+@file{examples/} directory of the source distribution, shows how to
+implement two--levels actions.  Notice how the action functions of the
+non--leaf nodes print the help screen.
+
+@smallexample
+@verbatiminclude two-levels-actions.sh
+@end smallexample
 
 @c page
 @node actions declare
@@ -1901,13 +1921,6 @@ all these variables are created by default by the @mbfl{} @code{main}
 module, @ref{main variables, Command line arguments variables}.
 @end defun
 
-
-@defun mbfl_actions_fake_action_set @var{action-set}
-Mutate @mbfl{} state to mimic the selection of an action set.  It is an
-error if @var{action-set} is not the name of an existent action set.
-This function should be used with care.
-@end defun
-
 @c page
 @node actions inspect
 @section Inspecting action trees
@@ -1922,6 +1935,23 @@ set; else return false.
 @defun mbfl_actions_set_exists_or_none @var{action-set}
 Return true if @var{action-set} is the identifier of an existent action
 set or it is the string @code{NONE}; else return false.
+@end defun
+
+@c page
+@node actions misc
+@section Other functions
+
+
+@defun mbfl_actions_fake_action_set @var{action-set}
+Mutate @mbfl{} state to mimic the selection of an action set.  It is an
+error if @var{action-set} is not the name of an existent action set.
+This function should be used with care.
+@end defun
+
+
+@defun mbfl_actions_print_usage_screen
+If an action set has been selected and its name is not @samp{NONE}:
+print the help screen documenting the available actions.
 @end defun
 
 @c page

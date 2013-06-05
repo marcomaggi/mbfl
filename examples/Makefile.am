@@ -12,7 +12,8 @@ EXTRA_DIST		= \
 	test-sendmail-localhost.sh		\
 	test-sendmail-poste.sh			\
 	\
-	actions-scripts/one-level-actions.sh
+	one-level-actions.sh			\
+	two-levels-actions.sh
 
 if WANT_SENDMAIL
 
