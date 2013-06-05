@@ -3572,8 +3572,9 @@ applied to @var{char} or @var{char} is an underscore, @samp{_}, or dash,
 @defunx mbfl_string_is_noblank @var{string}
 @defunx mbfl_string_is_name @var{string}
 @defunx mbfl_string_is_identifier @var{string}
-Return true if the associated char function returns true for each
-character in @var{string}.  As additional constraint:
+Return true if @var{string} is non--empty and the associated char
+function returns true for each character in @var{string}.  As additional
+constraint:
 
 @itemize
 @item
