@@ -1,5 +1,9 @@
 ## Process this file with automake to produce Makefile.in
 
+EXTRA_DIST		= \
+	one-level-actions.sh			\
+	two-levels-actions.sh
+
 AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/../examples
 
 info_TEXINFOS		= mbfl.texi

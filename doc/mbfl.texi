@@ -1801,8 +1801,8 @@ be customised with a specific set of dash and double--dash options.
 
 
 The script below (@file{one-level-actions.sh}, available in the
-@file{examples/} directory of the source distribution) shows how to
-implement one--level actions.  It implements the following behaviour:
+@file{doc/} directory of the source distribution) shows how to implement
+one--level actions.  It implements the following behaviour:
 
 @table @code
 @item one-level-actions.sh
@@ -1841,8 +1841,8 @@ main action.
 
 
 The script below (@file{two-levels-actions.sh}, available in the
-@file{examples/} directory of the source distribution) shows how to
-implement two--levels actions.  It implements the following behaviour:
+@file{doc/} directory of the source distribution) shows how to implement
+two--levels actions.  It implements the following behaviour:
 
 @table @code
 @item two-levels-actions.sh
