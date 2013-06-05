@@ -93,7 +93,7 @@ test "$mbfl_INTERACTIVE" = yes || {
     # stored  here.   This variable  is  used  when composing  the  help
     # screen.
     #
-    declare mbfl_action_sets_SELECTED_SET=
+    declare mbfl_action_sets_SELECTED_SET=MAIN
 }
 #page
 # Declare a new action set.
@@ -251,6 +251,17 @@ function mbfl_actions_dispatch () {
     fi
 }
 #page
+# Mutate MBFL state to mimic the selection of an action set.
+#
+function mbfl_actions_fake_action_set () {
+    mbfl_mandatory_parameter(ACTION_SET,1,action set)
+    if mbfl_actions_set_exists "$ACTION_SET"
+    then
+	mbfl_action_sets_SELECTED_SET=$ACTION_SET
+	return 0
+    else return 1
+    fi
+}
 # If an action set  has been selected and its name  is not "NONE": print
 # the help screen documenting the available actions.
 #

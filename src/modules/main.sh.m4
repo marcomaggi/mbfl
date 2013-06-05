@@ -332,7 +332,10 @@ function mbfl_main_print_license () {
     exit_success
 }
 function mbfl_main_print_usage_screen_long () {
-    printf '%s\n' "${script_USAGE}"
+    if test -n "${script_USAGE}"
+    then printf '%s\n' "${script_USAGE}"
+    else printf 'usafe: %s [arguments]\n' "${script_PROGNAME}"
+    fi
     # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
     # characters.
     test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"
@@ -344,7 +347,10 @@ function mbfl_main_print_usage_screen_long () {
     exit_success
 }
 function mbfl_main_print_usage_screen_brief () {
-    printf '%s\n' "${script_USAGE}"
+    if test -n "${script_USAGE}"
+    then printf '%s\n' "${script_USAGE}"
+    else printf 'usafe: %s [arguments]\n' "${script_PROGNAME}"
+    fi
     # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
     # characters.
     test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"

@@ -1901,6 +1901,13 @@ all these variables are created by default by the @mbfl{} @code{main}
 module, @ref{main variables, Command line arguments variables}.
 @end defun
 
+
+@defun mbfl_actions_fake_action_set @var{action-set}
+Mutate @mbfl{} state to mimic the selection of an action set.  It is an
+error if @var{action-set} is not the name of an existent action set.
+This function should be used with care.
+@end defun
+
 @c page
 @node actions inspect
 @section Inspecting action trees
