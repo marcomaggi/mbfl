@@ -357,7 +357,7 @@
 @end macro
 
 @macro func{NAME}
-@code{\NAME\}
+@code{\NAME\()}
 @end macro
 
 @c ------------------------------------------------------------
