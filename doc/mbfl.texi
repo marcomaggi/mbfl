@@ -1771,10 +1771,28 @@ actions a script can perform.
 
 
 Traditional Unix--style command line programs perform a single action,
-with behaviour variants selected by command line options.  For example
-@command{ls} prints a list of directory entries and the format of the
-output can be custommised with options like @option{-1} and
-@option{--color}.
+with behaviour variants selected by command line dash and double--dash
+options.  For example @command{ls} prints a list of directory entries
+and the format of the output can be custommised with options like
+@option{-1} and @option{--color}.  @mbfl{} implements this behaviour by
+default when the @code{actions} module is @strong{not} used.
+
+Other Unix--style command line programs offer a set of possible actions
+and allow the executor to select one by specifying command line options.
+For example @command{tar} acts on archive files and it can pack, unpack,
+validate them along with other actions selected with by the double--dash
+options @option{--create}, @option{--extract}, @option{--validate} and
+others.  @mbfl{} implements this behaviour through ``action options''
+provided by the @code{getopts} module; action options are available also
+when using the @code{actions} module.
+
+Other command line programs break this Unix--style to offer action
+selection throuh ``action arguments''.  For example @command{git} acts
+upon revision control repositories offering a big set of actions
+selected with its first argument: @samp{commit}, @samp{log},
+@samp{merge} and many others; the behaviour of each ``subcommand'' can
+be customised with a specific set of dash and double--dash options.
+@mbfl{} implements this behaviour through the @code{actions} module.
 
 @c page
 @node actions declare
