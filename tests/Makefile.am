@@ -31,7 +31,7 @@ MBFL_TESTS_ENV		+= MBFL_LIBRARY=$(builddir)/../src/libmbfl.sh; export MBFL_LIBRA
 MBFL_TESTS_ENV		+= MBFLTEST_LIBRARY=$(srcdir)/../src/lib/libmbfltest.sh; export MBFLTEST_LIBRARY;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
-MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(BASH_PROGRAM)
+#MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(BASH_PROGRAM)
 
 # Read "Parallel Test Harness" in the documentation of GNU Automake to
 # understand how to use this interface for "make check".
@@ -60,6 +60,8 @@ TESTS			=	\
 
 MBFL_INSTCHECK_FLAGS	= $(user_flags)
 MBFL_INSTCHECK_ENV	= PATH=$(srcdir):"`mbfl-config --libpath`":$(PATH); export PATH;
+MBFL_INSTCHECK_ENV	+= MBFL_LIBRARY="`mbfl-config --library`"; export MBFL_LIBRARY;
+MBFL_INSTCHECK_ENV	+= MBFLTEST_LIBRARY="`mbfl-config --testlib`"; export MBFLTEST_LIBRARY;
 MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR; examplesdir=$(srcdir)/../examples; export examplesdir;
 MBFL_INSTCHECK_RUN	= $(MBFL_INSTCHECK_ENV) $(BASH_PROGRAM) $(MBFL_INSTCHECK_FLAGS)
 
