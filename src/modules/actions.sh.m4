@@ -100,7 +100,7 @@ test "$mbfl_INTERACTIVE" = yes || {
 #
 function mbfl_declare_action_set () {
     mbfl_mandatory_parameter(ACTION_SET,1,action set)
-    if mbfl_actions_valid_string_as_action_set_identifier "$ACTION_SET"
+    if mbfl_string_is_name "$ACTION_SET"
     then
         if test -z "${mbfl_action_sets_EXISTS[${ACTION_SET}]}"
         then mbfl_action_sets_EXISTS[${ACTION_SET}]=yes
@@ -143,13 +143,13 @@ function mbfl_declare_action () {
 
     local KEY="${ACTION_SET}-${ACTION_IDENTIFIER}"
 
-    if ! mbfl_actions_valid_string_as_action_argument "$ACTION_IDENTIFIER"
+    if ! mbfl_string_is_identifier "$ACTION_IDENTIFIER"
     then
         mbfl_message_error "internal error: invalid action identifier: $ACTION_IDENTIFIER"
         exit_because_invalid_action_declaration
     fi
 
-    if mbfl_actions_valid_string_as_keyword_identifier "$ACTION_KEYWORD"
+    if mbfl_string_is_name "$ACTION_KEYWORD"
     then mbfl_action_sets_KEYWORDS[${KEY}]=${ACTION_KEYWORD}
     else
         mbfl_message_error "internal error: invalid keyword for action \"$ACTION_IDENTIFIER\": \"$ACTION_KEYWORD\""
@@ -169,51 +169,12 @@ function mbfl_declare_action () {
     return 0
 }
 #page
-function mbfl_actions_valid_string_as_action_set_identifier () {
-    mbfl_p_actions_valid_string_as_identifier "$1"
-}
-function mbfl_actions_valid_string_as_keyword_identifier () {
-    mbfl_p_actions_valid_string_as_identifier "$1"
-}
-function mbfl_actions_valid_string_as_action_argument () {
-    mbfl_p_actions_valid_string_as_identifier "$1"
-}
-function mbfl_p_actions_valid_string_as_identifier () {
-    # Return  0 if  ARGUMENT is  a  valid string  to be  used as  action
-    # selector argument; else return 1.
-    #
-    mbfl_mandatory_parameter(ARGUMENT, 1, string)
-    local len="${#ARGUMENT}" i ch
-    test $len = 0 && return 1
-    ch="${ARGUMENT:0:1}"
-    mbfl_p_actions_not_first_char_in_action_argument_name "$ch" && return 1
-    for ((i=1; $i < $len; ++i))
-    do
-        ch="${ARGUMENT:$i:1}"
-        mbfl_p_actions_not_char_in_action_argument_name "$ch" && return 1
-    done
-    return 0
-}
-function mbfl_p_actions_not_first_char_in_action_argument_name () {
-    test \
-        \( "$1" \< A -o Z \< "$1" \) -a \
-        \( "$1" \< a -o z \< "$1" \)
-}
-function mbfl_p_actions_not_char_in_action_argument_name () {
-    test \
-        \( "$1" \< A -o Z \< "$1" \) -a \
-        \( "$1" \< a -o z \< "$1" \) -a \
-        \( "$1" \< 0 -o 9 \< "$1" \) -a \
-        \( "$1" != '-' \)            -a \
-        \( "$1" != '_' \)
-}
-#page
 function mbfl_actions_set_exists () {
     # Return 0  if ACTION_SET  is the identifier  of an  existent action
     # set; else return 1.
     #
     mbfl_mandatory_parameter(ACTION_SET,1,action set)
-    mbfl_actions_valid_string_as_action_set_identifier "$ACTION_SET" \
+    mbfl_string_is_name "$ACTION_SET" \
         && test "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" \
         -a "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" = yes
 }
@@ -222,11 +183,9 @@ function mbfl_actions_set_exists_or_none () {
     # or it is the string "NONE"; else return 1.
     #
     mbfl_mandatory_parameter(ACTION_SET,1,action set)
-    mbfl_actions_valid_string_as_action_set_identifier "$ACTION_SET" \
-        && test \
-        "$ACTION_SET" = NONE \
-        -o \( "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" \
-              -a "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" = yes \)
+    mbfl_string_is_name "$ACTION_SET" && \
+	test "$ACTION_SET" = NONE \
+	-o \( "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" -a "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" = yes \)
 }
 #page
 function mbfl_actions_dispatch () {
