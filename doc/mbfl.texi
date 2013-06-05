@@ -1827,7 +1827,7 @@ the brief help screen for the action @samp{TWO} and exit.
 @item one-level-actions.sh help
 With the action argument @code{help}: print a generic help screen and
 exit.  Notice how the @samp{HELP} action function makes use of
-@func{mbfl_actions_fake_action_set} to print the same help screen of the
+@bfunc{mbfl_actions_fake_action_set} to print the same help screen of the
 main action.
 @end table
 
@@ -1851,7 +1851,7 @@ With no action argument: print a generic help screen and exit.
 @item two-levels-actions.sh help
 With the action argument @code{help}: print a generic help screen and
 exit.  Notice how the @samp{HELP} action function makes use of
-@func{mbfl_actions_fake_action_set} to print the same help screen of the
+@bfunc{mbfl_actions_fake_action_set} to print the same help screen of the
 main action.
 
 @item two-levels-actions.sh one
@@ -1915,7 +1915,7 @@ directly.
 
 @defun mbfl_declare_action_set @var{action-set}
 Declare a new action set.  @var{action-set} must be a string satisfying
-@func{mbfl_string_is_name} and representing the identifier of the action
+@bfunc{mbfl_string_is_name} and representing the identifier of the action
 set.  It is an error to declare the same action set twice.
 @end defun
 
@@ -1927,10 +1927,10 @@ Declare a new action belonging to an action set.  The arguments are:
 @item action-set
 A string representing the name of the action set this action belongs to.
 The action set must have been previously declared with a call to
-@func{mbfl_declare_action_set}.
+@bfunc{mbfl_declare_action_set}.
 
 @item keyword
-A unique string (in this script) satisfying @func{mbfl_string_is_name}
+A unique string (in this script) satisfying @bfunc{mbfl_string_is_name}
 and identifying this action.  The ``main'', ``before parsing options''
 and ``after parsing options'' function names associated to this action
 are built as:
@@ -1947,10 +1947,10 @@ leaf and it implements a script action; else @var{subset} must be the
 identifier of an action set subordinate to @var{action-set}: this
 function is recursively called to process it.  The subordinate action
 set must have been previously declared with a call to
-@func{mbfl_declare_action_set}.
+@bfunc{mbfl_declare_action_set}.
 
 @item identifier
-A string satisfying @func{mbfl_string_is_identifier} and representing
+A string satisfying @bfunc{mbfl_string_is_identifier} and representing
 the argument on the command line used to select this action.  This
 string must be unique for this @var{action-set}.
 
@@ -1980,12 +1980,12 @@ to @code{stderr}.  This function recursively calls itself, parsing
 command line arguments and traversing the tree of declared actions.
 
 @var{action-set} must be the name of an action set previously declared
-with @func{mbfl_declare_action_set}.  It is an error if this function is
+with @bfunc{mbfl_declare_action_set}.  It is an error if this function is
 called with an @var{action-set} name specifying a non--existent action
 set.  If there are no command line arguments left upon entering this
 function: the values previously selected are silently accepted.
 
-The function @func{mbfl_main} verifies that the action set @code{MAIN}
+The function @bfunc{mbfl_main} verifies that the action set @code{MAIN}
 exists and, if it does, it calls this function with argument
 @code{MAIN}.
 
@@ -2082,11 +2082,11 @@ Long option @code{color} with value @code{bianco}.
 @section Arguments
 
 
-The module contains, at the root level, a block of code like the
-following:
+The @code{main} module contains, at the root level, a block of code like
+the following:
 
 @example
-ARGC=0
+declare -i ARGC=0 ARGC1=0 ARG1ST=0
 declare -a ARGV ARGV1
 
 for ((ARGC1=0; $# > 0; ++ARGC1))
@@ -2100,11 +2100,14 @@ done
 this block is executed when @mbfl{} (and the script that loads it) is
 evaluated.  Its purpose is to store command line arguments in the global
 array @code{ARGV1} and the number of command line arguments in the
-global variable @code{ARGC1}.
+global variable @code{ARGC1}; the variable @code{ARG1ST} references the
+next argument in @code{ARGV1} that must be processed.
 
 The global array @code{ARGV} and the global variable @code{ARGC} are
 predefined and should be used by the @code{mbfl_getopts_*} functions to
-store non--option command line arguments.
+store non--option command line arguments.  Processing performed by the
+@code{getopts} module must happen after processing performed by the
+@code{actions} module.
 
 Example:
 
@@ -2126,25 +2129,21 @@ do
 done
 @end example
 
-When using action arguments: the first non--option argument can be
-interpreted as special value that selects an action to be performed by
-the script.  In this case the first argument is removed from the
+When using the @code{actions} module: the first arguments can be
+interpreted as special values that select an action to be performed by
+the script; in such case the first argument is removed from the
 @code{ARGV} array, so that processing the other arguments is not
-affected.
+affected.  @ref{actions intro, Introduction to action trees}.
 
 @c page
 @node getopts usage
 @section Using the module
 
 
-To use this module we have to declare a set of script options and
-optionally a set of action arguments.  We declare a new script option
-with the function @bfunc{mbfl_declare_option} and a new action argument
-with the function @bfunc{mbfl_declare_action_argument}.
-
-Option and action argument declarations should be done at the beginning
-of the script, before doing anything else; for example: right after the
-@mbfl{} library code.
+To use this module we have to declare a set of script options with the
+function @bfunc{mbfl_declare_option}.  Options declarations should be
+done at the beginning of the script, before doing anything else, or in
+the ``before parsing options'' functions.
 
 In the main block of the script, options are parsed by invoking
 @bfunc{mbfl_getopts_parse}: this function will update global variables
@@ -2230,6 +2229,10 @@ $ script.sh -b456
 $ script.sh --beta=456
 @end example
 
+@noindent
+it is an error to use the switch @option{-b} or  @option{--beta} with
+no argument (that is: with an empty string as argument).
+
 @c ------------------------------------------------------------
 
 @subsubheading Action options
@@ -2248,7 +2251,7 @@ this code declares two options with no arguments; the difference from
 the other declarations is that the keywords are prefixed with
 @code{ACTION_}: this prefix is recognised by the module and causes, if
 the option is used on the command line, the following code to be
-evaluated at argument parsing time:
+evaluated at arguments parsing time:
 
 @example
 mbfl_main_set_main script_action_gamma
@@ -2274,99 +2277,8 @@ action function.  In the example: the function
 @bfunc{script_action_delta} is selected as main action function.
 
 It is an error to declare a keyword prefixed with @code{ACTION_} with an
-option with argument.
-
-@c ------------------------------------------------------------
-
-@subsubheading Action arguments
-
-The following example declares two action arguments:
-
-@example
-mbfl_declare_action_argument gamma gamma no  no "do gamma action"
-mbfl_declare_action_argument delta delta yes no "do delta action"
-@end example
-
-@noindent
-an action argument is a non--option argument that is used on the command
-line as first parameter; its purpose is to select a function to be
-evaluated as main action of the script.
-
-The first of the two declarations has the following properties:
-
-@itemize
-@item
-Action argument keyword @code{gamma} (the first one); this is the
-internal identifier of the argument used to build the associated action
-function name.
-
-@item
-Argument string on the command line @code{gamma} (the second one).
-
-@item
-Selection value set to @code{no} (the first one): this script action is
-not selected by default.
-
-@item
-Options parsing activated when this action argument is found as first
-argument for the script (the second @code{no}).
-
-@item
-Description @code{do gamma action}, to be shown in the usage output.
-@end itemize
-
-If the first parameter to the script is @code{gamma} or @code{delta},
-the following code is evaluated at argument parsing time:
-
-@example
-mbfl_main_set_main script_action_gamma
-@end example
-
-@noindent
-or:
-
-@example
-mbfl_main_set_main script_action_delta
-@end example
-
-@noindent
-where the argument @code{script_action_gamma} is built by prefixing the
-the keyword with @code{script_action_}.  The code selects a function as
-main function for the script.  @ref{main function, Driving script
-execution}.
-
-Additionally, if the selection value is @code{yes}: the main function is
-selected at declaration time (that is by
-@bfunc{mbfl_declare_action_argument}); this is useful to declare an
-action option and select automatically the action function.  In the
-example: the function @bfunc{script_action_delta} is selected as main
-action function.
-
-@c ------------------------------------------------------------
-
-@subsubheading Action arguments and action options
-
-Notice that action arguments and action options implement the same
-feature and are fully compatible with each other.  Both can be used to
-select an action for the script.
-
-When declaring action options and action arguments selected by default:
-the last one wins.  So the following:
-
-@example
-mbfl_declare_option ACTION_GAMMA \
-  yes g gamma noarg "do gamma action"
-
-mbfl_declare_action_argument delta \
-  delta yes no "do delta action"
-@end example
-
-@noindent
-defines a @code{--gamma} action option and a @code{delta} action
-argument, and the main function is set to @bfunc{script_action_delta}.
-
-However, it is bad interface design to use both of them; it is better to
-use action arguments @strong{or} action options.
+option with argument (@code{witharg} as argument to
+@bfunc{mbfl_declare_option}).
 
 @c page
 @node getopts options
@@ -2597,7 +2509,7 @@ Restore the state of the test option to the one before the invocation to
 @section Interface functions
 
 
-Every declared option should have a long switch, the brief switch may be
+Every declared option should have a long switch, the brief switch can be
 omitted.
 
 
@@ -2637,10 +2549,11 @@ A one--line string briefly describing the option.
 @defun mbfl_getopts_parse
 Parse a set of command line options.  The options are handed to user
 defined functions.  The global array @code{ARGV1} and the global
-variable @code{ARGC1} are supposed to hold the command line arguments
-and the number of command line arguments.  Non--option arguments are
-left in the global array @code{ARGV}, the global variable @code{ARGC}
-holds the number of elements in @code{ARGV}.
+variable @code{ARGC1} must hold the command line arguments and the
+number of command line arguments, the global variable @code{ARG1ST} must
+hold the index of the first element in @code{ARGV1} that must be parsed.
+Non--option arguments are left in the global array @code{ARGV}, the
+global variable @code{ARGC} holds the number of elements in @code{ARGV}.
 
 If successful return @code{0}, else return @code{1}.
 @end defun
@@ -3993,14 +3906,14 @@ function.  If no command actions are configured: nothing is done.
 
 @item
 If it exists: invoke the function @bfunc{script_before_parsing_options}
-or the one selected by @func{mbfl_main_set_before_parsing_options}.
+or the one selected by @bfunc{mbfl_main_set_before_parsing_options}.
 
 @item
 Parse command line options with @bfunc{mbfl_getopts_parse}.
 
 @item
 If it exists: invoke the function @bfunc{script_after_parsing_options}
-or the one selected by @func{mbfl_main_set_after_parsing_options}.
+or the one selected by @bfunc{mbfl_main_set_after_parsing_options}.
 
 @item
 Invoke the function whose name is stored in the global variable
@@ -4026,7 +3939,7 @@ type -t @var{FUNCNAME} = function
 
 
 @defun mbfl_invoke_existent_script_function @var{funcname}
-Like @func{mbfl_invoke_script_function}, but if the function does not
+Like @bfunc{mbfl_invoke_script_function}, but if the function does not
 exist: print an error message to @code{stderr} and exit with failure.
 @end defun
 
@@ -4047,7 +3960,7 @@ The name of the function to be called right before parsing command line
 options.  This value can be customised by both the @mbfl{} and the user
 script.
 
-The default function name is: @func{script_before_parsing_options}.
+The default function name is: @bfunc{script_before_parsing_options}.
 @end defun
 
 
@@ -4056,7 +3969,7 @@ The name of the function to be called right after parsing command line
 options.  This value can be customised by both the @mbfl{} and the user
 script.
 
-The default function name is: @func{script_after_parsing_options}.
+The default function name is: @bfunc{script_after_parsing_options}.
 @end defun
 
 @c page
