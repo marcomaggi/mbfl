@@ -3849,6 +3849,7 @@ functions.
 * main variables::              Command line arguments variables.
 * main function::               Driving script execution.
 * main exit::                   Declaring exit codes.
+* main misc::                   Other functions.
 @end menu
 
 @c page
@@ -3860,20 +3861,38 @@ The following global variables are defined by default.
 
 
 @defvar ARGV1
-An array containing all the command line argument.  When no command line
-arguments are present: this array is empty.
+An array containing all the command line arguments.  When no command
+line arguments are present: this array is empty.
 @end defvar
 
 
 @defvar ARGC1
-An integer representing the number of values in @code{ARGV1}.  When no
-command line arguments are present: this variable is set to zero.
+A non--negative integer representing the number of values in
+@code{ARGV1}.  When no command line arguments are present: this variable
+is set to zero.
 @end defvar
 
 
 @defvar ARG1ST
-An integer representing the index in @code{ARGV1} of the next argument
-to be processed.  It is initialised to zero.
+A non--negative integer representing the index in @code{ARGV1} of the
+next argument to be processed.  It is initialised to zero; the
+@code{actions} module increments it to reflect its consuming of action
+arguments; the @code{getopts} module uses this value to locate the first
+argument to parse.
+@end defvar
+
+
+@defvar ARGV
+An array containing all the non--action and non--option command line
+arguments.  When no such arguments are present: this array is empty.
+This variable is filled by the @code{getopts} module.
+@end defvar
+
+
+@defvar ARGC
+A non--negative integer representing the number of values in
+@code{ARGV}.  When no arguments are present: this variable is set to
+zero.
 @end defvar
 
 @c page
@@ -3882,7 +3901,7 @@ to be processed.  It is initialised to zero.
 
 
 @findex script_after_parsing_options
-@findex script_after_parsing_options
+@findex script_before_parsing_options
 
 
 @defun mbfl_main
@@ -3899,10 +3918,14 @@ Invoke @bfunc{mbfl_main_create_exit_functions}.  @ref{main exit,
 Declaring exit codes}.
 
 @item
-Invoke the command line arguments according to the command actions
+Parse the command line arguments according to the command actions
 configuration; this step may change the selection of: main function,
-``before parsing options'' function, ``after parsing options''
-function.  If no command actions are configured: nothing is done.
+``before parsing options'' function, ``after parsing options'' function;
+if no command actions are configured: nothing is done.
+
+This function searches for a declared action set with name @code{MAIN}:
+if such set exists, it expects the first argument to be an action
+identifier in the set.
 
 @item
 If it exists: invoke the function @bfunc{script_before_parsing_options}
@@ -3927,23 +3950,6 @@ Exit the script with the return code of the action function or zero.
 @end defun
 
 
-@defun mbfl_invoke_script_function @var{funcname}
-If @var{funcname} is the name of an existing function: it is invoked
-with no arguments; the return value is the one of the called function.
-The existence test is performed with:
-
-@example
-type -t @var{FUNCNAME} = function
-@end example
-@end defun
-
-
-@defun mbfl_invoke_existent_script_function @var{funcname}
-Like @bfunc{mbfl_invoke_script_function}, but if the function does not
-exist: print an error message to @code{stderr} and exit with failure.
-@end defun
-
-
 @defun mbfl_main_set_main @var{funcname}
 Select the main function storing @var{funcname} into
 @code{mbfl_main_SCRIPT_FUNCTION}.
@@ -3952,6 +3958,7 @@ Select the main function storing @var{funcname} into
 
 @defvar mbfl_main_SCRIPT_FUNCTION
 Global variable that holds the name of the custom main script function.
+The default name is @code{main}.
 @end defvar
 
 
@@ -4028,6 +4035,39 @@ Exit the script with code one.
 
 @defun mbfl_main_print_exit_code @var{name}
 Print the code associated to @var{name}.
+@end defun
+
+@c page
+@node main misc
+@section Other functions
+
+
+@defun mbfl_invoke_script_function @var{funcname}
+If @var{funcname} is the name of an existing function: it is invoked
+with no arguments; the return value is the one of the called function.
+The existence test is performed with:
+
+@example
+type -t @var{FUNCNAME} = function
+@end example
+@end defun
+
+
+@defun mbfl_invoke_existent_script_function @var{funcname}
+Like @bfunc{mbfl_invoke_script_function}, but if the function does not
+exist: print an error message to @code{stderr} and exit with failure.
+@end defun
+
+
+@defun mbfl_main_print_usage_screen_long
+Print the help screen, long version.  It @strong{includes} the
+predefined command line options.
+@end defun
+
+
+@defun mbfl_main_print_usage_screen_brief
+Print the help screen, brief version.  It @strong{excludes} the
+predefined command line options.
 @end defun
 
 @c page
