@@ -1756,10 +1756,16 @@ print a message.
 
 
 @menu
+* actions intro::               Introduction to action trees.
 * actions declare::             Declaring actions and action sets.
 * actions dispatch::            Dispatching action arguments.
 * actions inspect::             Inspecting action trees.
 @end menu
+
+@c page
+@node actions intro
+@section Introduction to action trees
+
 
 @c page
 @node actions declare
@@ -1773,7 +1779,9 @@ directly.
 
 @defun mbfl_declare_action_set @var{action-set}
 Declare a new action set.  @var{action-set} must be a non--empty string
-representing the identifier of the action set.
+of characters in the ranges @samp{[A-Za-z0-9_-]}, the first being a
+letter, representing the identifier of the action set.  It is an error
+to declare the same action set twice.
 @end defun
 
 
@@ -3513,8 +3521,8 @@ characters (no accents) turned into lower case.
 
 
 @defun mbfl_string_is_alpha_char @var{char}
-Return true if @var{char} is in one of the ranges: @code{a-z},
-@code{A-Z}.
+Return true if @var{char} is in one of the ranges: @samp{[a-z]},
+@samp{[A-Z]}.
 @end defun
 
 
@@ -3534,8 +3542,8 @@ mbfl_string_is_alpha_char @var{char} || \
 
 
 @defun mbfl_string_is_noblank_char @var{char}
-Return true if @var{char} is none of the characters: @code{ },
-@code{\n}, @code{\r}, @code{\f}, @code{\t}.  @var{char} is meant to be
+Return true if @var{char} is none of the characters: @samp{ },
+@samp{\n}, @samp{\r}, @samp{\f}, @samp{\t}.  @var{char} is meant to be
 the unquoted version of the non--blank characters, the one obtained
 with:
 
@@ -3547,7 +3555,14 @@ $'char'
 
 @defun mbfl_string_is_name_char @var{char}
 Return true if @code{mbfl_string_is_alnum_char} returns true when
-applied to @var{char} or @var{char} is an underscore, @code{_}.
+applied to @var{char} or @var{char} is an underscore, @samp{_}.
+@end defun
+
+
+@defun mbfl_string_is_identifier_char @var{char}
+Return true if @code{mbfl_string_is_alnum_char} returns true when
+applied to @var{char} or @var{char} is an underscore, @samp{_}, or dash,
+@samp{-}.
 @end defun
 
 
@@ -3556,10 +3571,20 @@ applied to @var{char} or @var{char} is an underscore, @code{_}.
 @defunx mbfl_string_is_alnum @var{string}
 @defunx mbfl_string_is_noblank @var{string}
 @defunx mbfl_string_is_name @var{string}
+@defunx mbfl_string_is_identifier @var{string}
 Return true if the associated char function returns true for each
 character in @var{string}.  As additional constraint:
+
+@itemize
+@item
 @code{mbfl_string_is_name} returns false if @code{mbfl_string_is_digit}
 returns true when applied to the first character of @var{string}.
+
+@item
+@code{mbfl_string_is_identifier} returns false if
+@code{mbfl_string_is_digit} returns true when applied to the first
+character of @var{string} or the first char of @var{string} is a dash.
+@end itemize
 @end defun
 
 @c page

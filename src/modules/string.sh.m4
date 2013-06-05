@@ -137,6 +137,10 @@ function mbfl_string_is_name_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
     mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = _
 }
+function mbfl_string_is_identifier_char () {
+    mbfl_mandatory_parameter(CHAR, 1, char)
+    mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = '_' -o "${CHAR}" = '-'
+}
 function mbfl_string_is_noblank_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
     test \( "${CHAR}" != " " \) -a \
@@ -159,6 +163,12 @@ function mbfl_p_string_is () {
 function mbfl_string_is_name () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_p_string_is name "${STRING}" && ! mbfl_string_is_digit "${STRING:0:1}"
+}
+function mbfl_string_is_identifier () {
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_p_string_is identifier "${STRING}"		\
+	&& ! mbfl_string_is_digit "${STRING:0:1}"	\
+	&& ! test "${STRING:0:1}" = '-'
 }
 #PAGE
 function mbfl_string_range () {
