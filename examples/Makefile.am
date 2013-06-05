@@ -1,14 +1,18 @@
 ## Process this file with automake to produce Makefile.in
 
 EXTRA_DIST		= \
-	sendmail-connector.sh		\
-	sendmail-plain.sh		\
-	test-sendmail-gmail.sh		\
-	test-sendmail-localhost.sh	\
-	test-sendmail-poste.sh
-
-examplesdir		= $(datadir)/$(PACKAGE)/$(PACKAGE_VERSION)/examples
-dist_examples_DATA	= at.sh compress.sh template.sh
+	at.sh					\
+	compress.sh				\
+	template.sh				\
+	template-actions.sh			\
+	\
+	sendmail-connector.sh			\
+	sendmail-plain.sh			\
+	test-sendmail-gmail.sh			\
+	test-sendmail-localhost.sh		\
+	test-sendmail-poste.sh			\
+	\
+	actions-scripts/one-level-actions.sh
 
 if WANT_SENDMAIL
 
