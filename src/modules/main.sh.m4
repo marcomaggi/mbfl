@@ -131,6 +131,9 @@ test "$mbfl_INTERACTIVE" = yes || {
 
     mbfl_main_EXIT_CODES[10]=91
     mbfl_main_EXIT_NAMES[10]=invalid_function_name
+
+    mbfl_main_EXIT_CODES[11]=90
+    mbfl_main_EXIT_NAMES[11]=invalid_username
 }
 
 function exit_success () {

@@ -58,7 +58,12 @@ function mbfl_program_enable_sudo () {
 }
 function mbfl_program_declare_sudo_user () {
     mbfl_mandatory_parameter(PERSONA, 1, sudo user name)
-    mbfl_program_SUDO_USER=${PERSONA}
+    if mbfl_string_is_username "${PERSONA}"
+    then mbfl_program_SUDO_USER=${PERSONA}
+    else
+	mbfl_message_error_printf 'attempt to select invalid "sudo" user: "%s"' "${PERSONA}"
+	exit_because_invalid_username
+    fi
 }
 function mbfl_program_reset_sudo_user () {
     mbfl_program_SUDO_USER=nosudo
