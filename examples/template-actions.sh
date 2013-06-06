@@ -40,23 +40,27 @@ script_LICENSE=BSD
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
 mbfl_HARDCODED=
-mbfl_INSTALLED=$(test -x mbfl-config && mbfl-config) &>/dev/null
+mbfl_INSTALLED=$(mbfl-config) &>/dev/null
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do
-    test -n "$item" -a -f "$item" -a -r "$item" && {
-        source "$item" &>/dev/null || {
+    if test -n "$item" -a -f "$item" -a -r "$item"
+    then
+        if ! source "$item" &>/dev/null
+	then
             printf '%s error: loading MBFL file "%s"\n' \
                 "$script_PROGNAME" "$item" >&2
             exit 2
-        }
-    }
+        fi
+	break
+    fi
 done
 unset -v item
-test "$mbfl_LOADED" = yes || {
+if test "$mbfl_LOADED" != yes
+then
     printf '%s error: incorrect evaluation of MBFL\n' \
         "$script_PROGNAME" >&2
     exit 2
-}
+fi
 
 #page
 #### declaration of script actions tree
