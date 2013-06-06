@@ -48,18 +48,6 @@ function program-1.4 () {
     ! mbfl_program_exec false
 }
 
-#PAGE
-
-function program-2.1 () {
-    mbfl_program_check $BASH | dotest-output
-}
-function program-2.2 () {
-    ! mbfl_program_check 1234567asdfads &>/dev/null
-}
-function program-2.3 () {
-    ! mbfl_program_check '1234567 asdfads' &>/dev/null
-}
-
 #page
 
 function program-3.1 () {

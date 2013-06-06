@@ -26,30 +26,18 @@
 #
 
 #page
-## ------------------------------------------------------------
-## Obsolete program finding functions.
-## ------------------------------------------------------------
+#### simple finding of external programs
 
-function mbfl_program_check () {
-    local item= path=
-    for item in "$@"
-    do
-        path=$(mbfl_program_find "$item")
-        mbfl_file_is_executable "$path" || {
-            mbfl_message_error "cannot find executable '$item'"
-            return 1
-        }
-    done
-    return 0
-}
 function mbfl_program_find () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
     local item
     for item in $(type -ap "$PROGRAM")
-    do mbfl_file_is_executable "$item" && {
+    do
+	if mbfl_file_is_executable "$item"
+	then
             printf "%s\n" "$item"
             return 0
-        }
+	fi
     done
     return 0
 }

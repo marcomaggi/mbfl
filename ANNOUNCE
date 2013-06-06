@@ -37,6 +37,9 @@ Notes for revision 2.0d1
   module.  So  the selected "after  parsing options" function  is called
   before exiting.
 
+* BACKWARDS      INCOMPATIBILITY       The      deprecated      function
+  "mbfl_program_check()" has been removed.
+
 * The global variables: ARGC1, ARGV1,  ARGC, ARGV are no more read-only;
   ugly, but it allows test suites to use them.
 

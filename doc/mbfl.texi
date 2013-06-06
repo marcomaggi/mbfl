@@ -2938,15 +2938,6 @@ line of output, one for each executable file found.  The first value
 (the first line) is the one selected by this function.
 @end defun
 
-
-@defun mbfl_program_check @var{program} ?@var{program} ...?
-@strong{The use of this function is deprecated.}
-
-Check the availability of programs.  All the pathnames on the command
-line are checked: if one is not executable an error message is printed
-on stderr.  Return false if a program cannot be found, true otherwise.
-@end defun
-
 @c page
 @node program executing
 @section Executing a program
@@ -2983,8 +2974,9 @@ mbfl_program_exec ls /root
 
 Every time we execute a program with @command{sudo}: we have to select
 the user under which to execute it; if we do not do it: the internally
-registered user defaults to @code{nosudo}, which tells the function not
-to use @command{sudo}.  So the following script works as commented:
+registered user defaults to @code{nosudo}, which tells the function
+@strong{not} to use @command{sudo}.  So the following script works as
+commented:
 
 @example
 mbfl_program_enable_sudo
@@ -3035,7 +3027,7 @@ command line as:
 
 @noindent
 additionally: set the global variable @code{mbfl_program_BGPID} to the
-process id of the background process; that is: @code{mbfl_program_BGPID}
+process ID of the background process; that is: @code{mbfl_program_BGPID}
 is the value of @code{$!} right after the process execution.
 
 Using this function is different from calling:
@@ -3161,7 +3153,7 @@ program at the time of its execution is a fatal error.  So if we need to
 execute a program and the executable is not there, the script must be
 aborted on the spot.
 
-Functions are available to test the availability of a program, so we can
+Functions are provided to test the availability of a program, so we can
 try to locate an alternative or terminate the process under the script
 control.  On a system where executables may vanish from one moment to
 another, no matter how we test a program's existence, there's always the
