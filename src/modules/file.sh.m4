@@ -955,6 +955,20 @@ function mbfl_p_file_compress_bzip () {
     fi
 }
 
+#page
+#### interface to "stat"
+
+function mbfl_file_enable_stat () {
+    mbfl_declare_program stat
+}
+function mbfl_file_stat () {
+    local STAT FLAGS
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    STAT=$(mbfl_program_found stat) || exit $?
+    mbfl_program_exec "${STAT}" ${FLAGS} "$@"
+}
+
+
 ### end of file
 # Local Variables:
 # mode: sh

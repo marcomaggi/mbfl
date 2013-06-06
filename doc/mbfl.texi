@@ -1102,6 +1102,7 @@ false otherwise.
 * file commands tar::           Manipulating tar archives.
 * file commands perms::         Set/get file permissions.
 * file commands compress::      Compressing files.
+* file commands stat::          Inspecting files and directories.
 @end menu
 
 @c page
@@ -1572,6 +1573,39 @@ compressor program.
 @defun mbfl_file_decompress @var{PATHNAME} ?@dots{}?
 Decompress @var{PATHNAME}, a file pathname, with the currently selected
 compressor program.
+@end defun
+
+@c page
+@node file commands stat
+@subsection Inspecting files and directories
+
+
+The @gnu{} Coreutils package comes with a command line program
+@command{stat} which implements advanced inspection of file and
+directory status.  @xref{stat invocation, stat, Report file or file
+system status, coreutils}.
+
+
+@defun mbfl_file_enable_stat
+Declare the intention to use the program @command{stat}.
+@end defun
+
+
+@defun mbfl_file_stat @var{pathname} @var{arg} @dots{}
+Execute @command{stat} with @var{pathname} as first argument and
+@var{arg} as other arguments.
+
+@example
+mbfl_file_enable_stat
+
+mbfl_file_stat /bin/ls --format='%F'
+@result{} 0
+@print{} regular
+
+mbfl_file_stat /bin --format='%F'
+@result{} 0
+@print{} directory
+@end example
 @end defun
 
 @c page

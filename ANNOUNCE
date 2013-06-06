@@ -43,6 +43,7 @@ Notes for revision 2.0d1
 * The global variables: ARGC1, ARGV1,  ARGC, ARGV are no more read-only;
   ugly, but it allows test suites to use them.
 
+* Started interface to "stat" from GNU Coreutils.
 
 
 ### end of file

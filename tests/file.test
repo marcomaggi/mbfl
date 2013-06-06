@@ -627,6 +627,25 @@ function file-copy-2.1 () {
     dotest-clean-files
 }
 
+#page
+
+function file-stat-1.1 () {
+    local PATHNAME=$(dotest-mkfile file.ext)
+    local RESULT
+    mbfl_file_enable_stat
+    RESULT=$(mbfl_file_stat "${PATHNAME}" --format='%F')
+    dotest-equal 0 $? && dotest-equal regular $RESULT
+    dotest-clean-files
+}
+function file-stat-1.2 () {
+    local PATHNAME=/bin
+    local RESULT
+    mbfl_file_enable_stat
+    RESULT=$(mbfl_file_stat "${PATHNAME}" --format='%F')
+    dotest-equal 0 $? && dotest-equal directory $RESULT
+    dotest-clean-files
+}
+
 #PAGE
 
 dotest file-
