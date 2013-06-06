@@ -9,7 +9,7 @@
 #	This is the library file of MBFL. It must be sourced in shell
 #	scripts at the beginning of evaluation.
 #
-# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -41,13 +41,13 @@ mbfl_LOADED='yes'
 : ${script_DESCRIPTION:='<unknown>'}
 : ${script_EXAMPLES:=}
 function mbfl_set_maybe () {
-test -n "${1}" && eval ${1}=\'"${2}"\'
+test -n "$1" && eval $1=\'"$2"\'
 }
 function mbfl_read_maybe_null () {
 local VARNAME=${1:?"missing variable name parameter to '${FUNCNAME}'"}
 if mbfl_option_null
-then IFS= read -d $'\x00' $VARNAME
-else IFS= read $VARNAME
+then IFS= read -rs -d $'\x00' $VARNAME
+else IFS= read -rs $VARNAME
 fi
 }
 function mbfl_set_option_test ()   { function mbfl_option_test () { true;  }; }
@@ -79,21 +79,25 @@ mbfl_option_test && mbfl_save_option_TEST=yes
 mbfl_unset_option_test
 }
 function mbfl_option_test_restore () {
-test "${mbfl_save_option_TEST}" = "yes" && mbfl_set_option_test
+test "$mbfl_save_option_TEST" = "yes" && mbfl_set_option_test
 }
 
 function mbfl_string_chars () {
 local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
 local i j ch
-for ((i=0, j=0; $i < "${#STRING}"; ++i, ++j))
+for ((i=0, j=0; $i < ${#STRING}; ++i, ++j))
 do
-ch=
-test "${STRING:$i:1}" = \\ && {
-test $i != "${#STRING}" && ch=\\
+ch=${STRING:$i:1}
+if test "$ch" != $'\\'
+then SPLITFIELD[$j]=$ch
+else
 let ++i
-}
-SPLITFIELD[$j]="${ch}${STRING:$i:1}"
-ch=
+if test $i != "${#STRING}"
+then SPLITFIELD[$j]=${ch}${STRING:$i:1}
+else
+SPLITFIELD[$j]=$ch
+fi
+fi
 done
 SPLITCOUNT=$j
 return 0
@@ -178,6 +182,10 @@ function mbfl_string_is_name_char () {
 local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
 mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = _
 }
+function mbfl_string_is_identifier_char () {
+local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
+mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = '_' -o "${CHAR}" = '-'
+}
 function mbfl_string_is_noblank_char () {
 local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
 test \( "${CHAR}" != " " \) -a \
@@ -200,6 +208,16 @@ return 0
 function mbfl_string_is_name () {
 local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
 mbfl_p_string_is name "${STRING}" && ! mbfl_string_is_digit "${STRING:0:1}"
+}
+function mbfl_string_is_identifier () {
+local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
+mbfl_p_string_is identifier "${STRING}"		\
+&& ! mbfl_string_is_digit "${STRING:0:1}"	\
+&& ! test "${STRING:0:1}" = '-'
+}
+function mbfl_string_is_username () {
+local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
+mbfl_string_is_identifier "${STRING}"
 }
 function mbfl_string_range () {
 local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
@@ -1110,14 +1128,127 @@ fi
 }
 
 test "$mbfl_INTERACTIVE" = yes || {
-declare -i ARGC=0
-declare -a ARGV ARGV1
-for ((ARGC1=0; $# > 0; ++ARGC1))
+declare -A mbfl_action_sets_EXISTS
+declare -A mbfl_action_sets_SUBSETS
+declare -A mbfl_action_sets_KEYWORDS
+declare -A mbfl_action_sets_DESCRIPTIONS
+declare -A mbfl_action_sets_IDENTIFIERS
+declare mbfl_action_sets_SELECTED_SET=MAIN
+}
+function mbfl_declare_action_set () {
+local ACTION_SET=${1:?"missing action set parameter to '${FUNCNAME}'"}
+if mbfl_string_is_name "$ACTION_SET"
+then
+if test -z "${mbfl_action_sets_EXISTS[${ACTION_SET}]}"
+then mbfl_action_sets_EXISTS[${ACTION_SET}]=yes
+else
+mbfl_message_error "action set declared twice: \"$ACTION_SET\""
+# exit_because_invalid_action_declaration
+exit 96
+fi
+else
+mbfl_message_error "invalid action set identifier: \"$ACTION_SET\""
+exit 96
+fi
+}
+function mbfl_declare_action () {
+local ACTION_SET=${1:?"missing action set parameter to '${FUNCNAME}'"}
+local ACTION_KEYWORD=${2:?"missing keyword parameter to '${FUNCNAME}'"}
+local ACTION_SUBSET=${3:?"missing subset parameter to '${FUNCNAME}'"}
+local ACTION_IDENTIFIER=${4:?"missing identifier parameter to '${FUNCNAME}'"}
+local ACTION_DESCRIPTION=${5:?"missing description parameter to '${FUNCNAME}'"}
+local KEY="${ACTION_SET}-${ACTION_IDENTIFIER}"
+if ! mbfl_string_is_identifier "$ACTION_IDENTIFIER"
+then
+mbfl_message_error "internal error: invalid action identifier: $ACTION_IDENTIFIER"
+exit_because_invalid_action_declaration
+fi
+if mbfl_string_is_name "$ACTION_KEYWORD"
+then mbfl_action_sets_KEYWORDS[${KEY}]=${ACTION_KEYWORD}
+else
+mbfl_message_error "internal error: invalid keyword for action \"$ACTION_IDENTIFIER\": \"$ACTION_KEYWORD\""
+exit_because_invalid_action_declaration
+fi
+if mbfl_actions_set_exists_or_none "$ACTION_SUBSET"
+then mbfl_action_sets_SUBSETS[${KEY}]=$ACTION_SUBSET
+else
+mbfl_message_error \
+"internal error: invalid or non-existent action subset identifier for action \"$ACTION_IDENTIFIER\": \"$ACTION_SUBSET\""
+exit_because_invalid_action_declaration
+fi
+mbfl_action_sets_DESCRIPTIONS[${KEY}]=$ACTION_DESCRIPTION
+mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]="${mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]} ${ACTION_IDENTIFIER}"
+return 0
+}
+function mbfl_actions_set_exists () {
+local ACTION_SET=${1:?"missing action set parameter to '${FUNCNAME}'"}
+mbfl_string_is_name "$ACTION_SET" \
+&& test "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" \
+-a "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" = yes
+}
+function mbfl_actions_set_exists_or_none () {
+local ACTION_SET=${1:?"missing action set parameter to '${FUNCNAME}'"}
+mbfl_string_is_name "$ACTION_SET" && \
+test "$ACTION_SET" = NONE \
+-o \( "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" -a "${mbfl_action_sets_EXISTS[${ACTION_SET}]}" = yes \)
+}
+function mbfl_actions_dispatch () {
+local ACTION_SET=${1:?"missing action set parameter to '${FUNCNAME}'"}
+if ! mbfl_actions_set_exists "${ACTION_SET}"
+then
+mbfl_message_error "invalid action identifier: \"${ACTION_SET}\""
+return 1
+fi
+if test $ARG1ST = $ARGC1
+then return 0
+fi
+local IDENTIFIER=${ARGV1[$ARG1ST]}
+local KEY="${ACTION_SET}-${IDENTIFIER}"
+local ACTION_SUBSET=${mbfl_action_sets_SUBSETS[${KEY}]}
+local ACTION_KEYWORD=${mbfl_action_sets_KEYWORDS[${KEY}]}
+if test -z "${ACTION_KEYWORD}"
+then
+return 0
+else
+let ++ARG1ST
+mbfl_main_set_before_parsing_options "script_before_parsing_options_$ACTION_KEYWORD"
+mbfl_main_set_after_parsing_options  "script_after_parsing_options_$ACTION_KEYWORD"
+mbfl_main_set_main "script_action_$ACTION_KEYWORD"
+mbfl_action_sets_SELECTED_SET=$ACTION_SUBSET
+if test "${ACTION_SUBSET}" != NONE
+then
+mbfl_actions_dispatch "${ACTION_SUBSET}"
+else
+return 0
+fi
+fi
+}
+function mbfl_actions_fake_action_set () {
+local ACTION_SET=${1:?"missing action set parameter to '${FUNCNAME}'"}
+if mbfl_actions_set_exists "$ACTION_SET"
+then
+mbfl_action_sets_SELECTED_SET=$ACTION_SET
+return 0
+else return 1
+fi
+}
+function mbfl_actions_print_usage_screen () {
+local ACTION_SET=$mbfl_action_sets_SELECTED_SET
+if test -n "$ACTION_SET" -a "$ACTION_SET" != NONE
+then
+printf 'Action commands:\n\n'
+local ACTION_IDENTIFIER KEY
+for ACTION_IDENTIFIER in ${mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]}
 do
-ARGV1[$ARGC1]=$1
-shift
+KEY="${ACTION_SET}-${ACTION_IDENTIFIER}"
+printf '\t%s [options] [arguments]\n\t\t%s\n\n' \
+"${ACTION_IDENTIFIER}" "${mbfl_action_sets_DESCRIPTIONS[${KEY}]}"
 done
-declare -r ARGC1 ARGV1
+fi
+return 0
+}
+
+test "$mbfl_INTERACTIVE" = yes || {
 declare -i mbfl_getopts_INDEX=0
 declare -a mbfl_getopts_KEYWORDS
 declare -a mbfl_getopts_DEFAULTS
@@ -1125,11 +1256,6 @@ declare -a mbfl_getopts_BRIEFS
 declare -a mbfl_getopts_LONGS
 declare -a mbfl_getopts_HASARG
 declare -a mbfl_getopts_DESCRIPTION
-declare -i mbfl_getopts_actargs_INDEX=0
-declare -a mbfl_getopts_actargs_KEYWORDS
-declare -a mbfl_getopts_actargs_STRINGS
-declare -a mbfl_getopts_actargs_SKIPOPTS
-declare -a mbfl_getopts_actargs_DESCRIPTION
 }
 test "$mbfl_INTERACTIVE" = yes || {
 mbfl_message_DEFAULT_OPTIONS="
@@ -1172,8 +1298,6 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\tprint license informations and exit
 \t--print-options
 \t\tprint a list of long option switches
-\t--print-action-arguments
-\t\tprint a list of action arguments
 \t-h --help --usage
 \t\tprint usage informations and exit
 \t-H --brief-help --brief-usage
@@ -1197,110 +1321,73 @@ mbfl_p_declare_option_test_length $hasarg hasarg $index
 test "$hasarg" != witharg -a "$hasarg" != noarg && {
 mbfl_message_error \
 "wrong value '$hasarg' to hasarg field in option declaration number $index"
-exit 2
+exit_because_invalid_option_declaration
 }
 mbfl_getopts_HASARG[$mbfl_getopts_INDEX]=$hasarg
 test "$hasarg" = noarg -a "$default" != yes -a "$default" != no && {
 mbfl_message_error \
 "wrong value '$default' as default for option with no argument number $index"
-exit 2
+exit_because_invalid_option_declaration
 }
 mbfl_getopts_DEFAULTS[$mbfl_getopts_INDEX]=$default
 mbfl_p_declare_option_test_length $description description $index
 mbfl_getopts_DESCRIPTION[$mbfl_getopts_INDEX]=$description
 mbfl_getopts_INDEX=$index
 eval script_option_$(mbfl_string_toupper $keyword)=\'"$default"\'
-test ${keyword:0:7} = ACTION_ && {
+if test ${keyword:0:7} = ACTION_
+then
 if test "${hasarg}" = noarg
-then test "${default}" = yes && \
-mbfl_main_set_main script_$(mbfl_string_tolower $keyword)
-else mbfl_message_error "action option must be with no argument '$keyword'"
+then
+if test "${default}" = yes
+then mbfl_main_set_main script_$(mbfl_string_tolower $keyword)
 fi
-}
+else
+mbfl_message_error "action option must be with no argument '$keyword'"
+return 1
+fi
+fi
+return 0
 }
 function mbfl_p_declare_option_test_length () {
 local value=$1
 local value_name=$2
 local option_number=$3
-test -z "$value" && {
-mbfl_message_error "null $value_name in declared option number $option_number"
-exit 2
-}
-}
-function mbfl_declare_action_argument () {
-local keyword=${1:?"missing keyword parameter to '${FUNCNAME}'"}
-local argument=${2:?"missing identifier parameter to '${FUNCNAME}'"}
-local selected=${3:?"missing selection parameter to '${FUNCNAME}'"}
-local skipopts=${4:?"missing skip options parameter to '${FUNCNAME}'"}
-local description=${5:?"missing description parameter to '${FUNCNAME}'"}
-local index=$(($mbfl_getopts_actargs_INDEX + 1))
-test -z "$keyword" && {
-mbfl_message_error "null keyword in declared action argument number $index"
-exit 2
-}
-mbfl_getopts_actargs_KEYWORDS[$mbfl_getopts_actargs_INDEX]="$keyword"
-mbfl_getopts_is_action_argument "${argument}" || {
-mbfl_message_error "wrong value '$argument' as keyword for action argument number $index"
-exit 2
-}
-mbfl_getopts_actargs_STRINGS[$mbfl_getopts_actargs_INDEX]="$argument"
-test "$selected" != yes -a "$selected" != no && {
-mbfl_message_error \
-"wrong value '$selected' as selection for action argument number $index"
-exit 2
-}
-test "$skipopts" != yes -a "$skipopts" != no && {
-mbfl_message_error \
-"wrong value '$skipopts' as skip options flag for action argument number $index"
-exit 2
-}
-mbfl_getopts_actargs_SKIPOPTS[$mbfl_getopts_actargs_INDEX]="$skipopts"
-test -z "$description" && {
-mbfl_message_error "null description in declared action argument number $index"
-exit 2
-}
-mbfl_getopts_actargs_DESCRIPTION[$mbfl_getopts_actargs_INDEX]=$description
-mbfl_getopts_actargs_INDEX=$index
-test "$selected" = yes && mbfl_main_set_main script_action_$keyword
-return 0
-}
-function mbfl_getopts_parse () {
-local p_OPT= p_OPTARG= argument= i=0 j=0
-local found_end_of_options_delimiter=0
-test -n "${ARGV1[0]}" && mbfl_getopts_is_action_argument "${ARGV1[0]}" && {
-for ((j=0; $j < $mbfl_getopts_actargs_INDEX; ++j))
-do
-test "${ARGV1[0]}" = "${mbfl_getopts_actargs_STRINGS[$j]}" && {
-mbfl_main_set_main script_action_"${mbfl_getopts_actargs_KEYWORDS[$j]}"
-i=1
-if test "${mbfl_getopts_actargs_SKIPOPTS[$j]}" = yes
+if test -z "$value"
 then
-ARGC=$((${ARGC1}-1))
-for ((i=$i; $i < $ARGC1; ++i))
-do ARGV[$i]=${ARGV1[$i]}
-done
-return 0
-else break
+mbfl_message_error "null $value_name in declared option number $option_number"
+exit_because_invalid_option_declaration
 fi
 }
-done
-}
-for ((i=$i; $i < $ARGC1; ++i)); do
+function mbfl_getopts_parse () {
+local p_OPT= p_OPTARG= argument= i
+local found_end_of_options_delimiter=0 retval
+for ((i=${ARG1ST}; $i < ${ARGC1}; ++i))
+do
 argument="${ARGV1[$i]}"
-if test "$found_end_of_options_delimiter" = 1 ; then
+if test "$found_end_of_options_delimiter" = 1
+then
 ARGV[$ARGC]="${argument}"
 let ++ARGC
-elif test "${argument}" = '--' ; then
-found_end_of_options_delimiter=1
-elif mbfl_getopts_isbrief "${argument}" p_OPT || \
-mbfl_getopts_islong "${argument}" p_OPT
+elif test "${argument}" = '--'
+then found_end_of_options_delimiter=1
+elif \
+mbfl_getopts_isbrief "${argument}" p_OPT || \
+mbfl_getopts_islong  "${argument}" p_OPT
 then
 mbfl_getopts_p_process_predefined_option_no_arg "${p_OPT}"
+retval=$?
+if test $retval != 0
+then return $retval
+fi
 elif \
 mbfl_getopts_isbrief_with "${argument}" p_OPT p_OPTARG || \
 mbfl_getopts_islong_with  "${argument}" p_OPT p_OPTARG
 then
 mbfl_getopts_p_process_predefined_option_with_arg "${p_OPT}" "${p_OPTARG}"
+retval=$?
+if test $retval != 0
+then return $retval
+fi
 else
 test $i = 0 && found_possible_action_argument=1
 ARGV[$ARGC]="${argument}"
@@ -1312,7 +1399,6 @@ for ((i=0; $i < $ARGC; ++i))
 do ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
 done
 }
-declare -r ARGC ARGV
 return 0
 }
 function mbfl_getopts_p_process_script_option () {
@@ -1325,10 +1411,16 @@ keyword="${mbfl_getopts_KEYWORDS[$i]}"
 brief="${mbfl_getopts_BRIEFS[$i]}"
 long="${mbfl_getopts_LONGS[$i]}"
 hasarg="${mbfl_getopts_HASARG[$i]}"
-test \( -n "$OPT" \) -a \( \( -n "$brief" -a "$brief" = "$OPT" \) -o \
+test \( -n "$OPT" \) -a \
+\( \( -n "$brief" -a "$brief" = "$OPT" \) -o \
 \( -n "$long"  -a "$long"  = "$OPT" \) \) && {
 if test "$hasarg" = "witharg"
 then
+if test -z "$OPTARG"
+then
+mbfl_message_error "expected non-empty argument for option: \"$OPT\""
+return 1
+fi
 if mbfl_option_encoded_args
 then value=$(mbfl_decode_hex "${OPTARG}")
 else value="$OPTARG"
@@ -1345,10 +1437,12 @@ mbfl_invoke_script_function ${update_procedure}
 return 0
 }
 done
+mbfl_message_error "unknown option \"${OPT}\""
 return 1
 }
 function mbfl_getopts_p_process_predefined_option_no_arg () {
-local OPT="${1:?}" i=0
+local OPT=${1:?"missing option name parameter to '${FUNCNAME}'"}
+local i=0
 case "${OPT}" in
 encoded-args)
 mbfl_set_option_encoded_args
@@ -1386,68 +1480,41 @@ validate-programs)
 mbfl_main_set_private_main mbfl_program_main_validate_programs
 ;;
 list-exit-codes)
-mbfl_main_list_exit_codes
-exit 0
+mbfl_main_set_private_main mbfl_main_list_exit_codes
 ;;
 version)
-echo -e "${mbfl_message_VERSION}"
-exit 0
+mbfl_main_set_private_main mbfl_main_print_version_number
 ;;
 version-only)
-echo -e "${script_VERSION}"
-exit 0
+mbfl_main_set_private_main mbfl_main_print_version_number_only
 ;;
 license)
-case "${script_LICENSE}" in
-GPL|GPL2)
-echo -e "${mbfl_message_LICENSE_GPL}"
-;;
-GPL3)
-echo -e "${mbfl_message_LICENSE_GPL3}"
-;;
-LGPL|LGPL2)
-echo -e "${mbfl_message_LICENSE_LGPL}"
-;;
-LGPL3)
-echo -e "${mbfl_message_LICENSE_LGPL3}"
-;;
-BSD)
-echo -e "${mbfl_message_LICENSE_BSD}"
-;;
-*)
-mbfl_message_error "unknown license: \"${script_LICENSE}\""
-exit 2
-;;
-esac
-exit 0
+mbfl_main_set_private_main mbfl_main_print_license
 ;;
 h|help|usage)
-mbfl_getopts_print_usage_screen long
-exit 0
+mbfl_main_set_private_main mbfl_main_print_usage_screen_long
 ;;
 H|brief-help|brief-usage)
-mbfl_getopts_print_usage_screen brief
-exit 0
+mbfl_main_set_private_main mbfl_main_print_usage_screen_brief
 ;;
 print-options)
-mbfl_getopts_print_long_switches
-exit 0
-;;
-print-action-arguments)
-mbfl_getopts_print_action_arguments
-exit 0
+mbfl_main_set_private_main mbfl_getopts_print_long_switches
 ;;
 *)
-mbfl_getopts_p_process_script_option "${OPT}" || {
-mbfl_message_error "unknown option: '${OPT}'"
-exit 2
-}
+mbfl_getopts_p_process_script_option "${OPT}"
+return $?
 ;;
 esac
 return 0
 }
 function mbfl_getopts_p_process_predefined_option_with_arg () {
-local OPT="${1:?}" OPTARG="${2:?}"
+local OPT=${1:?"missing option name parameter to '${FUNCNAME}'"}
+local OPTARG=${2:?"missing option argument parameter to '${FUNCNAME}'"}
+if test -z "$OPTARG"
+then
+mbfl_message_error "empty value given to option \"${OPT}\" requiring argument"
+exit_because_invalid_option_argument
+fi
 mbfl_option_encoded_args && OPTARG=$(mbfl_decode_hex "${OPTARG}")
 case "${OPT}" in
 tmpdir)
@@ -1462,10 +1529,8 @@ mbfl_main_print_exit_code_names "${OPTARG}"
 exit 0
 ;;
 *)
-mbfl_getopts_p_process_script_option "${OPT}" "${OPTARG}" || {
-mbfl_message_error "unknown option \"${OPT}\""
-exit 2
-}
+mbfl_getopts_p_process_script_option "${OPT}" "${OPTARG}"
+return $?
 ;;
 esac
 return 0
@@ -1473,18 +1538,10 @@ return 0
 function mbfl_getopts_print_usage_screen () {
 local BRIEF_OR_LONG=${1:?"missing brief or long selection parameter to '${FUNCNAME}'"}
 local i=0 item brief long description long_hasarg long_hasarg default
-printf '%s\n' "${script_USAGE}"
-test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n"
-test $mbfl_getopts_actargs_INDEX != 0 && {
-printf 'actions:\n'
-for ((i=0; $i < $mbfl_getopts_actargs_INDEX; ++i))
-do printf '\t%s %s [options] [-- [other-args]]\n\t\t%s\n\n' \
-"${script_PROGNAME}" "${mbfl_getopts_actargs_STRINGS[$i]}" \
-"${mbfl_getopts_actargs_DESCRIPTION[$i]}"
-done
-}
-test $mbfl_getopts_INDEX != 0 -o ${BRIEF_OR_LONG} = long && printf 'options:\n'
-test $mbfl_getopts_INDEX != 0 && {
+printf 'Options:\n'
+if test $mbfl_getopts_INDEX = 0
+then printf '\tNo script-specific options.\n'
+else
 for ((i=0; $i < $mbfl_getopts_INDEX; ++i))
 do
 if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
@@ -1513,16 +1570,22 @@ else default='empty'
 fi
 printf '\t\t(default: %s)\n' "${default}"
 else
-test ${mbfl_getopts_KEYWORDS[$i]:0:7} = ACTION_ && {
+if test ${mbfl_getopts_KEYWORDS[$i]:0:7} = ACTION_
+then
 if test "${mbfl_getopts_DEFAULTS[$i]}" = 'yes'
 then printf '\t\t(default action)\n'
 fi
-}
+fi
 fi
 done
-}
-test ${BRIEF_OR_LONG} = long && printf "${mbfl_message_DEFAULT_OPTIONS}"
-test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+fi
+printf '\n'
+if test ${BRIEF_OR_LONG} = long
+then
+printf 'Common options:\n'
+printf "${mbfl_message_DEFAULT_OPTIONS}"
+printf '\n'
+fi
 }
 function mbfl_getopts_islong () {
 local ARGUMENT=${1:?"missing argument parameter to '${FUNCNAME}'"}
@@ -1586,30 +1649,6 @@ test \
 \( "$1" \< a -o z \< "$1" \) -a \
 \( "$1" \< 0 -o 9 \< "$1" \)
 }
-function mbfl_getopts_is_action_argument () {
-local ARGUMENT=${1:?"missing command line argument parameter to '${FUNCNAME}'"}
-local len="${#ARGUMENT}" i ch
-ch="${ARGUMENT:0:1}"
-mbfl_p_getopts_not_first_char_in_action_argument_name "$ch" && return 1
-for ((i=1; $i < $len; ++i))
-do
-ch="${ARGUMENT:$i:1}"
-mbfl_p_getopts_not_char_in_action_argument_name "$ch" && return 1
-done
-return 0
-}
-function mbfl_p_getopts_not_first_char_in_action_argument_name () {
-test \
-\( "$1" \< A -o Z \< "$1" \) -a \
-\( "$1" \< a -o z \< "$1" \)
-}
-function mbfl_p_getopts_not_char_in_action_argument_name () {
-test \
-\( "$1" \< A -o Z \< "$1" \) -a \
-\( "$1" \< a -o z \< "$1" \) -a \
-\( "$1" \< 0 -o 9 \< "$1" \) -a \
-\( "$1" != '-' \)
-}
 function mbfl_wrong_num_args () {
 local required=${1:?"missing required number of args parameter to '${FUNCNAME}'"}
 local argc=${2:?"missing given number of args parameter to '${FUNCNAME}'"}
@@ -1670,23 +1709,9 @@ done
 echo
 return 0
 }
-function mbfl_getopts_print_action_arguments () {
-local i=0 argument
-for ((i=0; $i < ${mbfl_getopts_actargs_INDEX}; ++i))
-do
-argument="${mbfl_getopts_actargs_STRINGS[$i]}"
-if test -n "${argument}"
-then echo -n "${argument}"
-else continue
-fi
-test $(($i+1)) -lt ${mbfl_getopts_actargs_INDEX} && echo -n ' '
-done
-echo
-return 0
-}
 
 mbfl_message_PROGNAME=$script_PROGNAME
-mbfl_message_CHANNEL="2"
+mbfl_message_CHANNEL=2
 function mbfl_message_set_progname () {
 mbfl_message_PROGNAME=${1:?$FUNCNAME error: missing program name argument}
 }
@@ -1711,39 +1736,62 @@ function mbfl_message_verbose_end () {
 mbfl_option_verbose && mbfl_message_p_print $FUNCNAME "$1\n"
 return 0
 }
+function mbfl_message_verbose_printf () {
+mbfl_option_verbose && {
+printf '%s: ' "$mbfl_message_PROGNAME" >&$mbfl_message_CHANNEL
+printf "$@" >&$mbfl_message_CHANNEL
+}
+return 0
+}
 function mbfl_message_debug () {
 mbfl_option_debug && mbfl_message_p_print_prefix $FUNCNAME "debug: $1\n"
+return 0
+}
+function mbfl_message_debug_printf () {
+mbfl_option_debug && {
+{
+printf '%s: debug: ' "$mbfl_message_PROGNAME"
+printf "$@"
+echo
+} >&$mbfl_message_CHANNEL
+}
 return 0
 }
 function mbfl_message_warning () {
 mbfl_message_p_print_prefix $FUNCNAME "warning: $1\n"
 return 0
 }
+function mbfl_message_warning_printf () {
+{
+printf '%s: warning: ' "$mbfl_message_PROGNAME"
+printf "$@"
+echo
+} >&$mbfl_message_CHANNEL
+return 0
+}
 function mbfl_message_error () {
 mbfl_message_p_print_prefix $FUNCNAME "error: $1\n"
 return 0
 }
-
-function mbfl_program_check () {
-local item= path=
-for item in "$@"
-do
-path=$(mbfl_program_find "$item")
-mbfl_file_is_executable "$path" || {
-mbfl_message_error "cannot find executable '$item'"
-return 1
-}
-done
+function mbfl_message_error_printf () {
+{
+printf '%s: error: ' "$mbfl_message_PROGNAME"
+printf "$@"
+echo
+} >&$mbfl_message_CHANNEL
 return 0
 }
+
 function mbfl_program_find () {
 local PROGRAM=${1:?"missing program parameter to '${FUNCNAME}'"}
 local item
 for item in $(type -ap "$PROGRAM")
-do mbfl_file_is_executable "$item" && {
+do
+if mbfl_file_is_executable "$item"
+then
 printf "%s\n" "$item"
 return 0
-}
+fi
 done
 return 0
 }
@@ -1757,7 +1805,12 @@ mbfl_declare_program whoami
 }
 function mbfl_program_declare_sudo_user () {
 local PERSONA=${1:?"missing sudo user name parameter to '${FUNCNAME}'"}
-mbfl_program_SUDO_USER=${PERSONA}
+if mbfl_string_is_username "${PERSONA}"
+then mbfl_program_SUDO_USER=${PERSONA}
+else
+mbfl_message_error_printf 'attempt to select invalid "sudo" user: "%s"' "${PERSONA}"
+exit_because_invalid_username
+fi
 }
 function mbfl_program_reset_sudo_user () {
 mbfl_program_SUDO_USER=nosudo
@@ -1830,14 +1883,14 @@ if test "$USE_SUDO" = yes
 then
 test "$PERSONA" = $("$WHOAMI") || {
 if test "$STDERR_TO_STDOUT" = yes
-then "$SUDO" -u "$PERSONA" "$@" <$INCHAN >$OUCHAN 2>&1 &
+then "$SUDO" -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN &
 else "$SUDO" -u "$PERSONA" "$@" <$INCHAN >$OUCHAN &
 fi
 mbfl_program_BGPID=$!
 }
 else
 if test "$STDERR_TO_STDOUT" = yes
-then "$@" <$INCHAN >$OUCHAN 2>&1 &
+then "$@" <$INCHAN 2>&1 >$OUCHAN &
 else "$@" <$INCHAN >$OUCHAN &
 fi
 mbfl_program_BGPID=$!
@@ -1883,15 +1936,17 @@ return $retval
 function mbfl_program_found () {
 local PROGRAM=${1:?"missing program name parameter to '${FUNCNAME}'"}
 local number_of_programs=${#mbfl_program_NAMES[@]} i=
-test "$PROGRAM" = : || {
+if test "$PROGRAM" != :
+then
 for ((i=0; $i < ${number_of_programs}; ++i))
 do
-test "${mbfl_program_NAMES[$i]}" = "$PROGRAM" && {
+if test "${mbfl_program_NAMES[$i]}" = "$PROGRAM"
+then
 echo "${mbfl_program_PATHS[$i]}"
 return 0
-}
+fi
 done
-}
+fi
 mbfl_message_error "executable not found '$PROGRAM'"
 exit_because_program_not_found
 }
@@ -1910,7 +1965,7 @@ local SIGSPEC=${1:?"missing signal name parameter to '${FUNCNAME}'"}
 local i name
 for ((i=0; $i < $mbfl_signal_MAX_SIGNUM; ++i))
 do
-test "SIG$(kill -l $i)" = "${SIGSPEC}" && {
+test "SIG$(kill -l $i)" = "$SIGSPEC" && {
 echo $i
 return 0
 }
@@ -1921,24 +1976,24 @@ function mbfl_signal_attach () {
 local SIGSPEC=${1:?"missing signal name parameter to '${FUNCNAME}'"}
 local HANDLER=${2:?"missing function name parameter to '${FUNCNAME}'"}
 local signum
-signum=$(mbfl_signal_map_signame_to_signum "${SIGSPEC}") || return 1
-if test -z ${mbfl_signal_HANDLERS[${signum}]}
-then mbfl_signal_HANDLERS[${signum}]=${HANDLER}
-else mbfl_signal_HANDLERS[${signum}]="${mbfl_signal_HANDLERS[${signum}]}:${HANDLER}"
+signum=$(mbfl_signal_map_signame_to_signum "$SIGSPEC") || return 1
+if test -z ${mbfl_signal_HANDLERS[$signum]}
+then mbfl_signal_HANDLERS[$signum]=$HANDLER
+else mbfl_signal_HANDLERS[$signum]="${mbfl_signal_HANDLERS[$signum]}:$HANDLER"
 fi
-mbfl_message_debug "attached '$HANDLER' to signal ${SIGSPEC}"
-trap -- "mbfl_signal_invoke_handlers ${signum}" ${signum}
+mbfl_message_debug "attached '$HANDLER' to signal $SIGSPEC"
+trap -- "mbfl_signal_invoke_handlers $signum" $signum
 }
 function mbfl_signal_invoke_handlers () {
 local SIGNUM=${1:?"missing signal number parameter to '${FUNCNAME}'"}
 local handler ORGIFS="$IFS"
-mbfl_message_debug "received signal 'SIG$(kill -l ${SIGNUM})'"
+mbfl_message_debug "received signal 'SIG$(kill -l $SIGNUM)'"
 IFS=:
 for handler in ${mbfl_signal_HANDLERS[$SIGNUM]}
 do
 IFS="$ORGIFS"
-mbfl_message_debug "registered handler: ${handler}"
-test -n "${handler}" && eval ${handler}
+mbfl_message_debug "registered handler: $handler"
+test -n "$handler" && eval $handler
 done
 IFS="$ORGIFS"
 return 0
@@ -1947,8 +2002,8 @@ return 0
 function mbfl_variable_find_in_array () {
 local ELEMENT=${1:?"missing element parameter parameter to '${FUNCNAME}'"}
 declare -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
-for ((i=0; $i < ${ARRAY_DIM}; ++i))
-do test "${mbfl_FIELDS[$i]}" = "${ELEMENT}" && { printf "$i\n"; return 0; }
+for ((i=0; $i < $ARRAY_DIM; ++i))
+do test "${mbfl_FIELDS[$i]}" = "$ELEMENT" && { printf "$i\n"; return 0; }
 done
 return 1
 }
@@ -1958,20 +2013,20 @@ pos=$(mbfl_variable_find_in_array "$@")
 }
 function mbfl_variable_colon_variable_to_array () {
 local COLON_VARIABLE=${1:?"missing colon variable parameter to '${FUNCNAME}'"}
-local ORGIFS="${IFS}"
+local ORGIFS="$IFS"
 IFS=: mbfl_FIELDS=(${!COLON_VARIABLE})
-IFS="${ORGIFS}"
+IFS="$ORGIFS"
 return 0
 }
 function mbfl_variable_array_to_colon_variable () {
 local COLON_VARIABLE=${1:?"missing colon variable parameter to '${FUNCNAME}'"}
 declare -i i dimension=${#mbfl_FIELDS[*]}
-if test ${dimension} = 0
-then eval ${COLON_VARIABLE}=
+if test $dimension = 0
+then eval $COLON_VARIABLE=
 else
 eval ${COLON_VARIABLE}=\'"${mbfl_FIELDS[0]}"\'
-for ((i=1; $i < ${dimension}; ++i))
-do eval ${COLON_VARIABLE}=\'"${!COLON_VARIABLE}:${mbfl_FIELDS[$i]}"\'
+for ((i=1; $i < $dimension; ++i))
+do eval $COLON_VARIABLE=\'"${!COLON_VARIABLE}:${mbfl_FIELDS[$i]}"\'
 done
 fi
 return 0
@@ -1981,18 +2036,18 @@ local COLON_VARIABLE=${1:?"missing colon variable parameter to '${FUNCNAME}'"}
 local item
 declare -a mbfl_FIELDS FIELDS
 declare -i dimension count i
-mbfl_variable_colon_variable_to_array "${COLON_VARIABLE}"
+mbfl_variable_colon_variable_to_array "$COLON_VARIABLE"
 dimension=${#mbfl_FIELDS[*]}
 FIELDS=("${mbfl_FIELDS[@]}")
 mbfl_FIELDS=()
-for ((i=0, count=0; $i < ${dimension}; ++i))
+for ((i=0, count=0; $i < $dimension; ++i))
 do
 item="${FIELDS[$i]}"
-mbfl_variable_element_is_in_array "${item}" && continue
-mbfl_FIELDS[${count}]="${item}"
+mbfl_variable_element_is_in_array "$item" && continue
+mbfl_FIELDS[$count]=$item
 let ++count
 done
-mbfl_variable_array_to_colon_variable ${COLON_VARIABLE}
+mbfl_variable_array_to_colon_variable $COLON_VARIABLE
 return 0
 }
 
@@ -2004,7 +2059,7 @@ local STRING=${1:?"missing prompt string parameter to '${FUNCNAME}'"}
 local PROGNAME="${2:-${script_PROGNAME}}"
 local PROMPT="${PROGNAME}: ${STRING}? (yes/no) "
 local ANS=
-while IFS= read -e -p "$PROMPT" ANS && \
+while IFS= read -r -e -p "$PROMPT" ANS && \
 test "$ANS" != 'yes' -a "$ANS" != 'no'
 do echo "${PROGNAME}: please answer yes or no."
 done
@@ -2016,7 +2071,7 @@ local PASSWORD= STTY=
 STTY=$(mbfl_program_found stty) || exit $?
 echo -n "${prompt}: " >&2
 "$STTY" cbreak -echo </dev/tty >/dev/tty 2>&1
-IFS= read PASSWORD
+IFS= read -rs PASSWORD
 "$STTY" -cbreak echo </dev/tty >/dev/tty 2>&1
 echo >&2
 printf %s "${PASSWORD}"
@@ -2098,16 +2153,15 @@ local TIME=${2:?"missing time parameter to '${FUNCNAME}'"}
 AT=$(mbfl_program_found at) || exit $?
 printf %s "${SCRIPT}" | {
 mbfl_program_redirect_stderr_to_stdout
-mbfl_program_exec "${AT}" -q ${QUEUE} ${TIME} || {
+mbfl_program_exec "$AT" -q $QUEUE $TIME || {
 mbfl_message_error \
-"scheduling command execution '${SCRIPT}' at time '${TIME}'"
+"scheduling command execution '$SCRIPT' at time '$TIME'"
 return 1
 }
 } | {
-{ IFS= read; IFS= read; } || {
+{ read; read; } || {
 mbfl_message_error "reading output of 'at'"
-mbfl_message_error \
-"while scheduling command execution '${SCRIPT}' at time '${TIME}'"
+mbfl_message_error "while scheduling command execution '$SCRIPT' at time '$TIME'"
 return 1
 }
 set -- $REPLY
@@ -2116,60 +2170,79 @@ printf %d "$2"
 }
 function mbfl_at_queue_print_identifiers () {
 local QUEUE=${mbfl_p_at_queue_letter}
-mbfl_p_at_program_atq "$QUEUE" | while IFS= read LINE
+mbfl_p_at_program_atq "$QUEUE" | while IFS= read -r LINE
 do
 set -- $LINE
 printf '%d ' "$1"
 done
 }
 function mbfl_at_queue_print_queues () {
-local ATQ SORT
+local ATQ SORT line
 ATQ=$(mbfl_program_found atq)   || exit $?
 SORT=$(mbfl_program_found sort) || exit $?
-{ mbfl_program_exec "${ATQ}" | while IFS= read LINE
+{ mbfl_program_exec "${ATQ}" | while IFS= read -r line
 do
-set -- ${LINE}
-printf '%c\n' "${4}"
-done } | mbfl_program_exec "${SORT}" -u
+set -- $line
+printf '%c\n' "$4"
+done } | mbfl_program_exec "$SORT" -u
 }
 function mbfl_at_queue_print_jobs () {
 local QUEUE=${mbfl_p_at_queue_letter}
-mbfl_p_at_program_atq "${QUEUE}"
+mbfl_p_at_program_atq "$QUEUE"
 }
 function mbfl_at_print_queue () {
-local QUEUE=${mbfl_p_at_queue_letter}
-printf '%c' "${QUEUE}"
+local QUEUE=$mbfl_p_at_queue_letter
+printf '%c' "$QUEUE"
 }
 function mbfl_at_drop () {
 local ATRM
 local ID=${1:?"missing script identifier parameter to '${FUNCNAME}'"}
 ATRM=$(mbfl_program_found atrm) || exit $?
-mbfl_program_exec "${ATRM}" "${ID}"
+mbfl_program_exec "$ATRM" "$ID"
 }
 function mbfl_at_queue_clean () {
 local item QUEUE=${mbfl_p_at_queue_letter}
-for item in $(mbfl_at_queue_print_identifiers "${QUEUE}")
-do mbfl_at_drop "${item}"
+for item in $(mbfl_at_queue_print_identifiers "$QUEUE")
+do mbfl_at_drop "$item"
 done
 }
 function mbfl_p_at_program_atq () {
 local ATQ
 local QUEUE=${1:?"missing job queue parameter to '${FUNCNAME}'"}
 ATQ=$(mbfl_program_found atq) || exit $?
-mbfl_program_exec "${ATQ}" -q "${QUEUE}"
+mbfl_program_exec "$ATQ" -q "$QUEUE"
 }
 
 test "$mbfl_INTERACTIVE" = yes || {
 mbfl_option_TMPDIR="${TMPDIR:-/tmp/${USER}}"
 mbfl_ORG_PWD=$PWD
+declare -i ARGC=0 ARGC1=0 ARG1ST=0
+declare -a ARGV ARGV1
+for ((ARGC1=0; $# > 0; ++ARGC1))
+do
+ARGV1[$ARGC1]=$1
+shift
+done
 mbfl_main_SCRIPT_FUNCTION=main
 mbfl_main_PRIVATE_SCRIPT_FUNCTION=
+mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS=script_before_parsing_options
+mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=script_after_parsing_options
 }
 function mbfl_main_set_main () {
-mbfl_main_SCRIPT_FUNCTION=${1:?}
+local FUNC=${1:?"missing main function name parameter to '${FUNCNAME}'"}
+mbfl_main_SCRIPT_FUNCTION=${FUNC}
 }
 function mbfl_main_set_private_main () {
-mbfl_main_PRIVATE_SCRIPT_FUNCTION=${1:?}
+local FUNC=${1:?"missing main function name parameter to '${FUNCNAME}'"}
+mbfl_main_PRIVATE_SCRIPT_FUNCTION=${FUNC}
+}
+function mbfl_main_set_before_parsing_options () {
+local FUNC=${1:?"missing main function name parameter to '${FUNCNAME}'"}
+mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS=${FUNC}
+}
+function mbfl_main_set_after_parsing_options () {
+local FUNC=${1:?"missing main function name parameter to '${FUNCNAME}'"}
+mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=${FUNC}
 }
 test "$mbfl_INTERACTIVE" = yes || {
 declare -a mbfl_main_EXIT_CODES mbfl_main_EXIT_NAMES
@@ -2181,6 +2254,22 @@ mbfl_main_EXIT_CODES[2]=99
 mbfl_main_EXIT_NAMES[2]=program_not_found
 mbfl_main_EXIT_CODES[3]=98
 mbfl_main_EXIT_NAMES[3]=wrong_num_args
+mbfl_main_EXIT_CODES[4]=97
+mbfl_main_EXIT_NAMES[4]=invalid_action_set
+mbfl_main_EXIT_CODES[5]=96
+mbfl_main_EXIT_NAMES[5]=invalid_action_declaration
+mbfl_main_EXIT_CODES[6]=95
+mbfl_main_EXIT_NAMES[6]=invalid_action_argument
+mbfl_main_EXIT_CODES[7]=94
+mbfl_main_EXIT_NAMES[7]=missing_action_function
+mbfl_main_EXIT_CODES[8]=93
+mbfl_main_EXIT_NAMES[8]=invalid_option_declaration
+mbfl_main_EXIT_CODES[9]=92
+mbfl_main_EXIT_NAMES[9]=invalid_option_argument
+mbfl_main_EXIT_CODES[10]=91
+mbfl_main_EXIT_NAMES[10]=invalid_function_name
+mbfl_main_EXIT_CODES[11]=90
+mbfl_main_EXIT_NAMES[11]=invalid_username
 }
 function exit_success () {
 exit_because_success
@@ -2324,23 +2413,93 @@ copying conditions.  There is NO warranty; not  even for MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.
 "
 }
+function mbfl_main_print_version_number () {
+echo -e "${mbfl_message_VERSION}"
+exit_success
+}
+function mbfl_main_print_version_number_only () {
+echo -e "${script_VERSION}"
+exit_success
+}
+function mbfl_main_print_license () {
+case "${script_LICENSE}" in
+GPL|GPL2)
+echo -e "${mbfl_message_LICENSE_GPL}"
+;;
+GPL3)
+echo -e "${mbfl_message_LICENSE_GPL3}"
+;;
+LGPL|LGPL2)
+echo -e "${mbfl_message_LICENSE_LGPL}"
+;;
+LGPL3)
+echo -e "${mbfl_message_LICENSE_LGPL3}"
+;;
+BSD)
+echo -e "${mbfl_message_LICENSE_BSD}"
+;;
+*)
+mbfl_message_error "unknown license: \"${script_LICENSE}\""
+exit_failure
+;;
+esac
+exit_success
+}
+function mbfl_main_print_usage_screen_long () {
+if test -n "${script_USAGE}"
+then printf '%s\n' "${script_USAGE}"
+else printf 'usafe: %s [arguments]\n' "${script_PROGNAME}"
+fi
+test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"
+mbfl_actions_print_usage_screen
+mbfl_getopts_print_usage_screen long
+test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+exit_success
+}
+function mbfl_main_print_usage_screen_brief () {
+if test -n "${script_USAGE}"
+then printf '%s\n' "${script_USAGE}"
+else printf 'usafe: %s [arguments]\n' "${script_PROGNAME}"
+fi
+test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"
+mbfl_actions_print_usage_screen
+mbfl_getopts_print_usage_screen brief
+test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+exit_success
+}
 function mbfl_main () {
 local exit_code=0 action_func item code
 mbfl_message_set_progname "$script_PROGNAME"
 mbfl_main_create_exit_functions
-mbfl_invoke_script_function script_before_parsing_options
-mbfl_getopts_parse
-mbfl_invoke_script_function script_after_parsing_options
-if test -n "$mbfl_main_PRIVATE_SCRIPT_FUNCTION"
-then mbfl_invoke_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
-else mbfl_invoke_script_function $mbfl_main_SCRIPT_FUNCTION
+if mbfl_actions_set_exists MAIN
+then
+if ! mbfl_actions_dispatch MAIN
+then exit_failure
 fi
+fi
+mbfl_invoke_script_function $mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS || exit_failure
+mbfl_getopts_parse || exit_because_invalid_option_argument
+mbfl_invoke_script_function $mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS || exit_failure
+if test -n "$mbfl_main_PRIVATE_SCRIPT_FUNCTION"
+then mbfl_invoke_existent_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
+else mbfl_invoke_existent_script_function $mbfl_main_SCRIPT_FUNCTION
+fi
+exit_success
 }
 function mbfl_invoke_script_function () {
-local item=${1:?"missing function name parameter to '${FUNCNAME}'"}
-if test "$(type -t $item)" = function
-then $item
+local FUNC=${1:?"missing function name parameter to '${FUNCNAME}'"}
+if test "$(type -t $FUNC)" = function
+then $FUNC
 else return 0
+fi
+}
+function mbfl_invoke_existent_script_function () {
+local FUNC=${1:?"missing function name parameter to '${FUNCNAME}'"}
+if test "$(type -t $FUNC)" = function
+then $FUNC
+else
+mbfl_message_error "internal error: request to call non-existent function \"$FUNC\""
+exit_because_invalid_function_name
 fi
 }
 
