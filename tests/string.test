@@ -323,6 +323,14 @@ function string-is-6.5 () { ! mbfl_string_is_identifier "\n"; }
 function string-is-6.6 () { ! mbfl_string_is_identifier '-abcd123'; }
 function string-is-6.7 () { mbfl_string_is_identifier a-b_c-d; }
 
+function string-is-7.1 () { mbfl_string_is_username abcd; }
+function string-is-7.2 () { mbfl_string_is_username ab_cd; }
+function string-is-7.3 () { mbfl_string_is_username _abcd123; }
+function string-is-7.4 () { ! mbfl_string_is_username 1abcd3 ; }
+function string-is-7.5 () { ! mbfl_string_is_username "\n"; }
+function string-is-7.6 () { ! mbfl_string_is_username '-abcd123'; }
+function string-is-7.7 () { mbfl_string_is_username a-b_c-d; }
+
 #PAGE
 
 function string-last-1.1 () {

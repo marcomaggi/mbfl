@@ -15,7 +15,6 @@
 #
 # Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
 #
-#
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
 # Free Software  Foundation; either version  3.0 of the License,  or (at
@@ -169,6 +168,10 @@ function mbfl_string_is_identifier () {
     mbfl_p_string_is identifier "${STRING}"		\
 	&& ! mbfl_string_is_digit "${STRING:0:1}"	\
 	&& ! test "${STRING:0:1}" = '-'
+}
+function mbfl_string_is_username () {
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_string_is_identifier "${STRING}"
 }
 #PAGE
 function mbfl_string_range () {

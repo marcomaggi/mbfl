@@ -3633,6 +3633,13 @@ character of @var{string} or the first char of @var{string} is a dash.
 @end itemize
 @end defun
 
+
+@defun mbfl_string_is_username @var{string}
+Return true if @var{string} is non--empty, all its characters are in the
+ranges @code{[a-zA-Z0-9_-]}, the first character is in the range
+@code{[a-zA-Z_]}; else return false.
+@end defun
+
 @c page
 @node string misc
 @section Miscellaneous functions
