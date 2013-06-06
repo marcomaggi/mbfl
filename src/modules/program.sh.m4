@@ -204,15 +204,17 @@ function mbfl_program_validate_declared () {
 function mbfl_program_found () {
     mbfl_mandatory_parameter(PROGRAM, 1, program name)
     local number_of_programs=${#mbfl_program_NAMES[@]} i=
-    test "$PROGRAM" = : || {
+    if test "$PROGRAM" != :
+    then
         for ((i=0; $i < ${number_of_programs}; ++i))
         do
-            test "${mbfl_program_NAMES[$i]}" = "$PROGRAM" && {
-                echo "${mbfl_program_PATHS[$i]}"
+            if test "${mbfl_program_NAMES[$i]}" = "$PROGRAM"
+	    then
+		echo "${mbfl_program_PATHS[$i]}"
                 return 0
-            }
+            fi
         done
-    }
+    fi
     mbfl_message_error "executable not found '$PROGRAM'"
     exit_because_program_not_found
 }

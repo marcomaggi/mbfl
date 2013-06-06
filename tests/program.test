@@ -99,9 +99,7 @@ function program-4.2 () {
 }
 
 #PAGE
-## ---------------------------------------------------------
-## End of "::test" namespace.
-## ---------------------------------------------------------
+#### let's go
 
 dotest program-
 dotest-final-report
