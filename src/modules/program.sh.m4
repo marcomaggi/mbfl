@@ -48,6 +48,7 @@ function mbfl_program_find () {
 ## ------------------------------------------------------------
 
 declare mbfl_program_SUDO_USER=nosudo
+declare mbfl_program_SUDO_OPTIONS
 declare mbfl_program_STDERR_TO_STDOUT=no
 declare mbfl_program_BASH=$BASH
 declare mbfl_program_BGPID
@@ -74,6 +75,15 @@ function mbfl_program_sudo_user () {
 function mbfl_program_requested_sudo () {
     test "$mbfl_program_SUDO_USER" != nosudo
 }
+function mbfl_program_declare_sudo_options () {
+    mbfl_program_SUDO_OPTIONS="$*"
+}
+function mbfl_program_reset_sudo_options () {
+    mbfl_program_SUDO_OPTIONS=
+}
+
+## --------------------------------------------------------------------
+
 function mbfl_program_redirect_stderr_to_stdout () {
     mbfl_program_STDERR_TO_STDOUT=yes
 }
@@ -82,8 +92,10 @@ function mbfl_program_redirect_stderr_to_stdout () {
 # to execute the program in background!!!
 function mbfl_program_exec () {
     local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
+    local SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
     local STDERR_TO_STDOUT=no
     mbfl_program_SUDO_USER=nosudo
+    mbfl_program_SUDO_OPTIONS=
     test "$PERSONA" = nosudo || {
         SUDO=$(mbfl_program_found sudo)     || exit $?
         WHOAMI=$(mbfl_program_found whoami) || exit $?
@@ -93,7 +105,7 @@ function mbfl_program_exec () {
     mbfl_program_STDERR_TO_STDOUT=no
     { mbfl_option_test || mbfl_option_show_program; } && {
         if test "$USE_SUDO" = yes -a "$PERSONA" != "$USER"
-        then echo "$SUDO" -u "$PERSONA" "$@" >&2
+        then echo "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" >&2
         else echo "$@" >&2
         fi
     }
@@ -104,8 +116,8 @@ function mbfl_program_exec () {
             # "whoami" when "sudo" is not required.
             test "$PERSONA" = $("$WHOAMI") || {
                 if test "$STDERR_TO_STDOUT" = yes
-                then "$SUDO" -u "$PERSONA" "$@" 2>&1
-                else "$SUDO" -u "$PERSONA" "$@"
+                then "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" 2>&1
+                else "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
                 fi
             }
         else

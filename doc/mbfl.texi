@@ -3109,19 +3109,35 @@ When the time comes: if the selected user name equals the value printed
 by @command{whoami}, @command{sudo} is not used.
 @end defun
 
+
 @defun mbfl_program_reset_sudo_user
 Reset the previously requested @command{sudo} user to a value that will
 cause @command{sudo} not to be used in the next program invocation.
 This is useful to abort a user request.
 @end defun
 
+
 @defun mbfl_program_sudo_user
 Print the current @command{sudo} user.
 @end defun
 
+
 @defun mbfl_program_requested_sudo
 Return true if the usage of @command{sudo} has been requested for the
 next command execution.
+@end defun
+
+
+@defun mbfl_program_declare_sudo_options @var{arg} @dots{}
+Select additional command line options to use on the next invocation of
+@command{sudo}.  These values are consumed by the first use of
+@bfunc{mbfl_program_exec}.
+@end defun
+
+
+@defun mbfl_program_reset_sudo_options
+Clean the options previously set by
+@bfunc{mbfl_program_declare_sudo_options}.
 @end defun
 
 @c ------------------------------------------------------------
