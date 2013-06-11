@@ -3076,6 +3076,9 @@ mbfl_program_exec ls <@var{inchan} >@var{ouchan} &
 @noindent
 because doing so puts in the background the function call (in a subshell)
 and then runs the program.
+
+Notice that we can always use @file{/dev/stdin} and @file{/dev/stdout}
+ad @var{inchan} and @var{ouchan} arguments.
 @end defun
 
 
