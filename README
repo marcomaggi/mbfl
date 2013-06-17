@@ -128,19 +128,28 @@ C. Resources
 
 The GNU Project software can be found here:
 
-		   <http://www.gnu.org/>
+		      <http://www.gnu.org/>
 
 the MBFL home page is at:
 
-	  <http://marcomaggi.github.com/mbfl.html>
+	    <http://marcomaggi.github.com/mbfl.html>
 
 development takes place at:
 
-	    <http://github.com/marcomaggi/mbfl/>
+	      <http://github.com/marcomaggi/mbfl/>
+
+and as backup at:
+
+	     <http://sourceforge.net/projects/mbfl/>
+
+proper release tarballs for this package are in the download area
+at:
+
+	  <http://sourceforge.net/projects/mbfl/files/>
 
 the Freshmeat page is:
 
-	    <http://freshmeat.net/projects/mbfl>
+	      <http://freshmeat.net/projects/mbfl>
 
 
 ### end of file

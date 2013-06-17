@@ -10,11 +10,19 @@ sized scripts.
 
   The MBFL home page is at:
 
-	  <http://marcomaggi.github.com/mbfl.html>
+		<http://marcomaggi.github.com/mbfl.html>
 
 development takes place at:
 
-	    <http://github.com/marcomaggi/mbfl/>
+		  <http://github.com/marcomaggi/mbfl/>
+
+and as backup at:
+
+		<http://sourceforge.net/projects/mbfl/>
+
+proper release tarballs for this package are in the download area at:
+
+	     <http://sourceforge.net/projects/mbfl/files/>
 
   This package makes use of the GNU Autotools.
 

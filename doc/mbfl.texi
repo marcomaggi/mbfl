@@ -81,6 +81,16 @@ development takes place at:
 @center @url{http://github.com/marcomaggi/mbfl/}
 
 @noindent
+and as backup at:
+
+@center @url{http://sourceforge.net/projects/mbfl/}
+
+@noindent
+proper release tarballs for this package are in the download area at:
+
+@center @url{http://sourceforge.net/projects/mbfl/files/}
+
+@noindent
 Copyright @copyright{} @value{COPYRIGHT_YEARS} by @value{AUTHOR} @value{AUTHOR_EMAIL}
 
 @quotation
