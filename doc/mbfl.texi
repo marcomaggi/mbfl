@@ -3092,6 +3092,14 @@ ad @var{inchan} and @var{ouchan} arguments.
 @end defun
 
 
+@defun mbfl_program_replace @var{program}
+@defunx mbfl_program_replace @var{program} @var{arg} @dots{}
+Like @func{mbfl_program_exec}, but execute the program through the Bash
+command @func{exec}, so replacing the current process without creating a
+new one.
+@end defun
+
+
 @defvar mbfl_program_BGPID
 Used by @bfunc{mbfl_program_execbg} to store the process id of the
 program executed in background.

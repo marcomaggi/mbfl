@@ -171,6 +171,53 @@ function mbfl_program_execbg () {
         fi
     }
 }
+
+## --------------------------------------------------------------------
+
+function mbfl_program_replace () {
+    local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
+    local SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
+    local STDERR_TO_STDOUT=no
+    mbfl_program_SUDO_USER=nosudo
+    mbfl_program_SUDO_OPTIONS=
+    test "$PERSONA" = nosudo || {
+        SUDO=$(mbfl_program_found sudo)     || exit $?
+        WHOAMI=$(mbfl_program_found whoami) || exit $?
+        USE_SUDO=yes
+    }
+    STDERR_TO_STDOUT=${mbfl_program_STDERR_TO_STDOUT}
+    mbfl_program_STDERR_TO_STDOUT=no
+    { mbfl_option_test || mbfl_option_show_program; } && {
+        if test "$USE_SUDO" = yes -a "$PERSONA" != "$USER"
+        then echo exec "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" >&2
+        else echo exec "$@" >&2
+        fi
+	# If  this is  a  dry  run: after  printing  the  program to  be
+	# executed we exit, because in a wet run the script would exit.
+	mbfl_option_test && exit_success
+    }
+    mbfl_option_test || {
+        if test "$USE_SUDO" = yes
+        then
+            # Putting  this test  inside  here avoids  using
+            # "whoami" when "sudo" is not required.
+            test "$PERSONA" = $("$WHOAMI") || {
+                if test "$STDERR_TO_STDOUT" = yes
+                then exec "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" 2>&1
+                else exec "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
+                fi
+            }
+        else
+            if test "$STDERR_TO_STDOUT" = yes
+            then exec "$@" 2>&1
+            else exec "$@"
+            fi
+        fi
+    }
+}
+
+## --------------------------------------------------------------------
+
 function mbfl_program_bash_command () {
     mbfl_mandatory_parameter(COMMAND, 1, command)
     mbfl_program_exec "$mbfl_program_BASH" -c "$COMMAND"
