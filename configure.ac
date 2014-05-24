@@ -7,7 +7,7 @@ AC_INIT([Marcos Bash Functions Library],[2.0d2],[marco.maggi-ipsu@poste.it],
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_MACRO_DIR([autotools])
 AC_CONFIG_AUX_DIR([autotools])
-AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip])
+AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip subdir-objects])
 AM_MAINTAINER_MODE
 
 AC_PROG_INSTALL
@@ -28,10 +28,9 @@ else
 fi
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 
-AC_CONFIG_FILES([Makefile meta/Makefile
-  src/Makefile doc/Makefile tests/Makefile
-  examples/Makefile
-  meta/mbfl-config meta/mbfl.pc])
+AC_CONFIG_FILES([Makefile]
+  [meta/mbfl-config]
+  [meta/mbfl.pc])
 AC_OUTPUT
 
 ### end of file
