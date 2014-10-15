@@ -3,7 +3,7 @@
 
 set -xe
 
-prefix=/usr/local
+prefix=/usr
 
 ../configure \
     --enable-maintainer-mode                    \
