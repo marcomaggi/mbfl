@@ -13,7 +13,7 @@
 #       (like ${name:num:num}) so, maybe, other Bourne shells will not
 #       made them work at all.
 #
-# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013, 2014 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -151,8 +151,10 @@ for class in alpha digit alnum noblank ; do
 done
 function mbfl_p_string_is () {
     mbfl_mandatory_parameter(CLASS, 1, class)
-    mbfl_mandatory_parameter(STRING, 2, string)
-    local i
+    # Accept $2  even if  it is  empty; for  this reason  we do  not use
+    # MBFL_MANDATORY_PARAMETER.
+    local STRING=$2
+    local -i i
     test "${#STRING}" = 0 && return 1
     for ((i=0; $i < ${#STRING}; ++i))
     do "mbfl_string_is_${CLASS}_char" "${STRING:$i:1}" || return 1
@@ -160,18 +162,27 @@ function mbfl_p_string_is () {
     return 0
 }
 function mbfl_string_is_name () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_p_string_is name "${STRING}" && ! mbfl_string_is_digit "${STRING:0:1}"
+    # Accept $1  even if  it is  empty; for  this reason  we do  not use
+    # MBFL_MANDATORY_PARAMETER.
+    local STRING=$1
+    test -n "$STRING" && \
+	mbfl_p_string_is name "${STRING}" && ! mbfl_string_is_digit "${STRING:0:1}"
 }
 function mbfl_string_is_identifier () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_p_string_is identifier "${STRING}"		\
+    # Accept $1  even if  it is  empty; for  this reason  we do  not use
+    # MBFL_MANDATORY_PARAMETER.
+    local STRING=$1
+    test -n "$STRING" && \
+	mbfl_p_string_is identifier "${STRING}"		\
 	&& ! mbfl_string_is_digit "${STRING:0:1}"	\
 	&& ! test "${STRING:0:1}" = '-'
 }
 function mbfl_string_is_username () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_string_is_identifier "${STRING}"
+    # Accept $1  even if  it is  empty; for  this reason  we do  not use
+    # MBFL_MANDATORY_PARAMETER.
+    local STRING=$1
+    test -n "$STRING" && \
+	mbfl_string_is_identifier "${STRING}"
 }
 #PAGE
 function mbfl_string_range () {
