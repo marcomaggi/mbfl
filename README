@@ -1,6 +1,6 @@
 
-	       Marco's Bash Functions Library
-	       ==============================
+		     Marco's Bash Functions Library
+		     ==============================
 
 
 Topics
@@ -18,36 +18,38 @@ Topics
 1. Introduction
 ---------------
 
-The MBFL  is a  collection of  shell functions  for the  GNU Bash
-shell.  This package is an attempt to make Bash a viable solution
-for medium sized scripts; it needs at least Bash version 4.
+The MBFL  is a  collection of  shell functions for  the GNU  Bash shell.
+This package  is an attempt  to make Bash  a viable solution  for medium
+sized scripts; it needs at least Bash version 4.
+
+   This package makes use of the GNU Autotools.
 
 
 2. License
 ----------
 
-Copyright (c) 2003-2005, 2009-2010, 2012-2013 Marco Maggi.
+Copyright (c) 2003-2005, 2009-2010, 2012-2014 Marco Maggi.
 
-This is free  software; you can redistribute it  and/or modify it
-under  the terms  of the  GNU  Lesser General  Public License  as
-published by the Free Software  Foundation; either version 3.0 of
-the License, or (at your option) any later version.
+This is  free software; you can  redistribute it and/or modify  it under
+the terms of  the GNU Lesser General Public License  as published by the
+Free Software Foundation; either version 3.0 of the License, or (at your
+option) any later version.
 
-This library is  distributed in the hope that it  will be useful,
-but WITHOUT  ANY WARRANTY; without  even the implied  warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+This library  is distributed  in the  hope that it  will be  useful, but
+WITHOUT   ANY   WARRANTY;  without   even   the   implied  warranty   of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+General Public License for more details.
 
-You should have received a copy  of the GNU Lesser General Public
-License  along with  this  library;  if not,  write  to the  Free
-Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-02111-1307 USA.
+You should have received a copy of the GNU Lesser General Public License
+along with this library; if not,  write to the Free Software Foundation,
+Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 
 3. Install
 ----------
 
-This package makes use of the GNU Autotools.  Do this:
+To install from  a proper release tarball, after  unpacking the archive,
+do this:
 
     $ cd mbfl-1.3.0
     $ mkdir build
@@ -64,25 +66,41 @@ then do it:
     $ make check
     $ make install
 
-  The  Makefile  supports  the DESTDIR  environment  variable  to
-install files in a temporary  location, example: to see what will
-happen:
+  From  a repository  checkout or  snapshot  (the ones  from the  Github
+site): we must  install the GNU Autotools (GNU  Automake, GNU Autoconf),
+then  we must  first run  the script  "autogen.sh" from  the top  source
+directory, to generate the needed files:
 
-    $ make -n install DESTDIR=/tmp/marco/mbfl
+    $ cd develstuff
+    $ sh autogen.sh
+
+we  should   now  see   the  executable   "configure"  script   and  the
+"Makefile.in" file.  From now on everything  is the same as for building
+from a proper release tarball, but we have to run the "configure" script
+enabling the maintainer mode:
+
+    $ ../configure --enable-maintainer-mode [options]
+    $ make
+    $ make install
+
+  The  Makefile supports  the  DESTDIR environment  variable to  install
+files in a temporary location, example: to see what will happen:
+
+    $ make -n install DESTDIR=/tmp/mbfl
 
 to really do it:
 
-    $ make install DESTDIR=/tmp/marco/mbfl
+    $ make install DESTDIR=/tmp/mbfl
 
-  Notice that,  when running  "make check",  we can  select which
-test to run by redefining the "TESTS" variable; for example:
+  Notice that,  when running "make check",  we can select which  test to
+run by redefining the "TESTS" variable; for example:
 
     $ make check TESTS=program.test
 
 will run only the "program.test" file.
 
-  After building  the package, and  before installing it,  we can
-test the example scripts as follows:
+  After building the package, and before  installing it, we can test the
+example scripts as follows:
 
     $ make test-template MFLAGS='--help'
 
@@ -96,31 +114,30 @@ will run "examples/template-actions.sh" with the flags "--help".
 4. Usage
 --------
 
-Read the documentation in Texinfo  format.  Briefly: the best way
-to use  the library  is to  include at  runtime the  library file
-"libmbfl.sh" in the  script; this is possible  by installing MBFL
-on the system and using this code in the scripts:
+Read the documentation in Texinfo format.   Briefly: the best way to use
+the library  is to include at  runtime the library file  "libmbfl.sh" in
+the script; this is possible by  installing MBFL on the system and using
+this code in the scripts:
 
-  source "${MBFL_LIBRARY:=$(mbfl-config)}"
+  source "${MBFL_LIBRARY:=$(type -p mbfl-config && mbfl-config)}"
 
-the output  of the "mbfl-config"  script is the full  pathname of
-the  library  file.  The  value  can  be overridden  setting  the
-environment variable "MBFL_LIBRARY".
+the  output of  the "mbfl-config"  script is  the full  pathname of  the
+library  file.  The  value  can be  overridden  setting the  environment
+variable "MBFL_LIBRARY".
 
 
 A. Credits
 ----------
 
-The stuff  was written  by Marco Maggi.   If this  package exists
-it's because of the great GNU software tools that he uses all the
-time.
+The  stuff was  written by  Marco Maggi.   If this  package exists  it's
+because of the great GNU software tools that he uses all the time.
 
 
 B. Bugs
 -------
 
-Bug reports are appreciated: You  should use the issue tracker at
-the Github site.
+Bug reports  are appreciated: You  should use  the issue tracker  at the
+Github site.
 
 
 C. Resources
@@ -128,34 +145,34 @@ C. Resources
 
 The GNU Project software can be found here:
 
-		      <http://www.gnu.org/>
+			 <http://www.gnu.org/>
 
 the MBFL home page is at:
 
-	    <http://marcomaggi.github.com/mbfl.html>
+		<http://marcomaggi.github.com/mbfl.html>
 
 development takes place at:
 
-	      <http://github.com/marcomaggi/mbfl/>
+		  <http://github.com/marcomaggi/mbfl/>
 
 and as backup at:
 
-	     <http://sourceforge.net/projects/mbfl/>
+		<http://sourceforge.net/projects/mbfl/>
 
 proper release tarballs for this package are in the download area
 at:
 
-	  <http://sourceforge.net/projects/mbfl/files/>
+	     <http://sourceforge.net/projects/mbfl/files/>
 
 the Freshmeat page is:
 
-	      <http://freshmeat.net/projects/mbfl>
+		  <http://freshmeat.net/projects/mbfl>
 
 
 ### end of file
 # Local Variables:
 # mode: text
 # coding: utf-8-unix
-# fill-column: 65
+# fill-column: 72
 # paragraph-start: "*"
 # End:
