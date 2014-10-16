@@ -60,7 +60,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2013
+@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2014
 
 @c page
 @c ------------------------------------------------------------
@@ -340,7 +340,7 @@ file @file{libmbfl.sh} in the script.  To do it, we install the package
 on the system and use this code in the scripts:
 
 @example
-source "$@{MBFL_LIBRARY:=$(mbfl-config)@}"
+source "$@{MBFL_LIBRARY:=$(type -p mbfl-config && mbfl-config)@}"
 @end example
 
 @noindent
@@ -365,7 +365,7 @@ A more reliable way to load the library is:
 script_PROGNAME=script.sh
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
-mbfl_INSTALLED=$(test -x mbfl-config && mbfl-config) &>/dev/null
+mbfl_INSTALLED=$(type -p mbfl-config && mbfl-config) &>/dev/null
 mbfl_HARDCODED=./some/dir/libmbfl.sh
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do
