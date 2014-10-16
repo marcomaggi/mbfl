@@ -182,7 +182,10 @@ test-template-actions:
 #### interface to "make installcheck"
 
 MBFL_INSTCHECK_FLAGS	= $(user_flags)
-MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:"`mbfl-config --libpath`":$(PATH); export PATH;
+# This thing with the PATH environment variable is needed to run
+# distcheck successfully.
+MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:$(DESTDIR)$(bindir):$$PATH; export PATH;
+MBFL_INSTCHECK_ENV	+= PATH="`mbfl-config --libpath`":$$PATH; export PATH;
 MBFL_INSTCHECK_ENV	+= MBFL_LIBRARY="`mbfl-config --library`"; export MBFL_LIBRARY;
 MBFL_INSTCHECK_ENV	+= MBFLTEST_LIBRARY="`mbfl-config --testlib`"; export MBFLTEST_LIBRARY;
 MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR; examplesdir=$(srcdir)/examples; export examplesdir;
