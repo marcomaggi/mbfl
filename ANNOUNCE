@@ -27,8 +27,11 @@ proper release tarballs for this package are in the download area at:
   This package makes use of the GNU Autotools.
 
 
-Notes for revision 2.0d2
+Notes for revision 2.0b0
 ------------------------
+
+* Fixed  "mbfl_string_is_*"  functions  to  accept an  empty  string  as
+  argument and return with error status.
 
 * Added function "mbfl_program_replace".
 
