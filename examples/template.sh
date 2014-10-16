@@ -7,7 +7,7 @@
 #	This script shows how an MBFL script should be organised
 #	to use MBFL.
 #
-# Copyright (c) 2004, 2005, 2009, 2012, 2013 Marco Maggi
+# Copyright (c) 2004, 2005, 2009, 2012, 2013, 2014 Marco Maggi
 # <marco.maggi-ipsu@poste.it>
 #
 # This is free  software you can redistribute it  and/or modify it under
@@ -33,7 +33,7 @@
 
 script_PROGNAME=template.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2004, 2005, 2009, 2012'
+script_COPYRIGHT_YEARS='2004, 2005, 2009, 2012, 2014'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
@@ -50,7 +50,7 @@ script_EXAMPLES="Usage examples:
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
 mbfl_HARDCODED=
-mbfl_INSTALLED=$(mbfl-config) &>/dev/null
+mbfl_INSTALLED=$(type -p mbfl-config && mbfl-config) &>/dev/null
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do
     if test -n "$item" -a -f "$item" -a -r "$item"

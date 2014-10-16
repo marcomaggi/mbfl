@@ -7,7 +7,7 @@
 #	This script shows how an MBFL script should be organised
 #	to use MBFL with command line actions processing.
 #
-# Copyright (c) 2013 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2013, 2014 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -30,7 +30,7 @@
 
 script_PROGNAME=template-actions.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2013'
+script_COPYRIGHT_YEARS='2013, 2014'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=BSD
 
@@ -40,7 +40,7 @@ script_LICENSE=BSD
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
 mbfl_HARDCODED=
-mbfl_INSTALLED=$(mbfl-config) &>/dev/null
+mbfl_INSTALLED=$(type -p mbfl-config && mbfl-config) &>/dev/null
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do
     if test -n "$item" -a -f "$item" -a -r "$item"
