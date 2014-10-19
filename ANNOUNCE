@@ -30,7 +30,10 @@ proper release tarballs for this package are in the download area at:
 Notes for revision 2.0b1
 ------------------------
 
-*
+* Added functions:
+
+     mbfl_string_is_extended_identifier
+     mbfl_string_is_extended_identifier_char
 
 
 Notes for revision 2.0b0

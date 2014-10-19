@@ -17,7 +17,7 @@
 @end macro
 
 @macro bfunc{NAME}
-@code{\NAME\}
+@code{\NAME\()}
 @end macro
 
 @macro bashref{NODE, TITLE}
@@ -3094,8 +3094,8 @@ ad @var{inchan} and @var{ouchan} arguments.
 
 @defun mbfl_program_replace @var{program}
 @defunx mbfl_program_replace @var{program} @var{arg} @dots{}
-Like @func{mbfl_program_exec}, but execute the program through the Bash
-command @func{exec}, so replacing the current process without creating a
+Like @bfunc{mbfl_program_exec}, but execute the program through the Bash
+command @bfunc{exec}, so replacing the current process without creating a
 new one.
 @end defun
 
@@ -3688,12 +3688,19 @@ applied to @var{char} or @var{char} is an underscore, @samp{_}, or dash,
 @end defun
 
 
+@defun mbfl_string_is_extended_identifier_char @var{char}
+Like @bfunc{mbfl_string_is_identifier_char}, but also accept dots
+@samp{.}.
+@end defun
+
+
 @defun mbfl_string_is_alpha @var{string}
 @defunx mbfl_string_is_digit @var{string}
 @defunx mbfl_string_is_alnum @var{string}
 @defunx mbfl_string_is_noblank @var{string}
 @defunx mbfl_string_is_name @var{string}
 @defunx mbfl_string_is_identifier @var{string}
+@defunx mbfl_string_is_extended_identifier @var{string}
 Return true if @var{string} is non--empty and the associated char
 function returns true for each character in @var{string}.  As additional
 constraint:
@@ -3704,8 +3711,9 @@ constraint:
 returns true when applied to the first character of @var{string}.
 
 @item
-@code{mbfl_string_is_identifier} returns false if
-@code{mbfl_string_is_digit} returns true when applied to the first
+@bfunc{mbfl_string_is_identifier} and
+@bfunc{mbfl_string_is_extended_identifier} return false if
+@bfunc{mbfl_string_is_digit} returns true when applied to the first
 character of @var{string} or the first char of @var{string} is a dash.
 @end itemize
 @end defun

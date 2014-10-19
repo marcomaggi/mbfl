@@ -140,6 +140,10 @@ function mbfl_string_is_identifier_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
     mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = '_' -o "${CHAR}" = '-'
 }
+function mbfl_string_is_extended_identifier_char () {
+    mbfl_mandatory_parameter(CHAR, 1, char)
+    mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = '_' -o "${CHAR}" = '-' -o "${CHAR}" = '.'
+}
 function mbfl_string_is_noblank_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
     test \( "${CHAR}" != " " \) -a \
@@ -175,6 +179,15 @@ function mbfl_string_is_identifier () {
     test -n "$STRING" && \
 	mbfl_p_string_is identifier "${STRING}"		\
 	&& ! mbfl_string_is_digit "${STRING:0:1}"	\
+	&& ! test "${STRING:0:1}" = '-'
+}
+function mbfl_string_is_extended_identifier () {
+    # Accept $1  even if  it is  empty; for  this reason  we do  not use
+    # MBFL_MANDATORY_PARAMETER.
+    local STRING=$1
+    test -n "$STRING" && \
+	mbfl_p_string_is extended_identifier "${STRING}"	\
+	&& ! mbfl_string_is_digit "${STRING:0:1}"		\
 	&& ! test "${STRING:0:1}" = '-'
 }
 function mbfl_string_is_username () {

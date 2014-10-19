@@ -338,6 +338,16 @@ function string-is-7.6 () { ! mbfl_string_is_username '-abcd123'; }
 function string-is-7.7 () { mbfl_string_is_username a-b_c-d; }
 function string-is-7.8 () { ! mbfl_string_is_username ''; }
 
+function string-is-8.1 () { mbfl_string_is_extended_identifier abcd; }
+function string-is-8.2 () { mbfl_string_is_extended_identifier ab_cd; }
+function string-is-8.3 () { mbfl_string_is_extended_identifier _abcd123; }
+function string-is-8.4 () { ! mbfl_string_is_extended_identifier 1abcd3 ; }
+function string-is-8.5 () { ! mbfl_string_is_extended_identifier "\n"; }
+function string-is-8.6 () { ! mbfl_string_is_extended_identifier '-abcd123'; }
+function string-is-8.7 () { mbfl_string_is_extended_identifier a-b_c-d; }
+function string-is-8.8 () { ! mbfl_string_is_extended_identifier ''; }
+function string-is-8.9 () { ! mbfl_string_is_extended_identifier '-abc.d.1_23'; }
+
 #PAGE
 
 function string-last-1.1 () {
