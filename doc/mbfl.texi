@@ -2337,12 +2337,16 @@ to the user defined functions.
 
 @table @option
 @item --tmpdir=DIR
+@cindex @option{--tmpdir}, predefined option
+@cindex Predefined option @option{--tmpdir}
 Selects a directory for temporary files.  The default value is the one in
 the environment variable @env{TMPDIR}, or @file{/tmp/$USER} if that
 variable is not set.  The value is stored in the variable
 @code{mbfl_option_TMPDIR}.
 
 @item --encoded-args
+@cindex @option{--encoded-args}, predefined option
+@cindex Predefined option @option{--encoded-args}
 Signals to the library that the non--option arguments and the option
 values are encoded in hexadecimal strings.  Encoding is useful to avoid
 quoting problems when invoking a script from another one.
@@ -2353,75 +2357,113 @@ array and before being stored in the option's specific global variables.
 
 @item -v
 @itemx --verbose
+@cindex @option{-v}, predefined option
+@cindex Predefined option @option{-v}
+@cindex @option{--verbose}, predefined option
+@cindex Predefined option @option{--verbose}
 Turns on verbose messages.  If this option is used: The function
 @bfunc{mbfl_option_verbose} returns true.  @ref{message, Printing
 messages to the console}.
 
 @item --silent
+@cindex @option{--silent}, predefined option
+@cindex Predefined option @option{--silent}
 Turns off verbose messages.  If this option is used: The function
 @bfunc{mbfl_option_verbose} returns false.
 
 @item --verbose-program
+@cindex @option{--verbose-program}, predefined option
+@cindex Predefined option @option{--verbose-program}
 If used: The @option{--verbose} option is added to the command line of
 external programs that support it.  The function
 @bfunc{mbfl_option_verbose_program} returns true or false depending on
 the state of this option.
 
 @item --show-program
+@cindex @option{--show-program}, predefined option
+@cindex Predefined option @option{--show-program}
 Prints the command line of executed external programs.
 
 @item --debug
+@cindex @option{--debug}, predefined option
+@cindex Predefined option @option{--debug}
 Turns on debugging messages.  Automatically turns on verbose messages
 and program showing.  @ref{message, Printing messages to the console}.
 
 @item --test
+@cindex @option{--test}, predefined option
+@cindex Predefined option @option{--test}
 Turns on test execution.  @ref{program testing, Testing a script and
 external programs}.
 
 @item --null
+@cindex @option{--null}, predefined option
+@cindex Predefined option @option{--null}
 Signals to the script that it has to use the null character to separate
 values, instead of the common newline.  The global variable
 @code{mbfl_option_NULL} is set to @code{yes}.
 
 @item -f
 @itemx --force
+@cindex @option{-f}, predefined option
+@cindex Predefined option @option{-f}
+@cindex @option{--force}, predefined option
+@cindex Predefined option @option{--force}
 Signals to the script that it does @strong{not} have to query the user
 before doing dangerous operations, like overwriting files.  The global
 variable @code{mbfl_option_INTERACTIVE} is set to @code{no}.
 
 @item -i
 @itemx --interactive
+@cindex @option{-i}, predefined option
+@cindex Predefined option @option{-i}
+@cindex @option{--interactive}, predefined option
+@cindex Predefined option @option{--interactive}
 Signals to the script that it @strong{does} have to query the user
 before doing dangerous operations, like overwriting files.  The global
 variable @code{mbfl_option_INTERACTIVE} is set to @code{yes}.
 
 @item --validate-programs
+@cindex @option{--validate-programs}, predefined option
+@cindex Predefined option @option{--validate-programs}
 Validates the existence of all the programs needed by the script; then
 exits.  The exit code is zero if all the programs were found, one
 otherwise.
 
 @item --list-exit-codes
+@cindex @option{--list-exit-codes}, predefined option
+@cindex Predefined option @option{--list-exit-codes}
 Prints a list of numerical exit codes and their associated names, as
 declared in the script.  @ref{main exit, Declaring exit codes}.
 
 @item --print-exit-code=NAME
+@cindex @option{--print-exit-code}, predefined option
+@cindex Predefined option @option{--print-exit-code}
 Prints the numerical exit code associated to @code{NAME}.
 
 @item --print-exit-code-names=CODE
+@cindex @option{--print-exit-code-names}, predefined option
+@cindex Predefined option @option{--print-exit-code-names}
 Prints the list of names associated to the numerical exit @code{CODE}.
 
 @item --version
+@cindex @option{--version}, predefined option
+@cindex Predefined option @option{--version}
 Prints to the standard output of the script the contents of the global
 variable @code{mbfl_message_VERSION}, then exits with code zero.  The
 variable makes use of the service variables.  @ref{service variables,
 Required user defined variables}.
 
 @item --version-only
+@cindex @option{--version-only}, predefined option
+@cindex Predefined option @option{--version-only}
 Prints to the standard output of the script the contents of the global
 variable @code{script_VERSION}, then exits with code zero.  @ref{service
 variables, Required user defined variables}.
 
 @item --license
+@cindex @option{--license}, predefined option
+@cindex Predefined option @option{--license}
 Prints to the standard output of the script the contents of one of the
 global variables @code{mbfl_message_LICENSE_*}, then exits with code
 zero.  The variable makes use of the service variables.  @ref{service
@@ -2430,6 +2472,12 @@ variables, Required user defined variables}.
 @item -h
 @itemx --help
 @itemx --usage
+@cindex @option{-h}, predefined option
+@cindex Predefined option @option{-h}
+@cindex @option{--help}, predefined option
+@cindex Predefined option @option{--help}
+@cindex @option{--usage}, predefined option
+@cindex Predefined option @option{--usage}
 Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
@@ -2441,6 +2489,12 @@ variables, Required user defined variables}.
 @item -H
 @itemx --brief-help
 @itemx --brief-usage
+@cindex @option{-H}, predefined option
+@cindex Predefined option @option{-H}
+@cindex @option{--brief-help}, predefined option
+@cindex Predefined option @option{--brief-help}
+@cindex @option{--brief-usage}, predefined option
+@cindex Predefined option @option{--brief-usage}
 Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
@@ -2450,6 +2504,8 @@ The difference with @option{--help} is that predefined options and usage
 examples are not displayed.
 
 @item --print-options
+@cindex @option{--print-options}, predefined option
+@cindex Predefined option @option{--print-options}
 Print all the long options with
 @bfunc{mbfl_getopts_print_long_switches}, then exit the script with code
 zero.
