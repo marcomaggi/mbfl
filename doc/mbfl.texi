@@ -340,7 +340,8 @@ file @file{libmbfl.sh} in the script.  To do it, we install the package
 on the system and use this code in the scripts:
 
 @example
-source "$@{MBFL_LIBRARY:=$(type -p mbfl-config && mbfl-config)@}"
+source "$@{MBFL_LIBRARY:=$(type -p mbfl-config &>/dev/null \
+   && mbfl-config)@}"
 @end example
 
 @noindent
@@ -365,7 +366,8 @@ A more reliable way to load the library is:
 script_PROGNAME=script.sh
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
-mbfl_INSTALLED=$(type -p mbfl-config && mbfl-config) &>/dev/null
+mbfl_INSTALLED=$(type -p mbfl-config &>/dev/null \
+   && mbfl-config) &>/dev/null
 mbfl_HARDCODED=./some/dir/libmbfl.sh
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do

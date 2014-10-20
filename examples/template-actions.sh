@@ -40,7 +40,7 @@ script_LICENSE=BSD
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
 mbfl_HARDCODED=
-mbfl_INSTALLED=$(type -p mbfl-config && mbfl-config) &>/dev/null
+mbfl_INSTALLED=$(type -p mbfl-config &>/dev/null && mbfl-config) &>/dev/null
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do
     if test -n "$item" -a -f "$item" -a -r "$item"
