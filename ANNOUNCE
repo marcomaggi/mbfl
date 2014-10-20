@@ -1,4 +1,4 @@
-Subject: [announce] MBFL revision 2.0b1
+Subject: [announce] MBFL revision 2.1d0
 
 		     Marco's Bash Functions Library
 		     ==============================
@@ -27,7 +27,7 @@ proper release tarballs for this package are in the download area at:
   This package makes use of the GNU Autotools.
 
 
-Notes for revision 2.0b1
+Notes for revision 2.1d0
 ------------------------
 
 * Added functions:
