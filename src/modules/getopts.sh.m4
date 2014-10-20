@@ -12,7 +12,7 @@
 #         Support for encoded argument values is provided and requires
 #       the "encode.sh" file to be included in the script.
 #
-# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013, 2014 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -69,6 +69,7 @@ mbfl_message_DEFAULT_OPTIONS="
 \t--verbose-program
 \t\tverbose execution for external program (if supported)
 \t--show-program
+\t--show-programs
 \t\tprint the command line of executed external programs
 \t--null
 \t\tuse the null character as terminator
@@ -269,7 +270,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
 	verbose-program)
             mbfl_set_option_verbose_program
 	    ;;
-	show-program)
+	show-program|show-programs)
             mbfl_set_option_show_program
 	    ;;
 	debug)

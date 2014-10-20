@@ -2380,8 +2380,11 @@ external programs that support it.  The function
 the state of this option.
 
 @item --show-program
+@itemx --show-programs
 @cindex @option{--show-program}, predefined option
 @cindex Predefined option @option{--show-program}
+@cindex @option{--show-programs}, predefined option
+@cindex Predefined option @option{--show-programs}
 Prints the command line of executed external programs.
 
 @item --debug
