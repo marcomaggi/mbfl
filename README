@@ -51,7 +51,7 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 To install from  a proper release tarball, after  unpacking the archive,
 do this:
 
-    $ cd mbfl-1.3.0
+    $ cd mbfl-2.0.0
     $ mkdir build
     $ cd build
 
@@ -71,7 +71,7 @@ site): we must  install the GNU Autotools (GNU  Automake, GNU Autoconf),
 then  we must  first run  the script  "autogen.sh" from  the top  source
 directory, to generate the needed files:
 
-    $ cd develstuff
+    $ cd mbfl
     $ sh autogen.sh
 
 we  should   now  see   the  executable   "configure"  script   and  the
@@ -79,6 +79,8 @@ we  should   now  see   the  executable   "configure"  script   and  the
 from a proper release tarball, but we have to run the "configure" script
 enabling the maintainer mode:
 
+    $ mkdir build
+    $ cd build
     $ ../configure --enable-maintainer-mode [options]
     $ make
     $ make install
@@ -95,9 +97,10 @@ to really do it:
   Notice that,  when running "make check",  we can select which  test to
 run by redefining the "TESTS" variable; for example:
 
-    $ make check TESTS=program.test
+    $ make check TESTS=tests/program.test
 
-will run only the "program.test" file.
+will  run  only   the  "program.test"  file  located   in  the  "tests/"
+subdirectory of the source tree.
 
   After building the package, and before  installing it, we can test the
 example scripts as follows:
@@ -119,7 +122,8 @@ the library  is to include at  runtime the library file  "libmbfl.sh" in
 the script; this is possible by  installing MBFL on the system and using
 this code in the scripts:
 
-  source "${MBFL_LIBRARY:=$(type -p mbfl-config && mbfl-config)}"
+  source "${MBFL_LIBRARY:=$(type -p mbfl-config &>/dev/null \
+     && mbfl-config)}"
 
 the  output of  the "mbfl-config"  script is  the full  pathname of  the
 library  file.  The  value  can be  overridden  setting the  environment
