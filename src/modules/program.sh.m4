@@ -236,14 +236,14 @@ test "$mbfl_INTERACTIVE" = yes || \
 
 function mbfl_declare_program () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
-    local pathname
+    local PATHNAME
     local next_free_index=${#mbfl_program_NAMES[@]}
 
     mbfl_program_NAMES[${next_free_index}]="$PROGRAM"
-    PROGRAM=$(mbfl_program_find "$PROGRAM")
-    test -n "$PROGRAM" && \
-        PROGRAM=$(mbfl_file_normalise "$PROGRAM")
-    mbfl_program_PATHS[${next_free_index}]="$PROGRAM"
+    PATHNAME=$(mbfl_program_find "$PROGRAM")
+    test -n "$PATHNAME" && \
+        PROGRAM=$(mbfl_file_normalise "$PATHNAME")
+    mbfl_program_PATHS[${next_free_index}]="$PATHNAME"
     return 0
 }
 function mbfl_program_validate_declared () {
@@ -271,8 +271,15 @@ function mbfl_program_found () {
         do
             if test "${mbfl_program_NAMES[$i]}" = "$PROGRAM"
 	    then
-		echo "${mbfl_program_PATHS[$i]}"
-                return 0
+		local PATHNAME="${mbfl_program_PATHS[$i]}"
+		if test -n "$PATHNAME" -a -x "$PATHNAME"
+		then
+		    echo "$PATHNAME"
+                    return 0
+		else
+		    mbfl_message_error_printf "executable not found '$PROGRAM'"
+		    exit_because_program_not_found
+		fi
             fi
         done
     fi
