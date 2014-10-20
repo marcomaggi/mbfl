@@ -35,6 +35,8 @@ Notes for revision 2.1d0
      mbfl_string_is_extended_identifier
      mbfl_string_is_extended_identifier_char
 
+* Rewritten support for running programs through sudo.
+
 
 Notes for revision 2.0b0
 ------------------------

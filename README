@@ -66,6 +66,18 @@ then do it:
     $ make check
     $ make install
 
+  We want to check the following configuration options:
+
+--with-sudo=/path/to/sudo
+   Allows the selection  of the pathname to the  executable "sudo"; this
+   pathname   is   hard-coded  in   the   library.    It  defaults   to:
+   /usr/bin/sudo.
+
+--with-whoami=/path/to/whoami
+   Allows the selection of the pathname to the executable "whoami"; this
+   pathname   is   hard-coded  in   the   library.    It  defaults   to:
+   /usr/bin/whoami.
+
   From  a repository  checkout or  snapshot  (the ones  from the  Github
 site): we must  install the GNU Autotools (GNU  Automake, GNU Autoconf),
 then  we must  first run  the script  "autogen.sh" from  the top  source

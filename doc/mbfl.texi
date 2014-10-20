@@ -3053,10 +3053,26 @@ line of output, one for each executable file found.  The first value
 
 
 This module provides an @api{} to execute a program under the privileges
-of the current user or under a more or less privileged user; it makes
-use of @command{sudo}, to allow one to execute a program as a different
-user (optionally without entering a password): refer to the
-@command{sudo} documentation for the required configuration.
+of the current user or under a more or less privileged user;
+@command{sudo} is used run a program as a different user: refer to its
+documentation for the required configuration; @command{whoami} is used
+to determine to which user the process belongs.
+
+At package configuration time we can specify which @command{sudo} and
+@command{whoami} executables to use through the following options for
+the configuration script @command{configure}:
+
+@table @code
+@item --with-sudo=/path/to/sudo
+Allows the selection of the pathname to the executable @command{sudo};
+this pathname is hard--coded in the library.  It defaults to:
+@file{/usr/bin/sudo}.
+
+@item --with-whoami=/path/to/whoami
+Allows the selection of the pathname to the executable @command{whoami};
+this pathname is hard--coded in the library.  It defaults to:
+@file{/usr/bin/whoami}.
+@end table
 
 The functions described here must be used in the following way:
 
@@ -3150,14 +3166,14 @@ because doing so puts in the background the function call (in a subshell)
 and then runs the program.
 
 Notice that we can always use @file{/dev/stdin} and @file{/dev/stdout}
-ad @var{inchan} and @var{ouchan} arguments.
+as @var{inchan} and @var{ouchan} arguments.
 @end defun
 
 
 @defun mbfl_program_replace @var{program}
 @defunx mbfl_program_replace @var{program} @var{arg} @dots{}
 Like @bfunc{mbfl_program_exec}, but execute the program through the Bash
-command @bfunc{exec}, so replacing the current process without creating a
+command @code{exec}, so replacing the current process without creating a
 new one.
 @end defun
 
@@ -3170,10 +3186,9 @@ program executed in background.
 
 @defun mbfl_program_enable_sudo
 Declare the intention to use @command{sudo} and other commands required
-to use it.  @ref{program declaring, Declaring the intention to use a
-program}.
+to use it.  The declared programs are: @command{sudo}, @command{whoami}.
 
-The declared programs are: @command{sudo}, @command{whoami}.
+This function does @strong{not} use @bfunc{mbfl_declare_program}.
 @end defun
 
 

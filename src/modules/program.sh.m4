@@ -49,20 +49,28 @@ function mbfl_program_find () {
 
 declare mbfl_program_SUDO_USER=nosudo
 declare mbfl_program_SUDO_OPTIONS
+declare -r mbfl_program_SUDO=__PATHNAME_SUDO__
+declare -r mbfl_program_WHOAMI=__PATHNAME_WHOAMI__
 declare mbfl_program_STDERR_TO_STDOUT=no
 declare mbfl_program_BASH=$BASH
 declare mbfl_program_BGPID
 
 function mbfl_program_enable_sudo () {
-    mbfl_declare_program sudo
-    mbfl_declare_program whoami
+    local SUDO=__PATHNAME_SUDO__
+    if ! test -x "$SUDO"
+    then mbfl_message_warning_printf 'executable sudo not found: "%s"\n' "$SUDO"
+    fi
+    local WHOAMI=__PATHNAME_WHOAMI__
+    if ! test -x "$WHOAMI"
+    then mbfl_message_warning_printf 'executable whoami not found: "%s"\n' "$WHOAMI"
+    fi
 }
 function mbfl_program_declare_sudo_user () {
     mbfl_mandatory_parameter(PERSONA, 1, sudo user name)
-    if mbfl_string_is_username "${PERSONA}"
-    then mbfl_program_SUDO_USER=${PERSONA}
+    if mbfl_string_is_username "$PERSONA"
+    then mbfl_program_SUDO_USER=$PERSONA
     else
-	mbfl_message_error_printf 'attempt to select invalid "sudo" user: "%s"' "${PERSONA}"
+	mbfl_message_error_printf 'attempt to select invalid "sudo" user: "%s"' "$PERSONA"
 	exit_because_invalid_username
     fi
 }
@@ -87,131 +95,112 @@ function mbfl_program_reset_sudo_options () {
 function mbfl_program_redirect_stderr_to_stdout () {
     mbfl_program_STDERR_TO_STDOUT=yes
 }
-# This function and the following 'mbfl_program_execbg' have
-# to be kept equal, with the exception of the stuff required
-# to execute the program in background!!!
+
+### --------------------------------------------------------------------
+
+# The    functions   'mbfl_program_exec',    'mbfl_program_execbg'   and
+# 'mbfl_program_replace' have  to be kept  equal, with the  exception of
+# the stuff required to execute the program as needed!!!
 function mbfl_program_exec () {
-    local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
-    local SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
-    local STDERR_TO_STDOUT=no
-    mbfl_program_SUDO_USER=nosudo
-    mbfl_program_SUDO_OPTIONS=
-    test "$PERSONA" = nosudo || {
-        SUDO=$(mbfl_program_found sudo)     || exit $?
-        WHOAMI=$(mbfl_program_found whoami) || exit $?
-        USE_SUDO=yes
-    }
-    STDERR_TO_STDOUT=${mbfl_program_STDERR_TO_STDOUT}
-    mbfl_program_STDERR_TO_STDOUT=no
-    { mbfl_option_test || mbfl_option_show_program; } && {
-        if test "$USE_SUDO" = yes -a "$PERSONA" != "$USER"
-        then echo "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" >&2
-        else echo "$@" >&2
-        fi
-    }
-    mbfl_option_test || {
-        if test "$USE_SUDO" = yes
-        then
-            # Putting  this test  inside  here avoids  using
-            # "whoami" when "sudo" is not required.
-            test "$PERSONA" = $("$WHOAMI") || {
-                if test "$STDERR_TO_STDOUT" = yes
-                then "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" 2>&1
-                else "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
-                fi
-            }
-        else
-            if test "$STDERR_TO_STDOUT" = yes
-            then "$@" 2>&1
-            else "$@"
-            fi
-        fi
-    }
+    mbfl_p_program_exec /dev/stdin /dev/stdout no-replace no-background "$@"
 }
 function mbfl_program_execbg () {
     mbfl_mandatory_parameter(INCHAN, 1, input channel)
     mbfl_mandatory_parameter(OUCHAN, 2, output channel)
     shift 2
-    local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
+    mbfl_p_program_exec "$INCHAN" "$OUCHAN" no-replace background "$@"
+}
+function mbfl_program_replace () {
+    mbfl_p_program_exec /dev/stdin /dev/stdout replace no-background "$@"
+}
+function mbfl_p_program_exec () {
+    mbfl_mandatory_parameter(INCHAN,     1, input channel)
+    mbfl_mandatory_parameter(OUCHAN,     2, output channel)
+    mbfl_mandatory_parameter(REPLACE,    3, replace argument)
+    mbfl_mandatory_parameter(BACKGROUND, 4, background argument)
+    shift 4
+    local PERSONA=$mbfl_program_SUDO_USER
+    local USE_SUDO=no
+    local SUDO=__PATHNAME_SUDO__
+    local WHOAMI=__PATHNAME_WHOAMI__
+    local USERNAME
     local SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
-    local STDERR_TO_STDOUT=no
+    local STDERR_TO_STDOUT=$mbfl_program_STDERR_TO_STDOUT
+
+    # Reset request for sudo.
     mbfl_program_SUDO_USER=nosudo
     mbfl_program_SUDO_OPTIONS=
-    test "$PERSONA" = nosudo || {
-        SUDO=$(mbfl_program_found sudo)     || exit $?
-        WHOAMI=$(mbfl_program_found whoami) || exit $?
-        USE_SUDO=yes
-    }
-    STDERR_TO_STDOUT=${mbfl_program_STDERR_TO_STDOUT}
-    mbfl_program_STDERR_TO_STDOUT='no'
+
+    # Reset stderr to stdout redirection
+    mbfl_program_STDERR_TO_STDOUT=no
+
+    # Set the variable USE_SUDO to 'yes' if  we must use sudo to run the
+    # program, otherwise leave it set to 'no'.
+    if ! test "$PERSONA" = nosudo
+    then
+        if ! test -x "$SUDO"
+	then
+	    mbfl_message_error_printf 'executable sudo not found: "%s"\n' "$SUDO"
+	    exit_because_program_not_found
+	fi
+        if ! test -x "$WHOAMI"
+	then
+	    mbfl_message_error_printf 'executable whoami not found: "%s"\n' "$WHOAMI"
+	    exit_because_program_not_found
+	fi
+	if ! USERNAME=$("$WHOAMI")
+	then
+	    mbfl_message_error 'unable to determine current user name'
+	    exit_because_failure
+	fi
+	if test "$PERSONA" != "$USERNAME"
+	then USE_SUDO=yes
+	fi
+    fi
+
+    # Print to stderr the comman line that will be executed.
     { mbfl_option_test || mbfl_option_show_program; } && {
-        if test "$USE_SUDO" = yes -a "$PERSONA" != "$USER"
+        if test "$USE_SUDO" = yes
         then echo "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" >&2
         else echo "$@" >&2
         fi
     }
-    mbfl_option_test || {
-        if test "$USE_SUDO" = yes
-        then
-            # Putting  this test  inside  here avoids  using
-            # "whoami" when "sudo" is not required.
-            test "$PERSONA" = $("$WHOAMI") || {
-                if test "$STDERR_TO_STDOUT" = yes
-                then "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN &
-                else "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN >$OUCHAN &
-                fi
-                mbfl_program_BGPID=$!
-            }
-        else
-            if test "$STDERR_TO_STDOUT" = yes
-            then "$@" <$INCHAN 2>&1 >$OUCHAN &
-            else "$@" <$INCHAN >$OUCHAN &
-            fi
-            mbfl_program_BGPID=$!
-        fi
-    }
-}
 
-## --------------------------------------------------------------------
-
-function mbfl_program_replace () {
-    local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
-    local SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
-    local STDERR_TO_STDOUT=no
-    mbfl_program_SUDO_USER=nosudo
-    mbfl_program_SUDO_OPTIONS=
-    test "$PERSONA" = nosudo || {
-        SUDO=$(mbfl_program_found sudo)     || exit $?
-        WHOAMI=$(mbfl_program_found whoami) || exit $?
-        USE_SUDO=yes
-    }
-    STDERR_TO_STDOUT=${mbfl_program_STDERR_TO_STDOUT}
-    mbfl_program_STDERR_TO_STDOUT=no
-    { mbfl_option_test || mbfl_option_show_program; } && {
-        if test "$USE_SUDO" = yes -a "$PERSONA" != "$USER"
-        then echo exec "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" >&2
-        else echo exec "$@" >&2
-        fi
-	# If  this is  a  dry  run: after  printing  the  program to  be
-	# executed we exit, because in a wet run the script would exit.
-	mbfl_option_test && exit_success
-    }
+    # If this run is not dry: actually run the program.
     mbfl_option_test || {
-        if test "$USE_SUDO" = yes
+	local EXEC
+	if test "$REPLACE" = replace
+	then EXEC=exec
+	fi
+        if test yes = "$USE_SUDO"
         then
-            # Putting  this test  inside  here avoids  using
-            # "whoami" when "sudo" is not required.
-            test "$PERSONA" = $("$WHOAMI") || {
-                if test "$STDERR_TO_STDOUT" = yes
-                then exec "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" 2>&1
-                else exec "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
-                fi
-            }
+	    if test "$BACKGROUND" = background
+	    then
+		if test "$STDERR_TO_STDOUT" = yes
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN      >$OUCHAN
+		fi
+		mbfl_program_BGPID=$!
+	    else
+		if test "$STDERR_TO_STDOUT" = yes
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN &
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN      >$OUCHAN &
+		fi
+	    fi
         else
-            if test "$STDERR_TO_STDOUT" = yes
-            then exec "$@" 2>&1
-            else exec "$@"
-            fi
+	    if test "$BACKGROUND" = background
+	    then
+		if test "$STDERR_TO_STDOUT" = yes
+		then $EXEC "$@" <$INCHAN 2>&1 >$OUCHAN &
+		else $EXEC "$@" <$INCHAN      >$OUCHAN &
+		fi
+		mbfl_program_BGPID=$!
+	    else
+		if test "$STDERR_TO_STDOUT" = yes
+		then $EXEC "$@" <$INCHAN 2>&1 >$OUCHAN
+		else $EXEC "$@" <$INCHAN      >$OUCHAN
+		fi
+	    fi
         fi
     }
 }

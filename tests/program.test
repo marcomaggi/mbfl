@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2004, 2005, 2012, 2013 Marco Maggi
+# Copyright (c) 2004, 2005, 2012, 2013, 2014 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -86,29 +86,27 @@ function program-3.5 () {
 #page
 
 function program-4.1 () {
-    local CODE SUDO
+    local CODE
     mbfl_program_enable_sudo
-    SUDO=$(mbfl_program_found sudo) || exit $?
     mbfl_set_option_test
     {
 	mbfl_program_declare_sudo_user root
 	echo 123 | mbfl_program_exec cat 2>&1 | \
-            dotest-output "$SUDO -u root cat"
+            dotest-output "$mbfl_program_SUDO -u root cat"
 	CODE=$?
     }
     mbfl_unset_option_test
     return $CODE
 }
 function program-4.2 () {
-    local CODE SUDO
+    local CODE
     mbfl_program_enable_sudo
-    SUDO=$(mbfl_program_found sudo) || exit $?
     mbfl_set_option_test
     {
 	mbfl_program_declare_sudo_user root
 	mbfl_program_declare_sudo_options -H VAL=val
 	echo 123 | mbfl_program_exec cat 2>&1 | \
-            dotest-output "$SUDO -H VAL=val -u root cat"
+            dotest-output "$mbfl_program_SUDO -H VAL=val -u root cat"
 	CODE=$?
     }
     mbfl_unset_option_test
