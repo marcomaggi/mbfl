@@ -129,17 +129,7 @@ will run "examples/template-actions.sh" with the flags "--help".
 4. Usage
 --------
 
-Read the documentation in Texinfo format.   Briefly: the best way to use
-the library  is to include at  runtime the library file  "libmbfl.sh" in
-the script; this is possible by  installing MBFL on the system and using
-this code in the scripts:
-
-  source "${MBFL_LIBRARY:=$(type -p mbfl-config &>/dev/null \
-     && mbfl-config)}"
-
-the  output of  the "mbfl-config"  script is  the full  pathname of  the
-library  file.  The  value  can be  overridden  setting the  environment
-variable "MBFL_LIBRARY".
+Read the documentation in Texinfo format.
 
 
 A. Credits

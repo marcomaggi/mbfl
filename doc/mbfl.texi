@@ -176,127 +176,7 @@ Indexes
 * variable index::              An entry for each variable.
 @c * type index::                  An entry for each type.
 
-@detailmenu
- --- The Detailed Node Listing ---
-
-Overview of the package
-
-* overview quick::              Quick run time loading.
-* overview reliable::           Reliable run time loading.
-* overview direct::             Direct inclusion.
-* overview notes::              Notes.
-
-Using the script preprocessor
-
-* preprocessor invoking::       Invoking the preprocessor.
-* preprocessor macros::         Macros library.
-
-Manipulating files and pathnames
-
-* file names::                  Manipulating file names.
-* file commands::               Manipulating files with external
-                                commands.
-* file testing::                Testing file existence and the like.
-* file read and write::         Reading and writing files with
-                                privileges.
-* file misc::                   Miscellaneous commands.
-
-File names
-
-* file name parts::             Splitting a file name into its
-                                components.
-* file name path::              Handling relative pathnames.
-* file name system::            Finding pathnames on the system.
-
-File Commands
-
-* file commands listing::       Retrieving informations.
-* file commands mkdir::         Creating directories.
-* file commands copy::          Copying files.
-* file commands move::          Moving files.
-* file commands removing::      Removing files and directories.
-* file commands tar::           Manipulating tar archives.
-* file commands symlink::       Creating symbolic links.
-* file commands perms::         Set/get file permissions.
-* file commands compress::      Compressing files.
-
-Parsing command line options
-
-* getopts arguments::           Arguments.
-* getopts usage::               Using the module.
-* getopts options::             Predefined options.
-* getopts interface::           Interface functions.
-
-Using external programs
-
-* program testing::             Testing a script and running programs.
-* program checking::            Checking programs existence.
-* program executing::           Executing a program.
-* program declaring::           Declaring the intention to use a
-                                program.
-
-Interfaces to external programs
-
-* interfaces at::               Scheduling jobs for later execution.
-
-Manipulating strings
-
-* string quote::                Quoted characters.
-* string inspection::           Inspecting a string.
-* string splitting::            Splitting a string.
-* string case::                 Converting between upper and lower case.
-* string class::                Matching a string with a class.
-* string misc::                 Miscellaneous functions.
-
-Manipulating variables
-
-* variables arrays::            Manipulating arrays.
-* variables colon::             Manipulating colon variables.
-
-Interfacing with the system
-
-* system user id::              Converting user identifiers.
-* system file perms::           Converting file permissions.
-
-Main function
-
-* main function::               Driving script execution.
-* main exit::                   Declaring exit codes.
-
-Building test suites
-
-* testing intro::               A way to organise a test suite.
-* testing shell::               A script to run tests.
-* testing config::              Configuring the package.
-* testing running::             Running tests.
-* testing compare::             Validating results by comparing.
-* testing output::              Validating results by output.
-* testing messages::            Printing messages from test functions.
-* testing files::               Handling files in tests.
-
-Handling files in tests
-
-* testing files directories::   Directories.
-* testing files files::         Files.
-* testing files examples::      Examples.
-
-Examples for sending email
-
-* sendmail message::            How to compose a test email message.
-* sendmail plain::              Just send an email message.
-* sendmail connector::          Send email through a process in
-                                background.
-* sendmail gnutls::             Using @command{gnutls-cli} as connector.
-* sendmail script::             Sending email.
-
-Using @command{gnutls-cli} as connector
-
-* sendmail gnutls now::         Immediate encrypted bridge.
-* sendmail gnutls delay::       Delayed encrypted bridge.
-
-@end detailmenu
 @end menu
-
 @end ifnottex
 
 @c page
@@ -318,24 +198,24 @@ utilities like @command{sed}, @command{grep} and @command{ed}.
 The library is better used starting from the template scripts in the
 @file{examples/} subdirectory of the distribution, especially
 @file{template.sh} and @file{template-actions.sh}.  This is because with
-@mbfl{} some choices have been made to reduce the application dependent
+@mbfl{} some choices have been made to reduce the application--dependent
 part of the script to the smallest dimension; if we follow another
 schema, @mbfl{} modules may be inadequate.  This is especially true for
 the options parsing module.
 
 @menu
-* overview quick::              Quick run time loading.
-* overview reliable::           Reliable run time loading.
+* overview quick::              Quick run--time loading.
+* overview reliable::           Reliable run--time loading.
 * overview direct::             Direct inclusion.
 * overview notes::              Notes.
 @end menu
 
 @c page
 @node overview quick
-@section Quick run time loading
+@section Quick run--time loading
 
 
-The easiest way to use the library is to include at run time the library
+The easiest way to use the library is to include at run--time the library
 file @file{libmbfl.sh} in the script.  To do it, we install the package
 on the system and use this code in the scripts:
 
@@ -357,7 +237,7 @@ environment variable.
 
 @c page
 @node overview reliable
-@section Reliable run time loading
+@section Reliable run--time loading
 
 
 A more reliable way to load the library is:
