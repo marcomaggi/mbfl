@@ -3028,6 +3028,7 @@ type -ap @var{program}
 @noindent
 that looks for a program in the current search path.  It prints the full
 pathname of the program found, or an empty string if nothing is found.
+The exit status is always @code{0}.
 
 @var{program} may be a program name with no directory part (examples:
 @command{sed}, @command{grep}), or an absolute or relative pathname

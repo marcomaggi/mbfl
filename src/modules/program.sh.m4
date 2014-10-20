@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013, 2014 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -31,7 +31,7 @@
 function mbfl_program_find () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
     local item
-    for item in $(type -ap "$PROGRAM")
+    type -ap "$PROGRAM" | while read item
     do
 	if mbfl_file_is_executable "$item"
 	then
