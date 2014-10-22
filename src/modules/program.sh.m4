@@ -177,14 +177,14 @@ function mbfl_p_program_exec () {
 	    if test "$BACKGROUND" = background
 	    then
 		if test "$STDERR_TO_STDOUT" = yes
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN      >$OUCHAN
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN &
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN      >$OUCHAN &
 		fi
 		mbfl_program_BGPID=$!
 	    else
 		if test "$STDERR_TO_STDOUT" = yes
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN &
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN      >$OUCHAN &
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN      >$OUCHAN
 		fi
 	    fi
         else
