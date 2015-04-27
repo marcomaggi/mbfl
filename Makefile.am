@@ -86,7 +86,7 @@ MBFLPP_RUN	= $(MBFLPP_ENV) $(BASH_PROGRAM) $(MBFLPP_SCRIPT)
 ## --------------------------------------------------------------------
 
 MBFLPP_MODULES_FLAGS	= --include=$(srcdir)/src/lib				\
-			  --library=$(srcdir)/lib/preprocessor.m4	 	\
+			  --library=$(srcdir)/src/lib/preprocessor.m4	 	\
 			  --define=__PKGDATADIR__=$(mbfldatadir)		\
 			  --define=__PACKAGE_NAME__=$(PACKAGE)			\
 			  --define=__PACKAGE_VERSION__=$(PACKAGE_VERSION)	\
