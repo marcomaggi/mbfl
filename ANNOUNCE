@@ -37,6 +37,9 @@ Notes for revision 2.1d0
 
 * Rewritten support for running programs through sudo.
 
+* For  sendmail-mbfl:  renamed  files  ".hostinfo"  and  ".authinfo"  to
+  ".mbfl-hostinfo" and ".mbfl-authinfo".
+
 
 Notes for revision 2.0b0
 ------------------------

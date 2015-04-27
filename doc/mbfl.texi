@@ -60,7 +60,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2014
+@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015
 
 @c page
 @c ------------------------------------------------------------
@@ -5504,7 +5504,7 @@ requires an encrypted session, can be specified using the
 
 To establish an encrypted session, the script needs to acquire the
 credentials of the user.  These can be stored in a configuration file
-named @file{~/.authinfo}, which looks like this:
+named @file{~/.mbfl-authinfo}, which looks like this:
 
 @smallexample
 machine smtp.gmail.com login marco@@gmail.com password abcdefghilm
@@ -5594,7 +5594,7 @@ Use @command{gnutls-cli} as connector for encrypted sessions.
 
 @item --auth-info=@var{file}
 Select the file, in @code{netrc} format, from which read the
-authorisation credentials.  Defaults to @file{~/.authinfo}.
+authorisation credentials.  Defaults to @file{~/.mbfl-authinfo}.
 
 @item --username=@var{user}
 Specify a string used to select an account in the authorisation file.
@@ -5645,7 +5645,7 @@ authorisation type is left unspecified: The script automatically looks
 into the default hostinfo file.  Informations from command line options
 supersede informations from the hostinfo file.
 
-The default pathname for the hostinfo file is @file{$HOME/.hostinfo} and
+The default pathname for the hostinfo file is @file{$HOME/.mbfl-hostinfo} and
 can be overridden by the @option{--host-info} option.  The format of
 this file is line oriented: Blank lines are ignored, lines starting with
 a @code{#} character are comments, lines starting with @code{machine}
@@ -5661,7 +5661,7 @@ machine <host> service <name> port <number> session <type> auth <type>
 for example:
 
 @smallexample
-# ~/.hostinfo --
+# ~/.mbfl-hostinfo --
 #
 
 # SMTP servers
@@ -5681,7 +5681,7 @@ machine pop.googlemail.com service pop3 port 995  session tls auth userpass
 so that we can extract a record with the following script:
 
 @example
-file=~/.hostinfo
+file=~/.mbfl-hostinfo
 host=gmail
 service=smtp
 
@@ -5716,7 +5716,7 @@ Notice that when using the hostinfo file, the value of the
 
 The only way the script has to acquire the user name and password to log
 into the remote server, is by reading the authinfo file.  By default,
-its pathname is @file{$HOME/.authinfo}, it can be overridden with the
+its pathname is @file{$HOME/.mbfl-authinfo}, it can be overridden with the
 @option{--auth-info} option.
 
 Its format is a simplified version of the @code{netrc} file format:
@@ -5741,7 +5741,7 @@ machine relay.poste.it login two@@poste.it  password 0123456789
 so that we can extract a record with the following script:
 
 @example
-file=~/.authinfo
+file=~/.mbfl-authinfo
 host=poste
 username=marco
 
@@ -5894,7 +5894,7 @@ The pathname of the file holding informations about known @smtp{}
 servers.  @ref{sendmail script hostinfo, Reading host informations from
 file}.
 
-By default it is set to @file{~/.hostinfo}.
+By default it is set to @file{~/.mbfl-hostinfo}.
 @end defvr
 
 
@@ -5903,7 +5903,7 @@ The pathname of the file holding informations about known accounts at
 @smtp{} servers.  @ref{sendmail script authinfo, Reading authentication
 credentials from file}.
 
-By default it is set to @file{~/.authinfo}.
+By default it is set to @file{~/.mbfl-authinfo}.
 @end defvr
 
 

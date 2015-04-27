@@ -9,7 +9,7 @@
 #	It supports plain connections and encrypted
 #	connections using external programs.
 #
-# Copyright (c) 2009, 2010 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2009, 2010, 2015 Marco Maggi <marcomaggi@gna.org>
 #
 # This  program  is free  software:  you  can redistribute  it
 # and/or modify it  under the terms of the  GNU General Public
@@ -94,7 +94,7 @@ mbfl_declare_option HOST \
 mbfl_declare_option PORT \
     ''        p port witharg 'select the server port'
 mbfl_declare_option HOST_INFO \
-    "$HOME/.hostinfo" '' host-info witharg 'select the hostinfo file'
+    "$HOME/.mbfl-hostinfo" '' host-info witharg 'select the hostinfo file'
 
 mbfl_declare_option TIMEOUT \
     5 '' timeout witharg 'select the connection timeout in seconds'
@@ -112,7 +112,7 @@ mbfl_declare_option OPENSSL_CONNECTOR \
     no '' openssl noarg 'use openssl for TLS'
 
 mbfl_declare_option AUTH_FILE \
-    "$HOME/.authinfo" '' auth-info witharg 'select the authinfo file'
+    "$HOME/.mbfl-authinfo" '' auth-info witharg 'select the authinfo file'
 mbfl_declare_option AUTH_USER \
     '' '' username witharg 'select the authorisation user'
 

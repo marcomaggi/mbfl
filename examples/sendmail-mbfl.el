@@ -1,6 +1,6 @@
 ;;; sendmail-mbfl.el --- send mail with sendmail-mbfl.sh
 
-;; Copyright (C) 2009, 2013  Marco Maggi <marcomaggi@gna.org>
+;; Copyright (C) 2009, 2013, 2015  Marco Maggi <marcomaggi@gna.org>
 ;; Copyright (C) 1995,  1996, 1999, 2000, 2001, 2002,  2003, 2004, 2005,
 ;; 2006, 2007, 2008 Free Software Foundation, Inc.
 
@@ -181,13 +181,13 @@ default it is set to `sendmail-mbfl-username'."
   :type 'function
   :group 'sendmail-mbfl)
 
-(defcustom sendmail-mbfl-host-info (expand-file-name "~/.hostinfo")
+(defcustom sendmail-mbfl-host-info (expand-file-name "~/.mbfl-hostinfo")
   "The pathname of the file holding informations about known SMTP servers."
   :version "22.3"
   :type 'string
   :group 'sendmail-mbfl)
 
-(defcustom sendmail-mbfl-auth-info (expand-file-name "~/.authinfo")
+(defcustom sendmail-mbfl-auth-info (expand-file-name "~/.mbfl-authinfo")
   "The pathname of the file holding informations about known accounts at SMTP servers."
   :version "22.3"
   :type 'string
