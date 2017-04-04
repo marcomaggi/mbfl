@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2017 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -102,7 +102,10 @@ function mbfl_program_redirect_stderr_to_stdout () {
 # 'mbfl_program_replace' have  to be kept  equal, with the  exception of
 # the stuff required to execute the program as needed!!!
 function mbfl_program_exec () {
-    mbfl_p_program_exec /dev/stdin /dev/stdout no-replace no-background "$@"
+    # We use /dev/fd/0 and  /dev/fd/1 because /dev/stdin and /dev/stdout
+    # do not exist when the script is run from a cron job.
+    local INCHAN=/dev/fd/0 OUCHAN=/dev/fd/1
+    mbfl_p_program_exec $INCHAN $OUCHAN no-replace no-background "$@"
 }
 function mbfl_program_execbg () {
     mbfl_mandatory_parameter(INCHAN, 1, input channel)
@@ -111,7 +114,10 @@ function mbfl_program_execbg () {
     mbfl_p_program_exec "$INCHAN" "$OUCHAN" no-replace background "$@"
 }
 function mbfl_program_replace () {
-    mbfl_p_program_exec /dev/stdin /dev/stdout replace no-background "$@"
+    # We use /dev/fd/0 and  /dev/fd/1 because /dev/stdin and /dev/stdout
+    # do not exist when the script is run from a cron job.
+    local INCHAN=/dev/fd/0 OUCHAN=/dev/fd/1
+    mbfl_p_program_exec $INCHAN $OUCHAN replace no-background "$@"
 }
 function mbfl_p_program_exec () {
     mbfl_mandatory_parameter(INCHAN,     1, input channel)
@@ -177,28 +183,44 @@ function mbfl_p_program_exec () {
 	    if test "$BACKGROUND" = background
 	    then
 		if test "$STDERR_TO_STDOUT" = yes
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN &
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN      >$OUCHAN &
+		   # The  order  of  redirections is  important.   First
+		   # redirect stdout to $OUCHAN, then redirect stderr to
+		   # stdout.   This  way  both  stdout  and  stderr  are
+		   # redirected to $OUCHAN.
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN >&$OUCHAN 2>&1 &
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN >&$OUCHAN      &
 		fi
 		mbfl_program_BGPID=$!
 	    else
 		if test "$STDERR_TO_STDOUT" = yes
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN      >$OUCHAN
+		   # The  order  of  redirections is  important.   First
+		   # redirect stdout to $OUCHAN, then redirect stderr to
+		   # stdout.   This  way  both  stdout  and  stderr  are
+		   # redirected to $OUCHAN.
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN >&$OUCHAN 2>&1
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN >&$OUCHAN
 		fi
 	    fi
         else
 	    if test "$BACKGROUND" = background
 	    then
 		if test "$STDERR_TO_STDOUT" = yes
-		then $EXEC "$@" <$INCHAN 2>&1 >$OUCHAN &
-		else $EXEC "$@" <$INCHAN      >$OUCHAN &
+		   # The  order  of  redirections is  important.   First
+		   # redirect stdout to $OUCHAN, then redirect stderr to
+		   # stdout.   This  way  both  stdout  and  stderr  are
+		   # redirected to $OUCHAN.
+		then $EXEC "$@" <$INCHAN >&$OUCHAN 2>&1 &
+		else $EXEC "$@" <$INCHAN >&$OUCHAN      &
 		fi
 		mbfl_program_BGPID=$!
 	    else
 		if test "$STDERR_TO_STDOUT" = yes
-		then $EXEC "$@" <$INCHAN 2>&1 >$OUCHAN
-		else $EXEC "$@" <$INCHAN      >$OUCHAN
+		   # The  order  of  redirections is  important.   First
+		   # redirect stdout to $OUCHAN, then redirect stderr to
+		   # stdout.   This  way  both  stdout  and  stderr  are
+		   # redirected to $OUCHAN.
+		then $EXEC "$@" <$INCHAN >&$OUCHAN 2>&1
+		else $EXEC "$@" <$INCHAN >&$OUCHAN
 		fi
 	    fi
         fi
