@@ -60,7 +60,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015
+@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017
 
 @c page
 @c ------------------------------------------------------------
@@ -3045,8 +3045,24 @@ mbfl_program_exec ls <@var{inchan} >@var{ouchan} &
 because doing so puts in the background the function call (in a subshell)
 and then runs the program.
 
-Notice that we can always use @file{/dev/stdin} and @file{/dev/stdout}
-as @var{inchan} and @var{ouchan} arguments.
+Notice that we can always use numeric file descriptors as @var{inchan} and @var{ouchan} arguments,
+for example:
+
+@example
+mbfl_program_execbg &0 &1 /bin/ls
+@end example
+
+@noindent
+the readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0}, @file{/dev/fd/1} are
+also usable as:
+
+@example
+mbfl_program_execbg /dev/stdin /dev/stdout /bin/ls
+@end example
+
+@noindent
+but remember that the aliases are @strong{not} available, for example, when the script is run from a
+cron job.
 @end defun
 
 

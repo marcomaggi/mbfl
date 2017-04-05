@@ -102,9 +102,9 @@ function mbfl_program_redirect_stderr_to_stdout () {
 # 'mbfl_program_replace' have  to be kept  equal, with the  exception of
 # the stuff required to execute the program as needed!!!
 function mbfl_program_exec () {
-    # We use /dev/fd/0 and  /dev/fd/1 because /dev/stdin and /dev/stdout
-    # do not exist when the script is run from a cron job.
-    local INCHAN=/dev/fd/0 OUCHAN=/dev/fd/1
+    # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
+    # /dev/fd/1 do not exist when the script is run from a cron job.
+    local INCHAN=0 OUCHAN=1
     mbfl_p_program_exec $INCHAN $OUCHAN no-replace no-background "$@"
 }
 function mbfl_program_execbg () {
@@ -114,9 +114,9 @@ function mbfl_program_execbg () {
     mbfl_p_program_exec "$INCHAN" "$OUCHAN" no-replace background "$@"
 }
 function mbfl_program_replace () {
-    # We use /dev/fd/0 and  /dev/fd/1 because /dev/stdin and /dev/stdout
-    # do not exist when the script is run from a cron job.
-    local INCHAN=/dev/fd/0 OUCHAN=/dev/fd/1
+    # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
+    # /dev/fd/1 do not exist when the script is run from a cron job.
+    local INCHAN=0 OUCHAN=1
     mbfl_p_program_exec $INCHAN $OUCHAN replace no-background "$@"
 }
 function mbfl_p_program_exec () {
@@ -187,8 +187,8 @@ function mbfl_p_program_exec () {
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
 		   # redirected to $OUCHAN.
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN >&$OUCHAN 2>&1 &
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN >&$OUCHAN      &
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN 2>&1 &
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN      &
 		fi
 		mbfl_program_BGPID=$!
 	    else
@@ -197,8 +197,8 @@ function mbfl_p_program_exec () {
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
 		   # redirected to $OUCHAN.
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN >&$OUCHAN 2>&1
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <$INCHAN >&$OUCHAN
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN 2>&1
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN
 		fi
 	    fi
         else
@@ -209,8 +209,8 @@ function mbfl_p_program_exec () {
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
 		   # redirected to $OUCHAN.
-		then $EXEC "$@" <$INCHAN >&$OUCHAN 2>&1 &
-		else $EXEC "$@" <$INCHAN >&$OUCHAN      &
+		then $EXEC "$@" <&$INCHAN >&$OUCHAN 2>&1 &
+		else $EXEC "$@" <&$INCHAN >&$OUCHAN      &
 		fi
 		mbfl_program_BGPID=$!
 	    else
@@ -219,8 +219,8 @@ function mbfl_p_program_exec () {
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
 		   # redirected to $OUCHAN.
-		then $EXEC "$@" <$INCHAN >&$OUCHAN 2>&1
-		else $EXEC "$@" <$INCHAN >&$OUCHAN
+		then $EXEC "$@" <&$INCHAN >&$OUCHAN 2>&1
+		else $EXEC "$@" <&$INCHAN >&$OUCHAN
 		fi
 	    fi
         fi
