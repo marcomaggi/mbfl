@@ -108,8 +108,8 @@ function mbfl_program_exec () {
     mbfl_p_program_exec $INCHAN $OUCHAN no-replace no-background "$@"
 }
 function mbfl_program_execbg () {
-    mbfl_mandatory_parameter(INCHAN, 1, input channel)
-    mbfl_mandatory_parameter(OUCHAN, 2, output channel)
+    mbfl_mandatory_parameter(INCHAN, 1, numeric input channel)
+    mbfl_mandatory_parameter(OUCHAN, 2, numeric output channel)
     shift 2
     mbfl_p_program_exec "$INCHAN" "$OUCHAN" no-replace background "$@"
 }

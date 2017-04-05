@@ -3027,7 +3027,7 @@ Does all the same things of @bfunc{mbfl_program_exec}, running the given
 command line as:
 
 @example
-@var{program} @var{arg} ... <@var{inchan} >@var{ouchan} &
+@var{program} @var{arg} ... <&@var{inchan} >&@var{ouchan} &
 @end example
 
 @noindent
@@ -3038,31 +3038,23 @@ is the value of @code{$!} right after the process execution.
 Using this function is different from calling:
 
 @example
-mbfl_program_exec ls <@var{inchan} >@var{ouchan} &
+mbfl_program_exec ls <&@var{inchan} >&@var{ouchan} &
 @end example
 
 @noindent
 because doing so puts in the background the function call (in a subshell)
 and then runs the program.
 
-Notice that we can always use numeric file descriptors as @var{inchan} and @var{ouchan} arguments,
-for example:
+Notice that we @strong{must} always use numeric file descriptors as @var{inchan} and @var{ouchan}
+arguments.  Also we can always use the default file descriptors, for example:
 
 @example
-mbfl_program_execbg &0 &1 /bin/ls
+mbfl_program_execbg 0 1 /bin/ls
 @end example
 
-@noindent
-the readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0}, @file{/dev/fd/1} are
-also usable as:
-
-@example
-mbfl_program_execbg /dev/stdin /dev/stdout /bin/ls
-@end example
-
-@noindent
-but remember that the aliases are @strong{not} available, for example, when the script is run from a
-cron job.
+The readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0}, @file{/dev/fd/1} are
+@strong{not} usable as @var{inchan} and @var{ouchan} arguments (remember that the aliases are
+@strong{not} available, for example, when the script is run from a cron job).
 @end defun
 
 
