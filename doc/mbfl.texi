@@ -73,22 +73,22 @@ library of functions for the @gnu{} Bash shell.  The package is
 distributed under the terms of the @gnu{} Lesser General Public License
 (@lgpl{}); the home page is at:
 
-@center @url{http://marcomaggi.github.com/mbfl.html}
+@center @url{https://marcomaggi.github.com/mbfl.html}
 
 @noindent
 development takes place at:
 
-@center @url{http://github.com/marcomaggi/mbfl/}
+@center @url{https://github.com/marcomaggi/mbfl/}
 
 @noindent
 and as backup at:
 
-@center @url{http://sourceforge.net/projects/mbfl/}
+@center @url{https://bitbucket.org/marcomaggi/mbfl}
 
 @noindent
 proper release tarballs for this package are in the download area at:
 
-@center @url{http://sourceforge.net/projects/mbfl/files/}
+@center @url{https://bitbucket.org/marcomaggi/mbfl/downloads/}
 
 @noindent
 Copyright @copyright{} @value{COPYRIGHT_YEARS} by @value{AUTHOR} @value{AUTHOR_EMAIL}
