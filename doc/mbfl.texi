@@ -996,6 +996,7 @@ false otherwise.
 * file commands symlink::       Creating symbolic links.
 * file commands tar::           Manipulating tar archives.
 * file commands perms::         Set/get file permissions.
+* file commands owner::         Setting file owner and group.
 * file commands compress::      Compressing files.
 * file commands stat::          Inspecting files and directories.
 @end menu
@@ -1388,6 +1389,40 @@ Set the access permissions for @var{pathname}; @var{mode} must be in a
 form accepted by @command{chmod}.
 @end defun
 
+@c page
+@node file commands owner
+@subsection Setting file owner and group
+
+
+@cindex Files, owner and group
+@cindex Owner of of files
+@cindex Group of of files
+@CindexCommand{chown}
+@CindexCommand{chgrp}
+
+
+@defun mbfl_file_enable_owner_and_group
+Declare the intention to use the programs required to change file owner and group.  @ref{program
+declaring, Declaring the intention to use a program}
+
+The programs are: @command{chown}, @command{chgrp}.
+@end defun
+
+
+To change the file owner and group one may request the use of @command{sudo}: just request a user
+before invoking the following function.  @ref{program executing, Executing a program}
+
+
+@defun mbfl_file_set_owner @var{owner} @var{pathname}
+Change the file owner for @var{pathname}; @var{owner} must be in a form accepted by @command{chown}.
+If verbose mode is enabled: hand the @option{--verbose} option to @command{chown}.
+@end defun
+
+
+@defun mbfl_file_set_group @var{group} @var{pathname}
+Change the file group for @var{pathname}; @var{group} must be in a form accepted by @command{chgrp}.
+If verbose mode is enabled: hand the @option{--verbose} option to @command{chgrp}.
+@end defun
 
 @c page
 @node file commands compress

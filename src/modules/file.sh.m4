@@ -8,7 +8,7 @@
 #
 #       This is a collection of file functions for the GNU BASH shell.
 #
-# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013, 2017 Marco Maggi <marcomaggi@gna.org>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -817,6 +817,36 @@ function mbfl_file_set_permissions () {
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     CHMOD=$(mbfl_program_found chmod) || exit $?
     mbfl_program_exec ${CHMOD} "${PERMISSIONS}" "${PATHNAME}"
+}
+
+#page
+## ------------------------------------------------------------
+## File owner and group functions.
+## ------------------------------------------------------------
+
+function mbfl_file_enable_owner_and_group () {
+    mbfl_declare_program chown
+    mbfl_declare_program chgrp
+}
+function mbfl_file_set_owner () {
+    local CHOWN CHOWN_FLAGS
+    mbfl_mandatory_parameter(OWNER, 1, owner)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    CHOWN=$(mbfl_program_found chown) || exit $?
+    if mbfl_option_verbose
+    then CHOWN_FLAGS='--verbose'
+    fi
+    mbfl_program_exec ${CHOWN} "${OWNER}" "${PATHNAME}" $CHOWN_FLAGS
+}
+function mbfl_file_set_group () {
+    local CHGRP CHGRP_FLAGS
+    mbfl_mandatory_parameter(GROUP, 1, group)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    CHGRP=$(mbfl_program_found chgrp) || exit $?
+    if mbfl_option_verbose
+    then CHGRP_FLAGS='--verbose'
+    fi
+    mbfl_program_exec ${CHGRP} "${GROUP}" "${PATHNAME}" $CHGRP_FLAGS
 }
 
 #page
