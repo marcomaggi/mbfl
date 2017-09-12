@@ -13,7 +13,7 @@
 #         The purpose of this script is to understand how to
 #       send a message through a process in background.
 #
-# Copyright (c) 2009, 2010 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2009, 2010 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This  program  is free  software:  you  can redistribute  it
 # and/or modify it  under the terms of the  GNU General Public

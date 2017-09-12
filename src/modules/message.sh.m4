@@ -10,7 +10,7 @@
 #       purpose is to allow easy displaying of error and "verbose"
 #       messages to the stderr channel of a script.
 #
-# Copyright (c) 2003-2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the

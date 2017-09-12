@@ -9,7 +9,7 @@
 #
 #	Preprocessor for BASH scripts using MBFL.
 #
-# Copyright (c) 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2005, 2009 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 #
 # This  program  is free  software:  you  can redistribute  it
