@@ -1,4 +1,4 @@
-Subject: [announce] MBFL revision 2.1b0
+Subject: [announce] MBFL revision 2.2.0
 
 		     Marco's Bash Functions Library
 		     ==============================
@@ -25,6 +25,12 @@ proper release tarballs for this package are in the download area at:
 	   <https://bitbucket.org/marcomaggi/mbfl/downloads/>
 
   This package makes use of the GNU Autotools.
+
+
+Notes for revision 2.2.0
+------------------------
+
+* Added file functions to change owner and group.
 
 
 Notes for revision 2.1b0

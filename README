@@ -52,7 +52,7 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 To install from  a proper release tarball, after  unpacking the archive,
 do this:
 
-    $ cd mbfl-2.0.0
+    $ cd mbfl-2.2.0
     $ mkdir build
     $ cd build
 
