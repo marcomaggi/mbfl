@@ -4,9 +4,27 @@
 AC_PREREQ([2.69])
 AC_INIT([Marcos Bash Functions Library],[2.2.0],[marco.maggi-ipsu@poste.it],
   [mbfl],[http://github.com/marcomaggi/mbfl])
+dnl This is the revision number of this configure.ac
+AC_REVISION([0.1])
+AC_COPYRIGHT([Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+
+This is  free software; you can  redistribute it and/or modify  it under
+the terms of  the GNU Lesser General Public License  as published by the
+Free Software Foundation; either version 3.0 of the License, or (at your
+option) any later version.
+
+This library  is distributed  in the  hope that it  will be  useful, but
+WITHOUT   ANY   WARRANTY;  without   even   the   implied  warranty   of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this library; if not,  write to the Free Software Foundation,
+Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+])
 AC_CONFIG_SRCDIR([src/])
-AC_CONFIG_MACRO_DIR([autotools])
-AC_CONFIG_AUX_DIR([autotools])
+AC_CONFIG_MACRO_DIR([meta/autotools])
+AC_CONFIG_AUX_DIR([meta/autotools])
 AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip subdir-objects])
 AM_MAINTAINER_MODE
 
@@ -51,8 +69,8 @@ fi
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 
 AC_CONFIG_FILES([Makefile]
-  [meta/mbfl-config]
-  [meta/mbfl.pc])
+  [meta/scripts/mbfl-config]
+  [meta/scripts/mbfl.pc])
 AC_OUTPUT
 
 ### end of file

@@ -1,23 +1,24 @@
 ## Process this file with automake to produce Makefile.in
 
-ACLOCAL_AMFLAGS		= -I autotools
+ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
 EXTRA_DIST		= INSTALL configure.sh ANNOUNCE
 CLEANFILES		=
 dist_doc_DATA		= README COPYING
 
-#page
+
 #### meta infrastructure
 
+EXTRA_DIST		+= meta/scripts/mbfl.pc.in
 pkgconfigdir		= $(libdir)/pkgconfig
-dist_pkgconfig_DATA	= meta/mbfl.pc
+nodist_pkgconfig_DATA	= meta/scripts/mbfl.pc
 
-dist_bin_SCRIPTS	= meta/mbfl-config
+dist_bin_SCRIPTS	= meta/scripts/mbfl-config
 
 autoconfdir		= $(datadir)/aclocal/$(PACKAGE)/$(PACKAGE_VERSION)
-dist_autoconf_DATA	= meta/mbfl.m4
+dist_autoconf_DATA	= meta/autoconf/mbfl.m4
 
-#page
+
 #### source modules
 
 EXTRA_DIST	+= \
@@ -111,7 +112,7 @@ src/scripts/mbfltest.sh : src/scripts/mbfltest-pre.sh
 	test -d src/scripts || $(MKDIR_P) src/scripts
 	$(MBFLPP_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
 
-#page
+
 #### tests
 
 EXTRA_DIST	+= \
@@ -180,7 +181,7 @@ test-template:
 test-template-actions:
 	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/examples/template-actions.sh $(MFLAGS)
 
-#page
+
 #### interface to "make installcheck"
 
 MBFL_INSTCHECK_FLAGS	= $(user_flags)
@@ -196,7 +197,7 @@ MBFL_INSTCHECK_RUN	= $(MBFL_INSTCHECK_ENV) $(BASH_PROGRAM) $(MBFL_INSTCHECK_FLAG
 installcheck-local:
 	@for f in $(TESTS); do $(MBFL_INSTCHECK_RUN) $(srcdir)/$$f; done
 
-#page
+
 #### documentation
 
 EXTRA_DIST		+= \
@@ -213,7 +214,7 @@ doc_mbfl_TEXINFOS	= \
 	doc/sendmail-plain.sh		\
 	doc/sendmail-connector.sh
 
-#page
+
 #### examples
 
 EXTRA_DIST		+= \
