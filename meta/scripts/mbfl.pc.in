@@ -2,6 +2,7 @@
 
 PACKAGE=@PACKAGE@
 PACKAGE_VERSION=@PACKAGE_VERSION@
+MBFL_CORE_VERSION=@MBFL_CORE_VERSION@
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -28,6 +29,6 @@ sysconfdir=@sysconfdir@
 
 Name: @PACKAGE_NAME@
 Description: collection of functions for GNU Bash
-Version: @PACKAGE_VERSION@
+Version: @MBFL_CORE_VERSION@
 
 ### end of file

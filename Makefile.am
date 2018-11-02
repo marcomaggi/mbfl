@@ -2,7 +2,7 @@
 
 ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
-EXTRA_DIST		= INSTALL ANNOUNCE
+EXTRA_DIST		= INSTALL ANNOUNCE configure.sh
 CLEANFILES		=
 dist_doc_DATA		= README COPYING
 
@@ -15,7 +15,7 @@ nodist_pkgconfig_DATA	= meta/scripts/mbfl.pc
 
 dist_bin_SCRIPTS	= meta/scripts/mbfl-config
 
-autoconfdir		= $(datadir)/aclocal/$(PACKAGE)/$(PACKAGE_VERSION)
+autoconfdir		= $(datadir)/aclocal/$(PACKAGE)/$(MBFL_CORE_VERSION)
 dist_autoconf_DATA	= meta/autoconf/mbfl.m4
 
 
@@ -60,7 +60,7 @@ MBFL_MODULES		= \
 
 MBFL_PREPRO		= src/lib/preprocessor.m4
 
-mbfldatadir		= $(datadir)/$(PACKAGE)/$(PACKAGE_VERSION)
+mbfldatadir		= $(datadir)/$(PACKAGE)/$(MBFL_CORE_VERSION)
 dist_mbfldata_DATA	= \
 	$(MBFL_PREPRO)				\
 	src/lib/libmbfltest.sh			\
@@ -90,7 +90,7 @@ MBFLPP_MODULES_FLAGS	= --include=$(srcdir)/src/lib				\
 			  --library=$(srcdir)/src/lib/preprocessor.m4	 	\
 			  --define=__PKGDATADIR__=$(mbfldatadir)		\
 			  --define=__PACKAGE_NAME__=$(PACKAGE)			\
-			  --define=__PACKAGE_VERSION__=$(PACKAGE_VERSION)	\
+			  --define=__PACKAGE_VERSION__=$(MBFL_CORE_VERSION)	\
 			  --define=__PATHNAME_SUDO__=$(PATHNAME_SUDO)		\
 			  --define=__PATHNAME_WHOAMI__=$(PATHNAME_WHOAMI)
 MBFLPP_LIBS_FLAGS	= --include=$(builddir)/src/modules  --preserve-comments

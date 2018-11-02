@@ -9,7 +9,7 @@
 #
 #
 #
-# Copyright (c) 2004, 2005, 2009, 2012 Marco Maggi
+# Copyright (c) 2004, 2005, 2009, 2012, 2018 Marco Maggi
 # <marco.maggi-ipsu@poste.it>
 #
 # This is free  software you can redistribute it  and/or modify it under
@@ -38,12 +38,13 @@ OPTION="${1:-${DEFAULT_OPTION}}"
 
 PACKAGE='@PACKAGE@'
 PACKAGE_VERSION='@PACKAGE_VERSION@'
+MBFL_CORE_VERSION='@MBFL_CORE_VERSION@'
 
 prefix="@prefix@"
 datarootdir="@datarootdir@"
 datadir="@datadir@"
 PKG_DIR="@PKG_DIR@"
-pkgdatadir="${datadir}/${PACKAGE}/${PACKAGE_VERSION}"
+pkgdatadir="${datadir}/${PACKAGE}/${MBFL_CORE_VERSION}"
 
 USAGE="usage: mbfl-config [option]
 Marco's BASH Functions Library configuration script

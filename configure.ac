@@ -36,6 +36,8 @@ AC_PROG_MAKE_SET
 AC_CHECK_PROG([BASH_PROGRAM],[bash],[bash],[:])
 AM_PATH_LISPDIR
 
+AC_SUBST([MBFL_CORE_VERSION],MMUX_PACKAGE_MAJOR_VERSION[.]MMUX_PACKAGE_MINOR_VERSION[.]MMUX_PACKAGE_PATCH_LEVEL)
+
 dnl --------------------------------------------------------------------
 
 AC_ARG_WITH([sudo],
