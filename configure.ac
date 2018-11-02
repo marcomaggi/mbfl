@@ -62,12 +62,9 @@ AC_ARG_WITH([sendmail],
   AS_HELP_STRING([--with-sendmail],[enable installation of sendmail example script and emacs interface]),
   [true],[with_sendmail=no])
 AC_MSG_CHECKING([whether sendmail support will be installed])
-if test x$with_sendmail = xyes
-then
-  AC_MSG_RESULT([yes])
-else
-  AC_MSG_RESULT([no])
-fi
+AS_VAR_IF(with_sendmail,'yes',
+  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([no])])
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 
 AC_CONFIG_FILES([Makefile]
