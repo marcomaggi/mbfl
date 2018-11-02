@@ -1,7 +1,0 @@
-# config --
-#
-# Slackstuff variables
-
-package_ARCHITECTURE=noarch
-
-### end of file

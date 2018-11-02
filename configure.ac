@@ -2,8 +2,10 @@
 #
 
 AC_PREREQ([2.69])
-AC_INIT([Marcos Bash Functions Library],[2.2.0],[marco.maggi-ipsu@poste.it],
+MMUX_PKG_VERSIONS([2],[3],[0],[devel.0],[noarch])
+AC_INIT([Marcos Bash Functions Library],MMUX_PACKAGE_VERSION,[marco.maggi-ipsu@poste.it],
   [mbfl],[http://github.com/marcomaggi/mbfl])
+MMUX_INIT
 dnl This is the revision number of this configure.ac
 AC_REVISION([0.1])
 AC_COPYRIGHT([Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018 Marco Maggi <marco.maggi-ipsu@poste.it>
@@ -71,10 +73,7 @@ AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 AC_CONFIG_FILES([Makefile]
   [meta/scripts/mbfl-config]
   [meta/scripts/mbfl.pc])
+MMUX_OUTPUT
 AC_OUTPUT
 
 ### end of file
-# Local Variables:
-# mode: autoconf
-# page-delimiter: "^#page"
-# End:

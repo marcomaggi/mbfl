@@ -31,6 +31,3 @@ Description: collection of functions for GNU Bash
 Version: @PACKAGE_VERSION@
 
 ### end of file
-# Local Variables:
-# mode: script
-# End:
