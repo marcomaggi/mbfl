@@ -593,11 +593,14 @@ and so it is a function with two mandatory parameters.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_optional_parameter @var{varname} @var{number} @var{default_value}
+@deffn {Preprocessor Macro} mbfl_optional_parameter @var{varname} @var{number}
+@deffnx {Preprocessor Macro} mbfl_optional_parameter @var{varname} @var{number} @var{default_value}
 Define a variable local to a shell function holding an argument to the
-function.  @var{varname} is the name of the variable; @var{number} is
-the positional parameter number; @var{default_value} is the
-initialisation value for the variable if the argument is not used.
+function.
+
+The argument @var{varname} is the name of the variable.  The argument @var{number} is the positional
+parameter number.  The argument @var{default_value} is the initialisation value for the variable if
+the argument is not used; when @var{default_value} is not present: the variable is left empty.
 
 Example, the following:
 
@@ -610,6 +613,20 @@ is expanded to:
 
 @smallexample
 local COUNT=$@{2:-123@}"
+@end smallexample
+
+@noindent
+and the following:
+
+@example
+mbfl_optional_parameter(COUNT, 2)
+@end example
+
+@noindent
+is expanded to:
+
+@smallexample
+local COUNT=$@{2:-@}"
 @end smallexample
 @end deffn
 
