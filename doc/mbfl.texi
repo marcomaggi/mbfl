@@ -157,6 +157,7 @@ entitled ``@gnu{} Free Documentation License''.
 * signal::                      Catching signals.
 * string::                      Manipulating strings.
 * dialog::                      Interacting with the user.
+* times::                       Times and dates.
 * variables::                   Manipulating variables.
 * system::                      Interfacing with the system.
 * main::                        Main function.
@@ -3800,6 +3801,100 @@ terminal.
 @defun mbfl_dialog_ask_password @var{prompt}
 Print @var{prompt} followed by a colon and a space, then reads a
 password from the terminal.  Print the password.
+@end defun
+
+@c page
+@node times
+@chapter Times and dates
+
+
+@defun mbfl_times_and_dates_enable
+Declare the commands required to handle times and dates.  @ref{program declaring, Declaring the
+intention to use a program}.
+
+The programs are: @command{date}.
+@end defun
+
+
+@menu
+* times raw::                   Raw call to @command{date}.
+* times current::               Acquire the current time and date.
+* times special::               Special time and date formats.
+@end menu
+
+@c page
+@node times raw
+@section Raw call to @command{date}
+
+
+@defun mbfl_exec_date @var{arg} @dots{}
+Execute @command{date} with the optional arguments appended to the command line.
+@end defun
+
+
+@defun mbfl_exec_date_format @var{format} @var{arg} @dots{}
+Execute @command{date} with the mandatory @var{format} as first argument.  Additional, optional,
+arguments are appended to the command line.
+@end defun
+
+@c page
+@node times current
+@section Acquire the current time and date
+
+
+@defun mbfl_date_current_year
+Print the current year as digit string.
+@end defun
+
+
+@defun mbfl_date_current_month
+Print the current month as two--digits string.
+@end defun
+
+
+@defun mbfl_date_current_day
+Print the current day as two--digits string.
+@end defun
+
+
+@defun mbfl_date_current_hour
+Print the current hour as two--digits string.
+@end defun
+
+
+@defun mbfl_date_current_minute
+Print the current minute as two--digits string.
+@end defun
+
+
+@defun mbfl_date_current_second
+Print the current second as two--digits string.
+@end defun
+
+
+@defun mbfl_date_current_date
+Print the current date, using the format @samp{%F}.
+@end defun
+
+
+@defun mbfl_date_current_time
+Print the current date, using the format @samp{%T}.
+@end defun
+
+@c page
+@node times special
+@section Special time and date formats
+
+
+@defun mbfl_date_email_timestamp
+Print the current timestamp, using the format specified by @option{--rfc-2822}: the format required
+by Interned email.
+@end defun
+
+
+@defun mbfl_date_iso_timestamp
+Print the current timestamp, using the format specified by @option{--iso-8601=ns}: the format
+required by @acronym{ISO} 8601 with nanoseconds precision.
 @end defun
 
 @c page

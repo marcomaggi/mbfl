@@ -35,6 +35,7 @@ EXTRA_DIST	+= \
 	src/modules/signal.sh.m4		\
 	src/modules/string.sh.m4		\
 	src/modules/dialog.sh.m4		\
+	src/modules/times-and-dates.sh.m4	\
 	src/modules/main.sh.m4			\
 	src/modules/variable.sh.m4		\
 	src/modules/system.sh.m4		\
@@ -56,7 +57,7 @@ MBFL_MODULES		= \
 	src/modules/getopts.sh	src/modules/actions.sh		src/modules/message.sh	\
 	src/modules/program.sh	src/modules/signal.sh		src/modules/string.sh	\
 	src/modules/dialog.sh	src/modules/main.sh		src/modules/variable.sh	\
-	src/modules/system.sh	src/modules/interfaces.sh
+	src/modules/system.sh	src/modules/interfaces.sh	src/modules/times-and-dates.sh
 
 MBFL_PREPRO		= src/lib/preprocessor.m4
 
@@ -127,6 +128,7 @@ EXTRA_DIST	+= \
 	tests/string.test		\
 	tests/system.test		\
 	tests/variable.test		\
+	tests/times-and-dates.test	\
 	\
 	tests/setup.sh			\
 	tests/signal.sh			\
@@ -158,17 +160,18 @@ TEST_LOG_COMPILER	= $(BASH_PROGRAM)
 AM_TEST_LOG_FLAGS	= $(user_flags)
 
 TESTS			= \
-	tests/encode.test	\
-	tests/file.test		\
-	tests/message.test	\
-	tests/getopts.test	\
-	tests/string.test	\
-	tests/system.test	\
-	tests/variable.test	\
-	tests/program.test	\
-	tests/signal.test	\
-	tests/script.test	\
-	tests/compress.test
+	tests/encode.test		\
+	tests/file.test			\
+	tests/message.test		\
+	tests/getopts.test		\
+	tests/string.test		\
+	tests/system.test		\
+	tests/variable.test		\
+	tests/program.test		\
+	tests/signal.test		\
+	tests/script.test		\
+	tests/compress.test		\
+	tests/times-and-dates.test
 
 ## --------------------------------------------------------------------
 ## additional test rules
