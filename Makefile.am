@@ -2,7 +2,7 @@
 
 ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
-EXTRA_DIST		= INSTALL ANNOUNCE configure.sh
+EXTRA_DIST		= INSTALL NEWS configure.sh
 CLEANFILES		=
 dist_doc_DATA		= README COPYING
 

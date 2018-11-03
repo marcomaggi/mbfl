@@ -1,34 +1,11 @@
-Subject: [announce] MBFL revision 2.3.0
+-*- coding: utf-8-unix -*-
 
-		     Marco's Bash Functions Library
-		     ==============================
-
-
-The MBFL  is a  collection of  shell functions for  the GNU  Bash shell.
-This package  is an attempt  to make Bash  a viable solution  for medium
-sized scripts.
-
-  The MBFL home page is at:
-
-	       <https://marcomaggi.github.com/mbfl.html>
-
-development takes place at:
-
-		 <https://github.com/marcomaggi/mbfl/>
-
-and as backup at:
-
-		<https://bitbucket.org/marcomaggi/mbfl>
-
-proper release tarballs for this package are in the download area at:
-
-	   <https://bitbucket.org/marcomaggi/mbfl/downloads/>
-
-  This package makes use of the GNU Autotools.
+	       Changes to Marco's Bash Functions Library
+	       =========================================
 
 
 Notes for revision 2.3.0-devel.0
-================================
+--------------------------------
 
 * Package building and installing infrastructure review.
 
@@ -109,7 +86,6 @@ Notes for revision 2.0d1
 ### end of file
 # Local Variables:
 # mode: text
-# coding: utf-8-unix
 # fill-column: 72
 # paragraph-start: "*"
 # End:
