@@ -3873,12 +3873,22 @@ Print the current second as two--digits string.
 
 
 @defun mbfl_date_current_date
-Print the current date, using the format @samp{%F}.
+Print the current date, using the format @samp{%F}.  Example:
+
+@example
+mbfl_date_current_date
+@print{} 2018-11-03
+@end example
 @end defun
 
 
 @defun mbfl_date_current_time
-Print the current date, using the format @samp{%T}.
+Print the current date, using the format @samp{%T}.  Example:
+
+@example
+mbfl_date_current_time
+@print{} 07:51:27
+@end example
 @end defun
 
 @c page
@@ -3888,13 +3898,23 @@ Print the current date, using the format @samp{%T}.
 
 @defun mbfl_date_email_timestamp
 Print the current timestamp, using the format specified by @option{--rfc-2822}: the format required
-by Interned email.
+by Interned email.  Example:
+
+@example
+mbfl_date_email_timestamp
+@print{} Sat, 03 Nov 2018 07:51:27 +0100
+@end example
 @end defun
 
 
 @defun mbfl_date_iso_timestamp
 Print the current timestamp, using the format specified by @option{--iso-8601=ns}: the format
-required by @acronym{ISO} 8601 with nanoseconds precision.
+required by @acronym{ISO} 8601 with nanoseconds precision.  Example:
+
+@example
+mbfl_date_iso_timestamp
+@print{} 2018-11-03T07:51:27,564646289+01:00
+@end example
 @end defun
 
 @c page
