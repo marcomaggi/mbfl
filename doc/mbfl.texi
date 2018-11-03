@@ -60,7 +60,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017
+@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017, 2018
 
 @c page
 @c ------------------------------------------------------------
@@ -3519,6 +3519,23 @@ backslash character, @code{\}, are substituted with a quoted backslash,
 @c page
 @node string inspection
 @section Inspecting a string
+
+
+@defun mbfl_string_length @var{string}
+Print an integer representing the length of @var{string}.  The argument @var{string} can be an empty
+string.
+@end defun
+
+
+@defun mbfl_string_length_equal_to @var{length} @var{string}
+Return successfully if @var{string} has length equal to @var{length}.  The argument @var{length}
+must be a non-negative integer; the argument @var{string} can be an empty string.
+@end defun
+
+
+@defun mbfl_string_is_empty @var{string}
+Return successfully if @var{string} is the empty.
+@end defun
 
 
 @defun mbfl_string_index @var{string} @var{index}

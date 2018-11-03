@@ -13,7 +13,7 @@
 #       (like ${name:num:num}) so, maybe, other Bourne shells will not
 #       made them work at all.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -118,6 +118,25 @@ function mbfl_string_index () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(INDEX, 2, index)
     printf "${STRING:$INDEX:1}\n"
+}
+function mbfl_string_length () {
+    # We  want this  function to  accept empty  strings, so  we use  the
+    # "optional" macro here.
+    mbfl_optional_parameter(STRING, 1)
+    echo ${#STRING}
+}
+function mbfl_string_length_equal_to () {
+    mbfl_mandatory_parameter(LENGTH, 1, length of string)
+    # We  want this  function to  accept empty  strings, so  we use  the
+    # "optional" macro here.
+    mbfl_optional_parameter(STRING, 2)
+    test ${#STRING} -eq $LENGTH
+}
+function mbfl_string_is_empty () {
+    # We  want this  function to  accept empty  strings, so  we use  the
+    # "optional" macro here.
+    mbfl_optional_parameter(STRING, 1)
+    test -z "$STRING"
 }
 #PAGE
 function mbfl_string_is_alpha_char () {

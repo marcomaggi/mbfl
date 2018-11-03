@@ -32,6 +32,12 @@ Notes for revision 2.3.0-devel.0
 
 * Package building and installing infrastructure review.
 
+* Added string functions:
+
+    mbfl_string_is_empty
+    mbfl_string_length
+    mbfl_string_length_equal_to
+
 
 Notes for revision 2.2.0
 ------------------------
