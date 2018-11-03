@@ -306,6 +306,24 @@ function string-is-empty-1.3 () {
     ! mbfl_string_is_empty abcdefghilm
 }
 
+### --------------------------------------------------------------------
+
+function string-is-not-empty-1.1.1 () {
+    ! mbfl_string_is_not_empty ''
+}
+
+function string-is-not-empty-1.1.2 () {
+    ! mbfl_string_is_not_empty
+}
+
+function string-is-not-empty-1.2 () {
+    mbfl_string_is_not_empty a
+}
+
+function string-is-not-empty-1.3 () {
+    mbfl_string_is_not_empty abcdefghilm
+}
+
 #page
 
 function string-length-1.1.1 () {

@@ -3535,7 +3535,12 @@ must be a non-negative integer; the argument @var{string} can be an empty string
 
 
 @defun mbfl_string_is_empty @var{string}
-Return successfully if @var{string} is the empty.
+Return successfully if @var{string} is empty.
+@end defun
+
+
+@defun mbfl_string_is_not_empty @var{string}
+Return successfully if @var{string} is not empty.
 @end defun
 
 

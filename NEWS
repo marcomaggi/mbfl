@@ -12,6 +12,7 @@ Notes for revision 2.3.0-devel.0
 * Added string functions:
 
     mbfl_string_is_empty
+    mbfl_string_is_not_empty
     mbfl_string_length
     mbfl_string_length_equal_to
 

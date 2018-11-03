@@ -138,6 +138,12 @@ function mbfl_string_is_empty () {
     mbfl_optional_parameter(STRING, 1)
     test -z "$STRING"
 }
+function mbfl_string_is_not_empty () {
+    # We  want this  function to  accept empty  strings, so  we use  the
+    # "optional" macro here.
+    mbfl_optional_parameter(STRING, 1)
+    test -n "$STRING"
+}
 #PAGE
 function mbfl_string_is_alpha_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
