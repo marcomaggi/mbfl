@@ -144,6 +144,36 @@ function mbfl_string_is_not_empty () {
     mbfl_optional_parameter(STRING, 1)
     test -n "$STRING"
 }
+#page
+function mbfl_string_equal () {
+    mbfl_optional_parameter(STR1, 1)
+    mbfl_optional_parameter(STR2, 2)
+    test "$STR1" '=' "$STR2"
+}
+
+function mbfl_string_less () {
+    mbfl_optional_parameter(STR1, 1)
+    mbfl_optional_parameter(STR2, 2)
+    test "$STR1" '<' "$STR2"
+}
+
+function mbfl_string_greater () {
+    mbfl_optional_parameter(STR1, 1)
+    mbfl_optional_parameter(STR2, 2)
+    test "$STR1" '>' "$STR2"
+}
+
+function mbfl_string_less_or_equal () {
+    mbfl_optional_parameter(STR1, 1)
+    mbfl_optional_parameter(STR2, 2)
+    test "$STR1" '<' "$STR2" -o "$STR1" '=' "$STR2"
+}
+
+function mbfl_string_greater_or_equal () {
+    mbfl_optional_parameter(STR1, 1)
+    mbfl_optional_parameter(STR2, 2)
+    test "$STR1" '>' "$STR2" -o "$STR1" '=' "$STR2"
+}
 #PAGE
 function mbfl_string_is_alpha_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)

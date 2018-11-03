@@ -3504,6 +3504,7 @@ useful to debug a script.
 * string splitting::            Splitting a string.
 * string case::                 Converting between upper and lower case.
 * string class::                Matching a string with a class.
+* string comparison::           Comparing strings.
 * string misc::                 Miscellaneous functions.
 @end menu
 
@@ -3763,6 +3764,84 @@ character of @var{string} or the first char of @var{string} is a dash.
 Return true if @var{string} is non--empty, all its characters are in the
 ranges @code{[a-zA-Z0-9_-]}, the first character is in the range
 @code{[a-zA-Z_]}; else return false.
+@end defun
+
+@c page
+@node string comparison
+@section Comparing strings
+
+
+@defun mbfl_string_equal @vari{str} @varii{str}
+Return successfully if the arguments are equal when lexicographically compared as strings; otherwise
+return unsuccessfully.  Examples:
+
+@example
+mbfl_string_equal '' ''                 @result{} 0
+mbfl_string_equal 'a' ''                @result{} 1
+mbfl_string_equal '' 'a'                @result{} 1
+mbfl_string_equal 'ciao' 'ciao'         @result{} 0
+mbfl_string_equal 'ciao' 'hello'        @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_less @vari{str} @varii{str}
+Return successfully if @vari{str} is less than @varii{str} when lexicographically compared as
+strings; otherwise return unsuccessfully.  Examples:
+
+@example
+mbfl_string_less '' ''                  @result{} 0
+mbfl_string_less 'a' ''                 @result{} 0
+mbfl_string_less '' 'a'                 @result{} 1
+mbfl_string_less 'ciao' 'ciao'          @result{} 1
+mbfl_string_less 'ciao' 'hello'         @result{} 0
+mbfl_string_less 'hello' 'ciao'         @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_greater @vari{str} @varii{str}
+Return successfully if @vari{str} is greater than @varii{str} when lexicographically compared as
+strings; otherwise return unsuccessfully.  Examples:
+
+@example
+mbfl_string_greater '' ''               @result{} 1
+mbfl_string_greater 'a' ''              @result{} 0
+mbfl_string_greater '' 'a'              @result{} 1
+mbfl_string_greater 'ciao' 'ciao'       @result{} 1
+mbfl_string_greater 'ciao' 'hello'      @result{} 1
+mbfl_string_greater 'hello' 'ciao'      @result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_string_less_or_equal @vari{str} @varii{str}
+Return successfully if @vari{str} is less than, or equal to, @varii{str} when lexicographically
+compared as strings; otherwise return unsuccessfully.  Examples:
+
+@example
+mbfl_string_less_or_equal '' ''                 @result{} 0
+mbfl_string_less_or_equal 'a' ''                @result{} 1
+mbfl_string_less_or_equal '' 'a'                @result{} 0
+mbfl_string_less_or_equal 'ciao' 'ciao'         @result{} 0
+mbfl_string_less_or_equal 'ciao' 'hello'        @result{} 0
+mbfl_string_less_or_equal 'hello' 'ciao'        @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_greater_or_equal @vari{str} @varii{str}
+Return successfully if @vari{str} is greater than, or equal to, @varii{str} when lexicographically
+compared as strings; otherwise return unsuccessfully.  Examples:
+
+@example
+mbfl_string_greater_or_equal '' ''              @result{} 0
+mbfl_string_greater_or_equal 'a' ''             @result{} 0
+mbfl_string_greater_or_equal '' 'a'             @result{} 1
+mbfl_string_greater_or_equal 'ciao' 'ciao'      @result{} 0
+mbfl_string_greater_or_equal 'ciao' 'hello'     @result{} 1
+mbfl_string_greater_or_equal 'hello' 'ciao'     @result{} 0
+@end example
 @end defun
 
 @c page
