@@ -150,6 +150,11 @@ function mbfl_string_equal () {
     mbfl_optional_parameter(STR2, 2)
     test "$STR1" '=' "$STR2"
 }
+function mbfl_string_not_equal () {
+    mbfl_optional_parameter(STR1, 1)
+    mbfl_optional_parameter(STR2, 2)
+    test "$STR1" '!=' "$STR2"
+}
 
 function mbfl_string_less () {
     mbfl_optional_parameter(STR1, 1)

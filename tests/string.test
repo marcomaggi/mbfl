@@ -569,6 +569,28 @@ function string-equal-1.4 () {
 
 ### --------------------------------------------------------------------
 
+function string-not-equal-1.1 () {
+    ! mbfl_string_not_equal '' ''
+}
+
+function string-not-equal-1.2 () {
+    mbfl_string_not_equal 'a' ''
+}
+
+function string-not-equal-1.3 () {
+    mbfl_string_not_equal '' 'a'
+}
+
+function string-not-equal-1.3 () {
+    ! mbfl_string_not_equal 'ciao' 'ciao'
+}
+
+function string-not-equal-1.4 () {
+    mbfl_string_not_equal 'ciao' 'hello'
+}
+
+### --------------------------------------------------------------------
+
 function string-less-1.1 () {
     ! mbfl_string_less '' ''
 }

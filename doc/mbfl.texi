@@ -3785,6 +3785,12 @@ mbfl_string_equal 'ciao' 'hello'        @result{} 1
 @end defun
 
 
+@defun mbfl_string_not_equal @vari{str} @varii{str}
+Return successfully if the arguments are @strong{not} equal when lexicographically compared as
+strings; otherwise return unsuccessfully.
+@end defun
+
+
 @defun mbfl_string_less @vari{str} @varii{str}
 Return successfully if @vari{str} is less than @varii{str} when lexicographically compared as
 strings; otherwise return unsuccessfully.  Examples:

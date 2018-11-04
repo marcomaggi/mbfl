@@ -16,6 +16,7 @@ Notes for revision 2.3.0-devel.0
     mbfl_string_length
     mbfl_string_length_equal_to
     mbfl_string_equal
+    mbfl_string_not_equal
     mbfl_string_less
     mbfl_string_greater
     mbfl_string_less_or_equal
