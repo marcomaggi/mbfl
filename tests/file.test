@@ -12,7 +12,7 @@
 #
 #	that will select these tests.
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -58,6 +58,13 @@ file-extension-1.5 () {
 file-extension-1.6 () {
     mbfl_file_extension a | dotest-output
 }
+file-extension-1.7 () {
+    mbfl_file_extension /path/to/.file.ext | dotest-output ext
+}
+file-extension-1.8 () {
+    mbfl_file_extension /path/to/the.file.ext | dotest-output ext
+}
+
 
 #PAGE
 

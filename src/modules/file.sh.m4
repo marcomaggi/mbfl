@@ -8,7 +8,7 @@
 #
 #       This is a collection of file functions for the GNU BASH shell.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2003-2005, 2009, 2013, 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -45,31 +45,35 @@ function mbfl_change_directory () {
 }
 
 #page
-## ------------------------------------------------------------
-## File name functions.
-## ------------------------------------------------------------
+#### file name functions
 
-# *NOTE*: the file name functions are not implemented using the
-# parameter expansion functionalities; in the way the author has
-# understood parameter  expansion: there are  cases that are
-# not correctly handled.
+# *NOTE*:  the  file  name  functions  are  not  implemented  using  the
+# parameter  expansion  functionalities;  in  the  way  the  author  has
+# understood parameter expansion: there are cases that are not correctly
+# handled.
 
-function mbfl_file_extension () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-#     PATHNAME=${PATHNAME##*/}
-#     PATHNAME=${PATHNAME#*.}
-#     printf '%s\n' "${PATHNAME}"
-#     return
-    local i=
+function mbfl_file_extension_var () {
+    mbfl_mandatory_parameter(OV, 1, ouptut variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    local i
+
     for ((i="${#PATHNAME}"; $i >= 0; --i))
     do
-        test "${PATHNAME:$i:1}" = '/' && return
-        mbfl_string_is_equal_unquoted_char "${PATHNAME}" $i '.' && {
-            let ++i
-            printf '%s\n' "${PATHNAME:$i}"
-            return
-        }
+        if test "${PATHNAME:$i:1}" = '/'
+	then break
+	elif mbfl_string_is_equal_unquoted_char "${PATHNAME}" $i '.'
+	then
+	    let ++i
+	    printf '%s\n' "${PATHNAME:$i}"
+	    break
+	fi
     done
+}
+function mbfl_file_extension () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    local OV
+    mbfl_file_extension_var OV "$PATHNAME"
+    printf "$OV"
 }
 function mbfl_file_dirname () {
     mbfl_optional_parameter(PATHNAME, 1, '')

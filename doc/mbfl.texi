@@ -860,11 +860,13 @@ mbfl_decode_hex 414243
 
 
 @defun mbfl_file_extension @var{pathname}
-Extract the extension from a file name.  Starting from the end of the
-string @var{pathname}: search the last dot character in the argument
-string and echo to stdout the range of characters from the dot to the
-end, not including the dot.  If a slash character or the beginning of
-the string is found first: echoes to stdout the empty string.
+@defunx mbfl_file_extension_var @var{OV} @var{pathname}
+Extract the extension from a file name.  Starting from the end of the string @var{pathname}: search
+the last dot character in the argument string and echo to stdout the range of characters from the
+dot to the end, not including the dot.  If a slash character or the beginning of the string is found
+first: echoes to stdout the empty string.
+
+The @code{_var} function variant writes the output in the variable @var{OV} rather than printing it.
 @end defun
 
 
