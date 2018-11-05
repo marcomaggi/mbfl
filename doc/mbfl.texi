@@ -891,8 +891,12 @@ The @code{_var} function variant writes the output in the result variable @var{R
 printing it.
 
 @example
-mbfl_file_extension /path/to/file.ext
-@print{} ext
+mbfl_file_extension /path/to/file.ext   @print{} ext
+mbfl_file_extension /path/to/file.      @print{} <no output>
+mbfl_file_extension /path/to/file       @print{} <no output>
+mbfl_file_extension /path/to/.file.ext  @print{} ext
+mbfl_file_extension /path/to/.dotfile   @print{} <no output>
+mbfl_file_extension .dotfile            @print{} <no output>
 
 local RV
 mbfl_file_extension_var RV /path/to/file.ext
