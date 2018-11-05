@@ -56,22 +56,40 @@ function mbfl_file_extension_var () {
     mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, output variable)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     local -i i
-    for ((i="${#PATHNAME}"; $i >= 0; --i))
+
+    # We search for the last dot  character in the pathname.  If we find
+    # a slash first: we return with empty extension.
+    #
+    # If the  dot is the  first character in  the tailname: there  is no
+    # extension.   So if  the dot  is the  first character  in the  full
+    # pathname, as in:
+    #
+    #   .dotfile
+    #
+    # there is no extension,  so we iterate from the end  only up to the
+    # second character  (string index 1).   There is never need  to look
+    # for a dot as first character (string index 0).
+    #
+    # If the  character before the first  dot is the slash, as in:
+    #
+    #   /path/to/.dotfile
+    #
+    # there is no extension.  So we check for this case.
+    #
+    for ((i="${#PATHNAME}"; $i > 0; --i))
     do
         if test "${PATHNAME:$i:1}" = '/'
 	then break
 	else
 	    if mbfl_string_is_equal_unquoted_char "$PATHNAME" $i '.'
 	    then
-		# If the dot is the  first character in the tailname, as
-		# in:
-		#
-		#   .dotfile
-		#   /path/to/.dotfile
-		#
-		# there is no extension.
-		if ! test \( $i -eq 0 \) -o \( "${PATHNAME:$(($i - 1)):1}" = '/' \)
+		if test \( "${PATHNAME:$(($i - 1)):1}" = '/' \)
 		then
+		    # There is no extension.   So we break because there
+		    # is no point in continuing.
+		    break
+		else
+		    # Found an extension.  Store it and break.
 		    let ++i
 		    printf -v OUTPUT_VARREF '%s' "${PATHNAME:$i}"
 		    break
