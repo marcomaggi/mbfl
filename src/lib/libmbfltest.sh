@@ -173,18 +173,26 @@ function dotest-output () {
     IFS="${ORGIFS}"
 
     if test -z "${expected_output}" ; then
-	if test ! -z "${output}" -a ${#output} -eq 0 ; then
-	    echo "   expected output of zero length" >&2
-	    echo "   got:      '$output'" >&2
+	if test ! -z "${output}" -a ${#output} -eq 0
+	then
+	    {
+		echo "${FUNCNAME}:"
+		echo "   expected output of zero length"
+		echo "   got:      '$output'"
+	    } >&2
 	    return 1
 	fi
     else
 	if test \
 	    \( $globmode = 0 -a "${expected_output}" != "${output}" \) -o  \
 	    \( $globmode = 1 -a \
-               "${expected_output}" != "${output:0:${expected_output_len}}" \) ; then
-	    echo "   expected: '$expected_output'" >&2
-	    echo "   got:      '$output'" >&2
+               "${expected_output}" != "${output:0:${expected_output_len}}" \)
+	then
+	    {
+		echo "${FUNCNAME}:"
+		echo "   expected: '$expected_output'"
+		echo "   got:      '$output'"
+	    } >&2
 	    return 1
 	fi
     fi
@@ -196,8 +204,11 @@ function dotest-equal () {
 
     if test "$expected" != "$got"
     then
-	echo "   expected: '$expected'" >&2
-	echo "   got:      '$got'" >&2
+	{
+	    echo "${FUNCNAME}:"
+	    echo "   expected: '$expected'"
+	    echo "   got:      '$got'"
+	} >&2
 	return 1
     fi
 }
