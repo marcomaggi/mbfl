@@ -934,6 +934,10 @@ mbfl_file_dirname ../abcd               @print{} ..
 mbfl_file_dirname ./abcd                @print{} .
 mbfl_file_dirname ../abcd/efgh          @print{} ../abcd
 mbfl_file_dirname ./abcd/efgh           @print{} ./abcd
+
+local RV
+mbfl_file_dirname_var RV /path/to/file.ext
+"$RV" @result{} /path/to
 @end example
 @end defun
 
