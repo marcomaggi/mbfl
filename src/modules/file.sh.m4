@@ -8,6 +8,11 @@
 #
 #       This is a collection of file functions for the GNU BASH shell.
 #
+#	NOTE  The file  name  functions are  not  implemented using  the
+#	parameter expansion  functionalities; in the way  the author has
+#	understood  parameter expansion:  there are  cases that  are not
+#	correctly handled.
+#
 # Copyright (c) 2003-2005, 2009, 2013, 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -27,9 +32,7 @@
 #
 
 #page
-## ------------------------------------------------------------
-## Changing directory functions.
-## ------------------------------------------------------------
+#### changing directory functions
 
 function mbfl_cd () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory)
@@ -45,15 +48,10 @@ function mbfl_change_directory () {
 }
 
 #page
-#### file name functions
-
-# *NOTE*:  the  file  name  functions  are  not  implemented  using  the
-# parameter  expansion  functionalities;  in  the  way  the  author  has
-# understood parameter expansion: there are cases that are not correctly
-# handled.
+#### file name functions: extension
 
 function mbfl_file_extension_var () {
-    mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, output variable)
+    mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     local -i i
 
@@ -105,29 +103,43 @@ function mbfl_file_extension () {
     mbfl_file_extension_var OUTPUT_VARNAME "$PATHNAME"
     echo "$OUTPUT_VARNAME"
 }
-function mbfl_file_dirname () {
-    mbfl_optional_parameter(PATHNAME, 1, '')
-    local i=
-    # Do not change "${PATHNAME:$i:1}" with "$ch"!! We need to extract the
-    # char at each loop iteration.
+
+#page
+#### file name functions: dirname
+
+function mbfl_file_dirname_var () {
+    mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
+    mbfl_optional_parameter(PATHNAME, 2)
+    local -i i
+
+    # We search for the last slash character in the pathname.
+    #
     for ((i="${#PATHNAME}"; $i >= 0; --i))
     do
-        test "${PATHNAME:$i:1}" = "/" && {
-            while test \( $i -gt 0 \) -a \( "${PATHNAME:$i:1}" = "/" \)
+        if test "${PATHNAME:$i:1}" = '/'
+	then
+            while test \( $i -gt 0 \) -a \( "${PATHNAME:$i:1}" = '/' \)
             do let --i
             done
-            if test $i = 0
-            then printf '%s\n' "${PATHNAME:$i:1}"
+            if test $i -eq 0
+            then printf -v OUTPUT_VARREF '%s' "${PATHNAME:$i:1}"
             else
                 let ++i
-                printf '%s\n' "${PATHNAME:0:$i}"
+                printf -v OUTPUT_VARREF '%s' "${PATHNAME:0:$i}"
             fi
             return 0
-        }
+        fi
     done
-    printf '.\n'
+    printf -v OUTPUT_VARREF '.'
     return 0
 }
+function mbfl_file_dirname () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    local OUTPUT_VARNAME
+    mbfl_file_dirname_var OUTPUT_VARNAME "$PATHNAME"
+    echo "$OUTPUT_VARNAME"
+}
+
 function mbfl_file_subpathname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_mandatory_parameter(BASEDIR, 2, base directory)
@@ -181,7 +193,7 @@ function mbfl_file_rootname () {
     for ((i="${#PATHNAME}"; $i >= 0; --i))
     do
         ch="${PATHNAME:$i:1}"
-        if test "$ch" = "."
+        if test "$ch" = '.'
         then
             if test $i -gt 0
             then
@@ -189,7 +201,7 @@ function mbfl_file_rootname () {
                 break
             else printf '%s\n' "${PATHNAME}"
             fi
-        elif test "$ch" = "/"
+        elif test "$ch" = '/'
         then
             printf '%s\n' "${PATHNAME}"
             break
@@ -220,7 +232,7 @@ function mbfl_file_tail () {
     local i=
     for ((i="${#PATHNAME}"; $i >= 0; --i))
     do
-        test "${PATHNAME:$i:1}" = "/" && {
+        test "${PATHNAME:$i:1}" = '/' && {
             let ++i
             printf '%s\n' "${PATHNAME:$i}"
             return 0

@@ -906,14 +906,35 @@ mbfl_file_extension_var RV /path/to/file.ext
 
 
 @defun mbfl_file_dirname @var{pathname}
-Extract the directory part from a fully qualified file name.  Search the
-last slash character in the input string and echo to stdout the range of
-characters from the first to the slash, not including the slash.
+@defunx mbfl_file_dirname_var @var{rv} @var{pathname}
+Extract the directory part from a fully qualified file name.  Search the last slash character in the
+input string and echo to stdout the range of characters from the first to the slash, not including
+the slash.
 
 If no slash is found: echo a single dot (the current directory).
 
-If the input string begins with @code{/} or @code{//} with no slash
-characters after the first ones: echo a single slash.
+If the input string begins with @code{/} or @code{//} with no slash characters after the first ones:
+echo a single slash.
+
+The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+printing it.
+
+@example
+mbfl_file_dirname /path/to/file.ext     @print{} /path/to
+mbfl_file_dirname file.ext              @print{} .
+mbfl_file_dirname /file.ext             @print{} /
+mbfl_file_dirname //file.ext            @print{} /
+mbfl_file_dirname /path/to///file.ext   @print{} /path/to
+mbfl_file_dirname //////file.ext        @print{} /
+mbfl_file_dirname a/b                   @print{} a
+mbfl_file_dirname a                     @print{} .
+mbfl_file_dirname ../a                  @print{} ..
+mbfl_file_dirname ./a                   @print{} .
+mbfl_file_dirname ../abcd               @print{} ..
+mbfl_file_dirname ./abcd                @print{} .
+mbfl_file_dirname ../abcd/efgh          @print{} ../abcd
+mbfl_file_dirname ./abcd/efgh           @print{} ./abcd
+@end example
 @end defun
 
 
