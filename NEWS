@@ -24,6 +24,26 @@ Notes for revision 2.3.0-devel.0
 
 * Added times and dates module.
 
+* Added some  "_var" variants  to functions.   For example  two variants
+  exist to extract the filename extension:
+
+    mbfl_file_extension
+    mbfl_file_extension_var
+
+  the first  variant will print the  result to stdout, while  the "_var"
+  variant will store the result in a variable whose name is handed to it
+  as first argument.  Example:
+
+    mbfl_file_extension /path/to/file.ext
+    -| ext
+
+    local OV
+    mbfl_file_extension_var OV /path/to/file.ext
+    "$OV"  => ext
+
+  The "_var" variants are always a bit faster because the output variant
+  is a wrapper for the "_var" variant.
+
 
 Notes for revision 2.2.0
 ------------------------

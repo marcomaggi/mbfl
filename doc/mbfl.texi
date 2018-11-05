@@ -68,10 +68,9 @@
 @c ------------------------------------------------------------
 
 @copying
-This document describes version @value{VERSION} of @value{PACKAGE}, a
-library of functions for the @gnu{} Bash shell.  The package is
-distributed under the terms of the @gnu{} Lesser General Public License
-(@lgpl{}); the home page is at:
+This document describes version @value{VERSION} of @value{PACKAGE}, a library of functions for the
+@gnu{} Bash shell.  The package is distributed under the terms of the @gnu{} Lesser General Public
+License (@lgpl{}); the home page is at:
 
 @center @url{https://marcomaggi.github.com/mbfl.html}
 
@@ -94,13 +93,11 @@ proper release tarballs for this package are in the download area at:
 Copyright @copyright{} @value{COPYRIGHT_YEARS} by @value{AUTHOR} @value{AUTHOR_EMAIL}
 
 @quotation
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the @gnu{} Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with
-Invariant Sections being ``@gnu{} Free Documentation License'' and
-``@gnu{} Lesser General Public License'', no Front--Cover Texts, and no
-Back--Cover Texts.  A copy of the license is included in the section
-entitled ``@gnu{} Free Documentation License''.
+Permission is granted to copy, distribute and/or modify this document under the terms of the @gnu{}
+Free Documentation License, Version 1.3 or any later version published by the Free Software
+Foundation; with Invariant Sections being ``@gnu{} Free Documentation License'' and ``@gnu{} Lesser
+General Public License'', no Front--Cover Texts, and no Back--Cover Texts.  A copy of the license is
+included in the section entitled ``@gnu{} Free Documentation License''.
 @end quotation
 @end copying
 
@@ -185,10 +182,10 @@ Indexes
 @chapter Overview of the package
 
 
-This package is an attempt to make @gnu{} Bash a viable solution for
-medium sized scripts; it needs at least Bash version 4.  A set of
-modules implementing common operations and a script template are offered
-by this package and the author has used them with success in
+This document describes version @value{VERSION} of @value{PACKAGE}, a library of functions for the
+@gnu{} Bash shell.  This package is an attempt to make @gnu{} Bash a viable solution for medium
+sized scripts; it needs at least Bash version 4.  A set of modules implementing common operations
+and a script template are offered by this package and the author has used them with success in
 implementing non--small scripts.
 
 The philosophy of @mbfl{} is to do the work as much as possible without
@@ -399,26 +396,23 @@ When using @mbfl{} we want to be aware of the following:
 
 @itemize
 @item
-Some functions take a variable name as argument and store in the
-referenced variable some value; to avoid name collision: select a name
-that starts with @code{p_}.  It is guaranteed that @mbfl{} never uses
-variables with name starting with such a prefix.
+Some functions take a variable name as argument and store in the referenced variable some value; to
+avoid name collision: select a name that starts with @code{p_}.  It is guaranteed that @mbfl{} never
+uses variables with name starting with such a prefix.
 
 @item
-It is possible, but not recommended, to source the library in an
-interactive shell, though some modules must be disabled.  The purpose of
-interactive loading is only to test and debug the functions by hand.
+It is possible, but not recommended, to source the library in an interactive shell, though some
+modules must be disabled.  The purpose of interactive loading is only to test and debug the
+functions by hand.
 
-To do this execute the following code in the shell before sourcing the
-library:
+To do this execute the following code in the shell before sourcing the library:
 
 @example
 mbfl_INTERACTIVE=yes
 @end example
 
 @noindent
-without exporting the variable.  The ``dangerous'' blocks of code in the
-library are surrounded by:
+without exporting the variable.  The ``dangerous'' blocks of code in the library are surrounded by:
 
 @example
 test "$mbfl_INTERACTIVE" = yes || @{
@@ -427,14 +421,13 @@ test "$mbfl_INTERACTIVE" = yes || @{
 @end example
 
 @noindent
-so they are not executed.  Disabled modules are: main, actions, getopts,
-signal; ``disabled'' does not mean that the functions are not there:
-only the global variable declarations are excluded; this is a little
-dirty, but, at present, it should work.
+so they are not executed.  Disabled modules are: main, actions, getopts, signal; ``disabled'' does
+not mean that the functions are not there: only the global variable declarations are excluded; this
+is a little dirty, but, at present, it should work.
 
 @item
-The @code{read} built in does word splitting on the text it reads, even
-when there is a single output variable.  We can verify it with:
+The @code{read} built in does word splitting on the text it reads, even when there is a single
+output variable.  We can verify it with:
 
 @example
 printf '\tciao\n' | @{
@@ -445,9 +438,9 @@ printf '\tciao\n' | @{
 @end example
 
 @noindent
-we see that the initial tabulation character has been stripped, because
-it is a character in the default value of @code{IFS}.  Word splitting
-does not happen when we set @code{IFS} to the empty string:
+we see that the initial tabulation character has been stripped, because it is a character in the
+default value of @code{IFS}.  Word splitting does not happen when we set @code{IFS} to the empty
+string:
 
 @example
 printf '\tciao\n' | @{
@@ -457,12 +450,35 @@ printf '\tciao\n' | @{
 @print{} line was '        ciao'
 @end example
 
-To avoid the mutation of text read with @code{read}, @mbfl{} always sets
-@code{IFS} to the empty string in the environment in which @code{read}
-is evaluated.  This happens in functions like
-@bfunc{mbfl_read_maybe_null} and @bfunc{mbfl_dialog_ask_password};
-notice, though, that these functions @strong{do not} mutate the
-@code{IFS} value in the environment of the caller.
+To avoid the mutation of text read with @code{read}, @mbfl{} always sets @code{IFS} to the empty
+string in the environment in which @code{read} is evaluated.  This happens in functions like
+@bfunc{mbfl_read_maybe_null} and @bfunc{mbfl_dialog_ask_password}; notice, though, that these
+functions @strong{do not} mutate the @code{IFS} value in the environment of the caller.
+
+@item
+Some functions have a @code{_var} variant; for example, two functions exists to extract the filename
+extension:
+
+@example
+mbfl_file_extension
+mbfl_file_extension_var
+@end example
+
+@noindent
+the first variant will print the result to stdout, while the @code{_var} variant will store the
+result in a variable whose name is handed to it as first argument.  Example:
+
+@example
+mbfl_file_extension /path/to/file.ext
+@print{} ext
+
+local OV
+mbfl_file_extension_var OV /path/to/file.ext
+"$OV"  @result{} ext
+@end example
+
+The @code{_var} variants are always a bit faster because the output variant is a wrapper for the
+@code{_var} variant.
 @end itemize
 
 @c page
