@@ -11,7 +11,7 @@
 #	the test suite. It must be sources at the beginning of
 #	all the test files.
 #
-# Copyright (c) 2004-2005, 2009, 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -163,8 +163,10 @@ function dotest-output () {
     fi
 
     IFS=""
-    while read -r -t 4 line; do
-	if test -z "${output}"; then
+    while read -r -t 4 line
+    do
+	if test ${#output} -eq 0
+	then
 	    output="$line"
 	else
 	    output="$output\n$line"
@@ -172,8 +174,9 @@ function dotest-output () {
     done
     IFS="${ORGIFS}"
 
-    if test -z "${expected_output}" ; then
-	if test ! -z "${output}" -a ${#output} -eq 0
+    if dotest-string-is-empty "$expected_output"
+    then
+	if dotest-string-is-not-empty "$output"
 	then
 	    {
 		echo "${FUNCNAME}:"
@@ -202,8 +205,9 @@ function dotest-equal () {
     local expected="$1"
     local got="$2"
 
-    if test "$expected" != "$got"
-    then
+    if test "$expected" '=' "$got"
+    then return 0
+    else
 	{
 	    echo "${FUNCNAME}:"
 	    echo "   expected: '$expected'"
@@ -327,6 +331,16 @@ function dotest-program-exec () {
 	    exit 2
         fi
     fi
+}
+
+#page
+#### utility functions
+
+function dotest-string-is-empty () {
+    test ${#1} -eq 0
+}
+function dotest-string-is-not-empty () {
+    test ${#1} -ne 0
 }
 
 #page
