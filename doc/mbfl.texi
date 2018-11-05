@@ -466,15 +466,15 @@ mbfl_file_extension_var
 
 @noindent
 the first variant will print the result to stdout, while the @code{_var} variant will store the
-result in a variable whose name is handed to it as first argument.  Example:
+result in a ``result variable'' whose name is handed to it as first argument.  Example:
 
 @example
 mbfl_file_extension /path/to/file.ext
 @print{} ext
 
-local OV
-mbfl_file_extension_var OV /path/to/file.ext
-"$OV"  @result{} ext
+local RV
+mbfl_file_extension_var RV /path/to/file.ext
+"$RV"  @result{} ext
 @end example
 
 The @code{_var} variants are always a bit faster because the output variant is a wrapper for the
@@ -562,10 +562,10 @@ The @mfour{} preprocessor is invoked by @command{mbflpp.sh} with the
 and directives are available prefixed with @code{m4_}.
 
 
-@deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{varname} @var{number} @var{name}
+@deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{varname} @var{number} @var{description}
 Define a variable local to a shell function holding an argument to the
 function.  @var{varname} is the name of the variable; @var{number} is
-the positional parameter number; @var{name} is a description of the
+the positional parameter number; @var{description} is a description of the
 argument.
 
 Example, the following:
@@ -608,6 +608,12 @@ function message () @{
 and so it is a function with two mandatory parameters.
 @end deffn
 
+
+@deffn {Preprocessor Macro} mbfl_mandatory_nameref_parameter @var{varname} @var{number} @var{description}
+Like @bfunc{mbfl_mandatory_parameter} but use the @code{-n} attribute when declaring the variable.
+This makes the new variable a nameref for the given variable name; @bashref{Shell Parameters, Shell
+Parameters}.
+@end deffn
 
 @deffn {Preprocessor Macro} mbfl_optional_parameter @var{varname} @var{number}
 @deffnx {Preprocessor Macro} mbfl_optional_parameter @var{varname} @var{number} @var{default_value}
@@ -874,15 +880,24 @@ mbfl_decode_hex 414243
 @subsection Splitting a file name into its components
 
 
-
 @defun mbfl_file_extension @var{pathname}
-@defunx mbfl_file_extension_var @var{OV} @var{pathname}
+@defunx mbfl_file_extension_var @var{RV} @var{pathname}
 Extract the extension from a file name.  Starting from the end of the string @var{pathname}: search
 the last dot character in the argument string and echo to stdout the range of characters from the
 dot to the end, not including the dot.  If a slash character or the beginning of the string is found
 first: echoes to stdout the empty string.
 
-The @code{_var} function variant writes the output in the variable @var{OV} rather than printing it.
+The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+printing it.
+
+@example
+mbfl_file_extension /path/to/file.ext
+@print{} ext
+
+local RV
+mbfl_file_extension_var RV /path/to/file.ext
+"$RV"  @result{} ext
+@end example
 @end defun
 
 

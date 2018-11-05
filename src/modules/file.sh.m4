@@ -53,27 +53,39 @@ function mbfl_change_directory () {
 # handled.
 
 function mbfl_file_extension_var () {
-    mbfl_mandatory_parameter(OV, 1, ouptut variable)
+    mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, output variable)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    local i
-
+    local -i i
     for ((i="${#PATHNAME}"; $i >= 0; --i))
     do
         if test "${PATHNAME:$i:1}" = '/'
 	then break
-	elif mbfl_string_is_equal_unquoted_char "${PATHNAME}" $i '.'
-	then
-	    let ++i
-	    printf '%s\n' "${PATHNAME:$i}"
-	    break
+	else
+	    if mbfl_string_is_equal_unquoted_char "$PATHNAME" $i '.'
+	    then
+		# If the dot is the  first character in the tailname, as
+		# in:
+		#
+		#   .dotfile
+		#   /path/to/.dotfile
+		#
+		# there is no extension.
+		if ! test \( $i -eq 0 \) -o \( "${PATHNAME:$(($i - 1)):1}" = '/' \)
+		then
+		    let ++i
+		    printf -v OUTPUT_VARREF '%s' "${PATHNAME:$i}"
+		    break
+		fi
+	    fi
 	fi
     done
+    return 0
 }
 function mbfl_file_extension () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local OV
-    mbfl_file_extension_var OV "$PATHNAME"
-    printf "$OV"
+    local OUTPUT_VARNAME
+    mbfl_file_extension_var OUTPUT_VARNAME "$PATHNAME"
+    echo "$OUTPUT_VARNAME"
 }
 function mbfl_file_dirname () {
     mbfl_optional_parameter(PATHNAME, 1, '')
