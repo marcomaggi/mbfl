@@ -258,6 +258,35 @@ function mbfl_file_rootname () {
 }
 
 #page
+#### file name functions: tailname
+
+function mbfl_file_tail_var () {
+    mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    local -i i
+    # If no slash is present: the result is the full pathname.
+    local result="$PATHNAME"
+
+    for ((i=${#PATHNAME}; $i >= 0; --i))
+    do
+        if test "${PATHNAME:$i:1}" = '/'
+	then
+            result="${PATHNAME:$((i + 1))}"
+            break
+	fi
+    done
+    printf -v OUTPUT_VARREF '%s' "$result"
+    return 0
+}
+
+function mbfl_file_tail () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    local OUTPUT_VARNAME
+    mbfl_file_tail_var OUTPUT_VARNAME "$PATHNAME"
+    echo "$OUTPUT_VARNAME"
+}
+
+#page
 
 function mbfl_file_subpathname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
@@ -318,20 +347,6 @@ function mbfl_file_split () {
     done
     SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found}"
     let ++SPLITCOUNT
-    return 0
-}
-function mbfl_file_tail () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local i=
-    for ((i=${#PATHNAME}; $i >= 0; --i))
-    do
-        test "${PATHNAME:$i:1}" = '/' && {
-            let ++i
-            printf '%s\n' "${PATHNAME:$i}"
-            return 0
-        }
-    done
-    printf '%s\n' "$PATHNAME"
     return 0
 }
 

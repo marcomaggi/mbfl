@@ -974,15 +974,32 @@ mbfl_file_rootname a                     @print{} a
 mbfl_file_rootname /                     @print{} /
 mbfl_file_rootname .                     @print{} .
 mbfl_file_rootname ..                    @print{} ..
+
+local RV
+mbfl_file_rootname_var /path/to/file.ext
+"$RV" @result{} /path/to/file
 @end example
 @end defun
 
 
 @defun mbfl_file_tail @var{pathname}
-Extract the file portion from a fully qualified file name.  Search the
-last slash character in the input string and echo to stdout the range of
-characters from the slash to the end, not including the slash.  If no
-slash is found: echo the whole string.
+@defunx mbfl_file_tail_var @var{pathname}
+Extract the file portion from a fully qualified pathname.  Search the last slash character in the
+input string and echo to stdout the range of characters from the slash to the end, not including the
+slash.  If no slash is found: echo the whole string.
+
+The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+printing it.
+
+@example
+mbfl_file_tail /path/to/file.ext  @print{} file.ext
+mbfl_file_tail /path/to/          @print{} <no output>
+mbfl_file_tail file.ext           @print{} file.ext
+
+local RV
+mbfl_file_tail_var RV /path/to/file.ext
+"$RV" @result{} file.ext
+@end example
 @end defun
 
 
