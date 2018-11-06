@@ -568,7 +568,7 @@ function mbfl_file_find_tmpdir_var () {
             RESULT_VARREF="$TMPDIR"
             return 0
 	else
-	    mbfl_message_error "cannot find usable value for 'TMPDIR'"
+	    mbfl_message_error 'cannot find usable value for "TMPDIR"'
 	    return 1
 	fi
     fi
@@ -595,12 +595,14 @@ function mbfl_file_enable_remove () {
 function mbfl_file_remove () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force --recursive"
-    mbfl_option_test || {
-        mbfl_file_exists "$PATHNAME" || {
+    if ! mbfl_option_test
+    then
+        if ! mbfl_file_exists "$PATHNAME"
+	then
             mbfl_message_error_printf 'pathname does not exist "%s"' "$PATHNAME"
             return 1
-        }
-    }
+	fi
+    fi
     mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_file_remove_file () {
@@ -617,29 +619,33 @@ function mbfl_file_remove_file () {
 function mbfl_file_remove_symlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force"
-    mbfl_option_test || {
-        mbfl_file_is_symlink "$PATHNAME" || {
+    if ! mbfl_option_test
+    then
+        if ! mbfl_file_is_symlink "$PATHNAME"
+	then
             mbfl_message_error_printf 'pathname is not a symbolic link "%s"' "$PATHNAME"
             return 1
-        }
-    }
+        fi
+    fi
     mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_file_remove_file_or_symlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force"
-    mbfl_option_test || {
-        mbfl_file_is_file "$PATHNAME" && ! mbfl_file_is_symlink "$PATHNAME" || {
+    if ! mbfl_option_test
+    then
+	if ! mbfl_file_is_file "$PATHNAME" || ! mbfl_file_is_symlink "$PATHNAME"
+	then
             mbfl_message_error_printf 'pathname is neither a file nor a symbolic link "%s"' "$PATHNAME"
             return 1
-        }
-    }
+        fi
+    fi
     mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_exec_rm () {
-    local RM FLAGS
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
+    local RM FLAGS
     RM=$(mbfl_program_found rm) || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$RM" ${FLAGS} "$@" -- "$PATHNAME"
