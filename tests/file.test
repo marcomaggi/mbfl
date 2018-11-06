@@ -573,6 +573,7 @@ function file-strip-leading-slash-var-1.6 () {
 }
 
 #PAGE
+#### pathname normalisation: full normalisation
 
 function file-normalise-1.1 () {
     local testdir=$(dotest-mkdir a/b)
@@ -622,7 +623,8 @@ function file-normalise-1.7 () {
 	dotest-clean-files
     } | dotest-output "${testdir}"
 }
-#page
+
+### --------------------------------------------------------------------
 
 function file-normalise-2.3 () {
     mbfl_file_normalise a/b wo | dotest-output wo/a/b
