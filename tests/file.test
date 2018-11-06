@@ -12,20 +12,6 @@
 #
 #	that will select these tests.
 #
-#       To check the "_var" function variants,  we want to test for both
-#       result variable setting  and empty output to stdout.   So we use
-#       the following pattern:
-#
-#          {
-#            local RV
-#            mbfl_file_extension_var RV /path/to/file.ext
-#            dotest-equal 'ext' "$RV"
-#          } | dotest-output
-#
-#	remembering  that  a  pipe  is  executed  in  a  subprocess,  so
-#	setting  variables  in  a  pipe  has  no  side  effects  in  the
-#	parent process.
-#
 # Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
@@ -45,14 +31,58 @@
 #
 
 #PAGE
-## ------------------------------------------------------------
-## Setup.
-## ------------------------------------------------------------
+#### setup
 
 source setup.sh
 testfile="$TMPDIR/proof.txt"
 
+#page
+#### file name functions: internal parsing utilities
+
+function file-backwards-looking-at-double-dot-1.1 () {
+    #                                            01234567890
+    mbfl_p_file_backwards_looking_at_double_dot '/path/to/..' 10
+}
+function file-backwards-looking-at-double-dot-1.2 () {
+    #                                            01
+    mbfl_p_file_backwards_looking_at_double_dot '..' 1
+}
+function file-backwards-looking-at-double-dot-1.3 () {
+    ! mbfl_p_file_backwards_looking_at_double_dot '.' 0
+}
+function file-backwards-looking-at-double-dot-1.4 () {
+    ! mbfl_p_file_backwards_looking_at_double_dot '/.' 1
+}
+function file-backwards-looking-at-double-dot-1.5 () {
+    ! mbfl_p_file_backwards_looking_at_double_dot 'a.' 1
+}
+function file-backwards-looking-at-double-dot-1.6 () {
+    ! mbfl_p_file_backwards_looking_at_double_dot 'a..' 1
+}
+
+### --------------------------------------------------------------------
+
+function file-looking-at-component-beginning-1.1.1 () {
+    mbfl_p_file_looking_at_component_beginning 'file.ext' 0
+}
+function file-looking-at-component-beginning-1.1.2 () {
+    ! mbfl_p_file_looking_at_component_beginning 'file.ext' 1
+}
+function file-looking-at-component-beginning-1.2.1 () {
+    #                                           01234567890123456
+    mbfl_p_file_looking_at_component_beginning '/path/to/file.ext' 9
+}
+function file-looking-at-component-beginning-1.2.2 () {
+    #                                             01234567890123456
+    ! mbfl_p_file_looking_at_component_beginning '/path/to/file.ext' 10
+}
+function file-looking-at-component-beginning-1.3 () {
+    #                                             01234567890123456
+    ! mbfl_p_file_looking_at_component_beginning '/path/to/file.ext' 8
+}
+
 #PAGE
+#### file name functions: extension
 
 file-extension-1.1 () {
     mbfl_file_extension /path/to/file.ext | dotest-output ext
@@ -85,74 +115,56 @@ file-extension-1.8 () {
 ### --------------------------------------------------------------------
 
 file-extension-var-1.1 () {
-    {
-	local RV
-	mbfl_file_extension_var RV /path/to/file.ext
-	dotest-equal 'ext' "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_extension_var RV /path/to/file.ext
+    dotest-equal 'ext' "$RV"
 }
 file-extension-var-1.2 () {
-    {
-	local RV
-	mbfl_file_extension_var RV /path/to/file.
-	dotest-equal '' "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_extension_var RV /path/to/file.
+    dotest-equal '' "$RV"
 }
 file-extension-var-1.3 () {
-    {
-	local RV
-	mbfl_file_extension_var RV /path/to/file
-	dotest-equal '' "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_extension_var RV /path/to/file
+    dotest-equal '' "$RV"
 }
 file-extension-var-1.4 () {
-    {
-	local RV
-	mbfl_file_extension_var RV /path/to/file.ext/ab
-	dotest-equal '' "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_extension_var RV /path/to/file.ext/ab
+    dotest-equal '' "$RV"
 }
 file-extension-var-1.5 () {
-    {
-	local RV
-	mbfl_file_extension_var RV /path/to/some.file.ext
-	dotest-equal 'ext' "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_extension_var RV /path/to/some.file.ext
+    dotest-equal 'ext' "$RV"
 }
 file-extension-var-1.6 () {
-    {
-	local RV
-	mbfl_file_extension_var RV a
-	dotest-equal '' "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_extension_var RV a
+    dotest-equal '' "$RV"
 }
 file-extension-var-1.7 () {
-    {
-	local RV
-	mbfl_file_extension_var RV /path/to/.file.ext
-	dotest-equal 'ext' "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_extension_var RV /path/to/.file.ext
+    dotest-equal 'ext' "$RV"
 }
 file-extension-var-1.8 () {
-    {
-	local RV
-	mbfl_file_extension_var RV /path/to/.dotfile
-	dotest-equal '' "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_extension_var RV /path/to/.dotfile
+    dotest-equal '' "$RV"
 }
 file-extension-var-1.9 () {
-    {
-	local RV
-	mbfl_file_extension_var RV .dotfile
-	dotest-equal '' "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_extension_var RV .dotfile
+    dotest-equal '' "$RV"
 }
 
 #PAGE
 #### file name functions: dirname
 
 file-dirname-1.1 () {
-    mbfl_file_dirname /path/to/file.ext | dotest-output "/path/to"
+    mbfl_file_dirname /path/to/file.ext | dotest-output '/path/to'
 }
 file-dirname-1.2 () {
     mbfl_file_dirname file.ext | dotest-output .
@@ -164,135 +176,227 @@ file-dirname-1.4 () {
     mbfl_file_dirname //file.ext | dotest-output /
 }
 file-dirname-1.5 () {
-    mbfl_file_dirname /path/to///file.ext | dotest-output "/path/to"
+    mbfl_file_dirname /path/to///file.ext | dotest-output '/path/to'
 }
 file-dirname-1.6 () {
-    mbfl_file_dirname //////file.ext | dotest-output "/"
+    mbfl_file_dirname //////file.ext | dotest-output '/'
 }
 file-dirname-1.7 () {
-    mbfl_file_dirname a/b | dotest-output "a"
+    mbfl_file_dirname a/b | dotest-output 'a'
 }
 file-dirname-1.8 () {
-    mbfl_file_dirname a | dotest-output "."
+    mbfl_file_dirname a | dotest-output '.'
 }
 file-dirname-1.9 () {
-    mbfl_file_dirname ../a | dotest-output ".."
+    mbfl_file_dirname ../a | dotest-output '..'
 }
 file-dirname-1.10 () {
-    mbfl_file_dirname ./a | dotest-output "."
+    mbfl_file_dirname ./a | dotest-output '.'
 }
 file-dirname-1.11 () {
-    mbfl_file_dirname ../abcd | dotest-output ".."
+    mbfl_file_dirname ../abcd | dotest-output '..'
 }
 file-dirname-1.12 () {
-    mbfl_file_dirname ./abcd | dotest-output "."
+    mbfl_file_dirname ./abcd | dotest-output '.'
 }
 file-dirname-1.13 () {
-    mbfl_file_dirname ../abcd/efgh | dotest-output "../abcd"
+    mbfl_file_dirname ../abcd/efgh | dotest-output '../abcd'
 }
 file-dirname-1.14 () {
-    mbfl_file_dirname ./abcd/efgh | dotest-output "./abcd"
+    mbfl_file_dirname ./abcd/efgh | dotest-output './abcd'
 }
 
 ### --------------------------------------------------------------------
 
 file-dirname-var-1.1 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV /path/to/file.ext
-	dotest-equal "/path/to" "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV /path/to/file.ext
+    dotest-equal '/path/to' "$RV"
 }
 file-dirname-var-1.2 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV file.ext
-	dotest-equal . "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV file.ext
+    dotest-equal . "$RV"
 }
 file-dirname-var-1.3 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV /file.ext
-	dotest-equal / "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV /file.ext
+    dotest-equal / "$RV"
 }
 file-dirname-var-1.4 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV //file.ext
-	dotest-equal / "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV //file.ext
+    dotest-equal / "$RV"
 }
 file-dirname-var-1.5 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV /path/to///file.ext
-	dotest-equal "/path/to" "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV /path/to///file.ext
+    dotest-equal '/path/to' "$RV"
 }
 file-dirname-var-1.6 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV //////file.ext
-	dotest-equal "/" "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV //////file.ext
+    dotest-equal '/' "$RV"
 }
 file-dirname-var-1.7 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV a/b
-	dotest-equal "a" "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV a/b
+    dotest-equal 'a' "$RV"
 }
 file-dirname-var-1.8 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV a
-	dotest-equal "." "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV a
+    dotest-equal '.' "$RV"
 }
 file-dirname-var-1.9 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV ../a
-	dotest-equal ".." "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV ../a
+    dotest-equal '..' "$RV"
 }
 file-dirname-var-1.10 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV ./a
-	dotest-equal "." "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV ./a
+    dotest-equal '.' "$RV"
 }
 file-dirname-var-1.11 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV ../abcd
-	dotest-equal ".." "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV ../abcd
+    dotest-equal '..' "$RV"
 }
 file-dirname-var-1.12 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV ./abcd
-	dotest-equal "." "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV ./abcd
+    dotest-equal '.' "$RV"
 }
 file-dirname-var-1.13 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV ../abcd/efgh
-	dotest-equal "../abcd" "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV ../abcd/efgh
+    dotest-equal '../abcd' "$RV"
 }
 file-dirname-var-1.14 () {
-    {
-	local RV
-	mbfl_file_dirname_var RV ./abcd/efgh
-	dotest-equal "./abcd" "$RV"
-    } | dotest-output
+    local RV
+    mbfl_file_dirname_var RV ./abcd/efgh
+    dotest-equal './abcd' "$RV"
+}
+
+#PAGE
+#### file name functions: rootname
+
+function file-rootname-1.1 () {
+    mbfl_file_rootname '/path/to/file.ext' | dotest-output '/path/to/file'
+}
+function file-rootname-1.2 () {
+    mbfl_file_rootname /path/to/file | dotest-output '/path/to/file'
+}
+function file-rootname-1.3 () {
+    mbfl_file_rootname /path/to.to/file | dotest-output '/path/to.to/file'
+}
+function file-rootname-1.4.1 () {
+    mbfl_file_rootname .dotfile | dotest-output '.dotfile'
+}
+function file-rootname-1.4.2 () {
+    mbfl_file_rootname /path/to/.dotfile | dotest-output /path/to/.dotfile
+}
+function file-rootname-1.4.3 () {
+    mbfl_file_rootname .dotfile.ext | dotest-output '.dotfile'
+}
+function file-rootname-1.5 () {
+    mbfl_file_rootname a | dotest-output 'a'
+}
+function file-rootname-1.6 () {
+    mbfl_file_rootname '/' | dotest-output '/'
+}
+function file-rootname-1.7 () {
+    mbfl_file_rootname '.' | dotest-output '.'
+}
+function file-rootname-1.8 () {
+    mbfl_file_rootname '..' | dotest-output '..'
+}
+function file-rootname-1.9 () {
+    mbfl_file_rootname 'file.ext' | dotest-output 'file'
+}
+function file-rootname-1.10 () {
+    mbfl_file_rootname '/path/to/file..ext' | dotest-output '/path/to/file.'
+}
+function file-rootname-1.11 () {
+    #                   012345678901234567
+    mbfl_file_rootname '/path/to/file.ext/' | dotest-output '/path/to/file'
+}
+function file-rootname-1.12 () {
+    mbfl_file_rootname '/path/to/file.ext///' | dotest-output '/path/to/file'
+}
+
+### --------------------------------------------------------------------
+
+function file-rootname-var-1.1 () {
+    local RV
+    mbfl_file_rootname_var RV /path/to/file.ext
+    dotest-equal '/path/to/file' "$RV"
+}
+function file-rootname-var-1.2 () {
+    local RV
+    mbfl_file_rootname_var RV /path/to/file
+    dotest-equal '/path/to/file' "$RV"
+}
+function file-rootname-var-1.3 () {
+    local RV
+    mbfl_file_rootname_var RV /path/to.to/file
+    dotest-equal '/path/to.to/file' "$RV"
+}
+function file-rootname-var-1.4.1 () {
+    local RV
+    mbfl_file_rootname_var RV .dotfile
+    dotest-equal '.dotfile' "$RV"
+}
+function file-rootname-var-1.4.2 () {
+    local RV
+    mbfl_file_rootname_var RV /path/to/.dotfile
+    dotest-equal '/path/to/.dotfile' "$RV"
+}
+function file-rootname-var-1.4.3 () {
+    local RV
+    mbfl_file_rootname_var RV .dotfile.ext
+    dotest-equal '.dotfile' "$RV"
+}
+function file-rootname-var-1.5 () {
+    local RV
+    mbfl_file_rootname_var RV a
+    dotest-equal 'a' "$RV"
+}
+function file-rootname-var-1.6 () {
+    local RV
+    mbfl_file_rootname_var RV '/'
+    dotest-equal '/' "$RV"
+}
+function file-rootname-var-1.7 () {
+    local RV
+    mbfl_file_rootname_var RV '.'
+    dotest-equal '.' "$RV"
+}
+function file-rootname-var-1.8 () {
+    local RV
+    mbfl_file_rootname_var RV '..'
+    dotest-equal '..' "$RV"
+}
+function file-rootname-var-1.9 () {
+    local RV
+    mbfl_file_rootname_var RV 'file.ext'
+    dotest-equal 'file' "$RV"
+}
+function file-rootname-var-1.10 () {
+    local RV
+    mbfl_file_rootname_var RV '/path/to/file..ext'
+    dotest-equal '/path/to/file.' "$RV"
+}
+function file-rootname-var-1.11 () {
+    local RV
+    mbfl_file_rootname_var RV '/path/to/file.ext/'
+    dotest-equal '/path/to/file' "$RV"
+}
+function file-rootname-var-1.12 () {
+    local RV
+    mbfl_file_rootname_var RV '/path/to/file.ext///'
+    dotest-equal '/path/to/file' "$RV"
 }
 
 #PAGE
@@ -378,24 +482,6 @@ function file-subpathname-2.2 () {
 
 function file-subpathname-3.1 () {
     mbfl_file_subpathname /a/b/c /d || true
-}
-
-#PAGE
-
-function file-rootname-1.1 () {
-    mbfl_file_rootname /path/to/file.ext | dotest-output "/path/to/file"
-}
-function file-rootname-1.2 () {
-    mbfl_file_rootname /path/to/file | dotest-output "/path/to/file"
-}
-function file-rootname-1.3 () {
-    mbfl_file_rootname /path/to/ab.cd/file | dotest-output "/path/to/ab.cd/file"
-}
-function file-rootname-1.4 () {
-    mbfl_file_rootname .wow | dotest-output ".wow"
-}
-function file-rootname-1.5 () {
-    mbfl_file_rootname a | dotest-output "a"
 }
 
 #PAGE

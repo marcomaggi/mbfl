@@ -33,6 +33,7 @@ m4_define([[mbfl_mandatory_parameter]],[[local $1=${$2:?"missing $3 parameter to
 m4_define([[mbfl_optional_parameter]],[[local $1="${$2:-$3}"]])
 
 m4_define([[mbfl_mandatory_nameref_parameter]],[[local -n $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])
+m4_define([[mbfl_mandatory_integer_parameter]],[[local -i $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])
 
 m4_define([[mbfl_command_line_argument]],[[local $1="${ARGV[$2]}"]])
 

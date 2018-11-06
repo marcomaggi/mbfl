@@ -13,7 +13,8 @@
 #	understood  parameter expansion:  there are  cases that  are not
 #	correctly handled.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2003-2005, 2009, 2013, 2017, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -32,19 +33,70 @@
 #
 
 #page
+#### pathname parsing utilities
+
+# Scan  backwards the  PATHNAME  starting at  INDEX,  assuming that  the
+# character at INDEX is a dot:
+#
+#   test "${PATHNAME:$INDEX:1}" = .
+#
+# Return  successfully if  INDEX  is  referencing the  second  dot in  a
+# double-dot component as in:
+#
+#   /path/to/..			..
+#             ^                  ^
+#           INDEX              INDEX
+#
+# otherwise return unsuccessfully.
+#
+function mbfl_p_file_backwards_looking_at_double_dot () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_integer_parameter(INDEX, 2, pathname index)
+
+    if ((0 < INDEX))
+    then
+	local -r ch="${PATHNAME:$((INDEX - 1)):1}"
+
+	# For the case of standalone double-dot "..":
+	if   ((1 == INDEX)) && test "$ch" = '.'
+	then return 0
+	     # For the case of double-dot as last component "/path/to/..":
+	elif ((1 < INDEX))  && test \( "$ch" = '.' \) -a \( "${PATHNAME:$((INDEX - 2)):1}" = '/' \)
+	then return 0
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+# Scan backwards the PATHNAME starting at INDEX.  Return successfully if
+# INDEX references the first character in a pathname component, as in:
+#
+#   /path/to/file.ext              file.ext
+#            ^                     ^
+#          INDEX                 INDEX
+#
+function mbfl_p_file_looking_at_component_beginning () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_integer_parameter(INDEX, 2, pathname index)
+
+    test 0 -eq $INDEX -o "${PATHNAME:$((INDEX - 1)):1}" = '/'
+}
+
+#page
 #### changing directory functions
 
 function mbfl_cd () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory)
     shift 1
-    DIRECTORY=$(mbfl_file_normalise "${DIRECTORY}")
+    DIRECTORY=$(mbfl_file_normalise "$DIRECTORY")
     mbfl_message_verbose "entering directory: '${DIRECTORY}'\n"
-    mbfl_change_directory "${DIRECTORY}" "$@"
+    mbfl_change_directory "$DIRECTORY" "$@"
 }
 function mbfl_change_directory () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory)
     shift 1
-    cd "$@" "${DIRECTORY}" &>/dev/null
+    cd "$@" "$DIRECTORY" &>/dev/null
 }
 
 #page
@@ -54,6 +106,7 @@ function mbfl_file_extension_var () {
     mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     local -i i
+    local result
 
     # We search for the last dot  character in the pathname.  If we find
     # a slash first: we return with empty extension.
@@ -74,27 +127,27 @@ function mbfl_file_extension_var () {
     #
     # there is no extension.  So we check for this case.
     #
-    for ((i="${#PATHNAME}"; $i > 0; --i))
+    for ((i=${#PATHNAME}; $i > 0; --i))
     do
         if test "${PATHNAME:$i:1}" = '/'
 	then break
 	else
-	    if mbfl_string_is_equal_unquoted_char "$PATHNAME" $i '.'
+	    if mbfl_string_is_equal_unquoted_char "$PATHNAME" $i .
 	    then
-		if test \( "${PATHNAME:$(($i - 1)):1}" = '/' \)
+		if test "${PATHNAME:$((i - 1)):1}" = '/'
 		then
 		    # There is no extension.   So we break because there
 		    # is no point in continuing.
 		    break
 		else
 		    # Found an extension.  Store it and break.
-		    let ++i
-		    printf -v OUTPUT_VARREF '%s' "${PATHNAME:$i}"
+		    result="${PATHNAME:$((i + 1))}"
 		    break
 		fi
 	    fi
 	fi
     done
+    printf -v OUTPUT_VARREF '%s' "$result"
     return 0
 }
 function mbfl_file_extension () {
@@ -111,26 +164,24 @@ function mbfl_file_dirname_var () {
     mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
     mbfl_optional_parameter(PATHNAME, 2)
     local -i i
+    local result=.
 
     # We search for the last slash character in the pathname.
     #
-    for ((i="${#PATHNAME}"; $i >= 0; --i))
+    for ((i=${#PATHNAME}; $i >= 0; --i))
     do
         if test "${PATHNAME:$i:1}" = '/'
 	then
+	    # Skip consecutive slashes.
             while test \( $i -gt 0 \) -a \( "${PATHNAME:$i:1}" = '/' \)
             do let --i
             done
-            if test $i -eq 0
-            then printf -v OUTPUT_VARREF '%s' "${PATHNAME:$i:1}"
-            else
-                let ++i
-                printf -v OUTPUT_VARREF '%s' "${PATHNAME:0:$i}"
-            fi
-            return 0
+
+	    result="${PATHNAME:0:$((i + 1))}"
+	    break
         fi
     done
-    printf -v OUTPUT_VARREF '.'
+    printf -v OUTPUT_VARREF '%s' "$result"
     return 0
 }
 function mbfl_file_dirname () {
@@ -140,12 +191,80 @@ function mbfl_file_dirname () {
     echo "$OUTPUT_VARNAME"
 }
 
+#page
+#### file name functions: rootname
+
+function mbfl_file_rootname_var () {
+    mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    local -i i=${#PATHNAME}
+    local ch result
+
+    # Special handling for standalone  slash, standalone dot, standalone
+    # double-dot.
+    if test \( "$PATHNAME" = '/' \) -o \( "$PATHNAME" = '.' \) -o \( "$PATHNAME" = '..' \)
+    then result="$PATHNAME"
+    else
+	# Skip the trailing slashes.
+	while ((0 < i)) && test "${PATHNAME:$((i - 1)):1}" = '/'
+	do let --i
+	done
+	PATHNAME="${PATHNAME:0:$i}"
+
+	if ((1 == i))
+	then result="$PATHNAME"
+	else
+	    for ((i=${#PATHNAME}; $i >= 0; --i))
+	    do
+		ch="${PATHNAME:$i:1}"
+		if test "$ch" = '.'
+		then
+		    if mbfl_p_file_backwards_looking_at_double_dot "$PATHNAME" $i || \
+			    mbfl_p_file_looking_at_component_beginning "$PATHNAME" $i
+		    then
+			# The pathname is one among:
+			#
+			#   /path/to/..
+			#   ..
+			#
+			# print the full pathname.
+			result="$PATHNAME"
+			break
+		    elif ((0 < i))
+		    then
+			result="${PATHNAME:0:$i}"
+			break
+		    else
+			result="$PATHNAME"
+			break
+		    fi
+		elif test "$ch" = '/'
+		then
+		    result="$PATHNAME"
+		    break
+		fi
+	    done
+	fi
+    fi
+    printf -v OUTPUT_VARREF '%s' "$result"
+    return 0
+}
+
+function mbfl_file_rootname () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    local OUTPUT_VARNAME
+    mbfl_file_rootname_var OUTPUT_VARNAME "$PATHNAME"
+    echo "$OUTPUT_VARNAME"
+}
+
+#page
+
 function mbfl_file_subpathname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_mandatory_parameter(BASEDIR, 2, base directory)
     test "${BASEDIR:$((${#BASEDIR}-1))}" = '/' && \
         BASEDIR="${BASEDIR:0:$((${#BASEDIR}-1))}"
-    if test "${PATHNAME}" = "${BASEDIR}"
+    if test "$PATHNAME" = "${BASEDIR}"
     then
         printf './\n'
         return 0
@@ -162,7 +281,7 @@ function mbfl_p_file_remove_dots_from_pathname () {
     local SPLITPATH SPLITCOUNT; declare -a SPLITPATH
     local output output_counter=0; declare -a output
     local input_counter=0
-    mbfl_file_split "${PATHNAME}"
+    mbfl_file_split "$PATHNAME"
     for ((input_counter=0; $input_counter < $SPLITCOUNT; ++input_counter))
     do
         case "${SPLITPATH[$input_counter]}" in
@@ -181,45 +300,19 @@ function mbfl_p_file_remove_dots_from_pathname () {
     for ((i=1; $i < $output_counter; ++i))
     do PATHNAME="${PATHNAME}/${output[$i]}"
     done
-    printf '%s\n' "${PATHNAME}"
-}
-function mbfl_file_rootname () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local i="${#PATHNAME}"
-    test $i = 1 && {
-        printf '%s\n' "${PATHNAME}"
-        return 0
-    }
-    for ((i="${#PATHNAME}"; $i >= 0; --i))
-    do
-        ch="${PATHNAME:$i:1}"
-        if test "$ch" = '.'
-        then
-            if test $i -gt 0
-            then
-                printf '%s\n' "${PATHNAME:0:$i}"
-                break
-            else printf '%s\n' "${PATHNAME}"
-            fi
-        elif test "$ch" = '/'
-        then
-            printf '%s\n' "${PATHNAME}"
-            break
-        fi
-    done
-    return 0
+    printf '%s\n' "$PATHNAME"
 }
 function mbfl_file_split () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local i=0 last_found=0
-    mbfl_string_skip "${PATHNAME}" i /
+    mbfl_string_skip "$PATHNAME" i /
     last_found=$i
-    for ((SPLITCOUNT=0; $i < "${#PATHNAME}"; ++i))
+    for ((SPLITCOUNT=0; $i < ${#PATHNAME}; ++i))
     do
-        test "${PATHNAME:$i:1}" = / && {
+        test "${PATHNAME:$i:1}" = '/' && {
             SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found:$(($i-$last_found))}"
             let ++SPLITCOUNT; let ++i
-            mbfl_string_skip "${PATHNAME}" i /
+            mbfl_string_skip "$PATHNAME" i /
             last_found=$i
         }
     done
@@ -230,7 +323,7 @@ function mbfl_file_split () {
 function mbfl_file_tail () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local i=
-    for ((i="${#PATHNAME}"; $i >= 0; --i))
+    for ((i=${#PATHNAME}; $i >= 0; --i))
     do
         test "${PATHNAME:$i:1}" = '/' && {
             let ++i
@@ -238,7 +331,7 @@ function mbfl_file_tail () {
             return 0
         }
     done
-    printf '%s\n' "${PATHNAME}"
+    printf '%s\n' "$PATHNAME"
     return 0
 }
 
@@ -339,45 +432,45 @@ function mbfl_file_remove () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force --recursive"
     mbfl_option_test || {
-        mbfl_file_exists "${PATHNAME}" || {
+        mbfl_file_exists "$PATHNAME" || {
             mbfl_message_error "pathname does not exist '${PATHNAME}'"
             return 1
         }
     }
-    mbfl_exec_rm "${PATHNAME}" ${FLAGS}
+    mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_file_remove_file () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force"
     mbfl_option_test || {
-        mbfl_file_is_file "${PATHNAME}" || {
+        mbfl_file_is_file "$PATHNAME" || {
             mbfl_message_error "pathname is not a file '${PATHNAME}'"
             return 1
         }
     }
-    mbfl_exec_rm "${PATHNAME}" ${FLAGS}
+    mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_file_remove_symlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force"
     mbfl_option_test || {
-        mbfl_file_is_symlink "${PATHNAME}" || {
+        mbfl_file_is_symlink "$PATHNAME" || {
             mbfl_message_error "pathname is not a symboli link '${PATHNAME}'"
             return 1
         }
     }
-    mbfl_exec_rm "${PATHNAME}" ${FLAGS}
+    mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_file_remove_file_or_symlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local FLAGS="--force"
     mbfl_option_test || {
-        mbfl_file_is_file "${PATHNAME}" && ! mbfl_file_is_symlink "${PATHNAME}" || {
+        mbfl_file_is_file "$PATHNAME" && ! mbfl_file_is_symlink "$PATHNAME" || {
             mbfl_message_error "pathname is not a file neither a symbolic link '${PATHNAME}'"
             return 1
         }
     }
-    mbfl_exec_rm "${PATHNAME}" ${FLAGS}
+    mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_exec_rm () {
     local RM FLAGS
@@ -385,7 +478,7 @@ function mbfl_exec_rm () {
     shift
     RM=$(mbfl_program_found rm) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-    mbfl_program_exec "${RM}" ${FLAGS} "$@" -- "${PATHNAME}"
+    mbfl_program_exec "${RM}" ${FLAGS} "$@" -- "$PATHNAME"
 }
 
 #page
@@ -512,13 +605,13 @@ function mbfl_file_remove_directory () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_optional_parameter(REMOVE_SILENTLY, 2, no)
     local FLAGS=
-    mbfl_file_is_directory "${PATHNAME}" || {
+    mbfl_file_is_directory "$PATHNAME" || {
         mbfl_message_error "pathname is not a directory '${PATHNAME}'"
         return 1
     }
     test "${REMOVE_SILENTLY}" = 'yes' && \
         FLAGS="${FLAGS} --ignore-fail-on-non-empty"
-    mbfl_exec_rmdir "${PATHNAME}" ${FLAGS}
+    mbfl_exec_rmdir "$PATHNAME" ${FLAGS}
 }
 function mbfl_file_remove_directory_silently () {
     mbfl_file_remove_directory "$1" yes
@@ -529,7 +622,7 @@ function mbfl_exec_rmdir () {
     shift
     RMDIR=$(mbfl_program_found rmdir) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-    mbfl_program_exec "${RMDIR}" $FLAGS "$@" "${PATHNAME}"
+    mbfl_program_exec "${RMDIR}" $FLAGS "$@" "$PATHNAME"
 }
 
 #page
@@ -547,13 +640,13 @@ function mbfl_file_make_directory () {
     MKDIR=$(mbfl_program_found mkdir) || exit $?
     FLAGS="--parents --mode=${PERMISSIONS}"
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-    mbfl_program_exec "${MKDIR}" $FLAGS "${PATHNAME}"
+    mbfl_program_exec "${MKDIR}" $FLAGS "$PATHNAME"
 }
 function mbfl_file_make_if_not_directory () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_optional_parameter(PERMISSIONS, 2, 0775)
-    mbfl_file_is_directory   "${PATHNAME}" || \
-    mbfl_file_make_directory "${PATHNAME}" "${PERMISSIONS}"
+    mbfl_file_is_directory   "$PATHNAME" || \
+    mbfl_file_make_directory "$PATHNAME" "${PERMISSIONS}"
     mbfl_program_reset_sudo_user
 }
 
@@ -588,12 +681,12 @@ function mbfl_file_listing () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift 1
     LS=$(mbfl_program_found ls) || exit $?
-    mbfl_program_exec ${LS} "$@" "${PATHNAME}"
+    mbfl_program_exec ${LS} "$@" "$PATHNAME"
 }
 function mbfl_file_long_listing () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local LS_FLAGS='-l'
-    mbfl_file_listing "${PATHNAME}" "${LS_FLAGS}"
+    mbfl_file_listing "$PATHNAME" "${LS_FLAGS}"
 }
 function mbfl_file_get_owner () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
@@ -628,20 +721,20 @@ function mbfl_file_get_size () {
 function mbfl_file_p_invoke_ls () {
     local LS
     LS=$(mbfl_program_found ls) || exit $?
-    mbfl_file_is_directory "${PATHNAME}" && LS_FLAGS="${LS_FLAGS} -d"
-    mbfl_program_exec ${LS} ${LS_FLAGS} "${PATHNAME}"
+    mbfl_file_is_directory "$PATHNAME" && LS_FLAGS="${LS_FLAGS} -d"
+    mbfl_program_exec ${LS} ${LS_FLAGS} "$PATHNAME"
 }
 function mbfl_file_normalise_link () {
     local READLINK
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     READLINK=$(mbfl_program_found readlink) || exit $?
-    mbfl_program_exec "${READLINK}" -fn "${PATHNAME}"
+    mbfl_program_exec "${READLINK}" -fn "$PATHNAME"
 }
 function mbfl_file_read_link () {
     local READLINK
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     READLINK=$(mbfl_program_found readlink) || exit $?
-    mbfl_program_exec "${READLINK}" "${PATHNAME}"
+    mbfl_program_exec "${READLINK}" "$PATHNAME"
 }
 
 #page
@@ -665,21 +758,21 @@ function mbfl_file_pathname_is_readable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
     local ERROR_MESSAGE="not readable pathname '${PATHNAME}'"
-    test -n "${PATHNAME}" -a -r "${PATHNAME}"
+    test -n "$PATHNAME" -a -r "$PATHNAME"
     mbfl_p_file_print_error_return_result
 }
 function mbfl_file_pathname_is_writable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
     local ERROR_MESSAGE="not writable pathname '${PATHNAME}'"
-    test -n "${PATHNAME}" -a -w "${PATHNAME}"
+    test -n "$PATHNAME" -a -w "$PATHNAME"
     mbfl_p_file_print_error_return_result
 }
 function mbfl_file_pathname_is_executable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
     local ERROR_MESSAGE="not executable pathname '${PATHNAME}'"
-    test -n "${PATHNAME}" -a -x "${PATHNAME}"
+    test -n "$PATHNAME" -a -x "$PATHNAME"
     mbfl_p_file_print_error_return_result
 }
 
@@ -689,26 +782,26 @@ function mbfl_file_is_file () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
     local ERROR_MESSAGE="unexistent file '${PATHNAME}'"
-    test -n "${PATHNAME}" -a -f "${PATHNAME}"
+    test -n "$PATHNAME" -a -f "$PATHNAME"
     mbfl_p_file_print_error_return_result
 }
 function mbfl_file_is_readable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
-    mbfl_file_is_file "${PATHNAME}" "${PRINT_ERROR}" && \
-        mbfl_file_pathname_is_readable "${PATHNAME}" "${PRINT_ERROR}"
+    mbfl_file_is_file "$PATHNAME" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_readable "$PATHNAME" "${PRINT_ERROR}"
 }
 function mbfl_file_is_writable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
-    mbfl_file_is_file "${PATHNAME}" "${PRINT_ERROR}" && \
-        mbfl_file_pathname_is_writable "${PATHNAME}" "${PRINT_ERROR}"
+    mbfl_file_is_file "$PATHNAME" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_writable "$PATHNAME" "${PRINT_ERROR}"
 }
 function mbfl_file_is_executable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
-    mbfl_file_is_file "${PATHNAME}" "${PRINT_ERROR}" && \
-        mbfl_file_pathname_is_executable "${PATHNAME}" "${PRINT_ERROR}"
+    mbfl_file_is_file "$PATHNAME" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_executable "$PATHNAME" "${PRINT_ERROR}"
 }
 
 # ------------------------------------------------------------
@@ -717,34 +810,34 @@ function mbfl_file_is_directory () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
     local ERROR_MESSAGE="unexistent directory '${PATHNAME}'"
-    test -n "${PATHNAME}" -a -d "${PATHNAME}"
+    test -n "$PATHNAME" -a -d "$PATHNAME"
     mbfl_p_file_print_error_return_result
 }
 function mbfl_file_directory_is_readable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
-    mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
-        mbfl_file_pathname_is_readable "${PATHNAME}" "${PRINT_ERROR}"
+    mbfl_file_is_directory "$PATHNAME" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_readable "$PATHNAME" "${PRINT_ERROR}"
 }
 function mbfl_file_directory_is_writable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
-    mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
-        mbfl_file_pathname_is_writable "${PATHNAME}" "${PRINT_ERROR}"
+    mbfl_file_is_directory "$PATHNAME" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_writable "$PATHNAME" "${PRINT_ERROR}"
 }
 function mbfl_file_directory_is_executable () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
-    mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
-        mbfl_file_pathname_is_executable "${PATHNAME}" "${PRINT_ERROR}"
+    mbfl_file_is_directory "$PATHNAME" "${PRINT_ERROR}" && \
+        mbfl_file_pathname_is_executable "$PATHNAME" "${PRINT_ERROR}"
 }
 function mbfl_file_directory_validate_writability () {
     local code
     mbfl_mandatory_parameter(DIRECTORY, 1, directory pathname)
     mbfl_mandatory_parameter(DESCRIPTION, 2, directory description)
     mbfl_message_verbose "validating ${DESCRIPTION} directory '${DIRECTORY}'\n"
-    mbfl_file_is_directory              "${DIRECTORY}" print_error && \
-    mbfl_file_directory_is_writable     "${DIRECTORY}" print_error
+    mbfl_file_is_directory              "$DIRECTORY" print_error && \
+    mbfl_file_directory_is_writable     "$DIRECTORY" print_error
     code=$?
     test $code != 0 && mbfl_message_error \
         "unwritable ${DESCRIPTION} directory '${DIRECTORY}'"
@@ -757,7 +850,7 @@ function mbfl_file_is_symlink () {
     local PATHNAME=${1}
     local PRINT_ERROR=${2:-no}
     local ERROR_MESSAGE="not a symbolic link pathname '${PATHNAME}'"
-    test -n "${PATHNAME}" -a -L "${PATHNAME}"
+    test -n "$PATHNAME" -a -L "$PATHNAME"
     mbfl_p_file_print_error_return_result
 }
 
@@ -768,15 +861,15 @@ function mbfl_file_is_symlink () {
 
 function mbfl_file_is_absolute () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    test "${PATHNAME:0:1}" = /
+    test "${PATHNAME:0:1}" = '/'
 }
 function mbfl_file_is_absolute_dirname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    mbfl_file_is_directory "${PATHNAME}" && mbfl_file_is_absolute "${PATHNAME}"
+    mbfl_file_is_directory "$PATHNAME" && mbfl_file_is_absolute "$PATHNAME"
 }
 function mbfl_file_is_absolute_filename () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    mbfl_file_is_file "${PATHNAME}" && mbfl_file_is_absolute "${PATHNAME}"
+    mbfl_file_is_file "$PATHNAME" && mbfl_file_is_absolute "$PATHNAME"
 }
 
 #page
@@ -790,45 +883,45 @@ function mbfl_file_enable_tar () {
 function mbfl_tar_create_to_stdout () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     shift
-    mbfl_tar_exec --directory="${DIRECTORY}" --create --file=- "$@" .
+    mbfl_tar_exec --directory="$DIRECTORY" --create --file=- "$@" .
 }
 function mbfl_tar_extract_from_stdin () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     shift
-    mbfl_tar_exec --directory="${DIRECTORY}" --extract --file=- "$@"
+    mbfl_tar_exec --directory="$DIRECTORY" --extract --file=- "$@"
 }
 function mbfl_tar_extract_from_file () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     mbfl_mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
-    mbfl_tar_exec --directory="${DIRECTORY}" --extract --file="${ARCHIVE_FILENAME}" "$@"
+    mbfl_tar_exec --directory="$DIRECTORY" --extract --file="$ARCHIVE_FILENAME" "$@"
 }
 function mbfl_tar_create_to_file () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     mbfl_mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
-    mbfl_tar_exec --directory="${DIRECTORY}" --create --file="${ARCHIVE_FILENAME}" "$@" .
+    mbfl_tar_exec --directory="$DIRECTORY" --create --file="$ARCHIVE_FILENAME" "$@" .
 }
 function mbfl_tar_archive_directory_to_file () {
     local PARENT DIRNAME
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     mbfl_mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
-    PARENT=$(mbfl_file_dirname "${DIRECTORY}")
-    DIRNAME=$(mbfl_file_tail "${DIRECTORY}")
+    PARENT=$(mbfl_file_dirname "$DIRECTORY")
+    DIRNAME=$(mbfl_file_tail "$DIRECTORY")
     mbfl_tar_exec --directory="${PARENT}" --create \
-        --file="${ARCHIVE_FILENAME}" "$@" "${DIRNAME}"
+        --file="$ARCHIVE_FILENAME" "$@" "$DIRNAME"
 }
 function mbfl_tar_list () {
     mbfl_mandatory_parameter(ARCHIVE_FILENAME, 1, archive pathname)
     shift
-    mbfl_tar_exec --list --file="${ARCHIVE_FILENAME}" "$@"
+    mbfl_tar_exec --list --file="$ARCHIVE_FILENAME" "$@"
 }
 function mbfl_tar_exec () {
     local TAR FLAGS
     TAR=$(mbfl_program_found tar) || exit $?
     mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-    mbfl_program_exec "${TAR}" ${FLAGS} "$@"
+    mbfl_program_exec "$TAR" ${FLAGS} "$@"
 }
 #page
 ## ------------------------------------------------------------
@@ -846,15 +939,15 @@ function mbfl_file_get_permissions () {
     LS=$(mbfl_program_found ls)   || exit $?
     CUT=$(mbfl_program_found cut) || exit $?
     # Here we use '-d' even with files: it appears to work with GNU ls.
-    SYMBOLIC=$(mbfl_program_exec ${LS} -ld "${PATHNAME}" | \
+    SYMBOLIC=$(mbfl_program_exec ${LS} -ld "$PATHNAME" | \
         mbfl_program_exec ${CUT} -d' ' -f1) || return $?
     mbfl_message_debug "symbolic permissions '${SYMBOLIC}'"
     OWNER=${SYMBOLIC:1:3}
     GROUP=${SYMBOLIC:4:3}
     OTHER=${SYMBOLIC:7:3}
-    OWNER=$(mbfl_system_symbolic_to_octal_permissions "${OWNER}")
-    GROUP=$(mbfl_system_symbolic_to_octal_permissions "${GROUP}")
-    OTHER=$(mbfl_system_symbolic_to_octal_permissions "${OTHER}")
+    OWNER=$(mbfl_system_symbolic_to_octal_permissions "$OWNER")
+    GROUP=$(mbfl_system_symbolic_to_octal_permissions "$GROUP")
+    OTHER=$(mbfl_system_symbolic_to_octal_permissions "$OTHER")
     printf '0%d%d%d\n' "${OWNER}" "${GROUP}" "${OTHER}"
 }
 function mbfl_file_set_permissions () {
@@ -862,7 +955,7 @@ function mbfl_file_set_permissions () {
     mbfl_mandatory_parameter(PERMISSIONS, 1, permissions)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     CHMOD=$(mbfl_program_found chmod) || exit $?
-    mbfl_program_exec ${CHMOD} "${PERMISSIONS}" "${PATHNAME}"
+    mbfl_program_exec ${CHMOD} "$PERMISSIONS" "$PATHNAME"
 }
 
 #page
@@ -882,7 +975,7 @@ function mbfl_file_set_owner () {
     if mbfl_option_verbose
     then CHOWN_FLAGS='--verbose'
     fi
-    mbfl_program_exec ${CHOWN} "${OWNER}" "${PATHNAME}" $CHOWN_FLAGS
+    mbfl_program_exec ${CHOWN} "$OWNER" "$PATHNAME" $CHOWN_FLAGS
 }
 function mbfl_file_set_group () {
     local CHGRP CHGRP_FLAGS
@@ -892,7 +985,7 @@ function mbfl_file_set_group () {
     if mbfl_option_verbose
     then CHGRP_FLAGS='--verbose'
     fi
-    mbfl_program_exec ${CHGRP} "${GROUP}" "${PATHNAME}" $CHGRP_FLAGS
+    mbfl_program_exec ${CHGRP} "$GROUP" "$PATHNAME" $CHGRP_FLAGS
 }
 
 #page

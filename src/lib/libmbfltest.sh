@@ -111,7 +111,7 @@ function dotest () {
                 fi
 	    else
 		dotest-echo "${item} -- *** FAILED ***\n"
-		dotest_TEST_FAILED="${dotest_TEST_FAILED} ${item}"
+		dotest_TEST_FAILED+="\n${item}"
 		let ++dotest_TEST_FAILED_NUMBER
 	    fi
 	    if test -n "$result" ; then
