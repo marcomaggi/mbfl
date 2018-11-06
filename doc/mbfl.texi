@@ -1023,7 +1023,7 @@ $SPLITCOUNT             @result{} 3
 
 
 @defun mbfl_file_strip_trailing_slash @var{pathname}
-@defunx mbfl_file_strip_trailing_slash @var{RV} @var{pathname}
+@defunx mbfl_file_strip_trailing_slash_var @var{RV} @var{pathname}
 Remove all the trailing slashes from @var{pathname} and print the result on stdout.  If
 @var{pathname} consists only of slashes: print a single dot.
 
@@ -1052,7 +1052,7 @@ mbfl_file_strip_trailing_slash_var RV '/path/to/dir.ext/'
 
 
 @defun mbfl_file_strip_leading_slash @var{pathname}
-@defunx mbfl_file_strip_leading_slash @var{RV} @var{pathname}
+@defunx mbfl_file_strip_leading_slash_var @var{RV} @var{pathname}
 Remove all the leading slashes from @var{pathname} and print the result on stdout.  If
 @var{pathname} consists only of slashes: print a single dot.
 
@@ -1078,17 +1078,14 @@ mbfl_file_strip_leading_slash 'file'    @print{} file
 
 @defun mbfl_file_normalise @var{pathname}
 @defunx mbfl_file_normalise @var{pathname} @var{prefix}
-Normalise a file name: remove all the occurrences of @code{.} and
-@code{..}.
+Normalise a file name: remove all the occurrences of @code{.} and @code{..}.
 
-If @var{pathname} is relative (according to
-@bfunc{mbfl_file_is_absolute}) and @var{prefix} is not present or it
-is the empty string: the current process working directory is prepended
-to @var{pathname}.
+If @var{pathname} is relative (according to @bfunc{mbfl_file_is_absolute}) and @var{prefix} is not
+present or it is the empty string: the current process working directory is prepended to
+@var{pathname}.
 
-If @var{prefix} is present and non empty, and @var{pathname} is relative
-(according to @bfunc{mbfl_file_is_absolute}): @var{prefix} is
-prepended to @var{pathname} and normalised, too.
+If @var{prefix} is present and non empty, and @var{pathname} is relative (according to
+@bfunc{mbfl_file_is_absolute}): @var{prefix} is prepended to @var{pathname} and normalised, too.
 
 Echo to stdout the normalised file name.  Return true.
 @end defun
