@@ -1125,24 +1125,41 @@ mbfl_file_subpathname_var RV /a/b/c /a
 @end example
 @end defun
 
+@c ------------------------------------------------------------------------
 
 @defun mbfl_file_is_absolute @var{pathname}
-Return true if the first character in @var{pathname} is a slash
-(@code{/}); else return false.
+Return true if the first character in @var{pathname} is a slash (@code{/}); else return false.
 @end defun
 
 
 @defun mbfl_file_is_absolute_dirname @var{pathname}
-Return true if @var{pathname} is a directory according to
-@bfunc{mbfl_file_is_directory} and an absolute pathname according to
-@bfunc{mbfl_file_is_absolute}.
+Return true if @var{pathname} is a directory according to @bfunc{mbfl_file_is_directory} and an
+absolute pathname according to @bfunc{mbfl_file_is_absolute}.
 @end defun
 
 
 @defun mbfl_file_is_absolute_filename @var{pathname}
-Return true if @var{pathname} is a file according to
-@bfunc{mbfl_file_is_file} and an absolute pathname according to
-@bfunc{mbfl_file_is_absolute}.
+Return true if @var{pathname} is a file according to @bfunc{mbfl_file_is_file} and an absolute
+pathname according to @bfunc{mbfl_file_is_absolute}.
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_file_is_relative @var{pathname}
+Return true if the first character in @var{pathname} is @strong{not} a slash (@code{/}); else return
+false.
+@end defun
+
+
+@defun mbfl_file_is_relative_dirname @var{pathname}
+Return true if @var{pathname} is a directory according to @bfunc{mbfl_file_is_directory} and an
+relative pathname according to @bfunc{mbfl_file_is_relative}.
+@end defun
+
+
+@defun mbfl_file_is_relative_filename @var{pathname}
+Return true if @var{pathname} is a file according to @bfunc{mbfl_file_is_file} and an relative
+pathname according to @bfunc{mbfl_file_is_relative}.
 @end defun
 
 @c page

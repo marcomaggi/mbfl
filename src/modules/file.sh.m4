@@ -510,6 +510,37 @@ function mbfl_file_subpathname () {
     fi
 }
 
+#page
+#### file pathname type functions
+
+function mbfl_file_is_absolute () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    test "${PATHNAME:0:1}" = '/'
+}
+function mbfl_file_is_absolute_dirname () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_file_is_directory "$PATHNAME" && mbfl_file_is_absolute "$PATHNAME"
+}
+function mbfl_file_is_absolute_filename () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_file_is_file "$PATHNAME" && mbfl_file_is_absolute "$PATHNAME"
+}
+
+### --------------------------------------------------------------------
+
+function mbfl_file_is_relative () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    test "${PATHNAME:0:1}" != '/'
+}
+function mbfl_file_is_relative_dirname () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_file_is_directory "$PATHNAME" && mbfl_file_is_relative "$PATHNAME"
+}
+function mbfl_file_is_relative_filename () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_file_is_file "$PATHNAME" && mbfl_file_is_relative "$PATHNAME"
+}
+
 #PAGE
 #### temporary directory functions
 
@@ -952,22 +983,6 @@ function mbfl_file_is_symlink () {
     local ERROR_MESSAGE="not a symbolic link pathname '${PATHNAME}'"
     test -n "$PATHNAME" -a -L "$PATHNAME"
     mbfl_p_file_print_error_return_result
-}
-
-#page
-#### file pathname type functions
-
-function mbfl_file_is_absolute () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    test "${PATHNAME:0:1}" = '/'
-}
-function mbfl_file_is_absolute_dirname () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    mbfl_file_is_directory "$PATHNAME" && mbfl_file_is_absolute "$PATHNAME"
-}
-function mbfl_file_is_absolute_filename () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    mbfl_file_is_file "$PATHNAME" && mbfl_file_is_absolute "$PATHNAME"
 }
 
 #page
