@@ -1004,23 +1004,76 @@ mbfl_file_tail_var RV /path/to/file.ext
 
 
 @defun mbfl_file_split @var{pathname}
-Separate a file name into its components.  One or more contiguous
-occurrences of the slash character is used as separator.  The components
-are stored in an array named @code{SPLITPATH}, that may be declared
-@code{local} in the scope of the caller; the base index is zero.  The
-number of elements in the array is stored in a variable named
-@code{SPLITCOUNT}.  Return true.
+Separate a file name into its components.  One or more contiguous occurrences of the slash character
+is used as separator.  The components are stored in an array named @code{SPLITPATH}, that may be
+declared @code{local} in the scope of the caller; the base index is zero.  The number of elements in
+the array is stored in a variable named @code{SPLITCOUNT}.  Return true.
+
+@example
+local -a SPLITPATH
+local -i SPLITCOUNT
+
+mbfl_file_split /path/to/file.ext
+"$@{SPLITPATH[0]@}"       @result{} path
+"$@{SPLITPATH[1]@}"       @result{} to
+"$@{SPLITPATH[2]@}"       @result{} file.ext
+$SPLITCOUNT             @result{} 3
+@end example
 @end defun
 
 
 @defun mbfl_file_strip_trailing_slash @var{pathname}
-If the last character in @var{pathname} is a slash (@code{/}): remove it
-and print the result on stdout.
+@defunx mbfl_file_strip_trailing_slash @var{RV} @var{pathname}
+Remove all the trailing slashes from @var{pathname} and print the result on stdout.  If
+@var{pathname} consists only of slashes: print a single dot.
+
+The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+printing it.
+
+@example
+mbfl_file_strip_trailing_slash '/path/to/file.ext'
+@print{} /path/to/file.ext
+
+mbfl_file_strip_trailing_slash '/path/to/dir.ext/'
+@print{} /path/to/dir.ext
+
+mbfl_file_strip_trailing_slash '/path/to/dir.ext///'
+@print{} /path/to/dir.ext
+
+mbfl_file_strip_trailing_slash '/'      @print{} .
+mbfl_file_strip_trailing_slash '///'    @print{} .
+mbfl_file_strip_trailing_slash 'file'   @print{} file
+
+local RV
+mbfl_file_strip_trailing_slash_var RV '/path/to/dir.ext/'
+"$RV" @result{} /path/to/dir.ext
+@end example
 @end defun
 
-@c page
-@node file names path
-@subsection Handling relative pathnames
+
+@defun mbfl_file_strip_leading_slash @var{pathname}
+@defunx mbfl_file_strip_leading_slash @var{RV} @var{pathname}
+Remove all the leading slashes from @var{pathname} and print the result on stdout.  If
+@var{pathname} consists only of slashes: print a single dot.
+
+The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+printing it.
+
+@example
+mbfl_file_strip_leading_slash '/path/to/file.ext'
+@print{} path/to/file.ext
+
+mbfl_file_strip_leading_slash '/path/to/dir.ext/'
+@print{} path/to/dir.ext/
+
+mbfl_file_strip_leading_slash '///path/to/dir.ext'
+@print{} path/to/dir.ext
+
+mbfl_file_strip_leading_slash '/'       @print{} .
+mbfl_file_strip_leading_slash '///'     @print{} .
+mbfl_file_strip_leading_slash 'file'    @print{} file
+@end example
+@end defun
 
 
 @defun mbfl_file_normalise @var{pathname}
@@ -1039,6 +1092,10 @@ prepended to @var{pathname} and normalised, too.
 
 Echo to stdout the normalised file name.  Return true.
 @end defun
+
+@c page
+@node file names path
+@subsection Handling relative pathnames
 
 
 @defun mbfl_file_subpathname @var{pathname} @var{basedir}

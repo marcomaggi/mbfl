@@ -100,7 +100,7 @@ function mbfl_change_directory () {
 }
 
 #page
-#### file name functions: extension
+#### pathname name functions: extension
 
 function mbfl_file_extension_var () {
     mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
@@ -158,7 +158,7 @@ function mbfl_file_extension () {
 }
 
 #page
-#### file name functions: dirname
+#### pathname name functions: dirname
 
 function mbfl_file_dirname_var () {
     mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
@@ -192,7 +192,7 @@ function mbfl_file_dirname () {
 }
 
 #page
-#### file name functions: rootname
+#### pathname name functions: rootname
 
 function mbfl_file_rootname_var () {
     mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
@@ -258,7 +258,7 @@ function mbfl_file_rootname () {
 }
 
 #page
-#### file name functions: tailname
+#### pathname name functions: tailname
 
 function mbfl_file_tail_var () {
     mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
@@ -283,6 +283,88 @@ function mbfl_file_tail () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local OUTPUT_VARNAME
     mbfl_file_tail_var OUTPUT_VARNAME "$PATHNAME"
+    echo "$OUTPUT_VARNAME"
+}
+
+#page
+#### pathname name functions: splitting components
+
+function mbfl_file_split () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    local i=0 last_found=0 len=${#PATHNAME}
+
+    mbfl_string_skip "$PATHNAME" i '/'
+    last_found=$i
+    for ((SPLITCOUNT=0; $i < $len; ++i))
+    do
+        if test "${PATHNAME:$i:1}" = '/'
+	then
+            SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found:$(($i-$last_found))}"
+            let ++SPLITCOUNT
+	    let ++i
+            mbfl_string_skip "$PATHNAME" i '/'
+            last_found=$i
+        fi
+    done
+    SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found}"
+    let ++SPLITCOUNT
+    return 0
+}
+
+#page
+#### pathname normalisation: stripping slashes
+
+function mbfl_file_strip_trailing_slash_var () {
+    mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    local -i i=${#PATHNAME}
+    local result
+
+    # Skip the trailing slashes.
+    while ((0 < i)) && test "${PATHNAME:$((i - 1)):1}" = '/'
+    do let --i
+    done
+    if ((0 == i))
+    then result='.'
+    else result="${PATHNAME:0:$i}"
+    fi
+    printf -v OUTPUT_VARREF '%s' "$result"
+}
+
+function mbfl_file_strip_trailing_slash () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    local OUTPUT_VARNAME
+    mbfl_file_strip_trailing_slash_var OUTPUT_VARNAME "$PATHNAME"
+    echo "$OUTPUT_VARNAME"
+}
+
+### --------------------------------------------------------------------
+
+function mbfl_file_strip_leading_slash_var () {
+    mbfl_mandatory_nameref_parameter(OUTPUT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    local result
+
+    if test "${PATHNAME:0:1}" = '/'
+    then
+	local -i i=1 len=${#PATHNAME}
+	# Skip the leading slashes.
+	while ((i < len)) && test "${PATHNAME:$i:1}" = '/'
+	do let ++i
+	done
+	if ((len == i))
+	then result='.'
+	else result="${PATHNAME:$i}"
+	fi
+    else result="$PATHNAME"
+    fi
+    printf -v OUTPUT_VARREF '%s' "$result"
+}
+
+function mbfl_file_strip_leading_slash () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    local OUTPUT_VARNAME
+    mbfl_file_strip_leading_slash_var OUTPUT_VARNAME "$PATHNAME"
     echo "$OUTPUT_VARNAME"
 }
 
@@ -330,24 +412,6 @@ function mbfl_p_file_remove_dots_from_pathname () {
     do PATHNAME="${PATHNAME}/${output[$i]}"
     done
     printf '%s\n' "$PATHNAME"
-}
-function mbfl_file_split () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local i=0 last_found=0
-    mbfl_string_skip "$PATHNAME" i /
-    last_found=$i
-    for ((SPLITCOUNT=0; $i < ${#PATHNAME}; ++i))
-    do
-        test "${PATHNAME:$i:1}" = '/' && {
-            SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found:$(($i-$last_found))}"
-            let ++SPLITCOUNT; let ++i
-            mbfl_string_skip "$PATHNAME" i /
-            last_found=$i
-        }
-    done
-    SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found}"
-    let ++SPLITCOUNT
-    return 0
 }
 
 #page
@@ -400,13 +464,7 @@ function mbfl_p_file_normalise2 () {
     fi
     cd - >/dev/null
 }
-function mbfl_file_strip_trailing_slash () {
-    mbfl_mandatory_parameter(pathname, 1, pathname)
-    local len=${#pathname}
-    test "${pathname:$len}" = '/' && \
-        pathname=${pathname:1:$(($len-1))}
-    printf '%s\n' "${pathname}"
-}
+
 #PAGE
 ## ------------------------------------------------------------
 ## Temporary directory functions.
