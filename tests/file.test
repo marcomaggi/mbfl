@@ -643,6 +643,7 @@ function file-normalise-2.6 () {
 }
 
 #page
+#### relative pathnames: extracting subpathnames
 
 function file-subpathname-1.1 () {
     mbfl_file_subpathname /a /a | dotest-output ./
@@ -651,12 +652,38 @@ function file-subpathname-1.1 () {
 function file-subpathname-2.1 () {
     mbfl_file_subpathname /a/b/c /a/ | dotest-output ./b/c
 }
+
 function file-subpathname-2.2 () {
     mbfl_file_subpathname /a/b/c /a | dotest-output ./b/c
 }
 
 function file-subpathname-3.1 () {
-    mbfl_file_subpathname /a/b/c /d || true
+    ! mbfl_file_subpathname /a/b/c /d
+}
+
+### --------------------------------------------------------------------
+
+function file-subpathname-var-1.1 () {
+    local RV
+    mbfl_file_subpathname_var RV /a /a
+    dotest-equal ./ "$RV"
+}
+
+function file-subpathname-var-2.1 () {
+    local RV
+    mbfl_file_subpathname_var RV /a/b/c /a/
+    dotest-equal ./b/c "$RV"
+}
+
+function file-subpathname-var-2.2 () {
+    local RV
+    mbfl_file_subpathname_var RV /a/b/c /a
+    dotest-equal ./b/c "$RV"
+}
+
+function file-subpathname-var-3.1 () {
+    local RV
+    ! mbfl_file_subpathname_var RV /a/b/c /d
 }
 
 #page

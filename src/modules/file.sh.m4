@@ -152,9 +152,9 @@ function mbfl_file_extension_var () {
 }
 function mbfl_file_extension () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local OUTPUT_VARNAME
-    mbfl_file_extension_var OUTPUT_VARNAME "$PATHNAME"
-    echo "$OUTPUT_VARNAME"
+    local RESULT_VARNAME
+    mbfl_file_extension_var RESULT_VARNAME "$PATHNAME"
+    echo "$RESULT_VARNAME"
 }
 
 #page
@@ -186,9 +186,9 @@ function mbfl_file_dirname_var () {
 }
 function mbfl_file_dirname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local OUTPUT_VARNAME
-    mbfl_file_dirname_var OUTPUT_VARNAME "$PATHNAME"
-    echo "$OUTPUT_VARNAME"
+    local RESULT_VARNAME
+    mbfl_file_dirname_var RESULT_VARNAME "$PATHNAME"
+    echo "$RESULT_VARNAME"
 }
 
 #page
@@ -252,9 +252,9 @@ function mbfl_file_rootname_var () {
 
 function mbfl_file_rootname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local OUTPUT_VARNAME
-    mbfl_file_rootname_var OUTPUT_VARNAME "$PATHNAME"
-    echo "$OUTPUT_VARNAME"
+    local RESULT_VARNAME
+    mbfl_file_rootname_var RESULT_VARNAME "$PATHNAME"
+    echo "$RESULT_VARNAME"
 }
 
 #page
@@ -281,9 +281,9 @@ function mbfl_file_tail_var () {
 
 function mbfl_file_tail () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local OUTPUT_VARNAME
-    mbfl_file_tail_var OUTPUT_VARNAME "$PATHNAME"
-    echo "$OUTPUT_VARNAME"
+    local RESULT_VARNAME
+    mbfl_file_tail_var RESULT_VARNAME "$PATHNAME"
+    echo "$RESULT_VARNAME"
 }
 
 #page
@@ -333,9 +333,9 @@ function mbfl_file_strip_trailing_slash_var () {
 
 function mbfl_file_strip_trailing_slash () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local OUTPUT_VARNAME
-    mbfl_file_strip_trailing_slash_var OUTPUT_VARNAME "$PATHNAME"
-    echo "$OUTPUT_VARNAME"
+    local RESULT_VARNAME
+    mbfl_file_strip_trailing_slash_var RESULT_VARNAME "$PATHNAME"
+    echo "$RESULT_VARNAME"
 }
 
 ### --------------------------------------------------------------------
@@ -363,9 +363,9 @@ function mbfl_file_strip_leading_slash_var () {
 
 function mbfl_file_strip_leading_slash () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local OUTPUT_VARNAME
-    mbfl_file_strip_leading_slash_var OUTPUT_VARNAME "$PATHNAME"
-    echo "$OUTPUT_VARNAME"
+    local RESULT_VARNAME
+    mbfl_file_strip_leading_slash_var RESULT_VARNAME "$PATHNAME"
+    echo "$RESULT_VARNAME"
 }
 
 #page
@@ -404,9 +404,9 @@ function mbfl_file_normalise_var () {
 function mbfl_file_normalise () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_optional_parameter(PREFIX, 2)
-    local OUTPUT_VARNAME
-    mbfl_file_normalise_var OUTPUT_VARNAME "$PATHNAME" "$PREFIX"
-    echo "$OUTPUT_VARNAME"
+    local RESULT_VARNAME
+    mbfl_file_normalise_var RESULT_VARNAME "$PATHNAME" "$PREFIX"
+    echo "$RESULT_VARNAME"
 }
 
 ### --------------------------------------------------------------------
@@ -474,20 +474,38 @@ function mbfl_p_file_normalise2_var () {
 }
 
 #page
+#### relative pathnames: extracting subpathnames
+
+function mbfl_file_subpathname_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    mbfl_mandatory_parameter(BASEDIR, 3, base directory)
+
+    # If BASEDIR ends with a slash: remove it.
+    if test "${BASEDIR:$((${#BASEDIR}-1))}" = '/'
+    then BASEDIR="${BASEDIR:0:$((${#BASEDIR}-1))}"
+    fi
+
+    if test "$PATHNAME" = "$BASEDIR"
+    then
+        RESULT_VARREF='./'
+        return 0
+    elif test "${PATHNAME:0:${#BASEDIR}}" = "$BASEDIR"
+    then
+        printf -v RESULT_VARREF './%s' "${PATHNAME:$((${#BASEDIR}+1))}"
+        return 0
+    else return 1
+    fi
+}
 
 function mbfl_file_subpathname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_mandatory_parameter(BASEDIR, 2, base directory)
-    test "${BASEDIR:$((${#BASEDIR}-1))}" = '/' && \
-        BASEDIR="${BASEDIR:0:$((${#BASEDIR}-1))}"
-    if test "$PATHNAME" = "$BASEDIR"
+    local RESULT_VARNAME
+    if mbfl_file_subpathname_var RESULT_VARNAME "$PATHNAME" "$BASEDIR"
     then
-        printf './\n'
-        return 0
-    elif test "${PATHNAME:0:${#BASEDIR}}" = "$BASEDIR"
-    then
-        printf  './%s\n' "${PATHNAME:$((${#BASEDIR}+1))}"
-        return 0
+	echo "$RESULT_VARNAME"
+	return 0
     else return 1
     fi
 }

@@ -1096,19 +1096,33 @@ Echo to stdout the normalised file name.  Return true.
 
 
 @defun mbfl_file_subpathname @var{pathname} @var{basedir}
-If @var{pathname} is a subdirectory or file under @var{basedir}: print
-to stdout the subpathname portion.  Example:
+@defunx mbfl_file_subpathname_var @var{RV} @var{pathname} @var{basedir}
+If @var{pathname} is a subdirectory or file under @var{basedir}: print to stdout the subpathname
+portion.  Example:
 
 @example
 mbfl_file_subpathname /a/b/c /a
 -> ./b/c
 @end example
 
-Both @var{pathname} and @var{basedir} must be full (normalised)
-pathnames for this function to work.
+Both @var{pathname} and @var{basedir} must be full (normalised) pathnames for this function to work.
+If @var{pathname} is recognised as subpathname of @var{basedir}: the return code is zero; else the
+return code is one.
 
-If @var{pathname} is recognised  as subpathname of @var{basedir}: the
-return code is zero; else the return code is one.
+The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+printing it.
+
+@example
+mbfl_file_subpathname /a /a       @print{} ./
+mbfl_file_subpathname /a/b/c /a/  @print{} ./b/c
+mbfl_file_subpathname /a/b/c /a   @print{} ./b/c
+
+mbfl_file_subpathname /a/b/c /d   @error{} no match
+
+local RV
+mbfl_file_subpathname_var RV /a/b/c /a
+"$RV" @result{} ./b/c
+@end example
 @end defun
 
 
