@@ -894,7 +894,7 @@ the last dot character in the argument string and echo to stdout the range of ch
 dot to the end, not including the dot.  If a slash character or the beginning of the string is found
 first: echoes to stdout the empty string.
 
-The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+The @code{_var} function variant stores the result in the variable @var{RV} rather than
 printing it.
 
 @example
@@ -923,7 +923,7 @@ If no slash is found: echo a single dot (the current directory).
 If the input string begins with @code{/} or @code{//} with no slash characters after the first ones:
 echo a single slash.
 
-The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+The @code{_var} function variant stores the result in the variable @var{RV} rather than
 printing it.
 
 @example
@@ -957,7 +957,7 @@ stdout the range of characters from the beginning to the dot, not including the 
 the last character: skip it; then if a slash character is found first, or no dot is found, or the
 dot is the first character: echo the full @var{pathname}.
 
-The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+The @code{_var} function variant stores the result in the variable @var{RV} rather than
 printing it.
 
 @example
@@ -988,7 +988,7 @@ Extract the file portion from a fully qualified pathname.  Search the last slash
 input string and echo to stdout the range of characters from the slash to the end, not including the
 slash.  If no slash is found: echo the whole string.
 
-The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+The @code{_var} function variant stores the result in the variable @var{RV} rather than
 printing it.
 
 @example
@@ -1027,7 +1027,7 @@ $SPLITCOUNT             @result{} 3
 Remove all the trailing slashes from @var{pathname} and print the result on stdout.  If
 @var{pathname} consists only of slashes: print a single dot.
 
-The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+The @code{_var} function variant stores the result in the variable @var{RV} rather than
 printing it.
 
 @example
@@ -1056,7 +1056,7 @@ mbfl_file_strip_trailing_slash_var RV '/path/to/dir.ext/'
 Remove all the leading slashes from @var{pathname} and print the result on stdout.  If
 @var{pathname} consists only of slashes: print a single dot.
 
-The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+The @code{_var} function variant stores the result in the variable @var{RV} rather than
 printing it.
 
 @example
@@ -1109,7 +1109,7 @@ Both @var{pathname} and @var{basedir} must be full (normalised) pathnames for th
 If @var{pathname} is recognised as subpathname of @var{basedir}: the return code is zero; else the
 return code is one.
 
-The @code{_var} function variant writes the output in the result variable @var{RV} rather than
+The @code{_var} function variant stores the result in the variable @var{RV} rather than
 printing it.
 
 @example
@@ -1169,25 +1169,28 @@ pathname according to @bfunc{mbfl_file_is_relative}.
 
 @defun mbfl_file_find_tmpdir
 @defunx mbfl_file_find_tmpdir @var{PATHNAME}
+@defunx mbfl_file_find_tmpdir_var @var{RV}
+@defunx mbfl_file_find_tmpdir_var @var{RV} @var{PATHNAME}
 Find a value for a temporary directory according to the following rules:
 
 @enumerate
 @item
-If @var{PATHNAME} argument is not used: it defaults to the current value
-of @code{mbfl_option_TMPDIR}.
+If @var{PATHNAME} is not used: it defaults to the current value of @code{mbfl_option_TMPDIR}.
 
 @item
-If @var{PATHNAME} is not null and it is a directory and it is writable:
-it is accepted as value.
+If @var{PATHNAME} is not null and it is a directory and it is writable: it is accepted as value.
 
 @item
-If @var{PATHNAME} argument is invalid: the value @file{/tmp/$USER},
-where @env{USER} is the environment variable, is tried; finally the
-value @file{/tmp} is tried.
+If @var{PATHNAME} is invalid: the value @file{/tmp/$USER}, where @env{USER} is the environment
+variable, is tried.
+
+@item
+Finally the value @file{/tmp} is tried.
 @end enumerate
 
-Echo the accepted value to stdout.  Return true if a value is found,
-false otherwise.
+Echo the accepted value to stdout.  Return true if a value is found, false otherwise.
+
+The @code{_var} function variant stores the result in the variable @var{RV} rather than printing it.
 @end defun
 
 @c page

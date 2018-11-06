@@ -544,26 +544,45 @@ function mbfl_file_is_relative_filename () {
 #PAGE
 #### temporary directory functions
 
-function mbfl_file_find_tmpdir () {
-    local TMPDIR="${1:-${mbfl_option_TMPDIR}}"
-    mbfl_file_directory_is_writable "$TMPDIR" && {
-        printf "${TMPDIR}\n"
+function mbfl_file_find_tmpdir_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_optional_parameter(TMPDIR, 2, "$mbfl_option_TMPDIR")
+
+    if mbfl_file_directory_is_writable "$TMPDIR"
+    then
+        RESULT_VARREF="$TMPDIR"
         return 0
-    }
-    test -n "$USER" && {
+    elif test -n "$USER"
+    then
         TMPDIR="/tmp/${USER}"
-        mbfl_file_directory_is_writable "$TMPDIR" && {
-            printf "${TMPDIR}\n"
+        if mbfl_file_directory_is_writable "$TMPDIR"
+	then
+            RESULT_VARREF="$TMPDIR"
             return 0
-        }
-    }
-    TMPDIR=/tmp
-    mbfl_file_directory_is_writable "$TMPDIR" && {
-        printf "${TMPDIR}\n"
-        return 0
-    }
-    mbfl_message_error "cannot find usable value for 'TMPDIR'"
-    return 1
+	else return 1
+	fi
+    else
+	TMPDIR=/tmp
+	if mbfl_file_directory_is_writable "$TMPDIR"
+	then
+            RESULT_VARREF="$TMPDIR"
+            return 0
+	else
+	    mbfl_message_error "cannot find usable value for 'TMPDIR'"
+	    return 1
+	fi
+    fi
+}
+
+function mbfl_file_find_tmpdir () {
+    mbfl_optional_parameter(TMPDIR, 1, "$mbfl_option_TMPDIR")
+    local RESULT_VARNAME
+    if mbfl_file_find_tmpdir_var RESULT_VARNAME "$TMPDIR"
+    then
+	echo "$RESULT_VARNAME"
+	return 0
+    else return 1
+    fi
 }
 
 #page
