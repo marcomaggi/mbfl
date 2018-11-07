@@ -1272,6 +1272,13 @@ Make use of @command{readlink} to acquire the original pathname
 referenced by @var{pathname}, then print it.
 @end defun
 
+
+@defun mbfl_exec_readlink @var{PATHNAME} @var{arg} @dots{}
+Raw executor for @command{readlink}.  The mandatory argument @var{PATHNAME} must be the pathname of
+a directory entry.  The optional arguments are added, as options, to the command line of
+@command{readlink}.
+@end defun
+
 @c page
 @node file commands stat
 @subsection Inspecting files and directories
@@ -1531,6 +1538,13 @@ The programs are: @command{ln}.
 
 @defun mbfl_file_symlink @var{original_name} @var{symlink_name}
 Create a symbolic link.
+@end defun
+
+
+@defun mbfl_exec_ln @var{original_name} @var{link_name} @var{arg} @dots{}
+Raw executor for @command{ln}.  The mandatory arguments @var{original_name} and @var{link_name} are
+put on the command line of @command{ln} as arguments.  The optional arguments @var{arg} are added,
+as options, to the command line of @command{ln}.
 @end defun
 
 @c page

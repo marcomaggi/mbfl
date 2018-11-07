@@ -674,14 +674,17 @@ function mbfl_exec_rmdir () {
 function mbfl_file_remove_directory () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_optional_parameter(REMOVE_SILENTLY, 2, no)
-    local FLAGS=
-    if ! mbfl_file_is_directory "$PATHNAME"
+    local FLAGS
+    if mbfl_file_is_directory "$PATHNAME"
     then
+	if test "$REMOVE_SILENTLY" = 'yes'
+	then FLAGS+=' --ignore-fail-on-non-empty'
+	fi
+	mbfl_exec_rmdir "$PATHNAME" ${FLAGS}
+    else
         mbfl_message_error "pathname is not a directory '${PATHNAME}'"
         return 1
     fi
-    test "$REMOVE_SILENTLY" = 'yes' && FLAGS+=' --ignore-fail-on-non-empty'
-    mbfl_exec_rmdir "$PATHNAME" ${FLAGS}
 }
 
 function mbfl_file_remove_directory_silently () {
@@ -705,7 +708,7 @@ function mbfl_exec_cp () {
     local CP FLAGS
     mbfl_program_found_var CP cp || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
-    mbfl_program_exec ${CP} ${FLAGS} "$@" -- "$SOURCE" "$TARGET"
+    mbfl_program_exec "$CP" ${FLAGS} "$@" -- "$SOURCE" "$TARGET"
 }
 
 # This is the executor for the  "rm" program when copying to a directory
@@ -718,7 +721,7 @@ function mbfl_exec_cp_to_dir () {
     local CP FLAGS
     mbfl_program_found_var CP cp || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
-    mbfl_program_exec ${CP} ${FLAGS} "$@" --target-directory="${TARGET}/" -- "$SOURCE"
+    mbfl_program_exec "$CP" ${FLAGS} "$@" --target-directory="${TARGET}/" -- "$SOURCE"
 }
 
 function mbfl_file_copy () {
@@ -776,7 +779,7 @@ function mbfl_exec_mv () {
     local MV FLAGS
     mbfl_program_found_var MV mv || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
-    mbfl_program_exec ${MV} ${FLAGS} "$@" -- "$SOURCE" "$TARGET"
+    mbfl_program_exec "$MV" ${FLAGS} "$@" -- "$SOURCE" "$TARGET"
 }
 # This is the  executor for the "mv" program when  moving to a directory
 # target.
@@ -788,7 +791,7 @@ function mbfl_exec_mv_to_dir () {
     local MV FLAGS
     mbfl_program_found_var MV mv || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
-    mbfl_program_exec ${MV} ${FLAGS} "$@" --target-directory="${TARGET}/" -- "$SOURCE"
+    mbfl_program_exec "$MV" ${FLAGS} "$@" --target-directory="${TARGET}/" -- "$SOURCE"
 }
 
 function mbfl_file_move () {
@@ -851,13 +854,23 @@ function mbfl_file_make_if_not_directory () {
 function mbfl_file_enable_symlink () {
     mbfl_declare_program ln
 }
+
+# This is the executor for the "ls" program.
+#
+function mbfl_exec_ln () {
+    mbfl_mandatory_parameter(ORIGINAL_NAME, 1, original name)
+    mbfl_mandatory_parameter(SYMLINK_NAME, 2, symbolic link name)
+    shift 2
+    local LN FLAGS
+    mbfl_program_found_var LN ln || exit $?
+    mbfl_option_verbose_program && FLAGS+=' --verbose'
+    mbfl_program_exec "$LN" ${FLAGS} "$@" -- "$ORIGINAL_NAME" "$SYMLINK_NAME"
+}
+
 function mbfl_file_symlink () {
     mbfl_mandatory_parameter(ORIGINAL_NAME, 1, original name)
     mbfl_mandatory_parameter(SYMLINK_NAME, 2, symbolic link name)
-    local LN FLAGS='--symbolic'
-    mbfl_program_found_var LN ln || exit $?
-    mbfl_option_verbose_program && FLAGS+=' --verbose'
-    mbfl_program_exec "$LN" ${FLAGS} -- "$ORIGINAL_NAME" "$SYMLINK_NAME"
+    mbfl_exec_ln "$ORIGINAL_NAME" "$SYMLINK_NAME" --symbolic
 }
 
 #page
@@ -867,6 +880,7 @@ function mbfl_file_enable_listing () {
     mbfl_declare_program ls
     mbfl_declare_program readlink
 }
+
 # This is the executor for the "ls" program.
 #
 function mbfl_file_listing () {
@@ -874,7 +888,7 @@ function mbfl_file_listing () {
     shift 1
     local LS
     mbfl_program_found_var LS ls || exit $?
-    mbfl_program_exec ${LS} "$@" -- "$PATHNAME"
+    mbfl_program_exec "$LS" "$@" -- "$PATHNAME"
 }
 # This is a raw, private, executor  for the "ls" program.  This function
 # uses the variable LS_FLAGS in the scope of the caller.
@@ -883,7 +897,7 @@ function mbfl_file_p_invoke_ls () {
     local LS
     mbfl_program_found_var LS ls || exit $?
     mbfl_file_is_directory "$PATHNAME" && LS_FLAGS+=' -d'
-    mbfl_program_exec ${LS} ${LS_FLAGS} "$PATHNAME"
+    mbfl_program_exec "$LS" ${LS_FLAGS} "$PATHNAME"
 }
 
 function mbfl_file_long_listing () {
@@ -891,17 +905,28 @@ function mbfl_file_long_listing () {
     local LS_FLAGS='-l'
     mbfl_file_listing "$PATHNAME" $LS_FLAGS
 }
-function mbfl_file_normalise_link () {
-    local READLINK
+
+### --------------------------------------------------------------------
+
+# This is the executor for the "readlink" program.
+#
+function mbfl_exec_readlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    READLINK=$(mbfl_program_found readlink) || exit $?
-    mbfl_program_exec "$READLINK" -fn "$PATHNAME"
+    shift
+    local READLINK FLAGS
+    mbfl_option_verbose_program && FLAGS+=' --verbose'
+    mbfl_program_found_var READLINK readlink || exit $?
+    mbfl_program_exec "$READLINK" ${FLAGS} "$@" -- "$PATHNAME"
 }
+
 function mbfl_file_read_link () {
-    local READLINK
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    READLINK=$(mbfl_program_found readlink) || exit $?
-    mbfl_program_exec "$READLINK" "$PATHNAME"
+    mbfl_exec_readlink "$PATHNAME"
+}
+
+function mbfl_file_normalise_link () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_exec_readlink "$PATHNAME" --canonicalize --no-newline
 }
 
 #page
