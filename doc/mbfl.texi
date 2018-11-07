@@ -877,7 +877,7 @@ mbfl_decode_hex 414243
 @menu
 * file names parts::            Splitting a file name into its
                                 components.
-* file names path::             Handling relative pathnames.
+* file names path::             Absolute and relative pathnames.
 * file names system::           Finding pathnames on the system.
 @end menu
 
@@ -1092,7 +1092,7 @@ Echo to stdout the normalised file name.  Return true.
 
 @c page
 @node file names path
-@subsection Handling relative pathnames
+@subsection Absolute and relative pathnames
 
 
 @defun mbfl_file_subpathname @var{pathname} @var{basedir}
