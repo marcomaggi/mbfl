@@ -1734,17 +1734,26 @@ mbfl_file_stat /bin --format='%F'
 
 
 @defun mbfl_file_get_owner @var{pathname}
+@defunx mbfl_file_get_owner_var @var{RV} @var{pathname}
 Print the owner of the file as symbolic name.
+
+The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
 @end defun
 
 
 @defun mbfl_file_get_group @var{pathname}
+@defunx mbfl_file_get_group_var @var{RV} @var{pathname}
 Print the group of the file as symbolic name.
+
+The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
 @end defun
 
 
 @defun mbfl_file_get_size @var{pathname}
+@defunx mbfl_file_get_size_var @var{RV} @var{pathname}
 Print the size of the file in bytes.
+
+The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
 @end defun
 
 @c page

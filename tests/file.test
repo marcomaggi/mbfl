@@ -737,6 +737,7 @@ function file-mkdir-1.1 () {
 }
 
 #page
+#### file system inspection: file owner
 
 function file-owner-1.1 () {
     local name=$(dotest-mkfile file.ext)
@@ -748,7 +749,19 @@ function file-owner-1.1 () {
     } | dotest-output $USER
 }
 
+### --------------------------------------------------------------------
+
+function file-owner-var-1.1 () {
+    local name=$(dotest-mkfile file.ext) RV
+
+    mbfl_file_enable_stat
+    mbfl_file_get_owner_var RV "$name"
+    dotest-clean-files
+    dotest-equal "$USER" "$RV"
+}
+
 #page
+#### file system inspection: file size
 
 function file-size-1.1 () {
     local PATHNAME=$(dotest-mkfile file.ext)
@@ -759,6 +772,18 @@ function file-size-1.1 () {
 	mbfl_file_get_size "${PATHNAME}"
 	dotest-clean-files
     } | dotest-output 10
+}
+
+### --------------------------------------------------------------------
+
+function file-size-var-1.1 () {
+    local PATHNAME=$(dotest-mkfile file.ext) RV
+
+    echo -n 0123456789 >"${PATHNAME}"
+    mbfl_file_enable_stat
+    mbfl_file_get_size_var RV "${PATHNAME}"
+    dotest-clean-files
+    dotest-equal 10 "$RV"
 }
 
 #page

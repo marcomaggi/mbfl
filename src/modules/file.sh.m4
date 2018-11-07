@@ -1280,6 +1280,8 @@ function mbfl_file_stat () {
     mbfl_program_exec "$STAT" ${FLAGS} "$@" -- "$PATHNAME"
 }
 
+### --------------------------------------------------------------------
+
 function mbfl_file_get_owner () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_file_stat "$PATHNAME" --format='%U'
@@ -1291,6 +1293,24 @@ function mbfl_file_get_group () {
 function mbfl_file_get_size () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_file_stat "$PATHNAME" --format='%s'
+}
+
+### --------------------------------------------------------------------
+
+function mbfl_file_get_owner_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --printf='%U')
+}
+function mbfl_file_get_group_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --printf='%G')
+}
+function mbfl_file_get_size_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --printf='%s')
 }
 
 
