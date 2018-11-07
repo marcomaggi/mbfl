@@ -7,7 +7,8 @@
 # Abstract
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014, 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2003-2005, 2009, 2013-2014, 2017-2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -273,11 +274,14 @@ function mbfl_program_validate_declared () {
     done
     return $retval
 }
-function mbfl_program_found () {
-    mbfl_mandatory_parameter(PROGRAM, 1, program name)
-    local number_of_programs=${#mbfl_program_NAMES[@]} i=
-    if test "$PROGRAM" != :
+function mbfl_program_found_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PROGRAM, 2, program name)
+    local number_of_programs=${#mbfl_program_NAMES[@]}
+
+    if test "$PROGRAM" != ':'
     then
+	local -i i
         for ((i=0; $i < ${number_of_programs}; ++i))
         do
             if test "${mbfl_program_NAMES[$i]}" = "$PROGRAM"
@@ -285,17 +289,29 @@ function mbfl_program_found () {
 		local PATHNAME="${mbfl_program_PATHS[$i]}"
 		if test -n "$PATHNAME" -a -x "$PATHNAME"
 		then
-		    echo "$PATHNAME"
+		    RESULT_VARREF="$PATHNAME"
                     return 0
 		else
-		    mbfl_message_error_printf "executable not found '$PROGRAM'"
+		    mbfl_message_error_printf 'executable not found: "%s"' "$PROGRAM"
 		    exit_because_program_not_found
 		fi
             fi
         done
     fi
-    mbfl_message_error "executable not found '$PROGRAM'"
+    mbfl_message_error_printf 'executable not found: "%s"' "$PROGRAM"
     exit_because_program_not_found
+}
+function mbfl_program_found () {
+    mbfl_mandatory_parameter(PROGRAM, 1, program name)
+    local RESULT_VARNAME EXIT_STATUS
+    mbfl_program_found_var RESULT_VARNAME "$PROGRAM"
+    EXIT_STATUS=$?
+    if ((0 == EXIT_STATUS))
+    then
+	echo "$RESULT_VARNAME"
+	return 0
+    else return $EXIT_STATUS
+    fi
 }
 
 #page

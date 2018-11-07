@@ -3501,26 +3501,26 @@ from the command line the option @option{--verbose} must be used before
 
 
 @defun mbfl_program_found @var{program}
-Print the pathname of the previously declared @var{program}.  Return
-zero if the program was found, otherwise print an error message and exit
-the current (sub)shell by invoking
+@defunx mbfl_program_found_var @var{RV} @var{program}
+Print the pathname of the previously declared @var{program}.  Return zero if the program was found,
+otherwise print an error message and exit the current (sub)shell by invoking
 @bfunc{exit_because_program_not_found}.
 
-This function should be used to retrieve the pathname of the program to
-be used as first argument to @bfunc{mbfl_program_exec}:
+This function should be used to retrieve the pathname of the program to be used as first argument to
+@bfunc{mbfl_program_exec}:
+
+The function variant @code{_var} will store the result in @var{RV} rather than printing it.
 
 @example
 function program_wrapper () @{
-    local ARGUMENT PROGNAME FLAGS
-
-    ARGUMENT=$@{1:?"missing 'ARGUMENT'"@}
+    mbfl_mandatory_parameter(ARGUMENT, 1, argument)
     shift
-    PROGNAME=$(mbfl_program_found myprog) || exit $?
+    local PROGNAME FLAGS
 
-    mbfl_option_verbose_program && \
-       FLAGS="$FLAGS --verbose"
-    mbfl_program_exec "$PROGNAME" \
-       $FLAGS "$ARGUMENT" "$@@"
+    mbfl_program_found_var PROGNAME myprog || exit $?
+
+    mbfl_option_verbose_program && FLAGS+=' --verbose'
+    mbfl_program_exec "$PROGNAME" $FLAGS "$ARGUMENT" "$@@"
 @}
 @end example
 
@@ -3532,8 +3532,8 @@ local PROGNAME=$(mbfl_program_found 'myprog') || \
 @end example
 
 @noindent
-because @code{local} will return with code zero even if
-@bfunc{mbfl_program_found} fails, so the error will not be reported.
+because @code{local} has exit status zero even if @bfunc{mbfl_program_found} fails, so the error
+will not be reported.
 @end defun
 
 
