@@ -1199,7 +1199,8 @@ The @code{_var} function variant stores the result in the variable @var{RV} rath
 
 
 @menu
-* file commands listing::       Retrieving informations.
+* file commands listing::       Listing directory entries.
+* file commands stat::          Inspecting files and directories.
 * file commands mkdir::         Creating directories.
 * file commands copy::          Copying files.
 * file commands move::          Moving files.
@@ -1209,12 +1210,11 @@ The @code{_var} function variant stores the result in the variable @var{RV} rath
 * file commands perms::         Set/get file permissions.
 * file commands owner::         Setting file owner and group.
 * file commands compress::      Compressing files.
-* file commands stat::          Inspecting files and directories.
 @end menu
 
 @c page
 @node file commands listing
-@subsection Retrieving informations
+@subsection Listing directory entries
 
 
 @cindex Files, listing
@@ -1270,6 +1270,61 @@ readlink -fn "$@var{pathname}"
 @defun mbfl_file_read_link @var{pathname}
 Make use of @command{readlink} to acquire the original pathname
 referenced by @var{pathname}, then print it.
+@end defun
+
+@c page
+@node file commands stat
+@subsection Inspecting files and directories
+
+
+The @gnu{} Coreutils package comes with a command line program @command{stat} which implements
+advanced inspection of file and directory status.  @xref{stat invocation, stat, Report file or file
+system status, coreutils}.
+
+
+@defun mbfl_file_enable_stat
+Declare the intention to use the program @command{stat}.
+@end defun
+
+
+@defun mbfl_file_stat @var{pathname} @var{arg} @dots{}
+Execute @command{stat} with @var{pathname} as first argument and @var{arg} as other arguments.
+
+@example
+mbfl_file_enable_stat
+
+mbfl_file_stat /bin/ls --format='%F'
+@result{} 0
+@print{} regular
+
+mbfl_file_stat /bin --format='%F'
+@result{} 0
+@print{} directory
+@end example
+@end defun
+
+
+@defun mbfl_file_get_owner @var{pathname}
+@defunx mbfl_file_get_owner_var @var{RV} @var{pathname}
+Print the owner of the file as symbolic name.
+
+The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
+@end defun
+
+
+@defun mbfl_file_get_group @var{pathname}
+@defunx mbfl_file_get_group_var @var{RV} @var{pathname}
+Print the group of the file as symbolic name.
+
+The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
+@end defun
+
+
+@defun mbfl_file_get_size @var{pathname}
+@defunx mbfl_file_get_size_var @var{RV} @var{pathname}
+Print the size of the file in bytes.
+
+The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
 @end defun
 
 @c page
@@ -1699,61 +1754,6 @@ compressor program.
 @defun mbfl_file_decompress @var{PATHNAME} ?@dots{}?
 Decompress @var{PATHNAME}, a file pathname, with the currently selected
 compressor program.
-@end defun
-
-@c page
-@node file commands stat
-@subsection Inspecting files and directories
-
-
-The @gnu{} Coreutils package comes with a command line program @command{stat} which implements
-advanced inspection of file and directory status.  @xref{stat invocation, stat, Report file or file
-system status, coreutils}.
-
-
-@defun mbfl_file_enable_stat
-Declare the intention to use the program @command{stat}.
-@end defun
-
-
-@defun mbfl_file_stat @var{pathname} @var{arg} @dots{}
-Execute @command{stat} with @var{pathname} as first argument and @var{arg} as other arguments.
-
-@example
-mbfl_file_enable_stat
-
-mbfl_file_stat /bin/ls --format='%F'
-@result{} 0
-@print{} regular
-
-mbfl_file_stat /bin --format='%F'
-@result{} 0
-@print{} directory
-@end example
-@end defun
-
-
-@defun mbfl_file_get_owner @var{pathname}
-@defunx mbfl_file_get_owner_var @var{RV} @var{pathname}
-Print the owner of the file as symbolic name.
-
-The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
-@end defun
-
-
-@defun mbfl_file_get_group @var{pathname}
-@defunx mbfl_file_get_group_var @var{RV} @var{pathname}
-Print the group of the file as symbolic name.
-
-The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
-@end defun
-
-
-@defun mbfl_file_get_size @var{pathname}
-@defunx mbfl_file_get_size_var @var{RV} @var{pathname}
-Print the size of the file in bytes.
-
-The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
 @end defun
 
 @c page
