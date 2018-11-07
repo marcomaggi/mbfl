@@ -1161,12 +1161,14 @@ function mbfl_exec_chgrp () {
 function mbfl_file_set_owner () {
     mbfl_mandatory_parameter(OWNER, 1, owner)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    mbfl_exec_chown "$PATHNAME" "$OWNER"
+    shift 2
+    mbfl_exec_chown "$PATHNAME" "$OWNER" "$@"
 }
 function mbfl_file_set_group () {
     mbfl_mandatory_parameter(GROUP, 1, group)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    mbfl_exec_chgrp "$PATHNAME" "$GROUP"
+    shift 2
+    mbfl_exec_chgrp "$PATHNAME" "$GROUP" "$@"
 }
 
 #page

@@ -1674,15 +1674,15 @@ To change the file owner and group one may request the use of @command{sudo}: ju
 before invoking the following function.  @ref{program executing, Executing a program}
 
 
-@defun mbfl_file_set_owner @var{owner} @var{pathname}
+@defun mbfl_file_set_owner @var{owner} @var{pathname} @var{opt} @dots{}
 Change the file owner for @var{pathname}; @var{owner} must be in a form accepted by @command{chown}.
-If verbose mode is enabled: hand the @option{--verbose} option to @command{chown}.
+The optional arguments @var{opt} are handed to @command{chown} as options.
 @end defun
 
 
-@defun mbfl_file_set_group @var{group} @var{pathname}
+@defun mbfl_file_set_group @var{group} @var{pathname} @var{opt} @dots{}
 Change the file group for @var{pathname}; @var{group} must be in a form accepted by @command{chgrp}.
-If verbose mode is enabled: hand the @option{--verbose} option to @command{chgrp}.
+The optional arguments @var{opt} are handed to @command{chgrp} as options.
 @end defun
 
 
@@ -1702,15 +1702,17 @@ The function variant @code{_var} stores the result in the variable @var{RV} rath
 @end defun
 
 
-@defun mbfl_exec_chown @var{pathname} @var{arg} @dots{}
+@defun mbfl_exec_chown @var{pathname} @var{opt} @dots{}
 Raw interface to @command{chown}.  The mandatory argument @var{pathname} is handed to
-@command{chown} as argument.  The optional arguments are handed to @command{chown} as options.
+@command{chown} as argument.  The optional arguments @var{opt} are handed to @command{chown} as
+options.
 @end defun
 
 
-@defun mbfl_exec_chgrp @var{pathname} @var{arg} @dots{}
+@defun mbfl_exec_chgrp @var{pathname} @var{opt} @dots{}
 Raw interface to @command{chgrp}.  The mandatory argument @var{pathname} is handed to
-@command{chgrp} as argument.  The optional arguments are handed to @command{chgrp} as options.
+@command{chgrp} as argument.  The optional arguments @var{opt} are handed to @command{chgrp} as
+options.
 @end defun
 
 @c page
