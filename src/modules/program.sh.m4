@@ -154,12 +154,12 @@ function mbfl_p_program_exec () {
     then
         if ! test -x "$SUDO"
 	then
-	    mbfl_message_error_printf 'executable sudo not found: "%s"\n' "$SUDO"
+	    mbfl_message_error_printf 'executable sudo not found: "%s"' "$SUDO"
 	    exit_because_program_not_found
 	fi
         if ! test -x "$WHOAMI"
 	then
-	    mbfl_message_error_printf 'executable whoami not found: "%s"\n' "$WHOAMI"
+	    mbfl_message_error_printf 'executable whoami not found: "%s"' "$WHOAMI"
 	    exit_because_program_not_found
 	fi
 	if ! USERNAME=$("$WHOAMI")

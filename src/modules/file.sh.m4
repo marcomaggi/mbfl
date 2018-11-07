@@ -1193,8 +1193,8 @@ function mbfl_file_read () {
 #### compression interface functions
 
 mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_gzip
-mbfl_p_file_compress_KEEP_ORIGINAL='no'
-mbfl_p_file_compress_TO_STDOUT='no'
+mbfl_p_file_compress_KEEP_ORIGINAL=false
+mbfl_p_file_compress_TO_STDOUT=false
 
 function mbfl_file_enable_compress () {
     mbfl_declare_program gzip
@@ -1202,102 +1202,128 @@ function mbfl_file_enable_compress () {
     mbfl_file_compress_select_gzip
     mbfl_file_compress_nokeep
 }
-function mbfl_file_compress_keep ()     { mbfl_p_file_compress_KEEP_ORIGINAL='yes'; }
-function mbfl_file_compress_nokeep ()   { mbfl_p_file_compress_KEEP_ORIGINAL='no'; }
-function mbfl_file_compress_stdout ()   { mbfl_p_file_compress_TO_STDOUT='yes'; }
-function mbfl_file_compress_nostdout () { mbfl_p_file_compress_TO_STDOUT='no'; }
+
+function mbfl_file_compress_keep     () { mbfl_p_file_compress_KEEP_ORIGINAL=true;  }
+function mbfl_file_compress_nokeep   () { mbfl_p_file_compress_KEEP_ORIGINAL=false; }
+function mbfl_file_compress_stdout   () { mbfl_p_file_compress_TO_STDOUT=true;      }
+function mbfl_file_compress_nostdout () { mbfl_p_file_compress_TO_STDOUT=false;     }
+
 function mbfl_file_compress_select_gzip () {
     mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_gzip
 }
-function mbfl_file_compress_select_bzip () {
-    mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_bzip
+function mbfl_file_compress_select_bzip2 () {
+    mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_bzip2
 }
+function mbfl_file_compress_select_bzip () {
+    mbfl_file_compress_select_bzip2
+}
+
 function mbfl_file_compress () {
-    mbfl_mandatory_parameter(FILE, 1, target file)
+    mbfl_mandatory_parameter(FILE, 1, uncompressed source file)
     shift
     mbfl_p_file_compress compress "$FILE" "$@"
 }
+
 function mbfl_file_decompress () {
-    mbfl_mandatory_parameter(FILE, 1, target file)
+    mbfl_mandatory_parameter(FILE, 1, compressed source file)
     shift
     mbfl_p_file_compress decompress "$FILE" "$@"
 }
+
 function mbfl_p_file_compress () {
     mbfl_mandatory_parameter(MODE, 1, compression/decompression mode)
     mbfl_mandatory_parameter(FILE, 2, target file)
     shift 2
-    mbfl_file_is_file "$FILE" || {
-        mbfl_message_error "compression target is not a file '${FILE}'"
+    if mbfl_file_is_file "$FILE"
+    then ${mbfl_p_file_compress_FUNCTION} ${MODE} "$FILE" "$@"
+    else
+        mbfl_message_error_printf 'compression target is not a file "%s"' "$FILE"
         return 1
-    }
-    ${mbfl_p_file_compress_FUNCTION} ${MODE} "$FILE" "$@"
+    fi
 }
 
 #page
 #### compression action functions
 
 function mbfl_p_file_compress_gzip () {
-    local COMPRESSOR FLAGS DEST
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
-    mbfl_mandatory_parameter(SOURCE, 2, target file)
+    mbfl_mandatory_parameter(SOURCE, 2, source file)
     shift 2
-    COMPRESSOR=$(mbfl_program_found gzip) || exit $?
+    local COMPRESSOR FLAGS='--force' DEST
+
+    mbfl_program_found_var COMPRESSOR gzip || exit $?
     case "$COMPRESS" in
         compress)
-            DEST=${SOURCE}.gz
+            printf -v DEST '%s.gz' "$SOURCE"
             ;;
         decompress)
-            DEST=$(mbfl_file_rootname "$SOURCE")
-            FLAGS="${FLAGS} --decompress"
+            mbfl_file_rootname_var DEST "$SOURCE"
+            FLAGS+=' --decompress'
             ;;
         *)
-            mbfl_message_error "internal error: wrong mode '${COMPRESS}' in '${FUNCNAME}'"
+            mbfl_message_error_printf 'internal error: wrong mode "%s" in "%s"' "$COMPRESS" "$FUNCNAME"
             exit_failure
             ;;
     esac
-    mbfl_option_verbose_program && FLAGS+=' --verbose'
-    if test "${mbfl_p_file_compress_TO_STDOUT}" = yes
+
+    if mbfl_option_verbose_program
+    then FLAGS+=' --verbose'
+    fi
+
+    if $mbfl_p_file_compress_TO_STDOUT
     then
-        FLAGS="${FLAGS} --stdout"
-        mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
+	# When   writing   to   stdout:  we   ignore   the   keep/nokeep
+	# configuration and always keep.
+        FLAGS+=' --keep --stdout'
+        mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
     else
-        if test "${mbfl_p_file_compress_KEEP_ORIGINAL}" = yes
-        then
-            FLAGS="${FLAGS} --stdout"
-            mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
-        else mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
-        fi
+	# The   output  goes   to   a  file:   honour  the   keep/nokeep
+	# configuration.
+	if $mbfl_p_file_compress_KEEP_ORIGINAL
+	then FLAGS+=' --keep'
+	fi
+	mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
     fi
 }
-function mbfl_p_file_compress_bzip () {
-    local COMPRESSOR FLAGS DEST
+function mbfl_p_file_compress_bzip2 () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, target file)
     shift 2
-    COMPRESSOR=$(mbfl_program_found bzip2) || exit $?
+    local COMPRESSOR FLAGS='--force' DEST
+
+    mbfl_program_found_var COMPRESSOR bzip2 || exit $?
     case "$COMPRESS" in
         compress)
-            DEST=${SOURCE}.bz2
-            FLAGS="${FLAGS} --compress"
+            printf -v DEST '%s.bz2' "$SOURCE"
+            FLAGS+=' --compress'
             ;;
         decompress)
-            DEST=$(mbfl_file_rootname "$SOURCE")
-            FLAGS="${FLAGS} --decompress"
+            mbfl_file_rootname_var DEST "$SOURCE"
+            FLAGS+=' --decompress'
             ;;
         *)
-            mbfl_message_error "internal error: wrong mode '${COMPRESS}' in '${FUNCNAME}'"
+            mbfl_message_error_printf 'internal error: wrong mode "%s" in "%s"' "$COMPRESS" "$FUNCNAME"
             exit_failure
             ;;
     esac
-    mbfl_option_verbose_program && FLAGS+=' --verbose'
-    if test "${mbfl_p_file_compress_TO_STDOUT}" = yes
+
+    if mbfl_option_verbose_program
+    then FLAGS+=' --verbose'
+    fi
+
+    if $mbfl_p_file_compress_TO_STDOUT
     then
-        FLAGS="${FLAGS} --keep --stdout"
-        mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
+	# When   writing   to   stdout:  we   ignore   the   keep/nokeep
+	# configuration and always keep.
+	FLAGS+=' --keep --stdout'
+	mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
     else
-        test "${mbfl_p_file_compress_KEEP_ORIGINAL}" = yes && \
-            FLAGS="${FLAGS} --keep"
-        mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
+	# The   output  goes   to   a  file:   honour  the   keep/nokeep
+	# configuration.
+	if $mbfl_p_file_compress_KEEP_ORIGINAL
+	then FLAGS+=' --keep'
+	fi
+	mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
     fi
 }
 

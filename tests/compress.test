@@ -10,7 +10,8 @@
 #
 #		$ TESTMATCH=compress- make all test
 #
-# Copyright (c) 2005, 2012, 2013 Marco Maggi
+# Copyright (c) 2005, 2012, 2013, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -37,11 +38,11 @@ source setup.sh
 
 function compress () {
     top_srcdir=${top_srcdir:=${PWD}/..}
+    examplesdir=${examplesdir:?'missing examplesdir in the environment'}
 
-    if false ; then
-        ${BASH} "$examplesdir"/compress.sh --debug -v "$@"
-    else
-        ${BASH} "$examplesdir"/compress.sh "$@"
+    if false
+    then "$BASH" "$examplesdir"/compress.sh --debug -v "$@"
+    else "$BASH" "$examplesdir"/compress.sh "$@"
     fi
 }
 
@@ -54,16 +55,16 @@ function sub-compress-assert-after-decompression () {
 }
 
 function sub-compress-assert-unexistent-original () {
-    dotest-assert-file-unexists "${original}" 'original file still exists'
+    dotest-assert-file-unexists "$original" 'original file still exists'
 }
 function sub-compress-assert-unexistent-compressed () {
-    dotest-assert-file-unexists "${compressed}" 'compressed file still exists'
+    dotest-assert-file-unexists "$compressed" 'compressed file still exists'
 }
 function sub-compress-assert-existent-original () {
-    dotest-assert-file-exists "${original}" 'original file does not exist'
+    dotest-assert-file-exists "$original" 'original file does not exist'
 }
 function sub-compress-assert-existent-compressed () {
-    dotest-assert-file-exists "${compressed}" 'compressed file does not exist'
+    dotest-assert-file-exists "$compressed" 'compressed file does not exist'
 }
 
 #page
@@ -71,30 +72,30 @@ function sub-compress-assert-existent-compressed () {
 function compress-gzip-compress-1.1 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.gz
+    local compressed="${original}.gz"
 
     mbfl_file_enable_remove
-    compress --compress "${original}"
+    compress --compress "$original"
     sub-compress-assert-after-compression
     dotest-clean-files
 }
 function compress-gzip-compress-1.2 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.gz
+    local compressed="${original}.gz"
 
     mbfl_file_enable_remove
-    compress --keep --compress "${original}"
+    compress --keep --compress "$original"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }
 function compress-gzip-compress-1.3 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.gz
+    local compressed="${original}.gz"
 
     mbfl_file_enable_remove
-    compress --stdout --compress "${original}" >"${compressed}"
+    compress --stdout --compress "$original" >"$compressed"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }
@@ -104,33 +105,33 @@ function compress-gzip-compress-1.3 () {
 function compress-gzip-decompress-2.1 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.gz
+    local compressed="${original}.gz"
 
-    compress --compress "${original}"
+    compress --compress "$original"
     sub-compress-assert-after-compression || dotest-clean-files
-    compress --decompress "${compressed}"
+    compress --decompress "$compressed"
     sub-compress-assert-after-decompression
     dotest-clean-files
 }
 function compress-gzip-decompress-2.2 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.gz
+    local compressed="${original}.gz"
 
-    compress --compress "${original}"
+    compress --compress "$original"
     sub-compress-assert-after-compression || dotest-clean-files
-    compress --keep --decompress "${compressed}"
+    compress --keep --decompress "$compressed"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }
 function compress-gzip-decompress-2.3 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.gz
+    local compressed="${original}.gz"
 
-    compress --compress "${original}"
+    compress --compress "$original"
     sub-compress-assert-after-compression || dotest-clean-files
-    compress --stdout --decompress "${compressed}" >"${original}"
+    compress --stdout --decompress "$compressed" >"$original"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }
@@ -140,30 +141,30 @@ function compress-gzip-decompress-2.3 () {
 function compress-bzip-compress-1.1 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.bz2
+    local compressed="${original}.bz2"
 
     mbfl_file_enable_remove
-    compress --bzip --compress "${original}"
+    compress --bzip --compress "$original"
     sub-compress-assert-after-compression
     dotest-clean-files
 }
 function compress-bzip-compress-1.2 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.bz2
+    local compressed="${original}.bz2"
 
     mbfl_file_enable_remove
-    compress --bzip --keep --compress "${original}"
+    compress --bzip --keep --compress "$original"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }
 function compress-bzip-compress-1.3 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.bz2
+    local compressed="${original}.bz2"
 
     mbfl_file_enable_remove
-    compress --bzip --stdout --compress "${original}" >"${compressed}"
+    compress --bzip --stdout --compress "$original" >"$compressed"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }
@@ -173,34 +174,34 @@ function compress-bzip-compress-1.3 () {
 function compress-bzip-decompress-2.1 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.bz2
+    local compressed="${original}.bz2"
     local result=
 
-    compress --bzip --compress "${original}"
+    compress --bzip --compress "$original"
     sub-compress-assert-after-compression || dotest-clean-files
-    compress --decompress "${compressed}"
+    compress --decompress "$compressed"
     sub-compress-assert-after-decompression
     dotest-clean-files
 }
 function compress-bzip-decompress-2.2 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.bz2
+    local compressed="${original}.bz2"
 
-    compress --bzip --compress "${original}"
+    compress --bzip --compress "$original"
     sub-compress-assert-after-compression || dotest-clean-files
-    compress --keep --decompress "${compressed}"
+    compress --keep --decompress "$compressed"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }
 function compress-bzip-decompress-2.3 () {
     dotest-mktmpdir
     local original=$(dotest-mkfile file.ext)
-    local compressed=${original}.bz2
+    local compressed="${original}.bz2"
 
-    compress --bzip --compress "${original}"
+    compress --bzip --compress "$original"
     sub-compress-assert-after-compression || dotest-clean-files
-    compress --stdout --decompress "${compressed}" >"${original}"
+    compress --stdout --decompress "$compressed" >"$original"
     sub-compress-assert-existent-original && sub-compress-assert-existent-compressed
     dotest-clean-files
 }

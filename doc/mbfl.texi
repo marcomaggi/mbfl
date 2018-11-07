@@ -1273,7 +1273,7 @@ referenced by @var{pathname}, then print it.
 @end defun
 
 
-@defun mbfl_exec_readlink @var{PATHNAME} @var{arg} @dots{}
+@defun mbfl_exec_readlink @var{PATHNAME} [@var{opt} @dots{}]
 Raw executor for @command{readlink}.  The mandatory argument @var{PATHNAME} must be the pathname of
 a directory entry.  The optional arguments are added, as options, to the command line of
 @command{readlink}.
@@ -1294,8 +1294,8 @@ Declare the intention to use the program @command{stat}.
 @end defun
 
 
-@defun mbfl_file_stat @var{pathname} @var{arg} @dots{}
-@defunx mbfl_file_stat_var @var{RV} @var{pathname} @var{arg} @dots{}
+@defun mbfl_file_stat @var{pathname} [@var{opt} @dots{}]
+@defunx mbfl_file_stat_var @var{RV} @var{pathname} [@var{opt} @dots{}]
 Execute @command{stat} with @var{pathname} as first argument and @var{arg} as other arguments.
 
 @example
@@ -1528,7 +1528,7 @@ Create a symbolic link.
 @end defun
 
 
-@defun mbfl_exec_ln @var{original_name} @var{link_name} @var{arg} @dots{}
+@defun mbfl_exec_ln @var{original_name} @var{link_name} [@var{opt} @dots{}]
 Raw executor for @command{ln}.  The mandatory arguments @var{original_name} and @var{link_name} are
 put on the command line of @command{ln} as arguments.  The optional arguments @var{arg} are added,
 as options, to the command line of @command{ln}.
@@ -1557,7 +1557,7 @@ the intention to use a program}
 @end defun
 
 
-@defun mbfl_exec_tar @var{arg} @dots{}
+@defun mbfl_exec_tar [@var{opt} @dots{}]
 @defunx mbfl_tar_exec @var{arg}  @dots{}
 Execute @command{tar} with whatever arguments are used.  Return the return code of @command{tar}.
 @end defun
@@ -1674,13 +1674,13 @@ To change the file owner and group one may request the use of @command{sudo}: ju
 before invoking the following function.  @ref{program executing, Executing a program}
 
 
-@defun mbfl_file_set_owner @var{owner} @var{pathname} @var{opt} @dots{}
+@defun mbfl_file_set_owner @var{owner} @var{pathname} [@var{opt} @dots{}]
 Change the file owner for @var{pathname}; @var{owner} must be in a form accepted by @command{chown}.
 The optional arguments @var{opt} are handed to @command{chown} as options.
 @end defun
 
 
-@defun mbfl_file_set_group @var{group} @var{pathname} @var{opt} @dots{}
+@defun mbfl_file_set_group @var{group} @var{pathname} [@var{opt} @dots{}]
 Change the file group for @var{pathname}; @var{group} must be in a form accepted by @command{chgrp}.
 The optional arguments @var{opt} are handed to @command{chgrp} as options.
 @end defun
@@ -1702,14 +1702,14 @@ The function variant @code{_var} stores the result in the variable @var{RV} rath
 @end defun
 
 
-@defun mbfl_exec_chown @var{pathname} @var{opt} @dots{}
+@defun mbfl_exec_chown @var{pathname} [@var{opt} @dots{}]
 Raw interface to @command{chown}.  The mandatory argument @var{pathname} is handed to
 @command{chown} as argument.  The optional arguments @var{opt} are handed to @command{chown} as
 options.
 @end defun
 
 
-@defun mbfl_exec_chgrp @var{pathname} @var{opt} @dots{}
+@defun mbfl_exec_chgrp @var{pathname} [@var{opt} @dots{}]
 Raw interface to @command{chgrp}.  The mandatory argument @var{pathname} is handed to
 @command{chgrp} as argument.  The optional arguments @var{opt} are handed to @command{chgrp} as
 options.
@@ -1726,19 +1726,18 @@ options.
 @CindexCommand{bzip2}
 
 
-This module has an internal state, stored in global variables.  The
-state holds informations about:
+This module has an internal state, stored in global variables.  The state holds informations about:
 
 @itemize
 @item
 The selected compression external program (default: @command{gzip}).
 
 @item
-Whether the program should keep the original files or replace them with
-the (de)compressed version (default: do not keep).
+Whether the program should keep the original files or replace them with the (de)compressed version
+(default: do not keep).
 
 @item
-Whether the output must be sent to standard output or a file.
+Whether the output must be sent to standard output or a file (default: send to a file).
 @end itemize
 
 @c ------------------------------------------------------------
@@ -1746,8 +1745,8 @@ Whether the output must be sent to standard output or a file.
 @subsubheading Initialisation
 
 @defun mbfl_file_enable_compress
-Declare the programs required to compress a file.  @ref{program
-declaring, Declaring the intention to use a program}
+Declare the programs required to compress a file.  @ref{program declaring, Declaring the intention
+to use a program}
 
 The programs are: @command{gzip}, @command{bzip2}.
 @end defun
@@ -1756,44 +1755,43 @@ The programs are: @command{gzip}, @command{bzip2}.
 
 @subsubheading Configuration
 
-The selection will affect all the future invocations of the
-compression/decompression functions.
+The selection will affect all the future invocations of the compression/decompression functions.
+
 
 @defun mbfl_file_compress_select_gzip
 @defunx mbfl_file_compress_select_bzip
+@defunx mbfl_file_compress_select_bzip2
 Select a compressor program.
 @end defun
 
+
 @defun mbfl_file_compress_keep
 @defunx mbfl_file_compress_nokeep
-Select whether the compress program should keep the original file or
-not.
+Select whether the compress program should keep the original file or not.
 @end defun
+
 
 @defun mbfl_file_compress_select_stdout
 @defunx mbfl_file_compress_select_nostdout
-Select if the output must be sent to stdout or a file.  This takes
-precedence over the keep/no keep configuration: if the output is sent to
-stdout the original file is kept.
+Select if the output must be sent to stdout or a file.  This takes precedence over the keep/no keep
+configuration: if the output is sent to stdout the original file is kept.
 @end defun
 
 @c ------------------------------------------------------------
 
 @subsubheading Actions
 
-Additional arguments to the selected compressor may be appended to the
-invocation of the following functions and are handed to the compressor
-unchanged.
+Additional arguments to the selected compressor may be appended to the invocation of the following
+functions and are handed to the compressor unchanged.
 
-@defun mbfl_file_compress @var{PATHNAME} ?@dots{}?
-Compress @var{PATHNAME}, a file pathname, with the currently selected
-compressor program.
+
+@defun mbfl_file_compress @var{PATHNAME} [@var{opt} @dots{}]
+Compress @var{PATHNAME}, a file pathname, with the currently selected compressor program.
 @end defun
 
 
-@defun mbfl_file_decompress @var{PATHNAME} ?@dots{}?
-Decompress @var{PATHNAME}, a file pathname, with the currently selected
-compressor program.
+@defun mbfl_file_decompress @var{PATHNAME} [@var{opt} @dots{}]
+Decompress @var{PATHNAME}, a file pathname, with the currently selected compressor program.
 @end defun
 
 @c page
@@ -3351,7 +3349,7 @@ The readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0}, @f
 
 
 @defun mbfl_program_replace @var{program}
-@defunx mbfl_program_replace @var{program} @var{arg} @dots{}
+@defunx mbfl_program_replace @var{program} [@var{opt} @dots{}]
 Like @bfunc{mbfl_program_exec}, but execute the program through the Bash
 command @code{exec}, so replacing the current process without creating a
 new one.
@@ -3406,7 +3404,7 @@ next command execution.
 @end defun
 
 
-@defun mbfl_program_declare_sudo_options @var{arg} @dots{}
+@defun mbfl_program_declare_sudo_options [@var{opt} @dots{}]
 Select additional command line options to use on the next invocation of
 @command{sudo}.  These values are consumed by the first use of
 @bfunc{mbfl_program_exec}.
@@ -3423,7 +3421,7 @@ Clean the options previously set by
 @subsubheading Executing a subshell
 
 
-@defun mbfl_program_bash @var{arg} @dots{}
+@defun mbfl_program_bash [@var{opt} @dots{}]
 Execute @command{bash} with the @var{arg} arguments appended.  The
 @command{bash} pathname is registered in the library at start up, from
 the built in variable @code{BASH}.
@@ -4172,12 +4170,12 @@ The programs are: @command{date}.
 @section Raw call to @command{date}
 
 
-@defun mbfl_exec_date @var{arg} @dots{}
+@defun mbfl_exec_date [@var{opt} @dots{}]
 Execute @command{date} with the optional arguments appended to the command line.
 @end defun
 
 
-@defun mbfl_exec_date_format @var{format} @var{arg} @dots{}
+@defun mbfl_exec_date_format @var{format} [@var{opt} @dots{}]
 Execute @command{date} with the mandatory @var{format} as first argument.  Additional, optional,
 arguments are appended to the command line.
 @end defun
@@ -5391,7 +5389,7 @@ redundant in such a simple script, it is there for completeness.
 
 
 @defun send @var{string}
-@defunx send @var{pattern} @var{arg} @dots{}
+@defunx send @var{pattern} [@var{opt} @dots{}]
 Send a string to the @smtp{} server.  Use @bfunc{printf} to format the
 string @var{pattern} with the optional arguments, then write the
 resulting string to file descriptor 3.  The string written out is
