@@ -57,6 +57,11 @@ changes!
 * Added  function "mbfl_exec_tar".   The  old  "mbfl_tar_exec" is  still
   there but is deprecated.
 
+* BACKWARDS  INCOMPATIBILITY  The  functions  "mbfl_file_set_owner"  and
+  "mbfl_file_set_group" do  not honour  the "--verbose"  option anymore.
+  However they  accept options  to be  used on the  command line  of the
+  underlying programs.
+
 
 Notes for revision 2.2.0
 ------------------------
