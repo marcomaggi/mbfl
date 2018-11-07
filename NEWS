@@ -62,6 +62,8 @@ changes!
   However they  accept options  to be  used on the  command line  of the
   underlying programs.
 
+* Added support to compress/decompress with lzip and xz.
+
 
 Notes for revision 2.2.0
 ------------------------

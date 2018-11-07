@@ -1199,6 +1199,8 @@ mbfl_p_file_compress_TO_STDOUT=false
 function mbfl_file_enable_compress () {
     mbfl_declare_program gzip
     mbfl_declare_program bzip2
+    mbfl_declare_program lzip
+    mbfl_declare_program xz
     mbfl_file_compress_select_gzip
     mbfl_file_compress_nokeep
 }
@@ -1216,6 +1218,12 @@ function mbfl_file_compress_select_bzip2 () {
 }
 function mbfl_file_compress_select_bzip () {
     mbfl_file_compress_select_bzip2
+}
+function mbfl_file_compress_select_lzip () {
+    mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_lzip
+}
+function mbfl_file_compress_select_xz () {
+    mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_xz
 }
 
 function mbfl_file_compress () {
@@ -1243,7 +1251,7 @@ function mbfl_p_file_compress () {
 }
 
 #page
-#### compression action functions
+#### compression action functions: gzip
 
 function mbfl_p_file_compress_gzip () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
@@ -1285,6 +1293,10 @@ function mbfl_p_file_compress_gzip () {
 	mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
     fi
 }
+
+#page
+#### compression action functions: bzip2
+
 function mbfl_p_file_compress_bzip2 () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, target file)
@@ -1317,6 +1329,94 @@ function mbfl_p_file_compress_bzip2 () {
 	# configuration and always keep.
 	FLAGS+=' --keep --stdout'
 	mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
+    else
+	# The   output  goes   to   a  file:   honour  the   keep/nokeep
+	# configuration.
+	if $mbfl_p_file_compress_KEEP_ORIGINAL
+	then FLAGS+=' --keep'
+	fi
+	mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
+    fi
+}
+
+#page
+#### compression action functions: lzip
+
+function mbfl_p_file_compress_lzip () {
+    mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
+    mbfl_mandatory_parameter(SOURCE, 2, source file)
+    shift 2
+    local COMPRESSOR FLAGS='--force' DEST
+
+    mbfl_program_found_var COMPRESSOR lzip || exit $?
+    case "$COMPRESS" in
+        compress)
+            printf -v DEST '%s.lz' "$SOURCE"
+            ;;
+        decompress)
+            mbfl_file_rootname_var DEST "$SOURCE"
+            FLAGS+=' --decompress'
+            ;;
+        *)
+            mbfl_message_error_printf 'internal error: wrong mode "%s" in "%s"' "$COMPRESS" "$FUNCNAME"
+            exit_failure
+            ;;
+    esac
+
+    if mbfl_option_verbose_program
+    then FLAGS+=' --verbose'
+    fi
+
+    if $mbfl_p_file_compress_TO_STDOUT
+    then
+	# When   writing   to   stdout:  we   ignore   the   keep/nokeep
+	# configuration and always keep.
+        FLAGS+=' --keep --stdout'
+        mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
+    else
+	# The   output  goes   to   a  file:   honour  the   keep/nokeep
+	# configuration.
+	if $mbfl_p_file_compress_KEEP_ORIGINAL
+	then FLAGS+=' --keep'
+	fi
+	mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
+    fi
+}
+
+#page
+#### compression action functions: xz
+
+function mbfl_p_file_compress_xz () {
+    mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
+    mbfl_mandatory_parameter(SOURCE, 2, source file)
+    shift 2
+    local COMPRESSOR FLAGS='--force' DEST
+
+    mbfl_program_found_var COMPRESSOR xz || exit $?
+    case "$COMPRESS" in
+        compress)
+            printf -v DEST '%s.xz' "$SOURCE"
+            ;;
+        decompress)
+            mbfl_file_rootname_var DEST "$SOURCE"
+            FLAGS+=' --decompress'
+            ;;
+        *)
+            mbfl_message_error_printf 'internal error: wrong mode "%s" in "%s"' "$COMPRESS" "$FUNCNAME"
+            exit_failure
+            ;;
+    esac
+
+    if mbfl_option_verbose_program
+    then FLAGS+=' --verbose'
+    fi
+
+    if $mbfl_p_file_compress_TO_STDOUT
+    then
+	# When   writing   to   stdout:  we   ignore   the   keep/nokeep
+	# configuration and always keep.
+        FLAGS+=' --keep --stdout'
+        mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
     else
 	# The   output  goes   to   a  file:   honour  the   keep/nokeep
 	# configuration.

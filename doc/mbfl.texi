@@ -1748,7 +1748,7 @@ Whether the output must be sent to standard output or a file (default: send to a
 Declare the programs required to compress a file.  @ref{program declaring, Declaring the intention
 to use a program}
 
-The programs are: @command{gzip}, @command{bzip2}.
+The programs are: @command{gzip}, @command{bzip2}, @command{lzip}, @command{xz}.
 @end defun
 
 @c ------------------------------------------------------------
@@ -1761,6 +1761,8 @@ The selection will affect all the future invocations of the compression/decompre
 @defun mbfl_file_compress_select_gzip
 @defunx mbfl_file_compress_select_bzip
 @defunx mbfl_file_compress_select_bzip2
+@defunx mbfl_file_compress_select_lzip
+@defunx mbfl_file_compress_select_xz
 Select a compressor program.
 @end defun
 
