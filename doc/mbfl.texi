@@ -1295,6 +1295,7 @@ Declare the intention to use the program @command{stat}.
 
 
 @defun mbfl_file_stat @var{pathname} @var{arg} @dots{}
+@defunx mbfl_file_stat_var @var{RV} @var{pathname} @var{arg} @dots{}
 Execute @command{stat} with @var{pathname} as first argument and @var{arg} as other arguments.
 
 @example
@@ -1308,20 +1309,6 @@ mbfl_file_stat /bin --format='%F'
 @result{} 0
 @print{} directory
 @end example
-@end defun
-
-
-@defun mbfl_file_get_owner @var{pathname}
-@defunx mbfl_file_get_owner_var @var{RV} @var{pathname}
-Print the owner of the file as symbolic name.
-
-The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
-@end defun
-
-
-@defun mbfl_file_get_group @var{pathname}
-@defunx mbfl_file_get_group_var @var{RV} @var{pathname}
-Print the group of the file as symbolic name.
 
 The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
 @end defun
@@ -1631,27 +1618,36 @@ return 1.
 
 
 @defun mbfl_file_enable_permissions
-Declare the intention to use the programs required to get/set file
-permissions.  @ref{program declaring, Declaring the intention to use a
-program}
+Declare the intention to use the programs required to get/set file permissions.  @ref{program
+declaring, Declaring the intention to use a program}
 
-The programs are: @command{ls}, @command{chmod}, @command{cut}.
+The programs are: @command{stat}, @command{chmod}.
 @end defun
 
 
 @defun mbfl_file_get_permissions @var{pathname}
+@defunx mbfl_file_get_permissions_var @var{RV} @var{pathname}
 Print the access permissions for @var{pathname}, in octal format.
+
+The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
+
+@example
+mbfl_file_get_permissions /bin/ls       @print{} 0755
+
+local PERMS
+mbfl_file_get_permissions_var PERMS /bin/ls
+"$RV" @result{} 0755
+@end example
 @end defun
 
 
-To set permissions one may request the use of @command{sudo}: just
-request a user before invoking the following function.  @ref{program
-executing, Executing a program}
+To set permissions one may request the use of @command{sudo}: just request a user before invoking
+the following function.  @ref{program executing, Executing a program}
 
 
 @defun mbfl_file_set_permissions @var{mode} @var{pathname}
-Set the access permissions for @var{pathname}; @var{mode} must be in a
-form accepted by @command{chmod}.
+Set the access permissions for @var{pathname}; @var{mode} must be in a form accepted by
+@command{chmod}.
 @end defun
 
 @c page
@@ -1670,7 +1666,7 @@ form accepted by @command{chmod}.
 Declare the intention to use the programs required to change file owner and group.  @ref{program
 declaring, Declaring the intention to use a program}
 
-The programs are: @command{chown}, @command{chgrp}.
+The programs are: @command{chown}, @command{chgrp}, @command{stat}.
 @end defun
 
 
@@ -1687,6 +1683,34 @@ If verbose mode is enabled: hand the @option{--verbose} option to @command{chown
 @defun mbfl_file_set_group @var{group} @var{pathname}
 Change the file group for @var{pathname}; @var{group} must be in a form accepted by @command{chgrp}.
 If verbose mode is enabled: hand the @option{--verbose} option to @command{chgrp}.
+@end defun
+
+
+@defun mbfl_file_get_owner @var{pathname}
+@defunx mbfl_file_get_owner_var @var{RV} @var{pathname}
+Print the owner of the file as symbolic name.
+
+The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
+@end defun
+
+
+@defun mbfl_file_get_group @var{pathname}
+@defunx mbfl_file_get_group_var @var{RV} @var{pathname}
+Print the group of the file as symbolic name.
+
+The function variant @code{_var} stores the result in the variable @var{RV} rather than print it.
+@end defun
+
+
+@defun mbfl_exec_chown @var{pathname} @var{arg} @dots{}
+Raw interface to @command{chown}.  The mandatory argument @var{pathname} is handed to
+@command{chown} as argument.  The optional arguments are handed to @command{chown} as options.
+@end defun
+
+
+@defun mbfl_exec_chgrp @var{pathname} @var{arg} @dots{}
+Raw interface to @command{chgrp}.  The mandatory argument @var{pathname} is handed to
+@command{chgrp} as argument.  The optional arguments are handed to @command{chgrp} as options.
 @end defun
 
 @c page

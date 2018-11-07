@@ -742,7 +742,7 @@ function file-mkdir-1.1 () {
 function file-owner-1.1 () {
     local name=$(dotest-mkfile file.ext)
 
-    mbfl_file_enable_stat
+    mbfl_file_enable_owner_and_group
     {
 	mbfl_file_get_owner "$name"
 	dotest-clean-files
@@ -754,7 +754,7 @@ function file-owner-1.1 () {
 function file-owner-var-1.1 () {
     local name=$(dotest-mkfile file.ext) RV
 
-    mbfl_file_enable_stat
+    mbfl_file_enable_owner_and_group
     mbfl_file_get_owner_var RV "$name"
     dotest-clean-files
     dotest-equal "$USER" "$RV"

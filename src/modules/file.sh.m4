@@ -1104,61 +1104,69 @@ function mbfl_tar_list () {
 #### file permissions functions
 
 function mbfl_file_enable_permissions () {
-    mbfl_declare_program ls
-    mbfl_declare_program cut
+    mbfl_file_enable_stat
     mbfl_declare_program chmod
 }
+function mbfl_exec_chmod () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    shift
+    local CHMOD FLAGS
+    mbfl_program_found_var CHMOD chmod || exit $?
+    mbfl_option_verbose_program && FLAGS+=' --verbose'
+    mbfl_program_exec "$CHMOD" ${FLAGS} "$@" -- "$PATHNAME"
+}
+
 function mbfl_file_get_permissions () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local LS CUT SYMBOLIC OWNER GROUP OTHER
-    LS=$(mbfl_program_found ls)   || exit $?
-    CUT=$(mbfl_program_found cut) || exit $?
-    # Here we use '-d' even with files: it appears to work with GNU ls.
-    SYMBOLIC=$(mbfl_program_exec ${LS} -ld "$PATHNAME" | \
-        mbfl_program_exec ${CUT} -d' ' -f1) || return $?
-    mbfl_message_debug "symbolic permissions '${SYMBOLIC}'"
-    OWNER=${SYMBOLIC:1:3}
-    GROUP=${SYMBOLIC:4:3}
-    OTHER=${SYMBOLIC:7:3}
-    OWNER=$(mbfl_system_symbolic_to_octal_permissions "$OWNER")
-    GROUP=$(mbfl_system_symbolic_to_octal_permissions "$GROUP")
-    OTHER=$(mbfl_system_symbolic_to_octal_permissions "$OTHER")
-    printf '0%d%d%d\n' "$OWNER" "$GROUP" "$OTHER"
+    mbfl_file_stat "$PATHNAME" --printf='0%a\n'
 }
 function mbfl_file_set_permissions () {
-    local CHMOD
     mbfl_mandatory_parameter(PERMISSIONS, 1, permissions)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    CHMOD=$(mbfl_program_found chmod) || exit $?
-    mbfl_program_exec ${CHMOD} "$PERMISSIONS" "$PATHNAME"
+    mbfl_exec_chmod "$PATHNAME" "$PERMISSIONS"
+}
+
+function mbfl_file_get_permissions_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --format='0%a')
 }
 
 #page
 #### file owner and group functions
 
 function mbfl_file_enable_owner_and_group () {
+    mbfl_file_enable_stat
     mbfl_declare_program chown
     mbfl_declare_program chgrp
 }
+
+function mbfl_exec_chown () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    shift
+    local CHOWN FLAGS
+    mbfl_program_found_var CHOWN chown || exit $?
+    mbfl_option_verbose_program && FLAGS+=' --verbose'
+    mbfl_program_exec "$CHOWN" ${FLAGS} "$@" -- "$PATHNAME"
+}
+function mbfl_exec_chgrp () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    shift
+    local CHGRP FLAGS
+    mbfl_program_found_var CHGRP chgrp || exit $?
+    mbfl_option_verbose_program && FLAGS+=' --verbose'
+    mbfl_program_exec "$CHGRP" ${FLAGS} "$@" -- "$PATHNAME"
+}
+
 function mbfl_file_set_owner () {
-    local CHOWN CHOWN_FLAGS
     mbfl_mandatory_parameter(OWNER, 1, owner)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    CHOWN=$(mbfl_program_found chown) || exit $?
-    if mbfl_option_verbose
-    then CHOWN_FLAGS='--verbose'
-    fi
-    mbfl_program_exec ${CHOWN} "$OWNER" "$PATHNAME" $CHOWN_FLAGS
+    mbfl_exec_chown "$PATHNAME" "$OWNER"
 }
 function mbfl_file_set_group () {
-    local CHGRP CHGRP_FLAGS
     mbfl_mandatory_parameter(GROUP, 1, group)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    CHGRP=$(mbfl_program_found chgrp) || exit $?
-    if mbfl_option_verbose
-    then CHGRP_FLAGS='--verbose'
-    fi
-    mbfl_program_exec ${CHGRP} "$GROUP" "$PATHNAME" $CHGRP_FLAGS
+    mbfl_exec_chgrp "$PATHNAME" "$GROUP"
 }
 
 #page
@@ -1305,6 +1313,12 @@ function mbfl_file_stat () {
     local STAT FLAGS
     mbfl_program_found_var STAT stat || exit $?
     mbfl_program_exec "$STAT" ${FLAGS} "$@" -- "$PATHNAME"
+}
+function mbfl_file_stat_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    shift 2
+    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" "$@")
 }
 
 ### --------------------------------------------------------------------
