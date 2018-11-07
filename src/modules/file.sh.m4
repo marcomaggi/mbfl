@@ -859,17 +859,17 @@ function mbfl_file_enable_symlink () {
 #
 function mbfl_exec_ln () {
     mbfl_mandatory_parameter(ORIGINAL_NAME, 1, original name)
-    mbfl_mandatory_parameter(SYMLINK_NAME, 2, symbolic link name)
+    mbfl_mandatory_parameter(LINK_NAME,     2, link name)
     shift 2
     local LN FLAGS
     mbfl_program_found_var LN ln || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
-    mbfl_program_exec "$LN" ${FLAGS} "$@" -- "$ORIGINAL_NAME" "$SYMLINK_NAME"
+    mbfl_program_exec "$LN" ${FLAGS} "$@" -- "$ORIGINAL_NAME" "$LINK_NAME"
 }
 
 function mbfl_file_symlink () {
     mbfl_mandatory_parameter(ORIGINAL_NAME, 1, original name)
-    mbfl_mandatory_parameter(SYMLINK_NAME, 2, symbolic link name)
+    mbfl_mandatory_parameter(SYMLINK_NAME,  2, symbolic link name)
     mbfl_exec_ln "$ORIGINAL_NAME" "$SYMLINK_NAME" --symbolic
 }
 
@@ -902,8 +902,7 @@ function mbfl_file_p_invoke_ls () {
 
 function mbfl_file_long_listing () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local LS_FLAGS='-l'
-    mbfl_file_listing "$PATHNAME" $LS_FLAGS
+    mbfl_file_listing "$PATHNAME" '-l'
 }
 
 ### --------------------------------------------------------------------
@@ -936,7 +935,7 @@ function mbfl_file_normalise_link () {
 # caller.
 #
 function mbfl_p_file_print_error_return_result () {
-    local RESULT=$?
+    mbfl_mandatory_parameter(RESULT, 1, result)
     if test ${RESULT} != 0 -a "$PRINT_ERROR" = 'print_error'
     then mbfl_message_error "$ERROR_MESSAGE"
     fi
@@ -954,21 +953,21 @@ function mbfl_file_pathname_is_readable () {
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     local ERROR_MESSAGE="not readable pathname '${PATHNAME}'"
     test -n "$PATHNAME" -a -r "$PATHNAME"
-    mbfl_p_file_print_error_return_result
+    mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_pathname_is_writable () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     local ERROR_MESSAGE="not writable pathname '${PATHNAME}'"
     test -n "$PATHNAME" -a -w "$PATHNAME"
-    mbfl_p_file_print_error_return_result
+    mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_pathname_is_executable () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     local ERROR_MESSAGE="not executable pathname '${PATHNAME}'"
     test -n "$PATHNAME" -a -x "$PATHNAME"
-    mbfl_p_file_print_error_return_result
+    mbfl_p_file_print_error_return_result $?
 }
 
 # ------------------------------------------------------------
@@ -978,7 +977,7 @@ function mbfl_file_is_file () {
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     local ERROR_MESSAGE="unexistent file '${PATHNAME}'"
     test -n "$PATHNAME" -a -f "$PATHNAME"
-    mbfl_p_file_print_error_return_result
+    mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_is_readable () {
     mbfl_optional_parameter(PATHNAME, 1)
@@ -1006,7 +1005,7 @@ function mbfl_file_is_directory () {
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     local ERROR_MESSAGE="unexistent directory '${PATHNAME}'"
     test -n "$PATHNAME" -a -d "$PATHNAME"
-    mbfl_p_file_print_error_return_result
+    mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_directory_is_readable () {
     mbfl_optional_parameter(PATHNAME, 1)
@@ -1027,16 +1026,15 @@ function mbfl_file_directory_is_executable () {
         mbfl_file_pathname_is_executable "$PATHNAME" "$PRINT_ERROR"
 }
 function mbfl_file_directory_validate_writability () {
-    local code
     mbfl_mandatory_parameter(DIRECTORY, 1, directory pathname)
     mbfl_mandatory_parameter(DESCRIPTION, 2, directory description)
     mbfl_message_verbose "validating ${DESCRIPTION} directory '${DIRECTORY}'\n"
-    mbfl_file_is_directory              "$DIRECTORY" print_error && \
-    mbfl_file_directory_is_writable     "$DIRECTORY" print_error
-    code=$?
-    test $code != 0 && mbfl_message_error \
-        "unwritable ${DESCRIPTION} directory '${DIRECTORY}'"
-    return $code
+    mbfl_file_is_directory "$DIRECTORY" print_error && mbfl_file_directory_is_writable "$DIRECTORY" print_error
+    local CODE=$?
+    if test $CODE != 0
+    then mbfl_message_error_printf 'unwritable %s directory: "%s"' "$DESCRIPTION" "$DIRECTORY"
+    fi
+    return $CODE
 }
 
 # ------------------------------------------------------------
@@ -1046,7 +1044,7 @@ function mbfl_file_is_symlink () {
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     local ERROR_MESSAGE="not a symbolic link pathname '${PATHNAME}'"
     test -n "$PATHNAME" -a -L "$PATHNAME"
-    mbfl_p_file_print_error_return_result
+    mbfl_p_file_print_error_return_result $?
 }
 
 #page
@@ -1055,49 +1053,53 @@ function mbfl_file_is_symlink () {
 function mbfl_file_enable_tar () {
     mbfl_declare_program tar
 }
+function mbfl_exec_tar () {
+    local TAR FLAGS
+    mbfl_program_found_var TAR tar || exit $?
+    mbfl_option_verbose_program && FLAGS+=' --verbose'
+    mbfl_program_exec "$TAR" ${FLAGS} "$@"
+}
+function mbfl_tar_exec () {
+    mbfl_exec_tar "$@"
+}
+
 function mbfl_tar_create_to_stdout () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     shift
-    mbfl_tar_exec --directory="$DIRECTORY" --create --file=- "$@" .
+    mbfl_exec_tar --directory="$DIRECTORY" --create --file=- "$@" .
 }
 function mbfl_tar_extract_from_stdin () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     shift
-    mbfl_tar_exec --directory="$DIRECTORY" --extract --file=- "$@"
+    mbfl_exec_tar --directory="$DIRECTORY" --extract --file=- "$@"
 }
 function mbfl_tar_extract_from_file () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     mbfl_mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
-    mbfl_tar_exec --directory="$DIRECTORY" --extract --file="$ARCHIVE_FILENAME" "$@"
+    mbfl_exec_tar --directory="$DIRECTORY" --extract --file="$ARCHIVE_FILENAME" "$@"
 }
 function mbfl_tar_create_to_file () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     mbfl_mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
-    mbfl_tar_exec --directory="$DIRECTORY" --create --file="$ARCHIVE_FILENAME" "$@" .
+    mbfl_exec_tar --directory="$DIRECTORY" --create --file="$ARCHIVE_FILENAME" "$@" .
 }
 function mbfl_tar_archive_directory_to_file () {
-    local PARENT DIRNAME
     mbfl_mandatory_parameter(DIRECTORY, 1, directory name)
     mbfl_mandatory_parameter(ARCHIVE_FILENAME, 2, archive pathname)
     shift 2
+    local PARENT DIRNAME
     mbfl_file_dirname_var PARENT "$DIRECTORY"
     mbfl_file_tail_var DIRNAME "$DIRECTORY"
-    mbfl_tar_exec --directory="$PARENT" --create \
-        --file="$ARCHIVE_FILENAME" "$@" "$DIRNAME"
+    mbfl_exec_tar --directory="$PARENT" --create --file="$ARCHIVE_FILENAME" "$@" "$DIRNAME"
 }
 function mbfl_tar_list () {
     mbfl_mandatory_parameter(ARCHIVE_FILENAME, 1, archive pathname)
     shift
-    mbfl_tar_exec --list --file="$ARCHIVE_FILENAME" "$@"
+    mbfl_exec_tar --list --file="$ARCHIVE_FILENAME" "$@"
 }
-function mbfl_tar_exec () {
-    local TAR FLAGS
-    TAR=$(mbfl_program_found tar) || exit $?
-    mbfl_option_verbose_program && FLAGS+=' --verbose'
-    mbfl_program_exec "$TAR" ${FLAGS} "$@"
-}
+
 #page
 #### file permissions functions
 

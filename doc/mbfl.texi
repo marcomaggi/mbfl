@@ -1570,9 +1570,9 @@ the intention to use a program}
 @end defun
 
 
-@defun mbfl_tar_exec ?...?
-Execute @command{tar} with whatever arguments are used.  Return the
-return code of @command{tar}.
+@defun mbfl_exec_tar @var{arg} @dots{}
+@defunx mbfl_tar_exec @var{arg}  @dots{}
+Execute @command{tar} with whatever arguments are used.  Return the return code of @command{tar}.
 @end defun
 
 
