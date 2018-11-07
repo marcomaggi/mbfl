@@ -152,27 +152,29 @@ function dotest-p-report-success-from-environment () {
 
 function dotest-output () {
     local expected_output="$1"
-    local output= line=l ORGIFS="${IFS}" globmode=0 expected_output_len
-
+    local -i globmode=0 expected_output_len
+    local output
 
     expected_output_len=${#expected_output}
-    if test "${expected_output:$((${expected_output_len}-1)):1}" = "*" ; then
+    if test "${expected_output:$((${expected_output_len}-1)):1}" = '*'
+    then
 	globmode=1
 	expected_output="${expected_output:0:$((${expected_output_len}-1))}"
 	expected_output_len=${#expected_output}
     fi
 
-    IFS=""
-    while read -r -t 4 line
-    do
-	if test ${#output} -eq 0
-	then
-	    output="$line"
-	else
-	    output="$output\n$line"
-	fi
-    done
-    IFS="${ORGIFS}"
+    # Read all the  lines from stdin, setting a timeout  of 4 seconds at
+    # every read.
+    #
+    {
+	while IFS="" read -r -t 4
+	do
+	    if test ${#output} -eq 0
+	    then output="$REPLY"
+	    else output+="\n${REPLY}"
+	    fi
+	done
+    }
 
     if dotest-string-is-empty "$expected_output"
     then
@@ -187,9 +189,8 @@ function dotest-output () {
 	fi
     else
 	if test \
-	    \( $globmode = 0 -a "${expected_output}" != "${output}" \) -o  \
-	    \( $globmode = 1 -a \
-               "${expected_output}" != "${output:0:${expected_output_len}}" \)
+	    \( $globmode -eq 0 -a "${expected_output}" != "${output}" \) -o  \
+	    \( $globmode -eq 1 -a "${expected_output}" != "${output:0:${expected_output_len}}" \)
 	then
 	    {
 		echo "${FUNCNAME}:"
@@ -205,7 +206,7 @@ function dotest-equal () {
     local expected="$1"
     local got="$2"
 
-    if test "$expected" '=' "$got"
+    if test "$expected" = "$got"
     then return 0
     else
 	{
