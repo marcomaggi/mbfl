@@ -2,7 +2,7 @@
 #
 
 AC_PREREQ([2.69])
-MMUX_PKG_VERSIONS([2],[3],[0],[devel.0],[noarch])
+MMUX_PKG_VERSIONS([3],[0],[0],[devel.0],[noarch])
 AC_INIT([Marcos Bash Functions Library],MMUX_PACKAGE_VERSION,[marco.maggi-ipsu@poste.it],
   [mbfl],[http://github.com/marcomaggi/mbfl])
 MMUX_INIT
@@ -27,7 +27,7 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_MACRO_DIR([meta/autotools])
 AC_CONFIG_AUX_DIR([meta/autotools])
-AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip subdir-objects])
+AM_INIT_AUTOMAKE([1.16 -Wall foreign subdir-objects info-in-builddir])
 AM_MAINTAINER_MODE
 
 AC_PROG_INSTALL
