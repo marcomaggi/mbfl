@@ -741,7 +741,7 @@ function file-mkdir-1.1 () {
 function file-owner-1.1 () {
     local name=$(dotest-mkfile file.ext)
 
-    mbfl_file_enable_listing
+    mbfl_file_enable_stat
     {
 	mbfl_file_get_owner "$name"
 	dotest-clean-files
@@ -754,7 +754,7 @@ function file-size-1.1 () {
     local PATHNAME=$(dotest-mkfile file.ext)
 
     echo -n 0123456789 >"${PATHNAME}"
-    mbfl_file_enable_listing
+    mbfl_file_enable_stat
     {
 	mbfl_file_get_size "${PATHNAME}"
 	dotest-clean-files
@@ -1095,12 +1095,13 @@ function file-copy-2.1 () {
 }
 
 #page
+#### file commands: interface to "stat"
 
 function file-stat-1.1 () {
     local PATHNAME=$(dotest-mkfile file.ext)
     local RESULT
     mbfl_file_enable_stat
-    RESULT=$(mbfl_file_stat "${PATHNAME}" --format='%F')
+    RESULT=$(mbfl_file_stat "$PATHNAME" --format='%F')
     dotest-equal 0 $? && dotest-equal regular $RESULT
     dotest-clean-files
 }

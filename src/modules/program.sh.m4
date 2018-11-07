@@ -29,6 +29,10 @@
 #page
 #### simple finding of external programs
 
+# In this function: we need a pipe to read the output of "type -ap".  So
+# this function  is the "print  output" variant.  The "_var"  variant is
+# below.
+#
 function mbfl_program_find () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
     local item
@@ -36,17 +40,20 @@ function mbfl_program_find () {
     do
 	if mbfl_file_is_executable "$item"
 	then
-            printf "%s\n" "$item"
-            return 0
+            echo "$item"
+            break
 	fi
     done
     return 0
 }
+function mbfl_program_find_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PROGRAM, 2, program)
+    RESULT_VARREF=$(mbfl_program_find "$PROGRAM")
+}
 
 #page
-## ------------------------------------------------------------
-## Program execution functions.
-## ------------------------------------------------------------
+#### program execution functions
 
 declare mbfl_program_SUDO_USER=nosudo
 declare mbfl_program_SUDO_OPTIONS
@@ -239,22 +246,22 @@ function mbfl_program_bash () {
 }
 
 #page
-## ------------------------------------------------------------
-## Program finding functions.
-## ------------------------------------------------------------
+#### program finding functions
 
-test "$mbfl_INTERACTIVE" = yes || \
-    declare -a mbfl_program_NAMES mbfl_program_PATHS
+if test "$mbfl_INTERACTIVE" != 'yes'
+then declare -a mbfl_program_NAMES mbfl_program_PATHS
+fi
 
 function mbfl_declare_program () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
     local PATHNAME
-    local next_free_index=${#mbfl_program_NAMES[@]}
+    local -r -i next_free_index=${#mbfl_program_NAMES[@]}
 
     mbfl_program_NAMES[${next_free_index}]="$PROGRAM"
-    PATHNAME=$(mbfl_program_find "$PROGRAM")
-    test -n "$PATHNAME" && \
-        PROGRAM=$(mbfl_file_normalise "$PATHNAME")
+    mbfl_program_find_var PATHNAME "$PROGRAM"
+    if test -n "$PATHNAME"
+    then mbfl_file_normalise_var PATHNAME "$PATHNAME"
+    fi
     mbfl_program_PATHS[${next_free_index}]="$PATHNAME"
     return 0
 }
@@ -277,12 +284,11 @@ function mbfl_program_validate_declared () {
 function mbfl_program_found_var () {
     mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(PROGRAM, 2, program name)
-    local number_of_programs=${#mbfl_program_NAMES[@]}
 
     if test "$PROGRAM" != ':'
     then
-	local -i i
-        for ((i=0; $i < ${number_of_programs}; ++i))
+	local -i i number_of_programs=${#mbfl_program_NAMES[@]}
+        for ((i=0; i < number_of_programs; ++i))
         do
             if test "${mbfl_program_NAMES[$i]}" = "$PROGRAM"
 	    then
@@ -315,9 +321,7 @@ function mbfl_program_found () {
 }
 
 #page
-## ------------------------------------------------------------
-## Program validation functions.
-## ------------------------------------------------------------
+#### program validation functions
 
 function mbfl_program_main_validate_programs () {
     mbfl_program_validate_declared || exit_because_program_not_found

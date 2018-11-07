@@ -1254,21 +1254,6 @@ Execute @command{ls} with @var{pathname} as argument and the flag
 @end defun
 
 
-@defun mbfl_file_get_owner @var{pathname}
-Print the owner of the file.
-@end defun
-
-
-@defun mbfl_file_get_group @var{pathname}
-Print the group of the file.
-@end defun
-
-
-@defun mbfl_file_get_size @var{pathname}
-Print the size of the file in bytes.
-@end defun
-
-
 @defun mbfl_file_normalise_link @var{pathname}
 Make use of the @command{readlink} to normalise the pathname of a
 symbolic link (remember that a symbolic link references a file, never a
@@ -1721,9 +1706,8 @@ compressor program.
 @subsection Inspecting files and directories
 
 
-The @gnu{} Coreutils package comes with a command line program
-@command{stat} which implements advanced inspection of file and
-directory status.  @xref{stat invocation, stat, Report file or file
+The @gnu{} Coreutils package comes with a command line program @command{stat} which implements
+advanced inspection of file and directory status.  @xref{stat invocation, stat, Report file or file
 system status, coreutils}.
 
 
@@ -1733,8 +1717,7 @@ Declare the intention to use the program @command{stat}.
 
 
 @defun mbfl_file_stat @var{pathname} @var{arg} @dots{}
-Execute @command{stat} with @var{pathname} as first argument and
-@var{arg} as other arguments.
+Execute @command{stat} with @var{pathname} as first argument and @var{arg} as other arguments.
 
 @example
 mbfl_file_enable_stat
@@ -1747,6 +1730,21 @@ mbfl_file_stat /bin --format='%F'
 @result{} 0
 @print{} directory
 @end example
+@end defun
+
+
+@defun mbfl_file_get_owner @var{pathname}
+Print the owner of the file as symbolic name.
+@end defun
+
+
+@defun mbfl_file_get_group @var{pathname}
+Print the group of the file as symbolic name.
+@end defun
+
+
+@defun mbfl_file_get_size @var{pathname}
+Print the size of the file in bytes.
 @end defun
 
 @c page
@@ -3140,11 +3138,11 @@ Return true if test execution is enabled, else return false.
 @section Checking programs existence
 
 
-The simpler way to test the availability of a program is to look for it
-just before it is used.
+The simpler way to test the availability of a program is to look for it just before it is used.
 
 
 @defun mbfl_program_find @var{program}
+@defunx mbfl_program_find_var @var{RV} @var{program}
 A wrapper for:
 
 @example
@@ -3152,25 +3150,24 @@ type -ap @var{program}
 @end example
 
 @noindent
-that looks for a program in the current search path.  It prints the full
-pathname of the program found, or an empty string if nothing is found.
-The exit status is always @code{0}.
+that looks for a program in the current search path.  It prints the full pathname of the program
+found, or an empty string if nothing is found.  The exit status is always @code{0}.
 
-@var{program} may be a program name with no directory part (examples:
-@command{sed}, @command{grep}), or an absolute or relative pathname
-(examples: @file{/bin/sed}, @file{../bin/grep}).  If @var{program} is a
-relative pathname and it is an executable file: the output of the
-function is exactly @var{program}, it is @strong{not} normalised.
+The @code{_var} function variant will store the result in the variable @var{RV} rather than print
+it.
 
-If an alias exists for a program, @code{type -p @var{program}} will
-return the empty string; that is why we have to use @code{type -ap
-@var{program}}, which will return the correct file pathname.
+@var{program} may be a program name with no directory part (examples: @command{sed},
+@command{grep}), or an absolute or relative pathname (examples: @file{/bin/sed},
+@file{../bin/grep}).  If @var{program} is a relative pathname and it is an executable file: the
+output of the function is exactly @var{program}, it is @strong{not} normalised.
 
-If the environment variable @env{PATH} holds the same directory more
-than once, or there exist programs with the same name in more than one
-@env{PATH} elements: @code{type -ap $program} will return more than one
-line of output, one for each executable file found.  The first value
-(the first line) is the one selected by this function.
+If an alias exists for a program, @code{type -p @var{program}} will return the empty string; that is
+why we have to use @code{type -ap @var{program}}, which will return the correct file pathname.
+
+If the environment variable @env{PATH} holds the same directory more than once, or there exist
+programs with the same name in more than one @env{PATH} elements: @code{type -ap $program} will
+return more than one line of output, one for each executable file found.  The first value (the first
+line) is the one selected by this function.
 @end defun
 
 @c page
@@ -3527,8 +3524,7 @@ function program_wrapper () @{
 Remember that we cannot use:
 
 @example
-local PROGNAME=$(mbfl_program_found 'myprog') || \
-    exit $?
+local PROGNAME=$(mbfl_program_found 'myprog') || exit $?
 @end example
 
 @noindent

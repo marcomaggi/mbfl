@@ -891,36 +891,6 @@ function mbfl_file_long_listing () {
     local LS_FLAGS='-l'
     mbfl_file_listing "$PATHNAME" $LS_FLAGS
 }
-function mbfl_file_get_owner () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local LS_FLAGS='-l' OWNER
-    set -- $(mbfl_file_p_invoke_ls) || return 1
-    OWNER=$3
-    test -z "$OWNER" && {
-        mbfl_message_error "null owner while inspecting '${PATHNAME}'"
-        return 1
-    }
-    printf '%s\n' "$OWNER"
-}
-function mbfl_file_get_group () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local LS_FLAGS="-l" GROUP
-    set -- $(mbfl_file_p_invoke_ls) || return 1
-    GROUP=$4
-    test -z "$GROUP" && {
-        mbfl_message_error "null group while inspecting '${PATHNAME}'"
-        return 1
-    }
-    printf '%s\n' "$GROUP"
-}
-function mbfl_file_get_size () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-##    local LS_FLAGS="--block-size=1 --size"
-    local output LS_FLAGS="-l"
-    output=$(mbfl_file_p_invoke_ls) || return 1
-    set -- $output
-    printf '%s\n' "${5}"
-}
 function mbfl_file_normalise_link () {
     local READLINK
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
@@ -1300,11 +1270,27 @@ function mbfl_p_file_compress_bzip () {
 function mbfl_file_enable_stat () {
     mbfl_declare_program stat
 }
+# This function is the executor for the "stat" program.
+#
 function mbfl_file_stat () {
-    local STAT FLAGS
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    STAT=$(mbfl_program_found stat) || exit $?
-    mbfl_program_exec "$STAT" ${FLAGS} "$@"
+    shift
+    local STAT FLAGS
+    mbfl_program_found_var STAT stat || exit $?
+    mbfl_program_exec "$STAT" ${FLAGS} "$@" -- "$PATHNAME"
+}
+
+function mbfl_file_get_owner () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_file_stat "$PATHNAME" --format='%U'
+}
+function mbfl_file_get_group () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_file_stat "$PATHNAME" --format='%G'
+}
+function mbfl_file_get_size () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_file_stat "$PATHNAME" --format='%s'
 }
 
 

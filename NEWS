@@ -47,6 +47,13 @@ changes!
   The "_var" variants are always a bit faster because the output variant
   is a wrapper for the "_var" variant.
 
+* BACKWARDS INCOMPATIBILITY The following  functions now use the program
+  "stat":
+
+    mbfl_file_get_owner
+    mbfl_file_get_group
+    mbfl_file_get_size
+
 
 Notes for revision 2.2.0
 ------------------------
