@@ -54,6 +54,9 @@ changes!
     mbfl_file_get_group
     mbfl_file_get_size
 
+* Added  function "mbfl_exec_tar".   The  old  "mbfl_tar_exec" is  still
+  there but is deprecated.
+
 
 Notes for revision 2.2.0
 ------------------------
