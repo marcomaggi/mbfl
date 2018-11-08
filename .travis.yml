@@ -48,17 +48,27 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - texinfo
-      script: "./configure --enable-maintainer-mode; make all; make check || cat test-suite.log;"
+      script:
+        ./configure --enable-maintainer-mode
+        make all
+        make check || { cat test-suite.log; false; }
 
     # Plain build under OS X, XCode 7.3.
     - os: osx
       osx_image: xcode7.3
-      script: "./configure --enable-maintainer-mode; make all; make check || cat test-suite.log;"
+      script:
+        ./configure --enable-maintainer-mode
+        make all
+        make check || { cat test-suite.log; false; }
 
     # Plain build under OS X, XCode 8.3.
     - os: osx
       osx_image: xcode8.3
-      script: "./configure --enable-maintainer-mode; make all; make check || cat test-suite.log;"
+      script:
+        ./configure --enable-maintainer-mode
+        make all
+        make check || { cat test-suite.log; false; }
+
 
 #page
 #### done
