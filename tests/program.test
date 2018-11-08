@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2004, 2005, 2012, 2013, 2014 Marco Maggi
+# Copyright (c) 2004, 2005, 2012, 2013, 2014, 2018 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -55,18 +55,18 @@ function program-3.1 () {
 	mbfl_set_option_verbose
 	mbfl_message_set_channel 1
 	mbfl_message_set_progname "test"
-	mbfl_declare_program ls
+	mbfl_declare_program /bin/ls
 	mbfl_program_validate_declared
 	mbfl_unset_option_verbose
-    } | dotest-output "test: found 'ls': '/usr/bin/ls'"
+    } | dotest-output "test: found '/bin/ls': '/bin/ls'"
 }
 function program-3.2 () {
     mbfl_declare_program unexistent
     ! mbfl_program_validate_declared &>/dev/null
 }
 function program-3.3 () {
-    mbfl_declare_program ls
-    mbfl_program_found ls | dotest-output /usr/bin/ls
+    mbfl_declare_program /bin/ls
+    mbfl_program_found /bin/ls | dotest-output /bin/ls
 }
 function program-3.4 () {
     mbfl_declare_program unexistent
