@@ -16,7 +16,7 @@ both Ubuntu GNU+Linux systems and OS X systems.
 ## License
 
 Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018 Marco Maggi
-<marco.maggi-ipsu@poste.it><br/>.  All rights reserved.
+<marco.maggi-ipsu@poste.it>.  All rights reserved.
 
 This is  free software; you can  redistribute it and/or modify  it under
 the terms of  the GNU Lesser General Public License  as published by the
@@ -78,7 +78,7 @@ must first run the script `autogen.sh` from the top source directory, to
 generate the needed files:
 
 ```
-$ cd cctemplate
+$ cd mbfl
 $ sh autogen.sh
 
 ```
@@ -110,8 +110,7 @@ will run `examples/template-actions.sh` selection  the action `one green
 gas` and appending the flags `--help`.
 
 
-4. Usage
---------
+## Usage
 
 Read the documentation generated from  the Texinfo sources.  The package
 installs the documentation  in Info format; we can  generate and install
