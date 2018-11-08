@@ -1,13 +1,59 @@
 # signaltest.sh --
+#
+# Part of: Marco's BASH Functions Library
+# Contents: test script for signal handling
+# Date: Mon Jul  7, 2003
+#
+# Abstract
+#
+#
+#
+# Copyright (c) 2003 Marco Maggi
+#
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  2.1 of the License,  or (at
+# your option) any later version.
+#
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# Lesser General Public License for more details.
+#
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA
 
-SIGSPEC=SIGUSR1
+#page
+#### MBFL's related options and variables
 
+script_PROGNAME=signaltest.sh
+script_VERSION=2.0
+script_COPYRIGHT_YEARS='2003, 2018'
+script_AUTHOR='Marco Maggi'
+script_LICENSE=LGPL
+script_USAGE="usage: ${script_PROGNAME} [options]"
+script_DESCRIPTION='Test scripts for signal handling.'
+script_EXAMPLES=
+
+#page
+#### load library
+
+mbfl_INTERACTIVE='no'
 source "${MBFL_LIBRARY:=libmbfl.sh}"
 
-function main () {
-    flag=0
+#page
+#### global variables
 
-#    mbfl_set_option_debug
+declare SIGSPEC='none'
+
+#page
+#### functions
+
+function main () {
+    local flag=0
+
     mbfl_message_debug "running: pid $$"
 
     mbfl_signal_attach SIGUSR1 handler_one
@@ -25,7 +71,7 @@ function main () {
 
 function debug-wait () {
     local i
-    for ((i=0; $i < $(($1 * 1000)); ++i)); do :; done    
+    for ((i=0; $i < $(($1 * 1000)); ++i)); do :; done
 }
 
 function handler_one () {
@@ -56,12 +102,13 @@ function output_and_debug () {
 function quitting () {
     local msg="exiting with no interruption"
 
-    if test $flag != 0 ; then
+    if test $flag != 0
+    then
 	msg="exiting after interruption ($SIGSPEC, $flag handlers)"
     fi
     output_and_debug "$msg"
 }
 
-main
+mbfl_main
 
 ### end of file
