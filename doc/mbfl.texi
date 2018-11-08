@@ -4848,6 +4848,18 @@ Return true if test mode is on, false otherwise.
 @end defun
 
 
+@defun dotest-set-debug
+@defunx dotest-unset-debug
+Enable or disable printing debug messages.  If debug mode is on: the function @bfunc{dotest-debug}
+will print its message; otherwise it will print nothing.
+@end defun
+
+
+@defun dotest-option-debug
+Return true if debug mode is on, false otherwise.
+@end defun
+
+
 @defun dotest-set-report-start
 @defunx dotest-unset-report-start
 Set or unset printing a message upon starting a function.
