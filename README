@@ -98,23 +98,6 @@ enabling the maintainer mode:
     $ make
     $ make install
 
-  The  Makefile supports  the  DESTDIR environment  variable to  install
-files in a temporary location, example: to see what will happen:
-
-    $ make -n install DESTDIR=/tmp/mbfl
-
-to really do it:
-
-    $ make install DESTDIR=/tmp/mbfl
-
-  Notice that,  when running "make check",  we can select which  test to
-run by redefining the "TESTS" variable; for example:
-
-    $ make check TESTS=tests/program.test
-
-will  run  only   the  "program.test"  file  located   in  the  "tests/"
-subdirectory of the source tree.
-
   After building the package, and before  installing it, we can test the
 example scripts as follows:
 
@@ -124,7 +107,8 @@ will run "examples/template.sh" with the flags "--help";
 
     $ make test-template-actions MFLAGS='one green gas --help'
 
-will run "examples/template-actions.sh" with the flags "--help".
+will run "examples/template-actions.sh" selection  the action "one green
+gas" and appending the flags "--help".
 
 
 4. Usage
