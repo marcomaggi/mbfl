@@ -47,6 +47,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - lzip
             - texinfo
       script:
         ./configure --enable-maintainer-mode
@@ -68,7 +69,6 @@ matrix:
         ./configure --enable-maintainer-mode
         make all
         make check || { cat test-suite.log; false; }
-
 
 #page
 #### done

@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2005, 2013 Marco Maggi
+# Copyright (c) 2005, 2013, 2018 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -41,10 +41,10 @@ function system-1.1 () {
     mbfl_system_enable_programs
     mbfl_system_numerical_user_id_to_name 0 | dotest-output 'root'
 }
-function system-1.2 () {
-    mbfl_system_enable_programs
-    mbfl_system_numerical_user_id_to_name 1000 | dotest-output 'marco'
-}
+# function system-1.2 () {
+#     mbfl_system_enable_programs
+#     mbfl_system_numerical_user_id_to_name 1000 | dotest-output "$USER"
+# }
 
 function system-2.1 () {
     mbfl_system_enable_programs
