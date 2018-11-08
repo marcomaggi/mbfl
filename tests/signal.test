@@ -43,6 +43,9 @@ function signaltest () {
     local tmpfile="$(dotest-mkfile result.txt)"
     local SIGNALTEST_FLAGS
 
+    # Enable job control.
+    set -m
+
     if dotest-option-debug
     then SIGNALTEST_FLAGS+=' --debug'
     fi
@@ -54,8 +57,10 @@ function signaltest () {
 
     # Let the process start and register its signal handlers.
     debug-wait 30
-    dotest-debug "sending signal to pid '$pid'"
+    dotest-debug "sending ${SIGSPEC} signal to pid '$pid'"
     kill -${SIGSPEC} $pid
+    dotest-debug "sending SIGCONT signal to pid '$pid' to wake it up"
+    kill -SIGCONT $pid
 
     dotest-debug "waiting for pid '$pid'"
     wait $pid

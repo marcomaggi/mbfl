@@ -54,6 +54,9 @@ declare SIGSPEC='none'
 function main () {
     local flag=0
 
+    # Enable job control.  So we can "suspend" later.
+    set -m
+
     mbfl_message_debug "running: pid $$"
 
     mbfl_signal_attach SIGUSR1 handler_one
@@ -62,16 +65,11 @@ function main () {
     mbfl_signal_attach SIGUSR2 handler_three
     mbfl_signal_attach SIGUSR2 handler_four
 
-    mbfl_message_debug "waiting"
-    debug-wait 40
+    mbfl_message_debug "waiting for SIGCONT"
+    suspend
     mbfl_message_debug "exiting"
     trap quitting EXIT
     exit 0
-}
-
-function debug-wait () {
-    local i
-    for ((i=0; $i < $(($1 * 1000)); ++i)); do :; done
 }
 
 function handler_one () {
