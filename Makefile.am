@@ -131,7 +131,6 @@ EXTRA_DIST	+= \
 	tests/times-and-dates.test	\
 	\
 	tests/setup.sh			\
-	tests/signal.sh			\
 	tests/signaltest.sh
 
 ## --------------------------------------------------------------------
