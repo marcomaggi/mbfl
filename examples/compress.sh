@@ -48,6 +48,8 @@ mbfl_declare_option ACTION_COMPRESS yes '' compress noarg "selects compress acti
 mbfl_declare_option ACTION_DECOMPRESS no '' decompress noarg "selects decompress action"
 mbfl_declare_option GZIP no G gzip noarg "selects gzip"
 mbfl_declare_option BZIP no B bzip noarg "selects bzip2"
+mbfl_declare_option LZIP no L lzip noarg "selects lzip"
+mbfl_declare_option XZ   no X xz   noarg "selects xc"
 mbfl_declare_option AUTO yes A auto noarg "automatically select compressor"
 mbfl_declare_option KEEP no k keep noarg "keeps the original file"
 mbfl_declare_option STDOUT no '' stdout noarg "writes output to stdout"
@@ -60,6 +62,7 @@ mbfl_file_enable_stat
 mbfl_main_declare_exit_code 2 error_compressing
 mbfl_main_declare_exit_code 3 error_decompressing
 mbfl_main_declare_exit_code 4 wrong_command_line_arguments
+
 #page
 #### options update functions
 
@@ -69,6 +72,14 @@ function script_option_update_gzip () {
 }
 function script_option_update_bzip () {
     mbfl_file_compress_select_bzip2
+    script_option_AUTO=no
+}
+function script_option_update_lzip () {
+    mbfl_file_compress_select_lzip
+    script_option_AUTO=no
+}
+function script_option_update_xz () {
+    mbfl_file_compress_select_xz
     script_option_AUTO=no
 }
 function script_option_update_keep () {
@@ -93,7 +104,7 @@ function script_action_compress () {
 
     for item in "${ARGV[@]}"
     do
-        if test "${script_option_AUTO}" = 'yes'
+        if test "$script_option_AUTO" = 'yes'
 	then
             mbfl_file_get_size_var size "$item"
             if ((size > 10000000))
@@ -133,6 +144,12 @@ function script_action_decompress () {
                 ;;
             bz2)
                 mbfl_file_compress_select_bzip
+                ;;
+            lz)
+                mbfl_file_compress_select_lzip
+                ;;
+            xz)
+                mbfl_file_compress_select_xz
                 ;;
             *)
                 mbfl_message_warning_printf 'unknown compressor extension: "%s"' "$ext"
