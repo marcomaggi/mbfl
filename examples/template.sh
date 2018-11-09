@@ -5,7 +5,10 @@
 # Abstract
 #
 #	This  script  template  shows  how  an  MBFL  script  should  be
-#	organised to use MBFL.
+#	organised  to  use  MBFL.   This script  makes  use  of  "action
+#	options": its behaviour is configured with command line options,
+#	similarly  to  what  "tar"  does with  the  options  "--create",
+#	"--extract" and the like.
 #
 # Copyright (c) 2004, 2005, 2009, 2012, 2013, 2014, 2018 Marco Maggi
 # <marco.maggi-ipsu@poste.it>

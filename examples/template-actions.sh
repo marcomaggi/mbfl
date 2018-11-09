@@ -5,7 +5,9 @@
 # Abstract
 #
 #	This  script  template  shows  how  an  MBFL  script  should  be
-#	organised to use MBFL with command line actions processing.
+#	organised  to use  MBFL  with command  line actions  processing.
+#	This  script   uses  the  "actions"  module   to  configure  its
+#	behaviour, similarly to what "git" does with its subcommands.
 #
 # Copyright (c) 2013, 2014, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
