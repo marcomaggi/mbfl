@@ -188,23 +188,21 @@ sized scripts; it needs at least Bash version 4.  A set of modules implementing 
 and a script template are offered by this package and the author has used them with success in
 implementing non--small scripts.
 
-The philosophy of @mbfl{} is to do the work as much as possible without
-external commands.  For example: string manipulation is done using the
-special variable substitution provided by Bash, and no use is done of
-utilities like @command{sed}, @command{grep} and @command{ed}.
+The philosophy of @mbfl{} is to do the work as much as possible without external commands.  For
+example: string manipulation is done using the special variable substitution provided by Bash, and
+no use is done of utilities like @command{sed}, @command{grep} and @command{ed}.
 
-The library is better used starting from the template scripts in the
-@file{examples/} subdirectory of the distribution, especially
-@file{template.sh} and @file{template-actions.sh}.  This is because with
-@mbfl{} some choices have been made to reduce the application--dependent
-part of the script to the smallest dimension; if we follow another
-schema, @mbfl{} modules may be inadequate.  This is especially true for
-the options parsing module.
+The library is better used starting from the template scripts in the @file{examples/} subdirectory
+of the distribution, especially @file{template.sh} and @file{template-actions.sh}.  This is because,
+with @mbfl{}, some choices are made to reduce the application--dependent part of the script to the
+smallest dimension; if we follow another schema, @mbfl{} modules may be inadequate.  This is
+especially true for the options parsing module.
 
 @menu
 * overview quick::              Quick run--time loading.
 * overview reliable::           Reliable run--time loading.
 * overview direct::             Direct inclusion.
+* overview interactive::        Using the library interactively.
 * overview notes::              Notes.
 @end menu
 
@@ -213,9 +211,8 @@ the options parsing module.
 @section Quick run--time loading
 
 
-The easiest way to use the library is to include at run--time the library
-file @file{libmbfl.sh} in the script.  To do it, we install the package
-on the system and use this code in the scripts:
+The easiest way to use the library is to include at run--time the library file @file{libmbfl.sh} in
+the script.  To do it, we install the package on the system and use this code in the scripts:
 
 @example
 source "$@{MBFL_LIBRARY:=$(type -p mbfl-config &>/dev/null \
@@ -223,15 +220,13 @@ source "$@{MBFL_LIBRARY:=$(type -p mbfl-config &>/dev/null \
 @end example
 
 @noindent
-after the service variables have been declared.  @ref{service variables,
-Required user defined variables}.
+after the service variables have been declared.  @ref{service variables, Required user defined
+variables}.
 
-This code will read the full pathname of the library from the
-environment variable @env{MBFL_LIBRARY}; if this variable is not set:
-the script @command{mbfl-config} is invoked with no arguments to acquire
-the pathname.  @command{mbfl-config} is installed by the package in the
-@code{$(bindir)} directory, which we must include in the @env{PATH}
-environment variable.
+This code will read the full pathname of the library from the environment variable
+@env{MBFL_LIBRARY}; if this variable is not set: the script @command{mbfl-config} is invoked with no
+arguments to acquire the pathname.  @command{mbfl-config} is installed by the package in the
+@code{$(bindir)} directory, which we must include in the @env{PATH} environment variable.
 
 @c page
 @node overview reliable
@@ -246,7 +241,7 @@ mbfl_INTERACTIVE=no
 mbfl_LOADED=no
 mbfl_INSTALLED=$(type -p mbfl-config &>/dev/null \
    && mbfl-config) &>/dev/null
-mbfl_HARDCODED=./some/dir/libmbfl.sh
+mbfl_HARDCODED=/some/dir/libmbfl.sh
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do
     if test -n "$item" -a -f "$item" -a -r "$item"
@@ -270,8 +265,8 @@ fi
 @end smallexample
 
 @noindent
-where the optional @file{./some/dir/libmbfl.sh} can be the pathname of a
-known location in which to find the library.  This code:
+where the optional @file{/some/dir/libmbfl.sh} can be the pathname of a known location in which to
+find the library.  This code:
 
 @enumerate
 @item
@@ -388,19 +383,10 @@ At this point, though, it is better to use the @mbfl{} preprocessor.
 @ref{preprocessor, Using the script preprocessor}.
 
 @c page
-@node overview notes
-@section Notes
+@node overview interactive
+@section Using the library interactively
 
 
-When using @mbfl{} we want to be aware of the following:
-
-@itemize
-@item
-Some functions take a variable name as argument and store in the referenced variable some value; to
-avoid name collision: select a name that starts with @code{p_}.  It is guaranteed that @mbfl{} never
-uses variables with name starting with such a prefix.
-
-@item
 It is possible, but not recommended, to source the library in an interactive shell, though some
 modules must be disabled.  The purpose of interactive loading is only to test and debug the
 functions by hand.
@@ -415,15 +401,29 @@ mbfl_INTERACTIVE=yes
 without exporting the variable.  The ``dangerous'' blocks of code in the library are surrounded by:
 
 @example
-test "$mbfl_INTERACTIVE" = yes || @{
+if test "$mbfl_INTERACTIVE" != 'yes'
+then
     ...
-@}
+fi
 @end example
 
 @noindent
 so they are not executed.  Disabled modules are: main, actions, getopts, signal; ``disabled'' does
 not mean that the functions are not there: only the global variable declarations are excluded; this
 is a little dirty, but, at present, it should work.
+
+@c page
+@node overview notes
+@section Notes
+
+
+When using @mbfl{} we want to be aware of the following:
+
+@itemize
+@item
+Some functions take a variable name as argument and store in the referenced variable some value; to
+avoid name collision: select a name that starts with @code{p_}.  It is guaranteed that @mbfl{} never
+uses variables with name starting with such a prefix.
 
 @item
 The @code{read} built in does word splitting on the text it reads, even when there is a single
@@ -477,8 +477,8 @@ mbfl_file_extension_var RV /path/to/file.ext
 "$RV"  @result{} ext
 @end example
 
-The @code{_var} variants are always a bit faster because the output variant is a wrapper for the
-@code{_var} variant.
+The @code{_var} variants are often a bit faster because the output variant is often a wrapper for
+the @code{_var} variant.
 @end itemize
 
 @c page
@@ -486,17 +486,15 @@ The @code{_var} variants are always a bit faster because the output variant is a
 @chapter Using the script preprocessor
 
 
-The @mbfl{} script preprocessor is a command line program named
-@command{mbflpp.sh}; it is itself a Bash script that makes use of the
-@mbfl{} library.  It can remove comments, blank lines, blank characters
-at the beginning of lines, and it can expand macros.
+The @mbfl{} script preprocessor is a command line program named @command{mbflpp.sh}; it is itself a
+Bash script that makes use of the @mbfl{} library.  It can remove comments, blank lines, blank
+characters at the beginning of lines, and it can expand macros.
 
-The macro preprocessing is done with the @gnu{} @mfour{} program, using
-a library of macros called @file{preprocessor.m4} which is installed on
-the system with the @mbfl{} package.
+The macro preprocessing is done with the @gnu{} @mfour{} program, using a library of macros called
+@file{preprocessor.m4} which is installed on the system with the @mbfl{} package.
 
-The use of the preprocessor is fully optional: every feature of the
-@mbfl{} library can be used without the preprocessor.
+The use of the preprocessor is fully optional: every feature of the @mbfl{} library can be used
+without the preprocessor.
 
 @menu
 * preprocessor invoking::       Invoking the preprocessor.
