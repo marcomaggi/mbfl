@@ -1976,8 +1976,8 @@ print a message.
 @chapter Selecting actions to perform
 
 
-The @code{actions} module allows the command line selection of different
-actions a script can perform.
+The @code{actions} module allows the command line selection of different actions a script can
+perform.
 
 @menu
 * actions intro::               Introduction to action trees.
@@ -1992,64 +1992,57 @@ actions a script can perform.
 @section Introduction to action trees
 
 
-Traditional Unix--style command line programs perform a single action,
-with behaviour variants selected by command line dash and double--dash
-options.  For example @command{ls} prints a list of directory entries
-and the format of the output can be custommised with options like
-@option{-1} and @option{--color}.  @mbfl{} implements this behaviour by
-default when the @code{actions} module is @strong{not} used.
+Traditional Unix--style command line programs perform a single action, with behaviour variants
+selected by command line dash and double--dash options.  For example @command{ls} prints a list of
+directory entries and the format of the output can be custommised with options like @option{-1} and
+@option{--color}.  @mbfl{} implements this behaviour by default when the @code{actions} module is
+@strong{not} used.
 
-Other Unix--style command line programs offer a set of possible actions
-and allow the executor to select one by specifying command line options.
-For example @command{tar} acts on archive files and it can pack, unpack,
-validate them along with other actions selected with by the double--dash
-options @option{--create}, @option{--extract}, @option{--validate} and
-others.  @mbfl{} implements this behaviour through ``action options''
-provided by the @code{getopts} module; action options are available also
-when using the @code{actions} module.
+Other Unix--style command line programs offer a set of possible actions and allow the executor to
+select one by specifying command line options.  For example @command{tar} acts on archive files and
+it can pack, unpack, validate them along with other actions selected with by the double--dash
+options @option{--create}, @option{--extract}, @option{--validate} and others.  @mbfl{} implements
+this behaviour through ``action options'' provided by the @code{getopts} module; action options are
+available also when using the @code{actions} module.
 
-Other command line programs break this Unix--style to offer action
-selection throuh ``action arguments''.  For example @command{git} acts
-upon revision control repositories offering a big set of actions
-selected with its first argument: @samp{commit}, @samp{log},
-@samp{merge} and many others; the behaviour of each ``subcommand'' can
-be customised with a specific set of dash and double--dash options.
-@mbfl{} implements this behaviour through the @code{actions} module.
+Other command line programs break this Unix--style to offer action selection throuh ``action
+arguments''.  For example @command{git} acts upon revision control repositories offering a big set
+of actions selected with its first argument: @samp{commit}, @samp{log}, @samp{merge} and many
+others; the behaviour of each ``subcommand'' can be customised with a specific set of dash and
+double--dash options.  @mbfl{} implements this behaviour through the @code{actions} module.
 
 @c ------------------------------------------------------------
 
 @subsubheading One--level actions
 
 
-The script below (@file{one-level-actions.sh}, available in the
-@file{doc/} directory of the source distribution) shows how to implement
-one--level actions.  It implements the following behaviour:
+The script below (@file{one-level-actions.sh}, available in the @file{doc/} directory of the source
+distribution) shows how to implement one--level actions.  It implements the following behaviour:
 
 @table @code
 @item one-level-actions.sh
 With no action argument: print a generic help screen and exit.
 
 @item one-level-actions.sh one
-With the action argument @code{one}: perform the action @samp{ONE},
-possibly with the options @option{-a} and @option{-b}.
+With the action argument @code{one}: perform the action @samp{ONE}, possibly with the options
+@option{-a} and @option{-b}.
 
 @item one-level-actions.sh one -H
-With the action argument @code{one} and the option @option{-H}: print
-the brief help screen for the action @samp{ONE} and exit.
+With the action argument @code{one} and the option @option{-H}: print the brief help screen for the
+action @samp{ONE} and exit.
 
 @item one-level-actions.sh two
-With the action argument @code{two}: perform the action @samp{TWO},
-possibly with the options @option{-d} and @option{-g}.
+With the action argument @code{two}: perform the action @samp{TWO}, possibly with the options
+@option{-d} and @option{-g}.
 
 @item one-level-actions.sh two -H
-With the action argument @code{two} and the option @option{-H}: print
-the brief help screen for the action @samp{TWO} and exit.
+With the action argument @code{two} and the option @option{-H}: print the brief help screen for the
+action @samp{TWO} and exit.
 
 @item one-level-actions.sh help
-With the action argument @code{help}: print a generic help screen and
-exit.  Notice how the @samp{HELP} action function makes use of
-@bfunc{mbfl_actions_fake_action_set} to print the same help screen of the
-main action.
+With the action argument @code{help}: print a generic help screen and exit.  Notice how the
+@samp{HELP} action function makes use of @bfunc{mbfl_actions_fake_action_set} to print the same help
+screen of the main action.
 @end table
 
 @smallexample
@@ -2061,64 +2054,60 @@ main action.
 @subsubheading Two--levels actions
 
 
-The script below (@file{two-levels-actions.sh}, available in the
-@file{doc/} directory of the source distribution) shows how to implement
-two--levels actions.  It implements the following behaviour:
+The script below (@file{two-levels-actions.sh}, available in the @file{doc/} directory of the source
+distribution) shows how to implement two--levels actions.  It implements the following behaviour:
 
 @table @code
 @item two-levels-actions.sh
 With no action argument: print a generic help screen and exit.
 
 @item two-levels-actions.sh help
-With the action argument @code{help}: print a generic help screen and
-exit.  Notice how the @samp{HELP} action function makes use of
-@bfunc{mbfl_actions_fake_action_set} to print the same help screen of the
-main action.
+With the action argument @code{help}: print a generic help screen and exit.  Notice how the
+@samp{HELP} action function makes use of @bfunc{mbfl_actions_fake_action_set} to print the same help
+screen of the main action.
 
 @item two-levels-actions.sh one
-With the non--leaf action argument @code{one}: print the help screen of
-the action @samp{ONE}.
+With the non--leaf action argument @code{one}: print the help screen of the action @samp{ONE}.
 
 @item two-levels-actions.sh two
-With the non--leaf action argument @code{two}: print the help screen of
-the action @samp{TWO}.
+With the non--leaf action argument @code{two}: print the help screen of the action @samp{TWO}.
 
 @item two-levels-actions.sh one red
-With the action arguments @code{one red}: perform the action @samp{RED},
-possibly with the options @option{-a} and @option{-b}.
+With the action arguments @code{one red}: perform the action @samp{RED}, possibly with the options
+@option{-a} and @option{-b}.
 
 @item two-levels-actions.sh one red -H
-With the action argument @code{one red} and the option @option{-H}:
-print the brief help screen for the action @samp{RED} and exit.
+With the action argument @code{one red} and the option @option{-H}: print the brief help screen for
+the action @samp{RED} and exit.
 
 @item two-levels-actions.sh one blue
-With the action arguments @code{one blue}: perform the action
-@samp{BLUE}, possibly with the options @option{-a} and @option{-b}.
+With the action arguments @code{one blue}: perform the action @samp{BLUE}, possibly with the options
+@option{-a} and @option{-b}.
 
 @item two-levels-actions.sh one blue -H
-With the action argument @code{one blue} and the option @option{-H}:
-print the brief help screen for the action @samp{BLUE} and exit.
+With the action argument @code{one blue} and the option @option{-H}: print the brief help screen for
+the action @samp{BLUE} and exit.
 
 @item two-levels-actions.sh two green
-With the action arguments @code{two green}: perform the action
-@samp{GREEN}, possibly with the options @option{-d} and @option{-g}.
+With the action arguments @code{two green}: perform the action @samp{GREEN}, possibly with the
+options @option{-d} and @option{-g}.
 
 @item two-levels-actions.sh two green -H
-With the action argument @code{two green} and the option @option{-H}:
-print the brief help screen for the action @samp{GREEN} exit.
+With the action argument @code{two green} and the option @option{-H}: print the brief help screen
+for the action @samp{GREEN} exit.
 
 @item two-levels-actions.sh two cyan
-With the action arguments @code{two cyan}: perform the action
-@samp{CYAN}, possibly with the options @option{-d} and @option{-g}.
+With the action arguments @code{two cyan}: perform the action @samp{CYAN}, possibly with the options
+@option{-d} and @option{-g}.
 
 @item two-levels-actions.sh two cyan -H
-With the action argument @code{two cyan} and the option @option{-H}:
-print the brief help screen for the action @samp{CYAN} exit.
+With the action argument @code{two cyan} and the option @option{-H}: print the brief help screen for
+the action @samp{CYAN} exit.
 @end table
 
 @noindent
-notice how the action functions of the non--leaf nodes print the help
-screen describing the subactions.
+notice how the action functions of the non--leaf nodes print the help screen describing the
+subactions.
 
 @smallexample
 @verbatiminclude two-levels-actions.sh
@@ -2129,15 +2118,14 @@ screen describing the subactions.
 @section Declaring actions and action sets
 
 
-The structure of the action sets tree is stored in global variables
-defined by default; we should never try to access such variables
-directly.
+The structure of the action sets tree is stored in global variables defined by default; we should
+never try to access such variables directly.
 
 
 @defun mbfl_declare_action_set @var{action-set}
-Declare a new action set.  @var{action-set} must be a string satisfying
-@bfunc{mbfl_string_is_name} and representing the identifier of the action
-set.  It is an error to declare the same action set twice.
+Declare a new action set.  @var{action-set} must be a string satisfying @bfunc{mbfl_string_is_name}
+and representing the identifier of the action set.  It is an error to declare the same action set
+twice.
 @end defun
 
 
@@ -2146,15 +2134,13 @@ Declare a new action belonging to an action set.  The arguments are:
 
 @table @var
 @item action-set
-A string representing the name of the action set this action belongs to.
-The action set must have been previously declared with a call to
-@bfunc{mbfl_declare_action_set}.
+A string representing the name of the action set this action belongs to.  The action set must have
+been previously declared with a call to @bfunc{mbfl_declare_action_set}.
 
 @item keyword
-A unique string (in this script) satisfying @bfunc{mbfl_string_is_name}
-and identifying this action.  The ``main'', ``before parsing options''
-and ``after parsing options'' function names associated to this action
-are built as:
+A unique string (in this script) satisfying @bfunc{mbfl_string_is_name} and identifying this action.
+The ``main'', ``before parsing options'' and ``after parsing options'' function names associated to
+this action are built as:
 
 @example
 script_action_$@var{keyword}
@@ -2163,17 +2149,14 @@ script_after_parsing_options_$@var{keyword}
 @end example
 
 @item subset
-If @var{subset} is the string @code{NONE} it means that this action is a
-leaf and it implements a script action; else @var{subset} must be the
-identifier of an action set subordinate to @var{action-set}: this
-function is recursively called to process it.  The subordinate action
-set must have been previously declared with a call to
-@bfunc{mbfl_declare_action_set}.
+If @var{subset} is the string @code{NONE} it means that this action is a leaf and it implements a
+script action; else @var{subset} must be the identifier of an action set subordinate to
+@var{action-set}: this function is recursively called to process it.  The subordinate action set
+must have been previously declared with a call to @bfunc{mbfl_declare_action_set}.
 
 @item identifier
-A string satisfying @bfunc{mbfl_string_is_identifier} and representing
-the argument on the command line used to select this action.  This
-string must be unique for this @var{action-set}.
+A string satisfying @bfunc{mbfl_string_is_identifier} and representing the argument on the command
+line used to select this action.  This string must be unique for this @var{action-set}.
 
 @item description
 A string describing this action, to be used to compose the help screen.

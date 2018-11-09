@@ -7,27 +7,27 @@
 #
 #
 #
-# Copyright (C) 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (C) 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
-# This  program  is free  software:  you  can redistribute  it
-# and/or modify it  under the terms of the  GNU General Public
-# License as published by the Free Software Foundation, either
-# version  3 of  the License,  or (at  your option)  any later
-# version.
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  3.0 of the License,  or (at
+# your option) any later version.
 #
-# This  program is  distributed in  the hope  that it  will be
-# useful, but  WITHOUT ANY WARRANTY; without  even the implied
-# warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
-# PURPOSE.   See  the  GNU  General Public  License  for  more
-# details.
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# Lesser General Public License for more details.
 #
-# You should  have received a  copy of the GNU  General Public
-# License   along   with    this   program.    If   not,   see
-# <http://www.gnu.org/licenses/>.
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
 #
 
 #page
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" != 'yes'
+then
     # Associative array: the keys are the  names of the action sets, the
     # values are  "yes".  If a string  represents the name of  an action
     # set: it is a key in this  array.  If a string does *not* represent
@@ -94,7 +94,8 @@ test "$mbfl_INTERACTIVE" = yes || {
     # screen.
     #
     declare mbfl_action_sets_SELECTED_SET=MAIN
-}
+fi
+
 #page
 # Declare a new action set.
 #

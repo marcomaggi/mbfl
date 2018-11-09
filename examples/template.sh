@@ -4,38 +4,44 @@
 #
 # Abstract
 #
-#	This script shows how an MBFL script should be organised
-#	to use MBFL.
+#	This  script  template  shows  how  an  MBFL  script  should  be
+#	organised to use MBFL.
 #
-# Copyright (c) 2004, 2005, 2009, 2012, 2013, 2014 Marco Maggi
+# Copyright (c) 2004, 2005, 2009, 2012, 2013, 2014, 2018 Marco Maggi
 # <marco.maggi-ipsu@poste.it>
 #
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
-# version.
+# The author hereby grants  permission to use, copy, modify, distribute,
+# and  license this  software  and its  documentation  for any  purpose,
+# provided that  existing copyright notices  are retained in  all copies
+# and that  this notice  is included verbatim in any  distributions.  No
+# written agreement, license, or royalty  fee is required for any of the
+# authorized uses.  Modifications to this software may be copyrighted by
+# their authors and need not  follow the licensing terms described here,
+# provided that the new terms are clearly indicated on the first page of
+# each file where they apply.
 #
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
+# IN NO  EVENT SHALL THE AUTHOR  OR DISTRIBUTORS BE LIABLE  TO ANY PARTY
+# FOR  DIRECT, INDIRECT, SPECIAL,  INCIDENTAL, OR  CONSEQUENTIAL DAMAGES
+# ARISING OUT  OF THE  USE OF THIS  SOFTWARE, ITS DOCUMENTATION,  OR ANY
+# DERIVATIVES  THEREOF, EVEN  IF THE  AUTHOR  HAVE BEEN  ADVISED OF  THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
+# THE  AUTHOR  AND DISTRIBUTORS  SPECIFICALLY  DISCLAIM ANY  WARRANTIES,
+# INCLUDING,   BUT   NOT  LIMITED   TO,   THE   IMPLIED  WARRANTIES   OF
+# MERCHANTABILITY,    FITNESS   FOR    A    PARTICULAR   PURPOSE,    AND
+# NON-INFRINGEMENT.  THIS  SOFTWARE IS PROVIDED  ON AN "AS  IS" BASIS,
+# AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
+# MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
 #page
-## ------------------------------------------------------------
-## MBFL's related options and variables.
-## ------------------------------------------------------------
+#### MBFL's related options and variables
 
 script_PROGNAME=template.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2004, 2005, 2009, 2012, 2014'
+script_COPYRIGHT_YEARS='2004, 2005, 2009, 2012, 2014, 2018'
 script_AUTHOR='Marco Maggi'
-script_LICENSE=GPL
+script_LICENSE=liberal
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
 script_DESCRIPTION='This is an example script.'
 script_EXAMPLES="Usage examples:
@@ -43,9 +49,7 @@ script_EXAMPLES="Usage examples:
 \t${script_PROGNAME} --alpha"
 
 #page
-## ------------------------------------------------------------
-## Library loading.
-## ------------------------------------------------------------
+#### library loading
 
 mbfl_INTERACTIVE=no
 mbfl_LOADED=no
@@ -73,9 +77,31 @@ then
 fi
 
 #page
-## ------------------------------------------------------------
-## Script options.
-## ------------------------------------------------------------
+#### declare external programs usage
+
+#mbfl_file_enable_compress
+#mbfl_file_enable_copy
+#mbfl_file_enable_make_directory
+#mbfl_file_enable_listing
+#mbfl_file_enable_stat
+#mbfl_file_enable_owner_and_group
+#mbfl_file_enable_permissions
+#mbfl_file_enable_move
+#mbfl_file_enable_remove
+#mbfl_file_enable_symlink
+#mbfl_file_enable_tar
+#mbfl_declare_program git
+
+#page
+#### declare exit codes
+
+mbfl_main_declare_exit_code 2 second_error
+mbfl_main_declare_exit_code 3 third_error
+mbfl_main_declare_exit_code 3 fourth_error
+mbfl_main_declare_exit_code 8 eighth_error
+
+#page
+#### script options
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ACTION_ONE   yes '' one   noarg 'selects action one'
@@ -92,35 +118,7 @@ mbfl_declare_option ENABLE no e enable noarg 'enables a feature'
 mbfl_declare_option DISABLE no d disable noarg 'disables a feature'
 
 #page
-## ------------------------------------------------------------
-## Declare external programs usage.
-## ------------------------------------------------------------
-
-#mbfl_file_enable_make_compress
-#mbfl_file_enable_make_copy
-#mbfl_file_enable_make_directory
-#mbfl_file_enable_make_listing
-#mbfl_file_enable_make_move
-#mbfl_file_enable_make_permissions
-#mbfl_file_enable_make_remove
-#mbfl_file_enable_make_symlink
-#mbfl_file_enable_make_tar
-#mbfl_declare_program ls
-
-#page
-## ------------------------------------------------------------
-## Declare exit codes.
-## ------------------------------------------------------------
-
-mbfl_main_declare_exit_code 2 second_error
-mbfl_main_declare_exit_code 8 eighth_error
-mbfl_main_declare_exit_code 3 third_error
-mbfl_main_declare_exit_code 3 fourth_error
-
-#page
-## ------------------------------------------------------------
-## Option update functions.
-## ------------------------------------------------------------
+#### option update functions
 
 function script_option_update_beta () {
     printf 'option beta: %s\n' "$script_option_BETA"
@@ -130,9 +128,7 @@ function script_option_update_alpha () {
 }
 
 #page
-## ------------------------------------------------------------
-## Main functions.
-## ------------------------------------------------------------
+#### main functions
 
 function script_before_parsing_options () {
     mbfl_message_verbose "$FUNCNAME\n"
@@ -147,7 +143,7 @@ function script_after_parsing_options () {
     return 0
 }
 function main () {
-    mbfl_program_validate_declared ||   exit_because_program_not_found
+    mbfl_program_validate_declared || exit_because_program_not_found
     printf "arguments: %d, '%s'\n" $ARGC "${ARGV[*]}"
     exit_because_success
 }
@@ -169,10 +165,9 @@ function script_action_four () {
 }
 
 #page
-## ------------------------------------------------------------
-## Start.
-## ------------------------------------------------------------
+#### let's go
 
+#mbfl_set_option_debug
 mbfl_main
 
 ### end of file
