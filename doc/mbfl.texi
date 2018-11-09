@@ -714,11 +714,10 @@ and it can be directly queried using the command line options
 
 
 @defvar script_LICENSE
-The identifier of the license under which the script is released.
-Accepted values are: @code{GPL} or @code{GPL2}, @code{GPL3}, @code{LGPL}
-or @code{LGPL2}, @code{LGPL3}, @code{BSD}.  It is used to select the
-appropriate value to be displayed when the user of the script selects
-the @code{--license} option.  @ref{getopts options, Predefined options}
+The identifier of the license under which the script is released.  Accepted values are: @code{GPL}
+or @code{GPL2}, @code{GPL3}, @code{LGPL} or @code{LGPL2}, @code{LGPL3}, @code{BSD}, @code{liberal}.
+It is used to select the appropriate value to be displayed when the user of the script selects the
+@code{--license} option.  @ref{getopts options, Predefined options}
 @end defvar
 
 @defvar script_USAGE

@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -27,13 +27,12 @@
 #
 
 #PAGE
-## ------------------------------------------------------------
-## Generic variables.
-## ------------------------------------------------------------
+#### generic variables
 
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" != yes
+then
     mbfl_option_TMPDIR="${TMPDIR:-/tmp/${USER}}"
-    mbfl_ORG_PWD=$PWD
+    declare -r mbfl_ORG_PWD=$PWD
 
     declare -i ARGC=0 ARGC1=0 ARG1ST=0
     declare -a ARGV ARGV1
@@ -74,7 +73,7 @@ test "$mbfl_INTERACTIVE" = yes || {
     # "mbfl_main_set_before_parsing_options()".
     #
     mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=script_after_parsing_options
-}
+fi
 
 function mbfl_main_set_main () {
     mbfl_mandatory_parameter(FUNC,1,main function name)
@@ -93,11 +92,10 @@ function mbfl_main_set_after_parsing_options () {
     mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=${FUNC}
 }
 #page
-## ------------------------------------------------------------
-## Exit codes management.
-## ------------------------------------------------------------
+#### exit codes management
 
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" != yes
+then
     declare -a mbfl_main_EXIT_CODES mbfl_main_EXIT_NAMES
     mbfl_main_EXIT_CODES[0]=0
     mbfl_main_EXIT_NAMES[0]=success
@@ -134,7 +132,7 @@ test "$mbfl_INTERACTIVE" = yes || {
 
     mbfl_main_EXIT_CODES[11]=90
     mbfl_main_EXIT_NAMES[11]=invalid_username
-}
+fi
 
 function exit_success () {
     exit_because_success
@@ -150,7 +148,8 @@ function mbfl_main_declare_exit_code () {
     mbfl_main_EXIT_CODES[$i]=$CODE
 }
 function mbfl_main_create_exit_functions () {
-    local i name
+    local -i i
+    local name
     for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do
         name=exit_because_${mbfl_main_EXIT_NAMES[${i}]}
@@ -158,14 +157,14 @@ function mbfl_main_create_exit_functions () {
     done
 }
 function mbfl_main_list_exit_codes () {
-    local i
+    local -i i
     for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do printf '%d %s\n' ${mbfl_main_EXIT_CODES[${i}]} ${mbfl_main_EXIT_NAMES[${i}]}
     done
 }
 function mbfl_main_print_exit_code () {
     mbfl_mandatory_parameter(NAME, 1, exit code name)
-    local i
+    local -i i
     for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do test "${mbfl_main_EXIT_NAMES[${i}]}" = "$NAME" && \
         printf '%d\n' ${mbfl_main_EXIT_CODES[${i}]}
@@ -173,7 +172,7 @@ function mbfl_main_print_exit_code () {
 }
 function mbfl_main_print_exit_code_names () {
     mbfl_mandatory_parameter(CODE, 1, exit code)
-    local i
+    local -i i
     for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do test "${mbfl_main_EXIT_CODES[${i}]}" = "$CODE" && \
         printf '%s\n' ${mbfl_main_EXIT_NAMES[${i}]}
@@ -181,13 +180,12 @@ function mbfl_main_print_exit_code_names () {
 }
 
 #PAGE
-## ------------------------------------------------------------
-## License message variables.
-## ------------------------------------------------------------
+#### license message variables
 
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" != 'yes'
+then
 
-mbfl_message_LICENSE_GPL="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_GPL="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This file  is free software you  can redistribute it  and/or modify it
@@ -204,7 +202,7 @@ Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 02111-1307, USA.
 "
 
-mbfl_message_LICENSE_GPL3="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_GPL3="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This file  is free software you  can redistribute it  and/or modify it
@@ -221,7 +219,7 @@ Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 02111-1307, USA.
 "
 
-mbfl_message_LICENSE_LGPL="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_LGPL="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This is free software; you  can redistribute it and/or modify it under
@@ -238,7 +236,7 @@ Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 USA.
 "
 
-mbfl_message_LICENSE_LGPL3="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_LGPL3="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This is free software; you  can redistribute it and/or modify it under
@@ -255,7 +253,7 @@ Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 USA.
 "
 
-mbfl_message_LICENSE_BSD="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_BSD="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 The author  hereby grant permission to use,  copy, modify, distribute,
@@ -280,16 +278,40 @@ AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 "
 
-}
+declare -r mbfl_message_LICENSE_LIBERAL="${script_PROGNAME} version ${script_VERSION}
+Written by ${script_AUTHOR}.\n
+Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
+The author  hereby grants permission  to use, copy,  modify, distribute,
+and  license  this  software  and its  documentation  for  any  purpose,
+provided that existing copyright notices  are retained in all copies and
+that this notice is included  verbatim in any distributions.  No written
+agreement, license, or royalty fee is required for any of the authorized
+uses.   Modifications  to this  software  may  be copyrighted  by  their
+authors and need not follow the licensing terms described here, provided
+that the new terms are clearly indicated  on the first page of each file
+where they apply.\n
+IN NO EVENT SHALL THE AUTHOR OR  DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
+DIRECT, INDIRECT, SPECIAL, INCIDENTAL,  OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE  USE OF THIS SOFTWARE, ITS DOCUMENTATION,  OR ANY DERIVATIVES
+THEREOF, EVEN IF THE AUTHOR HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.\n
+THE  AUTHOR  AND  DISTRIBUTORS  SPECIFICALLY  DISCLAIM  ANY  WARRANTIES,
+INCLUDING,   BUT   NOT   LIMITED   TO,   THE   IMPLIED   WARRANTIES   OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+THIS  SOFTWARE IS  PROVIDED ON  AN  \"AS IS\"  BASIS, AND  THE AUTHOR  AND
+DISTRIBUTORS  HAVE  NO  OBLIGATION   TO  PROVIDE  MAINTENANCE,  SUPPORT,
+UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+"
+
+fi
 
 #PAGE
-## ------------------------------------------------------------
-## Version message variables.
-## ------------------------------------------------------------
+#### version message variables
 
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" != 'yes'
+then
 
-mbfl_message_VERSION="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_VERSION="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This is free software; see the  source or use the '--license' option for
@@ -297,71 +319,86 @@ copying conditions.  There is NO warranty; not  even for MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.
 "
 
-}
+fi
 
 #page
 #### printing stuff
 
 function mbfl_main_print_version_number () {
-    echo -e "${mbfl_message_VERSION}"
+    echo -e "$mbfl_message_VERSION"
     exit_success
 }
 function mbfl_main_print_version_number_only () {
-    echo -e "${script_VERSION}"
+    echo -e "$script_VERSION"
     exit_success
 }
 function mbfl_main_print_license () {
-    case "${script_LICENSE}" in
+    case "$script_LICENSE" in
         GPL|GPL2)
-            echo -e "${mbfl_message_LICENSE_GPL}"
+            echo -e "$mbfl_message_LICENSE_GPL"
             ;;
         GPL3)
-            echo -e "${mbfl_message_LICENSE_GPL3}"
+            echo -e "$mbfl_message_LICENSE_GPL3"
             ;;
         LGPL|LGPL2)
-            echo -e "${mbfl_message_LICENSE_LGPL}"
+            echo -e "$mbfl_message_LICENSE_LGPL"
             ;;
         LGPL3)
-            echo -e "${mbfl_message_LICENSE_LGPL3}"
+            echo -e "$mbfl_message_LICENSE_LGPL3"
             ;;
         BSD)
-            echo -e "${mbfl_message_LICENSE_BSD}"
+            echo -e "$mbfl_message_LICENSE_BSD"
+            ;;
+        liberal)
+            echo -e "$mbfl_message_LICENSE_LIBERAL"
             ;;
         *)
-            mbfl_message_error "unknown license: \"${script_LICENSE}\""
+            mbfl_message_error_printf 'unknown license: "%s"' "$script_LICENSE"
             exit_failure
             ;;
     esac
     exit_success
 }
 function mbfl_main_print_usage_screen_long () {
-    if test -n "${script_USAGE}"
-    then printf '%s\n' "${script_USAGE}"
-    else printf 'usafe: %s [arguments]\n' "${script_PROGNAME}"
+    if test -n "$script_USAGE"
+    then printf '%s\n' "$script_USAGE"
+    else printf 'usafe: %s [arguments]\n' "$script_PROGNAME"
     fi
-    # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
-    # characters.
-    test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"
+    if test -n "$script_DESCRIPTION"
+    then
+	# Use the variable  as first argument to "printf"  to expand the
+	# escaped characters.
+	printf "${script_DESCRIPTION}\n\n"
+    fi
     mbfl_actions_print_usage_screen
     mbfl_getopts_print_usage_screen long
-    # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
-    # characters.
-    test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+    if test -n "$script_EXAMPLES"
+    then
+	# Use the variable  as first argument to "printf"  to expand the
+	# escaped characters.
+	printf "${script_EXAMPLES}\n"
+    fi
     exit_success
 }
 function mbfl_main_print_usage_screen_brief () {
-    if test -n "${script_USAGE}"
-    then printf '%s\n' "${script_USAGE}"
-    else printf 'usafe: %s [arguments]\n' "${script_PROGNAME}"
+    if test -n "$script_USAGE"
+    then printf '%s\n' "$script_USAGE"
+    else printf 'usafe: %s [arguments]\n' "$script_PROGNAME"
     fi
-    # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
-    # characters.
-    test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"
+    if test -n "$script_DESCRIPTION"
+    then
+	# Use the variable  as first argument to "printf"  to expand the
+	# escaped characters.
+	printf "${script_DESCRIPTION}\n\n"
+    fi
     mbfl_actions_print_usage_screen
     mbfl_getopts_print_usage_screen brief
-    # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
-    # characters.
-    test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+    if test -n "$script_EXAMPLES"
+    then
+	# Use the variable  as first argument to "printf"  to expand the
+	# escaped characters.
+	printf "${script_EXAMPLES}\n"
+    fi
     exit_success
 }
 #PAGE
@@ -394,7 +431,7 @@ function mbfl_main () {
 #
 function mbfl_invoke_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if test "$(type -t $FUNC)" = function
+    if test "$(type -t $FUNC)" = 'function'
     then $FUNC
     else return 0
     fi
@@ -404,10 +441,10 @@ function mbfl_invoke_script_function () {
 #
 function mbfl_invoke_existent_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if test "$(type -t $FUNC)" = function
+    if test "$(type -t $FUNC)" = 'function'
     then $FUNC
     else
-	mbfl_message_error "internal error: request to call non-existent function \"$FUNC\""
+	mbfl_message_error_printf 'internal error: request to call non-existent function \"%s\"' "$FUNC"
 	exit_because_invalid_function_name
     fi
 }
