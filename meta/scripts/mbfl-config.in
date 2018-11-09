@@ -29,9 +29,7 @@
 #
 
 #page
-## ------------------------------------------------------------
-## Global variables.
-## ------------------------------------------------------------
+#### global variables
 
 DEFAULT_OPTION='--library'
 OPTION="${1:-${DEFAULT_OPTION}}"
@@ -43,8 +41,7 @@ MBFL_CORE_VERSION='@MBFL_CORE_VERSION@'
 prefix="@prefix@"
 datarootdir="@datarootdir@"
 datadir="@datadir@"
-PKG_DIR="@PKG_DIR@"
-pkgdatadir="${datadir}/${PACKAGE}/${MBFL_CORE_VERSION}"
+pkgdatadir="@datadir@/@PACKAGE@"
 
 USAGE="usage: mbfl-config [option]
 Marco's BASH Functions Library configuration script
@@ -57,22 +54,20 @@ options:
 "
 
 #page
-## ------------------------------------------------------------
-## Main script.
-## ------------------------------------------------------------
+#### main script
 
-case "${OPTION}" in
+case "$OPTION" in
     --library)
-	echo "${pkgdatadir}/libmbfl.sh"
+	printf '%s/libmbfl.sh\n' "$pkgdatadir"
 	;;
     --testlib)
-	echo "${pkgdatadir}/libmbfltest.sh"
+	printf '%s/libmbfltest.sh\n' "$pkgdatadir"
 	;;
     --libpath)
-        echo "$pkgdatadir"
+        printf '%s\n' "$pkgdatadir"
         ;;
     --version)
-	echo "$PACKAGE_VERSION"
+        printf '%s\n' "$PACKAGE_VERSION"
 	;;
     *)
 	echo "$USAGE"

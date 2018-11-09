@@ -10,7 +10,8 @@ Notes for revision 3.0.0-devel.0
 This release  has some backwards  incompatibilities.  Watch out  for the
 changes!
 
-* Package building and installing infrastructure review.
+* Package building and installing  infrastructure review.  The files are
+  installed under directories *without* the version part.
 
 * Added string functions:
 

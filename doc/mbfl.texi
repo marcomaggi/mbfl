@@ -198,6 +198,16 @@ with @mbfl{}, some choices are made to reduce the application--dependent part of
 smallest dimension; if we follow another schema, @mbfl{} modules may be inadequate.  This is
 especially true for the options parsing module.
 
+Starting with version 3: this package installs files under directories @strong{without} the version
+part.  If we desire to install multiple versions of the package: we should install under
+@file{/opt/mbfl/$(VERSION)}, by using the appropriate command line option at configuration time:
+
+@example
+$ ./configure \
+      --prefix=/opt/mbfl/3.0.0 \
+      --libdir=/opt/mbfl/3.0.0/lib64
+@end example
+
 @menu
 * overview quick::              Quick run--time loading.
 * overview reliable::           Reliable run--time loading.

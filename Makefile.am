@@ -15,7 +15,7 @@ nodist_pkgconfig_DATA	= meta/scripts/mbfl.pc
 
 dist_bin_SCRIPTS	= meta/scripts/mbfl-config
 
-autoconfdir		= $(datadir)/aclocal/$(PACKAGE)/$(MBFL_CORE_VERSION)
+autoconfdir		= $(datadir)/aclocal/$(PACKAGE)
 dist_autoconf_DATA	= meta/autoconf/mbfl.m4
 
 
@@ -61,7 +61,7 @@ MBFL_MODULES		= \
 
 MBFL_PREPRO		= src/lib/preprocessor.m4
 
-mbfldatadir		= $(datadir)/$(PACKAGE)/$(MBFL_CORE_VERSION)
+mbfldatadir		= $(datadir)/$(PACKAGE)
 dist_mbfldata_DATA	= \
 	$(MBFL_PREPRO)				\
 	src/lib/libmbfltest.sh			\
