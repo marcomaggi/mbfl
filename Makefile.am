@@ -15,7 +15,7 @@ nodist_pkgconfig_DATA	= meta/scripts/mbfl.pc
 
 dist_bin_SCRIPTS	= meta/scripts/mbfl-config
 
-autoconfdir		= $(datadir)/aclocal/$(PACKAGE)
+autoconfdir		= $(datadir)/aclocal
 dist_autoconf_DATA	= meta/autoconf/mbfl.m4
 
 
