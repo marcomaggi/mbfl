@@ -31,13 +31,12 @@
 #
 
 #PAGE
-## ------------------------------------------------------------
-## Setup.
-## ------------------------------------------------------------
+#### setup
 
 source setup.sh
 
 #page
+#### sptlitting a string into characters
 
 function string-chars-1.1 () {
     local SPLITFIELD SPLITCOUNT string
@@ -143,6 +142,7 @@ function string-chars-1.6 () {
 }
 
 #page
+#### matching a substring
 
 function string-equal-substring-1.1 () {
     ! mbfl_string_equal_substring abcdefghi 0 123

@@ -565,16 +565,14 @@ Send the result of preprocessing to @bash{}, rather than print it.
 @section Macros library
 
 
-The @mfour{} preprocessor is invoked by @command{mbflpp.sh} with the
-@option{--prefix-builtins} option; so all the @mfour{} built in macros
-and directives are available prefixed with @code{m4_}.
+The @mfour{} preprocessor is invoked by @command{mbflpp.sh} with the @option{--prefix-builtins}
+option; so all the @mfour{} built in macros and directives are available prefixed with @code{m4_}.
 
 
 @deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{varname} @var{number} @var{description}
-Define a variable local to a shell function holding an argument to the
-function.  @var{varname} is the name of the variable; @var{number} is
-the positional parameter number; @var{description} is a description of the
-argument.
+Define a variable local to a shell function holding an argument to the function.  @var{varname} is
+the name of the variable; @var{number} is the positional parameter number; @var{description} is a
+description of the argument.
 
 Example, the following:
 
@@ -669,9 +667,8 @@ local COUNT=$@{2:-@}"
 
 
 @deffn {Preprocessor Macro} mbfl_command_line_argument @var{varname} @var{argindex}
-Define a variable local to a shell function holding an argument to the
-script.  @var{varname} is the variable name, @var{argindex} is the
-argument index in the @code{ARGV} array.
+Define a variable local to a shell function holding an argument to the script.  @var{varname} is the
+variable name, @var{argindex} is the argument index in the @code{ARGV} array.
 
 Example, the following:
 

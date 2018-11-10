@@ -1,4 +1,3 @@
-#! /bin/bash
 # string.sh --
 #
 # Part of: Marco's BASH functions library
@@ -9,11 +8,12 @@
 #
 #       This is a collection of string functions for the GNU BASH shell.
 #
-#       The functions made heavy usage of special variable substitutions
-#       (like ${name:num:num}) so, maybe, other Bourne shells will not
-#       made them work at all.
+#       The functions make heavy usage of special variable substitutions
+#       (like ${name:num:num})  so, maybe, other Bourne  shells will not
+#       work at all.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -31,21 +31,21 @@
 # USA.
 #
 
-#PAGE
+#page
 function mbfl_string_chars () {
     mbfl_mandatory_parameter(STRING, 1, string)
-    local i j ch
-    for ((i=0, j=0; $i < ${#STRING}; ++i, ++j))
+    local -i i j
+    local ch
+    for ((i=0, j=0; i < ${#STRING}; ++i, ++j))
     do
-        ch=${STRING:$i:1}
+        ch="${STRING:$i:1}"
         if test "$ch" != $'\\'
-        then SPLITFIELD[$j]=$ch
+        then SPLITFIELD[$j]="$ch"
         else
             let ++i
-            if test $i != "${#STRING}"
-            then SPLITFIELD[$j]=${ch}${STRING:$i:1}
-            else
-                SPLITFIELD[$j]=$ch
+            if test $i != ${#STRING}
+            then SPLITFIELD[$j]="${ch}${STRING:$i:1}"
+            else SPLITFIELD[$j]="$ch"
             fi
         fi
     done
@@ -179,7 +179,7 @@ function mbfl_string_greater_or_equal () {
     mbfl_optional_parameter(STR2, 2)
     test "$STR1" '>' "$STR2" -o "$STR1" '=' "$STR2"
 }
-#PAGE
+#page
 function mbfl_string_is_alpha_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
     ! test \( "${CHAR}" \< A -o Z \< "${CHAR}" \) -a \( "${CHAR}" \< a -o z \< "${CHAR}" \)
@@ -257,7 +257,7 @@ function mbfl_string_is_username () {
     test -n "$STRING" && \
 	mbfl_string_is_identifier "${STRING}"
 }
-#PAGE
+#page
 function mbfl_string_range () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(BEGIN, 2, begin)
