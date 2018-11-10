@@ -30,9 +30,7 @@
 #
 
 #PAGE
-## ------------------------------------------------------------
-## Setup.
-## ------------------------------------------------------------
+#### setup
 
 source setup.sh
 
@@ -41,8 +39,8 @@ function compress () {
     examplesdir=${examplesdir:?'missing examplesdir in the environment'}
 
     if false
-    then "$BASH" "$examplesdir"/compress.sh --debug -v "$@"
-    else "$BASH" "$examplesdir"/compress.sh "$@"
+    then "$BASH" examples/compress.sh --debug -v "$@"
+    else "$BASH" examples/compress.sh "$@"
     fi
 }
 
