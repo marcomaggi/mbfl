@@ -91,40 +91,40 @@ function script_option_update_include () {
 
 function main () {
     local M4_FLAGS='--prefix-builtins'
-    local libfile=${hidden_option_DATADIR}/preprocessor.m4
+    local PREPROCESSOR=${hidden_option_DATADIR}/preprocessor.m4
 
 
     M4_FLAGS+=" ${includes} ${symbols}"
-    if mbfl_file_is_readable "$libfile"
-    then M4_FLAGS+=" ${libfile}"
+    if mbfl_file_is_readable "$PREPROCESSOR"
+    then M4_FLAGS+=" ${PREPROCESSOR}"
     fi
     M4_FLAGS+=" ${libraries}"
 
     if ! {
             if test $ARGC -eq 0
-	    then program_cat
+    	    then program_cat
             else
-		mbfl_argv_all_files || exit_because_wrong_command_line_arguments
-		program_cat "${ARGV[@]}"
+    		mbfl_argv_all_files || exit_because_wrong_command_line_arguments
+    		program_cat "${ARGV[@]}"
             fi
-	} | {
+    	} | {
             if test "$script_option_ADD_BASH" = 'yes'
-	    then printf '#!%s\n' "$BASH"
+    	    then printf '#!%s\n' "$BASH"
             fi
             if test "$script_option_PRESERVE_COMMENTS" = 'yes'
-	    then program_m4 ${M4_FLAGS} -
+    	    then program_m4 ${M4_FLAGS} -
             else program_m4 ${M4_FLAGS} - | filter_drop_comments
             fi
-	} | {
+    	} | {
             if test "$script_option_EVAL" = 'yes'
-	    then exec "$BASH"
+    	    then exec "$BASH"
             else
-		if test "$script_option_OUTPUT" = '-'
-		then program_cat
-		else program_cat >"$script_option_OUTPUT"
-		fi
+    		if test "$script_option_OUTPUT" = '-'
+    		then program_cat
+    		else program_cat >"$script_option_OUTPUT"
+    		fi
             fi
-	}
+    	}
     then exit $?
     fi
     exit_success
