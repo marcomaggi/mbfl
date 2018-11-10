@@ -19,11 +19,28 @@ autoconfdir		= $(datadir)/aclocal
 dist_autoconf_DATA	= meta/autoconf/mbfl.m4
 
 
+#### documentation
+
+EXTRA_DIST		+= \
+	doc/one-level-actions.sh		\
+	doc/two-levels-actions.sh
+
+AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
+
+info_TEXINFOS		= doc/mbfl.texi
+doc_mbfl_TEXINFOS	= \
+	doc/fdl-1.3.texi		\
+	doc/lgpl-3.0.texi		\
+	doc/macros.texi			\
+	doc/sendmail-plain.sh		\
+	doc/sendmail-connector.sh
+
+
 #### source modules
 
 EXTRA_DIST	+= \
-	src/scripts/mbflpp-pre.sh		\
-	src/scripts/mbfltest-pre.sh		\
+	src/scripts/mbflpp.sh.m4		\
+	src/scripts/mbfltest.sh.m4		\
 	\
 	src/modules/base.sh.m4			\
 	src/modules/encode.sh.m4		\
@@ -70,11 +87,14 @@ dist_mbfldata_DATA	= \
 bin_SCRIPTS		= src/scripts/mbflpp.sh src/scripts/mbfltest.sh
 
 CLEANFILES		+= \
-	src/lib/libmbfltest.sh			\
-	src/lib/libmbfl.sh			\
-	src/scripts/mbflpp.sh			\
-	src/scripts/mbfltest.sh			\
-	$(MBFL_MODULES)
+	src/lib/libmbfltest.sh		\
+	src/lib/libmbfl.sh		\
+	src/scripts/mbflpp.sh		\
+	src/scripts/mbfltest.sh		\
+	$(MBFL_MODULES)			\
+	src/modules/$(am__dirstamp)	\
+	src/scripts/$(am__dirstamp)	\
+	src/lib/$(am__dirstamp)
 
 ## --------------------------------------------------------------------
 
@@ -97,20 +117,28 @@ MBFLPP_MODULES_FLAGS	= --include=$(srcdir)/src/lib				\
 MBFLPP_LIBS_FLAGS	= --include=$(builddir)/src/modules  --preserve-comments
 MBFLPP_SCRIPTS_FLAGS	= $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments
 
-src/modules/%.sh	: src/modules/%.sh.m4	$(MBFL_PREPRO)
-	test -d src/modules || $(MKDIR_P) src/modules
+src/modules/$(am__dirstamp):
+	@$(MKDIR_P) src/modules
+	@: > src/modules/$(am__dirstamp)
+
+src/scripts/$(am__dirstamp):
+	@$(MKDIR_P) src/scripts
+	@: > src/scripts/$(am__dirstamp)
+
+src/lib/$(am__dirstamp):
+	@$(MKDIR_P) src/lib
+	@: > src/lib/$(am__dirstamp)
+
+src/modules/%.sh: src/modules/%.sh.m4 $(MBFL_PREPRO) src/modules/$(am__dirstamp)
 	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
 
-src/lib/libmbfl.sh: src/lib/libmbfl.sh.m4 $(MBFL_PREPRO) $(MBFL_MODULES)
-	test -d src/lib || $(MKDIR_P) src/lib
+src/lib/libmbfl.sh: src/lib/libmbfl.sh.m4 $(MBFL_PREPRO) $(MBFL_MODULES) src/lib/$(am__dirstamp)
 	$(MBFLPP_RUN) $(MBFLPP_LIBS_FLAGS) <$< >$@
 
-src/scripts/mbflpp.sh : src/scripts/mbflpp-pre.sh
-	test -d src/scripts || $(MKDIR_P) src/scripts
+src/scripts/mbflpp.sh: src/scripts/mbflpp.sh.m4 src/scripts/$(am__dirstamp)
 	$(MBFLPP_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
 
-src/scripts/mbfltest.sh : src/scripts/mbfltest-pre.sh
-	test -d src/scripts || $(MKDIR_P) src/scripts
+src/scripts/mbfltest.sh: src/scripts/mbfltest.sh.m4 src/scripts/$(am__dirstamp)
 	$(MBFLPP_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
 
 
@@ -198,23 +226,6 @@ MBFL_INSTCHECK_RUN	= $(MBFL_INSTCHECK_ENV) $(BASH_PROGRAM) $(MBFL_INSTCHECK_FLAG
 
 installcheck-local:
 	@for f in $(TESTS); do $(MBFL_INSTCHECK_RUN) $(srcdir)/$$f; done
-
-
-#### documentation
-
-EXTRA_DIST		+= \
-	doc/one-level-actions.sh		\
-	doc/two-levels-actions.sh
-
-AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
-
-info_TEXINFOS		= doc/mbfl.texi
-doc_mbfl_TEXINFOS	= \
-	doc/fdl-1.3.texi		\
-	doc/lgpl-3.0.texi		\
-	doc/macros.texi			\
-	doc/sendmail-plain.sh		\
-	doc/sendmail-connector.sh
 
 
 #### examples
