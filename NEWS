@@ -11,7 +11,8 @@ This release  has some backwards  incompatibilities.  Watch out  for the
 changes!
 
 * Package building and installing  infrastructure review.  The files are
-  installed under directories *without* the version part.
+  installed under directories *without* the version part.  No pkg-config
+  module is installed.
 
 * Added string functions:
 

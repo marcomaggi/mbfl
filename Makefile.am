@@ -8,10 +8,6 @@ CLEANFILES		=
 
 #### meta infrastructure
 
-EXTRA_DIST		+= meta/scripts/mbfl.pc.in
-pkgconfigdir		= $(libdir)/pkgconfig
-nodist_pkgconfig_DATA	= meta/scripts/mbfl.pc
-
 dist_bin_SCRIPTS	= meta/scripts/mbfl-config
 
 autoconfdir		= $(datadir)/aclocal

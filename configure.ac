@@ -70,8 +70,7 @@ AS_VAR_IF(with_sendmail,'yes',
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 
 AC_CONFIG_FILES([Makefile]
-  [meta/scripts/mbfl-config]
-  [meta/scripts/mbfl.pc])
+  [meta/scripts/mbfl-config])
 MMUX_OUTPUT
 AC_OUTPUT
 
