@@ -5,27 +5,44 @@
 #
 # Abstract
 #
+#	This  file  is meant  to  be  included  in the  distribution  of
+#	packages using the MBFL and  using the GNU Autotools.  It should
+#	be loaded into  "configure.ac" by putting the  following lin ein
+#	"acinclude.m4":
 #
+#	   m4_include(path/to/mbfl.m4)
 #
-# Copyright (c) 2009, 2012 Marco Maggi
-# <marco.maggi-ipsu@poste.it>
+#	then in "configure.ac" we can use the macro:
 #
-# This  program  is free  software:  you  can redistribute  it
-# and/or modify it  under the terms of the  GNU General Public
-# License as published by the Free Software Foundation, either
-# version  3 of  the License,  or (at  your option)  any later
-# version.
+#	   MBFL_SETUP
 #
-# This  program is  distributed in  the hope  that it  will be
-# useful, but  WITHOUT ANY WARRANTY; without  even the implied
-# warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
-# PURPOSE.   See  the  GNU  General Public  License  for  more
-# details.
+#	In  a  "Makefile.am"  we  are  interested  in  the  substitution
+#	variables "MBFLPP" and "MBFLTEST".
 #
-# You should  have received a  copy of the GNU  General Public
-# License   along   with    this   program.    If   not,   see
-# <http://www.gnu.org/licenses/>.
+# Copyright (c) 2009, 2012, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
+# The author hereby grants  permission to use, copy, modify, distribute,
+# and  license this  software  and its  documentation  for any  purpose,
+# provided that  existing copyright notices  are retained in  all copies
+# and that  this notice  is included verbatim in any  distributions.  No
+# written agreement, license, or royalty  fee is required for any of the
+# authorized uses.  Modifications to this software may be copyrighted by
+# their authors and need not  follow the licensing terms described here,
+# provided that the new terms are clearly indicated on the first page of
+# each file where they apply.
+#
+# IN NO  EVENT SHALL THE AUTHOR  OR DISTRIBUTORS BE LIABLE  TO ANY PARTY
+# FOR  DIRECT, INDIRECT, SPECIAL,  INCIDENTAL, OR  CONSEQUENTIAL DAMAGES
+# ARISING OUT  OF THE  USE OF THIS  SOFTWARE, ITS DOCUMENTATION,  OR ANY
+# DERIVATIVES  THEREOF, EVEN  IF THE  AUTHOR  HAVE BEEN  ADVISED OF  THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# THE  AUTHOR  AND DISTRIBUTORS  SPECIFICALLY  DISCLAIM ANY  WARRANTIES,
+# INCLUDING,   BUT   NOT  LIMITED   TO,   THE   IMPLIED  WARRANTIES   OF
+# MERCHANTABILITY,    FITNESS   FOR    A    PARTICULAR   PURPOSE,    AND
+# NON-INFRINGEMENT.  THIS  SOFTWARE IS PROVIDED  ON AN "AS  IS" BASIS,
+# AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
+# MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
 AC_DEFUN([MBFL_SETUP],
