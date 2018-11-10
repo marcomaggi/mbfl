@@ -524,32 +524,32 @@ mbflpp.sh [options] --outfile=OUTFILE [--] INFILE1 INFILE2 ...
 @end smallexample
 
 @noindent
-all the @code{INFILE} pathnames are interpreted as files to concatenate
-in the specified order.
+all the @code{INFILE} pathnames are interpreted as files to concatenate in the specified order.
 
-All the @mbfl{} built in command line options are available,
-additionally the following options are supported.
+All the @mbfl{} built in command line options are available, additionally the following options are
+supported.
 
 @table @code
 @item --preserve-comments
 Do not filter out comments.
 
 @item --add-bash
-Add @code{#!$BASH} at the beginning of the output, where @code{BASH} is
-the built--in variable of Bash, @bashref{Bash Variables, BASH}.
+Add @code{#!$BASH} at the beginning of the output, where @code{BASH} is the built--in variable of
+Bash, @bashref{Bash Variables, BASH}.
 
-@item --define=VALUE
-Define a new symbol (@mfour{} syntax).  This is equivalent to the
-@option{--define} option of @mfour{}.
+@item -DNAME[=VALUE]
+@itemx --define=NAME[=VALUE]
+Define a new symbol (@mfour{} syntax).  This is equivalent to the @option{--define} option of
+@mfour{}.
 
-@item --include=VALUE
-Add a search path for files.  @code{VALUE} must be a directory pathname
-and it is handed to @mfour{} to search for macro files.  Can be used
-multiple times.
+@item -IVALUE
+@itemx --include=VALUE
+Add a search path for files.  @code{VALUE} must be a directory pathname and it is handed to @mfour{}
+to search for macro files.  We can use this option multiple times.
 
 @item --library=VALUE
-Include an @mfour{} library.  @code{VALUE} must be the name of an
-@mfour{} macro file which is evaluated before the input files.
+Include an @mfour{} library.  @code{VALUE} must be the name of an @mfour{} macro file which is
+evaluated before the input files.
 
 @item -oVALUE
 @itemx --output=VALUE
@@ -557,7 +557,7 @@ Select an output file, @code{-} for stdout.
 
 @item -e
 @itemx --eval
-If used evaluates the output script in @bash{}, instead of printing it.
+Send the result of preprocessing to @bash{}, rather than print it.
 @end table
 
 @c page
