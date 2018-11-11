@@ -389,7 +389,7 @@ function mbfl_getopts_print_usage_screen () {
             then
                 item=${mbfl_getopts_DEFAULTS[$i]}
                 if test -n "$item"
-                then default=$(printf "'%s'" "$item")
+                then printf -v default "'%s'" "$item"
                 else default='empty'
                 fi
                 printf '\t\t(default: %s)\n' "$default"
@@ -407,27 +407,33 @@ function mbfl_getopts_print_usage_screen () {
 
     # Do  it  as  first  argument  of "printf"  to  expand  the  escaped
     # characters.
-    if test ${BRIEF_OR_LONG} = long
+    if test $BRIEF_OR_LONG = long
     then
 	printf 'Common options:\n'
 	printf "$mbfl_message_DEFAULT_OPTIONS"
 	printf '\n'
     fi
 }
-#PAGE
+#page
 function mbfl_getopts_islong () {
     mbfl_mandatory_parameter(ARGUMENT, 1, argument)
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
-    local len=${#ARGUMENT} i ch
+    local -i len=${#ARGUMENT} i
+    local ch
 
-
-    test $len -lt 3 -o "${ARGUMENT:0:2}" != "--"  && return 1
-    for ((i=2; $i < $len; ++i)); do
-        ch=${ARGUMENT:$i:1}
-        mbfl_p_getopts_not_char_in_long_option_name "$ch" && return 1
-    done
-    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2}"
-    return 0
+    if test $len -lt 3 -o "${ARGUMENT:0:2}" != "--"
+    then return 1
+    else
+	for ((i=2; $i < $len; ++i))
+	do
+            ch=${ARGUMENT:$i:1}
+            if mbfl_p_getopts_not_char_in_long_option_name "$ch"
+	    then return 1
+	    fi
+	done
+	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2}"
+	return 0
+    fi
 }
 function mbfl_getopts_islong_with () {
     mbfl_mandatory_parameter(ARGUMENT, 1, argument)
