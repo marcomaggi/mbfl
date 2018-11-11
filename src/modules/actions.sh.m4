@@ -142,7 +142,7 @@ function mbfl_declare_action () {
     #
     mbfl_mandatory_parameter(ACTION_DESCRIPTION,5,description)
 
-    local KEY="${ACTION_SET}-${ACTION_IDENTIFIER}"
+    local KEY=${ACTION_SET}-${ACTION_IDENTIFIER}
 
     if ! mbfl_string_is_identifier "$ACTION_IDENTIFIER"
     then
@@ -166,7 +166,7 @@ function mbfl_declare_action () {
     fi
 
     mbfl_action_sets_DESCRIPTIONS[${KEY}]=$ACTION_DESCRIPTION
-    mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]="${mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]} ${ACTION_IDENTIFIER}"
+    mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]+=" ${ACTION_IDENTIFIER}"
     return 0
 }
 #page
@@ -217,7 +217,7 @@ function mbfl_actions_dispatch () {
     fi
 
     local IDENTIFIER=${ARGV1[$ARG1ST]}
-    local KEY="${ACTION_SET}-${IDENTIFIER}"
+    local KEY=${ACTION_SET}-${IDENTIFIER}
     local ACTION_SUBSET=${mbfl_action_sets_SUBSETS[${KEY}]}
     local ACTION_KEYWORD=${mbfl_action_sets_KEYWORDS[${KEY}]}
     #mbfl_message_debug "processing argument '$IDENTIFIER' for action selection"
@@ -274,7 +274,7 @@ function mbfl_actions_print_usage_screen () {
 	local ACTION_IDENTIFIER KEY
 	for ACTION_IDENTIFIER in ${mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]}
 	do
-	    KEY="${ACTION_SET}-${ACTION_IDENTIFIER}"
+	    KEY=${ACTION_SET}-${ACTION_IDENTIFIER}
 	    printf '\t%s [options] [arguments]\n\t\t%s\n\n' \
 		"${ACTION_IDENTIFIER}" "${mbfl_action_sets_DESCRIPTIONS[${KEY}]}"
 	done
