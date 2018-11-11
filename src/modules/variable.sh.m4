@@ -29,9 +29,14 @@
 #page
 function mbfl_variable_find_in_array () {
     mbfl_mandatory_parameter(ELEMENT, 1, element parameter)
-    declare -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
-    for ((i=0; $i < $ARRAY_DIM; ++i))
-    do test "${mbfl_FIELDS[$i]}" = "$ELEMENT" && { printf "$i\n"; return 0; }
+    local -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
+    for ((i=0; i < ARRAY_DIM; ++i))
+    do
+	if test "${mbfl_FIELDS[$i]}" = "$ELEMENT"
+	then
+	    printf '%s\n' $i
+	    return 0
+	fi
     done
     return 1
 }
@@ -62,7 +67,7 @@ function mbfl_variable_colon_variable_to_array () {
 }
 function mbfl_variable_array_to_colon_variable () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
-    declare -i i dimension=${#mbfl_FIELDS[*]}
+    local -i i dimension=${#mbfl_FIELDS[*]}
 
     if test $dimension = 0
     then eval $COLON_VARIABLE=
@@ -77,8 +82,8 @@ function mbfl_variable_array_to_colon_variable () {
 function mbfl_variable_colon_variable_drop_duplicate () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
     local item
-    declare -a mbfl_FIELDS FIELDS
-    declare -i dimension count i
+    local -a mbfl_FIELDS FIELDS
+    local -i dimension count i
 
     mbfl_variable_colon_variable_to_array "$COLON_VARIABLE"
     dimension=${#mbfl_FIELDS[*]}

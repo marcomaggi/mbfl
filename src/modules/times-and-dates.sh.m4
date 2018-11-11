@@ -37,8 +37,8 @@ function mbfl_times_and_dates_enable () {
 
 function mbfl_exec_date () {
     local DATE
-    DATE=$(mbfl_program_found date) || exit $?
-    mbfl_program_exec "${DATE}" "$@"
+    mbfl_program_found_var DATE date || exit $?
+    mbfl_program_exec "$DATE" "$@"
 }
 
 function mbfl_exec_date_format () {
