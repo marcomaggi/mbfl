@@ -257,12 +257,12 @@ function mbfl_declare_program () {
     local PATHNAME
     local -r -i next_free_index=${#mbfl_program_NAMES[@]}
 
-    mbfl_program_NAMES[${next_free_index}]="$PROGRAM"
+    mbfl_program_NAMES[${next_free_index}]=$PROGRAM
     mbfl_program_find_var PATHNAME "$PROGRAM"
     if test -n "$PATHNAME"
     then mbfl_file_normalise_var PATHNAME "$PATHNAME"
     fi
-    mbfl_program_PATHS[${next_free_index}]="$PATHNAME"
+    mbfl_program_PATHS[${next_free_index}]=$PATHNAME
     return 0
 }
 function mbfl_program_validate_declared () {
@@ -270,8 +270,8 @@ function mbfl_program_validate_declared () {
     local name path
     for ((i=0; $i < $number_of_programs; ++i))
     do
-        name="${mbfl_program_NAMES[$i]}"
-        path="${mbfl_program_PATHS[$i]}"
+        name=${mbfl_program_NAMES[$i]}
+        path=${mbfl_program_PATHS[$i]}
         if test -n "$path" -a -x "$path"
         then mbfl_message_verbose "found '$name': '$path'\n"
         else
@@ -292,10 +292,10 @@ function mbfl_program_found_var () {
         do
             if test "${mbfl_program_NAMES[$i]}" = "$PROGRAM"
 	    then
-		local PATHNAME="${mbfl_program_PATHS[$i]}"
+		local PATHNAME=${mbfl_program_PATHS[$i]}
 		if test -n "$PATHNAME" -a -x "$PATHNAME"
 		then
-		    RESULT_VARREF="$PATHNAME"
+		    RESULT_VARREF=$PATHNAME
                     return 0
 		else
 		    mbfl_message_error_printf 'executable not found: "%s"' "$PROGRAM"
