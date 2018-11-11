@@ -63,7 +63,7 @@ function mbfl_string_quote_var () {
     RESULT_VARREF=
     for ((i=0; i < ${#STRING}; ++i))
     do
-        ch="${STRING:$i:1}"
+        ch=${STRING:$i:1}
         test "$ch" = \\ && ch=\\\\
         RESULT_VARREF+=$ch
     done
@@ -208,14 +208,14 @@ function mbfl_string_chars () {
     local ch
     for ((i=0, j=0; i < ${#STRING}; ++i, ++j))
     do
-        ch="${STRING:$i:1}"
+        ch=${STRING:$i:1}
         if test "$ch" != $'\\'
-        then SPLITFIELD[$j]="$ch"
+        then SPLITFIELD[$j]=$ch
         else
             let ++i
             if test $i != ${#STRING}
-            then SPLITFIELD[$j]="${ch}${STRING:$i:1}"
-            else SPLITFIELD[$j]="$ch"
+            then SPLITFIELD[$j]=${ch}${STRING:$i:1}
+            else SPLITFIELD[$j]=$ch
             fi
         fi
     done
@@ -244,7 +244,7 @@ function mbfl_string_split () {
         test $(($i+${#SEPARATOR})) -gt ${#STRING} && break
         mbfl_string_equal_substring "${STRING}" $i "${SEPARATOR}" && {
             # here $i is the index of the first char in the separator
-            SPLITFIELD[$k]="${STRING:$first:$(($i-$first))}"
+            SPLITFIELD[$k]=${STRING:$first:$(($i-$first))}
             let ++k
             i=$(($i+${#SEPARATOR}-1))
 	    # place the "first" marker to the beginning of the
@@ -253,7 +253,7 @@ function mbfl_string_split () {
             first=$(($i+1))
         }
     done
-    SPLITFIELD[$k]="${STRING:$first}"
+    SPLITFIELD[$k]=${STRING:$first}
     let ++k
     SPLITCOUNT=$k
     return 0
@@ -409,8 +409,8 @@ function mbfl_p_string_uplo () {
       else
           upper=$ch
           if test "${MODE}" = toupper
-          then STRING="${STRING//$lower/$upper}"
-          else STRING="${STRING//$upper/$lower}"
+          then STRING=${STRING//$lower/$upper}
+          else STRING=${STRING//$upper/$lower}
           fi
           flag=0
       fi
@@ -420,11 +420,11 @@ function mbfl_p_string_uplo () {
 }
 #page
 function mbfl_sprintf () {
-    local VARNAME="${1:?missing variable name parameter in ${FUNCNAME}}"
-    local FORMAT="${2:?missing format parameter in ${FUNCNAME}}"
+    mbfl_mandatory_parameter(VARNAME, 1, variable name)
+    mbfl_mandatory_parameter(FORMAT,  2, format)
     local OUTPUT=
     shift 2
-    OUTPUT=$(printf "${FORMAT}" "$@")
+    OUTPUT=$(printf "$FORMAT" "$@")
     eval "${VARNAME}"=\'"${OUTPUT}"\'
 }
 
