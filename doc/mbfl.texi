@@ -716,7 +716,7 @@ mbfl_command_line_argument(PATHNAME,3)
 is expanded to:
 
 @example
-local PATHNAME="$@{ARGV[3]@}"
+local PATHNAME=$@{ARGV[3]@}
 @end example
 @end deffn
 
