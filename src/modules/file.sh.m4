@@ -55,7 +55,7 @@ function mbfl_p_file_backwards_looking_at_double_dot () {
 
     if ((0 < INDEX))
     then
-	local -r ch="${PATHNAME:$((INDEX - 1)):1}"
+	local -r ch=${PATHNAME:$((INDEX - 1)):1}
 
 	# For the case of standalone double-dot "..":
 	if   ((1 == INDEX)) && test "$ch" = '.'
@@ -141,13 +141,13 @@ function mbfl_file_extension_var () {
 		    break
 		else
 		    # Found an extension.  Store it and break.
-		    result="${PATHNAME:$((i + 1))}"
+		    result=${PATHNAME:$((i + 1))}
 		    break
 		fi
 	    fi
 	fi
     done
-    RESULT_VARREF="$result"
+    RESULT_VARREF=$result
     return 0
 }
 function mbfl_file_extension () {
@@ -179,11 +179,11 @@ function mbfl_file_dirname_var () {
             do let --i
             done
 
-	    result="${PATHNAME:0:$((i + 1))}"
+	    result=${PATHNAME:0:$((i + 1))}
 	    break
         fi
     done
-    RESULT_VARREF="$result"
+    RESULT_VARREF=$result
     return 0
 }
 function mbfl_file_dirname () {
@@ -207,20 +207,20 @@ function mbfl_file_rootname_var () {
     # Special handling for standalone  slash, standalone dot, standalone
     # double-dot.
     if test \( "$PATHNAME" = '/' \) -o \( "$PATHNAME" = '.' \) -o \( "$PATHNAME" = '..' \)
-    then result="$PATHNAME"
+    then result=$PATHNAME
     else
 	# Skip the trailing slashes.
 	while ((0 < i)) && test "${PATHNAME:$((i - 1)):1}" = '/'
 	do let --i
 	done
-	PATHNAME="${PATHNAME:0:$i}"
+	PATHNAME=${PATHNAME:0:$i}
 
 	if ((1 == i))
-	then result="$PATHNAME"
+	then result=$PATHNAME
 	else
 	    for ((i=${#PATHNAME}; $i >= 0; --i))
 	    do
-		ch="${PATHNAME:$i:1}"
+		ch=${PATHNAME:$i:1}
 		if test "$ch" = '.'
 		then
 		    if mbfl_p_file_backwards_looking_at_double_dot "$PATHNAME" $i || \
@@ -232,25 +232,25 @@ function mbfl_file_rootname_var () {
 			#   ..
 			#
 			# print the full pathname.
-			result="$PATHNAME"
+			result=$PATHNAME
 			break
 		    elif ((0 < i))
 		    then
-			result="${PATHNAME:0:$i}"
+			result=${PATHNAME:0:$i}
 			break
 		    else
-			result="$PATHNAME"
+			result=$PATHNAME
 			break
 		    fi
 		elif test "$ch" = '/'
 		then
-		    result="$PATHNAME"
+		    result=$PATHNAME
 		    break
 		fi
 	    done
 	fi
     fi
-    RESULT_VARREF="$result"
+    RESULT_VARREF=$result
     return 0
 }
 
@@ -271,17 +271,17 @@ function mbfl_file_tail_var () {
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     local -i i
     # If no slash is present: the result is the full pathname.
-    local result="$PATHNAME"
+    local result=$PATHNAME
 
     for ((i=${#PATHNAME}; $i >= 0; --i))
     do
         if test "${PATHNAME:$i:1}" = '/'
 	then
-            result="${PATHNAME:$((i + 1))}"
+            result=${PATHNAME:$((i + 1))}
             break
 	fi
     done
-    RESULT_VARREF="$result"
+    RESULT_VARREF=$result
     return 0
 }
 
@@ -307,14 +307,14 @@ function mbfl_file_split () {
     do
         if test "${PATHNAME:$i:1}" = '/'
 	then
-            SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found:$(($i-$last_found))}"
+            SPLITPATH[$SPLITCOUNT]=${PATHNAME:$last_found:$(($i-$last_found))}
             let ++SPLITCOUNT
 	    let ++i
             mbfl_string_skip "$PATHNAME" i '/'
             last_found=$i
         fi
     done
-    SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found}"
+    SPLITPATH[$SPLITCOUNT]=${PATHNAME:$last_found}
     let ++SPLITCOUNT
     return 0
 }
@@ -334,9 +334,9 @@ function mbfl_file_strip_trailing_slash_var () {
     done
     if ((0 == i))
     then result='.'
-    else result="${PATHNAME:0:$i}"
+    else result=${PATHNAME:0:$i}
     fi
-    RESULT_VARREF="$result"
+    RESULT_VARREF=$result
 }
 
 function mbfl_file_strip_trailing_slash () {
@@ -364,11 +364,11 @@ function mbfl_file_strip_leading_slash_var () {
 	done
 	if ((len == i))
 	then result='.'
-	else result="${PATHNAME:$i}"
+	else result=${PATHNAME:$i}
 	fi
-    else result="$PATHNAME"
+    else result=$PATHNAME
     fi
-    RESULT_VARREF="$result"
+    RESULT_VARREF=$result
 }
 
 function mbfl_file_strip_leading_slash () {
@@ -387,17 +387,17 @@ function mbfl_file_normalise_var () {
     mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     mbfl_optional_parameter(PREFIX, 3)
-    local dirname tailame result ORGPWD="$PWD"
+    local dirname tailame result ORGPWD=$PWD
 
     if mbfl_file_is_absolute "$PATHNAME"
     then
 	mbfl_p_file_normalise1_var result "$PATHNAME"
-	RESULT_VARREF="$result"
+	RESULT_VARREF=$result
     elif mbfl_file_is_directory "$PREFIX"
     then
-        PATHNAME="${PREFIX}/${PATHNAME}"
+        PATHNAME=${PREFIX}/${PATHNAME}
         mbfl_p_file_normalise1_var result "$PATHNAME"
-	RESULT_VARREF="$result"
+	RESULT_VARREF=$result
     elif test -n "$PREFIX"
     then
 	local PATHNAME1 PATHNAME2
@@ -407,7 +407,7 @@ function mbfl_file_normalise_var () {
         printf -v RESULT_VARREF '%s/%s' "$PREFIX" "$PATHNAME2"
     else
 	mbfl_p_file_normalise1_var result "$PATHNAME"
-	RESULT_VARREF="$result"
+	RESULT_VARREF=$result
     fi
     cd "$ORGPWD" >/dev/null
     return 0
@@ -443,19 +443,19 @@ function mbfl_p_file_remove_dots_from_pathname_var () {
                 let --output_counter
                 ;;
             *)
-                output[$output_counter]="${SPLITPATH[$input_counter]}"
+                output[$output_counter]=${SPLITPATH[$input_counter]}
                 let ++output_counter
                 ;;
         esac
     done
     {
 	local -i i
-	PATHNAME="${output[0]}"
+	PATHNAME=${output[0]}
 	for ((i=1; $i < $output_counter; ++i))
-	do PATHNAME+="/${output[$i]}"
+	do PATHNAME+=/${output[$i]}
 	done
     }
-    RESULT_VARREF1="$PATHNAME"
+    RESULT_VARREF1=$PATHNAME
 }
 
 function mbfl_p_file_normalise1_var () {
@@ -482,7 +482,7 @@ function mbfl_p_file_normalise2_var () {
     cd "$PATHNAME" >/dev/null
     if test -n "$TAILNAME"
     then printf -v RESULT_VARREF2 '%s/%s' "$PWD" "$TAILNAME"
-    else RESULT_VARREF2="$PWD"
+    else RESULT_VARREF2=$PWD
     fi
     cd - >/dev/null
 }
@@ -562,14 +562,14 @@ function mbfl_file_find_tmpdir_var () {
 
     if mbfl_file_directory_is_writable "$TMPDIR"
     then
-        RESULT_VARREF="$TMPDIR"
+        RESULT_VARREF=$TMPDIR
         return 0
     elif test -n "$USER"
     then
-        TMPDIR="/tmp/${USER}"
+        TMPDIR=/tmp/${USER}
         if mbfl_file_directory_is_writable "$TMPDIR"
 	then
-            RESULT_VARREF="$TMPDIR"
+            RESULT_VARREF=$TMPDIR
             return 0
 	else return 1
 	fi
@@ -577,7 +577,7 @@ function mbfl_file_find_tmpdir_var () {
 	TMPDIR=/tmp
 	if mbfl_file_directory_is_writable "$TMPDIR"
 	then
-            RESULT_VARREF="$TMPDIR"
+            RESULT_VARREF=$TMPDIR
             return 0
 	else
 	    mbfl_message_error 'cannot find usable value for "TMPDIR"'
@@ -615,7 +615,7 @@ function mbfl_exec_rm () {
 }
 function mbfl_file_remove () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local FLAGS="--force --recursive"
+    local FLAGS='--force --recursive'
     if ! mbfl_option_test
     then
         if ! mbfl_file_exists "$PATHNAME"
@@ -628,7 +628,7 @@ function mbfl_file_remove () {
 }
 function mbfl_file_remove_file () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local FLAGS="--force"
+    local FLAGS='--force'
     if ! mbfl_option_test
     then
         if ! mbfl_file_is_file "$PATHNAME"
@@ -641,7 +641,7 @@ function mbfl_file_remove_file () {
 }
 function mbfl_file_remove_symlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local FLAGS="--force"
+    local FLAGS='--force'
     if ! mbfl_option_test
     then
         if ! mbfl_file_is_symlink "$PATHNAME"
@@ -654,7 +654,7 @@ function mbfl_file_remove_symlink () {
 }
 function mbfl_file_remove_file_or_symlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    local FLAGS="--force"
+    local FLAGS='--force'
     if ! mbfl_option_test
     then
 	if      ! mbfl_file_is_file    "$PATHNAME" ||
