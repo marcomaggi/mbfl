@@ -9,7 +9,7 @@
 #       This file is a collection of functions used to interact to the
 #       user at the console.
 #
-# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -34,8 +34,9 @@ function mbfl_dialog_enable_programs () {
 function mbfl_dialog_yes_or_no () {
     mbfl_mandatory_parameter(STRING, 1, prompt string)
     mbfl_optional_parameter(PROGNAME, 2, ${script_PROGNAME})
-    local PROMPT="${PROGNAME}: ${STRING}? (yes/no) "
-    local ANS=
+    local PROMPT ANS
+    printf -v PROMPT '%s: %s? (yes/no) ' "$PROGNAME" "$STRING"
+
     while IFS= read -r -e -p "$PROMPT" ANS && \
         test "$ANS" != 'yes' -a "$ANS" != 'no'
     do echo "${PROGNAME}: please answer yes or no."
@@ -45,7 +46,7 @@ function mbfl_dialog_yes_or_no () {
 function mbfl_dialog_ask_password () {
     mbfl_mandatory_parameter(PROMPT, 1, prompt)
     local PASSWORD= STTY=
-    STTY=$(mbfl_program_found stty) || exit $?
+    mbfl_program_found_var STTY stty || exit $?
     echo -n "${prompt}: " >&2
     "$STTY" cbreak -echo </dev/tty >/dev/tty 2>&1
     IFS= read -rs PASSWORD
