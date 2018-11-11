@@ -12,7 +12,7 @@
 #         Support for encoded argument values is provided and requires
 #       the "encode.sh" file to be included in the script.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -257,7 +257,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
     mbfl_mandatory_parameter(OPT, 1, option name)
     local i=0
 
-    case "${OPT}" in
+    case $OPT in
 	encoded-args)
             mbfl_set_option_encoded_args
 	    ;;
@@ -332,7 +332,7 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
         exit_because_invalid_option_argument
     fi
     mbfl_option_encoded_args && OPTARG=$(mbfl_decode_hex "${OPTARG}")
-    case "${OPT}" in
+    case $OPT in
         tmpdir)
             mbfl_option_TMPDIR="${OPTARG}"
             ;;

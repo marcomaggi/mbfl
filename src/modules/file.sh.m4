@@ -422,7 +422,7 @@ function mbfl_p_file_remove_dots_from_pathname_var () {
     mbfl_file_split "$PATHNAME"
     for ((input_counter=0, output_counter=0; input_counter < SPLITCOUNT; ++input_counter))
     do
-        case "${SPLITPATH[$input_counter]}" in
+        case ${SPLITPATH[$input_counter]} in
             '.')
             ;;
             '..')
@@ -1260,7 +1260,7 @@ function mbfl_p_file_compress_gzip () {
     local COMPRESSOR FLAGS='--force' DEST
 
     mbfl_program_found_var COMPRESSOR gzip || exit $?
-    case "$COMPRESS" in
+    case $COMPRESS in
         compress)
             printf -v DEST '%s.gz' "$SOURCE"
             ;;
@@ -1304,7 +1304,7 @@ function mbfl_p_file_compress_bzip2 () {
     local COMPRESSOR FLAGS='--force' DEST
 
     mbfl_program_found_var COMPRESSOR bzip2 || exit $?
-    case "$COMPRESS" in
+    case $COMPRESS in
         compress)
             printf -v DEST '%s.bz2' "$SOURCE"
             FLAGS+=' --compress'
@@ -1349,7 +1349,7 @@ function mbfl_p_file_compress_lzip () {
     local COMPRESSOR FLAGS='--force' DEST
 
     mbfl_program_found_var COMPRESSOR lzip || exit $?
-    case "$COMPRESS" in
+    case $COMPRESS in
         compress)
             printf -v DEST '%s.lz' "$SOURCE"
             ;;
@@ -1393,7 +1393,7 @@ function mbfl_p_file_compress_xz () {
     local COMPRESSOR FLAGS='--force' DEST
 
     mbfl_program_found_var COMPRESSOR xz || exit $?
-    case "$COMPRESS" in
+    case $COMPRESS in
         compress)
             printf -v DEST '%s.xz' "$SOURCE"
             ;;

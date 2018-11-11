@@ -333,7 +333,7 @@ function mbfl_main_print_version_number_only () {
     exit_success
 }
 function mbfl_main_print_license () {
-    case "$script_LICENSE" in
+    case $script_LICENSE in
         GPL|GPL2)
             echo -e "$mbfl_message_LICENSE_GPL"
             ;;
