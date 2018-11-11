@@ -60,7 +60,16 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017, 2018
+@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017-2018
+
+@c ------------------------------------------------------------------------
+
+@set REQUIRED_BASH_VERSION      4.3
+
+@set GITHUB_URL                 @url{https://github.com/marcomaggi/@value{PACKAGE_NICKNAME}}
+@set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}}
+@set DOWNLOAD_URL               @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}/downloads}
+@set DOCUMENTATION_URL          @url{https://marcomaggi.github.io/docs/@value{PACKAGE_NICKNAME}.html}
 
 @c page
 @c ------------------------------------------------------------
@@ -69,25 +78,22 @@
 
 @copying
 This document describes version @value{VERSION} of @value{PACKAGE}, a library of functions for the
-@gnu{} Bash shell.  The package is distributed under the terms of the @gnu{} Lesser General Public
-License (@lgpl{}); the home page is at:
+@gnu{} Bash shell.  It requires Bash at least version @value{REQUIRED_BASH_VERSION}.  The package is
+distributed under the terms of the @gnu{} Lesser General Public License (@lgpl{}).
 
-@center @url{https://marcomaggi.github.com/mbfl.html}
+The latest release can be downloaded from:
+
+@center @value{DOWNLOAD_URL}
 
 @noindent
 development takes place at:
 
-@center @url{https://github.com/marcomaggi/mbfl/}
+@center @value{GITHUB_URL}
 
 @noindent
 and as backup at:
 
-@center @url{https://bitbucket.org/marcomaggi/mbfl}
-
-@noindent
-proper release tarballs for this package are in the download area at:
-
-@center @url{https://bitbucket.org/marcomaggi/mbfl/downloads/}
+@center @value{BITBUCKET_URL}
 
 @noindent
 Copyright @copyright{} @value{COPYRIGHT_YEARS} by @value{AUTHOR} @value{AUTHOR_EMAIL}
@@ -184,9 +190,9 @@ Indexes
 
 This document describes version @value{VERSION} of @value{PACKAGE}, a library of functions for the
 @gnu{} Bash shell.  This package is an attempt to make @gnu{} Bash a viable solution for medium
-sized scripts; it needs at least Bash version 4.  A set of modules implementing common operations
-and a script template are offered by this package and the author has used them with success in
-implementing non--small scripts.
+sized scripts; it needs at least Bash version @value{REQUIRED_BASH_VERSION}.  A set of modules
+implementing common operations and a script template are offered by this package and the author has
+used them with success in implementing non--small scripts.
 
 The philosophy of @mbfl{} is to do the work as much as possible without external commands.  For
 example: string manipulation is done using the special variable substitution provided by Bash, and
@@ -6628,10 +6634,28 @@ be equal to the ones of the source buffer.
 @xref{Top,bash,@gnu{} Bash,@gnu{} Bash}.
 
 
+The documentation of @value{PACKAGE} is available online:
+
+@center @value{DOCUMENTATION_URL}
+
+@noindent
+the latest release of this package can be downloaded from:
+
+@center @value{DOWNLOAD_URL}
+
+@noindent
+development takes place at:
+
+@center @value{GITHUB_URL}
+
+@noindent
+and as backup at:
+
+@center @value{BITBUCKET_URL}
+
 Lots of interesting stuff at the following site:
 
 @center @url{http://www.bash-hackers.org/wiki/}
-
 
 @c page
 @node concept index

@@ -7,7 +7,7 @@
 
 The MBFL  is a  collection of  shell functions for  the GNU  Bash shell.
 This package  is an attempt  to make Bash  a viable solution  for medium
-sized scripts; it needs at least Bash version 4.
+sized scripts; it needs at least Bash version 4.3.
 
 The package uses the GNU Autotools and it is tested, using Travis CI, on
 both Ubuntu GNU+Linux systems and OS X systems.
@@ -140,10 +140,6 @@ Pull Requests feature at the project's GitHub site.
 The GNU Project software can be found here:
 
 [https://www.gnu.org/](https://www.gnu.org/)
-
-the MBFL home page is at:
-
-[https://marcomaggi.github.com/mbfl.html](https://marcomaggi.github.com/mbfl.html)
 
 development takes place at:
 
