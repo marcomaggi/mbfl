@@ -36,18 +36,16 @@ function mbfl_system_enable_programs () {
 function mbfl_system_numerical_user_id_to_name () {
     local GREP CUT RESULT
     mbfl_mandatory_parameter(ID, 1, numerical user id)
-    GREP=$(mbfl_program_found grep) || exit $?
-    CUT=$(mbfl_program_found cut)   || exit $?
-    mbfl_program_exec "$GREP" "^[^:]\+:[^:]\+:${ID}:" /etc/passwd | \
-        mbfl_program_exec "$CUT" -d: -f1
+    mbfl_program_found_var GREP grep || exit $?
+    mbfl_program_found_var CUT cut   || exit $?
+    mbfl_program_exec "$GREP" "^[^:]\+:[^:]\+:${ID}:" /etc/passwd | mbfl_program_exec "$CUT" -d: -f1
 }
 function mbfl_system_user_name_to_numerical_id () {
     local GREP CUT
     mbfl_mandatory_parameter(NAME, 1, user name)
-    GREP=$(mbfl_program_found grep) || exit $?
-    CUT=$(mbfl_program_found cut)   || exit $?
-    mbfl_program_exec "$GREP" "^${NAME}" /etc/passwd | \
-        mbfl_program_exec "$CUT" -d: -f3
+    mbfl_program_found_var GREP grep || exit $?
+    mbfl_program_found_var CUT cut   || exit $?
+    mbfl_program_exec "$GREP" "^${NAME}" /etc/passwd | mbfl_program_exec "$CUT" -d: -f3
 }
 
 #page

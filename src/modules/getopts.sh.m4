@@ -31,11 +31,10 @@
 #
 
 #PAGE
-## ------------------------------------------------------------
-## Global variables.
-## ------------------------------------------------------------
+#### global variables
 
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" = 'yes'
+then
     declare -i mbfl_getopts_INDEX=0
     declare -a mbfl_getopts_KEYWORDS
     declare -a mbfl_getopts_DEFAULTS
@@ -43,7 +42,7 @@ test "$mbfl_INTERACTIVE" = yes || {
     declare -a mbfl_getopts_LONGS
     declare -a mbfl_getopts_HASARG
     declare -a mbfl_getopts_DESCRIPTION
-}
+fi
 
 #page
 ## ------------------------------------------------------------

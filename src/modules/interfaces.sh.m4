@@ -58,10 +58,11 @@ function mbfl_at_select_queue () {
     mbfl_p_at_queue_letter=${QUEUE}
 }
 function mbfl_at_schedule () {
-    local AT QUEUE=${mbfl_p_at_queue_letter}
     mbfl_mandatory_parameter(SCRIPT, 1, script)
     mbfl_mandatory_parameter(TIME, 2, time)
-    AT=$(mbfl_program_found at) || exit $?
+    local AT QUEUE=${mbfl_p_at_queue_letter}
+
+    mbfl_program_found_var AT at || exit $?
     # The return code of this function is the return code of the
     # following pipe.
     printf %s "$SCRIPT" | {
