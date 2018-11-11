@@ -242,7 +242,7 @@ function mbfl_string_split () {
     for ((i=0; $i < ${#STRING}; ++i))
     do
         test $(($i+${#SEPARATOR})) -gt ${#STRING} && break
-        mbfl_string_equal_substring "${STRING}" $i "${SEPARATOR}" && {
+        mbfl_string_equal_substring "$STRING" $i "$SEPARATOR" && {
             # here $i is the index of the first char in the separator
             SPLITFIELD[$k]=${STRING:$first:$(($i-$first))}
             let ++k
@@ -296,33 +296,33 @@ function mbfl_string_greater_or_equal () {
 #page
 function mbfl_string_is_alpha_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
-    ! test \( "${CHAR}" \< A -o Z \< "${CHAR}" \) -a \( "${CHAR}" \< a -o z \< "${CHAR}" \)
+    ! test \( "$CHAR" \< A -o Z \< "$CHAR" \) -a \( "$CHAR" \< a -o z \< "$CHAR" \)
 }
 function mbfl_string_is_digit_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
-    ! test "${CHAR}" \< 0 -o 9 \< "${CHAR}"
+    ! test "$CHAR" \< 0 -o 9 \< "$CHAR"
 }
 function mbfl_string_is_alnum_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
-    mbfl_string_is_alpha_char "${CHAR}" || mbfl_string_is_digit_char "${CHAR}"
+    mbfl_string_is_alpha_char "$CHAR" || mbfl_string_is_digit_char "$CHAR"
 }
 function mbfl_string_is_name_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
-    mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = _
+    mbfl_string_is_alnum_char "$CHAR" || test "$CHAR" = _
 }
 function mbfl_string_is_identifier_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
-    mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = '_' -o "${CHAR}" = '-'
+    mbfl_string_is_alnum_char "$CHAR" || test "$CHAR" = '_' -o "$CHAR" = '-'
 }
 function mbfl_string_is_extended_identifier_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
-    mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = '_' -o "${CHAR}" = '-' -o "${CHAR}" = '.'
+    mbfl_string_is_alnum_char "$CHAR" || test "$CHAR" = '_' -o "$CHAR" = '-' -o "$CHAR" = '.'
 }
 function mbfl_string_is_noblank_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
-    test \( "${CHAR}" != " " \) -a \
-	\( "${CHAR}" != $'\n' \) -a \( "${CHAR}" != $'\r' \) -a \
-	\( "${CHAR}" != $'\t' \) -a \( "${CHAR}" != $'\f' \)
+    test \( "$CHAR" != " " \) -a \
+	\( "$CHAR" != $'\n' \) -a \( "$CHAR" != $'\r' \) -a \
+	\( "$CHAR" != $'\t' \) -a \( "$CHAR" != $'\f' \)
 }
 for class in alpha digit alnum noblank ; do
     alias "mbfl_string_is_${class}"="mbfl_p_string_is $class"
@@ -344,14 +344,14 @@ function mbfl_string_is_name () {
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
     test -n "$STRING" && \
-	mbfl_p_string_is name "${STRING}" && ! mbfl_string_is_digit "${STRING:0:1}"
+	mbfl_p_string_is name "$STRING" && ! mbfl_string_is_digit "${STRING:0:1}"
 }
 function mbfl_string_is_identifier () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
     test -n "$STRING" && \
-	mbfl_p_string_is identifier "${STRING}"		\
+	mbfl_p_string_is identifier "$STRING"		\
 	&& ! mbfl_string_is_digit "${STRING:0:1}"	\
 	&& ! test "${STRING:0:1}" = '-'
 }
@@ -360,7 +360,7 @@ function mbfl_string_is_extended_identifier () {
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
     test -n "$STRING" && \
-	mbfl_p_string_is extended_identifier "${STRING}"	\
+	mbfl_p_string_is extended_identifier "$STRING"	\
 	&& ! mbfl_string_is_digit "${STRING:0:1}"		\
 	&& ! test "${STRING:0:1}" = '-'
 }
@@ -369,7 +369,7 @@ function mbfl_string_is_username () {
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
     test -n "$STRING" && \
-	mbfl_string_is_identifier "${STRING}"
+	mbfl_string_is_identifier "$STRING"
 }
 #page
 function mbfl_string_replace () {
@@ -388,10 +388,10 @@ function mbfl_string_skip () {
 }
 #page
 function mbfl_string_toupper () {
-    mbfl_p_string_uplo toupper "${1}"
+    mbfl_p_string_uplo toupper "$1"
 }
 function mbfl_string_tolower () {
-    mbfl_p_string_uplo tolower "${1}"
+    mbfl_p_string_uplo tolower "$1"
 }
 function mbfl_p_string_uplo () {
     mbfl_mandatory_parameter(MODE, 1, mode)
@@ -408,7 +408,7 @@ function mbfl_p_string_uplo () {
           flag=1
       else
           upper=$ch
-          if test "${MODE}" = toupper
+          if test "$MODE" = toupper
           then STRING=${STRING//$lower/$upper}
           else STRING=${STRING//$upper/$lower}
           fi
@@ -424,8 +424,8 @@ function mbfl_sprintf () {
     mbfl_mandatory_parameter(FORMAT,  2, format)
     local OUTPUT=
     shift 2
-    OUTPUT=$(printf "$FORMAT" "$@")
-    eval "${VARNAME}"=\'"${OUTPUT}"\'
+    printf -v OUTPUT "$FORMAT" "$@"
+    eval "$VARNAME"=\'"$OUTPUT"\'
 }
 
 ### end of file

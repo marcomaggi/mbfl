@@ -204,7 +204,7 @@ function mbfl_actions_dispatch () {
 
     # It  is an  error if  this function  is called  with an  action set
     # identifier specifying a non-existent action set.
-    if ! mbfl_actions_set_exists "${ACTION_SET}"
+    if ! mbfl_actions_set_exists "$ACTION_SET"
     then
         mbfl_message_error "invalid action identifier: \"${ACTION_SET}\""
         return 1
@@ -221,7 +221,7 @@ function mbfl_actions_dispatch () {
     local ACTION_SUBSET=${mbfl_action_sets_SUBSETS[${KEY}]}
     local ACTION_KEYWORD=${mbfl_action_sets_KEYWORDS[${KEY}]}
     #mbfl_message_debug "processing argument '$IDENTIFIER' for action selection"
-    if test -z "${ACTION_KEYWORD}"
+    if test -z "$ACTION_KEYWORD"
     then
         # The next  argument from  the command line  is *not*  an action
         # identifier:  just leave  it alone.   We accept  the previously
@@ -236,12 +236,12 @@ function mbfl_actions_dispatch () {
         mbfl_main_set_after_parsing_options  "script_after_parsing_options_$ACTION_KEYWORD"
         mbfl_main_set_main "script_action_$ACTION_KEYWORD"
         mbfl_action_sets_SELECTED_SET=$ACTION_SUBSET
-        if test "${ACTION_SUBSET}" != NONE
+        if test "$ACTION_SUBSET" != NONE
         then
             # The selected action has a  subset of actions: dispatch the
             # subset.
             #mbfl_message_debug "argument '$IDENTIFIER' is an action identifier with action subset"
-            mbfl_actions_dispatch "${ACTION_SUBSET}"
+            mbfl_actions_dispatch "$ACTION_SUBSET"
         else
             # The selected  action has *no*  subset of actions: it  is a
             # leaf  in  the actions  tree.   Stop  recursing and  return
@@ -276,7 +276,7 @@ function mbfl_actions_print_usage_screen () {
 	do
 	    KEY=${ACTION_SET}-${ACTION_IDENTIFIER}
 	    printf '\t%s [options] [arguments]\n\t\t%s\n\n' \
-		"${ACTION_IDENTIFIER}" "${mbfl_action_sets_DESCRIPTIONS[${KEY}]}"
+		"$ACTION_IDENTIFIER" "${mbfl_action_sets_DESCRIPTIONS[${KEY}]}"
 	done
     fi
     return 0

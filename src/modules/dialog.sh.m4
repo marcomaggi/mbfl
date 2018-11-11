@@ -52,7 +52,7 @@ function mbfl_dialog_ask_password () {
     IFS= read -rs PASSWORD
     "$STTY" -cbreak echo </dev/tty >/dev/tty 2>&1
     echo >&2
-    printf %s "${PASSWORD}"
+    printf %s "$PASSWORD"
 }
 
 ### end of file

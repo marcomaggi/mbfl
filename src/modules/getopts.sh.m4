@@ -143,9 +143,9 @@ function mbfl_declare_option () {
     # Process action option.
     if test ${keyword:0:7} = ACTION_
     then
-        if test "${hasarg}" = noarg
+        if test "$hasarg" = noarg
         then
-            if test "${default}" = yes
+            if test "$default" = yes
             then mbfl_main_set_main script_$(mbfl_string_tolower $keyword)
             fi
         else
@@ -177,22 +177,22 @@ function mbfl_getopts_parse () {
         then
             ARGV[$ARGC]=${argument}
             let ++ARGC
-        elif test "${argument}" = '--'
+        elif test "$argument" = '--'
         then found_end_of_options_delimiter=1
         elif \
-            mbfl_getopts_isbrief "${argument}" p_OPT || \
-            mbfl_getopts_islong  "${argument}" p_OPT
+            mbfl_getopts_isbrief "$argument" p_OPT || \
+            mbfl_getopts_islong  "$argument" p_OPT
         then
-            mbfl_getopts_p_process_predefined_option_no_arg "${p_OPT}"
+            mbfl_getopts_p_process_predefined_option_no_arg "$p_OPT"
             retval=$?
             if test $retval != 0
             then return $retval
             fi
         elif \
-            mbfl_getopts_isbrief_with "${argument}" p_OPT p_OPTARG || \
-            mbfl_getopts_islong_with  "${argument}" p_OPT p_OPTARG
+            mbfl_getopts_isbrief_with "$argument" p_OPT p_OPTARG || \
+            mbfl_getopts_islong_with  "$argument" p_OPT p_OPTARG
         then
-            mbfl_getopts_p_process_predefined_option_with_arg "${p_OPT}" "${p_OPTARG}"
+            mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
             retval=$?
             if test $retval != 0
             then return $retval
@@ -234,7 +234,7 @@ function mbfl_getopts_p_process_script_option () {
                   return 1
               fi
               if mbfl_option_encoded_args
-              then value=$(mbfl_decode_hex "${OPTARG}")
+              then value=$(mbfl_decode_hex "$OPTARG")
               else value=$OPTARG
               fi
           else value=yes
@@ -244,7 +244,7 @@ function mbfl_getopts_p_process_script_option () {
               mbfl_main_set_main script_${tolower_keyword}
           update_procedure=script_option_update_${tolower_keyword}
           state_variable=script_option_${keyword}
-          eval ${state_variable}=\'"${value}"\'
+          eval ${state_variable}=\'"$value"\'
           mbfl_invoke_script_function ${update_procedure}
           return 0
         }
@@ -315,7 +315,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
             mbfl_main_set_private_main mbfl_getopts_print_long_switches
             ;;
 	*)
-            mbfl_getopts_p_process_script_option "${OPT}"
+            mbfl_getopts_p_process_script_option "$OPT"
             return $?
 	    ;;
     esac
@@ -331,21 +331,21 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
         mbfl_message_error "empty value given to option \"${OPT}\" requiring argument"
         exit_because_invalid_option_argument
     fi
-    mbfl_option_encoded_args && OPTARG=$(mbfl_decode_hex "${OPTARG}")
+    mbfl_option_encoded_args && OPTARG=$(mbfl_decode_hex "$OPTARG")
     case $OPT in
         tmpdir)
             mbfl_option_TMPDIR=${OPTARG}
             ;;
         print-exit-code)
-            mbfl_main_print_exit_code "${OPTARG}"
+            mbfl_main_print_exit_code "$OPTARG"
             exit 0
         ;;
         print-exit-code-names|print-exit-code-name)
-            mbfl_main_print_exit_code_names "${OPTARG}"
+            mbfl_main_print_exit_code_names "$OPTARG"
             exit 0
         ;;
 	*)
-	    mbfl_getopts_p_process_script_option "${OPT}" "${OPTARG}"
+	    mbfl_getopts_p_process_script_option "$OPT" "$OPTARG"
             return $?
         ;;
     esac
@@ -374,26 +374,26 @@ function mbfl_getopts_print_usage_screen () {
             printf '\t'
 
             brief=${mbfl_getopts_BRIEFS[$i]}
-            test -n "$brief" && printf -- '-%s%s ' "${brief}" "${brief_hasarg}"
+            test -n "$brief" && printf -- '-%s%s ' "$brief" "$brief_hasarg"
 
             long=${mbfl_getopts_LONGS[$i]}
-            test -n "$long" && printf -- '--%s%s' "${long}" "${long_hasarg}"
+            test -n "$long" && printf -- '--%s%s' "$long" "$long_hasarg"
 
             printf '\n'
 
             description=${mbfl_getopts_DESCRIPTION[$i]}
-            test -z "${description}" && description='undocumented option'
+            test -z "$description" && description='undocumented option'
 
-            printf '\t\t%s\n' "${description}"
+            printf '\t\t%s\n' "$description"
 
             if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
             then
                 item=${mbfl_getopts_DEFAULTS[$i]}
-                if test -n "${item}"
-                then default=$(printf "'%s'" "${item}")
+                if test -n "$item"
+                then default=$(printf "'%s'" "$item")
                 else default='empty'
                 fi
-                printf '\t\t(default: %s)\n' "${default}"
+                printf '\t\t(default: %s)\n' "$default"
             else
                 if test ${mbfl_getopts_KEYWORDS[$i]:0:7} = ACTION_
 		then
@@ -411,7 +411,7 @@ function mbfl_getopts_print_usage_screen () {
     if test ${BRIEF_OR_LONG} = long
     then
 	printf 'Common options:\n'
-	printf "${mbfl_message_DEFAULT_OPTIONS}"
+	printf "$mbfl_message_DEFAULT_OPTIONS"
 	printf '\n'
     fi
 }
@@ -427,7 +427,7 @@ function mbfl_getopts_islong () {
         ch=${ARGUMENT:$i:1}
         mbfl_p_getopts_not_char_in_long_option_name "$ch" && return 1
     done
-    mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${ARGUMENT:2}"
+    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2}"
     return 0
 }
 function mbfl_getopts_islong_with () {
@@ -438,12 +438,12 @@ function mbfl_getopts_islong_with () {
 
     # The min length of a long option with is 5 (example: --o=1).
     test $len -lt 5 && return 1
-    equal_position=$(mbfl_string_first "${ARGUMENT}" =)
+    equal_position=$(mbfl_string_first "$ARGUMENT" =)
     test -z "$equal_position" -o $(($equal_position + 1)) = $len && return 1
 
     mbfl_getopts_islong "${ARGUMENT:0:$equal_position}" || return 1
-    mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${ARGUMENT:2:$(($equal_position - 2))}"
-    mbfl_set_maybe "${VALUE_VARIABLE_NAME}"  "${ARGUMENT:$(($equal_position + 1))}"
+    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2:$(($equal_position - 2))}"
+    mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "${ARGUMENT:$(($equal_position + 1))}"
     return 0
 }
 function mbfl_p_getopts_not_char_in_long_option_name () {
@@ -465,7 +465,7 @@ function mbfl_getopts_isbrief () {
     mbfl_p_getopts_not_char_in_brief_option_name \
         "${COMMAND_LINE_ARGUMENT:1:1}" && return 1
 
-    mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${COMMAND_LINE_ARGUMENT:1}"
+    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${COMMAND_LINE_ARGUMENT:1}"
     return 0
 }
 function mbfl_getopts_isbrief_with () {
@@ -479,9 +479,9 @@ function mbfl_getopts_isbrief_with () {
     mbfl_p_getopts_not_char_in_brief_option_name \
         "${COMMAND_LINE_ARGUMENT:1:1}" && return 1
 
-    mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${COMMAND_LINE_ARGUMENT:1:1}"
+    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${COMMAND_LINE_ARGUMENT:1:1}"
     local QUOTED_VALUE=$(mbfl_string_quote "${COMMAND_LINE_ARGUMENT:2}")
-    mbfl_set_maybe "${VALUE_VARIABLE_NAME}" "${QUOTED_VALUE}"
+    mbfl_set_maybe "$VALUE_VARIABLE_NAME" "$QUOTED_VALUE"
     return 0
 }
 function mbfl_p_getopts_not_char_in_brief_option_name () {
@@ -531,7 +531,7 @@ function mbfl_argv_all_files () {
     for ((i=0; $i < $ARGC; ++i))
     do
 	item=$(mbfl_file_normalise "${ARGV[$i]}")
-	test -f "${item}" || {
+	test -f "$item" || {
 	    mbfl_message_error "unexistent file '${item}'"
 	    return 1
         }
@@ -564,8 +564,8 @@ function mbfl_getopts_print_long_switches () {
 #     for ((i=0; $i < ${mbfl_getopts_actargs_INDEX}; ++i))
 #     do
 #         argument=${mbfl_getopts_actargs_STRINGS[$i]}
-#         if test -n "${argument}"
-#         then echo -n "${argument}"
+#         if test -n "$argument"
+#         then echo -n "$argument"
 #         else continue
 #         fi
 #         test $(($i+1)) -lt ${mbfl_getopts_actargs_INDEX} && echo -n ' '
