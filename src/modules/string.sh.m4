@@ -70,9 +70,10 @@ function mbfl_string_quote_var () {
 }
 function mbfl_string_quote () {
     mbfl_optional_parameter(STRING, 1)
-    local RESULT_NAMEVAR
-    if mbfl_string_quote_var RESULT_NAMEVAR "$STRING"
-    then printf '%s\n' "$RESULT_NAMEVAR"
+    local RESULT_VARNAME
+    if mbfl_string_quote_var RESULT_VARNAME "$STRING"
+    then printf '%s\n' "$RESULT_VARNAME"
+    else return $?
     fi
 }
 
@@ -127,11 +128,12 @@ function mbfl_string_first () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(CHAR, 2, char)
     mbfl_optional_parameter(BEGIN, 3)
-    local RV
+    local RESULT_VARNAME
     # Be  careful  to  return  the  same exit  status  of  the  call  to
     # "mbfl_string_first_var".
-    if mbfl_string_first_var RV "$STRING" "$CHAR" "$BEGIN"
-    then printf '%s\n' "$RV"
+    if mbfl_string_first_var RESULT_VARNAME "$STRING" "$CHAR" "$BEGIN"
+    then printf '%s\n' "$RESULT_VARNAME"
+    else return $?
     fi
 }
 
@@ -157,11 +159,12 @@ function mbfl_string_last () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(CHAR, 2, char)
     mbfl_optional_parameter(BEGIN, 3)
-    local RV
+    local RESULT_VARNAME
     # Be  careful  to  return  the  same exit  status  of  the  call  to
     # "mbfl_string_last_var".
-    if mbfl_string_last_var RV "$STRING" "$CHAR" "$BEGIN"
-    then printf '%s\n' "$RV"
+    if mbfl_string_last_var RESULT_VARNAME "$STRING" "$CHAR" "$BEGIN"
+    then printf '%s\n' "$RESULT_VARNAME"
+    else return $?
     fi
 }
 
@@ -191,9 +194,10 @@ function mbfl_string_range () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(BEGIN, 2, begin)
     mbfl_optional_parameter(END, 3)
-    local RV
-    if mbfl_string_range_var RV "$STRING" "$BEGIN" "$END"
-    then printf '%s\n' "$RV"
+    local RESULT_VARNAME
+    if mbfl_string_range_var RESULT_VARNAME "$STRING" "$BEGIN" "$END"
+    then printf '%s\n' "$RESULT_VARNAME"
+    else return $?
     fi
 }
 

@@ -153,8 +153,10 @@ function mbfl_file_extension_var () {
 function mbfl_file_extension () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local RESULT_VARNAME
-    mbfl_file_extension_var RESULT_VARNAME "$PATHNAME"
-    echo "$RESULT_VARNAME"
+    if mbfl_file_extension_var RESULT_VARNAME "$PATHNAME"
+    then echo "$RESULT_VARNAME"
+    else return $?
+    fi
 }
 
 #page
@@ -187,8 +189,10 @@ function mbfl_file_dirname_var () {
 function mbfl_file_dirname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local RESULT_VARNAME
-    mbfl_file_dirname_var RESULT_VARNAME "$PATHNAME"
-    echo "$RESULT_VARNAME"
+    if mbfl_file_dirname_var RESULT_VARNAME "$PATHNAME"
+    then echo "$RESULT_VARNAME"
+    else return $?
+    fi
 }
 
 #page
@@ -253,8 +257,10 @@ function mbfl_file_rootname_var () {
 function mbfl_file_rootname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local RESULT_VARNAME
-    mbfl_file_rootname_var RESULT_VARNAME "$PATHNAME"
-    echo "$RESULT_VARNAME"
+    if mbfl_file_rootname_var RESULT_VARNAME "$PATHNAME"
+    then echo "$RESULT_VARNAME"
+    else return $?
+    fi
 }
 
 #page
@@ -282,8 +288,10 @@ function mbfl_file_tail_var () {
 function mbfl_file_tail () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local RESULT_VARNAME
-    mbfl_file_tail_var RESULT_VARNAME "$PATHNAME"
-    echo "$RESULT_VARNAME"
+    if mbfl_file_tail_var RESULT_VARNAME "$PATHNAME"
+    then echo "$RESULT_VARNAME"
+    else return $?
+    fi
 }
 
 #page
@@ -334,8 +342,10 @@ function mbfl_file_strip_trailing_slash_var () {
 function mbfl_file_strip_trailing_slash () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local RESULT_VARNAME
-    mbfl_file_strip_trailing_slash_var RESULT_VARNAME "$PATHNAME"
-    echo "$RESULT_VARNAME"
+    if mbfl_file_strip_trailing_slash_var RESULT_VARNAME "$PATHNAME"
+    then echo "$RESULT_VARNAME"
+    else return $?
+    fi
 }
 
 ### --------------------------------------------------------------------
@@ -364,8 +374,10 @@ function mbfl_file_strip_leading_slash_var () {
 function mbfl_file_strip_leading_slash () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     local RESULT_VARNAME
-    mbfl_file_strip_leading_slash_var RESULT_VARNAME "$PATHNAME"
-    echo "$RESULT_VARNAME"
+    if mbfl_file_strip_leading_slash_var RESULT_VARNAME "$PATHNAME"
+    then echo "$RESULT_VARNAME"
+    else return $?
+    fi
 }
 
 #page
@@ -405,8 +417,10 @@ function mbfl_file_normalise () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_optional_parameter(PREFIX, 2)
     local RESULT_VARNAME
-    mbfl_file_normalise_var RESULT_VARNAME "$PATHNAME" "$PREFIX"
-    echo "$RESULT_VARNAME"
+    if mbfl_file_normalise_var RESULT_VARNAME "$PATHNAME" "$PREFIX"
+    then echo "$RESULT_VARNAME"
+    else return $?
+    fi
 }
 
 ### --------------------------------------------------------------------
@@ -483,7 +497,7 @@ function mbfl_file_subpathname_var () {
 
     # If BASEDIR ends with a slash: remove it.
     if test "${BASEDIR:$((${#BASEDIR}-1))}" = '/'
-    then BASEDIR="${BASEDIR:0:$((${#BASEDIR}-1))}"
+    then BASEDIR=${BASEDIR:0:$((${#BASEDIR}-1))}
     fi
 
     if test "$PATHNAME" = "$BASEDIR"
@@ -503,10 +517,8 @@ function mbfl_file_subpathname () {
     mbfl_mandatory_parameter(BASEDIR, 2, base directory)
     local RESULT_VARNAME
     if mbfl_file_subpathname_var RESULT_VARNAME "$PATHNAME" "$BASEDIR"
-    then
-	echo "$RESULT_VARNAME"
-	return 0
-    else return 1
+    then echo "$RESULT_VARNAME"
+    else return $?
     fi
 }
 
@@ -578,10 +590,8 @@ function mbfl_file_find_tmpdir () {
     mbfl_optional_parameter(TMPDIR, 1, "$mbfl_option_TMPDIR")
     local RESULT_VARNAME
     if mbfl_file_find_tmpdir_var RESULT_VARNAME "$TMPDIR"
-    then
-	echo "$RESULT_VARNAME"
-	return 0
-    else return 1
+    then echo "$RESULT_VARNAME"
+    else return $?
     fi
 }
 
