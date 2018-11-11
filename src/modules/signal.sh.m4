@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -58,23 +58,23 @@ function mbfl_signal_attach () {
     signum=$(mbfl_signal_map_signame_to_signum "$SIGSPEC") || return 1
     if test -z ${mbfl_signal_HANDLERS[$signum]}
     then mbfl_signal_HANDLERS[$signum]=$HANDLER
-    else mbfl_signal_HANDLERS[$signum]="${mbfl_signal_HANDLERS[$signum]}:$HANDLER"
+    else mbfl_signal_HANDLERS[$signum]=${mbfl_signal_HANDLERS[$signum]}:$HANDLER
     fi
     mbfl_message_debug "attached '$HANDLER' to signal $SIGSPEC"
     trap -- "mbfl_signal_invoke_handlers $signum" $signum
 }
 function mbfl_signal_invoke_handlers () {
     mbfl_mandatory_parameter(SIGNUM, 1, signal number)
-    local handler ORGIFS="$IFS"
+    local handler ORGIFS=$IFS
     mbfl_message_debug "received signal 'SIG$(kill -l $SIGNUM)'"
     IFS=:
     for handler in ${mbfl_signal_HANDLERS[$SIGNUM]}
     do
-        IFS="$ORGIFS"
+        IFS=$ORGIFS
         mbfl_message_debug "registered handler: $handler"
         test -n "$handler" && eval $handler
     done
-    IFS="$ORGIFS"
+    IFS=$ORGIFS
     return 0
 }
 
