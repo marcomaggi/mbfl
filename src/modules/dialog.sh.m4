@@ -37,22 +37,32 @@ function mbfl_dialog_yes_or_no () {
     local PROMPT ANS
     printf -v PROMPT '%s: %s? (yes/no) ' "$PROGNAME" "$STRING"
 
-    while IFS= read -r -e -p "$PROMPT" ANS && \
-        test "$ANS" != 'yes' -a "$ANS" != 'no'
-    do echo "${PROGNAME}: please answer yes or no."
+    while IFS= read -r -e -p "$PROMPT" ANS && test "$ANS" != 'yes' -a "$ANS" != 'no'
+    do printf '%s: please answer yes or no.\n' "$PROGNAME"
     done
     test "$ANS" = yes
 }
+
 function mbfl_dialog_ask_password () {
-    mbfl_mandatory_parameter(PROMPT, 1, prompt)
-    local PASSWORD= STTY=
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PROMPT, 2, prompt)
+    local PASSWORD STTY
+
     mbfl_program_found_var STTY stty || exit $?
-    echo -n "${prompt}: " >&2
+    printf '%s: ' "prompt" >&2
     "$STTY" cbreak -echo </dev/tty >/dev/tty 2>&1
     IFS= read -rs PASSWORD
     "$STTY" -cbreak echo </dev/tty >/dev/tty 2>&1
     echo >&2
-    printf %s "$PASSWORD"
+    RESULT_VARREF=$PASSWORD
+}
+function mbfl_dialog_ask_password () {
+    mbfl_mandatory_parameter(PROMPT, 1, prompt)
+    local RESULT_VARNAME
+    if mbfl_dialog_ask_password_var RESULT_VARNAME "$PROMPT"
+    then echo "$RV"
+    else return $?
+    fi
 }
 
 ### end of file

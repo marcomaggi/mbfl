@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -27,11 +27,9 @@
 #
 
 #page
-## ------------------------------------------------------------
-## Variables.
-## ------------------------------------------------------------
+#### global variables
 
-mbfl_LOADED='yes'
+declare mbfl_LOADED='yes'
 
 : ${script_PROGNAME:='<unknown>'}
 : ${script_VERSION:='<unknown>'}
@@ -43,9 +41,7 @@ mbfl_LOADED='yes'
 : ${script_EXAMPLES:=}
 
 #page
-## ------------------------------------------------------------
-## Miscellaneous functions.
-## ------------------------------------------------------------
+#### miscellaneous functions
 
 function mbfl_set_maybe () {
     test -n "$1" && eval $1=\'"$2"\'
@@ -60,9 +56,7 @@ function mbfl_read_maybe_null () {
 }
 
 #page
-## ------------------------------------------------------------
-## Global option creation functions.
-## ------------------------------------------------------------
+#### global option creation functions
 
 m4_define([[mbfl_create_option_procedure]],[[
     function mbfl_set_option_$1 ()   { function mbfl_option_$1 () { true;  }; }
@@ -84,7 +78,9 @@ function mbfl_option_test_save () {
     mbfl_unset_option_test
 }
 function mbfl_option_test_restore () {
-    test "$mbfl_save_option_TEST" = "yes" && mbfl_set_option_test
+    if test "$mbfl_save_option_TEST" = "yes"
+    then mbfl_set_option_test
+    fi
 }
 
 ### end of file
