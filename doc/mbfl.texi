@@ -446,6 +446,27 @@ When using @mbfl{} we want to be aware of the following:
 
 @itemize
 @item
+When in doubt about some functions work: we should take a look at the source code.  When doing this
+we must remember that: there is no word splitting when performing variable assignment; so there is
+no need to use double quotes in the following cases:
+
+@example
+alpha=$beta
+alpha=$@{beta:1:3@}
+alpha=$@{beta:-$gamma@}
+alpha=$@{#beta@}
+@end example
+
+There is also no word splitting when evaluating the @var{WORD} in the @code{case} statement; so
+there is no need to use double quotes in the following case:
+
+@example
+case $WORD in
+  ...
+esac
+@end example
+
+@item
 Some functions take a variable name as argument and store in the referenced variable some value; to
 avoid name collision: select a name that starts with @code{p_}.  It is guaranteed that @mbfl{} never
 uses variables with name starting with such a prefix.
