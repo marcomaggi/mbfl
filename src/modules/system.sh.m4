@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2005, 2009, 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -27,9 +27,7 @@
 #
 
 #page
-## ------------------------------------------------------------
-## User id conversion.
-## ------------------------------------------------------------
+#### user id conversion
 
 function mbfl_system_enable_programs () {
     mbfl_declare_program grep
@@ -40,22 +38,20 @@ function mbfl_system_numerical_user_id_to_name () {
     mbfl_mandatory_parameter(ID, 1, numerical user id)
     GREP=$(mbfl_program_found grep) || exit $?
     CUT=$(mbfl_program_found cut)   || exit $?
-    mbfl_program_exec ${GREP} "^[^:]\+:[^:]\+:${ID}:" /etc/passwd | \
-        mbfl_program_exec ${CUT} -d: -f1
+    mbfl_program_exec "$GREP" "^[^:]\+:[^:]\+:${ID}:" /etc/passwd | \
+        mbfl_program_exec "$CUT" -d: -f1
 }
 function mbfl_system_user_name_to_numerical_id () {
     local GREP CUT
     mbfl_mandatory_parameter(NAME, 1, user name)
     GREP=$(mbfl_program_found grep) || exit $?
     CUT=$(mbfl_program_found cut)   || exit $?
-    mbfl_program_exec ${GREP} "^${NAME}" /etc/passwd | \
-        mbfl_program_exec ${CUT} -d: -f3
+    mbfl_program_exec "$GREP" "^${NAME}" /etc/passwd | \
+        mbfl_program_exec "$CUT" -d: -f3
 }
 
 #page
-## ------------------------------------------------------------
-## File permissions.
-## ------------------------------------------------------------
+#### file permissions
 
 declare -a mbfl_symbolic_permissions
 mbfl_symbolic_permissions[0]='---'
@@ -69,17 +65,20 @@ mbfl_symbolic_permissions[7]='rwx'
 
 function mbfl_system_symbolic_to_octal_permissions () {
     mbfl_mandatory_parameter(MODE, 1, symbolic permissions)
+    local -i i
     for ((i=0; $i < 8; ++i))
-    do test "${mbfl_symbolic_permissions[$i]}" = "${MODE}" && {
-            printf "${i}\n"
+    do
+	if test "${mbfl_symbolic_permissions[$i]}" = "$MODE"
+	then
+            printf "%s\n" $i
             return 0
-        }
+        fi
     done
     return 1
 }
 function mbfl_system_octal_to_symbolic_permissions () {
     mbfl_mandatory_parameter(MODE, 1, symbolic permissions)
-    printf "${mbfl_symbolic_permissions[${MODE}]}\n"
+    printf '%s\n' "${mbfl_symbolic_permissions[${MODE}]}"
 }
 
 ### end of file

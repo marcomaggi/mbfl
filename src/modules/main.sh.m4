@@ -31,7 +31,7 @@
 
 if test "$mbfl_INTERACTIVE" != yes
 then
-    mbfl_option_TMPDIR="${TMPDIR:-/tmp/${USER}}"
+    mbfl_option_TMPDIR=${TMPDIR:-/tmp/${USER}}
     declare -r mbfl_ORG_PWD=$PWD
 
     declare -i ARGC=0 ARGC1=0 ARG1ST=0

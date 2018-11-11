@@ -8,7 +8,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2005, 2009, 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -41,17 +41,17 @@ function mbfl_at_enable () {
 }
 function mbfl_at_validate_queue_letter () {
     mbfl_mandatory_parameter(QUEUE, 1, queue letter)
-    test ${#QUEUE} -eq 1 && mbfl_string_is_alpha_char "${QUEUE}"
+    test ${#QUEUE} -eq 1 && mbfl_string_is_alpha_char "$QUEUE"
 }
 function mbfl_at_validate_selected_queue () {
-    mbfl_at_check_queue_letter "${QUEUE}" || {
+    mbfl_at_check_queue_letter "$QUEUE" || {
         mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
         return 1
     }
 }
 function mbfl_at_select_queue () {
     mbfl_mandatory_parameter(QUEUE, 1, queue letter)
-    mbfl_at_validate_queue_letter "${QUEUE}" || {
+    mbfl_at_validate_queue_letter "$QUEUE" || {
         mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
         return 1
     }
@@ -64,7 +64,7 @@ function mbfl_at_schedule () {
     AT=$(mbfl_program_found at) || exit $?
     # The return code of this function is the return code of the
     # following pipe.
-    printf %s "${SCRIPT}" | {
+    printf %s "$SCRIPT" | {
         mbfl_program_redirect_stderr_to_stdout
         mbfl_program_exec "$AT" -q $QUEUE $TIME || {
             mbfl_message_error \
@@ -93,7 +93,7 @@ function mbfl_at_queue_print_queues () {
     local ATQ SORT line
     ATQ=$(mbfl_program_found atq)   || exit $?
     SORT=$(mbfl_program_found sort) || exit $?
-    { mbfl_program_exec "${ATQ}" | while IFS= read -r line
+    { mbfl_program_exec "$ATQ" | while IFS= read -r line
         do
             set -- $line
             printf '%c\n' "$4"
