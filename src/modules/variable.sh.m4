@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -43,21 +43,21 @@ function mbfl_variable_element_is_in_array () {
 function mbfl_variable_colon_variable_to_array () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
     # Here we NEED to save IFS, else it will be left set to ":".
-    local ORGIFS="$IFS"
+    local ORGIFS=$IFS
     IFS=: mbfl_FIELDS=(${!COLON_VARIABLE})
-    IFS="$ORGIFS"
+    IFS=$ORGIFS
 
 # The  following is  an  old version.   It  passed the  test
 # suite.  I am keeping it here just in case.
 #
-#     local ORGIFS="${IFS}" item count=0
+#     local ORGIFS=${IFS} item count=0
 #     IFS=:
 #     for item in ${!COLON_VARIABLE} ; do
-# 	IFS="${ORGIFS}"
-# 	mbfl_FIELDS[${count}]="${item}"
+# 	IFS=${ORGIFS}
+# 	mbfl_FIELDS[${count}]=${item}
 # 	let ++count
 #     done
-#     IFS="${ORGIFS}"
+#     IFS=${ORGIFS}
     return 0
 }
 function mbfl_variable_array_to_colon_variable () {
@@ -88,7 +88,7 @@ function mbfl_variable_colon_variable_drop_duplicate () {
 
     for ((i=0, count=0; $i < $dimension; ++i))
     do
-	item="${FIELDS[$i]}"
+	item=${FIELDS[$i]}
 	mbfl_variable_element_is_in_array "$item" && continue
 	mbfl_FIELDS[$count]=$item
 	let ++count
