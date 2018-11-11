@@ -32,6 +32,172 @@
 #
 
 #page
+#### quoted characters
+
+function mbfl_string_is_quoted_char () {
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_mandatory_integer_parameter(POS, 2, position)
+    local -i COUNT
+    let --POS
+    for ((COUNT=0; POS >= 0; --POS))
+    do
+	if test "${STRING:${POS}:1}" = \\
+        then let ++COUNT
+        else break
+	fi
+    done
+    let ${COUNT}%2
+}
+function mbfl_string_is_equal_unquoted_char () {
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_mandatory_integer_parameter(POS, 2, position)
+    mbfl_mandatory_parameter(CHAR, 3, known char)
+    test "${STRING:${POS}:1}" = "$CHAR" || mbfl_string_is_quoted_char "$STRING" "$POS"
+}
+
+function mbfl_string_quote_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_optional_parameter(STRING, 2)
+    local -i i
+    local ch
+    RESULT_VARREF=
+    for ((i=0; i < ${#STRING}; ++i))
+    do
+        ch="${STRING:$i:1}"
+        test "$ch" = \\ && ch=\\\\
+        RESULT_VARREF+=$ch
+    done
+}
+function mbfl_string_quote () {
+    mbfl_optional_parameter(STRING, 1)
+    local RESULT_NAMEVAR
+    if mbfl_string_quote_var RESULT_NAMEVAR "$STRING"
+    then printf '%s\n' "$RESULT_NAMEVAR"
+    fi
+}
+
+#page
+#### inspecting a string
+
+function mbfl_string_length () {
+    # We  want this  function to  accept empty  strings, so  we use  the
+    # "optional" macro here.
+    mbfl_optional_parameter(STRING, 1)
+    echo ${#STRING}
+}
+function mbfl_string_length_equal_to () {
+    mbfl_mandatory_integer_parameter(LENGTH, 1, length of string)
+    # We  want this  function to  accept empty  strings, so  we use  the
+    # "optional" macro here.
+    mbfl_optional_parameter(STRING, 2)
+    test ${#STRING} -eq $LENGTH
+}
+function mbfl_string_is_empty () {
+    # We  want this  function to  accept empty  strings, so  we use  the
+    # "optional" macro here.
+    mbfl_optional_parameter(STRING, 1)
+    test -z "$STRING"
+}
+function mbfl_string_is_not_empty () {
+    # We  want this  function to  accept empty  strings, so  we use  the
+    # "optional" macro here.
+    mbfl_optional_parameter(STRING, 1)
+    test -n "$STRING"
+}
+
+function mbfl_string_first_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(STRING, 2, string)
+    mbfl_mandatory_parameter(CHAR, 3, char)
+    mbfl_optional_parameter(BEGIN, 4, 0)
+    local -i i
+    for ((i=$BEGIN; i < ${#STRING}; ++i))
+    do
+	if test "${STRING:$i:1}" = "$CHAR"
+	then
+            RESULT_VARREF=$i
+	    # Found!  Return with exit status 0.
+            return 0
+        fi
+    done
+    # Not found!  Return with exit status 1.
+    return 1
+}
+function mbfl_string_first () {
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_mandatory_parameter(CHAR, 2, char)
+    mbfl_optional_parameter(BEGIN, 3)
+    local RV
+    # Be  careful  to  return  the  same exit  status  of  the  call  to
+    # "mbfl_string_first_var".
+    if mbfl_string_first_var RV "$STRING" "$CHAR" "$BEGIN"
+    then printf '%s\n' "$RV"
+    fi
+}
+
+function mbfl_string_last_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(STRING, 2, string)
+    mbfl_mandatory_parameter(CHAR, 3, char)
+    mbfl_optional_parameter(BEGIN, 4)
+    local -i i
+    for ((i=${BEGIN:-((${#STRING}-1))}; i >= 0; --i))
+    do
+	if test "${STRING:$i:1}" = "$CHAR"
+	then
+	    # Found!  Return with exit status 0.
+            RESULT_VARREF=$i
+	    return 0
+        fi
+    done
+    # Not found!  Return with exit status 1.
+    return 1
+}
+function mbfl_string_last () {
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_mandatory_parameter(CHAR, 2, char)
+    mbfl_optional_parameter(BEGIN, 3)
+    local RV
+    # Be  careful  to  return  the  same exit  status  of  the  call  to
+    # "mbfl_string_last_var".
+    if mbfl_string_last_var RV "$STRING" "$CHAR" "$BEGIN"
+    then printf '%s\n' "$RV"
+    fi
+}
+
+function mbfl_string_index_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(STRING, 2, string)
+    mbfl_mandatory_parameter(INDEX, 3, index)
+    RESULT_VARREF=${STRING:$INDEX:1}
+}
+function mbfl_string_index () {
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_mandatory_parameter(INDEX, 2, index)
+    printf "${STRING:$INDEX:1}\n"
+}
+
+function mbfl_string_range_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(STRING, 2, string)
+    mbfl_mandatory_parameter(BEGIN, 3, begin)
+    mbfl_optional_parameter(END, 4)
+    if test -z "$END" -o "$END" = 'end' -o "$END" = 'END'
+    then RESULT_VARREF=${STRING:$BEGIN}
+    else RESULT_VARREF=${STRING:$BEGIN:$END}
+    fi
+}
+function mbfl_string_range () {
+    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_mandatory_parameter(BEGIN, 2, begin)
+    mbfl_optional_parameter(END, 3)
+    local RV
+    if mbfl_string_range_var RV "$STRING" "$BEGIN" "$END"
+    then printf '%s\n' "$RV"
+    fi
+}
+
+#page
 function mbfl_string_chars () {
     mbfl_mandatory_parameter(STRING, 1, string)
     local -i i j
@@ -69,7 +235,7 @@ function mbfl_string_split () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(SEPARATOR, 2, separator)
     local i j k=0 first=0
-    for ((i=0; $i < "${#STRING}"; ++i))
+    for ((i=0; $i < ${#STRING}; ++i))
     do
         test $(($i+${#SEPARATOR})) -gt ${#STRING} && break
         mbfl_string_equal_substring "${STRING}" $i "${SEPARATOR}" && {
@@ -87,62 +253,6 @@ function mbfl_string_split () {
     let ++k
     SPLITCOUNT=$k
     return 0
-}
-#page
-function mbfl_string_first () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_mandatory_parameter(CHAR, 2, char)
-    mbfl_optional_parameter(BEGIN, 3, 0)
-    local i
-    for ((i=$BEGIN; $i < ${#STRING}; ++i))
-    do test "${STRING:$i:1}" = "$CHAR" && {
-            printf "$i\n"
-            return 0
-        }
-    done
-    return 0
-}
-function mbfl_string_last () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_mandatory_parameter(CHAR, 2, char)
-    local i="${3:-${#STRING}}"
-    for ((; $i >= 0; --i))
-    do test "${STRING:$i:1}" = "$CHAR" && {
-            printf "$i\n"
-            return 0
-        }
-    done
-    return 0
-}
-function mbfl_string_index () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_mandatory_parameter(INDEX, 2, index)
-    printf "${STRING:$INDEX:1}\n"
-}
-function mbfl_string_length () {
-    # We  want this  function to  accept empty  strings, so  we use  the
-    # "optional" macro here.
-    mbfl_optional_parameter(STRING, 1)
-    echo ${#STRING}
-}
-function mbfl_string_length_equal_to () {
-    mbfl_mandatory_parameter(LENGTH, 1, length of string)
-    # We  want this  function to  accept empty  strings, so  we use  the
-    # "optional" macro here.
-    mbfl_optional_parameter(STRING, 2)
-    test ${#STRING} -eq $LENGTH
-}
-function mbfl_string_is_empty () {
-    # We  want this  function to  accept empty  strings, so  we use  the
-    # "optional" macro here.
-    mbfl_optional_parameter(STRING, 1)
-    test -z "$STRING"
-}
-function mbfl_string_is_not_empty () {
-    # We  want this  function to  accept empty  strings, so  we use  the
-    # "optional" macro here.
-    mbfl_optional_parameter(STRING, 1)
-    test -n "$STRING"
 }
 #page
 function mbfl_string_equal () {
@@ -219,7 +329,7 @@ function mbfl_p_string_is () {
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$2
     local -i i
-    test "${#STRING}" = 0 && return 1
+    test ${#STRING} = 0 && return 1
     for ((i=0; $i < ${#STRING}; ++i))
     do "mbfl_string_is_${CLASS}_char" "${STRING:$i:1}" || return 1
     done
@@ -258,15 +368,6 @@ function mbfl_string_is_username () {
 	mbfl_string_is_identifier "${STRING}"
 }
 #page
-function mbfl_string_range () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_mandatory_parameter(BEGIN, 2, begin)
-    mbfl_optional_parameter(END, 3)
-    if test -z "$END" -o "$END" = "end" -o "$END" = "END"
-    then printf "${STRING:$BEGIN}\n"
-    else printf "${STRING:$BEGIN:$END}\n"
-    fi
-}
 function mbfl_string_replace () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(PATTERN, 2, pattern)
@@ -292,7 +393,7 @@ function mbfl_p_string_uplo () {
     mbfl_mandatory_parameter(MODE, 1, mode)
     mbfl_optional_parameter(STRING, 2)
     local ch lower upper flag=0
-    test "${#STRING}" = 0 && return 0
+    test ${#STRING} = 0 && return 0
     for ch in \
         a A b B c C d D e E f F g G h H i I j J k K l L m M \
         n N o O p P q Q r R s S t T u U v V w W x X y Y z Z
@@ -321,39 +422,6 @@ function mbfl_sprintf () {
     shift 2
     OUTPUT=$(printf "${FORMAT}" "$@")
     eval "${VARNAME}"=\'"${OUTPUT}"\'
-}
-#page
-function mbfl_string_is_equal_unquoted_char () {
-    local STRING="${1:?missing string parameter to ${FUNCNAME}}"
-    local pos="${2:?missing position parameter to ${FUNCNAME}}"
-    local char="${3:?missing known char parameter to ${FUNCNAME}}"
-    test "${STRING:$pos:1}" = "$char" || mbfl_string_is_quoted_char "$STRING" $pos
-}
-function mbfl_string_is_quoted_char () {
-    local STRING="${1:?missing string parameter to ${FUNCNAME}}"
-    local i="${2:?missing position parameter to ${FUNCNAME}}"
-    local count
-    let --i
-    for ((count=0; $i >= 0; --i))
-      do
-      if test "${STRING:$i:1}" = \\
-          then let ++count
-          else break
-      fi
-    done
-    let ${count}%2
-}
-function mbfl_string_quote () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    local i ch
-    for ((i=0; $i < "${#STRING}"; ++i))
-    do
-        ch="${STRING:$i:1}"
-        test "$ch" = \\ && ch=\\\\
-        printf '%s' "$ch"
-    done
-    printf '\n'
-    return 0
 }
 
 ### end of file
