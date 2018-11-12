@@ -1,4 +1,3 @@
-#!/bin/bash
 # libmbfltest.sh --
 #
 # Part of: Marco's BASH Functions Library
@@ -7,11 +6,12 @@
 #
 # Abstract
 #
-#	This file defines a set of functions to be used to drive
-#	the test suite. It must be sources at the beginning of
-#	all the test files.
+#	This file  defines a set  of functions to  be used to  drive the
+#	test suite. It must be sources  at the beginning of all the test
+#	files.
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -30,83 +30,95 @@
 #
 
 #page
-## ------------------------------------------------------------
-## Shell configuration.
-## ------------------------------------------------------------
+#### shell configuration
 
 shopt -s expand_aliases
 
-mbfl_LOADED_MBFL_TEST='yes'
+declare mbfl_LOADED_MBFL_TEST='yes'
 
 #page
-## ------------------------------------------------------------
-## Output messages.
-## ------------------------------------------------------------
+#### output messages
 
 alias dotest-echo='dotest-p-echo ${FUNCNAME}'
 function dotest-p-echo () {
-    local name="$1"
+    local name=${1:?"missing funcname argument to '${FUNCNAME}'"}
     shift
     echo -e "$name: $@" >&2
 }
 alias dotest-debug='dotest-p-debug ${FUNCNAME}'
 function dotest-p-debug () {
-    local name="$1"
+    local name=${1:?"missing funcname argument to '${FUNCNAME}'"}
     shift
     dotest-option-debug && echo -e "*** $name ***: $@" >&2
 }
 
+alias dotest-printf='dotest-p-printf ${FUNCNAME}'
+function dotest-p-printf () {
+    local name=${1:?"missing funcname argument to '${FUNCNAME}'"}
+    local TEMPLATE=${2:?"missing template argument to '${FUNCNAME}'"}
+    shift 2
+    {
+	printf '%s:' "$name"
+	printf "$TEMPLATE"  "$@"
+	echo
+    } >&2
+}
+
 #page
-## ------------------------------------------------------------
-## Configuration.
-## ------------------------------------------------------------
+#### configuration
 
 function dotest-p-create-option-functions () {
     local item
 
-    for item in verbose debug test report-start report-success ; do
+    for item in verbose debug test report-start report-success
+    do
         eval function dotest-set-$item \(\) \
-            \{ function dotest-option-$item \(\) \{ true\;  \}\; \}
-            eval function dotest-unset-$item \(\) \
-                \{ function dotest-option-$item \(\) \{ false\; \}\; \}
-                dotest-unset-$item
+             \{ function dotest-option-$item \(\) \{ true\;  \}\; \}
+        eval function dotest-unset-$item \(\) \
+             \{ function dotest-option-$item \(\) \{ false\; \}\; \}
+        dotest-unset-$item
     done
 }
 dotest-p-create-option-functions
 
 #page
-## ------------------------------------------------------------
-## Test execution.
-## ------------------------------------------------------------
+#### test execution
 
 function dotest () {
-    local PATTERN="${1:?missing test function pattern parameter to ${FUNCNAME}}"
-    local FUNCTIONS; declare -a FUNCTIONS
-    local name= item= result=
-    local ORGPWD="$PWD"
+    local PATTERN=${1:?missing test function pattern parameter to ${FUNCNAME}}
+    local -a FUNCTIONS
+    local name item result ORGPWD=$PWD
+    local -i exit_status
 
 
-    PATTERN="${TESTMATCH:-${PATTERN}}"
+    PATTERN=${TESTMATCH:-${PATTERN}}
     dotest-p-report-start-from-environment
     dotest-p-report-success-from-environment
 
-    for item in `compgen -A function "${PATTERN}"` ; do
+    for item in `compgen -A function "$PATTERN"`
+    do
         # When a single test function name is selected, "$item" is equal
         # to "$PATTERN", then here "name" is set to the empty string.
 
 	let ++dotest_TEST_NUMBER
-	name="${item##${PATTERN}}"
-	if test -n "${name}" -o "${item}" = "${PATTERN}" ; then
+	name=${item##${PATTERN}}
+	if test -n "$name" -o "$item" = "$PATTERN"
+	then
 	    item="${PATTERN}${name}"
-	    if dotest-option-report-start ; then
-                dotest-echo "${item} -- start"
+	    if dotest-option-report-start
+	    then dotest-echo "${item} -- start"
             fi
-	    if result=$("${item}") ; then
-		if dotest-option-report-success ; then
-		    dotest-echo "${item} -- success"
+	    #echo ---$FUNCNAME--$item--- >&2
+	    result=$("$item")
+	    exit_status=$?
+	    #echo ---$FUNCNAME--$exit_status--- >&2
+	    if ((0 == exit_status))
+	    then
+		if dotest-option-report-success
+		then dotest-echo "${item} -- success"
                 else
-                    if dotest-option-report-start ; then
-                        echo
+                    if dotest-option-report-start
+		    then echo
                     fi
                 fi
 	    else
@@ -114,18 +126,17 @@ function dotest () {
 		dotest_TEST_FAILED+="\n${item}"
 		let ++dotest_TEST_FAILED_NUMBER
 	    fi
-	    if test -n "$result" ; then
-		echo "$result" >&2
-		echo >&2
+	    if test -n "$result"
+	    then printf '%s\n' "$result" >&2
 	    fi
-	    dotest-cd "${ORGPWD}"
+	    dotest-cd "$ORGPWD"
 	fi
     done
 
     return 0
 }
 function dotest-p-report-start-from-environment () {
-    case "${TESTSTART}" in
+    case $TESTSTART in
 	yes)
 	    dotest-set-report-start
 	    ;;
@@ -135,7 +146,7 @@ function dotest-p-report-start-from-environment () {
     esac
 }
 function dotest-p-report-success-from-environment () {
-    case "${TESTSUCCESS}" in
+    case $TESTSUCCESS in
 	yes)
 	    dotest-set-report-success
 	    ;;
@@ -146,9 +157,7 @@ function dotest-p-report-success-from-environment () {
 }
 
 #page
-## ------------------------------------------------------------
-## Testing results.
-## ------------------------------------------------------------
+#### testing results
 
 function dotest-output () {
     local expected_output="$1"
@@ -189,8 +198,8 @@ function dotest-output () {
 	fi
     else
 	if test \
-	    \( $globmode -eq 0 -a "${expected_output}" != "${output}" \) -o  \
-	    \( $globmode -eq 1 -a "${expected_output}" != "${output:0:${expected_output_len}}" \)
+	    \( $globmode -eq 0 -a "$expected_output" != "$output" \) -o  \
+	    \( $globmode -eq 1 -a "$expected_output" != "${output:0:${expected_output_len}}" \)
 	then
 	    {
 		echo "${FUNCNAME}:"
@@ -219,9 +228,7 @@ function dotest-equal () {
 }
 
 #page
-## ------------------------------------------------------------
-## File functions.
-## ------------------------------------------------------------
+#### file functions
 
 function dotest-echo-tmpdir () {
     echo "${TMPDIR:-/tmp}/dotest.$$"
@@ -233,7 +240,7 @@ function dotest-cd-tmpdir () {
 }
 function dotest-cd () {
     local DIRNAME="${1:?missing directory parameter to ${FUNCNAME}}"
-    cd "${DIRNAME}"
+    cd "$DIRNAME"
     dotest-option-verbose && dotest-echo "current directory: '$PWD'"
 }
 function dotest-mktmpdir () {
@@ -243,38 +250,37 @@ function dotest-mkdir () {
     local NAME="${1:?missing directory name parameter to ${FUNCNAME}}"
     local PREFIX="$2"
 
-    if test -n "${PREFIX}" ; then
-	PREFIX="$(dotest-echo-tmpdir)/${PREFIX}"
-    else
-	PREFIX="$(dotest-echo-tmpdir)"
+    if test -n "$PREFIX"
+    then PREFIX="$(dotest-echo-tmpdir)/${PREFIX}"
+    else PREFIX="$(dotest-echo-tmpdir)"
     fi
 
     NAME="${PREFIX}/${NAME}"
-    dotest-program-mkdir "${NAME}"
-    echo "${NAME}"
+    dotest-program-mkdir "$NAME"
+    echo "$NAME"
 }
 function dotest-mkfile () {
     local NAME="${1:?missing file name parameter to ${FUNCNAME}}"
     local PREFIX="$2"
 
-    if test -n "${PREFIX}" ; then
-	PREFIX="$(dotest-echo-tmpdir)/${PREFIX}"
-    else
-	PREFIX="$(dotest-echo-tmpdir)"
+    if test -n "$PREFIX"
+    then PREFIX="$(dotest-echo-tmpdir)/${PREFIX}"
+    else PREFIX="$(dotest-echo-tmpdir)"
     fi
-    NAME="${PREFIX}/${NAME}"
+    NAME=${PREFIX}/${NAME}
     dotest-option-verbose && dotest-echo "creating file '$NAME'"
 
     dotest-mktmpdir
-    if dotest-option-test ; then
-	echo echo \>"${NAME}"
+    if dotest-option-test
+    then echo echo \>"$NAME"
     else
-	echo >"${NAME}" || {
+	if ! echo >"$NAME"
+	then
 	    dotest-clean-files
 	    exit 2
-	}
+	fi
     fi
-    echo "${NAME}"
+    echo "$NAME"
 }
 function dotest-clean-files () {
     local result=$?
@@ -286,48 +292,56 @@ function dotest-assert-file-exists () {
     local FILE_NAME=${1:?"missing file name to '${FUNCNAME}'"}
     local ERROR_MESSAGE=${2:?"missing error message to '${FUNCNAME}'"}
 
-    if test ! -f "${FILE_NAME}" ; then
-        dotest-echo "${ERROR_MESSAGE}"
+    if test ! -f "$FILE_NAME"
+    then
+        dotest-echo "$ERROR_MESSAGE"
         dotest-clean-files
         return 1
+    else return 0
     fi
-    return 0
 }
 function dotest-assert-file-unexists () {
     local FILE_NAME=${1:?"missing file name to '${FUNCNAME}'"}
     local ERROR_MESSAGE=${2:?"missing error message to '${FUNCNAME}'"}
 
-    if test -f "${FILE_NAME}" ; then
-        dotest-echo "${ERROR_MESSAGE}"
+    if test -f "$FILE_NAME"
+    then
+        dotest-echo "$ERROR_MESSAGE"
         dotest-clean-files
         return 1
+    else return 0
     fi
-    return 0
 }
 
 #page
-## ------------------------------------------------------------
-## Program interfaces.
-## ------------------------------------------------------------
+#### program interfaces
 
 function dotest-program-mkdir () {
-    dotest-option-verbose && FLAGS="--verbose"
+    local FLAGS
+
+    if dotest-option-verbose
+    then FLAGS='--verbose'
+    fi
     if ! dotest-program-exec /bin/mkdir --parents ${FLAGS} --mode=0700 "$@" >&2
-        then
+    then
 	dotest-clean-files
 	exit 2
     fi
 }
 function dotest-program-rm () {
-    dotest-option-verbose && FLAGS="--verbose"
+    local FLAGS
+
+    if dotest-option-verbose
+    then FLAGS='--verbose'
+    fi
     dotest-program-exec /bin/rm --force --recursive ${FLAGS} "$@" >&2
 }
 function dotest-program-exec () {
-    if dotest-option-test ; then
-	echo "$@"
+    if dotest-option-test
+    then echo "$@"
     else
 	if ! "$@"
-            then
+        then
 	    dotest-clean-files
 	    exit 2
         fi
@@ -345,28 +359,27 @@ function dotest-string-is-not-empty () {
 }
 
 #page
-## ------------------------------------------------------------
-## Final report.
-## ------------------------------------------------------------
+#### final report
 
 trap dotest-clean-files EXIT
 
-test -z ${dotest_TEST_NUMBER} && declare -i dotest_TEST_NUMBER=0
+test -z ${dotest_TEST_NUMBER}        && declare -i dotest_TEST_NUMBER=0
 test -z ${dotest_TEST_FAILED_NUMBER} && declare -i dotest_TEST_FAILED_NUMBER=0
-test -z ${dotest_TEST_FAILED} && dotest_TEST_FAILED=
+test -z ${dotest_TEST_FAILED}        && declare dotest_TEST_FAILED=
 
 function dotest-final-report () {
     local item
     if test ${dotest_TEST_NUMBER} -ne 0
     then
         printf '\n'
-        printf "Test file '${mbfl_TEST_FILE:-$0}'\n"
-        printf "\tNumber of executed tests: ${dotest_TEST_NUMBER}\n"
-        printf "\tNumber of failed tests:   ${dotest_TEST_FAILED_NUMBER}\n"
-        if test -n "${dotest_TEST_FAILED}" ; then
-            printf "Failed tests:\n"
-            for item in ${dotest_TEST_FAILED} ; do
-                printf "   ${item}\n" >&2
+        printf 'Test file "%s"\n' "${mbfl_TEST_FILE:-$0}"
+        printf '\tNumber of executed tests: %d\n' ${dotest_TEST_NUMBER}
+        printf '\tNumber of failed tests:   %d\n' ${dotest_TEST_FAILED_NUMBER}
+        if test -n "$dotest_TEST_FAILED"
+	then
+            printf 'Failed tests:\n'
+            for item in ${dotest_TEST_FAILED}
+	    do printf '   %s\n' "$item">&2
             done
         fi
         printf '\n'

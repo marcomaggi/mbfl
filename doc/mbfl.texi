@@ -5162,12 +5162,17 @@ dotest mytest
 @section Printing messages from test functions
 
 
-@deffn Alias dotest-echo @var{string} ?...?
-@deffnx Alias dotest-debug @var{string} ?...?
-Print the parameters on stderr.  @code{dotest-debug} prints some @code{*}
-to make the message more visible.
+@deffn Alias dotest-echo @var{string} [@var{arg} @dots{}]
+@deffnx Alias dotest-debug @var{string} [@var{arg} @dots{}]
+Print the parameters on @code{stderr}.  @code{dotest-debug} prints some @code{*} to make the message
+more visible.
 @end deffn
 
+
+@deffn dotest-printf @var{template} [@var{arg} @dots{}]
+Format the @var{template} with the optional @var{arg} values, then print the result on
+@code{stderr}.
+@end deffn
 
 @c page
 @node testing files
