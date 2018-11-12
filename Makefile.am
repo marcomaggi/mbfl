@@ -255,11 +255,11 @@ test: all $(check_SCRIPTS)
 	do $(AM_TESTS_ENVIRONMENT) $(BASH_PROGRAM) "$$item" $(AM_TEST_LOG_FLAGS);	\
 	done
 
-test-template:
-	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/examples/template.sh $(MFLAGS)
+test-template: examples/template.sh src/lib/libmbfl.sh
+	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(builddir)/examples/template.sh $(MFLAGS)
 
-test-template-actions:
-	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/examples/template-actions.sh $(MFLAGS)
+test-template-actions: examples/template-actions.sh src/lib/libmbfl.sh
+	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(builddir)/examples/template-actions.sh $(MFLAGS)
 
 
 #### interface to "make installcheck"
