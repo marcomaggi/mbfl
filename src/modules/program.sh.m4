@@ -88,29 +88,6 @@ function mbfl_program_find () {
     fi
 }
 
-# In this function: we need a pipe to read the output of "type -ap".  So
-# this function  is the "print  output" variant.  The "_var"  variant is
-# below.
-#
-# function mbfl_program_find () {
-#     mbfl_mandatory_parameter(PROGRAM, 1, program)
-#     local item
-#     type -ap "$PROGRAM" | while read item
-#     do
-# 	if mbfl_file_is_executable "$item"
-# 	then
-#             echo "$item"
-#             break
-# 	fi
-#     done
-#     return 0
-# }
-# function mbfl_program_find_var () {
-#     mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-#     mbfl_mandatory_parameter(PROGRAM, 2, program)
-#     RESULT_VARREF=$(mbfl_program_find "$PROGRAM")
-# }
-
 #page
 #### program execution functions
 
