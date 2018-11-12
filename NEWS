@@ -68,6 +68,11 @@ changes!
 
 * Added support to compress/decompress with lzip and xz.
 
+* Added file functions:
+
+    mbfl_file_realpath
+    mbfl_file_realpath_var
+
 
 Notes for revision 2.2.0
 ------------------------

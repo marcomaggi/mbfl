@@ -576,7 +576,8 @@ function file-strip-leading-slash-var-1.6 () {
 #### pathname normalisation: full normalisation
 
 function file-normalise-1.1 () {
-    local testdir=$(dotest-mkdir a/b)
+    local testdir
+    testdir=$(dotest-mkdir a/b) || exit $?
 
     {
 	dotest-cd-tmpdir
@@ -588,7 +589,8 @@ function file-normalise-1.2 () {
     mbfl_file_normalise /path/to/file.ext | dotest-output "/path/to/file.ext"
 }
 function file-normalise-1.4 () {
-    local testdir=$(dotest-mkdir a/b)
+    local testdir
+    testdir=$(dotest-mkdir a/b) || exit $?
 
     {
 	dotest-cd-tmpdir
@@ -643,6 +645,44 @@ function file-normalise-2.6 () {
 }
 
 #page
+#### pathname normalisation: realpath
+
+function file-realpath-1.1 () {
+    local testpath
+    testpath=$(dotest-mkdir a/b) || exit $?
+
+    mbfl_file_enable_realpath
+
+    {
+	dotest-cd-tmpdir
+	mbfl_file_realpath a/b
+	dotest-clean-files
+    } | dotest-output "$testpath"
+}
+
+# Try realpath on a file that does not exist.
+#
+function file-realpath-1.2 () {
+    mbfl_file_enable_realpath
+    ! mbfl_file_realpath a/b/c
+}
+
+### --------------------------------------------------------------------
+
+function file-realpath-var-1.1 () {
+    local testpath
+    testpath=$(dotest-mkdir a/b) || exit $?
+    local RV
+
+    mbfl_file_enable_realpath
+
+    dotest-cd-tmpdir
+    mbfl_file_realpath_var RV a/b
+    dotest-clean-files
+    dotest-equal "$testpath" "$RV"
+}
+
+#page
 #### relative pathnames: extracting subpathnames
 
 function file-subpathname-1.1 () {
@@ -690,8 +730,8 @@ function file-subpathname-var-3.1 () {
 
 function file-remove-1.1 () {
     dotest-mktmpdir
-    local name=$(dotest-mkfile file.ext)
-    local result=
+    local name result
+    name=$(dotest-mkfile file.ext) || exit $?
 
     mbfl_file_enable_remove
     mbfl_file_remove_file "$name"
@@ -699,8 +739,8 @@ function file-remove-1.1 () {
     dotest-clean-files
 }
 function file-remove-1.2 () {
-    local name=$(dotest-mkdir dir.d)
-    local result=
+    local name result
+    name=$(dotest-mkdir dir.d) || exit $?
 
     mbfl_file_enable_remove
     mbfl_file_remove_directory "$name"
@@ -709,7 +749,8 @@ function file-remove-1.2 () {
 }
 function file-remove-1.3 () {
     dotest-mktmpdir
-    local name=$(dotest-mkfile file.ext)
+    local name
+    name=$(dotest-mkfile file.ext) || exit $?
 
     mbfl_file_enable_remove
     mbfl_file_remove "$name"
@@ -718,7 +759,8 @@ function file-remove-1.3 () {
 }
 function file-remove-1.4 () {
     dotest-mktmpdir
-    local name=$(dotest-mkfile file.ext)
+    local name
+    name=$(dotest-mkfile file.ext) || exit $?
 
     mbfl_file_enable_remove
     mbfl_file_remove "$name"
@@ -740,7 +782,8 @@ function file-mkdir-1.1 () {
 #### file system inspection: file owner
 
 function file-owner-1.1 () {
-    local name=$(dotest-mkfile file.ext)
+    local name
+    name=$(dotest-mkfile file.ext) || exit $?
 
     mbfl_file_enable_owner_and_group
     {
@@ -752,7 +795,8 @@ function file-owner-1.1 () {
 ### --------------------------------------------------------------------
 
 function file-owner-var-1.1 () {
-    local name=$(dotest-mkfile file.ext) RV
+    local name RV
+    name=$(dotest-mkfile file.ext) || exit $?
 
     mbfl_file_enable_owner_and_group
     mbfl_file_get_owner_var RV "$name"
@@ -764,7 +808,8 @@ function file-owner-var-1.1 () {
 #### file system inspection: file size
 
 function file-size-1.1 () {
-    local PATHNAME=$(dotest-mkfile file.ext)
+    local PATHNAME
+    PATHNAME=$(dotest-mkfile file.ext) || exit $?
 
     echo -n 0123456789 >"${PATHNAME}"
     mbfl_file_enable_stat
@@ -777,7 +822,8 @@ function file-size-1.1 () {
 ### --------------------------------------------------------------------
 
 function file-size-var-1.1 () {
-    local PATHNAME=$(dotest-mkfile file.ext) RV
+    local PATHNAME RV
+    PATHNAME=$(dotest-mkfile file.ext) || exit $?
 
     echo -n 0123456789 >"${PATHNAME}"
     mbfl_file_enable_stat
@@ -787,18 +833,20 @@ function file-size-var-1.1 () {
 }
 
 #page
+#### command interfaces: tar
 
 function file-tar-1.1 () {
-    local rootdir=$(dotest-mkdir top)
-    local arootdir=$(dotest-mkdir top/a)
-    local brootdir=$(dotest-mkdir top/b)
-    local tarfile=$(dotest-mkfile a.tar)
+    local rootdir arootdir brootdir tarfile
+    rootdir=$(dotest-mkdir top) || exit $?
+    arootdir=$(dotest-mkdir top/a) || exit $?
+    brootdir=$(dotest-mkdir top/b) || exit $?
+    tarfile=$(dotest-mkfile a.tar) || exit $?
 
     {
-	dotest-mkdir "top/a/alpha"
-	dotest-mkdir "top/a/beta"
-	dotest-mkfile "top/a/alpha/file.ext"
-	dotest-mkfile "top/a/beta/file.ext"
+	dotest-mkdir "top/a/alpha" || exit $?
+	dotest-mkdir "top/a/beta" || exit $?
+	dotest-mkfile "top/a/alpha/file.ext" || exit $?
+	dotest-mkfile "top/a/beta/file.ext" || exit $?
     } >/dev/null
 
     mbfl_file_enable_tar
@@ -808,16 +856,17 @@ function file-tar-1.1 () {
     dotest-clean-files
 }
 function file-tar-2.1 () {
-    local rootdir=$(dotest-mkdir top)
-    local arootdir=$(dotest-mkdir top/a)
-    local brootdir=$(dotest-mkdir top/b)
-    local tarfile="$(dotest-echo-tmpdir)/a.tar"
+    local rootdir arootdir brootdir tarfile
+    rootdir=$(dotest-mkdir top) || exit $?
+    arootdir=$(dotest-mkdir top/a) || exit $?
+    brootdir=$(dotest-mkdir top/b) || exit $?
+    tarfile=$(dotest-mkfile a.tar) || exit $?
 
     {
-	dotest-mkdir "top/a/alpha"
-	dotest-mkdir "top/a/beta"
-	dotest-mkfile "top/a/alpha/file.ext"
-	dotest-mkfile "top/a/beta/file.ext"
+	dotest-mkdir "top/a/alpha" || exit $?
+	dotest-mkdir "top/a/beta" || exit $?
+	dotest-mkfile "top/a/alpha/file.ext" || exit $?
+	dotest-mkfile "top/a/beta/file.ext" || exit $?
     } >/dev/null
 
     mbfl_file_enable_tar
@@ -831,8 +880,8 @@ function file-tar-2.1 () {
 #page
 
 file-is-file-1.1 () {
-    local PATHNAME=$(dotest-mkfile pathname)
-    local result
+    local PATHNAME result
+    PATHNAME=$(dotest-mkfile pathname) || exit  $?
 
     mbfl_file_is_file "${PATHNAME}"
     result=$?
@@ -847,7 +896,8 @@ file-is-file-1.2 () {
 # ------------------------------------------------------------
 
 file-is-readable-1.1 () {
-    local PATHNAME=$(dotest-mkfile pathname) result
+    local PATHNAME result
+    PATHNAME=$(dotest-mkfile pathname) || exit  $?
 
     mbfl_file_is_readable "${PATHNAME}"
     result=$?; dotest-clean-files; return $result
@@ -857,7 +907,8 @@ file-is-readable-1.2 () {
         dotest-output "<unknown>: error: unexistent file 'a'"
 }
 file-is-readable-1.3 () {
-    local PATHNAME=$(dotest-mkfile pathname) result
+    local PATHNAME result
+    PATHNAME=$(dotest-mkfile pathname) || exit  $?
 
     chmod u-r "${PATHNAME}"
     mbfl_file_is_readable "${PATHNAME}" print_error 2>&1 | \
@@ -868,7 +919,8 @@ file-is-readable-1.3 () {
 # ------------------------------------------------------------
 
 file-is-writable-1.1 () {
-    local PATHNAME=$(dotest-mkfile pathname) result
+    local PATHNAME result
+    PATHNAME=$(dotest-mkfile pathname) || exit  $?
 
     mbfl_file_is_writable "${PATHNAME}"
     result=$?; dotest-clean-files; return $result
@@ -878,7 +930,8 @@ file-is-writable-1.2 () {
         dotest-output "<unknown>: error: unexistent file 'a'"
 }
 file-is-writable-1.3 () {
-    local PATHNAME=$(dotest-mkfile pathname) result
+    local PATHNAME result
+    PATHNAME=$(dotest-mkfile pathname) || exit  $?
 
     chmod u-w "${PATHNAME}"
     mbfl_file_is_writable "${PATHNAME}" print_error 2>&1 | \
@@ -889,7 +942,8 @@ file-is-writable-1.3 () {
 # ------------------------------------------------------------
 
 file-is-executable-1.1 () {
-    local PATHNAME=$(dotest-mkfile pathname) result
+    local PATHNAME result
+    PATHNAME=$(dotest-mkfile pathname) || exit  $?
 
     chmod u+x "${PATHNAME}"
     mbfl_file_is_executable "${PATHNAME}"
@@ -900,7 +954,8 @@ file-is-executable-1.2 () {
         dotest-output "<unknown>: error: unexistent file 'a'"
 }
 file-is-executable-1.3 () {
-    local PATHNAME=$(dotest-mkfile pathname) result
+    local PATHNAME result
+    PATHNAME=$(dotest-mkfile pathname) || exit  $?
 
     chmod u-x "${PATHNAME}"
     mbfl_file_is_executable "${PATHNAME}" print_error 2>&1 | \
@@ -991,8 +1046,8 @@ file-directory-is-executable-1.3 () {
 
 file-get-permissions-1.1 () {
     dotest-mktmpdir
-    local PATHNAME=$(dotest-mkfile file.ext)
-    local MODE=0750
+    local PATHNAME MODE=0750
+    PATHNAME=$(dotest-mkfile file.ext) || exit  $?
 
     chmod ${MODE} "${PATHNAME}"
     mbfl_file_enable_permissions
@@ -1003,8 +1058,8 @@ file-get-permissions-1.1 () {
 }
 file-get-permissions-2.1 () {
     dotest-mktmpdir
-    local PATHNAME=$(dotest-mkfile file.ext)
-    local MODE=0750
+    local PATHNAME MODE=0750
+    PATHNAME=$(dotest-mkfile file.ext) || exit  $?
 
     mbfl_file_enable_permissions
     mbfl_file_set_permissions ${MODE} "${PATHNAME}"
@@ -1018,8 +1073,8 @@ file-get-permissions-2.1 () {
 
 file-write-1.1 () {
     dotest-mktmpdir
-    local PATHNAME=$(dotest-mkfile file.ext)
-    local STRING="this string" CONTENT=
+    local STRING="this string" CONTENT PATHNAME
+    PATHNAME=$(dotest-mkfile file.ext) || exit  $?
 
     mbfl_file_write "${STRING}" "${PATHNAME}"
     CONTENT=$(<"${PATHNAME}")
@@ -1029,8 +1084,8 @@ file-write-1.1 () {
 
 file-append-1.1 () {
     dotest-mktmpdir
-    local PATHNAME=$(dotest-mkfile file.ext)
-    local STRING="this string" CONTENT=
+    local STRING="this string" CONTENT PATHNAME
+    PATHNAME=$(dotest-mkfile file.ext) || exit  $?
 
     mbfl_file_write "${STRING}" "${PATHNAME}"
     mbfl_file_append " ${STRING}" "${PATHNAME}"
@@ -1041,8 +1096,8 @@ file-append-1.1 () {
 
 file-read-1.1 () {
     dotest-mktmpdir
-    local PATHNAME=$(dotest-mkfile file.ext)
-    local STRING="this string" CONTENT=
+    local STRING="this string" CONTENT PATHNAME
+    PATHNAME=$(dotest-mkfile file.ext) || exit  $?
 
     mbfl_file_write "${STRING}" "${PATHNAME}"
     CONTENT=$(mbfl_file_read "${PATHNAME}")
@@ -1053,8 +1108,9 @@ file-read-1.1 () {
 #page
 
 function file-move-1.1 () {
-    local src=$(dotest-mkfile file.ext)
-    local dst=$(dotest-echo-tmpdir)/file2.ext
+    local src dst
+    src=$(dotest-mkfile file.ext) || exit  $?
+    dst=$(dotest-echo-tmpdir)/file2.ext || exit  $?
 
     mbfl_file_enable_move
     mbfl_file_move "${src}" "${dst}"
@@ -1063,8 +1119,9 @@ function file-move-1.1 () {
     dotest-clean-files
 }
 function file-move-1.2 () {
-    local src=$(dotest-mkdir file.ext)
-    local dst=$(dotest-echo-tmpdir)/file2.ext
+    local src dst
+    src=$(dotest-mkdir file.ext) || exit  $?
+    dst=$(dotest-echo-tmpdir)/file2.ext || exit  $?
 
     mbfl_file_enable_move
     mbfl_file_move "${src}" "${dst}"
@@ -1073,9 +1130,10 @@ function file-move-1.2 () {
     dotest-clean-files
 }
 function file-move-2.1 () {
-    local src=$(dotest-mkfile file.ext)
-    local dir=$(dotest-mkdir wap)
-    local dst=${dir}/file.ext
+    local src dst dir
+    src=$(dotest-mkfile file.ext) || exit  $?
+    dir=$(dotest-mkdir wap) || exit  $?
+    dst=${dir}/file.ext
 
     mbfl_file_enable_move
     mbfl_file_move_to_directory "${src}" "${dir}"
@@ -1084,9 +1142,10 @@ function file-move-2.1 () {
     dotest-clean-files
 }
 function file-move-2.2 () {
-    local src=$(dotest-mkdir file.ext)
-    local dir=$(dotest-mkdir wap)
-    local dst=${dir}/file.ext
+    local src dst dir
+    src=$(dotest-mkdir file.ext) || exit  $?
+    dir=$(dotest-mkdir wap) || exit  $?
+    dst=${dir}/file.ext || exit  $?
 
     mbfl_file_enable_move
     mbfl_file_move_to_directory "${src}" "${dir}"
@@ -1098,8 +1157,9 @@ function file-move-2.2 () {
 #page
 
 function file-copy-1.1 () {
-    local src=$(dotest-mkfile file.ext)
-    local dst=$(dotest-echo-tmpdir)/file2.ext
+    local src dst
+    src=$(dotest-mkfile file.ext) || exit  $?
+    dst=$(dotest-echo-tmpdir)/file2.ext || exit  $?
 
     mbfl_file_enable_copy
     mbfl_file_copy "${src}" "${dst}"
@@ -1108,9 +1168,10 @@ function file-copy-1.1 () {
     dotest-clean-files
 }
 function file-copy-2.1 () {
-    local src=$(dotest-mkfile file.ext)
-    local dir=$(dotest-mkdir wap)
-    local dst=${dir}/file.ext
+    local src dst dir
+    src=$(dotest-mkfile file.ext) || exit  $?
+    dir=$(dotest-mkdir wap) || exit  $?
+    dst=${dir}/file.ext
 
     mbfl_file_enable_copy
     mbfl_file_copy_to_directory "${src}" "${dir}"
@@ -1123,16 +1184,17 @@ function file-copy-2.1 () {
 #### file commands: interface to "stat"
 
 function file-stat-1.1 () {
-    local PATHNAME=$(dotest-mkfile file.ext)
-    local RESULT
+    local PATHNAME RESULT
+    PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+
     mbfl_file_enable_stat
     RESULT=$(mbfl_file_stat "$PATHNAME" --format='%F')
     dotest-equal 0 $? && dotest-equal regular $RESULT
     dotest-clean-files
 }
 function file-stat-1.2 () {
-    local PATHNAME=/bin
-    local RESULT
+    local PATHNAME=/bin RESULT
+
     mbfl_file_enable_stat
     RESULT=$(mbfl_file_stat "${PATHNAME}" --format='%F')
     dotest-equal 0 $? && dotest-equal directory $RESULT
@@ -1145,8 +1207,9 @@ function file-stat-1.2 () {
 # Keep input file.  Print compressed data to stdout.
 #
 function file-compression-gzip-1.1 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.gz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.gz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1179,8 +1242,9 @@ function file-compression-gzip-1.1 () {
 # No keep input file.  Print compressed data to stdout.
 #
 function file-compression-gzip-1.2 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.gz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.gz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1213,8 +1277,9 @@ function file-compression-gzip-1.2 () {
 # Keep input file.  Write compressed data to a file.
 #
 function file-compression-gzip-1.3 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.gz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.gz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1247,8 +1312,9 @@ function file-compression-gzip-1.3 () {
 # No keep input file.  Write compressed data to a file.
 #
 function file-compression-gzip-1.4 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.gz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.gz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1284,8 +1350,9 @@ function file-compression-gzip-1.4 () {
 # Keep input file.  Print compressed data to stdout.
 #
 function file-compression-bzip2-1.1 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.bz2)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.bz2) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1318,8 +1385,9 @@ function file-compression-bzip2-1.1 () {
 # No keep input file.  Print compressed data to stdout.
 #
 function file-compression-bzip2-1.2 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.bz2)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.bz2) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1352,8 +1420,9 @@ function file-compression-bzip2-1.2 () {
 # Keep input file.  Write compressed data to a file.
 #
 function file-compression-bzip2-1.3 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.bz2)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.bz2) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1386,8 +1455,9 @@ function file-compression-bzip2-1.3 () {
 # No keep input file.  Write compressed data to a file.
 #
 function file-compression-bzip2-1.4 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.bz2)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.bz2) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1423,8 +1493,9 @@ function file-compression-bzip2-1.4 () {
 # Keep input file.  Print compressed data to stdout.
 #
 function file-compression-lzip-1.1 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.lz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.lz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1457,8 +1528,9 @@ function file-compression-lzip-1.1 () {
 # No keep input file.  Print compressed data to stdout.
 #
 function file-compression-lzip-1.2 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.lz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.lz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1491,8 +1563,9 @@ function file-compression-lzip-1.2 () {
 # Keep input file.  Write compressed data to a file.
 #
 function file-compression-lzip-1.3 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.lz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.lz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1525,8 +1598,9 @@ function file-compression-lzip-1.3 () {
 # No keep input file.  Write compressed data to a file.
 #
 function file-compression-lzip-1.4 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.lz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.lz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1562,8 +1636,9 @@ function file-compression-lzip-1.4 () {
 # Keep input file.  Print compressed data to stdout.
 #
 function file-compression-xz-1.1 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.xz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.xz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1596,8 +1671,9 @@ function file-compression-xz-1.1 () {
 # No keep input file.  Print compressed data to stdout.
 #
 function file-compression-xz-1.2 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.xz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.xz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1630,8 +1706,9 @@ function file-compression-xz-1.2 () {
 # Keep input file.  Write compressed data to a file.
 #
 function file-compression-xz-1.3 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.xz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.xz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress
@@ -1664,8 +1741,9 @@ function file-compression-xz-1.3 () {
 # No keep input file.  Write compressed data to a file.
 #
 function file-compression-xz-1.4 () {
-    local UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext)
-    local COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.xz)
+    local UNCOMPRESSED_PATHNAME COMPRESSED_PATHNAME
+    UNCOMPRESSED_PATHNAME=$(dotest-mkfile file.ext) || exit  $?
+    COMPRESSED_PATHNAME=$(dotest-mkfile file.ext.xz) || exit  $?
     local retval input_text=0123456789 output_text
 
     mbfl_file_enable_compress

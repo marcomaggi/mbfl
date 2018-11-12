@@ -488,6 +488,31 @@ function mbfl_p_file_normalise2_var () {
 }
 
 #page
+#### pathname normalisation: realpath
+
+function mbfl_file_enable_realpath () {
+    mbfl_declare_program realpath
+}
+
+function mbfl_file_realpath () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    shift
+    local REALPATH
+    mbfl_program_found_var REALPATH realpath || exit $?
+    mbfl_program_exec "$REALPATH" "$@" -- "$PATHNAME"
+}
+
+function mbfl_file_realpath_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    shift 2
+
+    if ! RESULT_VARREF=$(mbfl_file_realpath "$PATHNAME" "$@")
+    then return $?
+    fi
+}
+
+#page
 #### relative pathnames: extracting subpathnames
 
 function mbfl_file_subpathname_var () {

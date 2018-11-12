@@ -1239,6 +1239,7 @@ Echo the accepted value to stdout.  Return true if a value is found, false other
 * file commands move::          Moving files.
 * file commands removing::      Removing files and directories.
 * file commands symlink::       Creating symbolic links.
+* file commands realpath::      Normalising pathnames.
 * file commands tar::           Manipulating tar archives.
 * file commands perms::         Set/get file permissions.
 * file commands owner::         Setting file owner and group.
@@ -1563,8 +1564,33 @@ Create a symbolic link.
 
 @defun mbfl_exec_ln @var{original_name} @var{link_name} [@var{opt} @dots{}]
 Raw executor for @command{ln}.  The mandatory arguments @var{original_name} and @var{link_name} are
-put on the command line of @command{ln} as arguments.  The optional arguments @var{arg} are added,
+put on the command line of @command{ln} as arguments.  The optional arguments @var{opt} are added,
 as options, to the command line of @command{ln}.
+@end defun
+
+@c page
+@node file commands realpath
+@subsection Normalising pathnames
+
+
+@cindex Files, normalisation
+@CindexCommand{realpath}
+
+
+@defun mbfl_file_enable_realpath
+Declare the commands required to normalise pathnames.  @ref{program declaring, Declaring the
+intention to use a program}
+
+The programs are: @command{realpath}.
+@end defun
+
+
+@defun mbfl_file_realpath @var{pathname} [@var{opt} @dots{}]
+@defunx mbfl_file_realpath_var @var{RV} @var{pathname} [@var{opt} @dots{}]
+Normalise the given @var{pathname} using @command{realpath} and print the result to stdout.  The
+optional arguments @var{opt} are added, as options, to the command line of @command{realpath}.
+
+@DocVarVariant{}
 @end defun
 
 @c page
