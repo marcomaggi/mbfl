@@ -26,11 +26,21 @@
 #
 
 #PAGE
-## ------------------------------------------------------------
-## Setup.
-## ------------------------------------------------------------
+#### setup
 
 source setup.sh
+
+#page
+#### splitting path
+
+function program-split-path-1.1 () {
+    if mbfl_program_split_path
+    then
+	for ((i=0; i < ${#mbfl_split_PATH[@]}; ++i))
+	do echo "${mbfl_split_PATH[$i]}"
+	done
+    fi
+}
 
 #PAGE
 
@@ -58,7 +68,7 @@ function program-3.1 () {
 	mbfl_declare_program /bin/ls
 	mbfl_program_validate_declared
 	mbfl_unset_option_verbose
-    } | dotest-output "test: found '/bin/ls': '/bin/ls'"
+    } | dotest-output 'test: found "/bin/ls": "/bin/ls"'
 }
 function program-3.2 () {
     mbfl_declare_program unexistent
@@ -79,8 +89,7 @@ function program-3.5 () {
     mbfl_message_set_channel 1
     mbfl_message_set_progname "test"
     mbfl_declare_program unexistent
-    mbfl_program_validate_declared | dotest-output \
-	"test: *** not found 'unexistent', path: ''"
+    mbfl_program_validate_declared | dotest-output 'test: *** not found "unexistent", path: ""'
 }
 
 #page

@@ -36,6 +36,10 @@ shopt -s expand_aliases
 
 declare mbfl_LOADED_MBFL_TEST='yes'
 
+test -z ${dotest_TEST_NUMBER}        && declare -i dotest_TEST_NUMBER=0
+test -z ${dotest_TEST_FAILED_NUMBER} && declare -i dotest_TEST_FAILED_NUMBER=0
+declare -a dotest_TEST_FAILED
+
 #page
 #### output messages
 
@@ -123,7 +127,7 @@ function dotest () {
                 fi
 	    else
 		dotest-echo "${item} -- *** FAILED ***\n"
-		dotest_TEST_FAILED+="\n${item}"
+		dotest_TEST_FAILED+=("$item")
 		let ++dotest_TEST_FAILED_NUMBER
 	    fi
 	    if test -n "$result"
@@ -363,28 +367,25 @@ function dotest-string-is-not-empty () {
 
 trap dotest-clean-files EXIT
 
-test -z ${dotest_TEST_NUMBER}        && declare -i dotest_TEST_NUMBER=0
-test -z ${dotest_TEST_FAILED_NUMBER} && declare -i dotest_TEST_FAILED_NUMBER=0
-test -z ${dotest_TEST_FAILED}        && declare dotest_TEST_FAILED=
-
 function dotest-final-report () {
-    local item
-    if test ${dotest_TEST_NUMBER} -ne 0
+    if ((0 != dotest_TEST_NUMBER))
     then
         printf '\n'
         printf 'Test file "%s"\n' "${mbfl_TEST_FILE:-$0}"
         printf '\tNumber of executed tests: %d\n' ${dotest_TEST_NUMBER}
         printf '\tNumber of failed tests:   %d\n' ${dotest_TEST_FAILED_NUMBER}
-        if test -n "$dotest_TEST_FAILED"
+        if ((0 != ${#dotest_TEST_FAILED[@]}))
 	then
+	    local -i i
+
             printf 'Failed tests:\n'
-            for item in ${dotest_TEST_FAILED}
-	    do printf '   %s\n' "$item">&2
+            for ((i=0; i < ${#dotest_TEST_FAILED[@]}; ++i))
+	    do printf '   %s\n' "${dotest_TEST_FAILED[$i]}"
             done
         fi
         printf '\n'
     fi
-    if test ${dotest_TEST_FAILED_NUMBER} -eq 0
+    if ((0 == dotest_TEST_FAILED_NUMBER))
     then exit 0
     else exit 1
     fi

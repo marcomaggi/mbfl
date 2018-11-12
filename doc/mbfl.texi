@@ -3232,33 +3232,64 @@ Return true if test execution is enabled, else return false.
 The simpler way to test the availability of a program is to look for it just before it is used.
 
 
-@defun mbfl_program_find @var{program}
-@defunx mbfl_program_find_var @var{RV} @var{program}
-A wrapper for:
+@defvr Array mbfl_split_PATH
+After a call to @bfunc{mbfl_program_split_path}: this array is filled with the components of the
+@env{PATH} variable.
+@end defvr
+
+
+@defun mbfl_program_split_path
+If the number of pairs in the global array @code{mbfl_split_PATH} is zero: split the current value
+of @var{PATH} into its components by splitting the string using the colon character @code{:} as
+separator; store the result in the global array @code{mbfl_split_PATH}; finally return true.
+
+If the number of pairs in the global array @code{mbfl_split_PATH} is not zero: do nothing and return
+false.
+
+We can print the contents of the array with:
 
 @example
-type -ap @var{program}
+local -i i
+
+for ((i=0; i < $@{#mbfl_split_PATH[@@]@}; ++i))
+do echo "$@{mbfl_split_PATH[$i]@}"
+done
 @end example
 
-@noindent
-that looks for a program in the current search path.  It prints the full pathname of the program
-found, or an empty string if nothing is found.  The exit status is always @code{0}.
+To force a resplit, just reset the array to the empty state with:
+
+@example
+mbfl_split_PATH=()
+@end example
+@end defun
+
+
+@defun mbfl_program_find @var{program}
+@defunx mbfl_program_find_var @var{RV} @var{program}
+Search for a program in the standard search path.  Print the full pathname of the program found, or
+an empty string if nothing is found.  If an executable file is found: return true; otherwise return
+false.
+
+The search path is the one in the environment variable @var{ENV} as found by
+@bfunc{mbfl_program_split_path}.  The contained directories are searched in the order in which they
+appear in @env{PATH}.  There are rules:
+
+@itemize
+@item
+If @var{program} is an absolute pathname (according to @bfunc{mbfl_file_is_absolute}): only that
+absolute pathname is verified as executable file.  @var{PATH} is ignored.
+
+@item
+If @var{program} is a relative pathname with at least one slash character in it: only that relative
+pathname is verified as executable file.  @var{PATH} is ignored.
+
+@item
+If @var{program} is a relative pathname without slash characters in it: the standard search path is
+used.
+@end itemize
 
 The @code{_var} function variant will store the result in the variable @var{RV} rather than print
 it.
-
-@var{program} may be a program name with no directory part (examples: @command{sed},
-@command{grep}), or an absolute or relative pathname (examples: @file{/bin/sed},
-@file{../bin/grep}).  If @var{program} is a relative pathname and it is an executable file: the
-output of the function is exactly @var{program}, it is @strong{not} normalised.
-
-If an alias exists for a program, @code{type -p @var{program}} will return the empty string; that is
-why we have to use @code{type -ap @var{program}}, which will return the correct file pathname.
-
-If the environment variable @env{PATH} holds the same directory more than once, or there exist
-programs with the same name in more than one @env{PATH} elements: @code{type -ap $program} will
-return more than one line of output, one for each executable file found.  The first value (the first
-line) is the one selected by this function.
 @end defun
 
 @c page

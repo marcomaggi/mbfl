@@ -29,28 +29,87 @@
 #page
 #### simple finding of external programs
 
+declare -a mbfl_split_PATH
+
+function mbfl_program_split_path () {
+    if ((0 == ${#mbfl_split_PATH[@]}))
+    then
+	local -a SPLITFIELD
+	local -i SPLITCOUNT i
+
+	mbfl_string_split "$PATH" :
+	for ((i=0; i < SPLITCOUNT; ++i))
+	do mbfl_split_PATH[$i]=${SPLITFIELD[$i]}
+	done
+	return 0
+    else return 1
+    fi
+}
+
+function mbfl_program_find_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PROGRAM, 2, program)
+    local dummy
+
+    if { mbfl_file_is_absolute "$PROGRAM" && mbfl_file_is_executable "$PROGRAM"; }
+    then
+	RESULT_VARREF="$PROGRAM"
+	return 0
+    elif { mbfl_string_first_var dummy "$PROGRAM" '/' && mbfl_file_is_executable "$PROGRAM"; }
+    then
+	# The $PROGRAM it not an absolute pathname, but it is a relative
+	# pathname with at least one slash in it.
+	RESULT_VARREF="$PROGRAM"
+	return 0
+    else
+	mbfl_program_split_path
+	local PATHNAME
+	local -i i number_of_components=${#mbfl_split_PATH[@]}
+
+	for ((i=0; i < number_of_components; ++i))
+	do
+	    printf -v PATHNAME '%s/%s' "${mbfl_split_PATH[$i]}" "$PROGRAM"
+	    if mbfl_file_is_executable "$PATHNAME"
+	    then
+		RESULT_VARREF="$PATHNAME"
+		return 0
+	    fi
+	done
+    fi
+    return 1
+}
+
+function mbfl_program_find () {
+    mbfl_mandatory_parameter(PROGRAM, 1, program)
+    local RESULT_VARNAME
+    if mbfl_program_find_var RESULT_VARNAME "$PROGRAM"
+    then echo "$RESULT_VARNAME"
+    else return $?
+    fi
+}
+
 # In this function: we need a pipe to read the output of "type -ap".  So
 # this function  is the "print  output" variant.  The "_var"  variant is
 # below.
 #
-function mbfl_program_find () {
-    mbfl_mandatory_parameter(PROGRAM, 1, program)
-    local item
-    type -ap "$PROGRAM" | while read item
-    do
-	if mbfl_file_is_executable "$item"
-	then
-            echo "$item"
-            break
-	fi
-    done
-    return 0
-}
-function mbfl_program_find_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PROGRAM, 2, program)
-    RESULT_VARREF=$(mbfl_program_find "$PROGRAM")
-}
+# function mbfl_program_find () {
+#     mbfl_mandatory_parameter(PROGRAM, 1, program)
+#     local item
+#     type -ap "$PROGRAM" | while read item
+#     do
+# 	if mbfl_file_is_executable "$item"
+# 	then
+#             echo "$item"
+#             break
+# 	fi
+#     done
+#     return 0
+# }
+# function mbfl_program_find_var () {
+#     mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+#     mbfl_mandatory_parameter(PROGRAM, 2, program)
+#     RESULT_VARREF=$(mbfl_program_find "$PROGRAM")
+# }
 
 #page
 #### program execution functions
@@ -251,33 +310,31 @@ function mbfl_program_bash () {
 #### program finding functions
 
 if test "$mbfl_INTERACTIVE" != 'yes'
-then declare -a mbfl_program_NAMES mbfl_program_PATHS
+then declare -A mbfl_program_PATHNAMES
 fi
 
 function mbfl_declare_program () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
-    local PATHNAME
+    local PROGRAM_PATHNAME
     local -r -i next_free_index=${#mbfl_program_NAMES[@]}
 
-    mbfl_program_NAMES[${next_free_index}]=$PROGRAM
-    mbfl_program_find_var PATHNAME "$PROGRAM"
-    if test -n "$PATHNAME"
-    then mbfl_file_normalise_var PATHNAME "$PATHNAME"
+    mbfl_program_find_var PROGRAM_PATHNAME "$PROGRAM"
+    if test -n "$PROGRAM_PATHNAME"
+    then mbfl_file_normalise_var PROGRAM_PATHNAME "$PROGRAM_PATHNAME"
     fi
-    mbfl_program_PATHS[${next_free_index}]=$PATHNAME
+    mbfl_program_PATHNAMES["$PROGRAM"]=$PROGRAM_PATHNAME
     return 0
 }
 function mbfl_program_validate_declared () {
-    local -i i retval=0 number_of_programs=${#mbfl_program_NAMES[@]}
-    local name path
-    for ((i=0; i < number_of_programs; ++i))
+    local retval PROGRAM PROGRAM_PATHNAME
+
+    for PROGRAM in "${!mbfl_program_PATHNAMES[@]}"
     do
-        name=${mbfl_program_NAMES[$i]}
-        path=${mbfl_program_PATHS[$i]}
-        if test -n "$path" -a -x "$path"
-        then mbfl_message_verbose "found '$name': '$path'\n"
+	PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
+        if mbfl_file_is_executable "$PROGRAM_PATHNAME"
+        then mbfl_message_verbose_printf 'found "%s": "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
         else
-            mbfl_message_verbose "*** not found '$name', path: '$path'\n"
+            mbfl_message_verbose_printf '*** not found "%s", path: "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
             retval=1
         fi
     done
@@ -286,33 +343,23 @@ function mbfl_program_validate_declared () {
 function mbfl_program_found_var () {
     mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(PROGRAM, 2, program name)
+    local -r PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
 
-    if test "$PROGRAM" != ':'
+    if mbfl_file_is_executable "$PROGRAM_PATHNAME"
     then
-	local -i i number_of_programs=${#mbfl_program_NAMES[@]}
-        for ((i=0; i < number_of_programs; ++i))
-        do
-            if test "${mbfl_program_NAMES[$i]}" = "$PROGRAM"
-	    then
-		local PATHNAME=${mbfl_program_PATHS[$i]}
-		if test -n "$PATHNAME" -a -x "$PATHNAME"
-		then
-		    RESULT_VARREF=$PATHNAME
-                    return 0
-		else
-		    mbfl_message_error_printf 'executable not found: "%s"' "$PROGRAM"
-		    exit_because_program_not_found
-		fi
-            fi
-        done
+	RESULT_VARREF=$PROGRAM_PATHNAME
+        return 0
+    else
+	mbfl_message_error_printf 'invalid executable found for "%s": "%s"' "$PROGRAM" "$PROGRAM_PATHNAME"
+	exit_because_program_not_found
     fi
-    mbfl_message_error_printf 'executable not found: "%s"' "$PROGRAM"
+    mbfl_message_error_printf 'executable not found for: "%s"' "$PROGRAM"
     exit_because_program_not_found
 }
 function mbfl_program_found () {
-    mbfl_mandatory_parameter(PROGRAM, 1, program name)
+    mbfl_mandatory_parameter(THE_PROGRAM, 1, program name)
     local RESULT_VARNAME EXIT_STATUS
-    mbfl_program_found_var RESULT_VARNAME "$PROGRAM"
+    mbfl_program_found_var RESULT_VARNAME "$THE_PROGRAM"
     EXIT_STATUS=$?
     if ((0 == EXIT_STATUS))
     then
