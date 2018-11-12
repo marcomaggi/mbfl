@@ -270,7 +270,7 @@ function mbfl_declare_program () {
 function mbfl_program_validate_declared () {
     local -i i retval=0 number_of_programs=${#mbfl_program_NAMES[@]}
     local name path
-    for ((i=0; $i < $number_of_programs; ++i))
+    for ((i=0; i < number_of_programs; ++i))
     do
         name=${mbfl_program_NAMES[$i]}
         path=${mbfl_program_PATHS[$i]}
