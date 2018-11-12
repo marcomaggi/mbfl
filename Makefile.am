@@ -251,7 +251,9 @@ TESTS			= \
 .PHONY: test test-template test-template-actions
 
 test: all $(check_SCRIPTS)
-	$(AM_TESTS_ENVIRONMENT) $(BASH_PROGRAM) $(srcdir)/tests/*$(file)*.test $(AM_TEST_LOG_FLAGS)
+	for item in $(srcdir)/tests/*$(file)*.test;					\
+	do $(AM_TESTS_ENVIRONMENT) $(BASH_PROGRAM) "$$item" $(AM_TEST_LOG_FLAGS);	\
+	done
 
 test-template:
 	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/examples/template.sh $(MFLAGS)
