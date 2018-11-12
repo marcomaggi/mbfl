@@ -59,7 +59,7 @@ declare mbfl_program_SUDO_USER=nosudo
 declare mbfl_program_SUDO_OPTIONS
 declare -r mbfl_program_SUDO=__PATHNAME_SUDO__
 declare -r mbfl_program_WHOAMI=__PATHNAME_WHOAMI__
-declare mbfl_program_STDERR_TO_STDOUT=no
+declare mbfl_program_STDERR_TO_STDOUT=false
 declare mbfl_program_BASH=$BASH
 declare mbfl_program_BGPID
 
@@ -101,7 +101,7 @@ function mbfl_program_reset_sudo_options () {
 ## --------------------------------------------------------------------
 
 function mbfl_program_redirect_stderr_to_stdout () {
-    mbfl_program_STDERR_TO_STDOUT=yes
+    mbfl_program_STDERR_TO_STDOUT=true
 }
 
 ### --------------------------------------------------------------------
@@ -146,7 +146,7 @@ function mbfl_p_program_exec () {
     mbfl_program_SUDO_OPTIONS=
 
     # Reset stderr to stdout redirection
-    mbfl_program_STDERR_TO_STDOUT=no
+    mbfl_program_STDERR_TO_STDOUT=false
 
     # Set the variable USE_SUDO to 'yes' if  we must use sudo to run the
     # program, otherwise leave it set to 'no'.
@@ -190,7 +190,7 @@ function mbfl_p_program_exec () {
         then
 	    if test "$BACKGROUND" = background
 	    then
-		if test "$STDERR_TO_STDOUT" = yes
+		if $STDERR_TO_STDOUT
 		   # The  order  of  redirections is  important.   First
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
@@ -200,7 +200,7 @@ function mbfl_p_program_exec () {
 		fi
 		mbfl_program_BGPID=$!
 	    else
-		if test "$STDERR_TO_STDOUT" = yes
+		if $STDERR_TO_STDOUT
 		   # The  order  of  redirections is  important.   First
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
@@ -212,7 +212,7 @@ function mbfl_p_program_exec () {
         else
 	    if test "$BACKGROUND" = background
 	    then
-		if test "$STDERR_TO_STDOUT" = yes
+		if $STDERR_TO_STDOUT
 		   # The  order  of  redirections is  important.   First
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
@@ -222,7 +222,7 @@ function mbfl_p_program_exec () {
 		fi
 		mbfl_program_BGPID=$!
 	    else
-		if test "$STDERR_TO_STDOUT" = yes
+		if $STDERR_TO_STDOUT
 		   # The  order  of  redirections is  important.   First
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
