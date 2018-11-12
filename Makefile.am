@@ -137,6 +137,56 @@ src/scripts/mbfltest.sh: src/scripts/mbfltest.sh.m4 src/scripts/$(am__dirstamp)
 	$(MBFLPP_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
 
 
+#### examples
+
+EXTRA_DIST		+= \
+	examples/at.sh				\
+	examples/compress.sh.m4			\
+	examples/template.sh.m4			\
+	examples/template-actions.sh.m4		\
+	\
+	examples/sendmail-connector.sh		\
+	examples/sendmail-plain.sh		\
+	examples/test-sendmail-gmail.sh		\
+	examples/test-sendmail-localhost.sh	\
+	examples/test-sendmail-poste.sh
+
+EXAMPLES		= \
+	examples/compress.sh		\
+	examples/template.sh		\
+	examples/template-actions.sh
+
+check_SCRIPTS		= $(EXAMPLES)
+CLEANFILES		+= $(EXAMPLES) examples/$(am__dirstamp)
+
+MBFL_EXAMPLES_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
+MBFL_EXAMPLES_ENV	= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBRARY); export MBFL_LIBRARY;
+MBFL_EXAMPLES_PREPRO	= $(builddir)/src/scripts/mbflpp.sh
+MBFL_EXAMPLES_PPFLAGS	= --add-bash
+MBFL_EXAMPLES_RUNPP	= $(MBFL_EXAMPLES_ENV) $(BASH_PROGRAM) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_PPFLAGS)
+MBFL_EXAMPLES_PREREQ	= examples/$(am__dirstamp) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_LIBRARY)
+
+examples/$(am__dirstamp):
+	@$(MKDIR_P) examples
+	@: > examples/$(am__dirstamp)
+
+examples/compress.sh: examples/compress.sh.m4 $(MBFL_EXAMPLES_PREREQ)
+	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+
+examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQ)
+	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+
+examples/template-actions.sh: examples/template-actions.sh.m4 $(MBFL_EXAMPLES_PREREQ)
+	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+
+if WANT_SENDMAIL
+
+dist_lisp_LISP		= examples/sendmail-mbfl.el
+dist_bin_SCRIPTS	+= examples/sendmail-mbfl.sh
+
+endif
+
+
 #### tests
 
 EXTRA_DIST	+= \
@@ -200,7 +250,7 @@ TESTS			= \
 
 .PHONY: test test-template test-template-actions
 
-test:
+test: all $(check_SCRIPTS)
 	$(AM_TESTS_ENVIRONMENT) $(BASH_PROGRAM) $(srcdir)/tests/*$(file)*.test $(AM_TEST_LOG_FLAGS)
 
 test-template:
@@ -224,55 +274,5 @@ MBFL_INSTCHECK_RUN	= $(MBFL_INSTCHECK_ENV) $(BASH_PROGRAM) $(MBFL_INSTCHECK_FLAG
 
 installcheck-local:
 	@for f in $(TESTS); do $(MBFL_INSTCHECK_RUN) $(srcdir)/$$f; done
-
-
-#### examples
-
-EXTRA_DIST		+= \
-	examples/at.sh				\
-	examples/compress.sh.m4			\
-	examples/template.sh.m4			\
-	examples/template-actions.sh.m4		\
-	\
-	examples/sendmail-connector.sh		\
-	examples/sendmail-plain.sh		\
-	examples/test-sendmail-gmail.sh		\
-	examples/test-sendmail-localhost.sh	\
-	examples/test-sendmail-poste.sh
-
-EXAMPLES		= \
-	examples/compress.sh		\
-	examples/template.sh		\
-	examples/template-actions.sh
-
-check_SCRIPTS		= $(EXAMPLES)
-CLEANFILES		+= $(EXAMPLES) examples/$(am__dirstamp)
-
-MBFL_EXAMPLES_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
-MBFL_EXAMPLES_ENV	= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBRARY); export MBFL_LIBRARY;
-MBFL_EXAMPLES_PREPRO	= $(builddir)/src/scripts/mbflpp.sh
-MBFL_EXAMPLES_PPFLAGS	= --add-bash
-MBFL_EXAMPLES_RUNPP	= $(MBFL_EXAMPLES_ENV) $(BASH_PROGRAM) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_PPFLAGS)
-MBFL_EXAMPLES_PREREQ	= examples/$(am__dirstamp) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_LIBRARY)
-
-examples/$(am__dirstamp):
-	@$(MKDIR_P) examples
-	@: > examples/$(am__dirstamp)
-
-examples/compress.sh: examples/compress.sh.m4 $(MBFL_EXAMPLES_PREREQ)
-	$(MBFL_EXAMPLES_RUNPP) <$< >$@
-
-examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQ)
-	$(MBFL_EXAMPLES_RUNPP) <$< >$@
-
-examples/template-actions.sh: examples/template-actions.sh.m4 $(MBFL_EXAMPLES_PREREQ)
-	$(MBFL_EXAMPLES_RUNPP) <$< >$@
-
-if WANT_SENDMAIL
-
-dist_lisp_LISP		= examples/sendmail-mbfl.el
-dist_bin_SCRIPTS	+= examples/sendmail-mbfl.sh
-
-endif
 
 ### end of file
