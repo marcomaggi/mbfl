@@ -198,7 +198,10 @@ TESTS			= \
 ## --------------------------------------------------------------------
 ## additional test rules
 
-.PHONY: test-template test-template-actions
+.PHONY: test test-template test-template-actions
+
+test:
+	$(AM_TESTS_ENVIRONMENT) $(BASH_PROGRAM) $(srcdir)/tests/*$(file)*.test $(AM_TEST_LOG_FLAGS)
 
 test-template:
 	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/examples/template.sh $(MFLAGS)
