@@ -356,10 +356,10 @@ function mbfl_getopts_print_usage_screen () {
     local i=0 item brief long description long_hasarg long_hasarg default
 
     printf 'Options:\n'
-    if test $mbfl_getopts_INDEX = 0
+    if ((0 == mbfl_getopts_INDEX))
     then printf '\tNo script-specific options.\n'
     else
-        for ((i=0; $i < $mbfl_getopts_INDEX; ++i))
+        for ((i=0; i < mbfl_getopts_INDEX; ++i))
         do
             if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
             then
