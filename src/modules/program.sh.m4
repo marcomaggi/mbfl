@@ -113,19 +113,19 @@ function mbfl_program_exec () {
     # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
     # /dev/fd/1 do not exist when the script is run from a cron job.
     local INCHAN=0 OUCHAN=1
-    mbfl_p_program_exec $INCHAN $OUCHAN no-replace no-background "$@"
+    mbfl_p_program_exec $INCHAN $OUCHAN false false "$@"
 }
 function mbfl_program_execbg () {
     mbfl_mandatory_parameter(INCHAN, 1, numeric input channel)
     mbfl_mandatory_parameter(OUCHAN, 2, numeric output channel)
     shift 2
-    mbfl_p_program_exec "$INCHAN" "$OUCHAN" no-replace background "$@"
+    mbfl_p_program_exec "$INCHAN" "$OUCHAN" false true "$@"
 }
 function mbfl_program_replace () {
     # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
     # /dev/fd/1 do not exist when the script is run from a cron job.
     local INCHAN=0 OUCHAN=1
-    mbfl_p_program_exec $INCHAN $OUCHAN replace no-background "$@"
+    mbfl_p_program_exec $INCHAN $OUCHAN true false "$@"
 }
 function mbfl_p_program_exec () {
     mbfl_mandatory_parameter(INCHAN,     1, input channel)
@@ -134,7 +134,7 @@ function mbfl_p_program_exec () {
     mbfl_mandatory_parameter(BACKGROUND, 4, background argument)
     shift 4
     local PERSONA=$mbfl_program_SUDO_USER
-    local USE_SUDO=no
+    local USE_SUDO=false
     local SUDO=__PATHNAME_SUDO__
     local WHOAMI=__PATHNAME_WHOAMI__
     local USERNAME
@@ -148,9 +148,9 @@ function mbfl_p_program_exec () {
     # Reset stderr to stdout redirection
     mbfl_program_STDERR_TO_STDOUT=false
 
-    # Set the variable USE_SUDO to 'yes' if  we must use sudo to run the
-    # program, otherwise leave it set to 'no'.
-    if ! test "$PERSONA" = nosudo
+    # Set the variable USE_SUDO to 'true' if we must use sudo to run the
+    # program, otherwise leave it set to 'false'.
+    if test "$PERSONA" != nosudo
     then
         if ! test -x "$SUDO"
 	then
@@ -168,27 +168,29 @@ function mbfl_p_program_exec () {
 	    exit_because_failure
 	fi
 	if test "$PERSONA" != "$USERNAME"
-	then USE_SUDO=yes
+	then USE_SUDO=true
 	fi
     fi
 
-    # Print to stderr the comman line that will be executed.
-    { mbfl_option_test || mbfl_option_show_program; } && {
-        if test "$USE_SUDO" = yes
+    # Print to stderr the command line that will be executed.
+    if { mbfl_option_test || mbfl_option_show_program; }
+    then
+        if $USE_SUDO
         then echo "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" >&2
         else echo "$@" >&2
         fi
-    }
+    fi
 
     # If this run is not dry: actually run the program.
-    mbfl_option_test || {
+    if ! mbfl_option_test
+    then
 	local EXEC
-	if test "$REPLACE" = replace
+	if $REPLACE
 	then EXEC=exec
 	fi
-        if test yes = "$USE_SUDO"
+        if $USE_SUDO
         then
-	    if test "$BACKGROUND" = background
+	    if $BACKGROUND
 	    then
 		if $STDERR_TO_STDOUT
 		   # The  order  of  redirections is  important.   First
@@ -210,7 +212,7 @@ function mbfl_p_program_exec () {
 		fi
 	    fi
         else
-	    if test "$BACKGROUND" = background
+	    if $BACKGROUND
 	    then
 		if $STDERR_TO_STDOUT
 		   # The  order  of  redirections is  important.   First
@@ -232,7 +234,7 @@ function mbfl_p_program_exec () {
 		fi
 	    fi
         fi
-    }
+    fi
 }
 
 ## --------------------------------------------------------------------
