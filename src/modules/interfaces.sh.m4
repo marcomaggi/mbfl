@@ -1,5 +1,4 @@
-#! /bin/bash
-# interface.sh.m4 --
+# interfaces.sh.m4 --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: interfaces to external programs
@@ -8,7 +7,8 @@
 # Abstract
 #
 #
-# Copyright (c) 2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2005, 2009, 2013, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -27,11 +27,9 @@
 #
 
 #page
-## ------------------------------------------------------------
-## 'atd' interface.
-## ------------------------------------------------------------
+#### 'atd' interface.
 
-mbfl_p_at_queue_letter='a'
+declare mbfl_p_at_queue_letter='a'
 
 function mbfl_at_enable () {
     mbfl_declare_program at
@@ -41,20 +39,25 @@ function mbfl_at_enable () {
 }
 function mbfl_at_validate_queue_letter () {
     mbfl_mandatory_parameter(QUEUE, 1, queue letter)
-    test ${#QUEUE} -eq 1 && mbfl_string_is_alpha_char "$QUEUE"
+    if ((1 == ${#QUEUE}))
+    then mbfl_string_is_alpha_char "$QUEUE"
+    else return 1
+    fi
 }
 function mbfl_at_validate_selected_queue () {
-    mbfl_at_check_queue_letter "$QUEUE" || {
-        mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
+    if ! mbfl_at_check_queue_letter "$QUEUE"
+    then
+        mbfl_message_error_printf 'bad "at" queue identifier "%s"' "$QUEUE"
         return 1
-    }
+    fi
 }
 function mbfl_at_select_queue () {
     mbfl_mandatory_parameter(QUEUE, 1, queue letter)
-    mbfl_at_validate_queue_letter "$QUEUE" || {
-        mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
+    if ! mbfl_at_validate_queue_letter "$QUEUE"
+    then
+        mbfl_message_error_printf 'bad "at" queue identifier "%s"' "$QUEUE"
         return 1
-    }
+    fi
     mbfl_p_at_queue_letter=${QUEUE}
 }
 function mbfl_at_schedule () {
@@ -63,23 +66,26 @@ function mbfl_at_schedule () {
     local AT QUEUE=${mbfl_p_at_queue_letter}
 
     mbfl_program_found_var AT at || exit $?
-    # The return code of this function is the return code of the
+    # The  return code  of  this  function is  the  return  code of  the
     # following pipe.
-    printf %s "$SCRIPT" | {
+    printf '%s' "$SCRIPT" | {
         mbfl_program_redirect_stderr_to_stdout
-        mbfl_program_exec "$AT" -q $QUEUE $TIME || {
-            mbfl_message_error \
-                "scheduling command execution '$SCRIPT' at time '$TIME'"
+        if ! mbfl_program_exec "$AT" -q $QUEUE $TIME
+	then
+            mbfl_message_error_printf 'scheduling command execution "%s" at time "%s"' "$SCRIPT" "$TIME"
             return 1
-        }
+        fi
     } | {
-        { read; read; } || {
-            mbfl_message_error "reading output of 'at'"
-            mbfl_message_error "while scheduling command execution '$SCRIPT' at time '$TIME'"
+	local REPLY
+
+        if ! { read; read; }
+	then
+            mbfl_message_error 'reading output of "at"'
+            mbfl_message_error_printf 'while scheduling command execution "%s" at time "%s"' "$SCRIPT" "$TIME"
             return 1
-        }
+        fi
         set -- $REPLY
-        printf %d "$2"
+        printf '%d' "$2"
     }
 }
 function mbfl_at_queue_print_identifiers () {
@@ -126,7 +132,6 @@ function mbfl_p_at_program_atq () {
     ATQ=$(mbfl_program_found atq) || exit $?
     mbfl_program_exec "$ATQ" -q "$QUEUE"
 }
-
 
 ### end of file
 # Local Variables:

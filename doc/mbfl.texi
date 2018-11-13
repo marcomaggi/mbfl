@@ -3682,44 +3682,45 @@ Terminate the script with exit code @code{99}.
 @section Scheduling jobs for later execution
 
 
-This section documents the interface to the @command{atd} daemon; we may
-want to read the @command{at}(1) manual page.  The @command{at} service
-allows a user to schedule commands to be executed at a later time.
+This section documents the interface to the @command{atd} daemon; we may want to read the
+@command{at}(1) manual page.  The @command{at} service allows a user to schedule commands to be
+executed at a later time.
 
-This interface is suitable for scripts that define a unique simple
-policy to schedule commands; example: at each run they schedule a
-command in a fixed queue, to be executed at a fixed time in the future.
+This interface is suitable for scripts that define a unique simple policy to schedule commands;
+example: at each run they schedule a command in a fixed queue, to be executed at a fixed time in the
+future.
 
-This is good to implement the logic: if a condition does not happen
-before time @code{T}, then execute command @command{C}.
+This is good to implement the logic: if a condition does not happen before time @code{T}, then
+execute command @command{C}.
 
+@c ------------------------------------------------------------------------
 
 @subsubheading Commands declaration
 
 
 @defun mbfl_at_enable
-Declare the intention to use the @command{at} interface.  @ref{program
-declaring, Declaring the intention to use a program}.
+Declare the intention to use the @command{at} interface.  @ref{program declaring, Declaring the
+intention to use a program}.
 
 The declared programs are: @command{at}, @command{atq}, @command{atrm}.
 @end defun
 
+@c ------------------------------------------------------------------------
 
 @subsubheading Arguments validation
 
 
 @defun mbfl_at_validate_queue_letter @var{letter}
-Return true if @var{letter} is a valid queue identifier, else return
-false.
+Return true if @var{letter} is a valid queue identifier, else return false.
 @end defun
 
 
 @defun mbfl_at_validate_selected_queue
-Return true if the currently selected queue identifier is valid, else
-print an error message and return false.  A false return code means
-that an internal error has corrupted the module state.
+Return true if the currently selected queue identifier is valid, else print an error message and
+return false.  A false return code means that an internal error has corrupted the module's state.
 @end defun
 
+@c ------------------------------------------------------------------------
 
 @subsubheading Commands scheduling
 
@@ -3731,29 +3732,26 @@ Select and register in an internal state a queue identifier; invoke
 
 
 @defun mbfl_at_schedule @var{command} @var{time}
-Schedule @var{command} in the currently selected queue; the script will
-be executed at @var{time}.
+Schedule @var{command} in the currently selected queue; the script will be executed at @var{time}.
 
-If no error occurs: print to stdout the identifier of the scheduled
-job; the identifier can be used as argument to @bfunc{mbfl_at_drop}.
+If no error occurs: print to stdout the identifier of the scheduled job; the identifier can be used
+as argument to @bfunc{mbfl_at_drop}.
 
 @quotation
-The @command{at} command outputs some text (in which the job is
-embedded) on its stderr channel, so this function redirects stderr to
-stdout to return the value; this operation conflicts with the use of the
-``show program'' feature of @bfunc{mbfl_program_exec}.
+The @command{at} command outputs some text (in which the job is embedded) on its @code{stderr}
+channel, so this function redirects @code{stderr} to @code{stdout} to return the value; this
+operation conflicts with the use of the ``show program'' feature of @bfunc{mbfl_program_exec}.
 @end quotation
 
-@var{command} must be a string representing the invocation of an
-external executable program: it is sent unchanged to the @command{at}
-command.  @var{time} is the argument to the @command{at} command, see the
-manual page for its description.
+@var{command} must be a string representing the invocation of an external executable program: it is
+sent unchanged to the @command{at} command.  @var{time} is the argument to the @command{at} command,
+see the manual page for its description.
 @end defun
 
 
 @defun mbfl_at_drop @var{identifier}
-Remove a job; the identifier of a job is unique in all the queues, so
-this function is not affected by the currently selected queue.
+Remove a job; the identifier of a job is unique in all the queues, so this function is not affected
+by the currently selected queue.
 @end defun
 
 
@@ -3761,6 +3759,7 @@ this function is not affected by the currently selected queue.
 Remove all the jobs from the currently selected queue.
 @end defun
 
+@c ------------------------------------------------------------------------
 
 @subsubheading Inspection
 

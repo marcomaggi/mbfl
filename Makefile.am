@@ -140,7 +140,7 @@ src/scripts/mbfltest.sh: src/scripts/mbfltest.sh.m4 src/scripts/$(am__dirstamp)
 #### examples
 
 EXTRA_DIST		+= \
-	examples/at.sh				\
+	examples/at.sh.m4			\
 	examples/compress.sh.m4			\
 	examples/template.sh.m4			\
 	examples/template-actions.sh.m4		\
@@ -151,13 +151,18 @@ EXTRA_DIST		+= \
 	examples/test-sendmail-localhost.sh	\
 	examples/test-sendmail-poste.sh
 
-EXAMPLES		= \
+CHECK_EXAMPLES		= \
 	examples/compress.sh		\
 	examples/template.sh		\
 	examples/template-actions.sh
 
-check_SCRIPTS		= $(EXAMPLES)
-CLEANFILES		+= $(EXAMPLES) examples/$(am__dirstamp)
+SOME_EXAMPLES	= \
+	examples/at.sh
+
+check_SCRIPTS		= $(CHECK_EXAMPLES)
+noinst_SCRIPTS		= $(SOME_EXAMPLES)
+
+CLEANFILES		+= $(CHECK_EXAMPLES) $(SOME_EXAMPLES) examples/$(am__dirstamp)
 
 MBFL_EXAMPLES_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
 MBFL_EXAMPLES_ENV	= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBRARY); export MBFL_LIBRARY;
@@ -169,6 +174,9 @@ MBFL_EXAMPLES_PREREQ	= examples/$(am__dirstamp) $(MBFL_EXAMPLES_PREPRO) $(MBFL_E
 examples/$(am__dirstamp):
 	@$(MKDIR_P) examples
 	@: > examples/$(am__dirstamp)
+
+examples/at.sh: examples/at.sh.m4 $(MBFL_EXAMPLES_PREREQ)
+	$(MBFL_EXAMPLES_RUNPP) <$< >$@
 
 examples/compress.sh: examples/compress.sh.m4 $(MBFL_EXAMPLES_PREREQ)
 	$(MBFL_EXAMPLES_RUNPP) <$< >$@
