@@ -3051,124 +3051,132 @@ useful to retrieve the option for Bash programmable completion.
 @chapter Printing messages to the console
 
 
-This module allows us to print messages on an output channel.  Various
-forms of message are supported.  All the function names are prefixed
-with @code{mbfl_message_}.  All the messages will have the forms:
+This module allows us to print messages to an output channel.  Various forms of message are
+supported.  All the function names are prefixed with @code{mbfl_message_}.  Almost all the messages
+will have one of the forms:
 
 @example
 <progname>: <message>
-<progname>: [error|warning]: <message>
+<progname>: error: <message>
+<progname>: warning: <message>
+<progname>: debug: <message>
 @end example
+
+@menu
+* message config::              Message module configuration.
+* message plain::               Printing plain messages.
+* message format::              Printing formatted messages.
+@end menu
+
+@c page
+@node message config
+@section Message module configuration
 
 
 @defun mbfl_message_set_progname @var{PROGNAME}
-Set the script official name to put at the beginning of messages.  This
-value is initialised to @code{script_PROGNAME}.
+Set the script's official name to put at the beginning of messages.  This value is initialised to
+@code{script_PROGNAME}.
 @end defun
 
 
 @defun mbfl_message_set_channel @var{channel}
-Select the channel to be used to output messages.  This value is
-initialised to 2, which is stderr.
+Select the channel to be used to output messages.  @var{channel} must be a numeric string,
+otherwise: an error is printed on the old channel and the function returns false.  This value is
+initialised to @code{2}, which is @code{stderr}.
 @end defun
+
+@c page
+@node message plain
+@section Printing plain messages
 
 
 @defun mbfl_message_string @var{string}
-Output a message to the selected output channel.  Echo a string composed
-of: the selected program name, a colon, a space, @var{string}.  No
-newline character is appended to the message.  Escape characters
-supported by @code{printf} are allowed in @var{string}.
+Output a message to the selected output channel.  Echo a string composed of: the selected program
+name, a colon, a space, @var{string}.  No newline character is appended to the message.  Escape
+characters supported by @code{printf} are allowed in @var{string}.
 @end defun
 
 
 @defun mbfl_message_verbose @var{string}
-Output a message to the selected output channel, but only if the
-evaluation of the function @bfunc{mbfl_option_verbose} returns true.
+Output a message to the selected output channel, but only if the evaluation of the function
+@bfunc{mbfl_option_verbose} returns true.
 
-Echo a string composed of: the selected program name, a colon, a space,
-@var{string}. No newline character is appended to the message.  Escape
-characters supported by @code{printf} are allowed in @var{string}.
+Echo a string composed of: the selected program name, a colon, a space, @var{string}.  No newline
+character is appended to the message.  Escape characters supported by @code{printf} are allowed in
+@var{string}.
 @end defun
 
 
 @defun mbfl_message_verbose_end @var{string}
-Output a message to the selected output channel, but only if the
-evaluation of the function @bfunc{mbfl_option_verbose} returns true.
-Echo the string.  No newline character is appended to the message.
-Escape characters supported by @code{printf} are allowed in
-@var{string}.
-@end defun
+Output a message to the selected output channel, but only if the evaluation of the function
+@bfunc{mbfl_option_verbose} returns true.  Echo the string.  No newline character is appended to the
+message.  Escape characters supported by @code{printf} are allowed in @var{string}.
 
-
-@defun mbfl_message_debug @var{string}
-Output a message to the selected output channel, but only if the
-evaluation of the function @bfunc{mbfl_option_debug} returns true.  Echo
-a string composed of: the selected program name, a colon, a space,
-@var{string}.  No newline character is appended to the message.  Escape
-characters supported by @code{printf} are allowed in @var{string}.
-@end defun
-
-
-@defun mbfl_message_debug_printf @var{string}
-@defunx mbfl_message_debug_printf @var{pattern} @var{arg} ...
-Format the arguments in the same way @code{printf} would do; output the
-resulting string to the selected output channel, but only if the
-evaluation of the function @bfunc{mbfl_option_debug} returns true.
-
-Echo a string composed of: the selected program name, a colon, a space,
-the string @code{debug}, a colon, a space, the formatting result.  No
-newline character is appended to the message.
-@end defun
-
-
-@defun mbfl_message_verbose_printf @var{string}
-@defunx mbfl_message_verbose_printf @var{pattern} @var{arg} ...
-Format the arguments in the same way @code{printf} would do; output the
-resulting string to the selected output channel, but only if the
-evaluation of the function @bfunc{mbfl_option_verbose} returns true.
-
-Echo a string composed of: the selected program name, a colon, a space,
-the formatting result.  No newline character is appended to the message.
-@end defun
-
-
-@defun mbfl_message_warning @var{string}
-Output a warning message to the selected output channel.  Echo a string
-composed of: the selected program name, a colon, a space, the string
-@code{warning}, a colon, a space, @var{string}, a newline character.
-Escape characters supported by @code{printf} are allowed in
-@var{string}.
-@end defun
-
-
-@defun mbfl_message_warning_printf @var{string}
-@defunx mbfl_message_warning_printf @var{pattern} @var{arg} ...
-Format the arguments in the same way @code{printf} would do; output the
-resulting string to the selected output channel.
-
-Echo a string composed of: the selected program name, a colon, a space,
-the string @code{warning}, a colon, a space, the formatting result.  No
-newline character is appended to the message.
+If @var{string} is empty: this function just prints a newline when verbose execution is enabled.
 @end defun
 
 
 @defun mbfl_message_error @var{string}
-Output an error message to the selected output channel.  Echo a string
-composed of: the selected program name, a colon, a space, the string
-@code{error}, a colon, a space, @var{string}, a newline character.
-Escape characters supported by @code{printf} are allowed in
-@var{string}.
+Output an error message to the selected output channel.  Echo a string composed of: the selected
+program name, a colon, a space, the string @code{error}, a colon, a space, @var{string}, a newline
+character.  Escape characters supported by @code{printf} are allowed in @var{string}.
 @end defun
 
 
-@defun mbfl_message_error_printf @var{string}
-@defunx mbfl_message_error_printf @var{pattern} @var{arg} ...
-Format the arguments in the same way @code{printf} would do; output the
-resulting string to the selected output channel.
+@defun mbfl_message_warning @var{string}
+Output a warning message to the selected output channel.  Echo a string composed of: the selected
+program name, a colon, a space, the string @code{warning}, a colon, a space, @var{string}, a newline
+character.  Escape characters supported by @code{printf} are allowed in @var{string}.
+@end defun
 
-Echo a string composed of: the selected program name, a colon, a space,
-the string @code{error}, a colon, a space, the formatting result.  No
+
+@defun mbfl_message_debug @var{string}
+Output a message to the selected output channel, but only if the evaluation of the function
+@bfunc{mbfl_option_debug} returns true.  Echo a string composed of: the selected program name, a
+colon, a space, @var{string}, a newline character.  Escape characters supported by @code{printf} are
+allowed in @var{string}.
+@end defun
+
+@c page
+@node message format
+@section Printing formatted messages
+
+
+@defun mbfl_message_verbose_printf @var{template} [@var{arg} @dots{}]
+Format the arguments in the same way @code{printf} would do; output the resulting string to the
+selected output channel, but only if the evaluation of the function @bfunc{mbfl_option_verbose}
+returns true.
+
+Echo a string composed of: the selected program name, a colon, a space, the formatting result.  No
 newline character is appended to the message.
+@end defun
+
+
+@defun mbfl_message_error_printf @var{template} [@var{arg} @dots{}]
+Format the arguments in the same way @code{printf} would do; output the resulting string to the
+selected output channel.
+
+Echo a string composed of: the selected program name, a colon, a space, the string @code{error}, a
+colon, a space, the formatting result, a newline character.
+@end defun
+
+
+@defun mbfl_message_warning_printf @var{template} [@var{arg} @dots{}]
+Format the arguments in the same way @code{printf} would do; output the resulting string to the
+selected output channel.
+
+Echo a string composed of: the selected program name, a colon, a space, the string @code{warning}, a
+colon, a space, the formatting result, a newline character.
+@end defun
+
+
+@defun mbfl_message_debug_printf @var{template} [@var{arg} @dots{}]
+Format the arguments in the same way @code{printf} would do; output the resulting string to the
+selected output channel, but only if the evaluation of the function @bfunc{mbfl_option_debug}
+returns true.
+
+Echo a string composed of: the selected program name, a colon, a space, the string @code{debug}, a
+colon, a space, the formatting result.  No newline character is appended to the message.
 @end defun
 
 @c page
