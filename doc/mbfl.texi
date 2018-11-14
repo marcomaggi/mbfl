@@ -4002,6 +4002,16 @@ mbfl_string_range_var RV abcdefghilm 4 end
 @section Splitting a string
 
 
+@defvar SPLITFIELD
+Array used by @bfunc{mbfl_string_chars} to store the result of splitting a string.
+@end defvar
+
+
+@defvar SPLITCOUNT
+Array used by @bfunc{mbfl_string_chars} to store the number of values in @code{SPLITFIELD}.
+@end defvar
+
+
 @defun mbfl_string_chars @var{string}
 Split a string into characters.  Fill an array named @code{SPLITFIELD}
 with the characters from the string; the number of elements in the array
