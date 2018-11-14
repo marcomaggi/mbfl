@@ -20,7 +20,7 @@ EXTRA_DIST		+= \
 	doc/one-level-actions.sh		\
 	doc/two-levels-actions.sh
 
-AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples -I $(srcdir)/src/lib
+AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
 
 info_TEXINFOS		= doc/mbfl.texi
 doc_mbfl_TEXINFOS	= \
@@ -30,7 +30,7 @@ doc_mbfl_TEXINFOS	= \
 	doc/sendmail-plain.sh		\
 	doc/sendmail-connector.sh	\
 	doc/one-level-actions.sh	\
-	src/lib/loader.sh
+	doc/loader.sh
 
 
 #### source modules

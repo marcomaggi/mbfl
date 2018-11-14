@@ -566,6 +566,10 @@ Select an output file, @code{-} for stdout.
 @item -e
 @itemx --eval
 Send the result of preprocessing to @bash{}, rather than print it.
+
+@item --no-prepro
+Do not load the installed preprocessor's macros library.  If we use this option: we are meant to use
+the option @option{--library} to load a replacement macros library from a known location.
 @end table
 
 @c page
