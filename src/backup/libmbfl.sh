@@ -9,7 +9,7 @@
 #	This is the library file of MBFL. It must be sourced in shell
 #	scripts at the beginning of evaluation.
 #
-# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -31,7 +31,7 @@ mbfl_LOADED_MBFL='yes'
 
 shopt -s expand_aliases
 
-mbfl_LOADED='yes'
+declare mbfl_LOADED='yes'
 : ${script_PROGNAME:='<unknown>'}
 : ${script_VERSION:='<unknown>'}
 : ${script_COPYRIGHT_YEARS:='<unknown>'}
@@ -79,23 +79,168 @@ mbfl_option_test && mbfl_save_option_TEST=yes
 mbfl_unset_option_test
 }
 function mbfl_option_test_restore () {
-test "$mbfl_save_option_TEST" = "yes" && mbfl_set_option_test
+if test "$mbfl_save_option_TEST" = "yes"
+then mbfl_set_option_test
+fi
 }
 
+function mbfl_string_is_quoted_char () {
+local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
+local -i POS=${2:?"missing position parameter to '${FUNCNAME}'"}
+local -i COUNT
+let --POS
+for ((COUNT=0; POS >= 0; --POS))
+do
+if test "${STRING:${POS}:1}" = \\
+then let ++COUNT
+else break
+fi
+done
+let ${COUNT}%2
+}
+function mbfl_string_is_equal_unquoted_char () {
+local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
+local -i POS=${2:?"missing position parameter to '${FUNCNAME}'"}
+local CHAR=${3:?"missing known char parameter to '${FUNCNAME}'"}
+test "${STRING:${POS}:1}" = "$CHAR" || mbfl_string_is_quoted_char "$STRING" "$POS"
+}
+function mbfl_string_quote_var () {
+local -n RESULT_VARREF=${1:?"missing result variable name parameter to '${FUNCNAME}'"}
+local STRING="${2:-}"
+local -i i
+local ch
+RESULT_VARREF=
+for ((i=0; i < ${#STRING}; ++i))
+do
+ch=${STRING:$i:1}
+test "$ch" = \\ && ch=\\\\
+RESULT_VARREF+=$ch
+done
+}
+function mbfl_string_quote () {
+local STRING="${1:-}"
+local RESULT_VARNAME
+if mbfl_string_quote_var RESULT_VARNAME "$STRING"
+then printf '%s\n' "$RESULT_VARNAME"
+else return $?
+fi
+}
+function mbfl_string_length () {
+local STRING="${1:-}"
+echo ${#STRING}
+}
+function mbfl_string_length_equal_to () {
+local -i LENGTH=${1:?"missing length of string parameter to '${FUNCNAME}'"}
+local STRING="${2:-}"
+test ${#STRING} -eq $LENGTH
+}
+function mbfl_string_is_empty () {
+local STRING="${1:-}"
+test -z "$STRING"
+}
+function mbfl_string_is_not_empty () {
+local STRING="${1:-}"
+test -n "$STRING"
+}
+function mbfl_string_first_var () {
+local -n RESULT_VARREF=${1:?"missing result variable name parameter to '${FUNCNAME}'"}
+local STRING=${2:?"missing string parameter to '${FUNCNAME}'"}
+local CHAR=${3:?"missing char parameter to '${FUNCNAME}'"}
+local BEGIN="${4:-0}"
+local -i i
+for ((i=$BEGIN; i < ${#STRING}; ++i))
+do
+if test "${STRING:$i:1}" = "$CHAR"
+then
+RESULT_VARREF=$i
+# Found!  Return with exit status 0.
+return 0
+fi
+done
+return 1
+}
+function mbfl_string_first () {
+local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
+local CHAR=${2:?"missing char parameter to '${FUNCNAME}'"}
+local BEGIN="${3:-}"
+local RESULT_VARNAME
+if mbfl_string_first_var RESULT_VARNAME "$STRING" "$CHAR" "$BEGIN"
+then printf '%s\n' "$RESULT_VARNAME"
+else return $?
+fi
+}
+function mbfl_string_last_var () {
+local -n RESULT_VARREF=${1:?"missing result variable name parameter to '${FUNCNAME}'"}
+local STRING=${2:?"missing string parameter to '${FUNCNAME}'"}
+local CHAR=${3:?"missing char parameter to '${FUNCNAME}'"}
+local BEGIN="${4:-}"
+local -i i
+for ((i=${BEGIN:-((${#STRING}-1))}; i >= 0; --i))
+do
+if test "${STRING:$i:1}" = "$CHAR"
+then
+# Found!  Return with exit status 0.
+RESULT_VARREF=$i
+return 0
+fi
+done
+return 1
+}
+function mbfl_string_last () {
+local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
+local CHAR=${2:?"missing char parameter to '${FUNCNAME}'"}
+local BEGIN="${3:-}"
+local RESULT_VARNAME
+if mbfl_string_last_var RESULT_VARNAME "$STRING" "$CHAR" "$BEGIN"
+then printf '%s\n' "$RESULT_VARNAME"
+else return $?
+fi
+}
+function mbfl_string_index_var () {
+local -n RESULT_VARREF=${1:?"missing result variable name parameter to '${FUNCNAME}'"}
+local STRING=${2:?"missing string parameter to '${FUNCNAME}'"}
+local INDEX=${3:?"missing index parameter to '${FUNCNAME}'"}
+RESULT_VARREF=${STRING:$INDEX:1}
+}
+function mbfl_string_index () {
+local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
+local INDEX=${2:?"missing index parameter to '${FUNCNAME}'"}
+printf "${STRING:$INDEX:1}\n"
+}
+function mbfl_string_range_var () {
+local -n RESULT_VARREF=${1:?"missing result variable name parameter to '${FUNCNAME}'"}
+local STRING=${2:?"missing string parameter to '${FUNCNAME}'"}
+local BEGIN=${3:?"missing begin parameter to '${FUNCNAME}'"}
+local END="${4:-}"
+if test -z "$END" -o "$END" = 'end' -o "$END" = 'END'
+then RESULT_VARREF=${STRING:$BEGIN}
+else RESULT_VARREF=${STRING:$BEGIN:$END}
+fi
+}
+function mbfl_string_range () {
+local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
+local BEGIN=${2:?"missing begin parameter to '${FUNCNAME}'"}
+local END="${3:-}"
+local RESULT_VARNAME
+if mbfl_string_range_var RESULT_VARNAME "$STRING" "$BEGIN" "$END"
+then printf '%s\n' "$RESULT_VARNAME"
+else return $?
+fi
+}
 function mbfl_string_chars () {
 local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
-local i j ch
-for ((i=0, j=0; $i < ${#STRING}; ++i, ++j))
+local -i i j
+local ch
+for ((i=0, j=0; i < ${#STRING}; ++i, ++j))
 do
 ch=${STRING:$i:1}
 if test "$ch" != $'\\'
 then SPLITFIELD[$j]=$ch
 else
 let ++i
-if test $i != "${#STRING}"
+if test $i != ${#STRING}
 then SPLITFIELD[$j]=${ch}${STRING:$i:1}
-else
-SPLITFIELD[$j]=$ch
+else SPLITFIELD[$j]=$ch
 fi
 fi
 done
@@ -118,11 +263,11 @@ function mbfl_string_split () {
 local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
 local SEPARATOR=${2:?"missing separator parameter to '${FUNCNAME}'"}
 local i j k=0 first=0
-for ((i=0; $i < "${#STRING}"; ++i))
+for ((i=0; $i < ${#STRING}; ++i))
 do
 test $(($i+${#SEPARATOR})) -gt ${#STRING} && break
-mbfl_string_equal_substring "${STRING}" $i "${SEPARATOR}" && {
-SPLITFIELD[$k]="${STRING:$first:$(($i-$first))}"
+mbfl_string_equal_substring "$STRING" $i "$SEPARATOR" && {
+SPLITFIELD[$k]=${STRING:$first:$(($i-$first))}
 let ++k
 i=$(($i+${#SEPARATOR}-1))
 # place the "first" marker to the beginning of the
@@ -131,102 +276,107 @@ i=$(($i+${#SEPARATOR}-1))
 first=$(($i+1))
 }
 done
-SPLITFIELD[$k]="${STRING:$first}"
+SPLITFIELD[$k]=${STRING:$first}
 let ++k
 SPLITCOUNT=$k
 return 0
 }
-function mbfl_string_first () {
-local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
-local CHAR=${2:?"missing char parameter to '${FUNCNAME}'"}
-local BEGIN="${3:-0}"
-local i
-for ((i=$BEGIN; $i < ${#STRING}; ++i))
-do test "${STRING:$i:1}" = "$CHAR" && {
-printf "$i\n"
-return 0
+function mbfl_string_equal () {
+local STR1="${1:-}"
+local STR2="${2:-}"
+test "$STR1" '=' "$STR2"
 }
-done
-return 0
+function mbfl_string_not_equal () {
+local STR1="${1:-}"
+local STR2="${2:-}"
+test "$STR1" '!=' "$STR2"
 }
-function mbfl_string_last () {
-local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
-local CHAR=${2:?"missing char parameter to '${FUNCNAME}'"}
-local i="${3:-${#STRING}}"
-for ((; $i >= 0; --i))
-do test "${STRING:$i:1}" = "$CHAR" && {
-printf "$i\n"
-return 0
+function mbfl_string_less () {
+local STR1="${1:-}"
+local STR2="${2:-}"
+test "$STR1" '<' "$STR2"
 }
-done
-return 0
+function mbfl_string_greater () {
+local STR1="${1:-}"
+local STR2="${2:-}"
+test "$STR1" '>' "$STR2"
 }
-function mbfl_string_index () {
-local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
-local INDEX=${2:?"missing index parameter to '${FUNCNAME}'"}
-printf "${STRING:$INDEX:1}\n"
+function mbfl_string_less_or_equal () {
+local STR1="${1:-}"
+local STR2="${2:-}"
+test "$STR1" '<' "$STR2" -o "$STR1" '=' "$STR2"
+}
+function mbfl_string_greater_or_equal () {
+local STR1="${1:-}"
+local STR2="${2:-}"
+test "$STR1" '>' "$STR2" -o "$STR1" '=' "$STR2"
 }
 function mbfl_string_is_alpha_char () {
 local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
-! test \( "${CHAR}" \< A -o Z \< "${CHAR}" \) -a \( "${CHAR}" \< a -o z \< "${CHAR}" \)
+! test \( "$CHAR" \< A -o Z \< "$CHAR" \) -a \( "$CHAR" \< a -o z \< "$CHAR" \)
 }
 function mbfl_string_is_digit_char () {
 local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
-! test "${CHAR}" \< 0 -o 9 \< "${CHAR}"
+! test "$CHAR" \< 0 -o 9 \< "$CHAR"
 }
 function mbfl_string_is_alnum_char () {
 local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
-mbfl_string_is_alpha_char "${CHAR}" || mbfl_string_is_digit_char "${CHAR}"
+mbfl_string_is_alpha_char "$CHAR" || mbfl_string_is_digit_char "$CHAR"
 }
 function mbfl_string_is_name_char () {
 local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
-mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = _
+mbfl_string_is_alnum_char "$CHAR" || test "$CHAR" = _
 }
 function mbfl_string_is_identifier_char () {
 local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
-mbfl_string_is_alnum_char "${CHAR}" || test "${CHAR}" = '_' -o "${CHAR}" = '-'
+mbfl_string_is_alnum_char "$CHAR" || test "$CHAR" = '_' -o "$CHAR" = '-'
+}
+function mbfl_string_is_extended_identifier_char () {
+local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
+mbfl_string_is_alnum_char "$CHAR" || test "$CHAR" = '_' -o "$CHAR" = '-' -o "$CHAR" = '.'
 }
 function mbfl_string_is_noblank_char () {
 local CHAR=${1:?"missing char parameter to '${FUNCNAME}'"}
-test \( "${CHAR}" != " " \) -a \
-\( "${CHAR}" != $'\n' \) -a \( "${CHAR}" != $'\r' \) -a \
-\( "${CHAR}" != $'\t' \) -a \( "${CHAR}" != $'\f' \)
+test \( "$CHAR" != " " \) -a \
+\( "$CHAR" != $'\n' \) -a \( "$CHAR" != $'\r' \) -a \
+\( "$CHAR" != $'\t' \) -a \( "$CHAR" != $'\f' \)
 }
 for class in alpha digit alnum noblank ; do
 alias "mbfl_string_is_${class}"="mbfl_p_string_is $class"
 done
 function mbfl_p_string_is () {
 local CLASS=${1:?"missing class parameter to '${FUNCNAME}'"}
-local STRING=${2:?"missing string parameter to '${FUNCNAME}'"}
-local i
-test "${#STRING}" = 0 && return 1
+local STRING=$2
+local -i i
+test ${#STRING} = 0 && return 1
 for ((i=0; $i < ${#STRING}; ++i))
 do "mbfl_string_is_${CLASS}_char" "${STRING:$i:1}" || return 1
 done
 return 0
 }
 function mbfl_string_is_name () {
-local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
-mbfl_p_string_is name "${STRING}" && ! mbfl_string_is_digit "${STRING:0:1}"
+local STRING=$1
+test -n "$STRING" && \
+mbfl_p_string_is name "$STRING" && ! mbfl_string_is_digit "${STRING:0:1}"
 }
 function mbfl_string_is_identifier () {
-local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
-mbfl_p_string_is identifier "${STRING}"		\
+local STRING=$1
+test -n "$STRING" && \
+mbfl_p_string_is identifier "$STRING"		\
 && ! mbfl_string_is_digit "${STRING:0:1}"	\
 && ! test "${STRING:0:1}" = '-'
 }
-function mbfl_string_is_username () {
-local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
-mbfl_string_is_identifier "${STRING}"
+function mbfl_string_is_extended_identifier () {
+local STRING=$1
+test -n "$STRING" && \
+mbfl_p_string_is extended_identifier "$STRING"	\
+&& ! mbfl_string_is_digit "${STRING:0:1}"		\
+&& ! test "${STRING:0:1}" = '-'
 }
-function mbfl_string_range () {
-local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
-local BEGIN=${2:?"missing begin parameter to '${FUNCNAME}'"}
-local END="${3:-}"
-if test -z "$END" -o "$END" = "end" -o "$END" = "END"
-then printf "${STRING:$BEGIN}\n"
-else printf "${STRING:$BEGIN:$END}\n"
-fi
+function mbfl_string_is_username () {
+local STRING=$1
+test -n "$STRING" && \
+mbfl_string_is_identifier "$STRING"
 }
 function mbfl_string_replace () {
 local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
@@ -243,16 +393,16 @@ while test "${STRING:$position:1}" = "$CHAR" ; do let ++position ; done
 eval $POSNAME=$position
 }
 function mbfl_string_toupper () {
-mbfl_p_string_uplo toupper "${1}"
+mbfl_p_string_uplo toupper "$1"
 }
 function mbfl_string_tolower () {
-mbfl_p_string_uplo tolower "${1}"
+mbfl_p_string_uplo tolower "$1"
 }
 function mbfl_p_string_uplo () {
 local MODE=${1:?"missing mode parameter to '${FUNCNAME}'"}
 local STRING="${2:-}"
 local ch lower upper flag=0
-test "${#STRING}" = 0 && return 0
+test ${#STRING} = 0 && return 0
 for ch in \
 a A b B c C d D e E f F g G h H i I j J k K l L m M \
 n N o O p P q Q r R s S t T u U v V w W x X y Y z Z
@@ -263,9 +413,9 @@ lower=$ch
 flag=1
 else
 upper=$ch
-if test "${MODE}" = toupper
-then STRING="${STRING//$lower/$upper}"
-else STRING="${STRING//$upper/$lower}"
+if test "$MODE" = toupper
+then STRING=${STRING//$lower/$upper}
+else STRING=${STRING//$upper/$lower}
 fi
 flag=0
 fi
@@ -274,44 +424,12 @@ printf "${STRING}\n"
 return 0
 }
 function mbfl_sprintf () {
-local VARNAME="${1:?missing variable name parameter in ${FUNCNAME}}"
-local FORMAT="${2:?missing format parameter in ${FUNCNAME}}"
+local VARNAME=${1:?"missing variable name parameter to '${FUNCNAME}'"}
+local FORMAT=${2:?"missing format parameter to '${FUNCNAME}'"}
 local OUTPUT=
 shift 2
-OUTPUT=$(printf "${FORMAT}" "$@")
-eval "${VARNAME}"=\'"${OUTPUT}"\'
-}
-function mbfl_string_is_equal_unquoted_char () {
-local STRING="${1:?missing string parameter to ${FUNCNAME}}"
-local pos="${2:?missing position parameter to ${FUNCNAME}}"
-local char="${3:?missing known char parameter to ${FUNCNAME}}"
-test "${STRING:$pos:1}" = "$char" || mbfl_string_is_quoted_char "$STRING" $pos
-}
-function mbfl_string_is_quoted_char () {
-local STRING="${1:?missing string parameter to ${FUNCNAME}}"
-local i="${2:?missing position parameter to ${FUNCNAME}}"
-local count
-let --i
-for ((count=0; $i >= 0; --i))
-do
-if test "${STRING:$i:1}" = \\
-then let ++count
-else break
-fi
-done
-let ${count}%2
-}
-function mbfl_string_quote () {
-local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
-local i ch
-for ((i=0; $i < "${#STRING}"; ++i))
-do
-ch="${STRING:$i:1}"
-test "$ch" = \\ && ch=\\\\
-printf '%s' "$ch"
-done
-printf '\n'
-return 0
+printf -v OUTPUT "$FORMAT" "$@"
+eval "$VARNAME"=\'"$OUTPUT"\'
 }
 
 function mbfl_decode_hex () {
@@ -329,685 +447,936 @@ done
 echo;# to end the line and let "read" acquire the stuff from a pipeline
 }
 
+function mbfl_p_file_backwards_looking_at_double_dot () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+local -i INDEX=${2:?"missing pathname index parameter to '${FUNCNAME}'"}
+if ((0 < INDEX))
+then
+local -r ch=${PATHNAME:$((INDEX - 1)):1}
+# For the case of standalone double-dot "..":
+if   ((1 == INDEX)) && test "$ch" = '.'
+then return 0
+# For the case of double-dot as last component "/path/to/..":
+elif ((1 < INDEX))  && test \( "$ch" = '.' \) -a \( "${PATHNAME:$((INDEX - 2)):1}" = '/' \)
+then return 0
+else return 1
+fi
+else return 1
+fi
+}
+function mbfl_p_file_looking_at_component_beginning () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+local -i INDEX=${2:?"missing pathname index parameter to '${FUNCNAME}'"}
+test 0 -eq $INDEX -o "${PATHNAME:$((INDEX - 1)):1}" = '/'
+}
 function mbfl_cd () {
 local DIRECTORY=${1:?"missing directory parameter to '${FUNCNAME}'"}
 shift 1
-DIRECTORY=$(mbfl_file_normalise "${DIRECTORY}")
+DIRECTORY=$(mbfl_file_normalise "$DIRECTORY")
 mbfl_message_verbose "entering directory: '${DIRECTORY}'\n"
-mbfl_change_directory "${DIRECTORY}" "$@"
+mbfl_change_directory "$DIRECTORY" "$@"
 }
 function mbfl_change_directory () {
 local DIRECTORY=${1:?"missing directory parameter to '${FUNCNAME}'"}
 shift 1
-cd "$@" "${DIRECTORY}" &>/dev/null
+cd "$@" "$DIRECTORY" &>/dev/null
+}
+function mbfl_file_extension_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+local -i i
+local result
+for ((i=${#PATHNAME}; $i > 0; --i))
+do
+if test "${PATHNAME:$i:1}" = '/'
+then break
+else
+if mbfl_string_is_equal_unquoted_char "$PATHNAME" $i .
+then
+if test "${PATHNAME:$((i - 1)):1}" = '/'
+then
+# There is no extension.   So we break because there
+# is no point in continuing.
+break
+else
+# Found an extension.  Store it and break.
+result=${PATHNAME:$((i + 1))}
+break
+fi
+fi
+fi
+done
+RESULT_VARREF=$result
+return 0
 }
 function mbfl_file_extension () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local i=
-for ((i="${#PATHNAME}"; $i >= 0; --i))
-do
-test "${PATHNAME:$i:1}" = '/' && return
-mbfl_string_is_equal_unquoted_char "${PATHNAME}" $i '.' && {
-let ++i
-printf '%s\n' "${PATHNAME:$i}"
-return
+local RESULT_VARNAME
+if mbfl_file_extension_var RESULT_VARNAME "$PATHNAME"
+then echo "$RESULT_VARNAME"
+else return $?
+fi
 }
-done
-}
-function mbfl_file_dirname () {
-local PATHNAME="${1:-''}"
-local i=
-for ((i="${#PATHNAME}"; $i >= 0; --i))
+function mbfl_file_dirname_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME="${2:-}"
+local -i i
+local result=.
+for ((i=${#PATHNAME}; $i >= 0; --i))
 do
-test "${PATHNAME:$i:1}" = "/" && {
-while test \( $i -gt 0 \) -a \( "${PATHNAME:$i:1}" = "/" \)
+if test "${PATHNAME:$i:1}" = '/'
+then
+# Skip consecutive slashes.
+while test \( $i -gt 0 \) -a \( "${PATHNAME:$i:1}" = '/' \)
 do let --i
 done
-if test $i = 0
-then printf '%s\n' "${PATHNAME:$i:1}"
+result=${PATHNAME:0:$((i + 1))}
+break
+fi
+done
+RESULT_VARREF=$result
+return 0
+}
+function mbfl_file_dirname () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+local RESULT_VARNAME
+if mbfl_file_dirname_var RESULT_VARNAME "$PATHNAME"
+then echo "$RESULT_VARNAME"
+else return $?
+fi
+}
+function mbfl_file_rootname_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+local -i i=${#PATHNAME}
+local ch result
+if test \( "$PATHNAME" = '/' \) -o \( "$PATHNAME" = '.' \) -o \( "$PATHNAME" = '..' \)
+then result=$PATHNAME
 else
-let ++i
-printf '%s\n' "${PATHNAME:0:$i}"
-fi
-return 0
-}
+# Skip the trailing slashes.
+while ((0 < i)) && test "${PATHNAME:$((i - 1)):1}" = '/'
+do let --i
 done
-printf '.\n'
-return 0
-}
-function mbfl_file_subpathname () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local BASEDIR=${2:?"missing base directory parameter to '${FUNCNAME}'"}
-test "${BASEDIR:$((${#BASEDIR}-1))}" = '/' && \
-BASEDIR="${BASEDIR:0:$((${#BASEDIR}-1))}"
-if test "${PATHNAME}" = "${BASEDIR}"
-then
-printf './\n'
-return 0
-elif test "${PATHNAME:0:${#BASEDIR}}" = "${BASEDIR}"
-then
-printf  './%s\n' "${PATHNAME:$((${#BASEDIR}+1))}"
-return 0
-else return 1
-fi
-}
-function mbfl_p_file_remove_dots_from_pathname () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local item i
-local SPLITPATH SPLITCOUNT; declare -a SPLITPATH
-local output output_counter=0; declare -a output
-local input_counter=0
-mbfl_file_split "${PATHNAME}"
-for ((input_counter=0; $input_counter < $SPLITCOUNT; ++input_counter))
+PATHNAME=${PATHNAME:0:$i}
+if ((1 == i))
+then result=$PATHNAME
+else
+for ((i=${#PATHNAME}; $i >= 0; --i))
 do
-case "${SPLITPATH[$input_counter]}" in
-.)
-;;
-..)
-let --output_counter
-;;
-*)
-output[$output_counter]="${SPLITPATH[$input_counter]}"
-let ++output_counter
-;;
-esac
+ch=${PATHNAME:$i:1}
+if test "$ch" = '.'
+then
+if mbfl_p_file_backwards_looking_at_double_dot "$PATHNAME" $i || \
+mbfl_p_file_looking_at_component_beginning "$PATHNAME" $i
+then
+# The pathname is one among:
+#
+#   /path/to/..
+#   ..
+#
+# print the full pathname.
+result=$PATHNAME
+break
+elif ((0 < i))
+then
+result=${PATHNAME:0:$i}
+break
+else
+result=$PATHNAME
+break
+fi
+elif test "$ch" = '/'
+then
+result=$PATHNAME
+break
+fi
 done
-PATHNAME="${output[0]}"
-for ((i=1; $i < $output_counter; ++i))
-do PATHNAME="${PATHNAME}/${output[$i]}"
-done
-printf '%s\n' "${PATHNAME}"
+fi
+fi
+RESULT_VARREF=$result
+return 0
 }
 function mbfl_file_rootname () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local i="${#PATHNAME}"
-test $i = 1 && {
-printf '%s\n' "${PATHNAME}"
-return 0
-}
-for ((i="${#PATHNAME}"; $i >= 0; --i))
-do
-ch="${PATHNAME:$i:1}"
-if test "$ch" = "."
-then
-if test $i -gt 0
-then
-printf '%s\n' "${PATHNAME:0:$i}"
-break
-else printf '%s\n' "${PATHNAME}"
+local RESULT_VARNAME
+if mbfl_file_rootname_var RESULT_VARNAME "$PATHNAME"
+then echo "$RESULT_VARNAME"
+else return $?
 fi
-elif test "$ch" = "/"
+}
+function mbfl_file_tail_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+local -i i
+local result=$PATHNAME
+for ((i=${#PATHNAME}; $i >= 0; --i))
+do
+if test "${PATHNAME:$i:1}" = '/'
 then
-printf '%s\n' "${PATHNAME}"
+result=${PATHNAME:$((i + 1))}
 break
 fi
 done
-return 0
-}
-function mbfl_file_split () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local i=0 last_found=0
-mbfl_string_skip "${PATHNAME}" i /
-last_found=$i
-for ((SPLITCOUNT=0; $i < "${#PATHNAME}"; ++i))
-do
-test "${PATHNAME:$i:1}" = / && {
-SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found:$(($i-$last_found))}"
-let ++SPLITCOUNT; let ++i
-mbfl_string_skip "${PATHNAME}" i /
-last_found=$i
-}
-done
-SPLITPATH[$SPLITCOUNT]="${PATHNAME:$last_found}"
-let ++SPLITCOUNT
+RESULT_VARREF=$result
 return 0
 }
 function mbfl_file_tail () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local i=
-for ((i="${#PATHNAME}"; $i >= 0; --i))
+local RESULT_VARNAME
+if mbfl_file_tail_var RESULT_VARNAME "$PATHNAME"
+then echo "$RESULT_VARNAME"
+else return $?
+fi
+}
+function mbfl_file_split () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+local i=0 last_found=0 len=${#PATHNAME}
+mbfl_string_skip "$PATHNAME" i '/'
+last_found=$i
+for ((SPLITCOUNT=0; $i < $len; ++i))
 do
-test "${PATHNAME:$i:1}" = "/" && {
+if test "${PATHNAME:$i:1}" = '/'
+then
+SPLITPATH[$SPLITCOUNT]=${PATHNAME:$last_found:$(($i-$last_found))}
+let ++SPLITCOUNT
 let ++i
-printf '%s\n' "${PATHNAME:$i}"
+mbfl_string_skip "$PATHNAME" i '/'
+last_found=$i
+fi
+done
+SPLITPATH[$SPLITCOUNT]=${PATHNAME:$last_found}
+let ++SPLITCOUNT
 return 0
 }
+function mbfl_file_strip_trailing_slash_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+local -i i=${#PATHNAME}
+local result
+while ((0 < i)) && test "${PATHNAME:$((i - 1)):1}" = '/'
+do let --i
 done
-printf '%s\n' "${PATHNAME}"
+if ((0 == i))
+then result='.'
+else result=${PATHNAME:0:$i}
+fi
+RESULT_VARREF=$result
+}
+function mbfl_file_strip_trailing_slash () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+local RESULT_VARNAME
+if mbfl_file_strip_trailing_slash_var RESULT_VARNAME "$PATHNAME"
+then echo "$RESULT_VARNAME"
+else return $?
+fi
+}
+function mbfl_file_strip_leading_slash_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+local result
+if test "${PATHNAME:0:1}" = '/'
+then
+local -i i=1 len=${#PATHNAME}
+# Skip the leading slashes.
+while ((i < len)) && test "${PATHNAME:$i:1}" = '/'
+do let ++i
+done
+if ((len == i))
+then result='.'
+else result=${PATHNAME:$i}
+fi
+else result=$PATHNAME
+fi
+RESULT_VARREF=$result
+}
+function mbfl_file_strip_leading_slash () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+local RESULT_VARNAME
+if mbfl_file_strip_leading_slash_var RESULT_VARNAME "$PATHNAME"
+then echo "$RESULT_VARNAME"
+else return $?
+fi
+}
+function mbfl_file_normalise_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+local PREFIX="${3:-}"
+local dirname tailame result ORGPWD=$PWD
+if mbfl_file_is_absolute "$PATHNAME"
+then
+mbfl_p_file_normalise1_var result "$PATHNAME"
+RESULT_VARREF=$result
+elif mbfl_file_is_directory "$PREFIX"
+then
+PATHNAME=${PREFIX}/${PATHNAME}
+mbfl_p_file_normalise1_var result "$PATHNAME"
+RESULT_VARREF=$result
+elif test -n "$PREFIX"
+then
+local PATHNAME1 PATHNAME2
+mbfl_p_file_remove_dots_from_pathname_var PREFIX   "$PREFIX"
+mbfl_p_file_remove_dots_from_pathname_var PATHNAME1 "$PATHNAME"
+mbfl_file_strip_trailing_slash_var        PATHNAME2 "$PATHNAME1"
+printf -v RESULT_VARREF '%s/%s' "$PREFIX" "$PATHNAME2"
+else
+mbfl_p_file_normalise1_var result "$PATHNAME"
+RESULT_VARREF=$result
+fi
+cd "$ORGPWD" >/dev/null
 return 0
 }
 function mbfl_file_normalise () {
-local pathname="${1:?}"
-local prefix="${2}"
-local dirname=
-local tailname=
-local ORGDIR="${PWD}"
-if mbfl_file_is_absolute "${pathname}"
-then mbfl_p_file_normalise1 "${pathname}"
-elif mbfl_file_is_directory "${prefix}"
-then
-pathname="${prefix}/${pathname}"
-mbfl_p_file_normalise1 "${pathname}"
-elif test -n "${prefix}"
-then
-prefix=$(mbfl_p_file_remove_dots_from_pathname "${prefix}")
-pathname=$(mbfl_p_file_remove_dots_from_pathname "${pathname}")
-pathname=$(mbfl_file_strip_trailing_slash "${pathname}")
-printf '%s/%s\n' "${prefix}" "${pathname}"
-else mbfl_p_file_normalise1 "${pathname}"
-fi
-cd "${ORGDIR}" >/dev/null
-return 0
-}
-function mbfl_p_file_normalise1 () {
-if mbfl_file_is_directory "${pathname}"
-then mbfl_p_file_normalise2 "${pathname}"
-else
-local tailname=$(mbfl_file_tail "${pathname}")
-local dirname=$(mbfl_file_dirname "${pathname}")
-if mbfl_file_is_directory "${dirname}"
-then mbfl_p_file_normalise2 "${dirname}" "${tailname}"
-else
-pathname=$(mbfl_file_strip_trailing_slash "${pathname}")
-printf '%s\n' "${pathname}"
-fi
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+local PREFIX="${2:-}"
+local RESULT_VARNAME
+if mbfl_file_normalise_var RESULT_VARNAME "$PATHNAME" "$PREFIX"
+then echo "$RESULT_VARNAME"
+else return $?
 fi
 }
-function mbfl_p_file_normalise2 () {
-cd "$1" >/dev/null
-if test -n "$2"
-then echo "${PWD}/$2"
-else echo "${PWD}"
+function mbfl_p_file_remove_dots_from_pathname_var () {
+local -n RESULT_VARREF1=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+local -a SPLITPATH
+local -i SPLITCOUNT
+local -a output
+local -i output_counter input_counter
+mbfl_file_split "$PATHNAME"
+for ((input_counter=0, output_counter=0; input_counter < SPLITCOUNT; ++input_counter))
+do
+case ${SPLITPATH[$input_counter]} in
+'.')
+;;
+'..')
+let --output_counter
+;;
+*)
+output[$output_counter]=${SPLITPATH[$input_counter]}
+let ++output_counter
+;;
+esac
+done
+{
+local -i i
+PATHNAME=${output[0]}
+for ((i=1; $i < $output_counter; ++i))
+do PATHNAME+=/${output[$i]}
+done
+}
+RESULT_VARREF1=$PATHNAME
+}
+function mbfl_p_file_normalise1_var () {
+local -n RESULT_VARREF1=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+if mbfl_file_is_directory "$PATHNAME"
+then mbfl_p_file_normalise2_var RESULT_VARREF1 "$PATHNAME"
+else
+local TAILNAME DIRNAME
+mbfl_file_tail_var    TAILNAME "$PATHNAME"
+mbfl_file_dirname_var DIRNAME  "$PATHNAME"
+if mbfl_file_is_directory "$DIRNAME"
+then mbfl_p_file_normalise2_var RESULT_VARREF1 "$DIRNAME" "$TAILNAME"
+else mbfl_file_strip_trailing_slash_var RESULT_VARREF1 "$PATHNAME"
+fi
+fi
+}
+function mbfl_p_file_normalise2_var () {
+local -n RESULT_VARREF2=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+local TAILNAME="${3:-}"
+cd "$PATHNAME" >/dev/null
+if test -n "$TAILNAME"
+then printf -v RESULT_VARREF2 '%s/%s' "$PWD" "$TAILNAME"
+else RESULT_VARREF2=$PWD
 fi
 cd - >/dev/null
 }
-function mbfl_file_strip_trailing_slash () {
-local pathname=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local len=${#pathname}
-test "${pathname:$len}" = '/' && \
-pathname=${pathname:1:$(($len-1))}
-printf '%s\n' "${pathname}"
+function mbfl_file_enable_realpath () {
+mbfl_declare_program realpath
+}
+function mbfl_file_realpath () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+shift
+local REALPATH
+mbfl_program_found_var REALPATH realpath || exit $?
+mbfl_program_exec "$REALPATH" "$@" -- "$PATHNAME"
+}
+function mbfl_file_realpath_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+shift 2
+if ! RESULT_VARREF=$(mbfl_file_realpath "$PATHNAME" "$@")
+then return $?
+fi
+}
+function mbfl_file_subpathname_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+local BASEDIR=${3:?"missing base directory parameter to '${FUNCNAME}'"}
+if test "${BASEDIR:$((${#BASEDIR}-1))}" = '/'
+then BASEDIR=${BASEDIR:0:$((${#BASEDIR}-1))}
+fi
+if test "$PATHNAME" = "$BASEDIR"
+then
+RESULT_VARREF='./'
+return 0
+elif test "${PATHNAME:0:${#BASEDIR}}" = "$BASEDIR"
+then
+printf -v RESULT_VARREF './%s' "${PATHNAME:$((${#BASEDIR}+1))}"
+return 0
+else return 1
+fi
+}
+function mbfl_file_subpathname () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+local BASEDIR=${2:?"missing base directory parameter to '${FUNCNAME}'"}
+local RESULT_VARNAME
+if mbfl_file_subpathname_var RESULT_VARNAME "$PATHNAME" "$BASEDIR"
+then echo "$RESULT_VARNAME"
+else return $?
+fi
+}
+function mbfl_file_is_absolute () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+test "${PATHNAME:0:1}" = '/'
+}
+function mbfl_file_is_absolute_dirname () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_file_is_directory "$PATHNAME" && mbfl_file_is_absolute "$PATHNAME"
+}
+function mbfl_file_is_absolute_filename () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_file_is_file "$PATHNAME" && mbfl_file_is_absolute "$PATHNAME"
+}
+function mbfl_file_is_relative () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+test "${PATHNAME:0:1}" != '/'
+}
+function mbfl_file_is_relative_dirname () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_file_is_directory "$PATHNAME" && mbfl_file_is_relative "$PATHNAME"
+}
+function mbfl_file_is_relative_filename () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_file_is_file "$PATHNAME" && mbfl_file_is_relative "$PATHNAME"
+}
+function mbfl_file_find_tmpdir_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local TMPDIR="${2:-"$mbfl_option_TMPDIR"}"
+if mbfl_file_directory_is_writable "$TMPDIR"
+then
+RESULT_VARREF=$TMPDIR
+return 0
+elif test -n "$USER"
+then
+TMPDIR=/tmp/${USER}
+if mbfl_file_directory_is_writable "$TMPDIR"
+then
+RESULT_VARREF=$TMPDIR
+return 0
+else return 1
+fi
+else
+TMPDIR=/tmp
+if mbfl_file_directory_is_writable "$TMPDIR"
+then
+RESULT_VARREF=$TMPDIR
+return 0
+else
+mbfl_message_error 'cannot find usable value for "TMPDIR"'
+return 1
+fi
+fi
 }
 function mbfl_file_find_tmpdir () {
-local TMPDIR="${1:-${mbfl_option_TMPDIR}}"
-mbfl_file_directory_is_writable "${TMPDIR}" && {
-printf "${TMPDIR}\n"
-return 0
-}
-test -n "${USER}" && {
-TMPDIR="/tmp/${USER}"
-mbfl_file_directory_is_writable "${TMPDIR}" && {
-printf "${TMPDIR}\n"
-return 0
-}
-}
-TMPDIR=/tmp
-mbfl_file_directory_is_writable "${TMPDIR}" && {
-printf "${TMPDIR}\n"
-return 0
-}
-mbfl_message_error "cannot find usable value for 'TMPDIR'"
-return 1
+local TMPDIR="${1:-"$mbfl_option_TMPDIR"}"
+local RESULT_VARNAME
+if mbfl_file_find_tmpdir_var RESULT_VARNAME "$TMPDIR"
+then echo "$RESULT_VARNAME"
+else return $?
+fi
 }
 function mbfl_file_enable_remove () {
 mbfl_declare_program rm
 mbfl_declare_program rmdir
 }
+function mbfl_exec_rm () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+shift
+local RM FLAGS
+mbfl_program_found_var RM rm || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$RM" ${FLAGS} "$@" -- "$PATHNAME"
+}
 function mbfl_file_remove () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local FLAGS="--force --recursive"
-mbfl_option_test || {
-mbfl_file_exists "${PATHNAME}" || {
-mbfl_message_error "pathname does not exist '${PATHNAME}'"
+local FLAGS='--force --recursive'
+if ! mbfl_option_test
+then
+if ! mbfl_file_exists "$PATHNAME"
+then
+mbfl_message_error_printf 'pathname does not exist: "%s"' "$PATHNAME"
 return 1
-}
-}
-mbfl_exec_rm "${PATHNAME}" ${FLAGS}
+fi
+fi
+mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_file_remove_file () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local FLAGS="--force"
-mbfl_option_test || {
-mbfl_file_is_file "${PATHNAME}" || {
-mbfl_message_error "pathname is not a file '${PATHNAME}'"
+local FLAGS='--force'
+if ! mbfl_option_test
+then
+if ! mbfl_file_is_file "$PATHNAME"
+then
+mbfl_message_error_printf 'pathname is not a file: "%s"' "$PATHNAME"
 return 1
-}
-}
-mbfl_exec_rm "${PATHNAME}" ${FLAGS}
+fi
+fi
+mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_file_remove_symlink () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local FLAGS="--force"
-mbfl_option_test || {
-mbfl_file_is_symlink "${PATHNAME}" || {
-mbfl_message_error "pathname is not a symboli link '${PATHNAME}'"
+local FLAGS='--force'
+if ! mbfl_option_test
+then
+if ! mbfl_file_is_symlink "$PATHNAME"
+then
+mbfl_message_error_printf 'pathname is not a symbolic link: "%s"' "$PATHNAME"
 return 1
-}
-}
-mbfl_exec_rm "${PATHNAME}" ${FLAGS}
+fi
+fi
+mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
 function mbfl_file_remove_file_or_symlink () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local FLAGS="--force"
-mbfl_option_test || {
-mbfl_file_is_file "${PATHNAME}" && ! mbfl_file_is_symlink "${PATHNAME}" || {
-mbfl_message_error "pathname is not a file neither a symbolic link '${PATHNAME}'"
+local FLAGS='--force'
+if ! mbfl_option_test
+then
+if      ! mbfl_file_is_file    "$PATHNAME" ||
+! mbfl_file_is_symlink "$PATHNAME"
+then
+mbfl_message_error_printf 'pathname is neither a file nor a symbolic link: "%s"' "$PATHNAME"
 return 1
+fi
+fi
+mbfl_exec_rm "$PATHNAME" ${FLAGS}
 }
-}
-mbfl_exec_rm "${PATHNAME}" ${FLAGS}
-}
-function mbfl_exec_rm () {
-local RM FLAGS
+function mbfl_exec_rmdir () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
 shift
-RM=$(mbfl_program_found rm) || exit $?
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-mbfl_program_exec "${RM}" ${FLAGS} "$@" -- "${PATHNAME}"
+local RMDIR FLAGS
+mbfl_program_found_var RMDIR rmdir || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$RMDIR" $FLAGS "$@" "$PATHNAME"
+}
+function mbfl_file_remove_directory () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+local REMOVE_SILENTLY="${2:-no}"
+local FLAGS
+if mbfl_file_is_directory "$PATHNAME"
+then
+if test "$REMOVE_SILENTLY" = 'yes'
+then FLAGS+=' --ignore-fail-on-non-empty'
+fi
+mbfl_exec_rmdir "$PATHNAME" ${FLAGS}
+else
+mbfl_message_error "pathname is not a directory '${PATHNAME}'"
+return 1
+fi
+}
+function mbfl_file_remove_directory_silently () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_file_remove_directory "$PATHNAME" yes
 }
 function mbfl_file_enable_copy () {
 mbfl_declare_program cp
+}
+function mbfl_exec_cp () {
+local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
+local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
+shift 2
+local CP FLAGS
+mbfl_program_found_var CP cp || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$CP" ${FLAGS} "$@" -- "$SOURCE" "$TARGET"
+}
+function mbfl_exec_cp_to_dir () {
+local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
+local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
+shift 2
+local CP FLAGS
+mbfl_program_found_var CP cp || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$CP" ${FLAGS} "$@" --target-directory="${TARGET}/" -- "$SOURCE"
 }
 function mbfl_file_copy () {
 local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
 local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
 shift 2
-mbfl_option_test || {
-mbfl_file_is_readable "${SOURCE}" || {
-mbfl_message_error "copying file '${SOURCE}'"
+if ! mbfl_option_test
+then
+if ! mbfl_file_is_readable "$SOURCE"
+then
+mbfl_message_error_printf 'copying file "%s"' "$SOURCE"
 return 1
-}
-}
-mbfl_file_exists "${TARGET}" && {
-if mbfl_file_is_directory "${TARGET}"
-then mbfl_message_error "target of copy exists and it is a directory '${TARGET}'"
-else mbfl_message_error "target file of copy already exists '${TARGET}'"
+fi
+fi
+if mbfl_file_exists "$TARGET"
+then
+if mbfl_file_is_directory "$TARGET"
+then mbfl_message_error_printf 'target of copy exists and it is a directory "%s"' "$TARGET"
+else mbfl_message_error_printf 'target file of copy already exists "%s"' "$TARGET"
 fi
 return 1
-}
-mbfl_exec_cp "${SOURCE}" "${TARGET}" "$@"
+else mbfl_exec_cp "$SOURCE" "$TARGET" "$@"
+fi
 }
 function mbfl_file_copy_to_directory () {
 local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
 local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
 shift 2
-mbfl_option_test || {
-{ mbfl_file_is_readable    "${SOURCE}" print_error && \
-mbfl_file_exists       "${TARGET}" print_error && \
-mbfl_file_is_directory "${TARGET}" print_error
-} || {
-mbfl_message_error "copying file '${SOURCE}'"
+if ! mbfl_option_test
+then
+if      ! mbfl_file_is_readable  "$SOURCE" print_error || \
+! mbfl_file_exists       "$TARGET" print_error || \
+! mbfl_file_is_directory "$TARGET" print_error
+then
+mbfl_message_error_printf 'copying file "%s"' "$SOURCE"
 return 1
-}
-}
-mbfl_exec_cp_to_dir "${SOURCE}" "${TARGET}" "$@"
-}
-function mbfl_exec_cp () {
-local CP FLAGS
-local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
-local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
-shift 2
-CP=$(mbfl_program_found cp) || exit $?
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-mbfl_program_exec ${CP} ${FLAGS} "$@" -- "${SOURCE}" "${TARGET}"
-}
-function mbfl_exec_cp_to_dir () {
-local CP FLAGS
-local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
-local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
-shift 2
-CP=$(mbfl_program_found cp) || exit $?
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-mbfl_program_exec ${CP} ${FLAGS} "$@" --target-directory="${TARGET}/" -- "${SOURCE}"
+fi
+fi
+mbfl_exec_cp_to_dir "$SOURCE" "$TARGET" "$@"
 }
 function mbfl_file_enable_move () {
 mbfl_declare_program mv
+}
+function mbfl_exec_mv () {
+local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
+local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
+shift 2
+local MV FLAGS
+mbfl_program_found_var MV mv || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$MV" ${FLAGS} "$@" -- "$SOURCE" "$TARGET"
+}
+function mbfl_exec_mv_to_dir () {
+local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
+local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
+shift 2
+local MV FLAGS
+mbfl_program_found_var MV mv || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$MV" ${FLAGS} "$@" --target-directory="${TARGET}/" -- "$SOURCE"
 }
 function mbfl_file_move () {
 local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
 local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
 shift 2
-mbfl_option_test || {
-mbfl_file_pathname_is_readable "${SOURCE}" print_error || {
-mbfl_message_error "moving '${SOURCE}'"
+if ! mbfl_option_test
+then
+if ! mbfl_file_pathname_is_readable "$SOURCE" print_error
+then
+mbfl_message_error_printf 'moving "%s"' "$SOURCE"
 return 1
-}
-}
-mbfl_exec_mv "${SOURCE}" "${TARGET}" "$@"
+fi
+fi
+mbfl_exec_mv "$SOURCE" "$TARGET" "$@"
 }
 function mbfl_file_move_to_directory () {
 local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
 local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
 shift 2
-mbfl_option_test || {
-{ mbfl_file_pathname_is_readable "${SOURCE}" print_error && \
-mbfl_file_exists             "${TARGET}" print_error && \
-mbfl_file_is_directory       "${TARGET}" print_error
-} || {
-mbfl_message_error "moving file '${SOURCE}'"
+if ! mbfl_option_test
+then
+if      ! mbfl_file_pathname_is_readable "$SOURCE" print_error || \
+! mbfl_file_exists               "$TARGET" print_error || \
+! mbfl_file_is_directory         "$TARGET" print_error
+then
+mbfl_message_error_printf 'moving file "%s"' "$SOURCE"
 return 1
-}
-}
-mbfl_exec_mv_to_dir "${SOURCE}" "${TARGET}" "$@"
-}
-function mbfl_exec_mv () {
-local MV FLAGS
-local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
-local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
-shift 2
-MV=$(mbfl_program_found mv) || exit $?
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-mbfl_program_exec ${MV} ${FLAGS} "$@" -- "${SOURCE}" "${TARGET}"
-}
-function mbfl_exec_mv_to_dir () {
-local MV FLAGS
-local SOURCE=${1:?"missing source pathname parameter to '${FUNCNAME}'"}
-local TARGET=${2:?"missing target pathname parameter to '${FUNCNAME}'"}
-shift 2
-MV=$(mbfl_program_found mv) || exit $?
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-mbfl_program_exec ${MV} ${FLAGS} "$@" --target-directory="${TARGET}/" -- "${SOURCE}"
-}
-function mbfl_file_remove_directory () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local REMOVE_SILENTLY="${2:-no}"
-local FLAGS=
-mbfl_file_is_directory "${PATHNAME}" || {
-mbfl_message_error "pathname is not a directory '${PATHNAME}'"
-return 1
-}
-test "${REMOVE_SILENTLY}" = 'yes' && \
-FLAGS="${FLAGS} --ignore-fail-on-non-empty"
-mbfl_exec_rmdir "${PATHNAME}" ${FLAGS}
-}
-function mbfl_file_remove_directory_silently () {
-mbfl_file_remove_directory "$1" yes
-}
-function mbfl_exec_rmdir () {
-local RMDIR FLAGS
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-shift
-RMDIR=$(mbfl_program_found rmdir) || exit $?
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-mbfl_program_exec "${RMDIR}" $FLAGS "$@" "${PATHNAME}"
+fi
+fi
+mbfl_exec_mv_to_dir "$SOURCE" "$TARGET" "$@"
 }
 function mbfl_file_enable_make_directory () {
 mbfl_declare_program mkdir
 }
 function mbfl_file_make_directory () {
-local MKDIR FLAGS
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
 local PERMISSIONS="${2:-0775}"
-MKDIR=$(mbfl_program_found mkdir) || exit $?
+local MKDIR FLAGS
+mbfl_program_found_var MKDIR mkdir || exit $?
 FLAGS="--parents --mode=${PERMISSIONS}"
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-mbfl_program_exec "${MKDIR}" $FLAGS "${PATHNAME}"
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$MKDIR" $FLAGS -- "$PATHNAME"
 }
 function mbfl_file_make_if_not_directory () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
 local PERMISSIONS="${2:-0775}"
-mbfl_file_is_directory   "${PATHNAME}" || \
-mbfl_file_make_directory "${PATHNAME}" "${PERMISSIONS}"
+mbfl_file_is_directory   "$PATHNAME" || \
+mbfl_file_make_directory "$PATHNAME" "$PERMISSIONS"
 mbfl_program_reset_sudo_user
 }
 function mbfl_file_enable_symlink () {
 mbfl_declare_program ln
 }
+function mbfl_exec_ln () {
+local ORIGINAL_NAME=${1:?"missing original name parameter to '${FUNCNAME}'"}
+local LINK_NAME=${2:?"missing link name parameter to '${FUNCNAME}'"}
+shift 2
+local LN FLAGS
+mbfl_program_found_var LN ln || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$LN" ${FLAGS} "$@" -- "$ORIGINAL_NAME" "$LINK_NAME"
+}
 function mbfl_file_symlink () {
-local LN FLAGS="--symbolic"
 local ORIGINAL_NAME=${1:?"missing original name parameter to '${FUNCNAME}'"}
 local SYMLINK_NAME=${2:?"missing symbolic link name parameter to '${FUNCNAME}'"}
-LN=$(mbfl_program_found ln) || exit $?
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-mbfl_program_exec "${LN}" ${FLAGS} "${ORIGINAL_NAME}" "${SYMLINK_NAME}"
+mbfl_exec_ln "$ORIGINAL_NAME" "$SYMLINK_NAME" --symbolic
 }
 function mbfl_file_enable_listing () {
 mbfl_declare_program ls
 mbfl_declare_program readlink
 }
 function mbfl_file_listing () {
-local LS
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
 shift 1
-LS=$(mbfl_program_found ls) || exit $?
-mbfl_program_exec ${LS} "$@" "${PATHNAME}"
-}
-function mbfl_file_long_listing () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local LS_FLAGS='-l'
-mbfl_file_listing "${PATHNAME}" "${LS_FLAGS}"
-}
-function mbfl_file_get_owner () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local LS_FLAGS="-l" OWNER
-set -- $(mbfl_file_p_invoke_ls) || return 1
-OWNER=$3
-test -z "${OWNER}" && {
-mbfl_message_error "null owner while inspecting '${PATHNAME}'"
-return 1
-}
-printf '%s\n' "${OWNER}"
-}
-function mbfl_file_get_group () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local LS_FLAGS="-l" GROUP
-set -- $(mbfl_file_p_invoke_ls) || return 1
-GROUP=$4
-test -z "${GROUP}" && {
-mbfl_message_error "null group while inspecting '${PATHNAME}'"
-return 1
-}
-printf '%s\n' "${GROUP}"
-}
-function mbfl_file_get_size () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-local output LS_FLAGS="-l"
-output=$(mbfl_file_p_invoke_ls) || return 1
-set -- $output
-printf '%s\n' "${5}"
+local LS
+mbfl_program_found_var LS ls || exit $?
+mbfl_program_exec "$LS" "$@" -- "$PATHNAME"
 }
 function mbfl_file_p_invoke_ls () {
 local LS
-LS=$(mbfl_program_found ls) || exit $?
-mbfl_file_is_directory "${PATHNAME}" && LS_FLAGS="${LS_FLAGS} -d"
-mbfl_program_exec ${LS} ${LS_FLAGS} "${PATHNAME}"
+mbfl_program_found_var LS ls || exit $?
+mbfl_file_is_directory "$PATHNAME" && LS_FLAGS+=' -d'
+mbfl_program_exec "$LS" ${LS_FLAGS} "$PATHNAME"
 }
-function mbfl_file_normalise_link () {
-local READLINK
+function mbfl_file_long_listing () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-READLINK=$(mbfl_program_found readlink) || exit $?
-mbfl_program_exec "${READLINK}" -fn "${PATHNAME}"
+mbfl_file_listing "$PATHNAME" '-l'
+}
+function mbfl_exec_readlink () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+shift
+local READLINK FLAGS
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_found_var READLINK readlink || exit $?
+mbfl_program_exec "$READLINK" ${FLAGS} "$@" -- "$PATHNAME"
 }
 function mbfl_file_read_link () {
-local READLINK
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-READLINK=$(mbfl_program_found readlink) || exit $?
-mbfl_program_exec "${READLINK}" "${PATHNAME}"
+mbfl_exec_readlink "$PATHNAME"
+}
+function mbfl_file_normalise_link () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_exec_readlink "$PATHNAME" --canonicalize --no-newline
 }
 function mbfl_p_file_print_error_return_result () {
-local RESULT=$?
-test ${RESULT} != 0 -a "${PRINT_ERROR}" = 'print_error' && \
-mbfl_message_error "${ERROR_MESSAGE}"
+local RESULT=${1:?"missing result parameter to '${FUNCNAME}'"}
+if test ${RESULT} != 0 -a "$PRINT_ERROR" = 'print_error'
+then mbfl_message_error "$ERROR_MESSAGE"
+fi
 return $RESULT
 }
 function mbfl_file_exists () {
-test -e "${1}"
+local PATHNAME="${1:-}"
+test -n "$PATHNAME" -a -e "$PATHNAME"
 }
 function mbfl_file_pathname_is_readable () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
 local ERROR_MESSAGE="not readable pathname '${PATHNAME}'"
-test -n "${PATHNAME}" -a -r "${PATHNAME}"
-mbfl_p_file_print_error_return_result
+test -n "$PATHNAME" -a -r "$PATHNAME"
+mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_pathname_is_writable () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
 local ERROR_MESSAGE="not writable pathname '${PATHNAME}'"
-test -n "${PATHNAME}" -a -w "${PATHNAME}"
-mbfl_p_file_print_error_return_result
+test -n "$PATHNAME" -a -w "$PATHNAME"
+mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_pathname_is_executable () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
 local ERROR_MESSAGE="not executable pathname '${PATHNAME}'"
-test -n "${PATHNAME}" -a -x "${PATHNAME}"
-mbfl_p_file_print_error_return_result
+test -n "$PATHNAME" -a -x "$PATHNAME"
+mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_is_file () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
 local ERROR_MESSAGE="unexistent file '${PATHNAME}'"
-test -n "${PATHNAME}" -a -f "${PATHNAME}"
-mbfl_p_file_print_error_return_result
+test -n "$PATHNAME" -a -f "$PATHNAME"
+mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_is_readable () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
-mbfl_file_is_file "${PATHNAME}" "${PRINT_ERROR}" && \
-mbfl_file_pathname_is_readable "${PATHNAME}" "${PRINT_ERROR}"
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
+mbfl_file_is_file "$PATHNAME" "$PRINT_ERROR" && \
+mbfl_file_pathname_is_readable "$PATHNAME" "$PRINT_ERROR"
 }
 function mbfl_file_is_writable () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
-mbfl_file_is_file "${PATHNAME}" "${PRINT_ERROR}" && \
-mbfl_file_pathname_is_writable "${PATHNAME}" "${PRINT_ERROR}"
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
+mbfl_file_is_file "$PATHNAME" "$PRINT_ERROR" && \
+mbfl_file_pathname_is_writable "$PATHNAME" "$PRINT_ERROR"
 }
 function mbfl_file_is_executable () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
-mbfl_file_is_file "${PATHNAME}" "${PRINT_ERROR}" && \
-mbfl_file_pathname_is_executable "${PATHNAME}" "${PRINT_ERROR}"
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
+mbfl_file_is_file "$PATHNAME" "$PRINT_ERROR" && \
+mbfl_file_pathname_is_executable "$PATHNAME" "$PRINT_ERROR"
 }
 function mbfl_file_is_directory () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
 local ERROR_MESSAGE="unexistent directory '${PATHNAME}'"
-test -n "${PATHNAME}" -a -d "${PATHNAME}"
-mbfl_p_file_print_error_return_result
+test -n "$PATHNAME" -a -d "$PATHNAME"
+mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_directory_is_readable () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
-mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
-mbfl_file_pathname_is_readable "${PATHNAME}" "${PRINT_ERROR}"
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
+mbfl_file_is_directory "$PATHNAME" "$PRINT_ERROR" && \
+mbfl_file_pathname_is_readable "$PATHNAME" "$PRINT_ERROR"
 }
 function mbfl_file_directory_is_writable () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
-mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
-mbfl_file_pathname_is_writable "${PATHNAME}" "${PRINT_ERROR}"
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
+mbfl_file_is_directory "$PATHNAME" "$PRINT_ERROR" && \
+mbfl_file_pathname_is_writable "$PATHNAME" "$PRINT_ERROR"
 }
 function mbfl_file_directory_is_executable () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
-mbfl_file_is_directory "${PATHNAME}" "${PRINT_ERROR}" && \
-mbfl_file_pathname_is_executable "${PATHNAME}" "${PRINT_ERROR}"
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
+mbfl_file_is_directory "$PATHNAME" "$PRINT_ERROR" && \
+mbfl_file_pathname_is_executable "$PATHNAME" "$PRINT_ERROR"
 }
 function mbfl_file_directory_validate_writability () {
-local code
 local DIRECTORY=${1:?"missing directory pathname parameter to '${FUNCNAME}'"}
 local DESCRIPTION=${2:?"missing directory description parameter to '${FUNCNAME}'"}
 mbfl_message_verbose "validating ${DESCRIPTION} directory '${DIRECTORY}'\n"
-mbfl_file_is_directory              "${DIRECTORY}" print_error && \
-mbfl_file_directory_is_writable     "${DIRECTORY}" print_error
-code=$?
-test $code != 0 && mbfl_message_error \
-"unwritable ${DESCRIPTION} directory '${DIRECTORY}'"
-return $code
+mbfl_file_is_directory "$DIRECTORY" print_error && mbfl_file_directory_is_writable "$DIRECTORY" print_error
+local CODE=$?
+if test $CODE != 0
+then mbfl_message_error_printf 'unwritable %s directory: "%s"' "$DESCRIPTION" "$DIRECTORY"
+fi
+return $CODE
 }
 function mbfl_file_is_symlink () {
-local PATHNAME=${1}
-local PRINT_ERROR=${2:-no}
+local PATHNAME="${1:-}"
+local PRINT_ERROR="${2:-no}"
 local ERROR_MESSAGE="not a symbolic link pathname '${PATHNAME}'"
-test -n "${PATHNAME}" -a -L "${PATHNAME}"
-mbfl_p_file_print_error_return_result
-}
-function mbfl_file_is_absolute () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-test "${PATHNAME:0:1}" = /
-}
-function mbfl_file_is_absolute_dirname () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-mbfl_file_is_directory "${PATHNAME}" && mbfl_file_is_absolute "${PATHNAME}"
-}
-function mbfl_file_is_absolute_filename () {
-local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-mbfl_file_is_file "${PATHNAME}" && mbfl_file_is_absolute "${PATHNAME}"
+test -n "$PATHNAME" -a -L "$PATHNAME"
+mbfl_p_file_print_error_return_result $?
 }
 function mbfl_file_enable_tar () {
 mbfl_declare_program tar
 }
+function mbfl_exec_tar () {
+local TAR FLAGS
+mbfl_program_found_var TAR tar || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$TAR" ${FLAGS} "$@"
+}
+function mbfl_tar_exec () {
+mbfl_exec_tar "$@"
+}
 function mbfl_tar_create_to_stdout () {
 local DIRECTORY=${1:?"missing directory name parameter to '${FUNCNAME}'"}
 shift
-mbfl_tar_exec --directory="${DIRECTORY}" --create --file=- "$@" .
+mbfl_exec_tar --directory="$DIRECTORY" --create --file=- "$@" .
 }
 function mbfl_tar_extract_from_stdin () {
 local DIRECTORY=${1:?"missing directory name parameter to '${FUNCNAME}'"}
 shift
-mbfl_tar_exec --directory="${DIRECTORY}" --extract --file=- "$@"
+mbfl_exec_tar --directory="$DIRECTORY" --extract --file=- "$@"
 }
 function mbfl_tar_extract_from_file () {
 local DIRECTORY=${1:?"missing directory name parameter to '${FUNCNAME}'"}
 local ARCHIVE_FILENAME=${2:?"missing archive pathname parameter to '${FUNCNAME}'"}
 shift 2
-mbfl_tar_exec --directory="${DIRECTORY}" --extract --file="${ARCHIVE_FILENAME}" "$@"
+mbfl_exec_tar --directory="$DIRECTORY" --extract --file="$ARCHIVE_FILENAME" "$@"
 }
 function mbfl_tar_create_to_file () {
 local DIRECTORY=${1:?"missing directory name parameter to '${FUNCNAME}'"}
 local ARCHIVE_FILENAME=${2:?"missing archive pathname parameter to '${FUNCNAME}'"}
 shift 2
-mbfl_tar_exec --directory="${DIRECTORY}" --create --file="${ARCHIVE_FILENAME}" "$@" .
+mbfl_exec_tar --directory="$DIRECTORY" --create --file="$ARCHIVE_FILENAME" "$@" .
 }
 function mbfl_tar_archive_directory_to_file () {
-local PARENT DIRNAME
 local DIRECTORY=${1:?"missing directory name parameter to '${FUNCNAME}'"}
 local ARCHIVE_FILENAME=${2:?"missing archive pathname parameter to '${FUNCNAME}'"}
 shift 2
-PARENT=$(mbfl_file_dirname "${DIRECTORY}")
-DIRNAME=$(mbfl_file_tail "${DIRECTORY}")
-mbfl_tar_exec --directory="${PARENT}" --create \
---file="${ARCHIVE_FILENAME}" "$@" "${DIRNAME}"
+local PARENT DIRNAME
+mbfl_file_dirname_var PARENT "$DIRECTORY"
+mbfl_file_tail_var DIRNAME "$DIRECTORY"
+mbfl_exec_tar --directory="$PARENT" --create --file="$ARCHIVE_FILENAME" "$@" "$DIRNAME"
 }
 function mbfl_tar_list () {
 local ARCHIVE_FILENAME=${1:?"missing archive pathname parameter to '${FUNCNAME}'"}
 shift
-mbfl_tar_exec --list --file="${ARCHIVE_FILENAME}" "$@"
-}
-function mbfl_tar_exec () {
-local TAR FLAGS
-TAR=$(mbfl_program_found tar) || exit $?
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-mbfl_program_exec "${TAR}" ${FLAGS} "$@"
+mbfl_exec_tar --list --file="$ARCHIVE_FILENAME" "$@"
 }
 function mbfl_file_enable_permissions () {
-mbfl_declare_program ls
-mbfl_declare_program cut
+mbfl_file_enable_stat
 mbfl_declare_program chmod
 }
-function mbfl_file_get_permissions () {
-local LS CUT SYMBOLIC OWNER GROUP OTHER
+function mbfl_exec_chmod () {
 local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
-LS=$(mbfl_program_found ls)   || exit $?
-CUT=$(mbfl_program_found cut) || exit $?
-SYMBOLIC=$(mbfl_program_exec ${LS} -ld "${PATHNAME}" | \
-mbfl_program_exec ${CUT} -d' ' -f1) || return $?
-mbfl_message_debug "symbolic permissions '${SYMBOLIC}'"
-OWNER=${SYMBOLIC:1:3}
-GROUP=${SYMBOLIC:4:3}
-OTHER=${SYMBOLIC:7:3}
-OWNER=$(mbfl_system_symbolic_to_octal_permissions "${OWNER}")
-GROUP=$(mbfl_system_symbolic_to_octal_permissions "${GROUP}")
-OTHER=$(mbfl_system_symbolic_to_octal_permissions "${OTHER}")
-printf '0%d%d%d\n' "${OWNER}" "${GROUP}" "${OTHER}"
+shift
+local CHMOD FLAGS
+mbfl_program_found_var CHMOD chmod || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$CHMOD" ${FLAGS} "$@" -- "$PATHNAME"
+}
+function mbfl_file_get_permissions () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_file_stat "$PATHNAME" --printf='0%a\n'
 }
 function mbfl_file_set_permissions () {
-local CHMOD
 local PERMISSIONS=${1:?"missing permissions parameter to '${FUNCNAME}'"}
 local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
-CHMOD=$(mbfl_program_found chmod) || exit $?
-mbfl_program_exec ${CHMOD} "${PERMISSIONS}" "${PATHNAME}"
+mbfl_exec_chmod "$PATHNAME" "$PERMISSIONS"
+}
+function mbfl_file_get_permissions_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --format='0%a')
+}
+function mbfl_file_enable_owner_and_group () {
+mbfl_file_enable_stat
+mbfl_declare_program chown
+mbfl_declare_program chgrp
+}
+function mbfl_exec_chown () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+shift
+local CHOWN FLAGS
+mbfl_program_found_var CHOWN chown || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$CHOWN" ${FLAGS} "$@" -- "$PATHNAME"
+}
+function mbfl_exec_chgrp () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+shift
+local CHGRP FLAGS
+mbfl_program_found_var CHGRP chgrp || exit $?
+mbfl_option_verbose_program && FLAGS+=' --verbose'
+mbfl_program_exec "$CHGRP" ${FLAGS} "$@" -- "$PATHNAME"
+}
+function mbfl_file_set_owner () {
+local OWNER=${1:?"missing owner parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+shift 2
+mbfl_exec_chown "$PATHNAME" "$OWNER" "$@"
+}
+function mbfl_file_set_group () {
+local GROUP=${1:?"missing group parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+shift 2
+mbfl_exec_chgrp "$PATHNAME" "$GROUP" "$@"
 }
 function mbfl_file_append () {
 local STRING=${1:?"missing string parameter to '${FUNCNAME}'"}
@@ -1024,117 +1393,258 @@ local FILENAME=${1:?"missing file name parameter to '${FUNCNAME}'"}
 mbfl_program_bash_command "printf '%s' \"\$(<${FILENAME})\""
 }
 mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_gzip
-mbfl_p_file_compress_KEEP_ORIGINAL='no'
-mbfl_p_file_compress_TO_STDOUT='no'
+mbfl_p_file_compress_KEEP_ORIGINAL=false
+mbfl_p_file_compress_TO_STDOUT=false
 function mbfl_file_enable_compress () {
 mbfl_declare_program gzip
 mbfl_declare_program bzip2
+mbfl_declare_program lzip
+mbfl_declare_program xz
 mbfl_file_compress_select_gzip
 mbfl_file_compress_nokeep
 }
-function mbfl_file_compress_keep ()     { mbfl_p_file_compress_KEEP_ORIGINAL='yes'; }
-function mbfl_file_compress_nokeep ()   { mbfl_p_file_compress_KEEP_ORIGINAL='no'; }
-function mbfl_file_compress_stdout ()   { mbfl_p_file_compress_TO_STDOUT='yes'; }
-function mbfl_file_compress_nostdout () { mbfl_p_file_compress_TO_STDOUT='no'; }
+function mbfl_file_compress_keep     () { mbfl_p_file_compress_KEEP_ORIGINAL=true;  }
+function mbfl_file_compress_nokeep   () { mbfl_p_file_compress_KEEP_ORIGINAL=false; }
+function mbfl_file_compress_stdout   () { mbfl_p_file_compress_TO_STDOUT=true;      }
+function mbfl_file_compress_nostdout () { mbfl_p_file_compress_TO_STDOUT=false;     }
 function mbfl_file_compress_select_gzip () {
 mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_gzip
 }
+function mbfl_file_compress_select_bzip2 () {
+mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_bzip2
+}
 function mbfl_file_compress_select_bzip () {
-mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_bzip
+mbfl_file_compress_select_bzip2
+}
+function mbfl_file_compress_select_lzip () {
+mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_lzip
+}
+function mbfl_file_compress_select_xz () {
+mbfl_p_file_compress_FUNCTION=mbfl_p_file_compress_xz
 }
 function mbfl_file_compress () {
-local FILE=${1:?"missing target file parameter to '${FUNCNAME}'"}
+local FILE=${1:?"missing uncompressed source file parameter to '${FUNCNAME}'"}
 shift
-mbfl_p_file_compress compress "${FILE}" "$@"
+mbfl_p_file_compress compress "$FILE" "$@"
 }
 function mbfl_file_decompress () {
-local FILE=${1:?"missing target file parameter to '${FUNCNAME}'"}
+local FILE=${1:?"missing compressed source file parameter to '${FUNCNAME}'"}
 shift
-mbfl_p_file_compress decompress "${FILE}" "$@"
+mbfl_p_file_compress decompress "$FILE" "$@"
 }
 function mbfl_p_file_compress () {
 local MODE=${1:?"missing compression/decompression mode parameter to '${FUNCNAME}'"}
 local FILE=${2:?"missing target file parameter to '${FUNCNAME}'"}
 shift 2
-mbfl_file_is_file "${FILE}" || {
-mbfl_message_error "compression target is not a file '${FILE}'"
+if mbfl_file_is_file "$FILE"
+then ${mbfl_p_file_compress_FUNCTION} ${MODE} "$FILE" "$@"
+else
+mbfl_message_error_printf 'compression target is not a file "%s"' "$FILE"
 return 1
-}
-${mbfl_p_file_compress_FUNCTION} ${MODE} "${FILE}" "$@"
+fi
 }
 function mbfl_p_file_compress_gzip () {
-local COMPRESSOR FLAGS DEST
 local COMPRESS=${1:?"missing compress/decompress mode parameter to '${FUNCNAME}'"}
-local SOURCE=${2:?"missing target file parameter to '${FUNCNAME}'"}
+local SOURCE=${2:?"missing source file parameter to '${FUNCNAME}'"}
 shift 2
-COMPRESSOR=$(mbfl_program_found gzip) || exit $?
-case "${COMPRESS}" in
+local COMPRESSOR FLAGS='--force' DEST
+mbfl_program_found_var COMPRESSOR gzip || exit $?
+case $COMPRESS in
 compress)
-DEST=${SOURCE}.gz
+printf -v DEST '%s.gz' "$SOURCE"
 ;;
 decompress)
-DEST=$(mbfl_file_rootname "${SOURCE}")
-FLAGS="${FLAGS} --decompress"
+mbfl_file_rootname_var DEST "$SOURCE"
+FLAGS+=' --decompress'
 ;;
 *)
-mbfl_message_error "internal error: wrong mode '${COMPRESS}' in '${FUNCNAME}'"
+mbfl_message_error_printf 'internal error: wrong mode "%s" in "%s"' "$COMPRESS" "$FUNCNAME"
 exit_failure
 ;;
 esac
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-if test "${mbfl_p_file_compress_TO_STDOUT}" = yes
-then
-FLAGS="${FLAGS} --stdout"
-mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
-else
-if test "${mbfl_p_file_compress_KEEP_ORIGINAL}" = yes
-then
-FLAGS="${FLAGS} --stdout"
-mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}" >"${DEST}"
-else mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
+if mbfl_option_verbose_program
+then FLAGS+=' --verbose'
 fi
+if $mbfl_p_file_compress_TO_STDOUT
+then
+# When   writing   to   stdout:  we   ignore   the   keep/nokeep
+# configuration and always keep.
+FLAGS+=' --keep --stdout'
+mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
+else
+# The   output  goes   to   a  file:   honour  the   keep/nokeep
+# configuration.
+if $mbfl_p_file_compress_KEEP_ORIGINAL
+then FLAGS+=' --keep'
+fi
+mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
 fi
 }
-function mbfl_p_file_compress_bzip () {
-local COMPRESSOR FLAGS DEST
+function mbfl_p_file_compress_bzip2 () {
 local COMPRESS=${1:?"missing compress/decompress mode parameter to '${FUNCNAME}'"}
 local SOURCE=${2:?"missing target file parameter to '${FUNCNAME}'"}
 shift 2
-COMPRESSOR=$(mbfl_program_found bzip2) || exit $?
-case "${COMPRESS}" in
+local COMPRESSOR FLAGS='--force' DEST
+mbfl_program_found_var COMPRESSOR bzip2 || exit $?
+case $COMPRESS in
 compress)
-DEST=${SOURCE}.bz2
-FLAGS="${FLAGS} --compress"
+printf -v DEST '%s.bz2' "$SOURCE"
+FLAGS+=' --compress'
 ;;
 decompress)
-DEST=$(mbfl_file_rootname "${SOURCE}")
-FLAGS="${FLAGS} --decompress"
+mbfl_file_rootname_var DEST "$SOURCE"
+FLAGS+=' --decompress'
 ;;
 *)
-mbfl_message_error "internal error: wrong mode '${COMPRESS}' in '${FUNCNAME}'"
+mbfl_message_error_printf 'internal error: wrong mode "%s" in "%s"' "$COMPRESS" "$FUNCNAME"
 exit_failure
 ;;
 esac
-mbfl_option_verbose_program && FLAGS="${FLAGS} --verbose"
-if test "${mbfl_p_file_compress_TO_STDOUT}" = yes
-then
-FLAGS="${FLAGS} --keep --stdout"
-mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
-else
-test "${mbfl_p_file_compress_KEEP_ORIGINAL}" = yes && \
-FLAGS="${FLAGS} --keep"
-mbfl_program_exec "${COMPRESSOR}" ${FLAGS} "$@" "${SOURCE}"
+if mbfl_option_verbose_program
+then FLAGS+=' --verbose'
 fi
+if $mbfl_p_file_compress_TO_STDOUT
+then
+# When   writing   to   stdout:  we   ignore   the   keep/nokeep
+# configuration and always keep.
+FLAGS+=' --keep --stdout'
+mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
+else
+# The   output  goes   to   a  file:   honour  the   keep/nokeep
+# configuration.
+if $mbfl_p_file_compress_KEEP_ORIGINAL
+then FLAGS+=' --keep'
+fi
+mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
+fi
+}
+function mbfl_p_file_compress_lzip () {
+local COMPRESS=${1:?"missing compress/decompress mode parameter to '${FUNCNAME}'"}
+local SOURCE=${2:?"missing source file parameter to '${FUNCNAME}'"}
+shift 2
+local COMPRESSOR FLAGS='--force' DEST
+mbfl_program_found_var COMPRESSOR lzip || exit $?
+case $COMPRESS in
+compress)
+printf -v DEST '%s.lz' "$SOURCE"
+;;
+decompress)
+mbfl_file_rootname_var DEST "$SOURCE"
+FLAGS+=' --decompress'
+;;
+*)
+mbfl_message_error_printf 'internal error: wrong mode "%s" in "%s"' "$COMPRESS" "$FUNCNAME"
+exit_failure
+;;
+esac
+if mbfl_option_verbose_program
+then FLAGS+=' --verbose'
+fi
+if $mbfl_p_file_compress_TO_STDOUT
+then
+# When   writing   to   stdout:  we   ignore   the   keep/nokeep
+# configuration and always keep.
+FLAGS+=' --keep --stdout'
+mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
+else
+# The   output  goes   to   a  file:   honour  the   keep/nokeep
+# configuration.
+if $mbfl_p_file_compress_KEEP_ORIGINAL
+then FLAGS+=' --keep'
+fi
+mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
+fi
+}
+function mbfl_p_file_compress_xz () {
+local COMPRESS=${1:?"missing compress/decompress mode parameter to '${FUNCNAME}'"}
+local SOURCE=${2:?"missing source file parameter to '${FUNCNAME}'"}
+shift 2
+local COMPRESSOR FLAGS='--force' DEST
+mbfl_program_found_var COMPRESSOR xz || exit $?
+case $COMPRESS in
+compress)
+printf -v DEST '%s.xz' "$SOURCE"
+;;
+decompress)
+mbfl_file_rootname_var DEST "$SOURCE"
+FLAGS+=' --decompress'
+;;
+*)
+mbfl_message_error_printf 'internal error: wrong mode "%s" in "%s"' "$COMPRESS" "$FUNCNAME"
+exit_failure
+;;
+esac
+if mbfl_option_verbose_program
+then FLAGS+=' --verbose'
+fi
+if $mbfl_p_file_compress_TO_STDOUT
+then
+# When   writing   to   stdout:  we   ignore   the   keep/nokeep
+# configuration and always keep.
+FLAGS+=' --keep --stdout'
+mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE" >"$DEST"
+else
+# The   output  goes   to   a  file:   honour  the   keep/nokeep
+# configuration.
+if $mbfl_p_file_compress_KEEP_ORIGINAL
+then FLAGS+=' --keep'
+fi
+mbfl_program_exec "$COMPRESSOR" ${FLAGS} "$@" "$SOURCE"
+fi
+}
+function mbfl_file_enable_stat () {
+mbfl_declare_program stat
+}
+function mbfl_file_stat () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+shift
+local STAT FLAGS
+mbfl_program_found_var STAT stat || exit $?
+mbfl_program_exec "$STAT" ${FLAGS} "$@" -- "$PATHNAME"
+}
+function mbfl_file_stat_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+shift 2
+RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" "$@")
+}
+function mbfl_file_get_owner () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_file_stat "$PATHNAME" --format='%U'
+}
+function mbfl_file_get_group () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_file_stat "$PATHNAME" --format='%G'
+}
+function mbfl_file_get_size () {
+local PATHNAME=${1:?"missing pathname parameter to '${FUNCNAME}'"}
+mbfl_file_stat "$PATHNAME" --format='%s'
+}
+function mbfl_file_get_owner_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --printf='%U')
+}
+function mbfl_file_get_group_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --printf='%G')
+}
+function mbfl_file_get_size_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PATHNAME=${2:?"missing pathname parameter to '${FUNCNAME}'"}
+RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --printf='%s')
 }
 
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" != 'yes'
+then
 declare -A mbfl_action_sets_EXISTS
 declare -A mbfl_action_sets_SUBSETS
 declare -A mbfl_action_sets_KEYWORDS
 declare -A mbfl_action_sets_DESCRIPTIONS
 declare -A mbfl_action_sets_IDENTIFIERS
 declare mbfl_action_sets_SELECTED_SET=MAIN
-}
+fi
 function mbfl_declare_action_set () {
 local ACTION_SET=${1:?"missing action set parameter to '${FUNCNAME}'"}
 if mbfl_string_is_name "$ACTION_SET"
@@ -1157,7 +1667,7 @@ local ACTION_KEYWORD=${2:?"missing keyword parameter to '${FUNCNAME}'"}
 local ACTION_SUBSET=${3:?"missing subset parameter to '${FUNCNAME}'"}
 local ACTION_IDENTIFIER=${4:?"missing identifier parameter to '${FUNCNAME}'"}
 local ACTION_DESCRIPTION=${5:?"missing description parameter to '${FUNCNAME}'"}
-local KEY="${ACTION_SET}-${ACTION_IDENTIFIER}"
+local KEY=${ACTION_SET}-${ACTION_IDENTIFIER}
 if ! mbfl_string_is_identifier "$ACTION_IDENTIFIER"
 then
 mbfl_message_error "internal error: invalid action identifier: $ACTION_IDENTIFIER"
@@ -1177,7 +1687,7 @@ mbfl_message_error \
 exit_because_invalid_action_declaration
 fi
 mbfl_action_sets_DESCRIPTIONS[${KEY}]=$ACTION_DESCRIPTION
-mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]="${mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]} ${ACTION_IDENTIFIER}"
+mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]+=" ${ACTION_IDENTIFIER}"
 return 0
 }
 function mbfl_actions_set_exists () {
@@ -1194,7 +1704,7 @@ test "$ACTION_SET" = NONE \
 }
 function mbfl_actions_dispatch () {
 local ACTION_SET=${1:?"missing action set parameter to '${FUNCNAME}'"}
-if ! mbfl_actions_set_exists "${ACTION_SET}"
+if ! mbfl_actions_set_exists "$ACTION_SET"
 then
 mbfl_message_error "invalid action identifier: \"${ACTION_SET}\""
 return 1
@@ -1203,10 +1713,10 @@ if test $ARG1ST = $ARGC1
 then return 0
 fi
 local IDENTIFIER=${ARGV1[$ARG1ST]}
-local KEY="${ACTION_SET}-${IDENTIFIER}"
+local KEY=${ACTION_SET}-${IDENTIFIER}
 local ACTION_SUBSET=${mbfl_action_sets_SUBSETS[${KEY}]}
 local ACTION_KEYWORD=${mbfl_action_sets_KEYWORDS[${KEY}]}
-if test -z "${ACTION_KEYWORD}"
+if test -z "$ACTION_KEYWORD"
 then
 return 0
 else
@@ -1215,9 +1725,9 @@ mbfl_main_set_before_parsing_options "script_before_parsing_options_$ACTION_KEYW
 mbfl_main_set_after_parsing_options  "script_after_parsing_options_$ACTION_KEYWORD"
 mbfl_main_set_main "script_action_$ACTION_KEYWORD"
 mbfl_action_sets_SELECTED_SET=$ACTION_SUBSET
-if test "${ACTION_SUBSET}" != NONE
+if test "$ACTION_SUBSET" != NONE
 then
-mbfl_actions_dispatch "${ACTION_SUBSET}"
+mbfl_actions_dispatch "$ACTION_SUBSET"
 else
 return 0
 fi
@@ -1240,15 +1750,16 @@ printf 'Action commands:\n\n'
 local ACTION_IDENTIFIER KEY
 for ACTION_IDENTIFIER in ${mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]}
 do
-KEY="${ACTION_SET}-${ACTION_IDENTIFIER}"
+KEY=${ACTION_SET}-${ACTION_IDENTIFIER}
 printf '\t%s [options] [arguments]\n\t\t%s\n\n' \
-"${ACTION_IDENTIFIER}" "${mbfl_action_sets_DESCRIPTIONS[${KEY}]}"
+"$ACTION_IDENTIFIER" "${mbfl_action_sets_DESCRIPTIONS[${KEY}]}"
 done
 fi
 return 0
 }
 
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" = 'yes'
+then
 declare -i mbfl_getopts_INDEX=0
 declare -a mbfl_getopts_KEYWORDS
 declare -a mbfl_getopts_DEFAULTS
@@ -1256,7 +1767,7 @@ declare -a mbfl_getopts_BRIEFS
 declare -a mbfl_getopts_LONGS
 declare -a mbfl_getopts_HASARG
 declare -a mbfl_getopts_DESCRIPTION
-}
+fi
 test "$mbfl_INTERACTIVE" = yes || {
 mbfl_message_DEFAULT_OPTIONS="
 \t--tmpdir=DIR
@@ -1275,6 +1786,7 @@ mbfl_message_DEFAULT_OPTIONS="
 \t--verbose-program
 \t\tverbose execution for external program (if supported)
 \t--show-program
+\t--show-programs
 \t\tprint the command line of executed external programs
 \t--null
 \t\tuse the null character as terminator
@@ -1306,12 +1818,12 @@ mbfl_message_DEFAULT_OPTIONS="
 "
 }
 function mbfl_declare_option () {
-local keyword="$1"
-local default="$2"
-local brief="$3"
-local long="$4"
-local hasarg="$5"
-local description="$6"
+local keyword=$1
+local default=$2
+local brief=$3
+local long=$4
+local hasarg=$5
+local description=$6
 local index=$(($mbfl_getopts_INDEX + 1))
 mbfl_p_declare_option_test_length $keyword keyword $index
 mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=$(mbfl_string_toupper "$keyword")
@@ -1336,9 +1848,9 @@ mbfl_getopts_INDEX=$index
 eval script_option_$(mbfl_string_toupper $keyword)=\'"$default"\'
 if test ${keyword:0:7} = ACTION_
 then
-if test "${hasarg}" = noarg
+if test "$hasarg" = noarg
 then
-if test "${default}" = yes
+if test "$default" = yes
 then mbfl_main_set_main script_$(mbfl_string_tolower $keyword)
 fi
 else
@@ -1363,34 +1875,34 @@ local p_OPT= p_OPTARG= argument= i
 local found_end_of_options_delimiter=0 retval
 for ((i=${ARG1ST}; $i < ${ARGC1}; ++i))
 do
-argument="${ARGV1[$i]}"
+argument=${ARGV1[$i]}
 if test "$found_end_of_options_delimiter" = 1
 then
-ARGV[$ARGC]="${argument}"
+ARGV[$ARGC]=${argument}
 let ++ARGC
-elif test "${argument}" = '--'
+elif test "$argument" = '--'
 then found_end_of_options_delimiter=1
 elif \
-mbfl_getopts_isbrief "${argument}" p_OPT || \
-mbfl_getopts_islong  "${argument}" p_OPT
+mbfl_getopts_isbrief "$argument" p_OPT || \
+mbfl_getopts_islong  "$argument" p_OPT
 then
-mbfl_getopts_p_process_predefined_option_no_arg "${p_OPT}"
+mbfl_getopts_p_process_predefined_option_no_arg "$p_OPT"
 retval=$?
 if test $retval != 0
 then return $retval
 fi
 elif \
-mbfl_getopts_isbrief_with "${argument}" p_OPT p_OPTARG || \
-mbfl_getopts_islong_with  "${argument}" p_OPT p_OPTARG
+mbfl_getopts_isbrief_with "$argument" p_OPT p_OPTARG || \
+mbfl_getopts_islong_with  "$argument" p_OPT p_OPTARG
 then
-mbfl_getopts_p_process_predefined_option_with_arg "${p_OPT}" "${p_OPTARG}"
+mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
 retval=$?
 if test $retval != 0
 then return $retval
 fi
 else
 test $i = 0 && found_possible_action_argument=1
-ARGV[$ARGC]="${argument}"
+ARGV[$ARGC]=${argument}
 let ++ARGC
 fi
 done
@@ -1407,10 +1919,10 @@ local OPTARG="${2:-}"
 local i=0 value brief long hasarg keyword tolower_keyword update_procedure state_variable
 for ((i=0; $i < $mbfl_getopts_INDEX; ++i))
 do
-keyword="${mbfl_getopts_KEYWORDS[$i]}"
-brief="${mbfl_getopts_BRIEFS[$i]}"
-long="${mbfl_getopts_LONGS[$i]}"
-hasarg="${mbfl_getopts_HASARG[$i]}"
+keyword=${mbfl_getopts_KEYWORDS[$i]}
+brief=${mbfl_getopts_BRIEFS[$i]}
+long=${mbfl_getopts_LONGS[$i]}
+hasarg=${mbfl_getopts_HASARG[$i]}
 test \( -n "$OPT" \) -a \
 \( \( -n "$brief" -a "$brief" = "$OPT" \) -o \
 \( -n "$long"  -a "$long"  = "$OPT" \) \) && {
@@ -1422,17 +1934,17 @@ mbfl_message_error "expected non-empty argument for option: \"$OPT\""
 return 1
 fi
 if mbfl_option_encoded_args
-then value=$(mbfl_decode_hex "${OPTARG}")
-else value="$OPTARG"
+then value=$(mbfl_decode_hex "$OPTARG")
+else value=$OPTARG
 fi
-else value="yes"
+else value=yes
 fi
 tolower_keyword=$(mbfl_string_tolower ${keyword})
 test ${keyword:0:7} = ACTION_ && \
 mbfl_main_set_main script_${tolower_keyword}
 update_procedure=script_option_update_${tolower_keyword}
 state_variable=script_option_${keyword}
-eval ${state_variable}=\'"${value}"\'
+eval ${state_variable}=\'"$value"\'
 mbfl_invoke_script_function ${update_procedure}
 return 0
 }
@@ -1443,7 +1955,7 @@ return 1
 function mbfl_getopts_p_process_predefined_option_no_arg () {
 local OPT=${1:?"missing option name parameter to '${FUNCNAME}'"}
 local i=0
-case "${OPT}" in
+case $OPT in
 encoded-args)
 mbfl_set_option_encoded_args
 ;;
@@ -1456,7 +1968,7 @@ mbfl_unset_option_verbose
 verbose-program)
 mbfl_set_option_verbose_program
 ;;
-show-program)
+show-program|show-programs)
 mbfl_set_option_show_program
 ;;
 debug)
@@ -1501,7 +2013,7 @@ print-options)
 mbfl_main_set_private_main mbfl_getopts_print_long_switches
 ;;
 *)
-mbfl_getopts_p_process_script_option "${OPT}"
+mbfl_getopts_p_process_script_option "$OPT"
 return $?
 ;;
 esac
@@ -1515,21 +2027,21 @@ then
 mbfl_message_error "empty value given to option \"${OPT}\" requiring argument"
 exit_because_invalid_option_argument
 fi
-mbfl_option_encoded_args && OPTARG=$(mbfl_decode_hex "${OPTARG}")
-case "${OPT}" in
+mbfl_option_encoded_args && OPTARG=$(mbfl_decode_hex "$OPTARG")
+case $OPT in
 tmpdir)
-mbfl_option_TMPDIR="${OPTARG}"
+mbfl_option_TMPDIR=${OPTARG}
 ;;
 print-exit-code)
-mbfl_main_print_exit_code "${OPTARG}"
+mbfl_main_print_exit_code "$OPTARG"
 exit 0
 ;;
 print-exit-code-names|print-exit-code-name)
-mbfl_main_print_exit_code_names "${OPTARG}"
+mbfl_main_print_exit_code_names "$OPTARG"
 exit 0
 ;;
 *)
-mbfl_getopts_p_process_script_option "${OPT}" "${OPTARG}"
+mbfl_getopts_p_process_script_option "$OPT" "$OPTARG"
 return $?
 ;;
 esac
@@ -1539,36 +2051,36 @@ function mbfl_getopts_print_usage_screen () {
 local BRIEF_OR_LONG=${1:?"missing brief or long selection parameter to '${FUNCNAME}'"}
 local i=0 item brief long description long_hasarg long_hasarg default
 printf 'Options:\n'
-if test $mbfl_getopts_INDEX = 0
+if ((0 == mbfl_getopts_INDEX))
 then printf '\tNo script-specific options.\n'
 else
-for ((i=0; $i < $mbfl_getopts_INDEX; ++i))
+for ((i=0; i < mbfl_getopts_INDEX; ++i))
 do
 if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
 then
-brief_hasarg="VALUE"
-long_hasarg="=VALUE"
+brief_hasarg='VALUE'
+long_hasarg='=VALUE'
 else
 brief_hasarg=
 long_hasarg=
 fi
 printf '\t'
-brief="${mbfl_getopts_BRIEFS[$i]}"
-test -n "$brief" && printf -- '-%s%s ' "${brief}" "${brief_hasarg}"
-long="${mbfl_getopts_LONGS[$i]}"
-test -n "$long" && printf -- '--%s%s' "${long}" "${long_hasarg}"
+brief=${mbfl_getopts_BRIEFS[$i]}
+test -n "$brief" && printf -- '-%s%s ' "$brief" "$brief_hasarg"
+long=${mbfl_getopts_LONGS[$i]}
+test -n "$long" && printf -- '--%s%s' "$long" "$long_hasarg"
 printf '\n'
-description="${mbfl_getopts_DESCRIPTION[$i]}"
-test -z "${description}" && description='undocumented option'
-printf '\t\t%s\n' "${description}"
+description=${mbfl_getopts_DESCRIPTION[$i]}
+test -z "$description" && description='undocumented option'
+printf '\t\t%s\n' "$description"
 if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
 then
-item="${mbfl_getopts_DEFAULTS[$i]}"
-if test -n "${item}"
-then default=$(printf "'%s'" "${item}")
+item=${mbfl_getopts_DEFAULTS[$i]}
+if test -n "$item"
+then printf -v default "'%s'" "$item"
 else default='empty'
 fi
-printf '\t\t(default: %s)\n' "${default}"
+printf '\t\t(default: %s)\n' "$default"
 else
 if test ${mbfl_getopts_KEYWORDS[$i]:0:7} = ACTION_
 then
@@ -1580,36 +2092,43 @@ fi
 done
 fi
 printf '\n'
-if test ${BRIEF_OR_LONG} = long
+if test $BRIEF_OR_LONG = long
 then
 printf 'Common options:\n'
-printf "${mbfl_message_DEFAULT_OPTIONS}"
+printf "$mbfl_message_DEFAULT_OPTIONS"
 printf '\n'
 fi
 }
 function mbfl_getopts_islong () {
 local ARGUMENT=${1:?"missing argument parameter to '${FUNCNAME}'"}
 local OPTION_VARIABLE_NAME="${2:-}"
-local len="${#ARGUMENT}" i ch
-test $len -lt 3 -o "${ARGUMENT:0:2}" != "--"  && return 1
-for ((i=2; $i < $len; ++i)); do
-ch="${ARGUMENT:$i:1}"
-mbfl_p_getopts_not_char_in_long_option_name "$ch" && return 1
+local -i len=${#ARGUMENT} i
+local ch
+if test $len -lt 3 -o "${ARGUMENT:0:2}" != "--"
+then return 1
+else
+for ((i=2; $i < $len; ++i))
+do
+ch=${ARGUMENT:$i:1}
+if mbfl_p_getopts_not_char_in_long_option_name "$ch"
+then return 1
+fi
 done
-mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${ARGUMENT:2}"
+mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2}"
 return 0
+fi
 }
 function mbfl_getopts_islong_with () {
 local ARGUMENT=${1:?"missing argument parameter to '${FUNCNAME}'"}
 local OPTION_VARIABLE_NAME="${2:-}"
 local VALUE_VARIABLE_NAME="${3:-}"
-local len="${#ARGUMENT}" equal_position
+local len=${#ARGUMENT} equal_position
 test $len -lt 5 && return 1
-equal_position=$(mbfl_string_first "${ARGUMENT}" =)
+equal_position=$(mbfl_string_first "$ARGUMENT" =)
 test -z "$equal_position" -o $(($equal_position + 1)) = $len && return 1
 mbfl_getopts_islong "${ARGUMENT:0:$equal_position}" || return 1
-mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${ARGUMENT:2:$(($equal_position - 2))}"
-mbfl_set_maybe "${VALUE_VARIABLE_NAME}"  "${ARGUMENT:$(($equal_position + 1))}"
+mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2:$(($equal_position - 2))}"
+mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "${ARGUMENT:$(($equal_position + 1))}"
 return 0
 }
 function mbfl_p_getopts_not_char_in_long_option_name () {
@@ -1627,7 +2146,7 @@ test "${#COMMAND_LINE_ARGUMENT}" = 2 -a \
 "${COMMAND_LINE_ARGUMENT:0:1}" = "-" || return 1
 mbfl_p_getopts_not_char_in_brief_option_name \
 "${COMMAND_LINE_ARGUMENT:1:1}" && return 1
-mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${COMMAND_LINE_ARGUMENT:1}"
+mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${COMMAND_LINE_ARGUMENT:1}"
 return 0
 }
 function mbfl_getopts_isbrief_with () {
@@ -1638,9 +2157,9 @@ test "${#COMMAND_LINE_ARGUMENT}" -gt 2 -a \
 "${COMMAND_LINE_ARGUMENT:0:1}" = "-" || return 1
 mbfl_p_getopts_not_char_in_brief_option_name \
 "${COMMAND_LINE_ARGUMENT:1:1}" && return 1
-mbfl_set_maybe "${OPTION_VARIABLE_NAME}" "${COMMAND_LINE_ARGUMENT:1:1}"
+mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${COMMAND_LINE_ARGUMENT:1:1}"
 local QUOTED_VALUE=$(mbfl_string_quote "${COMMAND_LINE_ARGUMENT:2}")
-mbfl_set_maybe "${VALUE_VARIABLE_NAME}" "${QUOTED_VALUE}"
+mbfl_set_maybe "$VALUE_VARIABLE_NAME" "$QUOTED_VALUE"
 return 0
 }
 function mbfl_p_getopts_not_char_in_brief_option_name () {
@@ -1685,7 +2204,7 @@ local i item
 for ((i=0; $i < $ARGC; ++i))
 do
 item=$(mbfl_file_normalise "${ARGV[$i]}")
-test -f "${item}" || {
+test -f "$item" || {
 mbfl_message_error "unexistent file '${item}'"
 return 1
 }
@@ -1710,67 +2229,63 @@ echo
 return 0
 }
 
-mbfl_message_PROGNAME=$script_PROGNAME
-mbfl_message_CHANNEL=2
+declare mbfl_message_PROGNAME=$script_PROGNAME
+declare mbfl_message_CHANNEL=2
 function mbfl_message_set_progname () {
 mbfl_message_PROGNAME=${1:?$FUNCNAME error: missing program name argument}
 }
 function mbfl_message_set_channel () {
-mbfl_message_CHANNEL=${1:?$FUNCNAME error: missing channel argument}
+local CHANNEL=${1:?$FUNCNAME error: missing channel argument}
+if mbfl_string_is_digit "$CHANNEL"
+then mbfl_message_CHANNEL=$CHANNEL
+else
+mbfl_message_error_printf 'invalid message channel, expected digits: "%s"' "$CHANNEL"
+return 1
+fi
 }
 function mbfl_message_p_print () {
-printf "${2:?$1 error: missing argument}" >&$mbfl_message_CHANNEL
+printf "${2:?$1 error: missing template argument}" >&$mbfl_message_CHANNEL
 }
 function mbfl_message_p_print_prefix () {
 mbfl_message_p_print $1 "$mbfl_message_PROGNAME: $2"
 }
 function mbfl_message_string () {
+local STRING="${1:-string}"
 mbfl_message_p_print $FUNCNAME "$1"
 return 0
 }
 function mbfl_message_verbose () {
-mbfl_option_verbose && mbfl_message_p_print_prefix $FUNCNAME "$1"
+if mbfl_option_verbose
+then mbfl_message_p_print_prefix $FUNCNAME "$1"
+fi
 return 0
 }
 function mbfl_message_verbose_end () {
-mbfl_option_verbose && mbfl_message_p_print $FUNCNAME "$1\n"
+if mbfl_option_verbose
+then mbfl_message_p_print $FUNCNAME "$1\n"
+fi
 return 0
 }
-function mbfl_message_verbose_printf () {
-mbfl_option_verbose && {
-printf '%s: ' "$mbfl_message_PROGNAME" >&$mbfl_message_CHANNEL
-printf "$@" >&$mbfl_message_CHANNEL
-}
-return 0
-}
-function mbfl_message_debug () {
-mbfl_option_debug && mbfl_message_p_print_prefix $FUNCNAME "debug: $1\n"
-return 0
-}
-function mbfl_message_debug_printf () {
-mbfl_option_debug && {
-{
-printf '%s: debug: ' "$mbfl_message_PROGNAME"
-printf "$@"
-echo
-} >&$mbfl_message_CHANNEL
-}
+function mbfl_message_error () {
+mbfl_message_p_print_prefix $FUNCNAME "error: $1\n"
 return 0
 }
 function mbfl_message_warning () {
 mbfl_message_p_print_prefix $FUNCNAME "warning: $1\n"
 return 0
 }
-function mbfl_message_warning_printf () {
-{
-printf '%s: warning: ' "$mbfl_message_PROGNAME"
-printf "$@"
-echo
-} >&$mbfl_message_CHANNEL
+function mbfl_message_debug () {
+mbfl_option_debug && mbfl_message_p_print_prefix $FUNCNAME "debug: $1\n"
 return 0
 }
-function mbfl_message_error () {
-mbfl_message_p_print_prefix $FUNCNAME "error: $1\n"
+function mbfl_message_verbose_printf () {
+if mbfl_option_verbose
+then
+{
+printf '%s: ' "$mbfl_message_PROGNAME"
+printf "$@"
+} >&$mbfl_message_CHANNEL
+fi
 return 0
 }
 function mbfl_message_error_printf () {
@@ -1781,34 +2296,101 @@ echo
 } >&$mbfl_message_CHANNEL
 return 0
 }
-
-function mbfl_program_find () {
-local PROGRAM=${1:?"missing program parameter to '${FUNCNAME}'"}
-local item
-for item in $(type -ap "$PROGRAM")
-do
-if mbfl_file_is_executable "$item"
+function mbfl_message_warning_printf () {
+{
+printf '%s: warning: ' "$mbfl_message_PROGNAME"
+printf "$@"
+echo
+} >&$mbfl_message_CHANNEL
+return 0
+}
+function mbfl_message_debug_printf () {
+if mbfl_option_debug
 then
-printf "%s\n" "$item"
+{
+printf '%s: debug: ' "$mbfl_message_PROGNAME"
+printf "$@"
+echo
+} >&$mbfl_message_CHANNEL
+fi
+return 0
+}
+
+declare -a mbfl_split_PATH
+function mbfl_program_split_path () {
+if ((0 == ${#mbfl_split_PATH[@]}))
+then
+local -a SPLITFIELD
+local -i SPLITCOUNT i
+mbfl_string_split "$PATH" :
+for ((i=0; i < SPLITCOUNT; ++i))
+do mbfl_split_PATH[$i]=${SPLITFIELD[$i]}
+done
+return 0
+else return 1
+fi
+}
+function mbfl_program_find_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PROGRAM=${2:?"missing program parameter to '${FUNCNAME}'"}
+local dummy
+if { mbfl_file_is_absolute "$PROGRAM" && mbfl_file_is_executable "$PROGRAM"; }
+then
+RESULT_VARREF="$PROGRAM"
+return 0
+elif { mbfl_string_first_var dummy "$PROGRAM" '/' && mbfl_file_is_executable "$PROGRAM"; }
+then
+# The $PROGRAM it not an absolute pathname, but it is a relative
+# pathname with at least one slash in it.
+RESULT_VARREF="$PROGRAM"
+return 0
+else
+mbfl_program_split_path
+local PATHNAME
+local -i i number_of_components=${#mbfl_split_PATH[@]}
+for ((i=0; i < number_of_components; ++i))
+do
+printf -v PATHNAME '%s/%s' "${mbfl_split_PATH[$i]}" "$PROGRAM"
+if mbfl_file_is_executable "$PATHNAME"
+then
+RESULT_VARREF="$PATHNAME"
 return 0
 fi
 done
-return 0
+fi
+return 1
+}
+function mbfl_program_find () {
+local PROGRAM=${1:?"missing program parameter to '${FUNCNAME}'"}
+local RESULT_VARNAME
+if mbfl_program_find_var RESULT_VARNAME "$PROGRAM"
+then echo "$RESULT_VARNAME"
+else return $?
+fi
 }
 declare mbfl_program_SUDO_USER=nosudo
-declare mbfl_program_STDERR_TO_STDOUT=no
+declare mbfl_program_SUDO_OPTIONS
+declare -r mbfl_program_SUDO=/usr/bin/sudo
+declare -r mbfl_program_WHOAMI=/usr/bin/whoami
+declare mbfl_program_STDERR_TO_STDOUT=false
 declare mbfl_program_BASH=$BASH
 declare mbfl_program_BGPID
 function mbfl_program_enable_sudo () {
-mbfl_declare_program sudo
-mbfl_declare_program whoami
+local SUDO=/usr/bin/sudo
+if ! test -x "$SUDO"
+then mbfl_message_warning_printf 'executable sudo not found: "%s"\n' "$SUDO"
+fi
+local WHOAMI=/usr/bin/whoami
+if ! test -x "$WHOAMI"
+then mbfl_message_warning_printf 'executable whoami not found: "%s"\n' "$WHOAMI"
+fi
 }
 function mbfl_program_declare_sudo_user () {
 local PERSONA=${1:?"missing sudo user name parameter to '${FUNCNAME}'"}
-if mbfl_string_is_username "${PERSONA}"
-then mbfl_program_SUDO_USER=${PERSONA}
+if mbfl_string_is_username "$PERSONA"
+then mbfl_program_SUDO_USER=$PERSONA
 else
-mbfl_message_error_printf 'attempt to select invalid "sudo" user: "%s"' "${PERSONA}"
+mbfl_message_error_printf 'attempt to select invalid "sudo" user: "%s"' "$PERSONA"
 exit_because_invalid_username
 fi
 }
@@ -1821,81 +2403,126 @@ printf '%s\n' "$mbfl_program_SUDO_USER"
 function mbfl_program_requested_sudo () {
 test "$mbfl_program_SUDO_USER" != nosudo
 }
+function mbfl_program_declare_sudo_options () {
+mbfl_program_SUDO_OPTIONS="$*"
+}
+function mbfl_program_reset_sudo_options () {
+mbfl_program_SUDO_OPTIONS=
+}
 function mbfl_program_redirect_stderr_to_stdout () {
-mbfl_program_STDERR_TO_STDOUT=yes
+mbfl_program_STDERR_TO_STDOUT=true
 }
 function mbfl_program_exec () {
-local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
-local STDERR_TO_STDOUT=no
-mbfl_program_SUDO_USER=nosudo
-test "$PERSONA" = nosudo || {
-SUDO=$(mbfl_program_found sudo)     || exit $?
-WHOAMI=$(mbfl_program_found whoami) || exit $?
-USE_SUDO=yes
-}
-STDERR_TO_STDOUT=${mbfl_program_STDERR_TO_STDOUT}
-mbfl_program_STDERR_TO_STDOUT=no
-{ mbfl_option_test || mbfl_option_show_program; } && {
-if test "$USE_SUDO" = yes -a "$PERSONA" != "$USER"
-then echo "$SUDO" -u "$PERSONA" "$@" >&2
-else echo "$@" >&2
-fi
-}
-mbfl_option_test || {
-if test "$USE_SUDO" = yes
-then
-test "$PERSONA" = $("$WHOAMI") || {
-if test "$STDERR_TO_STDOUT" = yes
-then "$SUDO" -u "$PERSONA" "$@" 2>&1
-else "$SUDO" -u "$PERSONA" "$@"
-fi
-}
-else
-if test "$STDERR_TO_STDOUT" = yes
-then "$@" 2>&1
-else "$@"
-fi
-fi
-}
+local INCHAN=0 OUCHAN=1
+mbfl_p_program_exec $INCHAN $OUCHAN false false "$@"
 }
 function mbfl_program_execbg () {
+local INCHAN=${1:?"missing numeric input channel parameter to '${FUNCNAME}'"}
+local OUCHAN=${2:?"missing numeric output channel parameter to '${FUNCNAME}'"}
+shift 2
+mbfl_p_program_exec "$INCHAN" "$OUCHAN" false true "$@"
+}
+function mbfl_program_replace () {
+local INCHAN=0 OUCHAN=1
+mbfl_p_program_exec $INCHAN $OUCHAN true false "$@"
+}
+function mbfl_p_program_exec () {
 local INCHAN=${1:?"missing input channel parameter to '${FUNCNAME}'"}
 local OUCHAN=${2:?"missing output channel parameter to '${FUNCNAME}'"}
-shift 2
-local PERSONA=$mbfl_program_SUDO_USER USE_SUDO=no SUDO WHOAMI
-local STDERR_TO_STDOUT=no
+local REPLACE=${3:?"missing replace argument parameter to '${FUNCNAME}'"}
+local BACKGROUND=${4:?"missing background argument parameter to '${FUNCNAME}'"}
+shift 4
+local PERSONA=$mbfl_program_SUDO_USER
+local USE_SUDO=false
+local SUDO=/usr/bin/sudo
+local WHOAMI=/usr/bin/whoami
+local USERNAME
+local SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
+local STDERR_TO_STDOUT=$mbfl_program_STDERR_TO_STDOUT
 mbfl_program_SUDO_USER=nosudo
-test "$PERSONA" = nosudo || {
-SUDO=$(mbfl_program_found sudo)     || exit $?
-WHOAMI=$(mbfl_program_found whoami) || exit $?
-USE_SUDO=yes
-}
-STDERR_TO_STDOUT=${mbfl_program_STDERR_TO_STDOUT}
-mbfl_program_STDERR_TO_STDOUT='no'
-{ mbfl_option_test || mbfl_option_show_program; } && {
-if test "$USE_SUDO" = yes -a "$PERSONA" != "$USER"
-then echo "$SUDO" -u "$PERSONA" "$@" >&2
+mbfl_program_SUDO_OPTIONS=
+mbfl_program_STDERR_TO_STDOUT=false
+if test "$PERSONA" != nosudo
+then
+if ! test -x "$SUDO"
+then
+mbfl_message_error_printf 'executable sudo not found: "%s"' "$SUDO"
+exit_because_program_not_found
+fi
+if ! test -x "$WHOAMI"
+then
+mbfl_message_error_printf 'executable whoami not found: "%s"' "$WHOAMI"
+exit_because_program_not_found
+fi
+if ! USERNAME=$("$WHOAMI")
+then
+mbfl_message_error 'unable to determine current user name'
+exit_because_failure
+fi
+if test "$PERSONA" != "$USERNAME"
+then USE_SUDO=true
+fi
+fi
+if { mbfl_option_test || mbfl_option_show_program; }
+then
+if $USE_SUDO
+then echo "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" >&2
 else echo "$@" >&2
 fi
-}
-mbfl_option_test || {
-if test "$USE_SUDO" = yes
+fi
+if ! mbfl_option_test
 then
-test "$PERSONA" = $("$WHOAMI") || {
-if test "$STDERR_TO_STDOUT" = yes
-then "$SUDO" -u "$PERSONA" "$@" <$INCHAN 2>&1 >$OUCHAN &
-else "$SUDO" -u "$PERSONA" "$@" <$INCHAN >$OUCHAN &
+local EXEC
+if $REPLACE
+then EXEC=exec
+fi
+if $USE_SUDO
+then
+if $BACKGROUND
+then
+if $STDERR_TO_STDOUT
+# The  order  of  redirections is  important.   First
+# redirect stdout to $OUCHAN, then redirect stderr to
+# stdout.   This  way  both  stdout  and  stderr  are
+# redirected to $OUCHAN.
+then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN 2>&1 &
+else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN      &
 fi
 mbfl_program_BGPID=$!
-}
 else
-if test "$STDERR_TO_STDOUT" = yes
-then "$@" <$INCHAN 2>&1 >$OUCHAN &
-else "$@" <$INCHAN >$OUCHAN &
+if $STDERR_TO_STDOUT
+# The  order  of  redirections is  important.   First
+# redirect stdout to $OUCHAN, then redirect stderr to
+# stdout.   This  way  both  stdout  and  stderr  are
+# redirected to $OUCHAN.
+then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN 2>&1
+else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN
+fi
+fi
+else
+if $BACKGROUND
+then
+if $STDERR_TO_STDOUT
+# The  order  of  redirections is  important.   First
+# redirect stdout to $OUCHAN, then redirect stderr to
+# stdout.   This  way  both  stdout  and  stderr  are
+# redirected to $OUCHAN.
+then $EXEC "$@" <&$INCHAN >&$OUCHAN 2>&1 &
+else $EXEC "$@" <&$INCHAN >&$OUCHAN      &
 fi
 mbfl_program_BGPID=$!
+else
+if $STDERR_TO_STDOUT
+# The  order  of  redirections is  important.   First
+# redirect stdout to $OUCHAN, then redirect stderr to
+# stdout.   This  way  both  stdout  and  stderr  are
+# redirected to $OUCHAN.
+then $EXEC "$@" <&$INCHAN >&$OUCHAN 2>&1
+else $EXEC "$@" <&$INCHAN >&$OUCHAN
 fi
-}
+fi
+fi
+fi
 }
 function mbfl_program_bash_command () {
 local COMMAND=${1:?"missing command parameter to '${FUNCNAME}'"}
@@ -1904,51 +2531,60 @@ mbfl_program_exec "$mbfl_program_BASH" -c "$COMMAND"
 function mbfl_program_bash () {
 mbfl_program_exec "$mbfl_program_BASH" "$@"
 }
-test "$mbfl_INTERACTIVE" = yes || \
-declare -a mbfl_program_NAMES mbfl_program_PATHS
+if test "$mbfl_INTERACTIVE" != 'yes'
+then declare -A mbfl_program_PATHNAMES
+fi
 function mbfl_declare_program () {
 local PROGRAM=${1:?"missing program parameter to '${FUNCNAME}'"}
-local pathname
-local next_free_index=${#mbfl_program_NAMES[@]}
-mbfl_program_NAMES[${next_free_index}]="$PROGRAM"
-PROGRAM=$(mbfl_program_find "$PROGRAM")
-test -n "$PROGRAM" && \
-PROGRAM=$(mbfl_file_normalise "$PROGRAM")
-mbfl_program_PATHS[${next_free_index}]="$PROGRAM"
+local PROGRAM_PATHNAME
+local -r -i next_free_index=${#mbfl_program_NAMES[@]}
+mbfl_program_find_var PROGRAM_PATHNAME "$PROGRAM"
+if test -n "$PROGRAM_PATHNAME"
+then mbfl_file_normalise_var PROGRAM_PATHNAME "$PROGRAM_PATHNAME"
+fi
+mbfl_program_PATHNAMES["$PROGRAM"]=$PROGRAM_PATHNAME
 return 0
 }
 function mbfl_program_validate_declared () {
-local -i i retval=0 number_of_programs=${#mbfl_program_NAMES[@]}
-local name path
-for ((i=0; $i < $number_of_programs; ++i))
+local retval PROGRAM PROGRAM_PATHNAME
+for PROGRAM in "${!mbfl_program_PATHNAMES[@]}"
 do
-name="${mbfl_program_NAMES[$i]}"
-path="${mbfl_program_PATHS[$i]}"
-if test -n "$path" -a -x "$path"
-then mbfl_message_verbose "found '$name': '$path'\n"
+PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
+if mbfl_file_is_executable "$PROGRAM_PATHNAME"
+then mbfl_message_verbose_printf 'found "%s": "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
 else
-mbfl_message_verbose "*** not found '$name', path: '$path'\n"
+mbfl_message_verbose_printf '*** not found "%s", path: "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
 retval=1
 fi
 done
 return $retval
 }
-function mbfl_program_found () {
-local PROGRAM=${1:?"missing program name parameter to '${FUNCNAME}'"}
-local number_of_programs=${#mbfl_program_NAMES[@]} i=
-if test "$PROGRAM" != :
+function mbfl_program_found_var () {
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PROGRAM=${2:?"missing program name parameter to '${FUNCNAME}'"}
+local -r PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
+if mbfl_file_is_executable "$PROGRAM_PATHNAME"
 then
-for ((i=0; $i < ${number_of_programs}; ++i))
-do
-if test "${mbfl_program_NAMES[$i]}" = "$PROGRAM"
-then
-echo "${mbfl_program_PATHS[$i]}"
+RESULT_VARREF=$PROGRAM_PATHNAME
 return 0
-fi
-done
-fi
-mbfl_message_error "executable not found '$PROGRAM'"
+else
+mbfl_message_error_printf 'invalid executable found for "%s": "%s"' "$PROGRAM" "$PROGRAM_PATHNAME"
 exit_because_program_not_found
+fi
+mbfl_message_error_printf 'executable not found for: "%s"' "$PROGRAM"
+exit_because_program_not_found
+}
+function mbfl_program_found () {
+local THE_PROGRAM=${1:?"missing program name parameter to '${FUNCNAME}'"}
+local RESULT_VARNAME EXIT_STATUS
+mbfl_program_found_var RESULT_VARNAME "$THE_PROGRAM"
+EXIT_STATUS=$?
+if ((0 == EXIT_STATUS))
+then
+echo "$RESULT_VARNAME"
+return 0
+else return $EXIT_STATUS
+fi
 }
 function mbfl_program_main_validate_programs () {
 mbfl_program_validate_declared || exit_because_program_not_found
@@ -1979,31 +2615,36 @@ local signum
 signum=$(mbfl_signal_map_signame_to_signum "$SIGSPEC") || return 1
 if test -z ${mbfl_signal_HANDLERS[$signum]}
 then mbfl_signal_HANDLERS[$signum]=$HANDLER
-else mbfl_signal_HANDLERS[$signum]="${mbfl_signal_HANDLERS[$signum]}:$HANDLER"
+else mbfl_signal_HANDLERS[$signum]=${mbfl_signal_HANDLERS[$signum]}:$HANDLER
 fi
 mbfl_message_debug "attached '$HANDLER' to signal $SIGSPEC"
 trap -- "mbfl_signal_invoke_handlers $signum" $signum
 }
 function mbfl_signal_invoke_handlers () {
 local SIGNUM=${1:?"missing signal number parameter to '${FUNCNAME}'"}
-local handler ORGIFS="$IFS"
+local handler ORGIFS=$IFS
 mbfl_message_debug "received signal 'SIG$(kill -l $SIGNUM)'"
 IFS=:
 for handler in ${mbfl_signal_HANDLERS[$SIGNUM]}
 do
-IFS="$ORGIFS"
+IFS=$ORGIFS
 mbfl_message_debug "registered handler: $handler"
 test -n "$handler" && eval $handler
 done
-IFS="$ORGIFS"
+IFS=$ORGIFS
 return 0
 }
 
 function mbfl_variable_find_in_array () {
 local ELEMENT=${1:?"missing element parameter parameter to '${FUNCNAME}'"}
-declare -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
-for ((i=0; $i < $ARRAY_DIM; ++i))
-do test "${mbfl_FIELDS[$i]}" = "$ELEMENT" && { printf "$i\n"; return 0; }
+local -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
+for ((i=0; i < ARRAY_DIM; ++i))
+do
+if test "${mbfl_FIELDS[$i]}" = "$ELEMENT"
+then
+printf '%s\n' $i
+return 0
+fi
 done
 return 1
 }
@@ -2013,14 +2654,14 @@ pos=$(mbfl_variable_find_in_array "$@")
 }
 function mbfl_variable_colon_variable_to_array () {
 local COLON_VARIABLE=${1:?"missing colon variable parameter to '${FUNCNAME}'"}
-local ORGIFS="$IFS"
+local ORGIFS=$IFS
 IFS=: mbfl_FIELDS=(${!COLON_VARIABLE})
-IFS="$ORGIFS"
+IFS=$ORGIFS
 return 0
 }
 function mbfl_variable_array_to_colon_variable () {
 local COLON_VARIABLE=${1:?"missing colon variable parameter to '${FUNCNAME}'"}
-declare -i i dimension=${#mbfl_FIELDS[*]}
+local -i i dimension=${#mbfl_FIELDS[*]}
 if test $dimension = 0
 then eval $COLON_VARIABLE=
 else
@@ -2034,15 +2675,15 @@ return 0
 function mbfl_variable_colon_variable_drop_duplicate () {
 local COLON_VARIABLE=${1:?"missing colon variable parameter to '${FUNCNAME}'"}
 local item
-declare -a mbfl_FIELDS FIELDS
-declare -i dimension count i
+local -a mbfl_FIELDS FIELDS
+local -i dimension count i
 mbfl_variable_colon_variable_to_array "$COLON_VARIABLE"
 dimension=${#mbfl_FIELDS[*]}
 FIELDS=("${mbfl_FIELDS[@]}")
 mbfl_FIELDS=()
 for ((i=0, count=0; $i < $dimension; ++i))
 do
-item="${FIELDS[$i]}"
+item=${FIELDS[$i]}
 mbfl_variable_element_is_in_array "$item" && continue
 mbfl_FIELDS[$count]=$item
 let ++count
@@ -2051,32 +2692,146 @@ mbfl_variable_array_to_colon_variable $COLON_VARIABLE
 return 0
 }
 
+function mbfl_times_and_dates_enable () {
+mbfl_declare_program date
+}
+function mbfl_exec_date () {
+local DATE
+mbfl_program_found_var DATE date || exit $?
+mbfl_program_exec "$DATE" "$@"
+}
+function mbfl_exec_date_format () {
+local FORMAT=${1:?"missing date format parameter to '${FUNCNAME}'"}
+shift
+mbfl_exec_date "$FORMAT" "$@"
+}
+function mbfl_date_current_year () {
+mbfl_exec_date_format '+%Y'
+}
+function mbfl_date_current_month () {
+mbfl_exec_date_format '+%m'
+}
+function mbfl_date_current_day () {
+mbfl_exec_date_format '+%d'
+}
+function mbfl_date_current_hour () {
+mbfl_exec_date_format '+%H'
+}
+function mbfl_date_current_minute () {
+mbfl_exec_date_format '+%M'
+}
+function mbfl_date_current_second () {
+mbfl_exec_date_format '+%S'
+}
+function mbfl_date_current_date () {
+mbfl_exec_date_format '+%F'
+}
+function mbfl_date_current_time () {
+mbfl_exec_date_format '+%T'
+}
+function mbfl_date_email_timestamp () {
+mbfl_exec_date --rfc-2822
+}
+function mbfl_date_iso_timestamp () {
+mbfl_exec_date --iso-8601=ns
+}
+
 function mbfl_dialog_enable_programs () {
 mbfl_declare_program stty
 }
 function mbfl_dialog_yes_or_no () {
 local STRING=${1:?"missing prompt string parameter to '${FUNCNAME}'"}
 local PROGNAME="${2:-${script_PROGNAME}}"
-local PROMPT="${PROGNAME}: ${STRING}? (yes/no) "
-local ANS=
-while IFS= read -r -e -p "$PROMPT" ANS && \
-test "$ANS" != 'yes' -a "$ANS" != 'no'
-do echo "${PROGNAME}: please answer yes or no."
+local PROMPT ANS
+printf -v PROMPT '%s: %s? (yes/no) ' "$PROGNAME" "$STRING"
+while IFS= read -r -e -p "$PROMPT" ANS && test "$ANS" != 'yes' -a "$ANS" != 'no'
+do printf '%s: please answer yes or no.\n' "$PROGNAME"
 done
 test "$ANS" = yes
 }
 function mbfl_dialog_ask_password () {
-local PROMPT=${1:?"missing prompt parameter to '${FUNCNAME}'"}
-local PASSWORD= STTY=
-STTY=$(mbfl_program_found stty) || exit $?
-echo -n "${prompt}: " >&2
+local -n RESULT_VARREF=${1:?"missing result variable parameter to '${FUNCNAME}'"}
+local PROMPT=${2:?"missing prompt parameter to '${FUNCNAME}'"}
+local PASSWORD STTY
+mbfl_program_found_var STTY stty || exit $?
+printf '%s: ' "prompt" >&2
 "$STTY" cbreak -echo </dev/tty >/dev/tty 2>&1
 IFS= read -rs PASSWORD
 "$STTY" -cbreak echo </dev/tty >/dev/tty 2>&1
 echo >&2
-printf %s "${PASSWORD}"
+RESULT_VARREF=$PASSWORD
+}
+function mbfl_dialog_ask_password () {
+local PROMPT=${1:?"missing prompt parameter to '${FUNCNAME}'"}
+local RESULT_VARNAME
+if mbfl_dialog_ask_password_var RESULT_VARNAME "$PROMPT"
+then echo "$RV"
+else return $?
+fi
 }
 
+declare -A mbfl_system_PASSWD_ENTRIES
+declare -i mbfl_system_PASSWD_COUNT
+function mbfl_system_passwd_read () {
+local LINE
+mbfl_system_PASSWD_ENTRIES=()
+mbfl_system_PASSWD_COUNT=0
+while IFS= read LINE
+do
+mbfl_string_split "$LINE" :
+mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:name"]=${SPLITFIELD[0]}
+mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:passwd"]=${SPLITFIELD[1]}
+mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:uid"]=${SPLITFIELD[2]}
+mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gid"]=${SPLITFIELD[3]}
+mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gecos"]=${SPLITFIELD[4]}
+mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:dir"]=${SPLITFIELD[5]}
+mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:shell"]=${SPLITFIELD[6]}
+let ++mbfl_system_PASSWD_COUNT
+done </etc/passwd
+}
+function mbfl_system_passwd_print_entries () {
+local -i i
+for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+do
+printf "name='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
+printf "passwd='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:passwd]}"
+printf "uid=%d "	"${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
+printf "gid=%d "	"${mbfl_system_PASSWD_ENTRIES[${i}:gid]}"
+printf "gecos='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:gecos]}"
+printf "dir='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:dir]}"
+printf "shell='%s'\n"	"${mbfl_system_PASSWD_ENTRIES[${i}:shell]}"
+done
+}
+function mbfl_system_passwd_print_entries_as_xml () {
+local -i i
+for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+do
+printf '<entry '
+printf "name='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
+printf "passwd='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:passwd]}"
+printf "uid='%d' "	"${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
+printf "gid='%d' "	"${mbfl_system_PASSWD_ENTRIES[${i}:gid]}"
+printf "gecos='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:gecos]}"
+printf "dir='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:dir]}"
+printf "shell='%s'"	"${mbfl_system_PASSWD_ENTRIES[${i}:shell]}"
+printf '/>\n'
+done
+}
+function mbfl_system_passwd_print_entries_as_json () {
+local -i i
+for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+do
+printf '"entry": { '
+printf '"name": "%s", '		"${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
+printf '"passwd": "%s", '	"${mbfl_system_PASSWD_ENTRIES[${i}:passwd]}"
+printf '"uid": %d, '		"${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
+printf '"gid": %d, '		"${mbfl_system_PASSWD_ENTRIES[${i}:gid]}"
+printf '"gecos": "%s", '	"${mbfl_system_PASSWD_ENTRIES[${i}:gecos]}"
+printf '"dir": "%s", '		"${mbfl_system_PASSWD_ENTRIES[${i}:dir]}"
+printf '"shell": "%s"'		"${mbfl_system_PASSWD_ENTRIES[${i}:shell]}"
+printf ' }\n'
+done
+}
 function mbfl_system_enable_programs () {
 mbfl_declare_program grep
 mbfl_declare_program cut
@@ -2084,18 +2839,16 @@ mbfl_declare_program cut
 function mbfl_system_numerical_user_id_to_name () {
 local GREP CUT RESULT
 local ID=${1:?"missing numerical user id parameter to '${FUNCNAME}'"}
-GREP=$(mbfl_program_found grep) || exit $?
-CUT=$(mbfl_program_found cut)   || exit $?
-mbfl_program_exec ${GREP} "^[^:]\+:[^:]\+:${ID}:" /etc/passwd | \
-mbfl_program_exec ${CUT} -d: -f1
+mbfl_program_found_var GREP grep || exit $?
+mbfl_program_found_var CUT cut   || exit $?
+mbfl_program_exec "$GREP" "^[^:]\+:[^:]\+:${ID}:" /etc/passwd | mbfl_program_exec "$CUT" -d: -f1
 }
 function mbfl_system_user_name_to_numerical_id () {
 local GREP CUT
 local NAME=${1:?"missing user name parameter to '${FUNCNAME}'"}
-GREP=$(mbfl_program_found grep) || exit $?
-CUT=$(mbfl_program_found cut)   || exit $?
-mbfl_program_exec ${GREP} "^${NAME}" /etc/passwd | \
-mbfl_program_exec ${CUT} -d: -f3
+mbfl_program_found_var GREP grep || exit $?
+mbfl_program_found_var CUT cut   || exit $?
+mbfl_program_exec "$GREP" "^${NAME}" /etc/passwd | mbfl_program_exec "$CUT" -d: -f3
 }
 declare -a mbfl_symbolic_permissions
 mbfl_symbolic_permissions[0]='---'
@@ -2108,20 +2861,23 @@ mbfl_symbolic_permissions[6]='rw-'
 mbfl_symbolic_permissions[7]='rwx'
 function mbfl_system_symbolic_to_octal_permissions () {
 local MODE=${1:?"missing symbolic permissions parameter to '${FUNCNAME}'"}
+local -i i
 for ((i=0; $i < 8; ++i))
-do test "${mbfl_symbolic_permissions[$i]}" = "${MODE}" && {
-printf "${i}\n"
+do
+if test "${mbfl_symbolic_permissions[$i]}" = "$MODE"
+then
+printf "%s\n" $i
 return 0
-}
+fi
 done
 return 1
 }
 function mbfl_system_octal_to_symbolic_permissions () {
 local MODE=${1:?"missing symbolic permissions parameter to '${FUNCNAME}'"}
-printf "${mbfl_symbolic_permissions[${MODE}]}\n"
+printf '%s\n' "${mbfl_symbolic_permissions[${MODE}]}"
 }
 
-mbfl_p_at_queue_letter='a'
+declare mbfl_p_at_queue_letter='a'
 function mbfl_at_enable () {
 mbfl_declare_program at
 mbfl_declare_program atq
@@ -2130,42 +2886,49 @@ mbfl_declare_program sort
 }
 function mbfl_at_validate_queue_letter () {
 local QUEUE=${1:?"missing queue letter parameter to '${FUNCNAME}'"}
-test ${#QUEUE} -eq 1 && mbfl_string_is_alpha_char "${QUEUE}"
+if ((1 == ${#QUEUE}))
+then mbfl_string_is_alpha_char "$QUEUE"
+else return 1
+fi
 }
 function mbfl_at_validate_selected_queue () {
-mbfl_at_check_queue_letter "${QUEUE}" || {
-mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
+if ! mbfl_at_check_queue_letter "$QUEUE"
+then
+mbfl_message_error_printf 'bad "at" queue identifier "%s"' "$QUEUE"
 return 1
-}
+fi
 }
 function mbfl_at_select_queue () {
 local QUEUE=${1:?"missing queue letter parameter to '${FUNCNAME}'"}
-mbfl_at_validate_queue_letter "${QUEUE}" || {
-mbfl_message_error "bad 'at' queue identifier '${QUEUE}'"
+if ! mbfl_at_validate_queue_letter "$QUEUE"
+then
+mbfl_message_error_printf 'bad "at" queue identifier "%s"' "$QUEUE"
 return 1
-}
+fi
 mbfl_p_at_queue_letter=${QUEUE}
 }
 function mbfl_at_schedule () {
-local AT QUEUE=${mbfl_p_at_queue_letter}
 local SCRIPT=${1:?"missing script parameter to '${FUNCNAME}'"}
 local TIME=${2:?"missing time parameter to '${FUNCNAME}'"}
-AT=$(mbfl_program_found at) || exit $?
-printf %s "${SCRIPT}" | {
+local AT QUEUE=${mbfl_p_at_queue_letter}
+mbfl_program_found_var AT at || exit $?
+printf '%s' "$SCRIPT" | {
 mbfl_program_redirect_stderr_to_stdout
-mbfl_program_exec "$AT" -q $QUEUE $TIME || {
-mbfl_message_error \
-"scheduling command execution '$SCRIPT' at time '$TIME'"
+if ! mbfl_program_exec "$AT" -q $QUEUE $TIME
+then
+mbfl_message_error_printf 'scheduling command execution "%s" at time "%s"' "$SCRIPT" "$TIME"
 return 1
-}
+fi
 } | {
-{ read; read; } || {
-mbfl_message_error "reading output of 'at'"
-mbfl_message_error "while scheduling command execution '$SCRIPT' at time '$TIME'"
+local REPLY
+if ! { read; read; }
+then
+mbfl_message_error 'reading output of "at"'
+mbfl_message_error_printf 'while scheduling command execution "%s" at time "%s"' "$SCRIPT" "$TIME"
 return 1
-}
+fi
 set -- $REPLY
-printf %d "$2"
+printf '%d' "$2"
 }
 }
 function mbfl_at_queue_print_identifiers () {
@@ -2180,7 +2943,7 @@ function mbfl_at_queue_print_queues () {
 local ATQ SORT line
 ATQ=$(mbfl_program_found atq)   || exit $?
 SORT=$(mbfl_program_found sort) || exit $?
-{ mbfl_program_exec "${ATQ}" | while IFS= read -r line
+{ mbfl_program_exec "$ATQ" | while IFS= read -r line
 do
 set -- $line
 printf '%c\n' "$4"
@@ -2213,9 +2976,10 @@ ATQ=$(mbfl_program_found atq) || exit $?
 mbfl_program_exec "$ATQ" -q "$QUEUE"
 }
 
-test "$mbfl_INTERACTIVE" = yes || {
-mbfl_option_TMPDIR="${TMPDIR:-/tmp/${USER}}"
-mbfl_ORG_PWD=$PWD
+if test "$mbfl_INTERACTIVE" != yes
+then
+mbfl_option_TMPDIR=${TMPDIR:-/tmp/${USER}}
+declare -r mbfl_ORG_PWD=$PWD
 declare -i ARGC=0 ARGC1=0 ARG1ST=0
 declare -a ARGV ARGV1
 for ((ARGC1=0; $# > 0; ++ARGC1))
@@ -2227,7 +2991,7 @@ mbfl_main_SCRIPT_FUNCTION=main
 mbfl_main_PRIVATE_SCRIPT_FUNCTION=
 mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS=script_before_parsing_options
 mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=script_after_parsing_options
-}
+fi
 function mbfl_main_set_main () {
 local FUNC=${1:?"missing main function name parameter to '${FUNCNAME}'"}
 mbfl_main_SCRIPT_FUNCTION=${FUNC}
@@ -2244,12 +3008,15 @@ function mbfl_main_set_after_parsing_options () {
 local FUNC=${1:?"missing main function name parameter to '${FUNCNAME}'"}
 mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=${FUNC}
 }
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" != yes
+then
 declare -a mbfl_main_EXIT_CODES mbfl_main_EXIT_NAMES
 mbfl_main_EXIT_CODES[0]=0
 mbfl_main_EXIT_NAMES[0]=success
 mbfl_main_EXIT_CODES[1]=1
 mbfl_main_EXIT_NAMES[1]=failure
+mbfl_main_EXIT_CODES[2]=100
+mbfl_main_EXIT_NAMES[2]=error_loading_library
 mbfl_main_EXIT_CODES[2]=99
 mbfl_main_EXIT_NAMES[2]=program_not_found
 mbfl_main_EXIT_CODES[3]=98
@@ -2270,7 +3037,7 @@ mbfl_main_EXIT_CODES[10]=91
 mbfl_main_EXIT_NAMES[10]=invalid_function_name
 mbfl_main_EXIT_CODES[11]=90
 mbfl_main_EXIT_NAMES[11]=invalid_username
-}
+fi
 function exit_success () {
 exit_because_success
 }
@@ -2285,7 +3052,8 @@ mbfl_main_EXIT_NAMES[$i]=$DESCRIPTION
 mbfl_main_EXIT_CODES[$i]=$CODE
 }
 function mbfl_main_create_exit_functions () {
-local i name
+local -i i
+local name
 for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
 do
 name=exit_because_${mbfl_main_EXIT_NAMES[${i}]}
@@ -2293,14 +3061,14 @@ eval function "$name" "()" "{ exit ${mbfl_main_EXIT_CODES[${i}]}; }"
 done
 }
 function mbfl_main_list_exit_codes () {
-local i
+local -i i
 for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
 do printf '%d %s\n' ${mbfl_main_EXIT_CODES[${i}]} ${mbfl_main_EXIT_NAMES[${i}]}
 done
 }
 function mbfl_main_print_exit_code () {
 local NAME=${1:?"missing exit code name parameter to '${FUNCNAME}'"}
-local i
+local -i i
 for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
 do test "${mbfl_main_EXIT_NAMES[${i}]}" = "$NAME" && \
 printf '%d\n' ${mbfl_main_EXIT_CODES[${i}]}
@@ -2308,14 +3076,15 @@ done
 }
 function mbfl_main_print_exit_code_names () {
 local CODE=${1:?"missing exit code parameter to '${FUNCNAME}'"}
-local i
+local -i i
 for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
 do test "${mbfl_main_EXIT_CODES[${i}]}" = "$CODE" && \
 printf '%s\n' ${mbfl_main_EXIT_NAMES[${i}]}
 done
 }
-test "$mbfl_INTERACTIVE" = yes || {
-mbfl_message_LICENSE_GPL="${script_PROGNAME} version ${script_VERSION}
+if test "$mbfl_INTERACTIVE" != 'yes'
+then
+declare -r mbfl_message_LICENSE_GPL="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This file  is free software you  can redistribute it  and/or modify it
@@ -2331,7 +3100,7 @@ along with this file; see the file COPYING.  If not, write to the Free
 Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 02111-1307, USA.
 "
-mbfl_message_LICENSE_GPL3="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_GPL3="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This file  is free software you  can redistribute it  and/or modify it
@@ -2347,7 +3116,7 @@ along with this file; see the file COPYING.  If not, write to the Free
 Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
 02111-1307, USA.
 "
-mbfl_message_LICENSE_LGPL="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_LGPL="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This is free software; you  can redistribute it and/or modify it under
@@ -2363,7 +3132,7 @@ License along  with this library; if  not, write to  the Free Software
 Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 USA.
 "
-mbfl_message_LICENSE_LGPL3="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_LGPL3="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This is free software; you  can redistribute it and/or modify it under
@@ -2379,7 +3148,7 @@ License along  with this library; if  not, write to  the Free Software
 Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 USA.
 "
-mbfl_message_LICENSE_BSD="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_BSD="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 The author  hereby grant permission to use,  copy, modify, distribute,
@@ -2403,68 +3172,116 @@ NON-INFRINGEMENT.  THIS  SOFTWARE IS PROVIDED  ON AN \"AS  IS\" BASIS,
 AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 "
-}
-test "$mbfl_INTERACTIVE" = yes || {
-mbfl_message_VERSION="${script_PROGNAME} version ${script_VERSION}
+declare -r mbfl_message_LICENSE_LIBERAL="${script_PROGNAME} version ${script_VERSION}
+Written by ${script_AUTHOR}.\n
+Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
+The author  hereby grants permission  to use, copy,  modify, distribute,
+and  license  this  software  and its  documentation  for  any  purpose,
+provided that existing copyright notices  are retained in all copies and
+that this notice is included  verbatim in any distributions.  No written
+agreement, license, or royalty fee is required for any of the authorized
+uses.   Modifications  to this  software  may  be copyrighted  by  their
+authors and need not follow the licensing terms described here, provided
+that the new terms are clearly indicated  on the first page of each file
+where they apply.\n
+IN NO EVENT SHALL THE AUTHOR OR  DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
+DIRECT, INDIRECT, SPECIAL, INCIDENTAL,  OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE  USE OF THIS SOFTWARE, ITS DOCUMENTATION,  OR ANY DERIVATIVES
+THEREOF, EVEN IF THE AUTHOR HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.\n
+THE  AUTHOR  AND  DISTRIBUTORS  SPECIFICALLY  DISCLAIM  ANY  WARRANTIES,
+INCLUDING,   BUT   NOT   LIMITED   TO,   THE   IMPLIED   WARRANTIES   OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+THIS  SOFTWARE IS  PROVIDED ON  AN  \"AS IS\"  BASIS, AND  THE AUTHOR  AND
+DISTRIBUTORS  HAVE  NO  OBLIGATION   TO  PROVIDE  MAINTENANCE,  SUPPORT,
+UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+"
+fi
+if test "$mbfl_INTERACTIVE" != 'yes'
+then
+declare -r mbfl_message_VERSION="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
 Copyright (C) ${script_COPYRIGHT_YEARS} by ${script_AUTHOR}.\n
 This is free software; see the  source or use the '--license' option for
 copying conditions.  There is NO warranty; not  even for MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.
 "
-}
+fi
 function mbfl_main_print_version_number () {
-echo -e "${mbfl_message_VERSION}"
+echo -e "$mbfl_message_VERSION"
 exit_success
 }
 function mbfl_main_print_version_number_only () {
-echo -e "${script_VERSION}"
+echo -e "$script_VERSION"
 exit_success
 }
 function mbfl_main_print_license () {
-case "${script_LICENSE}" in
+case $script_LICENSE in
 GPL|GPL2)
-echo -e "${mbfl_message_LICENSE_GPL}"
+echo -e "$mbfl_message_LICENSE_GPL"
 ;;
 GPL3)
-echo -e "${mbfl_message_LICENSE_GPL3}"
+echo -e "$mbfl_message_LICENSE_GPL3"
 ;;
 LGPL|LGPL2)
-echo -e "${mbfl_message_LICENSE_LGPL}"
+echo -e "$mbfl_message_LICENSE_LGPL"
 ;;
 LGPL3)
-echo -e "${mbfl_message_LICENSE_LGPL3}"
+echo -e "$mbfl_message_LICENSE_LGPL3"
 ;;
 BSD)
-echo -e "${mbfl_message_LICENSE_BSD}"
+echo -e "$mbfl_message_LICENSE_BSD"
+;;
+liberal)
+echo -e "$mbfl_message_LICENSE_LIBERAL"
 ;;
 *)
-mbfl_message_error "unknown license: \"${script_LICENSE}\""
+mbfl_message_error_printf 'unknown license: "%s"' "$script_LICENSE"
 exit_failure
 ;;
 esac
 exit_success
 }
 function mbfl_main_print_usage_screen_long () {
-if test -n "${script_USAGE}"
-then printf '%s\n' "${script_USAGE}"
-else printf 'usafe: %s [arguments]\n' "${script_PROGNAME}"
+if test -n "$script_USAGE"
+then printf '%s\n' "$script_USAGE"
+else printf 'usafe: %s [arguments]\n' "$script_PROGNAME"
 fi
-test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"
+if test -n "$script_DESCRIPTION"
+then
+# Use the variable  as first argument to "printf"  to expand the
+# escaped characters.
+printf "${script_DESCRIPTION}\n\n"
+fi
 mbfl_actions_print_usage_screen
 mbfl_getopts_print_usage_screen long
-test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+if test -n "$script_EXAMPLES"
+then
+# Use the variable  as first argument to "printf"  to expand the
+# escaped characters.
+printf "${script_EXAMPLES}\n"
+fi
 exit_success
 }
 function mbfl_main_print_usage_screen_brief () {
-if test -n "${script_USAGE}"
-then printf '%s\n' "${script_USAGE}"
-else printf 'usafe: %s [arguments]\n' "${script_PROGNAME}"
+if test -n "$script_USAGE"
+then printf '%s\n' "$script_USAGE"
+else printf 'usafe: %s [arguments]\n' "$script_PROGNAME"
 fi
-test -n "${script_DESCRIPTION}" && printf "${script_DESCRIPTION}\n\n"
+if test -n "$script_DESCRIPTION"
+then
+# Use the variable  as first argument to "printf"  to expand the
+# escaped characters.
+printf "${script_DESCRIPTION}\n\n"
+fi
 mbfl_actions_print_usage_screen
 mbfl_getopts_print_usage_screen brief
-test -n "${script_EXAMPLES}" && printf "${script_EXAMPLES}\n"
+if test -n "$script_EXAMPLES"
+then
+# Use the variable  as first argument to "printf"  to expand the
+# escaped characters.
+printf "${script_EXAMPLES}\n"
+fi
 exit_success
 }
 function mbfl_main () {
@@ -2488,17 +3305,17 @@ exit_success
 }
 function mbfl_invoke_script_function () {
 local FUNC=${1:?"missing function name parameter to '${FUNCNAME}'"}
-if test "$(type -t $FUNC)" = function
+if test "$(type -t $FUNC)" = 'function'
 then $FUNC
 else return 0
 fi
 }
 function mbfl_invoke_existent_script_function () {
 local FUNC=${1:?"missing function name parameter to '${FUNCNAME}'"}
-if test "$(type -t $FUNC)" = function
+if test "$(type -t $FUNC)" = 'function'
 then $FUNC
 else
-mbfl_message_error "internal error: request to call non-existent function \"$FUNC\""
+mbfl_message_error_printf 'internal error: request to call non-existent function \"%s\"' "$FUNC"
 exit_because_invalid_function_name
 fi
 }
