@@ -27,6 +27,82 @@
 #
 
 #page
+#### reading entries from /etc/passwd
+
+declare -A mbfl_system_PASSWD_ENTRIES
+declare -i mbfl_system_PASSWD_COUNT
+
+function mbfl_system_passwd_read () {
+    local LINE
+
+    # Reset the array to empty.
+    mbfl_system_PASSWD_ENTRIES=()
+    mbfl_system_PASSWD_COUNT=0
+
+    while IFS= read LINE
+    do
+	mbfl_string_split "$LINE" :
+	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:name"]=${SPLITFIELD[0]}
+	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:passwd"]=${SPLITFIELD[1]}
+	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:uid"]=${SPLITFIELD[2]}
+	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gid"]=${SPLITFIELD[3]}
+	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gecos"]=${SPLITFIELD[4]}
+	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:dir"]=${SPLITFIELD[5]}
+	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:shell"]=${SPLITFIELD[6]}
+	let ++mbfl_system_PASSWD_COUNT
+    done </etc/passwd
+}
+
+function mbfl_system_passwd_print_entries () {
+    local -i i
+
+    for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+    do
+	printf "name='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
+	printf "passwd='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:passwd]}"
+	printf "uid=%d "	"${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
+	printf "gid=%d "	"${mbfl_system_PASSWD_ENTRIES[${i}:gid]}"
+	printf "gecos='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:gecos]}"
+	printf "dir='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:dir]}"
+	printf "shell='%s'\n"	"${mbfl_system_PASSWD_ENTRIES[${i}:shell]}"
+    done
+}
+
+function mbfl_system_passwd_print_entries_as_xml () {
+    local -i i
+
+    for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+    do
+	printf '<entry '
+	printf "name='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
+	printf "passwd='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:passwd]}"
+	printf "uid='%d' "	"${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
+	printf "gid='%d' "	"${mbfl_system_PASSWD_ENTRIES[${i}:gid]}"
+	printf "gecos='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:gecos]}"
+	printf "dir='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:dir]}"
+	printf "shell='%s'"	"${mbfl_system_PASSWD_ENTRIES[${i}:shell]}"
+	printf '/>\n'
+    done
+}
+
+function mbfl_system_passwd_print_entries_as_json () {
+    local -i i
+
+    for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+    do
+	printf '"entry": { '
+	printf '"name": "%s", '		"${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
+	printf '"passwd": "%s", '	"${mbfl_system_PASSWD_ENTRIES[${i}:passwd]}"
+	printf '"uid": %d, '		"${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
+	printf '"gid": %d, '		"${mbfl_system_PASSWD_ENTRIES[${i}:gid]}"
+	printf '"gecos": "%s", '	"${mbfl_system_PASSWD_ENTRIES[${i}:gecos]}"
+	printf '"dir": "%s", '		"${mbfl_system_PASSWD_ENTRIES[${i}:dir]}"
+	printf '"shell": "%s"'		"${mbfl_system_PASSWD_ENTRIES[${i}:shell]}"
+	printf ' }\n'
+    done
+}
+
+#page
 #### user id conversion
 
 function mbfl_system_enable_programs () {

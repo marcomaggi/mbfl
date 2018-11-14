@@ -142,6 +142,7 @@ src/scripts/mbfltest.sh: src/scripts/mbfltest.sh.m4 src/scripts/$(am__dirstamp)
 EXTRA_DIST		+= \
 	examples/at.sh.m4			\
 	examples/compress.sh.m4			\
+	examples/pwentries.sh.m4		\
 	examples/template.sh.m4			\
 	examples/template-actions.sh.m4		\
 	\
@@ -157,7 +158,8 @@ CHECK_EXAMPLES		= \
 	examples/template-actions.sh
 
 SOME_EXAMPLES	= \
-	examples/at.sh
+	examples/at.sh			\
+	examples/pwentries.sh
 
 check_SCRIPTS		= $(CHECK_EXAMPLES)
 noinst_SCRIPTS		= $(SOME_EXAMPLES)
@@ -179,6 +181,9 @@ examples/at.sh: examples/at.sh.m4 $(MBFL_EXAMPLES_PREREQ)
 	$(MBFL_EXAMPLES_RUNPP) <$< >$@
 
 examples/compress.sh: examples/compress.sh.m4 $(MBFL_EXAMPLES_PREREQ)
+	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+
+examples/pwentries.sh: examples/pwentries.sh.m4 $(MBFL_EXAMPLES_PREREQ)
 	$(MBFL_EXAMPLES_RUNPP) <$< >$@
 
 examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQ)
