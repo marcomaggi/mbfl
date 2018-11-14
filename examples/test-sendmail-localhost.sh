@@ -4,6 +4,7 @@
 PROGNAME=test-sendmail-localhost.sh
 FROM_ADDRESS=marco@localhost
 TO_ADDRESS=root@localhost
+declare -r SCRIPT=examples/sendmail-mbfl.sh
 
 function print_message () {
     local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
@@ -25,29 +26,29 @@ Marco
     printf "$MESSAGE"
 }
 
-true && bash sendmail-mbfl.sh                   \
-    --debug --verbose --test-message            \
-    --host=localhost --port=25                  \
-    --envelope-from=$FROM_ADDRESS               \
-    --envelope-to=$TO_ADDRESS
+true && bash "$SCRIPT"				\
+	     --debug --verbose --test-message	\
+	     --host=localhost --port=25		\
+	     --envelope-from=$FROM_ADDRESS	\
+	     --envelope-to=$TO_ADDRESS
 
-true && print_message | bash sendmail-mbfl.sh   \
-    --debug --verbose --message=-               \
-    --host=localhost --port=25                  \
-    --envelope-from=$FROM_ADDRESS               \
-    --envelope-to=$TO_ADDRESS
+true && print_message | bash "$SCRIPT"				\
+			     --debug --verbose --message=-      \
+			     --host=localhost --port=25         \
+			     --envelope-from=$FROM_ADDRESS      \
+			     --envelope-to=$TO_ADDRESS
 
 true && {
     : ${TMPDIR:=/tmp}
     PATHNAME=${TMPDIR}/message.$RANDOM.$$
     print_message >$PATHNAME
     trap "rm -f '$PATHNAME'" EXIT
-    bash sendmail-mbfl.sh                       \
-        --debug --verbose --message=$PATHNAME   \
-        --host=localhost                        \
-        --envelope-from=$FROM_ADDRESS           \
-        --envelope-to=$FROM_ADDRESS             \
-        --envelope-to=$TO_ADDRESS
+    bash "$SCRIPT"				\
+	 --debug --verbose --message=$PATHNAME	\
+	 --host=localhost			\
+	 --envelope-from=$FROM_ADDRESS		\
+	 --envelope-to=$FROM_ADDRESS		\
+	 --envelope-to=$TO_ADDRESS
 }
 
 ### end of file

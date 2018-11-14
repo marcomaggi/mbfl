@@ -212,8 +212,8 @@ function mbfl_p_program_exec () {
     if { mbfl_option_test || mbfl_option_show_program; }
     then
         if $USE_SUDO
-        then echo "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" >&2
-        else echo "$@" >&2
+        then echo "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" "<&$INCHAN >&$OUCHAN" >&2
+        else echo "$@" "<&$INCHAN >&$OUCHAN" >&2
         fi
     fi
 
@@ -233,8 +233,8 @@ function mbfl_p_program_exec () {
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
 		   # redirected to $OUCHAN.
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN 2>&1 &
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN      &
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"      &
 		fi
 		mbfl_program_BGPID=$!
 	    else
@@ -243,8 +243,8 @@ function mbfl_p_program_exec () {
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
 		   # redirected to $OUCHAN.
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN 2>&1
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&$INCHAN >&$OUCHAN
+		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
+		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"
 		fi
 	    fi
         else
@@ -255,8 +255,8 @@ function mbfl_p_program_exec () {
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
 		   # redirected to $OUCHAN.
-		then $EXEC "$@" <&$INCHAN >&$OUCHAN 2>&1 &
-		else $EXEC "$@" <&$INCHAN >&$OUCHAN      &
+		then $EXEC "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
+		else $EXEC "$@" <&"$INCHAN" >&"$OUCHAN"      &
 		fi
 		mbfl_program_BGPID=$!
 	    else
@@ -265,8 +265,8 @@ function mbfl_p_program_exec () {
 		   # redirect stdout to $OUCHAN, then redirect stderr to
 		   # stdout.   This  way  both  stdout  and  stderr  are
 		   # redirected to $OUCHAN.
-		then $EXEC "$@" <&$INCHAN >&$OUCHAN 2>&1
-		else $EXEC "$@" <&$INCHAN >&$OUCHAN
+		then $EXEC "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
+		else $EXEC "$@" <&"$INCHAN" >&"$OUCHAN"
 		fi
 	    fi
         fi

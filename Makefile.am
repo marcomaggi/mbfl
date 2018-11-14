@@ -146,6 +146,7 @@ EXTRA_DIST		+= \
 	examples/at.sh.m4			\
 	examples/compress.sh.m4			\
 	examples/pwentries.sh.m4		\
+	examples/sendmail-mbfl.sh.m4		\
 	examples/template.sh.m4			\
 	examples/template-actions.sh.m4		\
 	\
@@ -162,7 +163,8 @@ CHECK_EXAMPLES		= \
 
 SOME_EXAMPLES	= \
 	examples/at.sh			\
-	examples/pwentries.sh
+	examples/pwentries.sh		\
+	examples/sendmail-mbfl.sh
 
 check_SCRIPTS		= $(CHECK_EXAMPLES)
 noinst_SCRIPTS		= $(SOME_EXAMPLES)
@@ -189,6 +191,9 @@ examples/compress.sh: examples/compress.sh.m4 $(MBFL_EXAMPLES_PREREQ)
 examples/pwentries.sh: examples/pwentries.sh.m4 $(MBFL_EXAMPLES_PREREQ)
 	$(MBFL_EXAMPLES_RUNPP) <$< >$@
 
+examples/sendmail-mbfl.sh: examples/sendmail-mbfl.sh.m4 $(MBFL_EXAMPLES_PREREQ)
+	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+
 examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQ)
 	$(MBFL_EXAMPLES_RUNPP) <$< >$@
 
@@ -198,7 +203,7 @@ examples/template-actions.sh: examples/template-actions.sh.m4 $(MBFL_EXAMPLES_PR
 if WANT_SENDMAIL
 
 dist_lisp_LISP		= examples/sendmail-mbfl.el
-dist_bin_SCRIPTS	+= examples/sendmail-mbfl.sh
+bin_SCRIPTS		+= examples/sendmail-mbfl.sh
 
 endif
 

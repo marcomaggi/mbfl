@@ -49,7 +49,7 @@ function program-1.1 () {
 }
 function program-1.2 () {
     mbfl_set_option_test
-    mbfl_program_exec echo 123 2>&1 | dotest-output "echo 123"
+    mbfl_program_exec echo 123 2>&1 | dotest-output "echo 123 <&0 >&1"
 }
 function program-1.3 () {
     mbfl_program_exec true
@@ -101,7 +101,7 @@ function program-4.1 () {
     {
 	mbfl_program_declare_sudo_user root
 	echo 123 | mbfl_program_exec cat 2>&1 | \
-            dotest-output "$mbfl_program_SUDO -u root cat"
+            dotest-output "$mbfl_program_SUDO -u root cat <&0 >&1"
 	CODE=$?
     }
     mbfl_unset_option_test
@@ -115,7 +115,7 @@ function program-4.2 () {
 	mbfl_program_declare_sudo_user root
 	mbfl_program_declare_sudo_options -H VAL=val
 	echo 123 | mbfl_program_exec cat 2>&1 | \
-            dotest-output "$mbfl_program_SUDO -H VAL=val -u root cat"
+            dotest-output "$mbfl_program_SUDO -H VAL=val -u root cat <&0 >&1"
 	CODE=$?
     }
     mbfl_unset_option_test

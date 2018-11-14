@@ -1,19 +1,21 @@
 # test-sendmail-gmail.sh --
 #
 
+declare -r SCRIPT=examples/sendmail-mbfl.sh
+
 # These will use gnutls.
 true && {
-    true && bash sendmail-mbfl.sh \
+    true && bash "$SCRIPT" \
         --debug --verbose --test-message                        \
-        --starttls                                      \
+        --starttls						\
         --host=smtp.gmail.com --port=587                        \
         --envelope-from=mrc.mgg@gmail.com                       \
         --envelope-to=marco.maggi-ipsu@poste.it                 \
         --username=mrc.mgg --auth-plain
 
-    true && bash sendmail-mbfl.sh \
+    true && bash "$SCRIPT" \
         --debug --verbose --test-message                        \
-        --gnutls --starttls                             \
+        --gnutls --starttls					\
         --host=smtp.gmail.com --port=587                        \
         --envelope-from=mrc.mgg@gmail.com                       \
         --envelope-to=marco.maggi-ipsu@poste.it                 \
@@ -21,17 +23,17 @@ true && {
 }
 
 true && {
-    true && bash sendmail-mbfl.sh \
+    true && bash "$SCRIPT" \
         --debug --verbose --test-message                        \
-        --openssl --starttls                            \
+        --openssl --starttls					\
         --host=smtp.gmail.com --port=587                        \
         --envelope-from=mrc.mgg@gmail.com                       \
         --envelope-to=marco.maggi-ipsu@poste.it                 \
         --username=mrc.mgg --auth-plain
 
-    true && bash sendmail-mbfl.sh \
+    true && bash "$SCRIPT" \
         --debug --verbose --test-message                        \
-        --openssl --starttls                            \
+        --openssl --starttls					\
         --host=smtp.gmail.com --port=587                        \
         --envelope-from=mrc.mgg@gmail.com                       \
         --envelope-to=marco.maggi-ipsu@poste.it                 \

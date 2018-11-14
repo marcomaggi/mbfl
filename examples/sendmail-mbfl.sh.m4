@@ -1,66 +1,67 @@
-#! /bin/bash
 # Part of: Marco's Bash Functions Library
 # Contents: example script that sends an email message
 # Date: Thu Apr 23, 2009
 #
 # Abstract
 #
-#	This script shows how an MBFL script can send email.
-#	It supports plain connections and encrypted
-#	connections using external programs.
+#	This script shows how an MBFL script can send email. It supports
+#	plain  connections  and  encrypted  connections  using  external
+#	programs.
 #
-# Copyright (c) 2009, 2010, 2015, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2009, 2010, 2015, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
-# This  program  is free  software:  you  can redistribute  it
-# and/or modify it  under the terms of the  GNU General Public
-# License as published by the Free Software Foundation, either
-# version  3 of  the License,  or (at  your option)  any later
-# version.
+# The author hereby grants  permission to use, copy, modify, distribute,
+# and  license this  software  and its  documentation  for any  purpose,
+# provided that  existing copyright notices  are retained in  all copies
+# and that  this notice  is included verbatim in any  distributions.  No
+# written agreement, license, or royalty  fee is required for any of the
+# authorized uses.  Modifications to this software may be copyrighted by
+# their authors and need not  follow the licensing terms described here,
+# provided that the new terms are clearly indicated on the first page of
+# each file where they apply.
 #
-# This  program is  distributed in  the hope  that it  will be
-# useful, but  WITHOUT ANY WARRANTY; without  even the implied
-# warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
-# PURPOSE.   See  the  GNU  General Public  License  for  more
-# details.
+# IN NO  EVENT SHALL THE AUTHOR  OR DISTRIBUTORS BE LIABLE  TO ANY PARTY
+# FOR  DIRECT, INDIRECT, SPECIAL,  INCIDENTAL, OR  CONSEQUENTIAL DAMAGES
+# ARISING OUT  OF THE  USE OF THIS  SOFTWARE, ITS DOCUMENTATION,  OR ANY
+# DERIVATIVES  THEREOF, EVEN  IF THE  AUTHOR  HAVE BEEN  ADVISED OF  THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
-# You should  have received a  copy of the GNU  General Public
-# License   along   with    this   program.    If   not,   see
-# <http://www.gnu.org/licenses/>.
+# THE  AUTHOR  AND DISTRIBUTORS  SPECIFICALLY  DISCLAIM ANY  WARRANTIES,
+# INCLUDING,   BUT   NOT  LIMITED   TO,   THE   IMPLIED  WARRANTIES   OF
+# MERCHANTABILITY,    FITNESS   FOR    A    PARTICULAR   PURPOSE,    AND
+# NON-INFRINGEMENT.  THIS  SOFTWARE IS PROVIDED  ON AN "AS  IS" BASIS,
+# AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
+# MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
 #page
-## ------------------------------------------------------------
-## Global variables.
-## ------------------------------------------------------------
+#### global variables
 
 script_PROGNAME=sendmail-mbfl.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2009, 2010'
+script_COPYRIGHT_YEARS='2009, 2010, 2015, 2018'
 script_AUTHOR='Marco Maggi'
-script_LICENSE=GPL
+script_LICENSE=liberal
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
 script_DESCRIPTION='Send an email message.'
 script_EXAMPLES="Usage examples:
-
+\n\
 \techo 'From: marco@localhost
 \tTo: root@localhost
 \tSubject: ciao
-
+\n\
 \tHow do you do?
 \t' | ${script_PROGNAME} \\
 \t\t--envelope-from=marco@localhost --envelope-to=root@localhost"
 
 #page
-## ------------------------------------------------------------
-## Load library.
-## ------------------------------------------------------------
+#### load library
 
 mbfl_library_loader
 
 #page
-## ------------------------------------------------------------
-## Command line options.
-## ------------------------------------------------------------
+#### command line options
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option FROM \
@@ -76,7 +77,7 @@ mbfl_declare_option HOST \
     localhost '' host witharg 'select the server hostname'
 mbfl_declare_option PORT \
     ''        p port witharg 'select the server port'
-mbfl_declare_option HOST_INFO \
+mbfl_declare_option HOSTINFO_FILE \
     "$HOME/.mbfl-hostinfo" '' host-info witharg 'select the hostinfo file'
 
 mbfl_declare_option TIMEOUT \
@@ -94,7 +95,7 @@ mbfl_declare_option GNUTLS_CONNECTOR \
 mbfl_declare_option OPENSSL_CONNECTOR \
     no '' openssl noarg 'use openssl for TLS'
 
-mbfl_declare_option AUTH_FILE \
+mbfl_declare_option AUTHINFO_FILE \
     "$HOME/.mbfl-authinfo" '' auth-info witharg 'select the authinfo file'
 mbfl_declare_option AUTH_USER \
     '' '' username witharg 'select the authorisation user'
@@ -107,9 +108,7 @@ mbfl_declare_option AUTH_LOGIN \
     no  '' auth-login noarg 'select the login authorisation type'
 
 #page
-## ------------------------------------------------------------
-## Programs.
-## ------------------------------------------------------------
+#### programs
 
 mbfl_file_enable_remove
 
@@ -122,9 +121,7 @@ mbfl_declare_program mkfifo
 mbfl_declare_program openssl
 
 #page
-## ------------------------------------------------------------
-## Declare exit codes.
-## ------------------------------------------------------------
+#### declare exit codes
 
 mbfl_main_declare_exit_code 2 invalid_option
 mbfl_main_declare_exit_code 3 invalid_message_source
@@ -141,9 +138,7 @@ mbfl_main_declare_exit_code 10 failed_connection
 mbfl_main_declare_exit_code 11 wrong_server_answer
 
 #page
-## ------------------------------------------------------------
-## Global variables.
-## ------------------------------------------------------------
+#### global variables
 
 # Array and number of recipients  and the zero-based array holding them.
 # Every time  the option "--envelope-to"  is found on the  command line,
@@ -183,9 +178,7 @@ AUTH_TYPE=
 CONNECTOR=gnutls
 
 #page
-## ------------------------------------------------------------
-## Option update functions.
-## ------------------------------------------------------------
+#### option update functions
 
 function script_option_update_to () {
     RECIPIENTS[$RECIPIENTS_COUNT]=$script_option_TO
@@ -223,50 +216,50 @@ function main () {
     local FROM_ADDRESS=
     local SERVER_HOSTNAME= SERVER_PORT=
     local AUTH_USER=$script_option_AUTH_USER
-    local AUTH_FILE=$script_option_AUTH_FILE
     local LOGIN_NAME= PASSWORD= MESSAGE=
-    # Input  and  output   file  descriptors  when  using  a
-    # connector subprocess.
+    # Input  and   output  file  descriptors  when   using  a  connector
+    # subprocess.
     local INFD=3 OUFD=4
-    # Pathnames of the FIFOs used to talk to the connector's
-    # child process.
+    # Pathnames  of the  FIFOs used  to  talk to  the connector's  child
+    # process.
     local INFIFO= OUFIFO=
-    # This is for the PID of the connector external program,
-    # executed as child process.
+    # This is for the PID of the connector external program, executed as
+    # child process.
     local CONNECTOR_PID=
     # Timeout,  in seconds,  for the  read operation  on the  input file
     # descriptor.
     local READ_TIMEOUT=$script_option_TIMEOUT
 
     validate_and_normalise_configuration
-    {
-        mbfl_message_verbose_printf 'connecting to \"%s:%d\"\n' "$SERVER_HOSTNAME" "$SERVER_PORT"
-        mbfl_message_verbose_printf 'session type: %s, authentication %s\n' \
-            "$SESSION_TYPE" "$AUTH_TYPE"
-        case $SESSION_TYPE in
-            plain)
-                connect_establish_plain_connection
-                esmtp_exchange_greetings helo
-                ;;
-            tls)
-                connect_make_fifos_for_connector
-                case "$CONNECTOR" in
-                    gnutls)     connect_using_gnutls ;;
-                    openssl)    connect_using_openssl ;;
-                esac
-                esmtp_exchange_greetings ehlo
-                ;;
-            starttls)
-                connect_make_fifos_for_connector
-                case "$CONNECTOR" in
-                    gnutls)     connect_using_gnutls_starttls ;;
-                    openssl)    connect_using_openssl_starttls ;;
-                esac
-                esmtp_exchange_greetings ehlo
-                ;;
-        esac
-        mbfl_message_verbose 'connection established\n'
-    } || exit_because_failed_connection
+    if ! {
+            mbfl_message_verbose_printf 'connecting to \"%s:%d\"\n' "$SERVER_HOSTNAME" "$SERVER_PORT"
+            mbfl_message_verbose_printf 'session type: %s, authentication %s\n' "$SESSION_TYPE" "$AUTH_TYPE"
+            case $SESSION_TYPE in
+		plain)
+                    connect_establish_plain_connection
+                    esmtp_exchange_greetings helo
+                    ;;
+		tls)
+                    connect_make_fifos_for_connector
+                    case $CONNECTOR in
+			gnutls)     connect_using_gnutls ;;
+			openssl)    connect_using_openssl ;;
+                    esac
+                    esmtp_exchange_greetings ehlo
+                    ;;
+		starttls)
+                    connect_make_fifos_for_connector
+                    case $CONNECTOR in
+			gnutls)     connect_using_gnutls_starttls ;;
+			openssl)    connect_using_openssl_starttls ;;
+                    esac
+                    esmtp_exchange_greetings ehlo
+                    ;;
+            esac
+            mbfl_message_verbose 'connection established\n'
+	}
+    then exit_because_failed_connection
+    fi
     esmtp_authentication
     esmtp_send_message
     esmtp_quit
@@ -282,122 +275,148 @@ function validate_and_normalise_configuration () {
     # Informations from the hostinfo file are stored in these variables.
     local hostinfo_HOST= hostinfo_PORT= hostinfo_SESSION_TYPE= hostinfo_AUTH_TYPE=
 
-    test -z "$script_option_TIMEOUT" && {
+    # Validate the value in "script_option_TIMEOUT".
+    if mbfl_string_is_empty "$script_option_TIMEOUT"
+    then
         mbfl_message_error_printf 'null value as timeout'
         exit_because_invalid_option
-    }
-    mbfl_string_is_digit "$script_option_TIMEOUT" || {
+    fi
+    if ! mbfl_string_is_digit "$script_option_TIMEOUT"
+    then
         mbfl_message_error_printf 'invalid value as timeout: %s' "$script_option_TIMEOUT"
         exit_because_invalid_option
-    }
+    fi
 
     # Email addresses are selected with command line options.
-    if test -n "$script_option_FROM"
+    if mbfl_string_is_not_empty "$script_option_FROM"
     then FROM_ADDRESS=$script_option_FROM
     else
         mbfl_message_error 'empty string as MAIL FROM envelope address'
         exit_because_invalid_option
     fi
-    test $RECIPIENTS_COUNT -eq 0 && {
+    if ((0 == RECIPIENTS_COUNT))
+    then
         mbfl_message_error 'no recipients where selected'
         exit_because_invalid_option
-    }
+    fi
 
     # Message source is selected with command line options.
-    test "$script_option_TEST_MESSAGE" = yes || {
-        test -z "$script_option_MESSAGE" && {
+    if test "$script_option_TEST_MESSAGE" != yes
+    then
+        if mbfl_string_is_empty "$script_option_MESSAGE"
+	then
             mbfl_message_error 'missing selection of mail message source'
             exit_because_invalid_option
-        }
-        test "$script_option_MESSAGE" = - || {
-            mbfl_file_is_file "$script_option_MESSAGE" || {
+	fi
+        if mbfl_string_not_equal "$script_option_MESSAGE" '-'
+	then
+            if ! mbfl_file_is_file "$script_option_MESSAGE"
+	    then
                 mbfl_message_error 'selected message file does not exist'
                 exit_because_invalid_option
-            }
-            mbfl_file_is_readable "$script_option_MESSAGE" || {
+            fi
+            if ! mbfl_file_is_readable "$script_option_MESSAGE"
+	    then
                 mbfl_message_error 'selected message file is not readable'
                 exit_because_invalid_option
-            }
-        }
-    }
+            fi
+        fi
+    fi
 
     # Server host and  port selection is done with  command line options
-    # or  reading the  hostinfo file.
+    # or reading the hostinfo file.
     #
     # After "hostinfo_read" we  always update "SERVER_HOSTNAME" with the
     # value from the  hostinfo file; this is because  the value from the
     # command line option may be just  a search key in the file, not the
     # full server hostname.
-    if test -n "$script_option_HOST"
+    if mbfl_string_is_not_empty "$script_option_HOST"
     then SERVER_HOSTNAME="$script_option_HOST"
     else
         hostinfo_read
-        if test -n "$hostinfo_HOST"
+        if mbfl_string_is_not_empty "$hostinfo_HOST"
         then SERVER_HOSTNAME="$hostinfo_HOST"
         else SERVER_HOSTNAME=localhost
         fi
     fi
-    mbfl_string_is_noblank "$SERVER_HOSTNAME" || {
+    if ! mbfl_string_is_noblank "$SERVER_HOSTNAME"
+    then
         mbfl_message_error 'selected hostname string has blank characters in it'
         exit_because_invalid_option
-    }
-    if test -n "$script_option_PORT"
+    fi
+    if mbfl_string_is_not_empty "$script_option_PORT"
     then SERVER_PORT="$script_option_PORT"
     else
         hostinfo_read
-        test -n "$hostinfo_HOST" && SERVER_HOSTNAME="$hostinfo_HOST"
-        if test -n "$hostinfo_PORT"
+        if mbfl_string_is_not_empty "$hostinfo_HOST"
+	then SERVER_HOSTNAME="$hostinfo_HOST"
+	fi
+        if mbfl_string_is_not_empty "$hostinfo_PORT"
         then SERVER_PORT="$hostinfo_PORT"
         else SERVER_PORT=25
         fi
     fi
-    mbfl_string_is_digit "$SERVER_PORT" || {
+    if ! mbfl_string_is_digit "$SERVER_PORT"
+    then
         mbfl_message_error 'selected port string is not numeric'
         exit_because_invalid_option
-    }
+    fi
 
     # Session type is selected by  command line option, else by hostinfo
     # file, else defaults to "plain".
-    test -z "$SESSION_TYPE" && {
+    if mbfl_string_is_empty "$SESSION_TYPE"
+    then
         hostinfo_read
-        test -n "$hostinfo_HOST" && SERVER_HOSTNAME="$hostinfo_HOST"
+        if mbfl_string_is_not_empty "$hostinfo_HOST"
+	then SERVER_HOSTNAME="$hostinfo_HOST"
+	fi
         SESSION_TYPE=$hostinfo_SESSION_TYPE
-        test -z "$SESSION_TYPE" && SESSION_TYPE=plain
-    }
+        if mbfl_string_is_empty "$SESSION_TYPE"
+	then SESSION_TYPE=plain
+	fi
+    fi
 
     # Authorisation  type is selected  by command  line option,  else by
     # hostinfo file, else defaults to "none".
-    test -z "$AUTH_TYPE" && {
+    if mbfl_string_is_empty "$AUTH_TYPE"
+    then
         hostinfo_read
-        test -n "$hostinfo_HOST" && SERVER_HOSTNAME="$hostinfo_HOST"
+        if mbfl_string_is_not_empty "$hostinfo_HOST"
+	then SERVER_HOSTNAME="$hostinfo_HOST"
+	fi
         AUTH_TYPE=$hostinfo_AUTH_TYPE
-        test -z "$AUTH_TYPE" && AUTH_TYPE=none
-    }
-    test "$AUTH_TYPE" = none || {
-        test -z "$script_option_AUTH_FILE" && {
+        if mbfl_string_is_empty "$AUTH_TYPE"
+	then AUTH_TYPE=none
+	fi
+    fi
+    if mbfl_string_not_equal "$AUTH_TYPE" 'none'
+    then
+        if mbfl_string_is_empty "$script_option_AUTHINFO_FILE"
+	then
             mbfl_message_error 'empty string as auth file pathname'
             exit_because_invalid_option
-        }
-        mbfl_file_is_file "$script_option_AUTH_FILE" || {
+        fi
+        if ! mbfl_file_is_file "$script_option_AUTHINFO_FILE"
+	then
             mbfl_message_error 'selected auth file does not exist'
             exit_because_invalid_option
-        }
-        mbfl_file_is_readable "$script_option_AUTH_FILE" || {
+        fi
+        if ! mbfl_file_is_readable "$script_option_AUTHINFO_FILE"
+	then
             mbfl_message_error 'selected auth file is not readable'
             exit_because_invalid_option
-        }
-        test -z "$script_option_AUTH_USER" && {
+        fi
+        if mbfl_string_is_empty "$script_option_AUTH_USER"
+	then
             mbfl_message_error 'empty string as auth username'
             exit_because_invalid_option
-        }
+        fi
         auth_read_credentials
-    }
+    fi
     return 0
 }
 #page
-## ------------------------------------------------------------
-## Establishing connections to remote servers.
-## ------------------------------------------------------------
+#### establishing connections to remote servers
 
 # Synopsis:
 #
@@ -415,13 +434,15 @@ function validate_and_normalise_configuration () {
 #  connected to the device representing the remote host.
 #
 function connect_establish_plain_connection () {
-    local DEVICE=$(printf '/dev/tcp/%s/%d' "$SERVER_HOSTNAME" "$SERVER_PORT")
+    local DEVICE
+    printf -v DEVICE '/dev/tcp/%s/%d' "$SERVER_HOSTNAME" "$SERVER_PORT"
     INFD=3
     OUFD=$INFD
-    exec 3<>"$DEVICE" || {
+    if ! exec 3<>"$DEVICE"
+    then
         mbfl_message_error_printf 'failed establishing connection to %s:%d' "$SERVER_HOSTNAME" $SERVER_PORT
         exit_because_failed_connection
-    }
+    fi
     recv 220
     return 0
 }
@@ -448,12 +469,13 @@ function connect_establish_plain_connection () {
 function connect_using_gnutls () {
     local GNUTLS GNUTLS_FLAGS="--debug 0 --port $SERVER_PORT" success=no
     mbfl_message_verbose_printf 'connecting with gnutls, immediate encrypted bridge\n'
-    GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
+    mbfl_program_found_var GNUTLS gnutls-cli || exit $?
     mbfl_program_redirect_stderr_to_stdout
-    mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SERVER_HOSTNAME" || {
+    if ! mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SERVER_HOSTNAME"
+    then
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SERVER_HOSTNAME" "$SERVER_PORT"
         exit_failed_connection
-    }
+    fi
     CONNECTOR_PID=$mbfl_program_BGPID
     mbfl_message_debug "pid of gnutls: $CONNECTOR_PID"
     connect_open_file_descriptors_to_fifos
@@ -486,12 +508,13 @@ function connect_using_gnutls () {
 function connect_using_gnutls_starttls () {
     local GNUTLS GNUTLS_FLAGS="--debug 0 --starttls --port $SERVER_PORT"
     mbfl_message_verbose_printf 'connecting with gnutls, delayed encrypted bridge\n'
-    GNUTLS=$(mbfl_program_found gnutls-cli) || exit $?
+    mbfl_program_found_var GNUTLS gnutls-cli || exit $?
     mbfl_program_redirect_stderr_to_stdout
-    mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SERVER_HOSTNAME" || {
+    if ! mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SERVER_HOSTNAME"
+    then
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SERVER_HOSTNAME" "$SERVER_PORT"
         exit_failed_connection
-    }
+    fi
     CONNECTOR_PID=$mbfl_program_BGPID
     mbfl_message_debug "pid of gnutls: $CONNECTOR_PID"
     connect_open_file_descriptors_to_fifos
@@ -526,12 +549,13 @@ function connect_using_gnutls_starttls () {
 function connect_using_openssl () {
     local OPENSSL OPENSSL_FLAGS="s_client -quiet -connect $SERVER_HOSTNAME:$SERVER_PORT" success=no
     mbfl_message_verbose_printf 'connecting with openssl, immediate encrypted bridge\n'
-    OPENSSL=$(mbfl_program_found openssl) || exit $?
+    mbfl_program_found_var OPENSSL openssl || exit $?
     mbfl_program_redirect_stderr_to_stdout
-    mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS || {
+    if ! mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS
+    then
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SERVER_HOSTNAME" "$SERVER_PORT"
         exit_failed_connection
-    }
+    fi
     CONNECTOR_PID=$mbfl_program_BGPID
     mbfl_message_debug "pid of openssl: $CONNECTOR_PID"
     connect_open_file_descriptors_to_fifos
@@ -564,12 +588,13 @@ function connect_using_openssl_starttls () {
     local OPENSSL OPENSSL_FLAGS="s_client -quiet -starttls smtp -connect $SERVER_HOSTNAME:$SERVER_PORT"
     local success=no
     mbfl_message_verbose_printf 'connecting with openssl, delayed encrypted bridge\n'
-    OPENSSL=$(mbfl_program_found openssl) || exit $?
+    mbfl_program_found_var OPENSSL openssl || exit $?
     mbfl_program_redirect_stderr_to_stdout
-    mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS || {
+    if ! mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS
+    then
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SERVER_HOSTNAME" "$SERVER_PORT"
         exit_failed_connection
-    }
+    fi
     CONNECTOR_PID=$mbfl_program_BGPID
     mbfl_message_debug "pid of openssl: $CONNECTOR_PID"
     connect_open_file_descriptors_to_fifos
@@ -577,9 +602,7 @@ function connect_using_openssl_starttls () {
     return 0
 }
 #page
-## ------------------------------------------------------------
-## Waiting for the connector process.
-## ------------------------------------------------------------
+#### waiting for the connector process
 
 # Synopsis:
 #
@@ -631,9 +654,7 @@ function terminate_and_wait_for_connector_process () {
     CONNECTOR_PID=
 }
 #page
-## ------------------------------------------------------------
-## Handling of FIFOs to the connector.
-## ------------------------------------------------------------
+#### handling of FIFOs to the connector
 
 # Synopsis:
 #
@@ -657,19 +678,21 @@ function terminate_and_wait_for_connector_process () {
 #
 function connect_make_fifos_for_connector () {
     local MKFIFO
-    TMPDIR=$(mbfl_file_find_tmpdir) || {
+    if ! mbfl_file_find_tmpdir_var TMPDIR
+    then
         mbfl_message_error 'unable to determine pathname of temporary directory'
         exit_failure
-    }
-    INFIFO=$TMPDIR/in.$RANDOM.$$
-    OUFIFO=$TMPDIR/out.$RANDOM.$$
-    MKFIFO=$(mbfl_program_found mkfifo) || exit $?
+    fi
+    INFIFO=${TMPDIR}/in.${RANDOM}.$$
+    OUFIFO=${TMPDIR}/out.${RANDOM}.$$
+    mbfl_program_found_var MKFIFO mkfifo || exit $?
     mbfl_message_debug 'creating FIFOs for connector subprocess'
     trap connect_cleanup_fifos EXIT
-    mbfl_program_exec "$MKFIFO" --mode=0600 "$INFIFO" "$OUFIFO" || {
+    if ! mbfl_program_exec "$MKFIFO" --mode=0600 "$INFIFO" "$OUFIFO"
+    then
         mbfl_message_error 'unable to create FIFOs'
         exit_failure
-    }
+    fi
     return 0
 }
 # Synopsis:
@@ -705,9 +728,7 @@ function connect_cleanup_fifos () {
     mbfl_file_remove "$OUFIFO" &>/dev/null || true
 }
 #page
-## ------------------------------------------------------------
-## Receiving data from the server.
-## ------------------------------------------------------------
+#### receiving data from the server
 
 # Synopsis:
 #
@@ -817,9 +838,7 @@ function recv_until_string () {
     return 0
 }
 #page
-## ------------------------------------------------------------
-## Sending data to the server.
-## ------------------------------------------------------------
+#### sending data to the server
 
 # Synopsis:
 #
@@ -860,9 +879,7 @@ function send_no_log () {
     return 0
 }
 #page
-## ------------------------------------------------------------
-## Email message.
-## ------------------------------------------------------------
+#### email message
 
 #
 # Synopsis:
@@ -967,7 +984,7 @@ Configuration:
 \tuse gnutls-cli connector:\t$script_option_GNUTLS_CONNECTOR
 \tuse openssl connector:\t$script_option_OPENSSL_CONNECTOR
 \tselected connector:\t\t$CONNECTOR
-\tauth file:\t\t\t'$script_option_AUTH_FILE'
+\tauth file:\t\t\t'$script_option_AUTHINFO_FILE'
 \tauth user:\t\t\t'$script_option_AUTH_USER'
 \tauth method plain:\t\t$script_option_AUTH_PLAIN
 \tauth method login:\t\t$script_option_AUTH_LOGIN
@@ -978,9 +995,7 @@ Copyright $script_COPYRIGHT_YEARS $script_AUTHOR
     printf "$MESSAGE"
 }
 #page
-## ------------------------------------------------------------
-## SMTP/ESMTP protocol.
-## ------------------------------------------------------------
+#### SMTP/ESMTP protocol
 
 # Synopsis:
 #
@@ -1105,9 +1120,7 @@ function esmtp_quit () {
     return 0
 }
 #page
-## ------------------------------------------------------------
-## Authentication.
-## ------------------------------------------------------------
+#### authentication
 
 # Synopsis:
 #
@@ -1129,44 +1142,52 @@ function esmtp_quit () {
 #  and it is searched with a grep regular expression.
 #
 function auth_read_credentials () {
-    local GREP line= regexp=
-    GREP=$(mbfl_program_found grep) || exit $?
-    mbfl_message_verbose 'reading auth file\n'
-    local rex='^[ \t]*'
-    rex+='machine[ \t]\+.*%s.*[ \t]\+'
-    rex+='login[ \t]\+.*%s.*[ \t]\+'
-    rex+='password[ \t]\+.*'
-    rex+='[ \t]*$'
-    rex=$(printf "$rex" "$SERVER_HOSTNAME" "$AUTH_USER")
-    line=$(mbfl_program_exec "$GREP" "$rex" "$AUTH_FILE") || {
-        mbfl_message_error_printf 'unknown authorisation information for \"%s@%s\"' \
-            "$AUTH_USER" "$SERVER_HOSTNAME"
-        exit_because_unknown_auth_user
-    }
-    set -- $line
-    auth_file_validate_word "$1" machine        first   || exit $?
-    auth_file_validate_word "$3" login          third   || exit $?
-    auth_file_validate_word "$5" password       fifth   || exit $?
-    LOGIN_NAME=$4
-    PASSWORD=$6
-# This is reserved information so do not print it on the terminal!!!
-#     mbfl_message_debug_printf 'username %s, password %s' "$LOGIN_NAME" "$PASSWORD"
-    return 0
-}
-function auth_file_validate_word () {
-    local GOT=${1:?} EXPECTED=${2:?} POSITION=${3:?}
-    if test "$GOT" = "$EXPECTED"
-    then mbfl_message_debug_printf 'good %s word of auth record (%s)' $POSITION $GOT
+    local SPLITFIELD LINE FOUND=false
+    local -i SPLITCOUNT
+    local MACHINE_KEY LOGIN_KEY PASSWORD_KEY
+    local MACHINE_VAL LOGIN_VAL PASSWORD_VAL
+
+    mbfl_message_debug_printf 'reading authinfo file: %s' "$script_option_AUTHINFO_FILE"
+    while IFS= read LINE
+    do
+	mbfl_string_split "$LINE" ' '
+	if ((6 != SPLITCOUNT))
+	then continue
+	fi
+	MACHINE_KEY=${SPLITFIELD[0]}
+	MACHINE_VAL=${SPLITFIELD[1]}
+	LOGIN_KEY=${SPLITFIELD[2]}
+	LOGIN_VAL=${SPLITFIELD[3]}
+	PASSWORD_KEY=${SPLITFIELD[4]}
+	PASSWORD_VAL=${SPLITFIELD[5]}
+	if { mbfl_string_not_equal "$MACHINE_KEY" 'machine' || \
+		 mbfl_string_not_equal "$LOGIN_KEY" 'login' || \
+		 mbfl_string_not_equal "$PASSWORD_KEY" 'password'; }
+	then continue
+	elif { mbfl_string_equal "$MACHINE_VAL" "$SERVER_HOSTNAME" && mbfl_string_equal_substring "$LOGIN_VAL" 0 "$AUTH_USER"; }
+	then
+	    FOUND=true
+	    break
+	fi
+    done <"$script_option_AUTHINFO_FILE"
+
+    if $FOUND
+    then
+	LOGIN_NAME=$LOGIN_VAL
+	PASSWORD=$PASSWORD_VAL
+	# This  is reserved  information,  so  do not  print  it on  the
+	# terminal!!!
+	#
+	# mbfl_message_debug_printf 'username %s, password %s' "$LOGIN_NAME" "$PASSWORD"
+	return 0
     else
-        mbfl_message_error_printf 'expected \"%s\" as %s word of auth record, got \"%s\"' \
-            "$EXPECTED" "$POSITION" "$GOT"
-        exit_because_invalid_auth_file
+        mbfl_message_error_printf 'unknown authorisation information for \"%s@%s\"' "$AUTH_USER" "$SERVER_HOSTNAME"
+        exit_because_unknown_auth_user
     fi
 }
+
 #page
-## ------------------------------------------------------------
-## Hostinfo file.
-## ------------------------------------------------------------
+#### hostinfo file
 
 # Synopsis:
 #
@@ -1174,11 +1195,11 @@ function auth_file_validate_word () {
 #
 # Description:
 #
-#  Read the  hostinfo file to  select the port  number.
+#  Read the hostinfo file to select the port number.
 #
 #  The  pathname  of   the  hostinfo  file  must  be   in  the  variable
-#  "script_option_HOST_INFO". The host name  key must be in the variable
-#  "script_option_HOST".
+#  "script_option_HOSTINFO_FILE".  The  host name  key  must  be in  the
+#  variable "script_option_HOST".
 #
 #  At   the  first  invocation,   this  function   is  called   it  sets
 #  "hostinfo_ALREADY_READ" to  true; subsequent invocations  will detect
@@ -1188,50 +1209,61 @@ function auth_file_validate_word () {
 #  "hostinfo_HOST", "hostinfo_PORT" and "hostinfo_SESSION_TYPE".
 #
 function hostinfo_read () {
-    $hostinfo_ALREADY_READ && return 0
-    local HOSTINFO=$script_option_HOST_INFO
-    local rex='^[ \t]*'
-    rex+='machine[ \t]\+.*%s.*[ \t]\+'
-    rex+='service[ \t]\+smtp[ \t]\+'
-    rex+='port[ \t]\+[0-9]\+[ \t]\+'
-    rex+='session[ \t]\+\(plain\|tls\|starttls\)[ \t]\+'
-    rex+='auth[ \t]\+\(none\|plain\|login\)'
-    rex+='[ \t]*$'
-    rex=$(printf "$rex" "$script_option_HOST")
-    mbfl_message_debug_printf 'reading hostinfo file: %s' "$HOSTINFO"
-    local line
-    line=$(grep "$rex" "$HOSTINFO") || {
-        mbfl_message_error_printf 'selected host (%s) is unknown to hostinfo file (%s)' \
-            "$script_option_HOST" "$HOSTINFO"
-        exit_because_unknown_host
-    }
-    set -- $line
-    host_file_validate_word "$1" machine first   || exit $?
-    host_file_validate_word "$3" service third   || exit $?
-    host_file_validate_word "$5" port    fifth   || exit $?
-    host_file_validate_word "$7" session sixth   || exit $?
-    host_file_validate_word "$9" auth    seventh || exit $?
-    hostinfo_ALREADY_READ=true
-    hostinfo_HOST=$2
-    hostinfo_PORT=$6
-    hostinfo_SESSION_TYPE=$8
-    shift 9
-    hostinfo_AUTH_TYPE=$1
-    mbfl_message_debug_printf 'data from hostinfo: %s:%s, %s' \
-        "$hostinfo_HOST" "$hostinfo_PORT" "$hostinfo_SESSION_TYPE"
-    return 0
-}
-function host_file_validate_word () {
-    local GOT=${1:?} EXPECTED=${2:?} POSITION=${3:?}
-    if test "$GOT" = "$EXPECTED"
-    then mbfl_message_debug_printf 'good %s word of hostinfo record (%s)' $POSITION $GOT
+    if $hostinfo_ALREADY_READ
+    then return 0
+    fi
+    local SPLITFIELD LINE FOUND=false
+    local -i SPLITCOUNT
+    local MACHINE_KEY SERVICE_KEY PORT_KEY SESSION_KEY AUTH_KEY
+    local MACHINE_VAL SERVICE_VAL PORT_VAL SESSION_VAL AUTH_VAL
+
+    mbfl_message_debug_printf 'reading hostinfo file: %s' "$script_option_HOSTINFO_FILE"
+    while IFS= read LINE
+    do
+	mbfl_string_split "$LINE" ' '
+	if ((10 != SPLITCOUNT))
+	then continue
+	fi
+	MACHINE_KEY=${SPLITFIELD[0]}
+	MACHINE_VAL=${SPLITFIELD[1]}
+	SERVICE_KEY=${SPLITFIELD[2]}
+	SERVICE_VAL=${SPLITFIELD[3]}
+	PORT_KEY=${SPLITFIELD[4]}
+	PORT_VAL=${SPLITFIELD[5]}
+	SESSION_KEY=${SPLITFIELD[6]}
+	SESSION_VAL=${SPLITFIELD[7]}
+	AUTH_KEY=${SPLITFIELD[8]}
+	AUTH_VAL=${SPLITFIELD[9]}
+	if test "$MACHINE_KEY"	!= machine	-o \
+		"$SERVICE_KEY"	!= login	-o \
+		"$PORT_KEY"	!= port		-o \
+		"$SESSION_KEY"	!= session	-o \
+		"$AUTH_KEY"	!= auth
+	then continue
+	elif test "$SERVICE_VAL" = "$SMTP" -a "$MACHINE_VAL" = "$script_option_HOST"
+	then
+	    FOUND=true
+	    break
+	fi
+    done <"$script_option_HOSTINFO_FILE"
+
+    if $FOUND
+    then
+	hostinfo_ALREADY_READ=true
+	hostinfo_HOST=$MACHINE_VAL
+	hostinfo_PORT=$PORT_VAL
+	hostinfo_SESSION_TYPE=$SESSION_VAL
+	hostinfo_AUTH_TYPE=$AUTH_VAL
+	mbfl_message_debug_printf 'data from hostinfo: %s:%s, %s' "$hostinfo_HOST" "$hostinfo_PORT" "$hostinfo_SESSION_TYPE"
+	return 0
     else
-        mbfl_message_error_printf 'expected \"%s\" as %s word of hostinfo record, got \"%s\"' \
-            "$EXPECTED" "$POSITION" "$GOT"
-        exit_because_invalid_auth_file
+        mbfl_message_error_printf 'selected host (%s) is unknown to hostinfo file (%s)' "$script_option_HOST" "$script_option_HOSTINFO_FILE"
+        exit_because_unknown_host
     fi
 }
+
 #page
+### let's go
 
 mbfl_main
 
