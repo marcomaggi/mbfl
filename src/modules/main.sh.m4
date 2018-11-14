@@ -103,6 +103,9 @@ then
     mbfl_main_EXIT_CODES[1]=1
     mbfl_main_EXIT_NAMES[1]=failure
 
+    mbfl_main_EXIT_CODES[2]=100
+    mbfl_main_EXIT_NAMES[2]=error_loading_library
+
     mbfl_main_EXIT_CODES[2]=99
     mbfl_main_EXIT_NAMES[2]=program_not_found
 

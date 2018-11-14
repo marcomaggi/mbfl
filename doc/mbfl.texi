@@ -261,73 +261,45 @@ arguments to acquire the pathname.  @command{mbfl-config} is installed by the pa
 A more reliable way to load the library is:
 
 @smallexample
-script_PROGNAME=script.sh
-mbfl_INTERACTIVE=no
-mbfl_LOADED=no
-mbfl_INSTALLED=$(type -p mbfl-config &>/dev/null \
-   && mbfl-config) &>/dev/null
-mbfl_HARDCODED=/some/dir/libmbfl.sh
-for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
-do
-    if test -n "$item" -a -f "$item" -a -r "$item"
-    then
-        if ! source "$item" &>/dev/null
-        then
-            printf '%s error: loading MBFL file "%s"\n' \
-                "$script_PROGNAME" "$item" >&2
-            exit 2
-        fi
-        break
-    fi
-done
-unset -v item
-if test "$mbfl_LOADED" != yes
-then
-    printf '%s error: incorrect evaluation of MBFL\n' \
-        "$script_PROGNAME" >&2
-    exit 2
-fi
+@verbatiminclude loader.sh
 @end smallexample
 
 @noindent
-where the optional @file{/some/dir/libmbfl.sh} can be the pathname of a known location in which to
-find the library.  This code:
+where the value of @code{mbfl_HARDCODED} can be the pathname of a known location in which to find
+the library.  This code:
 
 @enumerate
 @item
-Looks for the pathname in the @env{MBFL_LIBRARY} variable, to allow us
-to explicitly select the file from the command line; example:
+Looks for the pathname in the @env{MBFL_LIBRARY} variable, to allow us to explicitly select the file
+from the command line; example:
 
 @example
 $ MBFL_LIBRARY=/path/to/libmbfl.sh script.sh
 @end example
 
 @item
-Looks in some known directory; for example a subdirectory of a software
-package that we have distributed.
+Looks in some known directory; for example a subdirectory of a software package that we have
+distributed.
 
 @item
-As a last resort tries to evaluate the @command{mbfl-config} script to
-pick up a library installed on the system.
+As a last resort tries to evaluate the @command{mbfl-config} script to pick up a library installed
+on the system.
 @end enumerate
 
-We see that the output of the @command{source} command is discarded:
-this is because we assume that:
+We see that the output of the @command{source} command is discarded: this is because we assume that:
 
 @itemize
 @item
-If an error occurs evaluating the library a lot of error messages may
-fill the screen, confusing the user; we just want a single error message
-pointing the finger of blame.
+If an error occurs evaluating the library a lot of error messages may fill the screen, confusing the
+user; we just want a single error message pointing the finger of blame.
 
 @item
-An error in the evaluation of the library code can be replicated because
-the evaluation does not heavily depend on the environment, so we can
-track down library errors later.
+An error in the evaluation of the library code can be replicated because the evaluation does not
+heavily depend on the environment, so we can track down library errors later.
 @end itemize
 
-This code is included in the @mbfl{} distribution in the
-@file{src/lib/loader.sh} file.
+This code is included in the @mbfl{} distribution in the @file{src/lib/loader.sh} file; we can also
+automatically include it in a script with the preprocessor macro @code{mbfl_library_loader}.
 
 @c page
 @node overview direct
@@ -603,6 +575,13 @@ Send the result of preprocessing to @bash{}, rather than print it.
 
 The @mfour{} preprocessor is invoked by @command{mbflpp.sh} with the @option{--prefix-builtins}
 option; so all the @mfour{} built in macros and directives are available prefixed with @code{m4_}.
+
+
+@deffn {Preprocessor Macro} mbfl_library_loader (@var{hardcoded_pathname})
+Expand to a block of code that reliably loads the @value{PACKAGE} library.  The optional argument
+@var{hardcoded_pathname} must be the absolute pathname to a file containing the library itself.
+@ref{overview reliable} for details.
+@end deffn
 
 
 @deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{varname} @var{number} @var{description}
@@ -4762,6 +4741,11 @@ Exit the script with code zero.
 @defun exit_because_failure
 @defunx exit_failure
 Exit the script with code one.
+@end defun
+
+
+@defun exit_because_error_loading_library
+Exit the script with code @code{100}.
 @end defun
 
 

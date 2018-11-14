@@ -16,6 +16,9 @@ changes!
   installed under directories *without* the version part.  No pkg-config
   module is installed.
 
+* The  way  the library  is  reliably  loaded  has been  reviewed.   The
+  preprocessor can include the needed code with a macro.
+
 * Added string functions:
 
     mbfl_string_is_empty

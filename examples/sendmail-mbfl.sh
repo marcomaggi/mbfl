@@ -9,7 +9,7 @@
 #	It supports plain connections and encrypted
 #	connections using external programs.
 #
-# Copyright (c) 2009, 2010, 2015 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2009, 2010, 2015, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This  program  is free  software:  you  can redistribute  it
 # and/or modify it  under the terms of the  GNU General Public
@@ -55,25 +55,8 @@ script_EXAMPLES="Usage examples:
 ## Load library.
 ## ------------------------------------------------------------
 
-mbfl_INTERACTIVE=no
-mbfl_LOADED=no
-mbfl_INSTALLED=$(mbfl-config) &>/dev/null
-mbfl_HARDCODED=
-for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
-do test -n "$item" -a -f "$item" -a -r "$item" && {
-        source "$item" &>/dev/null || {
-            printf '%s error: loading MBFL file "%s"\n' \
-                "$script_PROGNAME" "$item" >&2
-            exit 2
-        }
-    }
-done
-unset -v item
-test "$mbfl_LOADED" = yes || {
-    printf '%s error: incorrect evaluation of MBFL\n' \
-        "$script_PROGNAME" >&2
-    exit 2
-}
+mbfl_library_loader
+
 #page
 ## ------------------------------------------------------------
 ## Command line options.

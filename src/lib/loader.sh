@@ -1,24 +1,24 @@
-# loader.sh
+declare mbfl_INTERACTIVE=no
+declare mbfl_LOADED=no
+declare mbfl_HARDCODED=
+declare mbfl_INSTALLED=$(type -p mbfl-config &>/dev/null && mbfl-config) &>/dev/null
 
-mbfl_INTERACTIVE=no
-mbfl_LOADED=no
-mbfl_HARDCODED=
-mbfl_INSTALLED=$(type -p mbfl-config &>/dev/null && mbfl-config) &>/dev/null
+declare item
 for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
 do
-    test -n "$item" -a -f "$item" -a -r "$item" && {
-        source "$item" &>/dev/null || {
-            printf '%s error: loading MBFL file "%s"\n' \
-                "$script_PROGNAME" "$item" >&2
-            exit 2
-        }
-    }
+    if test -n "$item" -a -f "$item" -a -r "$item"
+    then
+        if source "$item" &>/dev/null
+        then break
+        else
+            printf '%s error: loading MBFL file "%s"\n' "$script_PROGNAME" "$item" >&2
+            exit 100
+        fi
+    fi
 done
 unset -v item
-test "$mbfl_LOADED" = yes || {
-    printf '%s error: incorrect evaluation of MBFL\n' \
-        "$script_PROGNAME" >&2
-    exit 2
-}
-
-### end of file
+if test "$mbfl_LOADED" != yes
+then
+    printf '%s error: incorrect evaluation of MBFL\n' "$script_PROGNAME" >&2
+    exit 100
+fi

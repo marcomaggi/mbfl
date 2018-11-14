@@ -51,8 +51,7 @@ script_EXAMPLES="Examples:
 \tat.sh --drop --identifier=1234
 "
 
-mbfl_INTERACTIVE='no'
-source "${MBFL_LIBRARY:=$(mbfl-config)}"
+mbfl_library_loader
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ACTION_SCHEDULE    no  S   schedule        noarg   'schedules a command'

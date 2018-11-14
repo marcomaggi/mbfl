@@ -20,7 +20,7 @@ EXTRA_DIST		+= \
 	doc/one-level-actions.sh		\
 	doc/two-levels-actions.sh
 
-AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
+AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples -I $(srcdir)/src/lib
 
 info_TEXINFOS		= doc/mbfl.texi
 doc_mbfl_TEXINFOS	= \
@@ -28,7 +28,9 @@ doc_mbfl_TEXINFOS	= \
 	doc/lgpl-3.0.texi		\
 	doc/macros.texi			\
 	doc/sendmail-plain.sh		\
-	doc/sendmail-connector.sh
+	doc/sendmail-connector.sh	\
+	doc/one-level-actions.sh	\
+	src/lib/loader.sh
 
 
 #### source modules
@@ -102,7 +104,8 @@ MBFLPP_RUN	= $(MBFLPP_ENV) $(BASH_PROGRAM) $(MBFLPP_SCRIPT)
 
 ## --------------------------------------------------------------------
 
-MBFLPP_MODULES_FLAGS	= --include=$(srcdir)/src/lib				\
+MBFLPP_MODULES_FLAGS	= --no-prepro 						\
+			  --include=$(srcdir)/src/lib				\
 			  --library=$(srcdir)/src/lib/preprocessor.m4	 	\
 			  --define=__PKGDATADIR__=$(mbfldatadir)		\
 			  --define=__PACKAGE_NAME__=$(PACKAGE)			\
@@ -169,7 +172,7 @@ CLEANFILES		+= $(CHECK_EXAMPLES) $(SOME_EXAMPLES) examples/$(am__dirstamp)
 MBFL_EXAMPLES_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
 MBFL_EXAMPLES_ENV	= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBRARY); export MBFL_LIBRARY;
 MBFL_EXAMPLES_PREPRO	= $(builddir)/src/scripts/mbflpp.sh
-MBFL_EXAMPLES_PPFLAGS	= --add-bash
+MBFL_EXAMPLES_PPFLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 --add-bash
 MBFL_EXAMPLES_RUNPP	= $(MBFL_EXAMPLES_ENV) $(BASH_PROGRAM) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_PPFLAGS)
 MBFL_EXAMPLES_PREREQ	= examples/$(am__dirstamp) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_LIBRARY)
 

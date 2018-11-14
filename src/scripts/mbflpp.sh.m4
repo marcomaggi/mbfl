@@ -39,7 +39,10 @@ script_EXAMPLES="Usage examples:
 ${script_PROGNAME} <INFILE >OUTFILE
 ${script_PROGNAME} --outfile=OUTFILE INFILE1 INFILE2 ..."
 
-source "${MBFL_LIBRARY:=$(mbfl-config)}"
+#page
+#### load the library
+
+m4_include(loader.sh)
 
 #page
 #### command line options
@@ -52,6 +55,7 @@ mbfl_declare_option INCLUDE           ''  I include           witharg "add a sea
 mbfl_declare_option LIBRARY           '' '' library           witharg "include an M4 library"
 mbfl_declare_option OUTPUT            -   o output            witharg "selects an output file, '-' for stdout"
 mbfl_declare_option EVAL              no  e eval              noarg "if used evaluates the output script in bash, instead of printing it"
+mbfl_declare_option NO_PREPROCESSOR   no '' no-prepro         noarg "do not load the m4 preprocessor library"
 
 #page
 #### external programs declarations
@@ -95,7 +99,7 @@ function main () {
 
 
     M4_FLAGS+=" ${includes} ${symbols}"
-    if mbfl_file_is_readable "$PREPROCESSOR"
+    if { test "$NO_PREPROCESSOR" = no && mbfl_file_is_readable "$PREPROCESSOR"; }
     then M4_FLAGS+=" ${PREPROCESSOR}"
     fi
     M4_FLAGS+=" ${libraries}"

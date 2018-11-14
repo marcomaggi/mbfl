@@ -40,8 +40,7 @@ script_EXAMPLES="Usage examples:
 
 \t${script_PROGNAME} --bzip --stdout --compress file.ext >file.ext.bz2"
 
-mbfl_INTERACTIVE='no'
-source "${MBFL_LIBRARY:=$(mbfl-config)}"
+mbfl_library_loader
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ACTION_COMPRESS yes '' compress noarg "selects compress action"
