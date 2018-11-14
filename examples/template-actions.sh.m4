@@ -224,7 +224,7 @@ function script_before_parsing_options () {
     script_USAGE="usage: ${script_PROGNAME} [action] [options]"
     script_DESCRIPTION='This is an example script showing action arguments.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} --x-opt"
 
     # keyword default-value brief-option long-option has-argument description
@@ -254,7 +254,7 @@ function script_before_parsing_options_ONE () {
     script_USAGE="usage: ${script_PROGNAME} one [action] [options]"
     script_DESCRIPTION='Example action tree: one.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one green solid"
 }
 function script_action_ONE () {
@@ -271,7 +271,7 @@ function script_before_parsing_options_TWO () {
     script_USAGE="usage: ${script_PROGNAME} two [action] [options]"
     script_DESCRIPTION='Example action tree: two.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two green solid"
 }
 function script_action_TWO () {
@@ -288,7 +288,7 @@ function script_before_parsing_options_THREE () {
     script_USAGE="usage: ${script_PROGNAME} three [action] [options]"
     script_DESCRIPTION='Example action tree: three.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three green solid"
 }
 function script_action_THREE () {
@@ -306,7 +306,7 @@ function script_before_parsing_options_ONE_GREEN () {
     script_USAGE="usage: ${script_PROGNAME} one green [action] [options]"
     script_DESCRIPTION='Example action tree: one green.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one green solid"
 }
 function script_action_ONE_GREEN () {
@@ -323,7 +323,7 @@ function script_before_parsing_options_ONE_WHITE () {
     script_USAGE="usage: ${script_PROGNAME} one white [action] [options]"
     script_DESCRIPTION='Example action tree: one white.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one white solid"
 }
 function script_action_ONE_WHITE () {
@@ -340,7 +340,7 @@ function script_before_parsing_options_ONE_RED () {
     script_USAGE="usage: ${script_PROGNAME} one red [action] [options]"
     script_DESCRIPTION='Example action tree: one red.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one red solid"
 }
 function script_action_ONE_RED () {
@@ -358,7 +358,7 @@ function script_before_parsing_options_TWO_GREEN () {
     script_USAGE="usage: ${script_PROGNAME} two green [action] [options]"
     script_DESCRIPTION='Example action tree: two green.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two green solid"
 }
 function script_action_TWO_GREEN () {
@@ -375,7 +375,7 @@ function script_before_parsing_options_TWO_WHITE () {
     script_USAGE="usage: ${script_PROGNAME} two white [action] [options]"
     script_DESCRIPTION='Example action tree: two white.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two white solid"
 }
 function script_action_TWO_WHITE () {
@@ -392,7 +392,7 @@ function script_before_parsing_options_TWO_RED () {
     script_USAGE="usage: ${script_PROGNAME} two red [action] [options]"
     script_DESCRIPTION='Example action tree: two red.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two red solid"
 }
 function script_action_TWO_RED () {
@@ -410,7 +410,7 @@ function script_before_parsing_options_THREE_GREEN () {
     script_USAGE="usage: ${script_PROGNAME} three green [action] [options]"
     script_DESCRIPTION='Example action tree: three green.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three green solid"
 }
 function script_action_THREE_GREEN () {
@@ -427,7 +427,7 @@ function script_before_parsing_options_THREE_WHITE () {
     script_USAGE="usage: ${script_PROGNAME} three white [action] [options]"
     script_DESCRIPTION='Example action tree: three white.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three white solid"
 }
 function script_action_THREE_WHITE () {
@@ -444,7 +444,7 @@ function script_before_parsing_options_THREE_RED () {
     script_USAGE="usage: ${script_PROGNAME} three red [action] [options]"
     script_DESCRIPTION='Example action tree: three red.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three red solid"
 }
 function script_action_THREE_RED () {
@@ -462,7 +462,7 @@ function script_before_parsing_options_ONE_GREEN_SOLID () {
     script_USAGE="usage: ${script_PROGNAME} one green solid [options]"
     script_DESCRIPTION='Example action: one green solid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one green solid --a-opt"
 
     # keyword default-value brief-option long-option has-argument description
@@ -485,7 +485,7 @@ function script_before_parsing_options_ONE_GREEN_LIQUID () {
     script_USAGE="usage: ${script_PROGNAME} one green liquid [options]"
     script_DESCRIPTION='Example action: one green liquid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one green liquid --d-opt"
 
     # keyword default-value brief-option long-option has-argument description
@@ -508,7 +508,7 @@ function script_before_parsing_options_ONE_GREEN_GAS () {
     script_USAGE="usage: ${script_PROGNAME} one green gas [options]"
     script_DESCRIPTION='Example action: one green gas.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one green gas --d-opt"
 
     # keyword default-value brief-option long-option has-argument description
@@ -532,7 +532,7 @@ function script_before_parsing_options_ONE_WHITE_SOLID () {
     script_USAGE="usage: ${script_PROGNAME} one white solid [options]"
     script_DESCRIPTION='Example action: one white solid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one white solid"
 }
 function script_action_ONE_WHITE_SOLID () {
@@ -549,7 +549,7 @@ function script_before_parsing_options_ONE_WHITE_LIQUID () {
     script_USAGE="usage: ${script_PROGNAME} one white liquid [options]"
     script_DESCRIPTION='Example action: one white liquid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one white liquid"
 }
 function script_action_ONE_WHITE_LIQUID () {
@@ -566,7 +566,7 @@ function script_before_parsing_options_ONE_WHITE_GAS () {
     script_USAGE="usage: ${script_PROGNAME} one white gas [options]"
     script_DESCRIPTION='Example action: one white gas.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one white gas"
 }
 function script_action_ONE_WHITE_GAS () {
@@ -584,7 +584,7 @@ function script_before_parsing_options_ONE_RED_SOLID () {
     script_USAGE="usage: ${script_PROGNAME} one red solid [options]"
     script_DESCRIPTION='Example action: one red solid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one red solid"
 }
 function script_action_ONE_RED_SOLID () {
@@ -601,7 +601,7 @@ function script_before_parsing_options_ONE_RED_LIQUID () {
     script_USAGE="usage: ${script_PROGNAME} one red liquid [options]"
     script_DESCRIPTION='Example action: one red liquid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one red liquid"
 }
 function script_action_ONE_RED_LIQUID () {
@@ -618,7 +618,7 @@ function script_before_parsing_options_ONE_RED_GAS () {
     script_USAGE="usage: ${script_PROGNAME} one red gas [options]"
     script_DESCRIPTION='Example action: one red gas.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} one red gas"
 }
 function script_action_ONE_RED_GAS () {
@@ -636,7 +636,7 @@ function script_before_parsing_options_TWO_GREEN_SOLID () {
     script_USAGE="usage: ${script_PROGNAME} two green solid [options]"
     script_DESCRIPTION='Example action: two green solid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two green solid --a-opt"
 }
 function script_action_TWO_GREEN_SOLID () {
@@ -653,7 +653,7 @@ function script_before_parsing_options_TWO_GREEN_LIQUID () {
     script_USAGE="usage: ${script_PROGNAME} two green liquid [options]"
     script_DESCRIPTION='Example action: two green liquid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two green liquid --d-opt"
 }
 function script_action_TWO_GREEN_LIQUID () {
@@ -670,7 +670,7 @@ function script_before_parsing_options_TWO_GREEN_GAS () {
     script_USAGE="usage: ${script_PROGNAME} two green gas [options]"
     script_DESCRIPTION='Example action: two green gas.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two green gas --d-opt"
 }
 function script_action_TWO_GREEN_GAS () {
@@ -688,7 +688,7 @@ function script_before_parsing_options_TWO_WHITE_SOLID () {
     script_USAGE="usage: ${script_PROGNAME} two white solid [options]"
     script_DESCRIPTION='Example action: two white solid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two white solid"
 }
 function script_action_TWO_WHITE_SOLID () {
@@ -705,7 +705,7 @@ function script_before_parsing_options_TWO_WHITE_LIQUID () {
     script_USAGE="usage: ${script_PROGNAME} two white liquid [options]"
     script_DESCRIPTION='Example action: two white liquid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two white liquid"
 }
 function script_action_TWO_WHITE_LIQUID () {
@@ -722,7 +722,7 @@ function script_before_parsing_options_TWO_WHITE_GAS () {
     script_USAGE="usage: ${script_PROGNAME} two white gas [options]"
     script_DESCRIPTION='Example action: two white gas.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two white gas"
 }
 function script_action_TWO_WHITE_GAS () {
@@ -740,7 +740,7 @@ function script_before_parsing_options_TWO_RED_SOLID () {
     script_USAGE="usage: ${script_PROGNAME} two red solid [options]"
     script_DESCRIPTION='Example action: two red solid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two red solid"
 }
 function script_action_TWO_RED_SOLID () {
@@ -757,7 +757,7 @@ function script_before_parsing_options_TWO_RED_LIQUID () {
     script_USAGE="usage: ${script_PROGNAME} two red liquid [options]"
     script_DESCRIPTION='Example action: two red liquid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two red liquid"
 }
 function script_action_TWO_RED_LIQUID () {
@@ -774,7 +774,7 @@ function script_before_parsing_options_TWO_RED_GAS () {
     script_USAGE="usage: ${script_PROGNAME} two red gas [options]"
     script_DESCRIPTION='Example action: two red gas.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} two red gas"
 }
 function script_action_TWO_RED_GAS () {
@@ -792,7 +792,7 @@ function script_before_parsing_options_THREE_GREEN_SOLID () {
     script_USAGE="usage: ${script_PROGNAME} three green solid [options]"
     script_DESCRIPTION='Example action: three green solid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three green solid --a-opt"
 }
 function script_action_THREE_GREEN_SOLID () {
@@ -809,7 +809,7 @@ function script_before_parsing_options_THREE_GREEN_LIQUID () {
     script_USAGE="usage: ${script_PROGNAME} three green liquid [options]"
     script_DESCRIPTION='Example action: three green liquid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three green liquid --d-opt"
 }
 function script_action_THREE_GREEN_LIQUID () {
@@ -826,7 +826,7 @@ function script_before_parsing_options_THREE_GREEN_GAS () {
     script_USAGE="usage: ${script_PROGNAME} three green gas [options]"
     script_DESCRIPTION='Example action: three green gas.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three green gas --d-opt"
 }
 function script_action_THREE_GREEN_GAS () {
@@ -844,7 +844,7 @@ function script_before_parsing_options_THREE_WHITE_SOLID () {
     script_USAGE="usage: ${script_PROGNAME} three white solid [options]"
     script_DESCRIPTION='Example action: three white solid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three white solid"
 }
 function script_action_THREE_WHITE_SOLID () {
@@ -861,7 +861,7 @@ function script_before_parsing_options_THREE_WHITE_LIQUID () {
     script_USAGE="usage: ${script_PROGNAME} three white liquid [options]"
     script_DESCRIPTION='Example action: three white liquid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three white liquid"
 }
 function script_action_THREE_WHITE_LIQUID () {
@@ -878,7 +878,7 @@ function script_before_parsing_options_THREE_WHITE_GAS () {
     script_USAGE="usage: ${script_PROGNAME} three white gas [options]"
     script_DESCRIPTION='Example action: three white gas.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three white gas"
 }
 function script_action_THREE_WHITE_GAS () {
@@ -896,7 +896,7 @@ function script_before_parsing_options_THREE_RED_SOLID () {
     script_USAGE="usage: ${script_PROGNAME} three red solid [options]"
     script_DESCRIPTION='Example action: three red solid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three red solid"
 }
 function script_action_THREE_RED_SOLID () {
@@ -913,7 +913,7 @@ function script_before_parsing_options_THREE_RED_LIQUID () {
     script_USAGE="usage: ${script_PROGNAME} three red liquid [options]"
     script_DESCRIPTION='Example action: three red liquid.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three red liquid"
 }
 function script_action_THREE_RED_LIQUID () {
@@ -930,7 +930,7 @@ function script_before_parsing_options_THREE_RED_GAS () {
     script_USAGE="usage: ${script_PROGNAME} three red gas [options]"
     script_DESCRIPTION='Example action: three red gas.'
     script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} three red gas"
 }
 function script_action_THREE_RED_GAS () {

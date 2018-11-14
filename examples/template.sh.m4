@@ -48,7 +48,7 @@ script_LICENSE=liberal
 script_USAGE="usage: ${script_PROGNAME} [options] ..."
 script_DESCRIPTION='This is an example script.'
 script_EXAMPLES="Usage examples:
-
+\n\
 \t${script_PROGNAME} --alpha"
 
 #page
