@@ -683,8 +683,8 @@ function connect_make_fifos_for_connector () {
         mbfl_message_error 'unable to determine pathname of temporary directory'
         exit_failure
     fi
-    INFIFO=${TMPDIR}/in.${RANDOM}.$$
-    OUFIFO=${TMPDIR}/out.${RANDOM}.$$
+    INFIFO=${TMPDIR}/connector-to-script.${RANDOM}.$$
+    OUFIFO=${TMPDIR}/script-to-connector.${RANDOM}.$$
     mbfl_program_found_var MKFIFO mkfifo || exit $?
     mbfl_message_debug 'creating FIFOs for connector subprocess'
     trap connect_cleanup_fifos EXIT
