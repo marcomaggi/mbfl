@@ -239,6 +239,8 @@ function mbfl_string_split () {
     mbfl_mandatory_parameter(STRING,    1, string)
     mbfl_mandatory_parameter(SEPARATOR, 2, separator)
     local -i i j k=0 first=0
+    SPLITFIELD=()
+    SPLITCOUNT=0
     for ((i=0; i < ${#STRING}; ++i))
     do
         if test $(($i+${#SEPARATOR})) -gt ${#STRING}
@@ -265,6 +267,8 @@ function mbfl_string_split_blanks () {
     local ACCUM CH
     local -i i
 
+    SPLITFIELD=()
+    SPLITCOUNT=0
     for ((i=0; i < ${#STRING}; ++i))
     do
 	CH=${STRING:$i:1}
