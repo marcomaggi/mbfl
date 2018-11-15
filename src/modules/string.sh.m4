@@ -236,28 +236,61 @@ function mbfl_string_equal_substring () {
     return 0
 }
 function mbfl_string_split () {
-    mbfl_mandatory_parameter(STRING, 1, string)
+    mbfl_mandatory_parameter(STRING,    1, string)
     mbfl_mandatory_parameter(SEPARATOR, 2, separator)
-    local i j k=0 first=0
-    for ((i=0; $i < ${#STRING}; ++i))
+    local -i i j k=0 first=0
+    for ((i=0; i < ${#STRING}; ++i))
     do
-        test $(($i+${#SEPARATOR})) -gt ${#STRING} && break
-        mbfl_string_equal_substring "$STRING" $i "$SEPARATOR" && {
-            # here $i is the index of the first char in the separator
-            SPLITFIELD[$k]=${STRING:$first:$(($i-$first))}
-            let ++k
-            i=$(($i+${#SEPARATOR}-1))
-	    # place the "first" marker to the beginning of the
-	    # next substring; "i" will be incremented by "for",
-	    # that is why we do "+1" here
-            first=$(($i+1))
-        }
+        if test $(($i+${#SEPARATOR})) -gt ${#STRING}
+	then break
+	elif mbfl_string_equal_substring "$STRING" $i "$SEPARATOR"
+	then
+	    # Here $i is the index of the first char in the separator.
+	    SPLITFIELD[$k]=${STRING:$first:$(($i-$first))}
+	    let ++k
+	    i=$(($i+${#SEPARATOR}-1))
+	    # Place  the "first"  marker to  the beginning  of the  next
+	    # substring; "i" will  be incremented by "for",  that is why
+	    # we do "+1" here.
+	    first=$(($i+1))
+        fi
     done
     SPLITFIELD[$k]=${STRING:$first}
     let ++k
     SPLITCOUNT=$k
     return 0
 }
+function mbfl_string_split_blanks () {
+    mbfl_mandatory_parameter(STRING, 1, string)
+    local ACCUM CH
+    local -i i
+
+    for ((i=0; i < ${#STRING}; ++i))
+    do
+	CH=${STRING:$i:1}
+	if test ' ' = "$CH" -o $'\t' = "$CH"
+	then
+	    # Store the field.
+	    SPLITFIELD[${#SPLITFIELD[@]}]=$ACCUM
+	    ACCUM=
+	    # Consume all the adjacent blanks, if any.
+	    for ((i=$i; i < ${#STRING}; ++i))
+	    do
+		CH=${STRING:$((i+1)):1}
+		if test ' ' != "$CH" -a $'\t' != "$CH"
+		then break
+		fi
+	    done
+	else ACCUM+=$CH
+	fi
+    done
+    if test -n "$ACCUM"
+    then SPLITFIELD[${#SPLITFIELD[@]}]=$ACCUM
+    fi
+    SPLITCOUNT=${#SPLITFIELD[@]}
+    return 0
+}
+
 #page
 function mbfl_string_equal () {
     mbfl_optional_parameter(STR1, 1)

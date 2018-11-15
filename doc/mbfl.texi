@@ -4050,11 +4050,36 @@ mbfl_string_chars "$@{string@}"
 
 
 @defun mbfl_string_split @var{string} @var{separator}
-Split @var{string} into fields using @var{separator}.  Fill an array
-named @code{SPLITFIELD} with the characters from the string; the number
-of elements in the array is stored in a variable named
-@code{SPLITCOUNT}.  Both @code{SPLITFIELD} and @code{SPLITCOUNT} can be
-declared @code{local} in the scope of the caller.
+Split @var{string} into fields using @var{separator}.  Fill an array named @code{SPLITFIELD} with
+the characters from the string; the number of elements in the array is stored in a variable named
+@code{SPLITCOUNT}.  Both @code{SPLITFIELD} and @code{SPLITCOUNT} can be declared @code{local} in the
+scope of the caller.
+@end defun
+
+
+@defun mbfl_string_split_blanks @var{string}
+Split @var{string} into fields using adjacent blank characters as separators.  Fill an array named
+@code{SPLITFIELD} with the characters from the string; the number of elements in the array is stored
+in a variable named @code{SPLITCOUNT}.  Both @code{SPLITFIELD} and @code{SPLITCOUNT} can be declared
+@code{local} in the scope of the caller.
+
+@example
+local -a SPLITFIELD
+local -i SPLITCOUNT
+local STRING
+
+printf -v STRING 'abc\t \tdef\t\t ghi \t\tlmn\t \topq\t\t   rs'
+
+mbfl_string_split_blanks "$STRING"
+
+$SPLITCOUNT             @result{} 6
+"$@{SPLITFIELD[0]@}"      @result{} abc
+"$@{SPLITFIELD[1]@}"      @result{} def
+"$@{SPLITFIELD[2]@}"      @result{} ghi
+"$@{SPLITFIELD[3]@}"      @result{} lmn
+"$@{SPLITFIELD[4]@}"      @result{} opq
+"$@{SPLITFIELD[5]@}"      @result{} rs
+@end example
 @end defun
 
 @c page
