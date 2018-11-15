@@ -289,59 +289,7 @@ function mbfl_p_program_exec () {
 
     # If this run is not dry: actually run the program.
     if ! mbfl_option_test
-    then
-	local EXEC
-	if $REPLACE
-	then EXEC=exec
-	fi
-	mbfl_p_program_exec_1 "$@"
-
-        # if $USE_SUDO
-        # then
-	#     if $BACKGROUND
-	#     then
-	# 	if $STDERR_TO_STDOUT
-	# 	   # The  order  of  redirections is  important.   First
-	# 	   # redirect stdout to $OUCHAN, then redirect stderr to
-	# 	   # stdout.   This  way  both  stdout  and  stderr  are
-	# 	   # redirected to $OUCHAN.
-	# 	then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
-	# 	else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"      &
-	# 	fi
-	# 	mbfl_program_BGPID=$!
-	#     else
-	# 	if $STDERR_TO_STDOUT
-	# 	   # The  order  of  redirections is  important.   First
-	# 	   # redirect stdout to $OUCHAN, then redirect stderr to
-	# 	   # stdout.   This  way  both  stdout  and  stderr  are
-	# 	   # redirected to $OUCHAN.
-	# 	then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
-	# 	else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"
-	# 	fi
-	#     fi
-        # else
-	#     if $BACKGROUND
-	#     then
-	# 	if $STDERR_TO_STDOUT
-	# 	   # The  order  of  redirections is  important.   First
-	# 	   # redirect stdout to $OUCHAN, then redirect stderr to
-	# 	   # stdout.   This  way  both  stdout  and  stderr  are
-	# 	   # redirected to $OUCHAN.
-	# 	then $EXEC "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
-	# 	else $EXEC "$@" <&"$INCHAN" >&"$OUCHAN"      &
-	# 	fi
-	# 	mbfl_program_BGPID=$!
-	#     else
-	# 	if $STDERR_TO_STDOUT
-	# 	   # The  order  of  redirections is  important.   First
-	# 	   # redirect stdout to $OUCHAN, then redirect stderr to
-	# 	   # stdout.   This  way  both  stdout  and  stderr  are
-	# 	   # redirected to $OUCHAN.
-	# 	then $EXEC "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
-	# 	else $EXEC "$@" <&"$INCHAN" >&"$OUCHAN"
-	# 	fi
-	#     fi
-        # fi
+    then mbfl_p_program_exec_1 "$@"
     fi
 }
 
@@ -376,6 +324,11 @@ function mbfl_p_program_exec_4 () {
     fi
 }
 function mbfl_p_program_exec_5 () {
+    local EXEC
+
+    if $REPLACE
+    then EXEC=exec
+    fi
     if $USE_SUDO
     then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
     else $EXEC                                     "$@"
@@ -412,6 +365,11 @@ function mbfl_p_program_log_4 () {
     fi
 }
 function mbfl_p_program_log_5 () {
+    local EXEC
+
+    if $REPLACE
+    then EXEC=exec
+    fi
     if $USE_SUDO
     then echo -n $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
     else echo -n $EXEC                                     "$@"
