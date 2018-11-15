@@ -89,7 +89,77 @@ function mbfl_program_find () {
 }
 
 #page
-#### program execution functions
+#### program finding functions
+
+if test "$mbfl_INTERACTIVE" != 'yes'
+then declare -A mbfl_program_PATHNAMES
+fi
+
+function mbfl_declare_program () {
+    mbfl_mandatory_parameter(PROGRAM, 1, program)
+    local PROGRAM_PATHNAME
+    local -r -i next_free_index=${#mbfl_program_NAMES[@]}
+
+    mbfl_program_find_var PROGRAM_PATHNAME "$PROGRAM"
+    if test -n "$PROGRAM_PATHNAME"
+    then mbfl_file_normalise_var PROGRAM_PATHNAME "$PROGRAM_PATHNAME"
+    fi
+    mbfl_program_PATHNAMES["$PROGRAM"]=$PROGRAM_PATHNAME
+    return 0
+}
+function mbfl_program_validate_declared () {
+    local retval PROGRAM PROGRAM_PATHNAME
+
+    for PROGRAM in "${!mbfl_program_PATHNAMES[@]}"
+    do
+	PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
+        if mbfl_file_is_executable "$PROGRAM_PATHNAME"
+        then mbfl_message_verbose_printf 'found "%s": "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
+        else
+            mbfl_message_verbose_printf '*** not found "%s", path: "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
+            retval=1
+        fi
+    done
+    return $retval
+}
+function mbfl_program_found_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(PROGRAM, 2, program name)
+    local -r PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
+
+    if mbfl_file_is_executable "$PROGRAM_PATHNAME"
+    then
+	RESULT_VARREF=$PROGRAM_PATHNAME
+        return 0
+    else
+	mbfl_message_error_printf 'invalid executable found for "%s": "%s"' "$PROGRAM" "$PROGRAM_PATHNAME"
+	exit_because_program_not_found
+    fi
+    mbfl_message_error_printf 'executable not found for: "%s"' "$PROGRAM"
+    exit_because_program_not_found
+}
+function mbfl_program_found () {
+    mbfl_mandatory_parameter(THE_PROGRAM, 1, program name)
+    local RESULT_VARNAME EXIT_STATUS
+    mbfl_program_found_var RESULT_VARNAME "$THE_PROGRAM"
+    EXIT_STATUS=$?
+    if ((0 == EXIT_STATUS))
+    then
+	echo "$RESULT_VARNAME"
+	return 0
+    else return $EXIT_STATUS
+    fi
+}
+
+#page
+#### program validation functions
+
+function mbfl_program_main_validate_programs () {
+    mbfl_program_validate_declared || exit_because_program_not_found
+}
+
+#page
+#### program execution API functions
 
 declare mbfl_program_SUDO_USER=nosudo
 declare mbfl_program_SUDO_OPTIONS
@@ -163,6 +233,10 @@ function mbfl_program_replace () {
     local INCHAN=0 OUCHAN=1
     mbfl_p_program_exec $INCHAN $OUCHAN true false "$@"
 }
+
+#page
+#### program execution mechanism functions
+
 function mbfl_p_program_exec () {
     mbfl_mandatory_parameter(INCHAN,     1, input channel)
     mbfl_mandatory_parameter(OUCHAN,     2, output channel)
@@ -210,11 +284,7 @@ function mbfl_p_program_exec () {
 
     # Print to stderr the command line that will be executed.
     if { mbfl_option_test || mbfl_option_show_program; }
-    then
-        if $USE_SUDO
-        then echo "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" "<&$INCHAN >&$OUCHAN" >&2
-        else echo "$@" "<&$INCHAN >&$OUCHAN" >&2
-        fi
+    then mbfl_p_program_log_1 "$@"
     fi
 
     # If this run is not dry: actually run the program.
@@ -224,56 +294,132 @@ function mbfl_p_program_exec () {
 	if $REPLACE
 	then EXEC=exec
 	fi
-        if $USE_SUDO
-        then
-	    if $BACKGROUND
-	    then
-		if $STDERR_TO_STDOUT
-		   # The  order  of  redirections is  important.   First
-		   # redirect stdout to $OUCHAN, then redirect stderr to
-		   # stdout.   This  way  both  stdout  and  stderr  are
-		   # redirected to $OUCHAN.
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"      &
-		fi
-		mbfl_program_BGPID=$!
-	    else
-		if $STDERR_TO_STDOUT
-		   # The  order  of  redirections is  important.   First
-		   # redirect stdout to $OUCHAN, then redirect stderr to
-		   # stdout.   This  way  both  stdout  and  stderr  are
-		   # redirected to $OUCHAN.
-		then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
-		else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"
-		fi
-	    fi
-        else
-	    if $BACKGROUND
-	    then
-		if $STDERR_TO_STDOUT
-		   # The  order  of  redirections is  important.   First
-		   # redirect stdout to $OUCHAN, then redirect stderr to
-		   # stdout.   This  way  both  stdout  and  stderr  are
-		   # redirected to $OUCHAN.
-		then $EXEC "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
-		else $EXEC "$@" <&"$INCHAN" >&"$OUCHAN"      &
-		fi
-		mbfl_program_BGPID=$!
-	    else
-		if $STDERR_TO_STDOUT
-		   # The  order  of  redirections is  important.   First
-		   # redirect stdout to $OUCHAN, then redirect stderr to
-		   # stdout.   This  way  both  stdout  and  stderr  are
-		   # redirected to $OUCHAN.
-		then $EXEC "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
-		else $EXEC "$@" <&"$INCHAN" >&"$OUCHAN"
-		fi
-	    fi
-        fi
+	mbfl_p_program_exec_1 "$@"
+
+        # if $USE_SUDO
+        # then
+	#     if $BACKGROUND
+	#     then
+	# 	if $STDERR_TO_STDOUT
+	# 	   # The  order  of  redirections is  important.   First
+	# 	   # redirect stdout to $OUCHAN, then redirect stderr to
+	# 	   # stdout.   This  way  both  stdout  and  stderr  are
+	# 	   # redirected to $OUCHAN.
+	# 	then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
+	# 	else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"      &
+	# 	fi
+	# 	mbfl_program_BGPID=$!
+	#     else
+	# 	if $STDERR_TO_STDOUT
+	# 	   # The  order  of  redirections is  important.   First
+	# 	   # redirect stdout to $OUCHAN, then redirect stderr to
+	# 	   # stdout.   This  way  both  stdout  and  stderr  are
+	# 	   # redirected to $OUCHAN.
+	# 	then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
+	# 	else $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"
+	# 	fi
+	#     fi
+        # else
+	#     if $BACKGROUND
+	#     then
+	# 	if $STDERR_TO_STDOUT
+	# 	   # The  order  of  redirections is  important.   First
+	# 	   # redirect stdout to $OUCHAN, then redirect stderr to
+	# 	   # stdout.   This  way  both  stdout  and  stderr  are
+	# 	   # redirected to $OUCHAN.
+	# 	then $EXEC "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
+	# 	else $EXEC "$@" <&"$INCHAN" >&"$OUCHAN"      &
+	# 	fi
+	# 	mbfl_program_BGPID=$!
+	#     else
+	# 	if $STDERR_TO_STDOUT
+	# 	   # The  order  of  redirections is  important.   First
+	# 	   # redirect stdout to $OUCHAN, then redirect stderr to
+	# 	   # stdout.   This  way  both  stdout  and  stderr  are
+	# 	   # redirected to $OUCHAN.
+	# 	then $EXEC "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
+	# 	else $EXEC "$@" <&"$INCHAN" >&"$OUCHAN"
+	# 	fi
+	#     fi
+        # fi
     fi
 }
 
-## --------------------------------------------------------------------
+### --------------------------------------------------------------------
+
+function mbfl_p_program_exec_1 () {
+    local EXIT_STATUS
+    if $BACKGROUND
+    then mbfl_p_program_exec_2 "$@" &
+    else mbfl_p_program_exec_2 "$@"
+    fi
+    EXIT_STATUS=$?
+    mbfl_program_BGPID=$!
+    return $EXIT_STATUS
+}
+function mbfl_p_program_exec_2 () {
+    if $STDERR_TO_STDOUT
+    then mbfl_p_program_exec_3 "$@" 2>&1
+    else mbfl_p_program_exec_3 "$@"
+    fi
+}
+function mbfl_p_program_exec_3 () {
+    if mbfl_string_is_digit "$OUCHAN"
+    then mbfl_p_program_exec_4 "$@" >&"$OUCHAN"
+    else mbfl_p_program_exec_4 "$@" >"$OUCHAN"
+    fi
+}
+function mbfl_p_program_exec_4 () {
+    if mbfl_string_is_digit "$INCHAN"
+    then mbfl_p_program_exec_5 "$@" <&"$INCHAN"
+    else mbfl_p_program_exec_5 "$@" <"$INCHAN"
+    fi
+}
+function mbfl_p_program_exec_5 () {
+    if $USE_SUDO
+    then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
+    else $EXEC                                     "$@"
+    fi
+}
+
+### --------------------------------------------------------------------
+
+function mbfl_p_program_log_1 () {
+    mbfl_p_program_log_2 "$@"
+    if $BACKGROUND
+    then echo ' &'
+    else echo
+    fi
+}
+function mbfl_p_program_log_2 () {
+    mbfl_p_program_log_3 "$@"
+    if $STDERR_TO_STDOUT
+    then echo -n ' 2>&1'
+    fi
+}
+function mbfl_p_program_log_3 () {
+    mbfl_p_program_log_4 "$@"
+    if mbfl_string_is_digit "$OUCHAN"
+    then echo -n " >&$OUCHAN"
+    else echo -n " >'$OUCHAN'"
+    fi
+}
+function mbfl_p_program_log_4 () {
+    mbfl_p_program_log_5 "$@"
+    if mbfl_string_is_digit "$INCHAN"
+    then echo -n " <&$INCHAN"
+    else echo -n " <'$INCHAN'"
+    fi
+}
+function mbfl_p_program_log_5 () {
+    if $USE_SUDO
+    then echo -n $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
+    else echo -n $EXEC                                     "$@"
+    fi
+}
+
+#page
+#### executing bash commands
 
 function mbfl_program_bash_command () {
     mbfl_mandatory_parameter(COMMAND, 1, command)
@@ -282,77 +428,6 @@ function mbfl_program_bash_command () {
 function mbfl_program_bash () {
     mbfl_program_exec "$mbfl_program_BASH" "$@"
 }
-
-#page
-#### program finding functions
-
-if test "$mbfl_INTERACTIVE" != 'yes'
-then declare -A mbfl_program_PATHNAMES
-fi
-
-function mbfl_declare_program () {
-    mbfl_mandatory_parameter(PROGRAM, 1, program)
-    local PROGRAM_PATHNAME
-    local -r -i next_free_index=${#mbfl_program_NAMES[@]}
-
-    mbfl_program_find_var PROGRAM_PATHNAME "$PROGRAM"
-    if test -n "$PROGRAM_PATHNAME"
-    then mbfl_file_normalise_var PROGRAM_PATHNAME "$PROGRAM_PATHNAME"
-    fi
-    mbfl_program_PATHNAMES["$PROGRAM"]=$PROGRAM_PATHNAME
-    return 0
-}
-function mbfl_program_validate_declared () {
-    local retval PROGRAM PROGRAM_PATHNAME
-
-    for PROGRAM in "${!mbfl_program_PATHNAMES[@]}"
-    do
-	PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
-        if mbfl_file_is_executable "$PROGRAM_PATHNAME"
-        then mbfl_message_verbose_printf 'found "%s": "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
-        else
-            mbfl_message_verbose_printf '*** not found "%s", path: "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
-            retval=1
-        fi
-    done
-    return $retval
-}
-function mbfl_program_found_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PROGRAM, 2, program name)
-    local -r PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
-
-    if mbfl_file_is_executable "$PROGRAM_PATHNAME"
-    then
-	RESULT_VARREF=$PROGRAM_PATHNAME
-        return 0
-    else
-	mbfl_message_error_printf 'invalid executable found for "%s": "%s"' "$PROGRAM" "$PROGRAM_PATHNAME"
-	exit_because_program_not_found
-    fi
-    mbfl_message_error_printf 'executable not found for: "%s"' "$PROGRAM"
-    exit_because_program_not_found
-}
-function mbfl_program_found () {
-    mbfl_mandatory_parameter(THE_PROGRAM, 1, program name)
-    local RESULT_VARNAME EXIT_STATUS
-    mbfl_program_found_var RESULT_VARNAME "$THE_PROGRAM"
-    EXIT_STATUS=$?
-    if ((0 == EXIT_STATUS))
-    then
-	echo "$RESULT_VARNAME"
-	return 0
-    else return $EXIT_STATUS
-    fi
-}
-
-#page
-#### program validation functions
-
-function mbfl_program_main_validate_programs () {
-    mbfl_program_validate_declared || exit_because_program_not_found
-}
-
 
 ### end of file
 # Local Variables:
