@@ -36,7 +36,7 @@
 #
 
 #page
-#### global variables
+#### MBFL's global variables
 
 script_PROGNAME=sendmail-mbfl.sh
 script_VERSION=1.0
@@ -56,6 +56,80 @@ script_EXAMPLES="Usage examples:
 \t\t--envelope-from=marco@localhost --envelope-to=root@localhost"
 
 #page
+#### script's global variables
+
+# Default  authinfo  file pathname.   This  file  holds the  credentials
+# needed to login into the mail server.  It is a line-oriented text file
+# whose lines must have the following format:
+#
+#    machine <hostname> login <usermail> password <password>
+#
+# where:
+#
+# <hostname> is the name of the SMTP server, for example smtp.gmail.com.
+#
+# <usermail> is the user's email address, for example mrc.mgg@gmail.com.
+#
+# <password> is the secret password for authentication.
+#
+declare -r DEFAULT_AUTHINFO_FILE=~/.mbfl-authinfo
+
+# Default hostinfo  file pathname.   This file holds  informations about
+# what is needed  to login into the SMTP server.   It is a line-oriented
+# text file whose lines must have the following format:
+#
+#    machine <hostname> service smtp port <port> session <sestype> auth <authtype>
+#
+# where:
+#
+# <hostname> is the name of the SMTP server, for example smtp.gmail.com.
+#
+# <port>  is the  port number  to which  this script  must connect;  for
+# example 25 for plain sessions; for TLS-Gmail it is 587.
+#
+# <sestype> is the type of session to  use; it must be one among: plain,
+# tls, starttls.
+#
+# <authtype> is the type of authentication to use; it must be one among:
+# none, plain, login.
+#
+declare -r DEFAULT_HOSTINFO_FILE=~/.mbfl-hostinfo
+
+# Array of recipients.   Every time the option  "--envelope-to" is found
+# on the command  line: its value is added to  the array.  After options
+# parsing theis variable is never modified.
+#
+declare -a RECIPIENTS
+
+# Select the type  of session; valid values: plain,  tls, starttls.  The
+# value can be selected:
+#
+# * by the options "--plain", "--tls" and "--starttls";
+#
+# * by reading the hostinfo file;
+#
+# * by defaulting to "plain".
+#
+declare SESSION_TYPE
+
+# Selected ESMTP authorisation type.   Valid values: none, login, plain.
+# The value can be selected:
+#
+# * by the options "--auth-none", "--auth-plain" and "--auth-login";
+#
+# * by reading the hosinfo file;
+#
+# * by defaulting to "none".
+#
+declare AUTH_TYPE
+
+# The identifier for the program to use as TLS connector.  Valid values:
+# "gnutls", "openssl"; if set to the empty string: no connector is used,
+# so the session is in plain text.
+#
+declare CONNECTOR=gnutls
+
+#page
 #### load library
 
 mbfl_library_loader
@@ -64,56 +138,38 @@ mbfl_library_loader
 #### command line options
 
 # keyword default-value brief-option long-option has-argument description
-mbfl_declare_option FROM \
-    '' F envelope-from witharg 'select envelope MAIL FROM address'
-mbfl_declare_option TO \
-    '' T envelope-to   witharg 'select envelope RCPT TO address'
-mbfl_declare_option MESSAGE \
-    -  M message witharg 'select the source of the email message'
-mbfl_declare_option TEST_MESSAGE \
-    no '' test-message noarg 'send a test message'
+mbfl_declare_option FROM		''  F envelope-from witharg 'select envelope MAIL FROM address'
+mbfl_declare_option TO			''  T envelope-to   witharg 'select envelope RCPT TO address'
+mbfl_declare_option MESSAGE		-   M message       witharg 'select the source of the email message'
+mbfl_declare_option TEST_MESSAGE	no '' test-message  noarg   'send a test message'
 
-mbfl_declare_option HOST \
-    localhost '' host witharg 'select the server hostname'
-mbfl_declare_option PORT \
-    ''        p port witharg 'select the server port'
-mbfl_declare_option HOSTINFO_FILE \
-    "$HOME/.mbfl-hostinfo" '' host-info witharg 'select the hostinfo file'
+mbfl_declare_option HOST		localhost '' host witharg 'select the server hostname'
+mbfl_declare_option PORT		''        p  port witharg 'select the server port'
+mbfl_declare_option HOSTINFO_FILE	"$DEFAULT_HOSTINFO_FILE" '' host-info witharg 'select the hostinfo file'
 
-mbfl_declare_option TIMEOUT \
-    5 '' timeout witharg 'select the connection timeout in seconds'
+mbfl_declare_option TIMEOUT		5 '' timeout witharg 'select the connection timeout in seconds'
 
-mbfl_declare_option SESSION_PLAIN \
-    yes '' plain        noarg 'establish a plain connection (non-encrypted)'
-mbfl_declare_option SESSION_TLS \
-    no  '' tls          noarg 'establish a TLS bridge immediately'
-mbfl_declare_option SESSION_STARTTLS \
-    no  '' starttls     noarg 'establish a TLS bridge using STARTTLS'
+mbfl_declare_option SESSION_PLAIN	yes '' plain        noarg 'establish a plain connection (non-encrypted)'
+mbfl_declare_option SESSION_TLS		no  '' tls          noarg 'establish a TLS bridge immediately'
+mbfl_declare_option SESSION_STARTTLS	no  '' starttls     noarg 'establish a TLS bridge using STARTTLS'
 
-mbfl_declare_option GNUTLS_CONNECTOR \
-    yes '' gnutls noarg 'use gnutls-cli for TLS'
-mbfl_declare_option OPENSSL_CONNECTOR \
-    no '' openssl noarg 'use openssl for TLS'
+mbfl_declare_option GNUTLS_CONNECTOR	yes '' gnutls noarg 'use gnutls-cli for TLS'
+mbfl_declare_option OPENSSL_CONNECTOR	no  '' openssl noarg 'use openssl for TLS'
 
-mbfl_declare_option AUTHINFO_FILE \
-    "$HOME/.mbfl-authinfo" '' auth-info witharg 'select the authinfo file'
-mbfl_declare_option AUTH_USER \
-    '' '' username witharg 'select the authorisation user'
+mbfl_declare_option AUTHINFO_FILE	"$DEFAULT_AUTHINFO_FILE" '' auth-info witharg 'select the authinfo file'
+mbfl_declare_option AUTH_USER		'' '' username witharg 'select the authorisation user'
 
-mbfl_declare_option AUTH_NONE \
-    yes '' auth-none noarg 'do not do authorisation'
-mbfl_declare_option AUTH_PLAIN \
-    no  '' auth-plain noarg 'select the plain authorisation type'
-mbfl_declare_option AUTH_LOGIN \
-    no  '' auth-login noarg 'select the login authorisation type'
+mbfl_declare_option AUTH_NONE		yes '' auth-none  noarg 'do not do authorisation'
+mbfl_declare_option AUTH_PLAIN		no  '' auth-plain noarg 'select the plain authorisation type'
+mbfl_declare_option AUTH_LOGIN		no  '' auth-login noarg 'select the login authorisation type'
 
 #page
 #### programs
 
 mbfl_file_enable_remove
+mbfl_times_and_dates_enable
 
 mbfl_declare_program base64
-mbfl_declare_program date
 mbfl_declare_program gnutls-cli
 mbfl_declare_program grep
 mbfl_declare_program hostname
@@ -138,51 +194,10 @@ mbfl_main_declare_exit_code 10 failed_connection
 mbfl_main_declare_exit_code 11 wrong_server_answer
 
 #page
-#### global variables
-
-# Array and number of recipients  and the zero-based array holding them.
-# Every time  the option "--envelope-to"  is found on the  command line,
-# its value is added to the array and the counter incremented.
-#
-# After options parsing these variables are never modified.
-#
-declare -i RECIPIENTS_COUNT=0
-declare -a RECIPIENTS
-
-# Select the type  of session; valid values: plain,  tls, starttls.  The
-# value can be selected:
-#
-# * by the options "--plain", "--tls" and "--starttls";
-#
-# * by reading the hostinfo file;
-#
-# * by defaulting to "plain".
-#
-SESSION_TYPE=
-
-# Selected ESMTP authorisation type.   Valid values: none, login, plain.
-# The value can be selected:
-#
-# * by the options "--auth-none", "--auth-plain" and "--auth-login";
-#
-# * by reading the hosinfo file;
-#
-# * by defaulting to "none".
-#
-AUTH_TYPE=
-
-# The identifier for the program to use as TLS connector.  Valid values:
-# "gnutls", "openssl"; if set to the empty string: no connector is used,
-# so the session is in plain text.
-#
-CONNECTOR=gnutls
-
-#page
 #### option update functions
 
 function script_option_update_to () {
-    RECIPIENTS[$RECIPIENTS_COUNT]=$script_option_TO
-    let ++RECIPIENTS_COUNT
+    RECIPIENTS[${#RECIPIENTS[@]}]=$script_option_TO
 }
 
 function script_option_update_session_plain () {
@@ -294,7 +309,7 @@ function validate_and_normalise_configuration () {
         mbfl_message_error 'empty string as MAIL FROM envelope address'
         exit_because_invalid_option
     fi
-    if ((0 == RECIPIENTS_COUNT))
+    if mbfl_array_is_empty RECIPIENTS
     then
         mbfl_message_error 'no recipients where selected'
         exit_because_invalid_option
@@ -958,17 +973,22 @@ function read_and_send_message () {
 #
 function print_test_message () {
     local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
-    local HOSTNAME_PROGRAM DATE_PROGRAM
-    HOSTNAME_PROGRAM=$(mbfl_program_found hostname)     || exit $?
-    DATE_PROGRAM=$(mbfl_program_found date)             || exit $?
-    LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn) || {
+    local HOSTNAME_PROGRAM
+
+    mbfl_program_found_var HOSTNAME_PROGRAM hostname || exit $?
+
+    if ! LOCAL_HOSTNAME=$(mbfl_program_exec "$HOSTNAME_PROGRAM" --fqdn)
+    then
         mbfl_message_error 'unable to determine fully qualified hostname for test message'
         exit_failure
-    }
-    DATE=$(mbfl_program_exec "$DATE_PROGRAM" --rfc-2822) || {
+    fi
+
+    if ! DATE=$(mbfl_date_email_timestamp)
+    then
         mbfl_message_error 'unable to determine date in RFC-2822 format for test message'
         exit_failure
-    }
+    fi
+
     MESSAGE_ID=$(printf '%d-%d-%d@%s' $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME")
     MESSAGE="Sender: $FROM_ADDRESS
 From: $FROM_ADDRESS
@@ -1093,7 +1113,7 @@ function esmtp_send_message () {
     mbfl_message_verbose 'esmtp: sending message\n'
     send 'MAIL FROM:<%s>' "$FROM_ADDRESS"
     recv 250
-    for ((i=0; i < RECIPIENTS_COUNT; ++i))
+    for ((i=0; i < ${#RECIPIENTS[@]}; ++i))
     do
         send 'RCPT TO:<%s>' "${RECIPIENTS[$i]}"
         recv 250
@@ -1150,7 +1170,7 @@ function auth_read_credentials () {
     mbfl_message_debug_printf 'reading authinfo file: %s' "$script_option_AUTHINFO_FILE"
     while IFS= read LINE
     do
-	mbfl_string_split "$LINE" ' '
+	mbfl_string_split_blanks "$LINE"
 	if ((6 != SPLITCOUNT))
 	then continue
 	fi
@@ -1189,29 +1209,20 @@ function auth_read_credentials () {
 #page
 #### hostinfo file
 
-# Synopsis:
+# Read the hostinfo file to select the port number.
 #
-#       hostinfo_read
+# The  pathname   of  the  hostinfo   file  must  be  in   the  variable
+# "script_option_HOSTINFO_FILE".   The  host name  key  must  be in  the
+# variable "script_option_HOST".
 #
-# Description:
+# At   the  first   invocation,  this   function  is   called  it   sets
+# "hostinfo_ALREADY_READ"  to true;  subsequent invocations  will detect
+# this and just return success, doing nothing.
 #
-#  Read the hostinfo file to select the port number.
-#
-#  The  pathname  of   the  hostinfo  file  must  be   in  the  variable
-#  "script_option_HOSTINFO_FILE".  The  host name  key  must  be in  the
-#  variable "script_option_HOST".
-#
-#  At   the  first  invocation,   this  function   is  called   it  sets
-#  "hostinfo_ALREADY_READ" to  true; subsequent invocations  will detect
-#  this and just return success, doing nothing.
-#
-#  The  selected   hostname,  port  and  session  type   are  stored  in
-#  "hostinfo_HOST", "hostinfo_PORT" and "hostinfo_SESSION_TYPE".
+# The  selected   hostname,  port  and   session  type  are   stored  in
+# "hostinfo_HOST", "hostinfo_PORT" and "hostinfo_SESSION_TYPE".
 #
 function hostinfo_read () {
-    if $hostinfo_ALREADY_READ
-    then return 0
-    fi
     local SPLITFIELD LINE FOUND=false
     local -i SPLITCOUNT
     local MACHINE_KEY SERVICE_KEY PORT_KEY SESSION_KEY AUTH_KEY
@@ -1220,36 +1231,46 @@ function hostinfo_read () {
     mbfl_message_debug_printf 'reading hostinfo file: %s' "$script_option_HOSTINFO_FILE"
     while IFS= read LINE
     do
-	mbfl_string_split "$LINE" ' '
-	if ((10 != SPLITCOUNT))
-	then continue
-	fi
-	MACHINE_KEY=${SPLITFIELD[0]}
-	MACHINE_VAL=${SPLITFIELD[1]}
-	SERVICE_KEY=${SPLITFIELD[2]}
-	SERVICE_VAL=${SPLITFIELD[3]}
-	PORT_KEY=${SPLITFIELD[4]}
-	PORT_VAL=${SPLITFIELD[5]}
-	SESSION_KEY=${SPLITFIELD[6]}
-	SESSION_VAL=${SPLITFIELD[7]}
-	AUTH_KEY=${SPLITFIELD[8]}
-	AUTH_VAL=${SPLITFIELD[9]}
-	if test "$MACHINE_KEY"	!= machine	-o \
-		"$SERVICE_KEY"	!= login	-o \
-		"$PORT_KEY"	!= port		-o \
-		"$SESSION_KEY"	!= session	-o \
-		"$AUTH_KEY"	!= auth
-	then continue
-	elif test "$SERVICE_VAL" = "$SMTP" -a "$MACHINE_VAL" = "$script_option_HOST"
+	mbfl_string_split_blanks "$LINE"
+	if ((10 == ${#SPLITFIELD[@]}))
 	then
-	    FOUND=true
-	    break
+	    MACHINE_KEY=${SPLITFIELD[0]}
+	    MACHINE_VAL=${SPLITFIELD[1]}
+	    SERVICE_KEY=${SPLITFIELD[2]}
+	    SERVICE_VAL=${SPLITFIELD[3]}
+	    PORT_KEY=${SPLITFIELD[4]}
+	    PORT_VAL=${SPLITFIELD[5]}
+	    SESSION_KEY=${SPLITFIELD[6]}
+	    SESSION_VAL=${SPLITFIELD[7]}
+	    AUTH_KEY=${SPLITFIELD[8]}
+	    AUTH_VAL=${SPLITFIELD[9]}
+	    # if test  "$MACHINE_KEY"	= machine	-a \
+	    # 	     "$SERVICE_KEY"	= service	-a \
+	    # 	     "$PORT_KEY"	= port		-a \
+	    # 	     "$SESSION_KEY"	= session	-a \
+	    # 	     "$AUTH_KEY"	= auth
+	    # then echo --$FUNCNAME--keys-ok-- >&2
+	    # fi
+	    # if test "$SERVICE_VAL"	= 'smtp'	-a \
+	    # 	    "$MACHINE_VAL"	= "$script_option_HOST"
+	    # then echo --$FUNCNAME--vals-ok-- >&2
+	    # fi
+	    if test "$MACHINE_KEY"	= machine	-a \
+		    "$SERVICE_KEY"	= service	-a \
+		    "$PORT_KEY"		= port		-a \
+		    "$SESSION_KEY"	= session	-a \
+		    "$AUTH_KEY"		= auth		-a \
+		    "$SERVICE_VAL"	= 'smtp'	-a \
+		    "$MACHINE_VAL"	= "$script_option_HOST"
+	    then
+		FOUND=true
+		break
+	    fi
 	fi
     done <"$script_option_HOSTINFO_FILE"
 
     if $FOUND
     then
-	hostinfo_ALREADY_READ=true
 	hostinfo_HOST=$MACHINE_VAL
 	hostinfo_PORT=$PORT_VAL
 	hostinfo_SESSION_TYPE=$SESSION_VAL
