@@ -44,6 +44,7 @@ m4_include(variable.sh)
 m4_include(times-and-dates.sh)
 m4_include(dialog.sh)
 m4_include(system.sh)
+m4_include(arrays.sh)
 m4_include(interfaces.sh)
 m4_include(main.sh)
 

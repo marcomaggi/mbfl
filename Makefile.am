@@ -52,6 +52,7 @@ EXTRA_DIST	+= \
 	src/modules/times-and-dates.sh.m4	\
 	src/modules/main.sh.m4			\
 	src/modules/variable.sh.m4		\
+	src/modules/arrays.sh.m4		\
 	src/modules/system.sh.m4		\
 	src/modules/interfaces.sh.m4		\
 	\
@@ -67,11 +68,12 @@ EXTRA_DIST	+= \
 	src/backup/preprocessor.m4
 
 MBFL_MODULES		= \
-	src/modules/base.sh	src/modules/encode.sh		src/modules/file.sh	\
-	src/modules/getopts.sh	src/modules/actions.sh		src/modules/message.sh	\
-	src/modules/program.sh	src/modules/signal.sh		src/modules/string.sh	\
-	src/modules/dialog.sh	src/modules/main.sh		src/modules/variable.sh	\
-	src/modules/system.sh	src/modules/interfaces.sh	src/modules/times-and-dates.sh
+	src/modules/base.sh	src/modules/encode.sh		src/modules/file.sh	      \
+	src/modules/getopts.sh	src/modules/actions.sh		src/modules/message.sh	      \
+	src/modules/program.sh	src/modules/signal.sh		src/modules/string.sh	      \
+	src/modules/dialog.sh	src/modules/main.sh		src/modules/variable.sh	      \
+	src/modules/system.sh	src/modules/arrays.sh		src/modules/interfaces.sh     \
+	src/modules/times-and-dates.sh
 
 MBFL_PREPRO		= src/lib/preprocessor.m4
 
@@ -211,6 +213,7 @@ endif
 #### tests
 
 EXTRA_DIST	+= \
+	tests/arrays.test		\
 	tests/compress.test		\
 	tests/encode.test		\
 	tests/file.test			\
@@ -221,8 +224,8 @@ EXTRA_DIST	+= \
 	tests/signal.test		\
 	tests/string.test		\
 	tests/system.test		\
-	tests/variable.test		\
 	tests/times-and-dates.test	\
+	tests/variable.test		\
 	\
 	tests/setup.sh			\
 	tests/signaltest.sh
@@ -253,18 +256,19 @@ TEST_LOG_COMPILER	= $(BASH_PROGRAM)
 AM_TEST_LOG_FLAGS	= $(user_flags)
 
 TESTS			= \
+	tests/arrays.test		\
+	tests/compress.test		\
 	tests/encode.test		\
 	tests/file.test			\
-	tests/message.test		\
 	tests/getopts.test		\
+	tests/message.test		\
+	tests/program.test		\
+	tests/script.test		\
+	tests/signal.test		\
 	tests/string.test		\
 	tests/system.test		\
-	tests/variable.test		\
-	tests/program.test		\
-	tests/signal.test		\
-	tests/script.test		\
-	tests/compress.test		\
-	tests/times-and-dates.test
+	tests/times-and-dates.test	\
+	tests/variable.test
 
 ## --------------------------------------------------------------------
 ## additional test rules
