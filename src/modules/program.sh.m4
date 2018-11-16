@@ -51,11 +51,16 @@ function mbfl_program_find_var () {
     mbfl_mandatory_parameter(PROGRAM, 2, program)
     local dummy
 
-    if { mbfl_file_is_absolute "$PROGRAM" && mbfl_file_is_executable "$PROGRAM"; }
+    # NOTE We do *not* want to test for the executability of the program
+    # here!  This  is because  we also  want to find  a program  that is
+    # executable only  by some other user,  for example "/sbin/ifconfig"
+    # is executable only by root (or it should be).
+
+    if mbfl_file_is_absolute "$PROGRAM"
     then
 	RESULT_VARREF="$PROGRAM"
 	return 0
-    elif { mbfl_string_first_var dummy "$PROGRAM" '/' && mbfl_file_is_executable "$PROGRAM"; }
+    elif mbfl_string_first_var dummy "$PROGRAM" '/'
     then
 	# The $PROGRAM it not an absolute pathname, but it is a relative
 	# pathname with at least one slash in it.
@@ -69,7 +74,7 @@ function mbfl_program_find_var () {
 	for ((i=0; i < number_of_components; ++i))
 	do
 	    printf -v PATHNAME '%s/%s' "${mbfl_split_PATH[$i]}" "$PROGRAM"
-	    if mbfl_file_is_executable "$PATHNAME"
+	    if mbfl_file_is_file "$PATHNAME"
 	    then
 		RESULT_VARREF="$PATHNAME"
 		return 0
@@ -98,10 +103,9 @@ fi
 function mbfl_declare_program () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
     local PROGRAM_PATHNAME
-    local -r -i next_free_index=${#mbfl_program_NAMES[@]}
 
     mbfl_program_find_var PROGRAM_PATHNAME "$PROGRAM"
-    if test -n "$PROGRAM_PATHNAME"
+    if mbfl_string_is_not_empty "$PROGRAM_PATHNAME"
     then mbfl_file_normalise_var PROGRAM_PATHNAME "$PROGRAM_PATHNAME"
     fi
     mbfl_program_PATHNAMES["$PROGRAM"]=$PROGRAM_PATHNAME
@@ -113,7 +117,11 @@ function mbfl_program_validate_declared () {
     for PROGRAM in "${!mbfl_program_PATHNAMES[@]}"
     do
 	PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
-        if mbfl_file_is_executable "$PROGRAM_PATHNAME"
+	# NOTE We  do *not* want  to test  for the executability  of the
+	# program here!  This is because we  also want to find a program
+	# that  is  executable only  by  some  other user,  for  example
+	# "/sbin/ifconfig" is executable only by root (or it should be).
+        if mbfl_file_is_file "$PROGRAM_PATHNAME"
         then mbfl_message_verbose_printf 'found "%s": "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
         else
             mbfl_message_verbose_printf '*** not found "%s", path: "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
@@ -127,16 +135,18 @@ function mbfl_program_found_var () {
     mbfl_mandatory_parameter(PROGRAM, 2, program name)
     local -r PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
 
-    if mbfl_file_is_executable "$PROGRAM_PATHNAME"
+    # NOTE We do *not* want to test for the executability of the program
+    # here!  This  is because  we also  want to find  a program  that is
+    # executable only  by some other user,  for example "/sbin/ifconfig"
+    # is executable only by root (or it should be).
+    if mbfl_file_is_file "$PROGRAM_PATHNAME"
     then
 	RESULT_VARREF=$PROGRAM_PATHNAME
         return 0
     else
-	mbfl_message_error_printf 'invalid executable found for "%s": "%s"' "$PROGRAM" "$PROGRAM_PATHNAME"
+	mbfl_message_error_printf 'invalid pathname for program "%s": "%s"' "$PROGRAM" "$PROGRAM_PATHNAME"
 	exit_because_program_not_found
     fi
-    mbfl_message_error_printf 'executable not found for: "%s"' "$PROGRAM"
-    exit_because_program_not_found
 }
 function mbfl_program_found () {
     mbfl_mandatory_parameter(THE_PROGRAM, 1, program name)
