@@ -338,11 +338,13 @@ function mbfl_p_program_exec_5 () {
 ### --------------------------------------------------------------------
 
 function mbfl_p_program_log_1 () {
-    mbfl_p_program_log_2 "$@"
-    if $BACKGROUND
-    then echo ' &'
-    else echo
-    fi
+    {
+	mbfl_p_program_log_2 "$@"
+	if $BACKGROUND
+	then echo ' &'
+	else echo
+	fi
+    } >&2
 }
 function mbfl_p_program_log_2 () {
     mbfl_p_program_log_3 "$@"
