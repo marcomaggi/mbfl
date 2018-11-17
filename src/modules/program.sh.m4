@@ -338,6 +338,7 @@ function mbfl_p_program_exec_5 () {
 
     if $REPLACE
     then EXEC=exec
+    else EXEC=command
     fi
     if $USE_SUDO
     then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
@@ -381,6 +382,7 @@ function mbfl_p_program_log_5 () {
 
     if $REPLACE
     then EXEC=exec
+    else EXEC=command
     fi
     if $USE_SUDO
     then echo -n $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
