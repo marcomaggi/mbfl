@@ -779,6 +779,55 @@ function string-is-8.8 () { ! mbfl_string_is_extended_identifier ''; }
 function string-is-8.9 () { ! mbfl_string_is_extended_identifier '-abc.d.1_23'; }
 
 #page
+#### validating email addresses
+
+function string-is-email-address-1.1 () {
+    mbfl_string_is_email_address 'marco'
+}
+
+function string-is-email-address-1.2 () {
+    mbfl_string_is_email_address 'marco@localhost'
+}
+
+function string-is-email-address-1.3 () {
+    mbfl_string_is_email_address 'marco.maggi@localhost.luna'
+}
+
+function string-is-email-address-1.4 () {
+    mbfl_string_is_email_address 'maRCo.maggi-123@locALhost-123.luna'
+}
+
+function string-is-email-address-1.5 () {
+    mbfl_string_is_email_address 'marco_maggi@localhost_luna'
+}
+
+### --------------------------------------------------------------------
+
+function string-is-email-address-2.1 () {
+    ! mbfl_string_is_email_address ''
+}
+
+function string-is-email-address-2.2 () {
+    ! mbfl_string_is_email_address 'marco@'
+}
+
+function string-is-email-address-2.3 () {
+    ! mbfl_string_is_email_address '@localhost'
+}
+
+function string-is-email-address-2.4 () {
+    ! mbfl_string_is_email_address '@'
+}
+
+function string-is-email-address-2.5 () {
+    ! mbfl_string_is_email_address 'marco@@localhost'
+}
+
+function string-is-email-address-2.6 () {
+    ! mbfl_string_is_email_address 'marco@localhost@there'
+}
+
+#page
 
 function string-toupper-1.1 () {
     mbfl_string_toupper abcdefghilm | dotest-output ABCDEFGHILM

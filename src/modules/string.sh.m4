@@ -370,11 +370,17 @@ function mbfl_p_string_is () {
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$2
     local -i i
-    test ${#STRING} = 0 && return 1
-    for ((i=0; $i < ${#STRING}; ++i))
-    do "mbfl_string_is_${CLASS}_char" "${STRING:$i:1}" || return 1
-    done
-    return 0
+    if ((0 < ${#STRING}))
+    then
+	for ((i=0; i < ${#STRING}; ++i))
+	do
+	    if ! "mbfl_string_is_${CLASS}_char" "${STRING:$i:1}"
+	    then return 1
+	    fi
+	done
+	return 0
+    else return 1
+    fi
 }
 function mbfl_string_is_name () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
@@ -387,8 +393,8 @@ function mbfl_string_is_identifier () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
-    test -n "$STRING" && \
-	mbfl_p_string_is identifier "$STRING"		\
+    test -n "$STRING" \
+	&&   mbfl_p_string_is identifier "$STRING"	\
 	&& ! mbfl_string_is_digit "${STRING:0:1}"	\
 	&& ! test "${STRING:0:1}" = '-'
 }
@@ -396,8 +402,8 @@ function mbfl_string_is_extended_identifier () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
-    test -n "$STRING" && \
-	mbfl_p_string_is extended_identifier "$STRING"	\
+    test -n "$STRING" \
+	&&   mbfl_p_string_is extended_identifier "$STRING"	\
 	&& ! mbfl_string_is_digit "${STRING:0:1}"		\
 	&& ! test "${STRING:0:1}" = '-'
 }
@@ -408,6 +414,18 @@ function mbfl_string_is_username () {
     test -n "$STRING" && \
 	mbfl_string_is_identifier "$STRING"
 }
+function mbfl_string_is_email_address () {
+    # We want  to accept  an empty  parameter and  return unsuccessfully
+    # when given.
+    mbfl_optional_parameter(ADDRESS, 1)
+    local -r REX='^[a-zA-Z0-9_.\-]+(@[a-zA-Z0-9_.\-]+)?$'
+
+    if [[ $ADDRESS =~ $REX ]]
+    then return 0
+    else return 1
+    fi
+}
+
 #page
 function mbfl_string_replace () {
     mbfl_mandatory_parameter(STRING, 1, string)

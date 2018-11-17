@@ -40,6 +40,7 @@ changes!
     mbfl_string_less_or_equal
     mbfl_string_greater_or_equal
     mbfl_string_split_blanks
+    mbfl_string_is_email_address
 
 * Added times and dates module.
 

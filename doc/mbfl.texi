@@ -4191,6 +4191,17 @@ ranges @code{[a-zA-Z0-9_-]}, the first character is in the range
 @code{[a-zA-Z_]}; else return false.
 @end defun
 
+
+@defun mbfl_string_is_email_address @var{string}
+Return true if @var{string} is non--empty and it matches the general shape of an email address;
+otherwise return false.  The @var{string} is considered an email address if it matches the following
+regular expression:
+
+@example
+REX='^[a-zA-Z0-9_.\-]+(@@[a-zA-Z0-9_.\-]+)?$'
+@end example
+@end defun
+
 @c page
 @node strings comparison
 @section Comparing strings
