@@ -99,13 +99,13 @@ function main () {
 
 
     M4_FLAGS+=" ${includes} ${symbols}"
-    if { test "$NO_PREPROCESSOR" = no && mbfl_file_is_readable "$PREPROCESSOR"; }
+    if { test "$script_option_NO_PREPROCESSOR" = no && mbfl_file_is_readable "$PREPROCESSOR"; }
     then M4_FLAGS+=" ${PREPROCESSOR}"
     fi
     M4_FLAGS+=" ${libraries}"
 
     if ! {
-            if test $ARGC -eq 0
+            if ((0 == ARGC))
     	    then program_cat
             else
     		mbfl_argv_all_files || exit_because_wrong_command_line_arguments
