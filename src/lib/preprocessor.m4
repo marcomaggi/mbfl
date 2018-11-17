@@ -28,17 +28,17 @@ m4_dnl Foundation, Inc., 59 Temple Place,  Suite 330, Boston, MA 02111-1307
 m4_dnl USA.
 m4_dnl
 
-m4_changequote(`[[', `]]')
+m4_changequote(`[[[', `]]]')
 
-m4_define([[mbfl_mandatory_parameter]],[[local $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])
-m4_define([[mbfl_optional_parameter]],[[local $1="${$2:-$3}"]])
+m4_define([[[mbfl_mandatory_parameter]]],[[[local $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]]])
+m4_define([[[mbfl_optional_parameter]]],[[[local $1="${$2:-$3}"]]])
 
-m4_define([[mbfl_mandatory_nameref_parameter]],[[local -n $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])
-m4_define([[mbfl_mandatory_integer_parameter]],[[local -i $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]])
+m4_define([[[mbfl_mandatory_nameref_parameter]]],[[[local -n $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]]])
+m4_define([[[mbfl_mandatory_integer_parameter]]],[[[local -i $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]]])
 
-m4_define([[mbfl_command_line_argument]],[[local $1="${ARGV[$2]}"]])
+m4_define([[[mbfl_command_line_argument]]],[[[local $1="${ARGV[$2]]]}"]]])
 
-m4_define([[mbfl_library_loader]],[[
+m4_define([[[mbfl_library_loader]]],[[[
 declare mbfl_INTERACTIVE=no
 declare mbfl_LOADED=no
 declare mbfl_HARDCODED=$1
@@ -63,7 +63,7 @@ then
     printf '%s error: incorrect evaluation of MBFL\n' "$script_PROGNAME" >&2
     exit 100
 fi
-]])
+]]])
 
 m4_dnl end of file
 m4_divert(0)m4_dnl

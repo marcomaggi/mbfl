@@ -312,7 +312,6 @@ is easy if we preprocess our scripts with @gnu{} @mfour{}.  We only need
 to put the following in the script:
 
 @example
-m4_changequote([[,]])
 m4_include(libmbfl.sh)
 @end example
 
@@ -580,6 +579,12 @@ the option @option{--library} to load a replacement macros library from a known 
 
 The @mfour{} preprocessor is invoked by @command{mbflpp.sh} with the @option{--prefix-builtins}
 option; so all the @mfour{} built in macros and directives are available prefixed with @code{m4_}.
+
+The quoting for the preprocessor is changed with:
+
+@example
+m4_changequote(`[[[', `]]]')
+@end example
 
 
 @deffn {Preprocessor Macro} mbfl_library_loader (@var{hardcoded_pathname})

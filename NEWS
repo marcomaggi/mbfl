@@ -19,6 +19,14 @@ changes!
 * The  way  the library  is  reliably  loaded  has been  reviewed.   The
   preprocessor can include the needed code with a macro.
 
+* The quoting for m4 preprocessing is changed from:
+
+     m4_changequote(`[[', `]]')
+
+  to:
+
+     m4_changequote(`[[[', `]]]')
+
 * Added string functions:
 
     mbfl_string_is_empty
