@@ -2428,9 +2428,9 @@ Description @code{enable alpha option}, to be shown in the usage help
 screen.
 @end itemize
 
-If the option is used: the function @code{script_option_update_alpha} is
-invoked (if it exists) with no arguments, after the variable
-@code{script_option_ALPHA} has been set to @code{yes}.  Valid option
+If the option is used: the function @code{script_option_update_alpha} is invoked (if it exists) with
+no arguments, after the variable @code{script_option_ALPHA} has been set to @code{yes}; in the
+function name: @code{alpha} is the lower case variant of the keyword @code{ALPHA}.  Valid option
 uses are:
 
 @example
@@ -2467,10 +2467,10 @@ Long switch @option{--beta}.
 Description @code{select beta value}, to be shown in the usage output.
 @end itemize
 
-If the option is used: the function @code{script_option_update_beta} is
-invoked (if it exists) with no arguments, after the variable
-@code{script_option_BETA} has been set to the selected value.  Valid
-option uses are:
+If the option is used: the function @code{script_option_update_beta} is invoked (if it exists) with
+no arguments, after the variable @code{script_option_BETA} has been set to the selected value; in
+the function name: @code{beta} is the lower case variant of the keyword @code{BETA}.  Valid option
+uses are:
 
 @example
 $ script.sh -b456
