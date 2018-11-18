@@ -1132,6 +1132,8 @@ mbfl_file_strip_leading_slash 'file'    @print{} file
 
 @defun mbfl_file_normalise @var{pathname}
 @defunx mbfl_file_normalise @var{pathname} @var{prefix}
+@defunx mbfl_file_normalise_var @var{RV} @var{pathname}
+@defunx mbfl_file_normalise_var @var{RV} @var{pathname} @var{prefix}
 Normalise a file name: remove all the occurrences of @code{.} and @code{..}.
 
 If @var{pathname} is relative (according to @bfunc{mbfl_file_is_absolute}) and @var{prefix} is not
@@ -1142,6 +1144,8 @@ If @var{prefix} is present and non empty, and @var{pathname} is relative (accord
 @bfunc{mbfl_file_is_absolute}): @var{prefix} is prepended to @var{pathname} and normalised, too.
 
 Echo to stdout the normalised file name.  Return true.
+
+@DocVarVariant{}
 @end defun
 
 @c page
