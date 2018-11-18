@@ -102,7 +102,7 @@ fi
 
 #page
 function mbfl_declare_option () {
-    local keyword=$1
+    local keyword=$1 tolower_keyword
     local default=$2
     local brief=$3
     local long=$4
@@ -145,7 +145,9 @@ function mbfl_declare_option () {
         if test "$hasarg" = noarg
         then
             if test "$default" = yes
-            then mbfl_main_set_main script_$(mbfl_string_tolower $keyword)
+            then
+		mbfl_string_tolower_var tolower_keyword $keyword
+		mbfl_main_set_main script_${tolower_keyword}
             fi
         else
             mbfl_message_error "action option must be with no argument '$keyword'"
@@ -167,59 +169,61 @@ function mbfl_p_declare_option_test_length () {
 #page
 function mbfl_getopts_parse () {
     local p_OPT= p_OPTARG= argument=
-    local -i found_end_of_options_delimiter=0 i retval
+    local -i i
 
     for ((i=ARG1ST; i < ARGC1; ++i))
     do
         argument=${ARGV1[$i]}
 
-        if ((1 == found_end_of_options_delimiter))
+	if mbfl_string_equal "$argument" '--'
         then
-            ARGV[$ARGC]=${argument}
-            let ++ARGC
-        elif mbfl_string_equal "$argument" '--'
-        then found_end_of_options_delimiter=1
-        elif \
-            mbfl_getopts_isbrief "$argument" p_OPT || \
-            mbfl_getopts_islong  "$argument" p_OPT
-        then
-            mbfl_getopts_p_process_predefined_option_no_arg "$p_OPT"
-            retval=$?
-            if ((0 != retval))
-            then return $retval
-            fi
-        elif mbfl_getopts_isbrief_with "$argument" p_OPT p_OPTARG
-        then
-            mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
-            retval=$?
-            if ((0 != retval))
-            then return $retval
-            fi
-	else
-            mbfl_getopts_islong_with "$argument" p_OPT p_OPTARG
-	    retval=$?
-	    if ((0 == retval))
-	    then
-		# Found a long option with value.
-		mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
-		retval=$?
-		if ((0 != retval))
-		then return $retval
-		fi
-	    elif ((2 == retval))
-            then
-		# Found a long option with empty value:
-		#
-		#   --option=
-		#
-		# this is an error.
-                mbfl_message_error_printf 'expected option with non-empty value: "%s"' "$argument"
-                return 1
-            else
+	    # Found  end-of-options  delimiter.   Everything else  is  a
+	    # non-option argument.
+	    for ((i=$i; i < ARGC1; ++i))
+	    do
 		ARGV[$ARGC]=${argument}
 		let ++ARGC
-            fi
-	fi
+	    done
+	    break
+	elif mbfl_string_equal '--' "${argument:0:2}"
+	then
+	    if mbfl_getopts_islong  "$argument" p_OPT
+	    then
+		if ! mbfl_getopts_p_process_predefined_option_no_arg "$p_OPT"
+		then return 1
+		fi
+	    elif mbfl_getopts_islong_with "$argument" p_OPT p_OPTARG
+	    then
+		if ! mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
+		then return 1
+		fi
+	    else
+		# Invalid command line argument starting with "--".
+		mbfl_message_error_printf 'invalid command line argument: "%s"' "$argument"
+		return 1
+	    fi
+	elif mbfl_string_equal '-' "${argument:0:1}"
+	then
+            if mbfl_getopts_isbrief "$argument" p_OPT
+            then
+		if ! mbfl_getopts_p_process_predefined_option_no_arg "$p_OPT"
+		then return 1
+		fi
+            elif mbfl_getopts_isbrief_with "$argument" p_OPT p_OPTARG
+            then
+		if ! mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
+		then return 1
+		fi
+	    else
+		# Invalid command line argument starting with "-".
+		mbfl_message_error_printf 'invalid command line argument: "%s"' "$argument"
+		return 1
+	    fi
+	else
+	    # If it is not an option: it is a non-option argument.
+	    ARGV[$ARGC]=${argument}
+	    let ++ARGC
+        fi
     done
 
     if mbfl_option_encoded_args
@@ -230,6 +234,7 @@ function mbfl_getopts_parse () {
     fi
     return 0
 }
+
 #page
 function mbfl_getopts_p_process_script_option () {
     mbfl_mandatory_parameter(OPT, 1, option name)
@@ -242,31 +247,32 @@ function mbfl_getopts_p_process_script_option () {
         brief=${mbfl_getopts_BRIEFS[$i]}
         long=${mbfl_getopts_LONGS[$i]}
         hasarg=${mbfl_getopts_HASARG[$i]}
-        test \( -n "$OPT" \) -a \
-            \( \( -n "$brief" -a "$brief" = "$OPT" \) -o \
-               \( -n "$long"  -a "$long"  = "$OPT" \) \) && {
-          if test "$hasarg" = "witharg"
-          then
-              if mbfl_string_is_empty "$OPTARG"
-              then
-                  mbfl_message_error "expected non-empty argument for option: \"$OPT\""
-                  return 1
-              fi
-              if mbfl_option_encoded_args
-              then value=$(mbfl_decode_hex "$OPTARG")
-              else value=$OPTARG
-              fi
-          else value=yes
-          fi
-          tolower_keyword=$(mbfl_string_tolower ${keyword})
-          test ${keyword:0:7} = ACTION_ && \
-              mbfl_main_set_main script_${tolower_keyword}
-          update_procedure=script_option_update_${tolower_keyword}
-          state_variable=script_option_${keyword}
-          eval ${state_variable}=\'"$value"\'
-          mbfl_invoke_script_function ${update_procedure}
-          return 0
-        }
+        if test \( -n "$OPT" \) -a \
+		\( \( -n "$brief" -a "$brief" = "$OPT" \) -o \( -n "$long" -a "$long" = "$OPT" \) \)
+	then
+            if test "$hasarg" = "witharg"
+            then
+		if mbfl_string_is_empty "$OPTARG"
+		then
+                    mbfl_message_error "expected non-empty argument for option: \"$OPT\""
+                    return 1
+		fi
+		if mbfl_option_encoded_args
+		then value=$(mbfl_decode_hex "$OPTARG")
+		else value=$OPTARG
+		fi
+            else value=yes
+            fi
+            mbfl_string_tolower_var tolower_keyword ${keyword}
+            if test ${keyword:0:7} = ACTION_
+	    then mbfl_main_set_main script_${tolower_keyword}
+	    fi
+            update_procedure=script_option_update_${tolower_keyword}
+            state_variable=script_option_${keyword}
+            eval ${state_variable}=\'"$value"\'
+            mbfl_invoke_script_function ${update_procedure}
+            return 0
+        fi
     done
     mbfl_message_error_printf 'unknown option "%s"' "$OPT"
     return 1
@@ -446,108 +452,58 @@ function mbfl_getopts_print_usage_screen () {
 function mbfl_getopts_islong () {
     mbfl_mandatory_parameter(ARGUMENT, 1, argument)
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
-    local -i len=${#ARGUMENT} i
-    local ch
+    local -r REX='^--([a-zA-Z0-9_\-]+)$'
 
-    if test $len -lt 3 -o "${ARGUMENT:0:2}" != "--"
-    then return 1
-    else
-	for ((i=2; i < len; ++i))
-	do
-            ch=${ARGUMENT:$i:1}
-            if mbfl_p_getopts_not_char_in_long_option_name "$ch"
-	    then return 1
-	    fi
-	done
-	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2}"
+    if [[ $ARGUMENT =~ $REX ]]
+    then
+	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${BASH_REMATCH[1]}"
 	return 0
+    else return 1
     fi
 }
 function mbfl_getopts_islong_with () {
     mbfl_mandatory_parameter(ARGUMENT, 1, argument)
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
     mbfl_optional_parameter(VALUE_VARIABLE_NAME, 3)
-    local -i len=${#ARGUMENT} equal_position
+    local -r REX='^--([a-zA-Z0-9_\-]+)=(.+)$'
 
-    # The minimum length  of a long option with argument  is 5 (example:
-    # --o=1).
-    if ((5 <= len))
+    if [[ $ARGUMENT =~ $REX ]]
     then
-	if mbfl_string_first_var equal_position "$ARGUMENT" '='
-	then
-	    # Perform special checks for these cases:
-	    #
-	    #    --option=
-	    #    --=
-	    #    --=value
-	    #
-	    if (( (2 == equal_position) || ((1+equal_position) == len) ))
-	    then
-		# The argument has  an invalid format in  the context of
-		# the getopts module.
-		return 2
-	    else
-		if mbfl_getopts_islong "${ARGUMENT:0:$equal_position}"
-		then
-		    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2:$(($equal_position - 2))}"
-		    mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "${ARGUMENT:$(($equal_position + 1))}"
-		    return 0
-		fi
-	    fi
-	fi
-    elif mbfl_string_equal '--=' "$ARGUMENT"
-    then return 2
+	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${BASH_REMATCH[1]}"
+	mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "${BASH_REMATCH[2]}"
+	return 0
+    else return 1
     fi
-    return 1
 }
-function mbfl_p_getopts_not_char_in_long_option_name () {
-    test \
-        \( "$1" \< A -o Z \< "$1" \) -a \
-        \( "$1" \< a -o z \< "$1" \) -a \
-        \( "$1" \< 0 -o 9 \< "$1" \) -a \
-        "$1" != _ -a "$1" != -
-}
-#PAGE
+
+#page
 function mbfl_getopts_isbrief () {
-    mbfl_mandatory_parameter(COMMAND_LINE_ARGUMENT, 1, command line argument)
+    mbfl_mandatory_parameter(ARGUMENT, 1, argument)
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
-    local ch
+    local -r REX='^-([a-zA-Z0-9])$'
 
-    if ! test "${#COMMAND_LINE_ARGUMENT}" = 2 -a "${COMMAND_LINE_ARGUMENT:0:1}" = "-"
-    then return 1
+    if [[ $ARGUMENT =~ $REX ]]
+    then
+	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${BASH_REMATCH[1]}"
+	return 0
+    else return 1
     fi
-
-    if mbfl_p_getopts_not_char_in_brief_option_name "${COMMAND_LINE_ARGUMENT:1:1}"
-    then return 1
-    fi
-
-    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${COMMAND_LINE_ARGUMENT:1}"
-    return 0
 }
 function mbfl_getopts_isbrief_with () {
-    mbfl_mandatory_parameter(COMMAND_LINE_ARGUMENT, 1, command line argument)
+    mbfl_mandatory_parameter(ARGUMENT, 1, argument)
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
     mbfl_optional_parameter(VALUE_VARIABLE_NAME, 3)
+    local -r REX='^-([a-zA-Z0-9])(.+)$'
 
-    if ! test "${#COMMAND_LINE_ARGUMENT}" -gt 2 -a "${COMMAND_LINE_ARGUMENT:0:1}" = "-"
-    then return 1
+    if [[ $ARGUMENT =~ $REX ]]
+    then
+	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${BASH_REMATCH[1]}"
+	mbfl_set_maybe "$VALUE_VARIABLE_NAME"  $(mbfl_string_quote "${BASH_REMATCH[2]}")
+	return 0
+    else return 1
     fi
-
-    if mbfl_p_getopts_not_char_in_brief_option_name "${COMMAND_LINE_ARGUMENT:1:1}"
-    then return 1
-    fi
-
-    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${COMMAND_LINE_ARGUMENT:1:1}"
-    local QUOTED_VALUE=$(mbfl_string_quote "${COMMAND_LINE_ARGUMENT:2}")
-    mbfl_set_maybe "$VALUE_VARIABLE_NAME" "$QUOTED_VALUE"
-    return 0
 }
-function mbfl_p_getopts_not_char_in_brief_option_name () {
-    test \
-        \( "$1" \< A -o Z \< "$1" \) -a \
-        \( "$1" \< a -o z \< "$1" \) -a \
-        \( "$1" \< 0 -o 9 \< "$1" \)
-}
+
 #PAGE
 function mbfl_wrong_num_args () {
     mbfl_mandatory_integer_parameter(required, 1, required number of args)

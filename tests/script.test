@@ -83,11 +83,11 @@ function script-template-2.5 () {
 # Option with argument used with an empty argument.
 #
 function script-template-2.6 () {
-    script --beta= | dotest-output 'template.sh: error: expected option with non-empty value: "--beta="'
+    script --beta= | dotest-output 'template.sh: error: invalid command line argument: "--beta="'
 }
 
 function script-template-2.7 () {
-    script --= | dotest-output 'template.sh: error: expected option with non-empty value: "--="'
+    script --= | dotest-output 'template.sh: error: invalid command line argument: "--="'
 }
 
 #page

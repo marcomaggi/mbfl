@@ -2947,9 +2947,7 @@ Optional name of a variable that this function will set to the option value from
 @end table
 
 Return with code @code{0} if the string is a long option with argument.  Return with code @code{1}
-if the string may have a valid format in the context of the getopts module, but it is not an option
-with argument.  Return with code @code{2} if the string has an invalid format in the context of the
-getopts module.
+if the string is not an option with argument.
 
 An option must be of the form @code{--option=value}, only characters in the ranges @code{A-Z},
 @code{a-z}, @code{0-9} and the characters @code{-} and @code{_} are allowed in the option name.
@@ -2962,8 +2960,8 @@ Usage examples:
 mbfl_getopts_islong_with --option=one   @result{} 0
 mbfl_getopts_islong_with --option       @result{} 1
 mbfl_getopts_islong_with wappa          @result{} 1
-mbfl_getopts_islong_with --option=      @result{} 2
-mbfl_getopts_islong_with --=            @result{} 2
+mbfl_getopts_islong_with --option=      @result{} 1
+mbfl_getopts_islong_with --=            @result{} 1
 @end example
 @end defun
 

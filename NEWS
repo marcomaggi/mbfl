@@ -97,11 +97,6 @@ changes!
 
 * Started arrays module.
 
-* BACKWARDS  INCOMPATIBILITY   In  the  getopts  module,   the  function
-  "mbfl_getopts_islong_with()" now  return 2 if the  argument surely has
-  an invalid format.   It still return 1  if the argument is  not a long
-  option with argument or if it may have an invalid format.
-
 
 Notes for revision 2.2.0
 ------------------------
