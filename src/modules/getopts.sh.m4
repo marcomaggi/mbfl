@@ -45,13 +45,12 @@ then
 fi
 
 #page
-## ------------------------------------------------------------
-## Default options description.
-## ------------------------------------------------------------
+#### default options description
 
-test "$mbfl_INTERACTIVE" = yes || {
+if test "$mbfl_INTERACTIVE" != yes
+then
 
-mbfl_message_DEFAULT_OPTIONS="
+    mbfl_message_DEFAULT_OPTIONS="
 \t--tmpdir=DIR
 \t\tselect a directory for temporary files
 \t-i --interactive
@@ -99,7 +98,7 @@ mbfl_message_DEFAULT_OPTIONS="
 \t\toptions, then exit
 "
 
-}
+fi
 
 #page
 function mbfl_declare_option () {
@@ -117,18 +116,19 @@ function mbfl_declare_option () {
     mbfl_getopts_LONGS[$mbfl_getopts_INDEX]=$long
 
     mbfl_p_declare_option_test_length $hasarg hasarg $index
-    test "$hasarg" != witharg -a "$hasarg" != noarg && {
+    if test "$hasarg" != witharg -a "$hasarg" != noarg
+    then
         mbfl_message_error \
             "wrong value '$hasarg' to hasarg field in option declaration number $index"
         exit_because_invalid_option_declaration
-    }
+    fi
     mbfl_getopts_HASARG[$mbfl_getopts_INDEX]=$hasarg
 
-    test "$hasarg" = noarg -a "$default" != yes -a "$default" != no && {
-        mbfl_message_error \
-            "wrong value '$default' as default for option with no argument number $index"
+    if test "$hasarg" = noarg -a "$default" != yes -a "$default" != no
+    then
+        mbfl_message_error "wrong value '$default' as default for option with no argument number $index"
         exit_because_invalid_option_declaration
-    }
+    fi
     mbfl_getopts_DEFAULTS[$mbfl_getopts_INDEX]=$default
 
     mbfl_p_declare_option_test_length $description description $index
@@ -158,7 +158,7 @@ function mbfl_p_declare_option_test_length () {
     local value=$1
     local value_name=$2
     local option_number=$3
-    if test -z "$value"
+    if mbfl_string_is_empty "$value"
     then
         mbfl_message_error "null $value_name in declared option number $option_number"
         exit_because_invalid_option_declaration
@@ -203,11 +203,12 @@ function mbfl_getopts_parse () {
         fi
     done
 
-    mbfl_option_encoded_args && {
-        for ((i=0; $i < $ARGC; ++i))
+    if mbfl_option_encoded_args
+    then
+        for ((i=0; i < ARGC; ++i))
         do ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
         done
-    }
+    fi
     return 0
 }
 #page
@@ -216,7 +217,7 @@ function mbfl_getopts_p_process_script_option () {
     mbfl_optional_parameter(OPTARG, 2)
     local i=0 value brief long hasarg keyword tolower_keyword update_procedure state_variable
 
-    for ((i=0; $i < $mbfl_getopts_INDEX; ++i))
+    for ((i=0; i < mbfl_getopts_INDEX; ++i))
     do
         keyword=${mbfl_getopts_KEYWORDS[$i]}
         brief=${mbfl_getopts_BRIEFS[$i]}
@@ -227,7 +228,7 @@ function mbfl_getopts_p_process_script_option () {
                \( -n "$long"  -a "$long"  = "$OPT" \) \) && {
           if test "$hasarg" = "witharg"
           then
-              if test -z "$OPTARG"
+              if mbfl_string_is_empty "$OPTARG"
               then
                   mbfl_message_error "expected non-empty argument for option: \"$OPT\""
                   return 1
@@ -248,7 +249,7 @@ function mbfl_getopts_p_process_script_option () {
           return 0
         }
     done
-    mbfl_message_error "unknown option \"${OPT}\""
+    mbfl_message_error_printf 'unknown option "%s"' "$OPT"
     return 1
 }
 #PAGE
@@ -325,12 +326,14 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
     mbfl_mandatory_parameter(OPT, 1, option name)
     mbfl_mandatory_parameter(OPTARG, 2, option argument)
 
-    if test -z "$OPTARG"
+    if mbfl_string_is_empty "$OPTARG"
     then
-        mbfl_message_error "empty value given to option \"${OPT}\" requiring argument"
+        mbfl_message_error_printf 'empty value given to option "%s" requiring argument' "$OPT"
         exit_because_invalid_option_argument
     fi
-    mbfl_option_encoded_args && OPTARG=$(mbfl_decode_hex "$OPTARG")
+    if mbfl_option_encoded_args
+    then OPTARG=$(mbfl_decode_hex "$OPTARG")
+    fi
     case $OPT in
         tmpdir)
             mbfl_option_TMPDIR=${OPTARG}
@@ -338,15 +341,15 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
         print-exit-code)
             mbfl_main_print_exit_code "$OPTARG"
             exit 0
-        ;;
+            ;;
         print-exit-code-names|print-exit-code-name)
             mbfl_main_print_exit_code_names "$OPTARG"
             exit 0
-        ;;
+            ;;
 	*)
 	    mbfl_getopts_p_process_script_option "$OPT" "$OPTARG"
             return $?
-        ;;
+            ;;
     esac
     return 0
 }
@@ -373,22 +376,28 @@ function mbfl_getopts_print_usage_screen () {
             printf '\t'
 
             brief=${mbfl_getopts_BRIEFS[$i]}
-            test -n "$brief" && printf -- '-%s%s ' "$brief" "$brief_hasarg"
+            if test -n "$brief"
+	    then printf -- '-%s%s ' "$brief" "$brief_hasarg"
+	    fi
 
             long=${mbfl_getopts_LONGS[$i]}
-            test -n "$long" && printf -- '--%s%s' "$long" "$long_hasarg"
+            if test -n "$long"
+	    then printf -- '--%s%s' "$long" "$long_hasarg"
+	    fi
 
             printf '\n'
 
             description=${mbfl_getopts_DESCRIPTION[$i]}
-            test -z "$description" && description='undocumented option'
+            if mbfl_string_is_empty "$description"
+	    then description='undocumented option'
+	    fi
 
             printf '\t\t%s\n' "$description"
 
             if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
             then
                 item=${mbfl_getopts_DEFAULTS[$i]}
-                if test -n "$item"
+                if mbfl_string_is_not_empty "$item"
                 then printf -v default "'%s'" "$item"
                 else default='empty'
                 fi
@@ -424,7 +433,7 @@ function mbfl_getopts_islong () {
     if test $len -lt 3 -o "${ARGUMENT:0:2}" != "--"
     then return 1
     else
-	for ((i=2; $i < $len; ++i))
+	for ((i=2; i < len; ++i))
 	do
             ch=${ARGUMENT:$i:1}
             if mbfl_p_getopts_not_char_in_long_option_name "$ch"
@@ -444,9 +453,13 @@ function mbfl_getopts_islong_with () {
     # The min length of a long option with is 5 (example: --o=1).
     test $len -lt 5 && return 1
     equal_position=$(mbfl_string_first "$ARGUMENT" =)
-    test -z "$equal_position" -o $(($equal_position + 1)) = $len && return 1
+    if test -z "$equal_position" -o $((equal_position + 1)) -eq $len
+    then return 1
+    fi
 
-    mbfl_getopts_islong "${ARGUMENT:0:$equal_position}" || return 1
+    if ! mbfl_getopts_islong "${ARGUMENT:0:$equal_position}"
+    then return 1
+    fi
     mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2:$(($equal_position - 2))}"
     mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "${ARGUMENT:$(($equal_position + 1))}"
     return 0
@@ -464,11 +477,13 @@ function mbfl_getopts_isbrief () {
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
     local ch
 
-    test "${#COMMAND_LINE_ARGUMENT}" = 2 -a \
-        "${COMMAND_LINE_ARGUMENT:0:1}" = "-" || return 1
+    if ! test "${#COMMAND_LINE_ARGUMENT}" = 2 -a "${COMMAND_LINE_ARGUMENT:0:1}" = "-"
+    then return 1
+    fi
 
-    mbfl_p_getopts_not_char_in_brief_option_name \
-        "${COMMAND_LINE_ARGUMENT:1:1}" && return 1
+    if mbfl_p_getopts_not_char_in_brief_option_name "${COMMAND_LINE_ARGUMENT:1:1}"
+    then return 1
+    fi
 
     mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${COMMAND_LINE_ARGUMENT:1}"
     return 0
@@ -478,11 +493,13 @@ function mbfl_getopts_isbrief_with () {
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
     mbfl_optional_parameter(VALUE_VARIABLE_NAME, 3)
 
-    test "${#COMMAND_LINE_ARGUMENT}" -gt 2 -a \
-        "${COMMAND_LINE_ARGUMENT:0:1}" = "-" || return 1
+    if ! test "${#COMMAND_LINE_ARGUMENT}" -gt 2 -a "${COMMAND_LINE_ARGUMENT:0:1}" = "-"
+    then return 1
+    fi
 
-    mbfl_p_getopts_not_char_in_brief_option_name \
-        "${COMMAND_LINE_ARGUMENT:1:1}" && return 1
+    if mbfl_p_getopts_not_char_in_brief_option_name "${COMMAND_LINE_ARGUMENT:1:1}"
+    then return 1
+    fi
 
     mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${COMMAND_LINE_ARGUMENT:1:1}"
     local QUOTED_VALUE=$(mbfl_string_quote "${COMMAND_LINE_ARGUMENT:2}")
@@ -497,50 +514,53 @@ function mbfl_p_getopts_not_char_in_brief_option_name () {
 }
 #PAGE
 function mbfl_wrong_num_args () {
-    mbfl_mandatory_parameter(required, 1, required number of args)
-    mbfl_mandatory_parameter(argc, 2, given number of args)
+    mbfl_mandatory_integer_parameter(required, 1, required number of args)
+    mbfl_mandatory_integer_parameter(argc, 2, given number of args)
 
-    test $required != $argc && {
+    if ((required == argc))
+    then return 0
+    else
         mbfl_message_error "number of arguments required: $required"
         return 1
-    }
-    return 0
+    fi
 }
 function mbfl_wrong_num_args_range () {
-    mbfl_mandatory_parameter(min_required, 1, minimum required number of args)
-    mbfl_mandatory_parameter(max_required, 2, maximum required number of args)
-    mbfl_mandatory_parameter(argc, 3, given number of args)
+    mbfl_mandatory_integer_parameter(min_required, 1, minimum required number of args)
+    mbfl_mandatory_integer_parameter(max_required, 2, maximum required number of args)
+    mbfl_mandatory_integer_parameter(argc, 3, given number of args)
 
-    test $min_required -gt $argc -o $max_required -lt $argc && {
-        mbfl_message_error \
-            "number of required arguments between $min_required and $max_required but given $argc"
+    if test $min_required -gt $argc -o $max_required -lt $argc
+    then
+        mbfl_message_error "number of required arguments between $min_required and $max_required but given $argc"
         return 1
-    }
-    return 0
+    else return 0
+    fi
 }
 function mbfl_argv_from_stdin () {
     local item=
 
-    test $ARGC -ne 0 && {
+    if ((0 == ARGC))
+    then return 0
+    else
         while mbfl_read_maybe_null item
         do
             ARGV[${ARGC}]=${item}
             let ++ARGC
         done
-    }
-    return 0
+    fi
 }
 function mbfl_argv_all_files () {
     local i item
 
-    for ((i=0; $i < $ARGC; ++i))
+    for ((i=0; i < ARGC; ++i))
     do
-	item=$(mbfl_file_normalise "${ARGV[$i]}")
-	test -f "$item" || {
-	    mbfl_message_error "unexistent file '${item}'"
+	mbfl_file_normalise_var item "${ARGV[$i]}"
+	if mbfl_file_is_file "$item"
+	then ARGV[$i]=${item}
+	else
+	    mbfl_message_error_printf 'unexistent file "%s"' "$item"
 	    return 1
-        }
-	ARGV[$i]=${item}
+        fi
     done
     return 0
 }
