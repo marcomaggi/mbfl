@@ -113,8 +113,12 @@ MBFLPP_MODULES_FLAGS	= --no-prepro 						\
 			  --define=__PACKAGE_NAME__=$(PACKAGE)			\
 			  --define=__PACKAGE_VERSION__=$(MBFL_CORE_VERSION)	\
 			  --define=__PATHNAME_SUDO__=$(PATHNAME_SUDO)		\
-			  --define=__PATHNAME_WHOAMI__=$(PATHNAME_WHOAMI)
-MBFLPP_LIBS_FLAGS	= --include=$(builddir)/src/modules  --preserve-comments
+			  --define=__PATHNAME_WHOAMI__=$(PATHNAME_WHOAMI)	\
+			  $(MBFLPPFLAGS)
+MBFLPP_LIBS_FLAGS	= --no-prepro 						\
+			  --include=$(srcdir)/src/lib				\
+			  --library=$(srcdir)/src/lib/preprocessor.m4	 	\
+			  --include=$(builddir)/src/modules  --preserve-comments
 MBFLPP_SCRIPTS_FLAGS	= $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments
 
 src/modules/$(am__dirstamp):
