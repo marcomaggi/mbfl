@@ -443,36 +443,21 @@ function mbfl_string_skip () {
 }
 #page
 function mbfl_string_toupper () {
-    mbfl_p_string_uplo toupper "$1"
+    echo "${1^^}"
 }
 function mbfl_string_tolower () {
-    mbfl_p_string_uplo tolower "$1"
+    echo "${1,,}"
 }
-function mbfl_p_string_uplo () {
-    mbfl_mandatory_parameter(MODE, 1, mode)
-    mbfl_optional_parameter(STRING, 2)
-    local ch lower upper flag=0
-    test ${#STRING} = 0 && return 0
-    for ch in \
-        a A b B c C d D e E f F g G h H i I j J k K l L m M \
-        n N o O p P q Q r R s S t T u U v V w W x X y Y z Z
-    do
-      if test $flag = 0
-      then
-          lower=$ch
-          flag=1
-      else
-          upper=$ch
-          if test "$MODE" = toupper
-          then STRING=${STRING//$lower/$upper}
-          else STRING=${STRING//$upper/$lower}
-          fi
-          flag=0
-      fi
-    done
-    printf "${STRING}\n"
-    return 0
+
+function mbfl_string_toupper_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    RESULT_VARREF="${2^^}"
 }
+function mbfl_string_tolower_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    RESULT_VARREF="${2,,}"
+}
+
 #page
 function mbfl_sprintf () {
     mbfl_mandatory_parameter(VARNAME, 1, variable name)

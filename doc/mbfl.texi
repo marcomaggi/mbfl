@@ -4128,14 +4128,20 @@ $SPLITCOUNT             @result{} 6
 
 
 @defun mbfl_string_toupper @var{string}
-Output @var{string} with all the occurrences of lower case @ascii{}
-characters (no accents) turned into upper case.
+@defunx mbfl_string_toupper_var @var{RV} @var{string}
+Output @var{string} with all the occurrences of lower case @ascii{} characters (no accents) turned
+into upper case.
+
+@DocVarVariant{}
 @end defun
 
 
 @defun mbfl_string_tolower @var{string}
-Output @var{string} with all the occurrences of upper case @ascii{}
-characters (no accents) turned into lower case.
+@defunx mbfl_string_tolower_var @var{RV} @var{string}
+Output @var{string} with all the occurrences of upper case @ascii{} characters (no accents) turned
+into lower case.
+
+@DocVarVariant{}
 @end defun
 
 @c page
