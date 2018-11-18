@@ -166,17 +166,18 @@ function mbfl_p_declare_option_test_length () {
 }
 #page
 function mbfl_getopts_parse () {
-    local p_OPT= p_OPTARG= argument= i
-    local found_end_of_options_delimiter=0 retval
-    for ((i=${ARG1ST}; $i < ${ARGC1}; ++i))
+    local p_OPT= p_OPTARG= argument=
+    local -i found_end_of_options_delimiter=0 i retval
+
+    for ((i=ARG1ST; i < ARGC1; ++i))
     do
         argument=${ARGV1[$i]}
 
-        if test "$found_end_of_options_delimiter" = 1
+        if ((1 == found_end_of_options_delimiter))
         then
             ARGV[$ARGC]=${argument}
             let ++ARGC
-        elif test "$argument" = '--'
+        elif mbfl_string_equal "$argument" '--'
         then found_end_of_options_delimiter=1
         elif \
             mbfl_getopts_isbrief "$argument" p_OPT || \
@@ -184,23 +185,41 @@ function mbfl_getopts_parse () {
         then
             mbfl_getopts_p_process_predefined_option_no_arg "$p_OPT"
             retval=$?
-            if test $retval != 0
+            if ((0 != retval))
             then return $retval
             fi
-        elif \
-            mbfl_getopts_isbrief_with "$argument" p_OPT p_OPTARG || \
-            mbfl_getopts_islong_with  "$argument" p_OPT p_OPTARG
+        elif mbfl_getopts_isbrief_with "$argument" p_OPT p_OPTARG
         then
             mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
             retval=$?
-            if test $retval != 0
+            if ((0 != retval))
             then return $retval
             fi
-        else
-            test $i = 0 && found_possible_action_argument=1
-            ARGV[$ARGC]=${argument}
-            let ++ARGC
-        fi
+	else
+            mbfl_getopts_islong_with "$argument" p_OPT p_OPTARG
+	    retval=$?
+	    if ((0 == retval))
+	    then
+		# Found a long option with value.
+		mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
+		retval=$?
+		if ((0 != retval))
+		then return $retval
+		fi
+	    elif ((2 == retval))
+            then
+		# Found a long option with empty value:
+		#
+		#   --option=
+		#
+		# this is an error.
+                mbfl_message_error_printf 'expected option with non-empty value: "%s"' "$argument"
+                return 1
+            else
+		ARGV[$ARGC]=${argument}
+		let ++ARGC
+            fi
+	fi
     done
 
     if mbfl_option_encoded_args
@@ -448,21 +467,38 @@ function mbfl_getopts_islong_with () {
     mbfl_mandatory_parameter(ARGUMENT, 1, argument)
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
     mbfl_optional_parameter(VALUE_VARIABLE_NAME, 3)
-    local len=${#ARGUMENT} equal_position
+    local -i len=${#ARGUMENT} equal_position
 
-    # The min length of a long option with is 5 (example: --o=1).
-    test $len -lt 5 && return 1
-    equal_position=$(mbfl_string_first "$ARGUMENT" =)
-    if test -z "$equal_position" -o $((equal_position + 1)) -eq $len
-    then return 1
+    # The minimum length  of a long option with argument  is 5 (example:
+    # --o=1).
+    if ((5 <= len))
+    then
+	if mbfl_string_first_var equal_position "$ARGUMENT" '='
+	then
+	    # Perform special checks for these cases:
+	    #
+	    #    --option=
+	    #    --=
+	    #    --=value
+	    #
+	    if (( (2 == equal_position) || ((1+equal_position) == len) ))
+	    then
+		# The argument has  an invalid format in  the context of
+		# the getopts module.
+		return 2
+	    else
+		if mbfl_getopts_islong "${ARGUMENT:0:$equal_position}"
+		then
+		    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2:$(($equal_position - 2))}"
+		    mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "${ARGUMENT:$(($equal_position + 1))}"
+		    return 0
+		fi
+	    fi
+	fi
+    elif mbfl_string_equal '--=' "$ARGUMENT"
+    then return 2
     fi
-
-    if ! mbfl_getopts_islong "${ARGUMENT:0:$equal_position}"
-    then return 1
-    fi
-    mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${ARGUMENT:2:$(($equal_position - 2))}"
-    mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "${ARGUMENT:$(($equal_position + 1))}"
-    return 0
+    return 1
 }
 function mbfl_p_getopts_not_char_in_long_option_name () {
     test \

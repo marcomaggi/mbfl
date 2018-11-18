@@ -80,6 +80,16 @@ function script-template-2.5 () {
     script --alpha | dotest-output "option alpha\naction one, arguments: 0, ''"
 }
 
+# Option with argument used with an empty argument.
+#
+function script-template-2.6 () {
+    script --beta= | dotest-output 'template.sh: error: expected option with non-empty value: "--beta="'
+}
+
+function script-template-2.7 () {
+    script --= | dotest-output 'template.sh: error: expected option with non-empty value: "--="'
+}
+
 #page
 #### test template for arguments
 

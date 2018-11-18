@@ -421,7 +421,9 @@ function mbfl_main () {
 	fi
     fi
     mbfl_invoke_script_function $mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS || exit_failure
-    mbfl_getopts_parse || exit_because_invalid_option_argument
+    if ! mbfl_getopts_parse
+    then exit_because_invalid_option_argument
+    fi
     mbfl_invoke_script_function $mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS || exit_failure
     if test -n "$mbfl_main_PRIVATE_SCRIPT_FUNCTION"
     then mbfl_invoke_existent_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION

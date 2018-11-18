@@ -2932,31 +2932,29 @@ mbfl_getopts_islong gasp                @result{} 1
 
 @defun mbfl_getopts_islong_with @var{string}
 @defunx mbfl_getopts_islong_with @var{string} @var{optname} @var{varname}
-Verify if a string has the format of a long option with argument.
-Arguments:
+Verify if a string has the format of a long option with argument.  Arguments:
 
 @table @var
 @item string
 The string to validate.
 
 @item optname
-Optional name of a variable that this function will set to the option
-name from @var{string}, without the leading dashes.
+Optional name of a variable that this function will set to the option name from @var{string},
+without the leading dashes.
 
 @item varname
-Optional name of a variable that this function will set to the option
-value from @var{string}.
+Optional name of a variable that this function will set to the option value from @var{string}.
 @end table
 
-Return with code zero if the string is a long option with argument, else
-return with code one.
+Return with code @code{0} if the string is a long option with argument.  Return with code @code{1}
+if the string may have a valid format in the context of the getopts module, but it is not an option
+with argument.  Return with code @code{2} if the string has an invalid format in the context of the
+getopts module.
 
-An option must be of the form @code{--option=value}, only characters in
-the ranges @code{A-Z}, @code{a-z}, @code{0-9} and the characters
-@code{-} and @code{_} are allowed in the option name.
+An option must be of the form @code{--option=value}, only characters in the ranges @code{A-Z},
+@code{a-z}, @code{0-9} and the characters @code{-} and @code{_} are allowed in the option name.
 
-If the argument is not an option with value, the variable names are
-ignored.
+If the argument is not an option with value, the variable names are ignored.
 
 Usage examples:
 
@@ -2964,6 +2962,8 @@ Usage examples:
 mbfl_getopts_islong_with --option=one   @result{} 0
 mbfl_getopts_islong_with --option       @result{} 1
 mbfl_getopts_islong_with wappa          @result{} 1
+mbfl_getopts_islong_with --option=      @result{} 2
+mbfl_getopts_islong_with --=            @result{} 2
 @end example
 @end defun
 
