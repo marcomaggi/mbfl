@@ -541,6 +541,10 @@ Do not filter out comments.
 Add @code{#!$BASH} at the beginning of the output, where @code{BASH} is the built--in variable of
 Bash, @bashref{Bash Variables, BASH}.
 
+@item --bash-program=BASH
+Select the absolute file pathname of the Bash executable to use when the @option{--add-bash} is
+used.  It defaults to the Bash used to run the preprocessor script itself.
+
 @item -DNAME[=VALUE]
 @itemx --define=NAME[=VALUE]
 Define a new symbol (@mfour{} syntax).  This is equivalent to the @option{--define} option of

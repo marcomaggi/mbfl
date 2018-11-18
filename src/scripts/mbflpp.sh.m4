@@ -83,7 +83,7 @@ declare includes
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option PRESERVE_COMMENTS no '' preserve-comments noarg "do not filter out comments"
-mbfl_declare_option ADD_BASH          no '' add-bash          noarg "add '#!${BASH}' at the beginning"
+mbfl_declare_option ADD_BASH          no '' add-bash          noarg "add Bash shebang at the beginning"
 mbfl_declare_option DEFINE            ''  D define            witharg "define a new symbols (m4 syntax)"
 mbfl_declare_option INCLUDE           ''  I include           witharg "add a search path for files"
 mbfl_declare_option LIBRARY           '' '' library           witharg "include an M4 library"
@@ -92,6 +92,7 @@ mbfl_declare_option EVAL              no  e eval              noarg "if used eva
 mbfl_declare_option NO_PREPROCESSOR   no '' no-prepro         noarg "do not load the m4 preprocessor library"
 
 mbfl_declare_option MBFL_LIBRARY      "$DEFAULT_MBFL_LIBRARY" '' mbfl-library witharg "pathname of the MBFL library"
+mbfl_declare_option BASH_PROGRAM      "$BASH" '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
 
 #page
 #### external programs declarations
@@ -137,6 +138,23 @@ function script_option_update_include () {
     printf -v ITEM "%s-include='%s'" '-' "$script_option_INCLUDE"
     includes+=" ${ITEM}"
 }
+function script_option_update_bash_program () {
+    if ! mbfl_file_is_file "$script_option_BASH_PROGRAM"
+    then
+	mbfl_message_error_printf 'selected Bash program pathname is not a file: "%s"' "$script_option_BASH_PROGRAM"
+	exit_because_wrong_command_line_arguments
+    fi
+    if ! mbfl_file_is_absolute "$script_option_BASH_PROGRAM"
+    then
+	mbfl_message_error_printf 'selected Bash program pathname is not absolute: "%s"' "$script_option_BASH_PROGRAM"
+	exit_because_wrong_command_line_arguments
+    fi
+    if ! mbfl_file_is_executable "$script_option_BASH_PROGRAM"
+    then
+	mbfl_message_error_printf 'selected Bash program is not executable: "%s"' "$script_option_BASH_PROGRAM"
+	exit_because_wrong_command_line_arguments
+    fi
+}
 
 #page
 #### main functions
@@ -160,7 +178,7 @@ function main () {
             fi
     	} | {
             if test "$script_option_ADD_BASH" = 'yes'
-    	    then printf '#!%s\n' "$BASH"
+    	    then printf '#!%s\n' "$script_option_BASH_PROGRAM"
             fi
             if test "$script_option_PRESERVE_COMMENTS" = 'yes'
     	    then program_m4 \
