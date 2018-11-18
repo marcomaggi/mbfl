@@ -578,7 +578,9 @@ function mbfl_getopts_print_long_switches () {
         then printf -- '--%s' "${mbfl_getopts_LONGS[$i]}"
         else continue
         fi
-        test $(($i+1)) -lt ${#mbfl_getopts_LONGS[@]} && echo -n ' '
+        if (( (i+1) < ${#mbfl_getopts_LONGS[@]}))
+	then echo -n ' '
+	fi
     done
     echo
     return 0
