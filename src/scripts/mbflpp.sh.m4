@@ -127,7 +127,7 @@ mbfl_main_declare_exit_code 2 wrong_command_line_arguments
 
 function script_option_update_define () {
     local ITEM
-    printf -var ITEM "%s-define='%s'" '-' "$script_option_DEFINE"
+    printf -v ITEM "%s-define=%s" '-' "$script_option_DEFINE"
     symbols+=" ${ITEM}"
 }
 function script_option_update_library () {
@@ -135,7 +135,7 @@ function script_option_update_library () {
 }
 function script_option_update_include () {
     local ITEM
-    printf -v ITEM "%s-include='%s'" '-' "$script_option_INCLUDE"
+    printf -v ITEM "%s-include=%s" '-' "$script_option_INCLUDE"
     includes+=" ${ITEM}"
 }
 function script_option_update_bash_program () {
