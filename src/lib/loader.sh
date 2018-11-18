@@ -9,7 +9,9 @@ do
     if test -n "$item" -a -f "$item" -a -r "$item"
     then
         if source "$item" &>/dev/null
-        then break
+        then
+	    declare -r mbfl_LOADED_LIBRARY=$item
+	    break
         else
             printf '%s error: loading MBFL file "%s"\n' "$script_PROGNAME" "$item" >&2
             exit 100

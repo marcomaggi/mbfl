@@ -45,6 +45,40 @@ ${script_PROGNAME} --outfile=OUTFILE INFILE1 INFILE2 ..."
 m4_include(loader.sh)
 
 #page
+#### global variables
+
+declare -r PACKAGE_VERSION='__PACKAGE_VERSION__'
+declare -r PACKAGE_DATADIR='__PKGDATADIR__'
+
+# The absolute pathname of the MBFL  library loaded by this script.  The
+# variable "mbfl_LOADED_LIBRARY" is defined by  the loader code block in
+# "loader.sh".
+#
+declare -r DEFAULT_MBFL_LIBRARY=${mbfl_LOADED_LIBRARY}
+
+# A string  representing command  line options for  GNU m4:  the symbols
+# definitions.   It  is built  by  appending  the definitions  from  the
+# command line option "--define" as:
+#
+#   --define=<symbol>=<value>
+#
+declare symbols
+
+# A  string representing  command line  options  for GNU  m4: the  macro
+# libraries.  It is built by  appending the definitions from the command
+# line option "--library".
+#
+declare libraries
+
+# A string representing command line options for GNU m4: the search path
+# for include files.  It is built  by appending the definitions from the
+# command line option "--include" as:
+#
+#   --include=<directory>
+#
+declare includes
+
+#page
 #### command line options
 
 # keyword default-value brief-option long-option has-argument description
@@ -56,6 +90,8 @@ mbfl_declare_option LIBRARY           '' '' library           witharg "include a
 mbfl_declare_option OUTPUT            -   o output            witharg "selects an output file, '-' for stdout"
 mbfl_declare_option EVAL              no  e eval              noarg "if used evaluates the output script in bash, instead of printing it"
 mbfl_declare_option NO_PREPROCESSOR   no '' no-prepro         noarg "do not load the m4 preprocessor library"
+
+mbfl_declare_option MBFL_LIBRARY      "$DEFAULT_MBFL_LIBRARY" '' mbfl-library witharg "pathname of the MBFL library"
 
 #page
 #### external programs declarations
@@ -71,23 +107,35 @@ mbfl_declare_program cat
 mbfl_main_declare_exit_code 2 wrong_command_line_arguments
 
 #page
-#### global variables
-
-declare -r hidden_option_DATADIR='__PKGDATADIR__'
-
-declare symbols libraries includes
-
-#page
 #### option update functions
+#
+# NOTE The trick:
+#
+#    printf -v VAR "%s..." '-' ...
+#
+# places a dash character as first character of the output in VAR.  This
+# is needed to  avoid "printf" interpreting the first dash  as an option
+# for itself; that is:
+#
+#    printf -v VAR "-D..." ...
+#    printf -v VAR "--define..." ...
+#
+# would  raise "invalid  option" errors  because "-D"  and "--"  are not
+# valid "printf" options.  (Marco Maggi; Nov 18, 2018)
+#
 
 function script_option_update_define () {
-    symbols+=" --define=${script_option_DEFINE}"
+    local ITEM
+    printf -var ITEM "%s-define='%s'" '-' "$script_option_DEFINE"
+    symbols+=" ${ITEM}"
 }
 function script_option_update_library () {
     libraries+=" ${script_option_LIBRARY}"
 }
 function script_option_update_include () {
-    includes+=" --include=${script_option_INCLUDE}"
+    local ITEM
+    printf -v ITEM "%s-include='%s'" '-' "$script_option_INCLUDE"
+    includes+=" ${ITEM}"
 }
 
 #page
@@ -95,8 +143,7 @@ function script_option_update_include () {
 
 function main () {
     local M4_FLAGS='--prefix-builtins'
-    local PREPROCESSOR=${hidden_option_DATADIR}/preprocessor.m4
-
+    local PREPROCESSOR=${PACKAGE_DATADIR}/preprocessor.m4
 
     M4_FLAGS+=" ${includes} ${symbols}"
     if { test "$script_option_NO_PREPROCESSOR" = no && mbfl_file_is_readable "$PREPROCESSOR"; }
@@ -116,8 +163,14 @@ function main () {
     	    then printf '#!%s\n' "$BASH"
             fi
             if test "$script_option_PRESERVE_COMMENTS" = 'yes'
-    	    then program_m4 ${M4_FLAGS} -
-            else program_m4 ${M4_FLAGS} - | filter_drop_comments
+    	    then program_m4 \
+		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$PACKAGE_DATADIR" \
+		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
+		     ${M4_FLAGS} -
+            else program_m4 \
+		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$PACKAGE_DATADIR" \
+		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
+		     ${M4_FLAGS} - | filter_drop_comments
             fi
     	} | {
             if test "$script_option_EVAL" = 'yes'

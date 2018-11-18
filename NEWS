@@ -27,6 +27,9 @@ changes!
 
      m4_changequote(`[[[', `]]]')
 
+* Added preprocessor macros to  automatically include the library loader
+  and automatically embed the whole library in the output script.
+
 * Added string functions:
 
     mbfl_string_is_empty
@@ -64,6 +67,11 @@ changes!
   The "_var" variants are always a bit faster because the output variant
   is a wrapper for the "_var" variant.
 
+* Added functions to the file module:
+
+    mbfl_file_realpath
+    mbfl_file_realpath_var
+
 * BACKWARDS INCOMPATIBILITY The following  functions now use the program
   "stat":
 
@@ -80,11 +88,6 @@ changes!
   underlying programs.
 
 * Added support to compress/decompress with lzip and xz.
-
-* Added file functions:
-
-    mbfl_file_realpath
-    mbfl_file_realpath_var
 
 * Added functions to the program module:
 

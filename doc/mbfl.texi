@@ -307,9 +307,8 @@ automatically include it in a script with the preprocessor macro @code{mbfl_libr
 @section Direct inclusion
 
 
-Another solution is to directly include the library in the script; this
-is easy if we preprocess our scripts with @gnu{} @mfour{}.  We only need
-to put the following in the script:
+Another solution is to directly include the library in the script; this is easy if we preprocess our
+scripts with @gnu{} @mfour{}.  We only need to put the following in the script:
 
 @example
 m4_include(libmbfl.sh)
@@ -324,13 +323,11 @@ $ m4 --prefix-builtins --include=/path/to/library \
 @end example
 
 @noindent
-easy to do in a @file{Makefile}.  The installation directory pathname of
-the library (@file{/path/to/library} in the example) is the output of
-@code{mbfl-config --libpath}.
+easy to do in a @file{Makefile}.  The installation directory pathname of the library
+(@file{/path/to/library} in the example) is the output of @code{mbfl-config --libpath}.
 
-It is also interesting to process the script with the following rule of
-@gnu{} Make: assuming that the source scripts are in the
-@file{src/modules} directory of the source tree:
+It is also interesting to process the script with the following rule of @gnu{} Make: assuming that
+the source scripts are in the @file{src/modules} directory of the source tree:
 
 @example
 vpath	%.sh.m4		$(srcdir)/src/modules
@@ -345,13 +342,12 @@ M4FLAGS = --prefix-builtins --include=/path/to/library
 @end example
 
 @noindent
-this will remove all the comments and blank lines, decreasing the size
-of the script significantly if one makes use of verbose comments; note
-that this will wipe out the @code{#!/bin/bash} first line, too.
+this will remove all the comments and blank lines, decreasing the size of the script significantly
+if one makes use of verbose comments; note that this will wipe out the @code{#!/bin/bash} first
+line, too.
 
-Usually we want the script to begin with @code{#!/bin/bash} followed by
-a comment describing the license terms.  We can do it by preparing a
-script like the following:
+Usually we want the script to begin with @code{#!/bin/bash} followed by a comment describing the
+license terms.  We can do it by preparing a script like the following:
 
 @example
 #!/bin/bash
@@ -376,8 +372,8 @@ script.sh: script.sh.m4 realscript.sh
 @noindent
 @file{realscript.sh} can be processed as explained above.
 
-At this point, though, it is better to use the @mbfl{} preprocessor.
-@ref{preprocessor, Using the script preprocessor}.
+At this point, though, it is better to use the @mbfl{} preprocessor.  @ref{preprocessor, Using the
+script preprocessor}.
 
 @c page
 @node overview interactive
@@ -585,6 +581,37 @@ The quoting for the preprocessor is changed with:
 @example
 m4_changequote(`[[[', `]]]')
 @end example
+
+
+@deffn {Preprocessor Macro} __PACKAGE_VERSION__
+Expands into the version number of this package.
+@end deffn
+
+
+@deffn {Preprocessor Macro} __PACKAGE_DATADIR__
+Expands into the absolute pathname of the directory under which the @value{PACKAGE} library is
+installed.  For example:
+
+@example
+/usr/local/share/mbfl
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} __MBFL_LIBRARY__
+Expands into the absolute pathname of the @value{PACKAGE} library file.  For example:
+
+@example
+/usr/local/share/mbfl/libmbfl.sh
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_embed_library
+Expands into the contents of the library file.  The selected library is the one used by the
+preprocessor script @command{mbflpp.sh} itself.  The resulting output script does not need to load
+the library at runtime; let's say it is ``statically linked''.
+@end deffn
 
 
 @deffn {Preprocessor Macro} mbfl_library_loader (@var{hardcoded_pathname})

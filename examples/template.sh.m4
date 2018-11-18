@@ -52,9 +52,9 @@ script_EXAMPLES="Usage examples:
 \t${script_PROGNAME} --alpha"
 
 #page
-#### library loading
+#### library embedding
 
-mbfl_library_loader
+mbfl_embed_library
 
 #page
 #### declare external programs usage

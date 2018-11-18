@@ -166,7 +166,10 @@ CHECK_EXAMPLES		= \
 SOME_EXAMPLES	= \
 	examples/at.sh			\
 	examples/pwentries.sh		\
-	examples/sendmail-mbfl.sh
+	examples/sendmail-mbfl.sh	\
+	examples/compress.sh		\
+	examples/template.sh		\
+	examples/template-actions.sh
 
 check_SCRIPTS		= $(CHECK_EXAMPLES)
 noinst_SCRIPTS		= $(SOME_EXAMPLES)
@@ -176,7 +179,7 @@ CLEANFILES		+= $(CHECK_EXAMPLES) $(SOME_EXAMPLES) examples/$(am__dirstamp)
 MBFL_EXAMPLES_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
 MBFL_EXAMPLES_ENV	= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBRARY); export MBFL_LIBRARY;
 MBFL_EXAMPLES_PREPRO	= $(builddir)/src/scripts/mbflpp.sh
-MBFL_EXAMPLES_PPFLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 --add-bash
+MBFL_EXAMPLES_PPFLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 --add-bash $(MBFLPPFLAGS)
 MBFL_EXAMPLES_RUNPP	= $(MBFL_EXAMPLES_ENV) $(BASH_PROGRAM) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_PPFLAGS)
 MBFL_EXAMPLES_PREREQ	= examples/$(am__dirstamp) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_LIBRARY)
 

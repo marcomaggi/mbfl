@@ -65,5 +65,7 @@ then
 fi
 ]]])
 
+m4_define([[[mbfl_embed_library]]],[[[m4_include(__MBFL_LIBRARY__)]]])
+
 m4_dnl end of file
 m4_divert(0)m4_dnl
