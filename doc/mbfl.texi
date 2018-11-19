@@ -4772,6 +4772,18 @@ obtain indexes with the functions described in @ref{system passwd searching, Sea
 Print to @code{stdout} the field name of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
+
+@example
+local IDX NAME
+
+mbfl_system_passwd_read
+if mbfl_system_passwd_find_entry_by_name_var IDX root
+then
+    if mbfl_system_passwd_get_name_var NAME $IDX
+    then echo "$NAME"
+    fi
+fi
+@end example
 @end defun
 
 
