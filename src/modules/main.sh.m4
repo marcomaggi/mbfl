@@ -8,7 +8,8 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright   (c)    2004-2005,   2009,    2013,   2018    Marco   Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -31,7 +32,7 @@
 
 if test "$mbfl_INTERACTIVE" != yes
 then
-    mbfl_option_TMPDIR=${TMPDIR:-/tmp/${USER}}
+    declare mbfl_option_TMPDIR=${TMPDIR:-/tmp/${USER}}
     declare -r mbfl_ORG_PWD=$PWD
 
     declare -i ARGC=0 ARGC1=0 ARG1ST=0
@@ -47,7 +48,7 @@ then
     # is requested.  This  value can be customised by both  the MBFL and
     # the user script by calling the function "mbfl_main_set_main()".
     #
-    mbfl_main_SCRIPT_FUNCTION=main
+    declare mbfl_main_SCRIPT_FUNCTION=main
 
     # The name of  the main function to be called  whtn a special action
     # is requested, for example: printing the required external programs
@@ -58,21 +59,21 @@ then
     # When  this variable  is  not set  to the  empty  string: it  takes
     # precedence over the value selected by "mbfl_main_SCRIPT_FUNCTION".
     #
-    mbfl_main_PRIVATE_SCRIPT_FUNCTION=
+    declare mbfl_main_PRIVATE_SCRIPT_FUNCTION=
 
     # The name of the function to be called right before parsing command
     # line options.  This  value can be customised by both  the MBFL and
     # the      user     script      by     calling      the     function
     # "mbfl_main_set_before_parsing_options()".
     #
-    mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS=script_before_parsing_options
+    declare mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS=script_before_parsing_options
 
     # The name of the function to  be called right after parsing command
     # line options.  This  value can be customised by both  the MBFL and
     # the      user     script      by     calling      the     function
     # "mbfl_main_set_before_parsing_options()".
     #
-    mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=script_after_parsing_options
+    declare mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=script_after_parsing_options
 fi
 
 function mbfl_main_set_main () {
@@ -146,14 +147,14 @@ function exit_failure () {
 function mbfl_main_declare_exit_code () {
     mbfl_mandatory_parameter(CODE, 1, exit code)
     mbfl_mandatory_parameter(DESCRIPTION, 2, exit code name)
-    local i=${#mbfl_main_EXIT_CODES[@]}
+    local -i i=${#mbfl_main_EXIT_CODES[@]}
     mbfl_main_EXIT_NAMES[$i]=$DESCRIPTION
     mbfl_main_EXIT_CODES[$i]=$CODE
 }
 function mbfl_main_create_exit_functions () {
     local -i i
     local name
-    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do
         name=exit_because_${mbfl_main_EXIT_NAMES[${i}]}
         eval function "$name" "()" "{ exit ${mbfl_main_EXIT_CODES[${i}]}; }"
@@ -161,24 +162,28 @@ function mbfl_main_create_exit_functions () {
 }
 function mbfl_main_list_exit_codes () {
     local -i i
-    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do printf '%d %s\n' ${mbfl_main_EXIT_CODES[${i}]} ${mbfl_main_EXIT_NAMES[${i}]}
     done
 }
 function mbfl_main_print_exit_code () {
     mbfl_mandatory_parameter(NAME, 1, exit code name)
     local -i i
-    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
-    do test "${mbfl_main_EXIT_NAMES[${i}]}" = "$NAME" && \
-        printf '%d\n' ${mbfl_main_EXIT_CODES[${i}]}
+    for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    do
+	if test "${mbfl_main_EXIT_NAMES[${i}]}" = "$NAME"
+	then printf '%d\n' ${mbfl_main_EXIT_CODES[${i}]}
+	fi
     done
 }
 function mbfl_main_print_exit_code_names () {
     mbfl_mandatory_parameter(CODE, 1, exit code)
     local -i i
-    for ((i=0; $i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
-    do test "${mbfl_main_EXIT_CODES[${i}]}" = "$CODE" && \
-        printf '%s\n' ${mbfl_main_EXIT_NAMES[${i}]}
+    for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    do
+	if test "${mbfl_main_EXIT_CODES[${i}]}" = "$CODE"
+	then printf '%s\n' ${mbfl_main_EXIT_NAMES[${i}]}
+	fi
     done
 }
 
@@ -363,11 +368,11 @@ function mbfl_main_print_license () {
     exit_success
 }
 function mbfl_main_print_usage_screen_long () {
-    if test -n "$script_USAGE"
+    if mbfl_string_is_not_empty "$script_USAGE"
     then printf '%s\n' "$script_USAGE"
     else printf 'usafe: %s [arguments]\n' "$script_PROGNAME"
     fi
-    if test -n "$script_DESCRIPTION"
+    if mbfl_string_is_not_empty "$script_DESCRIPTION"
     then
 	# Use the variable  as first argument to "printf"  to expand the
 	# escaped characters.
@@ -375,7 +380,7 @@ function mbfl_main_print_usage_screen_long () {
     fi
     mbfl_actions_print_usage_screen
     mbfl_getopts_print_usage_screen long
-    if test -n "$script_EXAMPLES"
+    if mbfl_string_is_not_empty "$script_EXAMPLES"
     then
 	# Use the variable  as first argument to "printf"  to expand the
 	# escaped characters.
@@ -384,11 +389,11 @@ function mbfl_main_print_usage_screen_long () {
     exit_success
 }
 function mbfl_main_print_usage_screen_brief () {
-    if test -n "$script_USAGE"
+    if mbfl_string_is_not_empty "$script_USAGE"
     then printf '%s\n' "$script_USAGE"
     else printf 'usafe: %s [arguments]\n' "$script_PROGNAME"
     fi
-    if test -n "$script_DESCRIPTION"
+    if mbfl_string_is_not_empty "$script_DESCRIPTION"
     then
 	# Use the variable  as first argument to "printf"  to expand the
 	# escaped characters.
@@ -396,7 +401,7 @@ function mbfl_main_print_usage_screen_brief () {
     fi
     mbfl_actions_print_usage_screen
     mbfl_getopts_print_usage_screen brief
-    if test -n "$script_EXAMPLES"
+    if mbfl_string_is_not_empty "$script_EXAMPLES"
     then
 	# Use the variable  as first argument to "printf"  to expand the
 	# escaped characters.
@@ -420,12 +425,16 @@ function mbfl_main () {
 	then exit_failure
 	fi
     fi
-    mbfl_invoke_script_function $mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS || exit_failure
+    if ! mbfl_invoke_script_function $mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS
+    then exit_failure
+    fi
     if ! mbfl_getopts_parse
     then exit_because_invalid_option_argument
     fi
-    mbfl_invoke_script_function $mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS || exit_failure
-    if test -n "$mbfl_main_PRIVATE_SCRIPT_FUNCTION"
+    if ! mbfl_invoke_script_function $mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS
+    then exit_failure
+    fi
+    if mbfl_string_is_not_empty "$mbfl_main_PRIVATE_SCRIPT_FUNCTION"
     then mbfl_invoke_existent_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
     else mbfl_invoke_existent_script_function $mbfl_main_SCRIPT_FUNCTION
     fi
@@ -436,7 +445,7 @@ function mbfl_main () {
 #
 function mbfl_invoke_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if test "$(type -t $FUNC)" = 'function'
+    if mbfl_string_equal "$(type -t $FUNC)" 'function'
     then $FUNC
     else return 0
     fi
@@ -446,7 +455,7 @@ function mbfl_invoke_script_function () {
 #
 function mbfl_invoke_existent_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if test "$(type -t $FUNC)" = 'function'
+    if mbfl_string_equal "$(type -t $FUNC)" 'function'
     then $FUNC
     else
 	mbfl_message_error_printf 'internal error: request to call non-existent function \"%s\"' "$FUNC"
