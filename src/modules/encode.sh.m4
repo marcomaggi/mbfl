@@ -7,8 +7,8 @@
 # Abstract
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
-#
+# Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -28,18 +28,20 @@
 
 function mbfl_decode_hex () {
     mbfl_mandatory_parameter(INPUT, 1, input string)
+    local -i i
 
-    for ((i=0; $i < ${#INPUT}; i=$(($i + 2)))) ; do
-        echo -en "\\x${INPUT:$i:2}"
+    for ((i=0; i < ${#INPUT}; i=$((i + 2))))
+    do echo -en "\\x${INPUT:$i:2}"
     done
     echo;# to end the line and let "read" acquire the stuff from a pipeline
 }
 
 function mbfl_decode_oct () {
     mbfl_mandatory_parameter(INPUT, 1, input string)
+    local -i i
 
-    for ((i=0; $i < ${#INPUT}; i=$(($i + 3)))) ; do
-        echo -en "\\0${INPUT:$i:3}"
+    for ((i=0; i < ${#INPUT}; i=$((i + 3))))
+    do echo -en "\\0${INPUT:$i:3}"
     done
     echo;# to end the line and let "read" acquire the stuff from a pipeline
 }
