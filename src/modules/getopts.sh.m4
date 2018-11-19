@@ -257,7 +257,7 @@ function mbfl_getopts_p_process_script_option () {
         if test \( -n "$OPT" \) -a \
 		\( \( -n "$brief" -a "$brief" = "$OPT" \) -o \( -n "$long" -a "$long" = "$OPT" \) \)
 	then
-            if test "$hasarg" = "witharg"
+            if mbfl_string_equal "$hasarg" "witharg"
             then
 		if mbfl_string_is_empty "$OPTARG"
 		then
@@ -271,7 +271,7 @@ function mbfl_getopts_p_process_script_option () {
             else value=yes
             fi
             mbfl_string_tolower_var tolower_keyword ${keyword}
-            if test ${keyword:0:7} = ACTION_
+            if mbfl_string_equal ${keyword:0:7} ACTION_
 	    then mbfl_main_set_main script_${tolower_keyword}
 	    fi
             update_procedure=script_option_update_${tolower_keyword}
