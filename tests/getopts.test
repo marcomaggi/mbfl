@@ -10,7 +10,7 @@
 #
 #		$ TESTMATCH=getopts- bash getopts.test
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018 Marco Maggi
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -29,13 +29,11 @@
 #
 
 #PAGE
-## ------------------------------------------------------------
-## Setup.
-## ------------------------------------------------------------
+#### setup
 
 source setup.sh
 
-#PAGE
+#page
 
 function getopts-1.1 () { mbfl_getopts_islong --option; }
 function getopts-1.2 () { ! mbfl_getopts_islong -option;  }
@@ -49,7 +47,7 @@ function getopts-1.7 () {
     dotest-equal option $name
 }
 
-#PAGE
+#page
 
 function getopts-2.1 () { mbfl_getopts_islong_with --option=one ; }
 function getopts-2.2 () { ! mbfl_getopts_islong_with --option ; }
@@ -76,7 +74,7 @@ function getopts-2.7 () {
 }
 function getopts-2.8 () { ! mbfl_getopts_islong_with --afasd= ; }
 
-#PAGE
+#page
 
 function getopts-3.1 () { mbfl_getopts_isbrief -a; }
 function getopts-3.2 () { ! mbfl_getopts_isbrief -aa; }
@@ -117,16 +115,16 @@ function getopts-5.4 () {
 #page
 
 function getopts-6.1 () {
-    mbfl_declare_option A a o option wappa 'an option' 2>&1 | dotest-output \
-	"<unknown>: error: wrong value 'wappa' to hasarg field in option declaration number 1"
+    mbfl_declare_option A a o option wappa 'an option' 2>&1 | \
+	dotest-output '<unknown>: error: wrong value "wappa" to hasarg field in option declaration number 1'
 }
 function getopts-6.2 () {
-    mbfl_declare_option A a o option noarg 'an option' 2>&1| dotest-output \
-	"<unknown>: error: wrong value 'a' as default for option with no argument number 1"
+    mbfl_declare_option A a o option noarg 'an option' 2>&1 | \
+	dotest-output '<unknown>: error: wrong value "a" as default for option with no argument number 1'
 }
 function getopts-6.3 () {
-    mbfl_declare_option ACTION_DELTA no o option witharg 'an option' 2>&1 | dotest-output \
-        "<unknown>: error: action option must be with no argument 'ACTION_DELTA'"
+    mbfl_declare_option ACTION_DELTA no o option witharg 'an option' 2>&1 | \
+	dotest-output '<unknown>: error: action option must be with no argument "ACTION_DELTA"'
 }
 
 #page

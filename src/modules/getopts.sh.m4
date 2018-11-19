@@ -12,7 +12,8 @@
 #         Support for encoded argument values is provided and requires
 #       the "encode.sh" file to be included in the script.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -102,55 +103,59 @@ fi
 
 #page
 function mbfl_declare_option () {
-    local keyword=$1 tolower_keyword
+    mbfl_mandatory_parameter(keyword, 1, option declaration keyword)
     local default=$2
     local brief=$3
     local long=$4
-    local hasarg=$5
-    local description=$6
-    local index=$(($mbfl_getopts_INDEX + 1))
+    mbfl_mandatory_parameter(hasarg, 5, option declaration hasarg selection)
+    mbfl_mandatory_parameter(description, 6, option declaration decription)
+    local tolower_keyword toupper_keyword
+    local -ri index=$((1 + mbfl_getopts_INDEX))
 
-    mbfl_p_declare_option_test_length $keyword keyword $index
-    mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=$(mbfl_string_toupper "$keyword")
+    mbfl_p_declare_option_test_length "$keyword" 'keyword' $index
+
+    mbfl_string_toupper_var toupper_keyword $keyword
+    mbfl_string_tolower_var tolower_keyword $keyword
+
+    mbfl_getopts_KEYWORDS[$mbfl_getopts_INDEX]=$toupper_keyword
     mbfl_getopts_BRIEFS[$mbfl_getopts_INDEX]=$brief
     mbfl_getopts_LONGS[$mbfl_getopts_INDEX]=$long
 
-    mbfl_p_declare_option_test_length $hasarg hasarg $index
-    if test "$hasarg" != witharg -a "$hasarg" != noarg
+    mbfl_p_declare_option_test_length "$hasarg" 'hasarg' $index
+    if { mbfl_string_not_equal "$hasarg" 'witharg' && mbfl_string_not_equal "$hasarg" 'noarg'; }
     then
-        mbfl_message_error \
-            "wrong value '$hasarg' to hasarg field in option declaration number $index"
+        mbfl_message_error_printf 'wrong value "%s" to hasarg field in option declaration number %d' "$hasarg" $index
         exit_because_invalid_option_declaration
     fi
     mbfl_getopts_HASARG[$mbfl_getopts_INDEX]=$hasarg
 
-    if test "$hasarg" = noarg -a "$default" != yes -a "$default" != no
+    if { mbfl_string_equal "$hasarg" 'noarg' && \
+	     mbfl_string_not_equal "$default" 'yes' && \
+	     mbfl_string_not_equal "$default" 'no'; }
     then
-        mbfl_message_error "wrong value '$default' as default for option with no argument number $index"
+        mbfl_message_error_printf 'wrong value "%s" as default for option with no argument number %d' "$default" $index
         exit_because_invalid_option_declaration
     fi
     mbfl_getopts_DEFAULTS[$mbfl_getopts_INDEX]=$default
 
-    mbfl_p_declare_option_test_length $description description $index
+    mbfl_p_declare_option_test_length "$description" 'description' $index
     mbfl_getopts_DESCRIPTION[$mbfl_getopts_INDEX]=$description
 
     mbfl_getopts_INDEX=$index
 
     # Create the global option variable
-    eval script_option_$(mbfl_string_toupper $keyword)=\'"$default"\'
+    eval script_option_${toupper_keyword}=\'"$default"\'
 
     # Process action option.
-    if test ${keyword:0:7} = ACTION_
+    if mbfl_string_equal ${keyword:0:7} 'ACTION_'
     then
-        if test "$hasarg" = noarg
+        if mbfl_string_equal "$hasarg" 'noarg'
         then
-            if test "$default" = yes
-            then
-		mbfl_string_tolower_var tolower_keyword $keyword
-		mbfl_main_set_main script_${tolower_keyword}
+            if mbfl_string_equal "$default" 'yes'
+            then mbfl_main_set_main script_${tolower_keyword}
             fi
         else
-            mbfl_message_error "action option must be with no argument '$keyword'"
+            mbfl_message_error_printf 'action option must be with no argument "%s"' $keyword
             return 1
         fi
     fi
@@ -158,14 +163,16 @@ function mbfl_declare_option () {
 }
 function mbfl_p_declare_option_test_length () {
     local value=$1
-    local value_name=$2
-    local option_number=$3
+    mbfl_mandatory_parameter(value_name, 2, value name)
+    mbfl_mandatory_integer_parameter(option_number, 3, ciao number)
+
     if mbfl_string_is_empty "$value"
     then
-        mbfl_message_error "null $value_name in declared option number $option_number"
+        mbfl_message_error_printf 'null "%s" in declared option number %d' "$value_name" $option_number
         exit_because_invalid_option_declaration
     fi
 }
+
 #page
 function mbfl_getopts_parse () {
     local p_OPT= p_OPTARG= argument=
