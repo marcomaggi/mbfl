@@ -4371,26 +4371,27 @@ If the initial value of the offset corresponds to a char equal to
 
 @defun mbfl_dialog_yes_or_no @var{string}
 @defunx mbfl_dialog_yes_or_no @var{string} @var{progname}
-Print the question @var{string} on the standard output and wait for the
-user to type @code{yes} or @code{no} in the standard input.  Return true
-if the user has typed @code{yes}, false if the user has typed @code{no}.
+Print the question @var{string} on the standard output and wait for the user to type @code{yes} or
+@code{no} in the standard input.  Return true if the user has typed @code{yes}, false if the user
+has typed @code{no}.
 
-The optional parameter @var{progname} is used as prefix for the prompt;
-if not given: It defaults to the value of @code{script_PROGNAME}.
-@ref{service variables, Required user defined variables}.
+The optional parameter @var{progname} is used as prefix for the prompt; if not given: It defaults to
+the value of @code{script_PROGNAME}.  @ref{service variables, Required user defined variables}.
 @end defun
 
 
 @defun mbfl_dialog_enable_programs
-Declare the usage of the external program @command{stty}, which is used
-by @bfunc{mbfl_dialog_ask_password} to turn of password echoing on the
-terminal.
+Declare the usage of the external program @command{stty}, which is used by
+@bfunc{mbfl_dialog_ask_password} to turn of password echoing on the terminal.
 @end defun
 
 
 @defun mbfl_dialog_ask_password @var{prompt}
-Print @var{prompt} followed by a colon and a space, then reads a
-password from the terminal.  Print the password.
+@defunx mbfl_dialog_ask_password_var @var{RV} @var{prompt}
+Print @var{prompt} followed by a colon and a space, then reads a password from the terminal.  Print
+the password.
+
+@DocVarVariant{}
 @end defun
 
 @c page
@@ -4642,32 +4643,202 @@ mbfl_array_length_var RV ARRY
 
 
 @defun mbfl_system_enable_programs
-Declare the intention to use the programs required by this module.
-@ref{program declaring, Declaring the intention to use a program}.
+Declare the intention to use the programs required by this module.  @ref{program declaring,
+Declaring the intention to use a program}.
 
-Required programs are: @command{grep}, @command{cut}.
+As of version @value{VERSION}: this function does nothing; it is still here for backwards
+compatibility.
 @end defun
 
 
 @menu
+* system passwd::               Reading and searching the file
+                                @file{/etc/passwd}.
 * system user id::              Converting user identifiers.
 * system file perms::           Converting file permissions.
 @end menu
+
+@c page
+@node system passwd
+@section Reading and searching the file @file{/etc/passwd}
+
+
+@menu
+* system passwd reading::       Reading the file @file{passwd}.
+* system passwd printing::      Printing entries from @file{passwd}.
+* system passwd searching::     Searching entries from @file{passwd}.
+* system passwd inspect::       Inspecting entries from @file{passwd}.
+@end menu
+
+@c page
+@node system passwd reading
+@subsection Reading the file @file{passwd}
+
+
+@defun mbfl_system_passwd_read
+Read the file @file{/etc/passwd} and store the resulting fields in an internal global array
+variable.  Only the first call to this function will actually read the file, unless
+@bfunc{mbfl_system_passwd_reset} has been called.
+@end defun
+
+
+@defun mbfl_system_passwd_reset
+Reset the internal state so that the next call to @bfunc{mbfl_system_passwd_read} will actually
+load, or reaload, the contents of @file{/etc/passwd}.
+@end defun
+
+
+@c page
+@node system passwd printing
+@subsection Printing entries from @file{passwd}
+
+
+We are meant to call these function after a call to @bfunc{mbfl_system_passwd_read}.
+
+
+@defun mbfl_system_passwd_print_entries
+Print to @code{stdout} the entries of @file{passwd}, one per line.  The format of each line is:
+
+@example
+name='root' passwd='x' uid=0 gid=0 gecos='' dir='/root' \
+shell='/bin/bash'
+@end example
+@end defun
+
+
+@defun mbfl_system_passwd_print_entries_as_xml
+Print to @code{stdout} the entries of @file{passwd}, one per line, in @acronym{XML} format.  The
+format of each line is:
+
+@example
+<entry name='root' passwd='x' uid='0' gid='0' gecos='' \
+dir='/root' shell='/bin/bash'/>
+@end example
+@end defun
+
+
+@defun mbfl_system_passwd_print_entries_as_json
+Print to @code{stdout} the entries of @file{passwd}, one per line, in @acronym{JSON} format.  The
+format of each line is:
+
+@example
+"entry": @{ "name": "root", "passwd": "x", "uid": 0, "gid": 0, \
+"gecos": "", "dir": "/root", "shell": "/bin/bash" @}
+@end example
+@end defun
+
+@c page
+@node system passwd searching
+@subsection Searching entries from @file{passwd}
+
+
+We are meant to call these function after a call to @bfunc{mbfl_system_passwd_read}.  The following
+functions inspect entries from @file{/etc/passwd} and locate them using numeric indexes; such
+indexes are valid only until the next call to @bfunc{mbfl_system_passwd_reset}.
+
+
+@defun mbfl_system_passwd_find_entry_by_name @var{name}
+@defunx mbfl_system_passwd_find_entry_by_name_var @var{RV} @var{name}
+Search the entries of @file{passwd} for one whose user name is @var{name}.  When successful: print
+to @code{stdout} the index of the entry and return true; otherwise return false.  We can use the
+index with the functions described in @ref{system passwd inspect, Inspecting entries from
+@file{passwd}}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_passwd_find_entry_by_uid @var{uid}
+@defunx mbfl_system_passwd_find_entry_by_uid_var @var{RV} @var{uid}
+Search the entries of @file{passwd} for one whose user id is @var{uid}.  When successful: print to
+@code{stdout} the index of the entry and return true; otherwise return false.  We can use the index
+with the functions described in @ref{system passwd inspect, Inspecting entries from @file{passwd}}.
+
+@DocVarVariant{}
+@end defun
+
+@c page
+@node system passwd inspect
+@subsection Inspecting entries from @file{passwd}
+
+
+The following functions inspect entries from @file{/etc/passwd} using an index argument; we must
+obtain indexes with the functions described in @ref{system passwd searching, Searching entries from
+@file{passwd}}.
+
+
+@defun mbfl_system_passwd_get_name @var{idx}
+@defunx mbfl_system_passwd_get_name_var @var{RV} @var{idx}
+Print to @code{stdout} the field name of the @file{passwd} entry at index @var{idx}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_passwd_get_passwd @var{idx}
+@defunx mbfl_system_passwd_get_passwd_var @var{RV} @var{idx}
+Print to @code{stdout} the field passwd of the @file{passwd} entry at index @var{idx}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_passwd_get_uid @var{idx}
+@defunx mbfl_system_passwd_get_uid_var @var{RV} @var{idx}
+Print to @code{stdout} the field uid of the @file{passwd} entry at index @var{idx}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_passwd_get_gid @var{idx}
+@defunx mbfl_system_passwd_get_gid_var @var{RV} @var{idx}
+Print to @code{stdout} the field gid of the @file{passwd} entry at index @var{idx}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_passwd_get_gecos @var{idx}
+@defunx mbfl_system_passwd_get_gecos_var @var{RV} @var{idx}
+Print to @code{stdout} the field gecos of the @file{passwd} entry at index @var{idx}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_passwd_get_dir @var{idx}
+@defunx mbfl_system_passwd_get_dir_var @var{RV} @var{idx}
+Print to @code{stdout} the field dir of the @file{passwd} entry at index @var{idx}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_passwd_get_shell @var{idx}
+@defunx mbfl_system_passwd_get_shell_var @var{RV} @var{idx}
+Print to @code{stdout} the field shell of the @file{passwd} entry at index @var{idx}.
+
+@DocVarVariant{}
+@end defun
 
 @c page
 @node system user id
 @section Converting user identifiers
 
 
+We are meant to call these function after a call to @bfunc{mbfl_system_passwd_read}; @ref{system
+passwd reading, Reading the file @file{passwd}}.
+
+
 @defun mbfl_system_numerical_user_id_to_name @var{id}
-Convert the numerical user @var{id} to the user name found in the
-@file{/etc/passwd} file.
+Convert the numerical user @var{id} to the user name found in the @file{/etc/passwd} file.
 @end defun
 
 
 @defun mbfl_system_numerical_user_id_to_name @var{name}
-Convert the symbolic user @var{name} to the numerical identifier found
-in the @file{/etc/passwd} file.
+Convert the symbolic user @var{name} to the numerical identifier found in the @file{/etc/passwd}
+file.
 @end defun
 
 @c page

@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2005, 2013, 2018 Marco Maggi
+# Copyright (c) 2005, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -26,58 +26,103 @@
 #
 
 #PAGE
-## ------------------------------------------------------------
-## Setup.
-## ------------------------------------------------------------
+#### setup
 
 source setup.sh
 
-#PAGE
-## ------------------------------------------------------------
-## User identifier functions.
-## ------------------------------------------------------------
+#page
+#### searching user names in passwd: by name
 
-function system-1.1 () {
-    mbfl_system_enable_programs
-    mbfl_system_numerical_user_id_to_name 0 | dotest-output 'root'
+function system-passwd-find-entry-by-name-var-1.1 () {
+    local IDX NAME
+    mbfl_system_passwd_read
+    if mbfl_system_passwd_find_entry_by_name_var IDX root
+    then
+	if mbfl_system_passwd_get_name_var NAME $IDX
+	then dotest-equal root "$NAME"
+	else return 1
+	fi
+    else return 1
+    fi
 }
-# function system-1.2 () {
-#     mbfl_system_enable_programs
-#     mbfl_system_numerical_user_id_to_name 1000 | dotest-output "$USER"
-# }
 
-function system-2.1 () {
-    mbfl_system_enable_programs
-    mbfl_system_user_name_to_numerical_id 'root' | dotest-output '0'
-}
-function system-2.2 () {
-    mbfl_system_enable_programs
-    mbfl_system_user_name_to_numerical_id 'daemon' | dotest-output '1'
+### ------------------------------------------------------------------------
+
+function system-passwd-find-entry-by-name-1.1 () {
+    local IDX NAME
+    mbfl_system_passwd_read
+    if IDX=$(mbfl_system_passwd_find_entry_by_name root)
+    then
+	if NAME=$(mbfl_system_passwd_get_name $IDX)
+	then dotest-equal root "$NAME"
+	else return 1
+	fi
+    else return 1
+    fi
 }
 
 #page
-## ------------------------------------------------------------
-## File permissions functions.
-## ------------------------------------------------------------
+#### searching user names in passwd: by name
 
-function system-2.1 () {
+function system-passwd-find-entry-by-uid-var-1.1 () {
+    local IDX NAME
+    mbfl_system_passwd_read
+    if mbfl_system_passwd_find_entry_by_uid_var IDX 0
+    then
+	if mbfl_system_passwd_get_name_var NAME $IDX
+	then dotest-equal root "$NAME"
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-passwd-find-entry-by-uid-1.1 () {
+    local IDX NAME
+    mbfl_system_passwd_read
+    if IDX=$(mbfl_system_passwd_find_entry_by_uid 0)
+    then
+	if NAME=$(mbfl_system_passwd_get_name $IDX)
+	then dotest-equal root "$NAME"
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+#PAGE
+#### user identifier functions
+
+function system-name-to-uid-1.1 () {
+    mbfl_system_passwd_read
+    mbfl_system_numerical_user_id_to_name 0 | dotest-output 'root'
+}
+
+function system-name-to-uid-2.1 () {
+    mbfl_system_passwd_read
+    mbfl_system_user_name_to_numerical_id 'root' | dotest-output '0'
+}
+
+#page
+#### file permissions functions
+
+function system-symbolic-to-octal-1.1 () {
     mbfl_system_symbolic_to_octal_permissions 'rwx' | dotest-output '7'
 }
-function system-2.2 () {
+function system-symbolic-to-octal-1.2 () {
     mbfl_system_symbolic_to_octal_permissions 'r-x' | dotest-output '5'
 }
-function system-2.3 () {
+function system-symbolic-to-octal-1.3 () {
     mbfl_system_octal_to_symbolic_permissions '7' | dotest-output 'rwx'
 }
-function system-2.4 () {
+function system-symbolic-to-octal-1.4 () {
     mbfl_system_octal_to_symbolic_permissions '5' | dotest-output 'r-x'
 }
 
-
 #PAGE
-## ---------------------------------------------------------
-## End of tests.
-## ---------------------------------------------------------
+#### end of tests
 
 dotest system-
 dotest-final-report

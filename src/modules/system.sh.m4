@@ -8,7 +8,8 @@
 #
 #
 #
-# Copyright (c) 2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright    (c)    2005,    2009,     2013,    2018    Marco    Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -30,28 +31,40 @@
 #### reading entries from /etc/passwd
 
 declare -A mbfl_system_PASSWD_ENTRIES
-declare -i mbfl_system_PASSWD_COUNT
+declare -i mbfl_system_PASSWD_COUNT=0
 
-function mbfl_system_passwd_read () {
-    local LINE
-
+function mbfl_system_passwd_reset () {
     # Reset the array to empty.
     mbfl_system_PASSWD_ENTRIES=()
     mbfl_system_PASSWD_COUNT=0
-
-    while IFS= read LINE
-    do
-	mbfl_string_split "$LINE" :
-	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:name"]=${SPLITFIELD[0]}
-	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:passwd"]=${SPLITFIELD[1]}
-	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:uid"]=${SPLITFIELD[2]}
-	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gid"]=${SPLITFIELD[3]}
-	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gecos"]=${SPLITFIELD[4]}
-	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:dir"]=${SPLITFIELD[5]}
-	mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:shell"]=${SPLITFIELD[6]}
-	let ++mbfl_system_PASSWD_COUNT
-    done </etc/passwd
 }
+
+function mbfl_system_passwd_read () {
+    if ((0 == mbfl_system_PASSWD_COUNT))
+    then
+	local LINE REX='([a-zA-Z0-9_\-]+):([a-zA-Z0-9_\-]+):([0-9]+):([0-9]+):([a-zA-Z0-9_/\-]*):([a-zA-Z0-9_/\-]+):([a-zA-Z0-9_/\-]+)'
+
+	while IFS= read LINE
+	do
+	    if [[ $LINE =~ $REX ]]
+	    then
+		mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:name"]=${BASH_REMATCH[1]}
+		mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:passwd"]=${BASH_REMATCH[2]}
+		mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:uid"]=${BASH_REMATCH[3]}
+		mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gid"]=${BASH_REMATCH[4]}
+		mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gecos"]=${BASH_REMATC[5]}
+		mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:dir"]=${BASH_REMATCH[6]}
+		mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:shell"]=${BASH_REMATCH[7]}
+		let ++mbfl_system_PASSWD_COUNT
+	    else
+		:
+	    fi
+	done </etc/passwd
+    fi
+}
+
+#page
+#### reading entries from /etc/passwd
 
 function mbfl_system_passwd_print_entries () {
     local -i i
@@ -103,25 +116,104 @@ function mbfl_system_passwd_print_entries_as_json () {
 }
 
 #page
+#### internal array getters
+
+m4_define([[[MBFL_PASSWD_DECLARE_GETTER]]],[[[
+function mbfl_system_passwd_get_$1_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(INDEX, 2, passwd entry index)
+    RESULT_VARREF=${mbfl_system_PASSWD_ENTRIES[${INDEX}:$1]}
+}
+function mbfl_system_passwd_get_$1 () {
+    mbfl_mandatory_integer_parameter(INDEX, 1, passwd entry index)
+    echo "${mbfl_system_PASSWD_ENTRIES[${INDEX}:$1]}"
+}
+]]])
+MBFL_PASSWD_DECLARE_GETTER(name)
+MBFL_PASSWD_DECLARE_GETTER(passwd)
+MBFL_PASSWD_DECLARE_GETTER(uid)
+MBFL_PASSWD_DECLARE_GETTER(gid)
+MBFL_PASSWD_DECLARE_GETTER(gecos)
+MBFL_PASSWD_DECLARE_GETTER(dir)
+MBFL_PASSWD_DECLARE_GETTER(shell)
+
+#page
+#### searching passwd entries
+
+function mbfl_system_passwd_find_entry_by_name_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(THE_NAME, 2, user name)
+    local -i i
+
+    mbfl_system_passwd_read
+    for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+    do
+	if mbfl_string_equal "$THE_NAME" "${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
+	then
+	    RESULT_VARREF=$i
+	    return 0
+	fi
+    done
+    return 1
+}
+
+function mbfl_system_passwd_find_entry_by_name () {
+    mbfl_mandatory_parameter(THE_NAME, 1, user name)
+    local RESULT_VARNAME
+    if mbfl_system_passwd_find_entry_by_name_var RESULT_VARNAME "$THE_NAME"
+    then echo "$RESULT_VARNAME"
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_passwd_find_entry_by_uid_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(THE_UID, 2, user id)
+    local -i i
+
+    for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+    do
+	if mbfl_string_equal "$THE_UID" "${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
+	then
+	    RESULT_VARREF=$i
+	    return 0
+	fi
+    done
+    return 1
+}
+
+function mbfl_system_passwd_find_entry_by_uid () {
+    mbfl_mandatory_parameter(THE_UID, 1, user id)
+    local RESULT_VARNAME
+    if mbfl_system_passwd_find_entry_by_uid_var RESULT_VARNAME "$THE_UID"
+    then echo "$RESULT_VARNAME"
+    else return 1
+    fi
+}
+
+#page
 #### user id conversion
 
 function mbfl_system_enable_programs () {
-    mbfl_declare_program grep
-    mbfl_declare_program cut
+    :
 }
 function mbfl_system_numerical_user_id_to_name () {
-    local GREP CUT RESULT
-    mbfl_mandatory_parameter(ID, 1, numerical user id)
-    mbfl_program_found_var GREP grep || exit $?
-    mbfl_program_found_var CUT cut   || exit $?
-    mbfl_program_exec "$GREP" "^[^:]\+:[^:]\+:${ID}:" /etc/passwd | mbfl_program_exec "$CUT" -d: -f1
+    mbfl_mandatory_integer_parameter(THE_UID, 1, numerical user id)
+    local IDX
+    if mbfl_system_passwd_find_entry_by_uid_var IDX $THE_UID
+    then mbfl_system_passwd_get_name $IDX
+    else return 1
+    fi
 }
 function mbfl_system_user_name_to_numerical_id () {
-    local GREP CUT
-    mbfl_mandatory_parameter(NAME, 1, user name)
-    mbfl_program_found_var GREP grep || exit $?
-    mbfl_program_found_var CUT cut   || exit $?
-    mbfl_program_exec "$GREP" "^${NAME}" /etc/passwd | mbfl_program_exec "$CUT" -d: -f3
+    mbfl_mandatory_parameter(THE_NAME, 1, user name)
+    local IDX
+    if mbfl_system_passwd_find_entry_by_name_var IDX "$THE_NAME"
+    then mbfl_system_passwd_get_uid $IDX
+    else return 1
+    fi
 }
 
 #page
@@ -140,9 +232,9 @@ mbfl_symbolic_permissions[7]='rwx'
 function mbfl_system_symbolic_to_octal_permissions () {
     mbfl_mandatory_parameter(MODE, 1, symbolic permissions)
     local -i i
-    for ((i=0; $i < 8; ++i))
+    for ((i=0; i < 8; ++i))
     do
-	if test "${mbfl_symbolic_permissions[$i]}" = "$MODE"
+	if mbfl_string_equal "${mbfl_symbolic_permissions[$i]}" "$MODE"
 	then
             printf "%s\n" $i
             return 0
