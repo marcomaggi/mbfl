@@ -9,7 +9,8 @@
 #       This file is a collection of functions used to interact to the
 #       user at the console.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright   (c)    2003-2005,   2009,    2013,   2018    Marco   Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -37,13 +38,15 @@ function mbfl_dialog_yes_or_no () {
     local PROMPT ANS
     printf -v PROMPT '%s: %s? (yes/no) ' "$PROGNAME" "$STRING"
 
-    while IFS= read -r -e -p "$PROMPT" ANS && test "$ANS" != 'yes' -a "$ANS" != 'no'
+    while { IFS= read -r -e -p "$PROMPT" ANS && \
+		mbfl_string_not_equal "$ANS" 'yes' && \
+		mbfl_string_not_equal "$ANS" 'no'; }
     do printf '%s: please answer yes or no.\n' "$PROGNAME"
     done
-    test "$ANS" = yes
+    mbfl_string_equal "$ANS" 'yes'
 }
 
-function mbfl_dialog_ask_password () {
+function mbfl_dialog_ask_password_var () {
     mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(PROMPT, 2, prompt)
     local PASSWORD STTY
