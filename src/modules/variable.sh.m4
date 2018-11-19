@@ -8,7 +8,8 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright   (c)    2004-2005,   2009,    2013,   2018    Marco   Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -32,9 +33,9 @@ function mbfl_variable_find_in_array () {
     local -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
     for ((i=0; i < ARRAY_DIM; ++i))
     do
-	if test "${mbfl_FIELDS[$i]}" = "$ELEMENT"
+	if mbfl_string_equal "${mbfl_FIELDS[$i]}" "$ELEMENT"
 	then
-	    printf '%s\n' $i
+	    printf '%d\n' $i
 	    return 0
 	fi
     done
@@ -91,10 +92,12 @@ function mbfl_variable_colon_variable_drop_duplicate () {
     FIELDS=("${mbfl_FIELDS[@]}")
     mbfl_FIELDS=()
 
-    for ((i=0, count=0; $i < $dimension; ++i))
+    for ((i=0, count=0; i < dimension; ++i))
     do
 	item=${FIELDS[$i]}
-	mbfl_variable_element_is_in_array "$item" && continue
+	if mbfl_variable_element_is_in_array "$item"
+	then continue
+	fi
 	mbfl_FIELDS[$count]=$item
 	let ++count
     done
