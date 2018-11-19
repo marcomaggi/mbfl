@@ -44,7 +44,9 @@ declare mbfl_LOADED='yes'
 #### miscellaneous functions
 
 function mbfl_set_maybe () {
-    test -n "$1" && eval $1=\'"$2"\'
+    if mbfl_string_is_not_empty "$1"
+    then eval $1=\'"$2"\'
+    fi
 }
 function mbfl_read_maybe_null () {
     mbfl_mandatory_parameter(VARNAME, 1, variable name)
@@ -74,11 +76,13 @@ mbfl_create_option_procedure([[[interactive]]])
 mbfl_create_option_procedure([[[encoded_args]]])
 
 function mbfl_option_test_save () {
-    mbfl_option_test && mbfl_save_option_TEST=yes
+    if mbfl_option_test
+    then mbfl_save_option_TEST=yes
+    fi
     mbfl_unset_option_test
 }
 function mbfl_option_test_restore () {
-    if test "$mbfl_save_option_TEST" = "yes"
+    if mbfl_string_equal "$mbfl_save_option_TEST" 'yes'
     then mbfl_set_option_test
     fi
 }
