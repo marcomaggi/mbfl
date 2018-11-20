@@ -24,13 +24,13 @@ AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
 
 info_TEXINFOS		= doc/mbfl.texi
 doc_mbfl_TEXINFOS	= \
-	doc/fdl-1.3.texi		\
-	doc/lgpl-3.0.texi		\
-	doc/macros.texi			\
-	doc/sendmail-plain.sh		\
-	doc/sendmail-connector.sh	\
-	doc/one-level-actions.sh	\
-	doc/loader.sh
+	doc/fdl-1.3.texi				\
+	doc/lgpl-3.0.texi				\
+	doc/macros.texi					\
+	doc/one-level-actions.sh			\
+	doc/loader.sh					\
+	$(srcdir)/examples/sendmail-plain.sh		\
+	$(srcdir)/examples/sendmail-connector.sh
 
 
 #### source modules

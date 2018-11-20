@@ -6,30 +6,37 @@
 #
 # Abstract
 #
-#       This script just sends a hardcoded email message from
-#       a hardcoded address to a hardcoded address.  It makes
-#       no use of MBFL.
+#       This  script  just  sends  a  hardcoded  email  message  from  a
+#       hardcoded address  to a hardcoded  address.  It makes no  use of
+#       MBFL.
 #
-#         The purpose of this script is to understand how to
-#       send a message through a process in background.
+#         The purpose  of this  script is  to understand  how to  send a
+#       message through a process in background.
 #
-# Copyright (c) 2009, 2010 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2009, 2010, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
-# This  program  is free  software:  you  can redistribute  it
-# and/or modify it  under the terms of the  GNU General Public
-# License as published by the Free Software Foundation, either
-# version  3 of  the License,  or (at  your option)  any later
-# version.
+# The author hereby grants  permission to use, copy, modify, distribute,
+# and  license this  software  and its  documentation  for any  purpose,
+# provided that  existing copyright notices  are retained in  all copies
+# and that  this notice  is included verbatim in any  distributions.  No
+# written agreement, license, or royalty  fee is required for any of the
+# authorized uses.  Modifications to this software may be copyrighted by
+# their authors and need not  follow the licensing terms described here,
+# provided that the new terms are clearly indicated on the first page of
+# each file where they apply.
 #
-# This  program is  distributed in  the hope  that it  will be
-# useful, but  WITHOUT ANY WARRANTY; without  even the implied
-# warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
-# PURPOSE.   See  the  GNU  General Public  License  for  more
-# details.
+# IN NO  EVENT SHALL THE AUTHOR  OR DISTRIBUTORS BE LIABLE  TO ANY PARTY
+# FOR  DIRECT, INDIRECT, SPECIAL,  INCIDENTAL, OR  CONSEQUENTIAL DAMAGES
+# ARISING OUT  OF THE  USE OF THIS  SOFTWARE, ITS DOCUMENTATION,  OR ANY
+# DERIVATIVES  THEREOF, EVEN  IF THE  AUTHOR  HAVE BEEN  ADVISED OF  THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
-# You should  have received a  copy of the GNU  General Public
-# License   along   with    this   program.    If   not,   see
-# <http://www.gnu.org/licenses/>.
+# THE  AUTHOR  AND DISTRIBUTORS  SPECIFICALLY  DISCLAIM ANY  WARRANTIES,
+# INCLUDING,   BUT   NOT  LIMITED   TO,   THE   IMPLIED  WARRANTIES   OF
+# MERCHANTABILITY,    FITNESS   FOR    A    PARTICULAR   PURPOSE,    AND
+# NON-INFRINGEMENT.  THIS  SOFTWARE IS PROVIDED  ON AN "AS  IS" BASIS,
+# AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
+# MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
 PROGNAME=${0##*/}
@@ -62,16 +69,16 @@ function print_message () {
     local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
     LOCAL_HOSTNAME=$(hostname --fqdn) || exit 2
     DATE=$(date --rfc-2822) || exit 2
-    MESSAGE_ID=$(printf '%d-%d-%d@%s' \
-        $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME")
+    printf -v MESSAGE_ID '%d-%d-%d@%s' \
+        $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME"
     MESSAGE="Sender: $FROM_ADDRESS
 From: $FROM_ADDRESS
 To: $TO_ADDRESS
-Subject: proof from $PROGNAME
+Subject: demo from $PROGNAME
 Message-ID: <$MESSAGE_ID>
 Date: $DATE
 
-This is a text proof from the $PROGNAME script.
+This is a text demo from the $PROGNAME script.
 --\x20
 Marco
 "
@@ -99,26 +106,30 @@ function recv () {
     local EXPECTED_CODE=${1:?}
     local line=
     IFS= read line <&3
-    test "$LOGGING_TO_STDERR" = yes && \
-        printf '%s log: recv: %s\n' "$PROGNAME" "$line"
+    if test "$LOGGING_TO_STDERR" = yes
+    then printf '%s log: recv: %s\n' "$PROGNAME" "$line"
+    fi
     if test "${line:0:3}" != "$EXPECTED_CODE"
     then
         send %s QUIT
         # It is cleaner to wait for the reply from the
         # server.
         IFS= read line <&3
-        test "$LOGGING_TO_STDERR" = yes && \
-            printf '%s log: recv: %s\n' "$PROGNAME" "$line"
+        if test "$LOGGING_TO_STDERR" = yes
+        then printf '%s log: recv: %s\n' "$PROGNAME" "$line"
+        fi
         exit 2
     fi
 }
 function send () {
-    local pattern=${1:?}
+    local template=${1:?}
     shift
-    local line=$(printf "$pattern" "$@")
+    local line
+    printf -v line "$template" "$@"
     printf '%s\r\n' "$line" >&4
-    test "$LOGGING_TO_STDERR" = yes && \
-        printf '%s log: sent: %s\n' "$PROGNAME" "$line"
+    if test "$LOGGING_TO_STDERR" = yes
+    then printf '%s log: sent: %s\n' "$PROGNAME" "$line"
+    fi
 }
 function read_and_send_message () {
     local line
@@ -131,20 +142,23 @@ function read_and_send_message () {
         fi
         let ++count
     done
-    test "$LOGGING_TO_STDERR" = yes && \
-        printf '%s log: sent message (%d lines)\n' "$PROGNAME" $count
+    if test "$LOGGING_TO_STDERR" = yes
+    then printf '%s log: sent message (%d lines)\n' "$PROGNAME" $count
+    fi
 }
 function connector () {
     local HOSTNAME=${1:?} query= answer= line=
-    local DEVICE=$(printf '/dev/tcp/%s/%d' "$HOSTNAME" $SMTP_PORT)
+    local DEVICE
+    printf -v DEVICE '/dev/tcp/%s/%d' "$HOSTNAME" $SMTP_PORT
     exec 3<>"$DEVICE"
     # Read the  greetings from the server, echo  them to the
     # client.
     IFS= read -t 5 answer <&3
-    test 127 -lt $? && {
+    if ((127 < $?))
+    then
         printf '%s: connection timed out\n' "$PROGNAME" >&2
         exit 2
-    }
+    fi
     printf '%s\n' "$answer"
     # Read the query from the client, echo it to the server.
     while read query
@@ -153,22 +167,26 @@ function connector () {
         # Read the  answer from the  server, echo it  to the
         # client.
         IFS= read -t 5 answer <&3
-        test 127 -lt $? && {
+        if ((127 < $?))
+        then
             printf '%s: connection timed out\n' "$PROGNAME" >&2
             exit 2
-        }
+        fi
         printf '%s\n' "$answer"
         # Test special queries.
-        test "$query" = QUIT$'\r' && {
+        if test "$query" = QUIT$'\r'
+        then
             IFS= read -t 5 answer <&3
-            test 127 -lt $? && {
+            if ((127 < $?))
+            then
                 printf '%s: connection timed out\n' "$PROGNAME" >&2
                 exit 2
-            }
+            fi
             printf '%s\n' "$answer"
             exit
-        }
-        test "$query" = DATA$'\r' && {
+        fi
+        if test "$query" = DATA$'\r'
+        then
             # Read data lines from  the client, echo them to
             # the server up until ".\r" is read.
             while IFS= read line
@@ -179,12 +197,13 @@ function connector () {
             # Read the answer to  data from the server, echo
             # it to the client.
             IFS= read -t 5 answer <&3
-            test 127 -lt $? && {
+            if ((127 < $?))
+            then
                 printf '%s: connection timed out\n' "$PROGNAME" >&2
                 exit 2
-            }
+            fi
             printf '%s\n' "$answer"
-        }
+        fi
     done
     # We should never come here.
     exit 1
