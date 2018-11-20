@@ -4654,7 +4654,8 @@ compatibility.
 @menu
 * system passwd::               Reading and searching the file
                                 @file{/etc/passwd}.
-* system user id::              Converting user identifiers.
+* system group::                Reading and searching the file
+                                @file{/etc/group}.
 * system file perms::           Converting file permissions.
 @end menu
 
@@ -4668,6 +4669,7 @@ compatibility.
 * system passwd printing::      Printing entries from @file{passwd}.
 * system passwd searching::     Searching entries from @file{passwd}.
 * system passwd inspect::       Inspecting entries from @file{passwd}.
+* system passwd userid::        Converting user identifiers.
 @end menu
 
 @c page
@@ -4686,7 +4688,6 @@ variable.  Only the first call to this function will actually read the file, unl
 Reset the internal state so that the next call to @bfunc{mbfl_system_passwd_read} will actually
 load, or reaload, the contents of @file{/etc/passwd}.
 @end defun
-
 
 @c page
 @node system passwd printing
@@ -4835,8 +4836,8 @@ Print to @code{stdout} the field shell of the @file{passwd} entry at index @var{
 @end defun
 
 @c page
-@node system user id
-@section Converting user identifiers
+@node system passwd userid
+@subsection Converting user identifiers
 
 
 We are meant to call these function after a call to @bfunc{mbfl_system_passwd_read}; @ref{system
@@ -4851,6 +4852,155 @@ Convert the numerical user @var{id} to the user name found in the @file{/etc/pas
 @defun mbfl_system_numerical_user_id_to_name @var{name}
 Convert the symbolic user @var{name} to the numerical identifier found in the @file{/etc/passwd}
 file.
+@end defun
+
+@c page
+@node system group
+@section Reading and searching the file @file{/etc/group}
+
+
+@menu
+* system group reading::        Reading the file @file{/etc/group}.
+* system group printing::       Printing entries from @file{/etc/group}.
+* system group searching::      Searching entries from @file{/etc/group}.
+* system group inspect::        Inspecting entries from @file{/etc/group}.
+@end menu
+
+@c page
+@node system group reading
+@subsection Reading the file @file{/etc/group}
+
+
+@defun mbfl_system_group_read
+Read the file @file{/etc/group} and store the resulting fields in an internal global array variable.
+Only the first call to this function will actually read the file, unless
+@bfunc{mbfl_system_group_reset} has been called.
+@end defun
+
+
+@defun mbfl_system_group_reset
+Reset the internal state so that the next call to @bfunc{mbfl_system_group_read} will actually load,
+or reaload, the contents of @file{/etc/group}.
+@end defun
+
+@c page
+@node system group printing
+@subsection Printing entries from @file{/etc/group}
+
+
+We are meant to call these function after a call to @bfunc{mbfl_system_group_read}.
+
+
+@defun mbfl_system_group_print_entries
+Print to @code{stdout} the entries of @file{/etc/group}, one per line.  The format of each line is:
+
+@example
+name='root' passwd='x' gid=0 users='root'
+@end example
+@end defun
+
+
+@defun mbfl_system_group_print_entries_as_xml
+Print to @code{stdout} the entries of @file{/etc/group}, one per line, in @acronym{XML} format.  The
+format of each line is:
+
+@example
+<entry name='root' passwd='x' gid='0' users='root'/>
+@end example
+@end defun
+
+
+@defun mbfl_system_group_print_entries_as_json
+Print to @code{stdout} the entries of @file{/etc/group}, one per line, in @acronym{JSON} format.
+The format of each line is:
+
+@example
+"entry": @{ "name": "root", "passwd": "x", "gid": 0, "users": "root" @}
+@end example
+@end defun
+
+@c page
+@node system group searching
+@subsection Searching entries from @file{group}
+
+
+We are meant to call these function after a call to @bfunc{mbfl_system_group_read}.  The following
+functions inspect entries from @file{/etc/group} and locate them using numeric indexes; such indexes
+are valid only until the next call to @bfunc{mbfl_system_group_reset}.
+
+
+@defun mbfl_system_group_find_entry_by_name @var{name}
+@defunx mbfl_system_group_find_entry_by_name_var @var{RV} @var{name}
+Search the entries of @file{/etc/group} for one whose group name is @var{name}.  When successful:
+print to @code{stdout} the index of the entry and return true; otherwise return false.  We can use
+the index with the functions described in @ref{system group inspect, Inspecting entries from
+@file{/etc/group}}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_group_find_entry_by_gid @var{gid}
+@defunx mbfl_system_group_find_entry_by_gid_var @var{RV} @var{gid}
+Search the entries of @file{/etc/group} for one whose group id is @var{gid}.  When successful: print
+to @code{stdout} the index of the entry and return true; otherwise return false.  We can use the
+index with the functions described in @ref{system group inspect, Inspecting entries from
+@file{/etc/group}}.
+
+@DocVarVariant{}
+@end defun
+
+@c page
+@node system group inspect
+@subsection Inspecting entries from @file{/etc/group}
+
+
+The following functions inspect entries from @file{/etc/group} using an index argument; we must
+obtain indexes with the functions described in @ref{system group searching, Searching entries from
+@file{/etc/group}}.
+
+
+@defun mbfl_system_group_get_name @var{idx}
+@defunx mbfl_system_group_get_name_var @var{RV} @var{idx}
+Print to @code{stdout} the field name of the @file{/etc/group} entry at index @var{idx}.
+
+@DocVarVariant{}
+
+@example
+local IDX NAME
+
+mbfl_system_group_read
+if mbfl_system_group_find_entry_by_name_var IDX root
+then
+    if mbfl_system_group_get_name_var NAME $IDX
+    then echo "$NAME"
+    fi
+fi
+@end example
+@end defun
+
+
+@defun mbfl_system_group_get_passwd @var{idx}
+@defunx mbfl_system_group_get_passwd_var @var{RV} @var{idx}
+Print to @code{stdout} the field passwd of the @file{/etc/group} entry at index @var{idx}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_group_get_gid @var{idx}
+@defunx mbfl_system_group_get_gid_var @var{RV} @var{idx}
+Print to @code{stdout} the field gid of the @file{/etc/group} entry at index @var{idx}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_group_get_users @var{idx}
+@defunx mbfl_system_group_get_users_var @var{RV} @var{idx}
+Print to @code{stdout} the field users of the @file{/etc/group} entry at index @var{idx}.
+
+@DocVarVariant{}
 @end defun
 
 @c page

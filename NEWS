@@ -98,7 +98,7 @@ changes!
 * Started arrays module.
 
 * Added  functions  to  the  system   module  to  inspect  entries  from
-  /etc/passwd.
+  /etc/passwd and /etc/group.
 
 
 Notes for revision 2.2.0

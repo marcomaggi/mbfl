@@ -31,7 +31,7 @@
 source setup.sh
 
 #page
-#### searching user names in passwd: by name
+#### searching entries in /etc/passwd: by name
 
 function system-passwd-find-entry-by-name-var-1.1 () {
     local IDX NAME
@@ -62,7 +62,7 @@ function system-passwd-find-entry-by-name-1.1 () {
 }
 
 #page
-#### searching user names in passwd: by name
+#### searching entries in /etc/passwd: by uid
 
 function system-passwd-find-entry-by-uid-var-1.1 () {
     local IDX NAME
@@ -92,17 +92,125 @@ function system-passwd-find-entry-by-uid-1.1 () {
     fi
 }
 
-#PAGE
-#### user identifier functions
+#page
+#### /etc/passwd: conversion between names and UIDs
 
-function system-name-to-uid-1.1 () {
-    mbfl_system_passwd_read
+function system-passwd-name-to-uid-1.1 () {
     mbfl_system_numerical_user_id_to_name 0 | dotest-output 'root'
 }
 
-function system-name-to-uid-2.1 () {
-    mbfl_system_passwd_read
+function system-passwd-uid-to-name-2.1 () {
     mbfl_system_user_name_to_numerical_id 'root' | dotest-output '0'
+}
+
+#page
+#### printing entries in /etc/passwd
+
+function system-passwd-print-entries-raw-1.1 () {
+    local IDX NAME
+    if mbfl_system_passwd_read
+    then mbfl_system_passwd_print_entries
+    fi
+}
+
+function system-passwd-print-entries-xml-2.1 () {
+    local IDX NAME
+    if mbfl_system_passwd_read
+    then mbfl_system_passwd_print_entries_as_xml
+    fi
+}
+
+function system-passwd-print-entries-xml-3.1 () {
+    local IDX NAME
+    if mbfl_system_passwd_read
+    then mbfl_system_passwd_print_entries_as_json
+    fi
+}
+
+#page
+#### searching entries in /etc/group: by name
+
+function system-group-find-entry-by-name-var-1.1 () {
+    local IDX NAME
+    mbfl_system_group_read
+    if mbfl_system_group_find_entry_by_name_var IDX root
+    then
+	if mbfl_system_group_get_name_var NAME $IDX
+	then dotest-equal root "$NAME"
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-group-find-entry-by-name-1.1 () {
+    local IDX NAME
+    mbfl_system_group_read
+    if IDX=$(mbfl_system_group_find_entry_by_name root)
+    then
+	if NAME=$(mbfl_system_group_get_name $IDX)
+	then dotest-equal root "$NAME"
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+#page
+#### searching entries in /etc/group: by gid
+
+function system-group-find-entry-by-gid-var-1.1 () {
+    local IDX NAME
+    mbfl_system_group_read
+    if mbfl_system_group_find_entry_by_gid_var IDX 0
+    then
+	if mbfl_system_group_get_name_var NAME $IDX
+	then dotest-equal root "$NAME"
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-group-find-entry-by-gid-1.1 () {
+    local IDX NAME
+    mbfl_system_group_read
+    if IDX=$(mbfl_system_group_find_entry_by_gid 0)
+    then
+	if NAME=$(mbfl_system_group_get_name $IDX)
+	then dotest-equal root "$NAME"
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+#page
+#### printing entries in /etc/group
+
+function system-group-print-entries-raw-1.1 () {
+    local IDX NAME
+    if mbfl_system_group_read
+    then mbfl_system_group_print_entries
+    fi
+}
+
+function system-group-print-entries-xml-2.1 () {
+    local IDX NAME
+    if mbfl_system_group_read
+    then mbfl_system_group_print_entries_as_xml
+    fi
+}
+
+function system-group-print-entries-xml-3.1 () {
+    local IDX NAME
+    if mbfl_system_group_read
+    then mbfl_system_group_print_entries_as_json
+    fi
 }
 
 #page
@@ -121,7 +229,7 @@ function system-symbolic-to-octal-1.4 () {
     mbfl_system_octal_to_symbolic_permissions '5' | dotest-output 'r-x'
 }
 
-#PAGE
+#page
 #### end of tests
 
 dotest system-
