@@ -109,21 +109,21 @@ function system-passwd-uid-to-name-2.1 () {
 function system-passwd-print-entries-raw-1.1 () {
     local IDX NAME
     if mbfl_system_passwd_read
-    then mbfl_system_passwd_print_entries
+    then mbfl_system_passwd_print_entries >/dev/null
     fi
 }
 
 function system-passwd-print-entries-xml-2.1 () {
     local IDX NAME
     if mbfl_system_passwd_read
-    then mbfl_system_passwd_print_entries_as_xml
+    then mbfl_system_passwd_print_entries_as_xml >/dev/null
     fi
 }
 
 function system-passwd-print-entries-xml-3.1 () {
     local IDX NAME
     if mbfl_system_passwd_read
-    then mbfl_system_passwd_print_entries_as_json
+    then mbfl_system_passwd_print_entries_as_json >/dev/null
     fi
 }
 
@@ -195,21 +195,61 @@ function system-group-find-entry-by-gid-1.1 () {
 function system-group-print-entries-raw-1.1 () {
     local IDX NAME
     if mbfl_system_group_read
-    then mbfl_system_group_print_entries
+    then mbfl_system_group_print_entries >/dev/null
     fi
 }
 
 function system-group-print-entries-xml-2.1 () {
     local IDX NAME
     if mbfl_system_group_read
-    then mbfl_system_group_print_entries_as_xml
+    then mbfl_system_group_print_entries_as_xml >/dev/null
     fi
 }
 
 function system-group-print-entries-xml-3.1 () {
     local IDX NAME
     if mbfl_system_group_read
-    then mbfl_system_group_print_entries_as_json
+    then mbfl_system_group_print_entries_as_json >/dev/null
+    fi
+}
+
+#page
+#### retrieving users from /etc/group
+
+function system-group-get-user-in-group-var-1.1 () {
+    local -i GROUP_IDX USER_COUNT USER_IDX
+    local USER_NAME
+    if mbfl_system_group_read
+    then
+	if mbfl_system_group_find_entry_by_name_var GROUP_IDX root
+	then
+	    mbfl_system_group_get_users_count_var USER_COUNT $GROUP_IDX
+	    for ((USER_IDX=0; USER_IDX < USER_COUNT; ++USER_IDX))
+	    do
+		mbfl_system_group_get_user_name_var USER_NAME $GROUP_IDX $USER_IDX
+		dotest-equal 'root' "$USER_NAME"
+	    done
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+function system-group-get-user-in-group-1.1 () {
+    local -i GROUP_IDX USER_COUNT USER_IDX
+    local USER_NAME
+
+    if mbfl_system_group_read
+    then
+	if GROUP_IDX=$(mbfl_system_group_find_entry_by_name root)
+	then
+	    USER_COUNT=$(mbfl_system_group_get_users_count $GROUP_IDX)
+	    for ((USER_IDX=0; USER_IDX < USER_COUNT; ++USER_IDX))
+	    do mbfl_system_group_get_user_name $GROUP_IDX $USER_IDX | dotest-output 'root'
+	    done
+	else return 1
+	fi
+    else return 1
     fi
 }
 

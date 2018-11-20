@@ -4960,9 +4960,9 @@ obtain indexes with the functions described in @ref{system group searching, Sear
 @file{/etc/group}}.
 
 
-@defun mbfl_system_group_get_name @var{idx}
-@defunx mbfl_system_group_get_name_var @var{RV} @var{idx}
-Print to @code{stdout} the field name of the @file{/etc/group} entry at index @var{idx}.
+@defun mbfl_system_group_get_name @var{group_idx}
+@defunx mbfl_system_group_get_name_var @var{RV} @var{group_idx}
+Print to @code{stdout} the field name of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
 
@@ -4980,27 +4980,73 @@ fi
 @end defun
 
 
-@defun mbfl_system_group_get_passwd @var{idx}
-@defunx mbfl_system_group_get_passwd_var @var{RV} @var{idx}
-Print to @code{stdout} the field passwd of the @file{/etc/group} entry at index @var{idx}.
+@defun mbfl_system_group_get_passwd @var{group_idx}
+@defunx mbfl_system_group_get_passwd_var @var{RV} @var{group_idx}
+Print to @code{stdout} the field passwd of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_group_get_gid @var{idx}
-@defunx mbfl_system_group_get_gid_var @var{RV} @var{idx}
-Print to @code{stdout} the field gid of the @file{/etc/group} entry at index @var{idx}.
+@defun mbfl_system_group_get_gid @var{group_idx}
+@defunx mbfl_system_group_get_gid_var @var{RV} @var{group_idx}
+Print to @code{stdout} the field gid of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_group_get_users @var{idx}
-@defunx mbfl_system_group_get_users_var @var{RV} @var{idx}
-Print to @code{stdout} the field users of the @file{/etc/group} entry at index @var{idx}.
+@defun mbfl_system_group_get_users @var{group_idx}
+@defunx mbfl_system_group_get_users_var @var{RV} @var{group_idx}
+Print to @code{stdout} the field users of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_group_get_users_count @var{group_idx}
+@defunx mbfl_system_group_get_users_count_var @var{RV} @var{group_idx}
+Print to @code{stdout} the number of user names in the list of users for the entry at index
+@var{group_idx}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_system_group_get_user_name @var{group_idx} @var{user_idx}
+@defunx mbfl_system_group_get_user_name_var @var{RV} @var{group_idx} @var{user_idx}
+Print to @code{stdout} the name of the user at index @var{user_idx} in the list of users for the
+entry at index @var{group_idx}.
+
+@DocVarVariant{}
+
+@example
+local -i GROUP_IDX USER_COUNT USER_IDX
+local USER_NAME
+
+mbfl_system_group_read
+
+if GROUP_IDX=$(mbfl_system_group_find_entry_by_name root)
+then
+    USER_COUNT=$(mbfl_system_group_get_users_count $GROUP_IDX)
+    for ((USER_IDX=0; USER_IDX < USER_COUNT; ++USER_IDX))
+    do mbfl_system_group_get_user_name $GROUP_IDX $USER_IDX
+    done
+fi
+
+# Using the "_var" variants.
+if mbfl_system_group_find_entry_by_name_var GROUP_IDX root
+then
+    mbfl_system_group_get_users_count_var USER_COUNT $GROUP_IDX
+    for ((USER_IDX=0; USER_IDX < USER_COUNT; ++USER_IDX))
+    do
+        mbfl_system_group_get_user_name_var USER_NAME \
+           $GROUP_IDX $USER_IDX
+        echo "$USER_NAME"
+    done
+else return 1
+fi
+@end example
 @end defun
 
 @c page

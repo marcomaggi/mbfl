@@ -254,6 +254,21 @@ function mbfl_system_group_read () {
 		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:passwd"]=${BASH_REMATCH[2]}
 		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:gid"]=${BASH_REMATCH[3]}
 		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:users"]=${BASH_REMATCH[4]}
+
+		    # Let's parse the "users" field.
+		    if mbfl_string_is_not_empty "${mbfl_system_GROUP_ENTRIES[${mbfl_system_GROUP_COUNT}:users]}"
+		    then
+			{
+			    local SPLITFIELD
+			    local -i SPLITCOUNT i
+			    mbfl_string_split "${mbfl_system_GROUP_ENTRIES[${mbfl_system_GROUP_COUNT}:users]}" ','
+			    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:users:count"]=$SPLITCOUNT
+			    for ((i=0; i < SPLITCOUNT; ++i))
+			    do mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:users:${i}"]=${SPLITFIELD[$i]}
+			    done
+			}
+		    fi
+
 		    let ++mbfl_system_GROUP_COUNT
 		fi
 	    done </etc/group
@@ -318,18 +333,44 @@ function mbfl_system_group_print_entries_as_json () {
 m4_define([[[MBFL_GROUP_DECLARE_GETTER]]],[[[
 function mbfl_system_group_get_$1_var () {
     mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_integer_parameter(INDEX, 2, group entry index)
-    RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${INDEX}:$1]}
+    mbfl_mandatory_integer_parameter(GROUP_INDEX, 2, group entry index)
+    RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:$1]}
 }
 function mbfl_system_group_get_$1 () {
-    mbfl_mandatory_integer_parameter(INDEX, 1, group entry index)
-    echo "${mbfl_system_GROUP_ENTRIES[${INDEX}:$1]}"
+    mbfl_mandatory_integer_parameter(GROUP_INDEX, 1, group entry index)
+    echo "${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:$1]}"
 }
 ]]])
 MBFL_GROUP_DECLARE_GETTER(name)
 MBFL_GROUP_DECLARE_GETTER(passwd)
 MBFL_GROUP_DECLARE_GETTER(gid)
 MBFL_GROUP_DECLARE_GETTER(users)
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_group_get_users_count_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(GROUP_INDEX, 2, group entry index)
+    RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:users:count]}
+}
+function mbfl_system_group_get_users_count () {
+    mbfl_mandatory_integer_parameter(GROUP_INDEX, 1, group entry index)
+    echo "${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:users:count]}"
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_group_get_user_name_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(GROUP_INDEX,   2, group entry index)
+    mbfl_mandatory_integer_parameter(USER_INDEX,    3, user index)
+    RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:users:${USER_INDEX}]}
+}
+function mbfl_system_group_get_user_name () {
+    mbfl_mandatory_integer_parameter(GROUP_INDEX, 1, group entry index)
+    mbfl_mandatory_integer_parameter(USER_INDEX,  2, user index)
+    echo "${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:users:${USER_INDEX}]}"
+}
 
 #page
 #### searching group entries
