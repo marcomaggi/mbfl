@@ -4052,54 +4052,54 @@ Array used by @bfunc{mbfl_string_chars} to store the number of values in @code{S
 
 
 @defun mbfl_string_chars @var{string}
-Split a string into characters.  Fill an array named @code{SPLITFIELD}
-with the characters from the string; the number of elements in the array
-is stored in a variable named @code{SPLITCOUNT}.  Both @code{SPLITFIELD}
-and @code{SPLITCOUNT} can be declared @code{local} in the scope of the
-caller.
+Split a string into characters.  Fill an array named @code{SPLITFIELD} with the characters from the
+string; the number of elements in the array is stored in a variable named @code{SPLITCOUNT}.  Both
+@code{SPLITFIELD} and @code{SPLITCOUNT} can be declared @code{local} in the scope of the caller.
 
-The difference between this function and using @code{$@{STRING:$i:1@}},
-is that this function detects backslash characters, @code{\}, and treats
-them as part of the following character.  So, for example, the sequence
-@code{\n} is treated as a single char.
+The difference between this function and using @code{$@{STRING:$i:1@}}, is that this function
+detects backslash characters, @code{\}, and treats them as part of the following character.  So, for
+example, the sequence @code{\n} is treated as a single char.
 @end defun
 
 
 Example of usage for @bfunc{mbfl_string_chars}:
 
 @example
+local SPLITFIELD
+local -i SPLITCOUNT
+
 string="abcde\nfghilm"
 mbfl_string_chars "$@{string@}"
-# Now:
-# "$@{#string@}" = $SPLITCOUNT
-#  a = "$@{SPLITFIELD[0]@}"
-#  b = "$@{SPLITFIELD[1]@}"
-#  c = "$@{SPLITFIELD[2]@}"
-#  d = "$@{SPLITFIELD[3]@}"
-#  e = "$@{SPLITFIELD[4]@}"
-#  \n = "$@{SPLITFIELD[5]@}"
-#  f = "$@{SPLITFIELD[6]@}"
-#  g = "$@{SPLITFIELD[7]@}"
-#  h = "$@{SPLITFIELD[8]@}"
-#  i = "$@{SPLITFIELD[9]@}"
-#  l = "$@{SPLITFIELD[10]@}"
-#  m = "$@{SPLITFIELD[11]@}"
+
+$SPLITCOUNT             @result{} 12
+"$@{SPLITFIELD[0]@}"    @result{} a
+"$@{SPLITFIELD[1]@}"    @result{} b
+"$@{SPLITFIELD[2]@}"    @result{} c
+"$@{SPLITFIELD[3]@}"    @result{} d
+"$@{SPLITFIELD[4]@}"    @result{} e
+"$@{SPLITFIELD[5]@}"    @result{} \n
+"$@{SPLITFIELD[6]@}"    @result{} f
+"$@{SPLITFIELD[7]@}"    @result{} g
+"$@{SPLITFIELD[8]@}"    @result{} h
+"$@{SPLITFIELD[9]@}"    @result{} i
+"$@{SPLITFIELD[10]@}"   @result{} l
+"$@{SPLITFIELD[11]@}"   @result{} m
 @end example
 
 
 @defun mbfl_string_split @var{string} @var{separator}
 Split @var{string} into fields using @var{separator}.  Fill an array named @code{SPLITFIELD} with
 the characters from the string; the number of elements in the array is stored in a variable named
-@code{SPLITCOUNT}.  Both @code{SPLITFIELD} and @code{SPLITCOUNT} can be declared @code{local} in the
-scope of the caller.
+@code{SPLITCOUNT}.  We can declare both @code{SPLITFIELD} and @code{SPLITCOUNT} as @code{local} in
+the scope of the caller.
 @end defun
 
 
 @defun mbfl_string_split_blanks @var{string}
 Split @var{string} into fields using adjacent blank characters as separators.  Fill an array named
 @code{SPLITFIELD} with the characters from the string; the number of elements in the array is stored
-in a variable named @code{SPLITCOUNT}.  Both @code{SPLITFIELD} and @code{SPLITCOUNT} can be declared
-@code{local} in the scope of the caller.
+in a variable named @code{SPLITCOUNT}.  We can declare both @code{SPLITFIELD} and @code{SPLITCOUNT}
+as @code{local} in the scope of the caller.
 
 @example
 local -a SPLITFIELD
@@ -4340,28 +4340,63 @@ the return value is false, always.
 
 @defun mbfl_string_replace @var{string} @var{pattern}
 @defunx mbfl_string_replace @var{string} @var{pattern} @var{subst}
-Replace all the occurrences of @var{pattern} in @var{string} with
-@var{subst}, then print the result.  If not used, @var{subst} defaults
-to the empty string.
+@defunx mbfl_string_replace_var @var{RV} @var{string} @var{pattern}
+@defunx mbfl_string_replace_var @var{RV} @var{string} @var{pattern} @var{subst}
+Replace all the occurrences of @var{pattern} in @var{string} with @var{subst}, then print the
+result.  If not used, @var{subst} defaults to the empty string.
+
+@DocVarVariant{}
+
+@example
+mbfl_string_replace 'abcdefg' 'cde' '123'
+@print{} 'ab123fg'
+
+local RV
+mbfl_string_replace_var RV 'abcdefg' 'cde' '123'
+"$RV" @result{} ab123fg
+@end example
 @end defun
 
 
 @defun mbfl_sprintf @var{varname} @var{format} ...
-Make use of @code{printf} to format the string @var{format} with the
-additional arguments, then store the result in @var{varname}: If this
-name is local in the scope of the caller, this has the effect of filling
-the variable in that scope.
+Make use of @code{printf} to format the string @var{format} with the additional arguments, then
+store the result in @var{varname}: If this name is local in the scope of the caller, this has the
+effect of filling the variable in that scope.
+
+@strong{NOTE} We should use the built--in @code{printf -v @var{varname}} construct, rather than this
+function.
 @end defun
 
 
 @defun mbfl_string_skip @var{string} @var{varname} @var{char}
-Skip all the characters in a string equal to @var{char}.  @var{varname}
-is the name of a variable in the scope of the caller: Its value is the
-offset of the first character to test in @var{string}.  The offset is
-incremented until a char different from @var{char} is found, then the
-value of @var{varname} is updated to the position of the different char.
-If the initial value of the offset corresponds to a char equal to
-@var{char}, the variable is left untouched.  Return true.
+Skip all the characters in a string equal to @var{char}.  @var{varname} is the name of a variable in
+the scope of the caller: Its value is the offset of the first character to test in @var{string}.
+The offset is incremented until a char different from @var{char} is found, then the value of
+@var{varname} is updated to the position of the different char.  If the initial value of the offset
+corresponds to a char equal to @var{char}, the variable is left untouched.  Return true.
+
+@example
+local -i i
+
+# The char "z" is not present in the string: leave "i" untouched.
+i=3
+;;               0123456
+mbfl_string_skip abcdefg i z
+$i @result{} 3
+
+# The whole string  is filled with "a": increment "i" to
+# the length of the string itself.
+i=3
+;;               0123456
+mbfl_string_skip aaaaaaa i a
+$i @result{} 7
+
+# Skip until the index of the "d" character.
+i=3
+;;               01234567890
+mbfl_string_skip abcccccdefg i c
+$i @result{} 7
+@end example
 @end defun
 
 @c page

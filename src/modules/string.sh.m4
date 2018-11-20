@@ -390,32 +390,31 @@ function mbfl_string_is_name () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
-    test -n "$STRING" && \
-	mbfl_p_string_is name "$STRING" && ! mbfl_string_is_digit "${STRING:0:1}"
+    mbfl_string_is_not_empty "$STRING" && mbfl_p_string_is name "$STRING" && { ! mbfl_string_is_digit "${STRING:0:1}"; }
 }
 function mbfl_string_is_identifier () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
-    test -n "$STRING" \
+    mbfl_string_is_not_empty "$STRING" \
 	&&   mbfl_p_string_is identifier "$STRING"	\
 	&& ! mbfl_string_is_digit "${STRING:0:1}"	\
-	&& ! test "${STRING:0:1}" = '-'
+	&& mbfl_string_not_equal "${STRING:0:1}" '-'
 }
 function mbfl_string_is_extended_identifier () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
-    test -n "$STRING" \
+    mbfl_string_is_not_empty "$STRING" \
 	&&   mbfl_p_string_is extended_identifier "$STRING"	\
 	&& ! mbfl_string_is_digit "${STRING:0:1}"		\
-	&& ! test "${STRING:0:1}" = '-'
+	&& mbfl_string_not_equal "${STRING:0:1}" '-'
 }
 function mbfl_string_is_username () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
-    test -n "$STRING" && \
+    mbfl_string_is_not_empty "$STRING" && \
 	mbfl_string_is_identifier "$STRING"
 }
 function mbfl_string_is_email_address () {
@@ -435,16 +434,25 @@ function mbfl_string_replace () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(PATTERN, 2, pattern)
     mbfl_optional_parameter(SUBST, 3)
-    printf "${STRING//$PATTERN/$SUBST}\n"
+    printf '%s\n' "${STRING//$PATTERN/$SUBST}"
 }
+function mbfl_string_replace_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(STRING, 2, string)
+    mbfl_mandatory_parameter(PATTERN, 3, pattern)
+    mbfl_optional_parameter(SUBST, 4)
+    RESULT_VARREF=${STRING//$PATTERN/$SUBST}
+}
+
 function mbfl_string_skip () {
     mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_mandatory_parameter(POSNAME, 2, position)
+    mbfl_mandatory_nameref_parameter(POSNAME, 2, position)
     mbfl_mandatory_parameter(CHAR, 3, char)
-    local position=${!POSNAME}
-    while test "${STRING:$position:1}" = "$CHAR" ; do let ++position ; done
-    eval $POSNAME=$position
+    while test "${STRING:$POSNAME:1}" = "$CHAR"
+    do let ++POSNAME
+    done
 }
+
 #page
 function mbfl_string_toupper () {
     echo "${1^^}"
