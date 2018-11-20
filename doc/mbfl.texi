@@ -4972,7 +4972,7 @@ The format of each line is:
 
 @c page
 @node system group searching
-@subsection Searching entries from @file{group}
+@subsection Searching entries from @file{/etc/group}
 
 
 We are meant to call these function after a call to @bfunc{mbfl_system_group_read}.  The following
@@ -5106,7 +5106,7 @@ fi
 
 
 We are meant to call these function after a call to @bfunc{mbfl_system_group_read}; @ref{system
-group reading, Reading the file @file{group}}.
+group reading, Reading the file @file{/etc/group}}.
 
 
 @defun mbfl_system_group_gid_to_name @var{gid}
