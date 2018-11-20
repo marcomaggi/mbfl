@@ -206,6 +206,8 @@ function mbfl_string_range () {
 }
 
 #page
+#### splitting
+
 function mbfl_string_chars () {
     mbfl_mandatory_parameter(STRING, 1, string)
     local -i i j
@@ -224,19 +226,6 @@ function mbfl_string_chars () {
         fi
     done
     SPLITCOUNT=$j
-    return 0
-}
-#page
-function mbfl_string_equal_substring () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_mandatory_parameter(POSITION, 2, position)
-    mbfl_mandatory_parameter(PATTERN, 3, pattern)
-    local i
-    test $(($POSITION+${#PATTERN})) -gt ${#STRING} && return 1
-    for ((i=0; $i < "${#PATTERN}"; ++i))
-    do test "${PATTERN:$i:1}" != "${STRING:$(($POSITION+$i)):1}" && \
-        return 1
-    done
     return 0
 }
 function mbfl_string_split () {
@@ -334,6 +323,24 @@ function mbfl_string_greater_or_equal () {
     mbfl_optional_parameter(STR2, 2)
     test "$STR1" '>' "$STR2" -o "$STR1" '=' "$STR2"
 }
+
+function mbfl_string_equal_substring () {
+    mbfl_mandatory_parameter(STRING,   1, string)
+    mbfl_mandatory_parameter(POSITION, 2, position)
+    mbfl_mandatory_parameter(PATTERN,  3, pattern)
+    local i
+    if (( (POSITION + ${#PATTERN}) > ${#STRING} ))
+    then return 1
+    fi
+    for ((i=0; i < "${#PATTERN}"; ++i))
+    do
+	if test "${PATTERN:$i:1}" != "${STRING:$(($POSITION+$i)):1}"
+	then return 1
+	fi
+    done
+    return 0
+}
+
 #page
 function mbfl_string_is_alpha_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
@@ -430,6 +437,27 @@ function mbfl_string_is_email_address () {
 }
 
 #page
+#### case conversion
+
+function mbfl_string_toupper () {
+    echo "${1^^}"
+}
+function mbfl_string_tolower () {
+    echo "${1,,}"
+}
+
+function mbfl_string_toupper_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    RESULT_VARREF="${2^^}"
+}
+function mbfl_string_tolower_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    RESULT_VARREF="${2,,}"
+}
+
+#page
+#### miscellaneous
+
 function mbfl_string_replace () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(PATTERN, 2, pattern)
@@ -453,24 +481,6 @@ function mbfl_string_skip () {
     done
 }
 
-#page
-function mbfl_string_toupper () {
-    echo "${1^^}"
-}
-function mbfl_string_tolower () {
-    echo "${1,,}"
-}
-
-function mbfl_string_toupper_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    RESULT_VARREF="${2^^}"
-}
-function mbfl_string_tolower_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    RESULT_VARREF="${2,,}"
-}
-
-#page
 function mbfl_sprintf () {
     mbfl_mandatory_parameter(VARNAME, 1, variable name)
     mbfl_mandatory_parameter(FORMAT,  2, format)
