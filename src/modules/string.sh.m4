@@ -52,7 +52,9 @@ function mbfl_string_is_equal_unquoted_char () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_integer_parameter(POS, 2, position)
     mbfl_mandatory_parameter(CHAR, 3, known char)
-    test "${STRING:${POS}:1}" = "$CHAR" || mbfl_string_is_quoted_char "$STRING" "$POS"
+    if test "${STRING:${POS}:1}" != "$CHAR"
+    then mbfl_string_is_quoted_char "$STRING" "$POS"
+    fi
 }
 
 function mbfl_string_quote_var () {
@@ -64,7 +66,9 @@ function mbfl_string_quote_var () {
     for ((i=0; i < ${#STRING}; ++i))
     do
         ch=${STRING:$i:1}
-        test "$ch" = \\ && ch=\\\\
+        if test "$ch" = \\
+	then ch=\\\\
+	fi
         RESULT_VARREF+=$ch
     done
 }
@@ -73,7 +77,7 @@ function mbfl_string_quote () {
     local RESULT_VARNAME
     if mbfl_string_quote_var RESULT_VARNAME "$STRING"
     then printf '%s\n' "$RESULT_VARNAME"
-    else return $?
+    else return 1
     fi
 }
 
@@ -243,18 +247,18 @@ function mbfl_string_split () {
     SPLITCOUNT=0
     for ((i=0; i < ${#STRING}; ++i))
     do
-        if test $(($i+${#SEPARATOR})) -gt ${#STRING}
+        if (( (i + ${#SEPARATOR}) > ${#STRING}))
 	then break
 	elif mbfl_string_equal_substring "$STRING" $i "$SEPARATOR"
 	then
 	    # Here $i is the index of the first char in the separator.
-	    SPLITFIELD[$k]=${STRING:$first:$(($i-$first))}
+	    SPLITFIELD[$k]=${STRING:$first:$((i - first))}
 	    let ++k
-	    i=$(($i+${#SEPARATOR}-1))
+	    let i+=${#SEPARATOR}-1
 	    # Place  the "first"  marker to  the beginning  of the  next
 	    # substring; "i" will  be incremented by "for",  that is why
 	    # we do "+1" here.
-	    first=$(($i+1))
+	    let first=i+1
         fi
     done
     SPLITFIELD[$k]=${STRING:$first}
@@ -288,7 +292,7 @@ function mbfl_string_split_blanks () {
 	else ACCUM+=$CH
 	fi
     done
-    if test -n "$ACCUM"
+    if mbfl_string_is_not_empty "$ACCUM"
     then SPLITFIELD[${#SPLITFIELD[@]}]=$ACCUM
     fi
     SPLITCOUNT=${#SPLITFIELD[@]}
