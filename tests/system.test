@@ -95,12 +95,62 @@ function system-passwd-find-entry-by-uid-1.1 () {
 #page
 #### /etc/passwd: conversion between names and UIDs
 
-function system-passwd-name-to-uid-1.1 () {
-    mbfl_system_numerical_user_id_to_name 0 | dotest-output 'root'
+function system-passwd-uid-to-name-var-1.1 () {
+    local USER_NAME
+
+    if mbfl_system_passwd_read
+    then
+	if mbfl_system_passwd_uid_to_name_var USER_NAME 0
+	then dotest-equal 'root' "$USER_NAME"
+	else return 1
+	fi
+    else return 1
+    fi
 }
 
-function system-passwd-uid-to-name-2.1 () {
+### ------------------------------------------------------------------------
+
+function system-passwd-uid-to-name-1.1 () {
+    if mbfl_system_passwd_read
+    then mbfl_system_passwd_uid_to_name 0 | dotest-output 'root'
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-passwd-name-to-uid-var-1.1 () {
+    local USER_ID
+
+    if mbfl_system_passwd_read
+    then
+	if mbfl_system_passwd_name_to_uid_var USER_ID 'root'
+	then dotest-equal 0 "$USER_ID"
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-passwd-name-to-uid-1.1 () {
+    if mbfl_system_passwd_read
+    then mbfl_system_passwd_name_to_uid 'root' | dotest-output 0
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-passwd-name-to-numerical-uid-1.1 () {
     mbfl_system_user_name_to_numerical_id 'root' | dotest-output '0'
+}
+
+### ------------------------------------------------------------------------
+
+function system-passwd-numerical-uid-to-name-1.1 () {
+    mbfl_system_numerical_user_id_to_name 0 | dotest-output 'root'
 }
 
 #page
@@ -251,6 +301,67 @@ function system-group-get-user-in-group-1.1 () {
 	fi
     else return 1
     fi
+}
+
+#page
+#### /etc/group: conversion between names and GIDs
+
+function system-group-gid-to-name-var-1.1 () {
+    local GROUP_NAME
+
+    if mbfl_system_group_read
+    then
+	if mbfl_system_group_gid_to_name_var GROUP_NAME 0
+	then dotest-equal 'root' "$GROUP_NAME"
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-group-gid-to-name-1.1 () {
+    if mbfl_system_group_read
+    then mbfl_system_group_gid_to_name 0 | dotest-output 'root'
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-group-name-to-gid-var-1.1 () {
+    local GROUP_ID
+
+    if mbfl_system_group_read
+    then
+	if mbfl_system_group_name_to_gid_var GROUP_ID 'root'
+	then dotest-equal 0 "$GROUP_ID"
+	else return 1
+	fi
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-group-name-to-gid-1.1 () {
+    if mbfl_system_group_read
+    then mbfl_system_group_name_to_gid 'root' | dotest-output 0
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function system-group-name-to-numerical-gid-1.1 () {
+    mbfl_system_group_name_to_numerical_id 'root' | dotest-output '0'
+}
+
+### ------------------------------------------------------------------------
+
+function system-group-numerical-gid-to-name-1.1 () {
+    mbfl_system_numerical_group_id_to_name 0 | dotest-output 'root'
 }
 
 #page

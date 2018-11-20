@@ -4844,14 +4844,64 @@ We are meant to call these function after a call to @bfunc{mbfl_system_passwd_re
 passwd reading, Reading the file @file{passwd}}.
 
 
+@defun mbfl_system_passwd_uid_to_name @var{uid}
+@defunx mbfl_system_passwd_uid_to_name_var @var{RV} @var{uid}
+Print to @code{stdout} the name of the user whose uid is @var{uid}.  When successful return true;
+otherwise return false.
+
+@DocVarVariant{}
+
+@example
+local USER_NAME
+
+if mbfl_system_passwd_read
+then mbfl_system_passwd_uid_to_name 0
+fi
+
+# Using the "_var" variants.
+if mbfl_system_passwd_read
+then
+    mbfl_system_passwd_uid_to_name_var USER_NAME 0
+    echo "$USER_NAME"
+fi
+@end example
+@end defun
+
+
+@defun mbfl_system_passwd_name_to_uid @var{name}
+@defunx mbfl_system_passwd_name_to_uid_var @var{RV} @var{name}
+Print to @code{stdout} the id of the user whose uid is @var{uid}.  When successful return true;
+otherwise return false.
+
+@DocVarVariant{}
+
+@example
+local USER_ID
+
+if mbfl_system_passwd_read
+then mbfl_system_passwd_name_to_uid 'root'
+fi
+
+# Using the "_var" variants.
+if mbfl_system_passwd_read
+then
+    if mbfl_system_passwd_name_to_uid_var USER_ID 'root'
+    then echo "$USER_ID"
+    fi
+fi
+@end example
+@end defun
+
+
 @defun mbfl_system_numerical_user_id_to_name @var{id}
-Convert the numerical user @var{id} to the user name found in the @file{/etc/passwd} file.
+Convert the numerical user @var{id} to the user name found in the @file{/etc/passwd} file; print the
+result to @code{stdout}.  When successful return true; otherwise return false.
 @end defun
 
 
 @defun mbfl_system_numerical_user_id_to_name @var{name}
 Convert the symbolic user @var{name} to the numerical identifier found in the @file{/etc/passwd}
-file.
+file; print the result to @code{stdout}.  When successful return true; otherwise return false.
 @end defun
 
 @c page
@@ -4864,6 +4914,7 @@ file.
 * system group printing::       Printing entries from @file{/etc/group}.
 * system group searching::      Searching entries from @file{/etc/group}.
 * system group inspect::        Inspecting entries from @file{/etc/group}.
+* system group groupid::        Converting group identifiers.
 @end menu
 
 @c page
@@ -5047,6 +5098,75 @@ then
 else return 1
 fi
 @end example
+@end defun
+
+@c page
+@node system group groupid
+@subsection Converting group identifiers
+
+
+We are meant to call these function after a call to @bfunc{mbfl_system_group_read}; @ref{system
+group reading, Reading the file @file{group}}.
+
+
+@defun mbfl_system_group_gid_to_name @var{gid}
+@defunx mbfl_system_group_gid_to_name_var @var{RV} @var{gid}
+Print to @code{stdout} the name of the group whose gid is @var{gid}.  When successful return true;
+otherwise return false.
+
+@DocVarVariant{}
+
+@example
+local GROUP_NAME
+
+if mbfl_system_group_read
+then mbfl_system_group_gid_to_name 0
+fi
+
+# Using the "_var" variants.
+if mbfl_system_group_read
+then
+    mbfl_system_group_gid_to_name_var GROUP_NAME 0
+    echo "$GROUP_NAME"
+fi
+@end example
+@end defun
+
+
+@defun mbfl_system_group_name_to_gid @var{name}
+@defunx mbfl_system_group_name_to_gid_var @var{RV} @var{name}
+Print to @code{stdout} the id of the group whose gid is @var{gid}.  When successful return true;
+otherwise return false.
+
+@DocVarVariant{}
+
+@example
+local GROUP_ID
+
+if mbfl_system_group_read
+then mbfl_system_group_name_to_gid 'root'
+fi
+
+# Using the "_var" variants.
+if mbfl_system_group_read
+then
+    if mbfl_system_group_name_to_gid_var GROUP_ID 'root'
+    then echo "$GROUP_ID"
+    fi
+fi
+@end example
+@end defun
+
+
+@defun mbfl_system_numerical_group_id_to_name @var{id}
+Convert the numerical group @var{id} to the group name found in the @file{/etc/group} file; print the
+result to @code{stdout}.  When successful return true; otherwise return false.
+@end defun
+
+
+@defun mbfl_system_numerical_group_id_to_name @var{name}
+Convert the symbolic group @var{name} to the numerical identifier found in the @file{/etc/group}
+file; print the result to @code{stdout}.  When successful return true; otherwise return false.
 @end defun
 
 @c page

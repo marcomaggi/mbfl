@@ -28,6 +28,15 @@
 #
 
 #page
+#### module initialisation
+
+# This exists, but does nothing, for backwards compatibility.
+#
+function mbfl_system_enable_programs () {
+    :
+}
+
+#page
 #### reading entries from /etc/passwd
 
 declare -A mbfl_system_PASSWD_ENTRIES
@@ -42,7 +51,8 @@ function mbfl_system_passwd_reset () {
 function mbfl_system_passwd_read () {
     if ((0 == mbfl_system_PASSWD_COUNT))
     then
-	local -r REX='([a-zA-Z0-9_\-]+):([a-zA-Z0-9_\-]+):([0-9]+):([0-9]+):([a-zA-Z0-9_/\-]*):([a-zA-Z0-9_/\-]+):([a-zA-Z0-9_/\-]+)'
+	#             username          passwd            uid      gid      gecos dir                shell
+	local -r REX='([a-zA-Z0-9_\-]+):([a-zA-Z0-9_\-]+):([0-9]+):([0-9]+):(.*):([a-zA-Z0-9_/\-]+):([a-zA-Z0-9_/\-]+)'
 	local LINE
 
 	if {
@@ -58,11 +68,13 @@ function mbfl_system_passwd_read () {
 		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:dir"]=${BASH_REMATCH[6]}
 		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:shell"]=${BASH_REMATCH[7]}
 		    let ++mbfl_system_PASSWD_COUNT
+		else
+		    :
 		fi
 	    done </etc/passwd
 	}
 	then
-	    if ((0 < mbfl_system_GROUP_COUNT))
+	    if ((0 < mbfl_system_PASSWD_COUNT))
 	    then return 0
 	    else return 1
 	    fi
@@ -204,25 +216,57 @@ function mbfl_system_passwd_find_entry_by_uid () {
 #page
 #### user id conversion
 
-function mbfl_system_enable_programs () {
-    :
-}
-function mbfl_system_numerical_user_id_to_name () {
-    mbfl_mandatory_integer_parameter(THE_UID, 1, numerical user id)
-    local IDX
-    mbfl_system_passwd_read
-    if mbfl_system_passwd_find_entry_by_uid_var IDX $THE_UID
-    then mbfl_system_passwd_get_name $IDX
+function mbfl_system_passwd_uid_to_name_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(THE_UID,       2, user id)
+    local -i USER_INDEX
+    if mbfl_system_passwd_find_entry_by_uid_var USER_INDEX $THE_UID
+    then mbfl_system_passwd_get_name_var RESULT_VARREF $USER_INDEX
     else return 1
+    fi
+}
+function mbfl_system_passwd_uid_to_name () {
+    mbfl_mandatory_integer_parameter(THE_UID, 1, user id)
+    local -i USER_INDEX
+    if mbfl_system_passwd_find_entry_by_uid_var USER_INDEX $THE_UID
+    then mbfl_system_passwd_get_name $USER_INDEX
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_passwd_name_to_uid_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(THE_NAME,              2, user name)
+    local -i USER_INDEX
+    if mbfl_system_passwd_find_entry_by_name_var USER_INDEX "$THE_NAME"
+    then mbfl_system_passwd_get_uid_var RESULT_VARREF $USER_INDEX
+    else return 1
+    fi
+}
+
+function mbfl_system_passwd_name_to_uid () {
+    mbfl_mandatory_parameter(THE_NAME, 1, user name)
+    local -i USER_INDEX
+    if mbfl_system_passwd_find_entry_by_name_var USER_INDEX "$THE_NAME"
+    then mbfl_system_passwd_get_uid $USER_INDEX
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_numerical_user_id_to_name () {
+    mbfl_mandatory_integer_parameter(THE_UID, 1, user id)
+    if mbfl_system_passwd_read
+    then mbfl_system_passwd_uid_to_name "$THE_UID"
     fi
 }
 function mbfl_system_user_name_to_numerical_id () {
     mbfl_mandatory_parameter(THE_NAME, 1, user name)
-    local IDX
-    mbfl_system_passwd_read
-    if mbfl_system_passwd_find_entry_by_name_var IDX "$THE_NAME"
-    then mbfl_system_passwd_get_uid $IDX
-    else return 1
+    if mbfl_system_passwd_read
+    then mbfl_system_passwd_name_to_uid "$THE_NAME"
     fi
 }
 
@@ -424,6 +468,63 @@ function mbfl_system_group_find_entry_by_gid () {
     if mbfl_system_group_find_entry_by_gid_var RESULT_VARNAME "$THE_GID"
     then echo "$RESULT_VARNAME"
     else return 1
+    fi
+}
+
+#page
+#### group id conversion
+
+function mbfl_system_group_gid_to_name_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(THE_GID,       2, group id)
+    local -i GROUP_INDEX
+    if mbfl_system_group_find_entry_by_gid_var GROUP_INDEX $THE_GID
+    then mbfl_system_group_get_name_var RESULT_VARREF $GROUP_INDEX
+    else return 1
+    fi
+}
+function mbfl_system_group_gid_to_name () {
+    mbfl_mandatory_integer_parameter(THE_GID, 1, group id)
+    local -i GROUP_INDEX
+    if mbfl_system_group_find_entry_by_gid_var GROUP_INDEX $THE_GID
+    then mbfl_system_group_get_name $GROUP_INDEX
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_group_name_to_gid_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(THE_NAME,              2, group name)
+    local -i GROUP_INDEX
+    if mbfl_system_group_find_entry_by_name_var GROUP_INDEX "$THE_NAME"
+    then mbfl_system_group_get_gid_var RESULT_VARREF $GROUP_INDEX
+    else return 1
+    fi
+}
+
+function mbfl_system_group_name_to_gid () {
+    mbfl_mandatory_parameter(THE_NAME, 1, group name)
+    local -i GROUP_INDEX
+    if mbfl_system_group_find_entry_by_name_var GROUP_INDEX "$THE_NAME"
+    then mbfl_system_group_get_gid $GROUP_INDEX
+    else return 1
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_numerical_group_id_to_name () {
+    mbfl_mandatory_integer_parameter(THE_GID, 1, group id)
+    if mbfl_system_group_read
+    then mbfl_system_group_gid_to_name "$THE_GID"
+    fi
+}
+function mbfl_system_group_name_to_numerical_id () {
+    mbfl_mandatory_parameter(THE_NAME, 1, group name)
+    if mbfl_system_group_read
+    then mbfl_system_group_name_to_gid "$THE_NAME"
     fi
 }
 
