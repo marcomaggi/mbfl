@@ -6363,14 +6363,14 @@ them to the server; it reads lines from the server, and echoes them to stdout.
 @appendixsec Using @command{gnutls-cli} as connector
 
 
-@gnu{} @tls{} is a library implementing the @tls{} protocol; it can be used to establish encrypted
+@gnu{} @tls{} is a library implementing the @tls{} protocol; we can use it to establish encrypted
 and authenticated connections to a remote host.  The @smtp{} protocol has extensions to allow usage
 of a @tls{} layer.
 
 A @gnu{} @tls{} installation comes with a command line test program, @command{gnutls-cli}, that can
-be used to establish an encrypted connection by a shell script.  This command can be used as the
-``connector'' modeled in @ref{sendmail connector, Send email through a process in background}.  It
-has a manual page, which we may want to read.
+establish an encrypted connection.  We use this command as the ``connector'' modeled in
+@ref{sendmail connector, Send email through a process in background}.  It has a manual page, which
+we may want to read.
 
 When handling an encrypted connection we have to know in advance how the remote @smtp{} server
 behaves.  Let's see first the simpler example, using the a human driven interactive session; then we
@@ -6637,7 +6637,7 @@ recv> - Key Exchange: RSA
 recv> - Cipher: ARCFOUR-128
 recv> - MAC: MD5
 recv> - Compression: NULL
-send> ehlo rapitore.luna
+send> ehlo localhost.localdomain
 recv> 250-...
 recv> 250-SIZE 35651584
 recv> 250-8BITMIME
@@ -6668,13 +6668,13 @@ recv> 221 2.0.0 closing connection ...
 @appendixsec Using @command{openssl} as connector
 
 
-OpenSSL is a library implementing the @ssl{}/@tls{} protocol; it can be used to establish encrypted
+OpenSSL is a library implementing the @ssl{}/@tls{} protocol; we can use it to establish encrypted
 and authenticated connections to a remote host.
 
-An OpenSSL installation comes with a command line test program, @command{openssl}, that can be used
-to establish an encrypted connection by a shell script.  This command can be used as the
-``connector'' modeled in @ref{sendmail connector, Send email through a process in background}.  It
-has a manual page, which we may want to read.
+An OpenSSL installation comes with a command line test program, @command{openssl}, that can
+establish an encrypted connection.  We use this command as the ``connector'' modeled in
+@ref{sendmail connector, Send email through a process in background}.  It has a manual page, which
+we may want to read.
 
 Here we see how we can use the @command{openssl} program in place of the @command{gnutls-cli}
 program described in @ref{sendmail gnutls, Using @command{gnutls-cli} as connector}.  The two
@@ -6710,7 +6710,7 @@ To build the encrypted bridge right after the connection, without exchanging gre
 server, we do:
 
 @example
-$ openssl s_client -quiet -connect relay.poste.it:465
+openssl s_client -quiet -connect relay.poste.it:465
 @end example
 
 @noindent
@@ -6726,7 +6726,7 @@ To first exchange greetings, then send @code{STARTTLS} and finally build the enc
 do:
 
 @example
-$ openssl s_client -quiet -starttls smtp \
+openssl s_client -quiet -starttls smtp \
     -connect smtp.gmail.com:587
 @end example
 
