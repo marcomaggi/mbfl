@@ -306,43 +306,49 @@ function mbfl_p_program_exec () {
 ### --------------------------------------------------------------------
 
 function mbfl_p_program_exec_1 () {
-    local EXIT_STATUS
-    if $BACKGROUND
-    then mbfl_p_program_exec_2 "$@" &
+    if $STDERR_TO_STDOUT
+    then mbfl_p_program_exec_2 "$@" 2>&1
     else mbfl_p_program_exec_2 "$@"
     fi
-    EXIT_STATUS=$?
-    mbfl_program_BGPID=$!
-    return $EXIT_STATUS
 }
 function mbfl_p_program_exec_2 () {
-    if $STDERR_TO_STDOUT
-    then mbfl_p_program_exec_3 "$@" 2>&1
-    else mbfl_p_program_exec_3 "$@"
+    if mbfl_string_is_digit "$OUCHAN"
+    then mbfl_p_program_exec_3 "$@" >&"$OUCHAN"
+    else mbfl_p_program_exec_3 "$@" >"$OUCHAN"
     fi
 }
 function mbfl_p_program_exec_3 () {
-    if mbfl_string_is_digit "$OUCHAN"
-    then mbfl_p_program_exec_4 "$@" >&"$OUCHAN"
-    else mbfl_p_program_exec_4 "$@" >"$OUCHAN"
+    if mbfl_string_is_digit "$INCHAN"
+    then mbfl_p_program_exec_4 "$@" <&"$INCHAN"
+    else mbfl_p_program_exec_4 "$@" <"$INCHAN"
     fi
 }
 function mbfl_p_program_exec_4 () {
-    if mbfl_string_is_digit "$INCHAN"
-    then mbfl_p_program_exec_5 "$@" <&"$INCHAN"
-    else mbfl_p_program_exec_5 "$@" <"$INCHAN"
+    local EXEC
+
+    # NOTE We might be tempted to  use "command" as value of "EXEC" when
+    # we  are not  replacing the  current  process.  We  must avoid  it,
+    # because "command" causes  an additional process to  be spawned and
+    # this botches the value of  "mbfl_program_BGPID" we want to collect
+    # when running the process in background.
+    if $REPLACE
+    then EXEC=exec
+    else EXEC=
+    fi
+    if $USE_SUDO
+    then mbfl_p_program_exec_5 $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
+    else mbfl_p_program_exec_5 $EXEC                                     "$@"
     fi
 }
 function mbfl_p_program_exec_5 () {
-    local EXEC
-
-    if $REPLACE
-    then EXEC=exec
-    else EXEC=command
-    fi
-    if $USE_SUDO
-    then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
-    else $EXEC                                     "$@"
+    if $BACKGROUND
+    then
+	local -i EXIT_CODE
+	"$@" &
+	EXIT_CODE=$?
+	mbfl_program_BGPID=$!
+	return $EXIT_CODE
+    else "$@"
     fi
 }
 
