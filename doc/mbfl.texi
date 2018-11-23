@@ -4233,12 +4233,25 @@ ranges @code{[a-zA-Z0-9_-]}, the first character is in the range
 
 @defun mbfl_string_is_email_address @var{string}
 Return true if @var{string} is non--empty and it matches the general shape of an email address;
-otherwise return false.  The @var{string} is considered an email address if it matches the following
-regular expression:
+otherwise return false.
+@end defun
 
-@example
-REX='^[a-zA-Z0-9_.\-]+(@@[a-zA-Z0-9_.\-]+)?$'
-@end example
+
+@defun mbfl_string_is_network_hostname @var{string}
+Return true if @var{string} is non--empty and it matches the format of a network hostname; otherwise
+return false.
+@end defun
+
+
+@defun mbfl_string_is_network_port @var{string}
+Return true if @var{string} is non--empty and it matches the format of a network port number;
+otherwise return false.
+@end defun
+
+
+@defun mbfl_string_is_network_ip_address @var{string}
+Return true if @var{string} is non--empty and it matches the format of an @acronym{IP} address;
+otherwise return false.
 @end defun
 
 @c page

@@ -424,6 +424,50 @@ function mbfl_string_is_username () {
     mbfl_string_is_not_empty "$STRING" && \
 	mbfl_string_is_identifier "$STRING"
 }
+function mbfl_string_is_network_port () {
+    # We want  to accept  an empty  parameter and  return unsuccessfully
+    # when given.
+    mbfl_optional_parameter(STRING, 1)
+
+    if mbfl_string_is_not_empty "$STRING" && mbfl_string_is_digit "$STRING" && ((0 <= STRING && STRING <= 1024))
+    then return 0
+    else return 1
+    fi
+}
+function mbfl_string_is_network_hostname () {
+    # We want  to accept  an empty  parameter and  return unsuccessfully
+    # when given.
+    mbfl_optional_parameter(STRING, 1)
+    # This regular expression comes from:
+    #
+    #   https://stackoverflow.com/questions/106179/regular-expression-to-match-dns-hostname-or-ip-address
+    #
+    # answer by Sakari A. Maaranen, last visited Nov 23, 2018.
+    local -r REX="^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$"
+
+    if ((${#STRING} <= 255)) && [[ $STRING =~ $REX ]]
+    then return 0
+    fi
+    return 1
+}
+
+function mbfl_string_is_network_ip_address () {
+    # We want  to accept  an empty  parameter and  return unsuccessfully
+    # when given.
+    mbfl_optional_parameter(STRING, 1)
+    # This regular expression comes from:
+    #
+    #   https://stackoverflow.com/questions/106179/regular-expression-to-match-dns-hostname-or-ip-address
+    #
+    # answer by Jorge Ferreira, last visited Nov 23, 2018.
+    local -r REX="^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+
+    if ((${#STRING} <= 255)) && [[ $STRING =~ $REX ]]
+    then return 0
+    fi
+    return 1
+}
+
 function mbfl_string_is_email_address () {
     # We want  to accept  an empty  parameter and  return unsuccessfully
     # when given.

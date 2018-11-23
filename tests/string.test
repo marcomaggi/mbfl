@@ -828,6 +828,49 @@ function string-is-email-address-2.6 () {
 }
 
 #page
+#### validating network port numbers
+
+function string-is-network-port-1.1 () {
+    mbfl_string_is_network_port 25
+}
+function string-is-network-port-2.1 () {
+    ! mbfl_string_is_network_port ciao
+}
+
+#page
+#### validating network hostnames
+
+function string-is-network-hostname-1.1 () {
+    mbfl_string_is_network_hostname localhost
+}
+function string-is-network-hostname-1.2 () {
+    mbfl_string_is_network_hostname www.ciao.it
+}
+function string-is-network-hostname-2.1 () {
+    ! mbfl_string_is_network_hostname 'ciao mamma'
+}
+
+#page
+#### validating network IP address
+
+function string-is-network-ip-address-1.1 () {
+    mbfl_string_is_network_ip_address 127.0.0.1
+}
+function string-is-network-ip-address-1.2 () {
+    mbfl_string_is_network_ip_address 123.222.111.0
+}
+
+function string-is-network-ip-address-2.1 () {
+    ! mbfl_string_is_network_ip_address 'ciao mamma'
+}
+function string-is-network-ip-address-2.2 () {
+    ! mbfl_string_is_network_ip_address 1.2.3.4.5
+}
+function string-is-network-ip-address-2.3 () {
+    ! mbfl_string_is_network_ip_address 500.0.0.0
+}
+
+#page
 #### uppercase and lowercase conversion
 
 function string-toupper-1.1 () {
