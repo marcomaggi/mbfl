@@ -6909,9 +6909,8 @@ construction or @tls{} session with bridge construction after
 @code{STARTTLS} command.
 
 @item --gnutls
-Use @command{gnutls-cli} as connector for encrypted sessions.  This is
-the default when @option{--starttls} or @option{--delayed-starttls} are
-used.
+Use @command{gnutls-cli} as connector for encrypted sessions.  This is the default when
+@option{--tls} or @option{--starttls} are used.
 
 @item --openssl
 Use @command{gnutls-cli} as connector for encrypted sessions.
