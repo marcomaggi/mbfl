@@ -229,19 +229,22 @@ function mbfl_program_exec () {
     # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
     # /dev/fd/1 do not exist when the script is run from a cron job.
     local INCHAN=0 OUCHAN=1
-    mbfl_p_program_exec $INCHAN $OUCHAN false false "$@"
+    local REPLACE=false BACKGROUND=false
+    mbfl_p_program_exec $INCHAN $OUCHAN $REPLACE $BACKGROUND "$@"
 }
 function mbfl_program_execbg () {
     mbfl_mandatory_parameter(INCHAN, 1, numeric input channel)
     mbfl_mandatory_parameter(OUCHAN, 2, numeric output channel)
     shift 2
-    mbfl_p_program_exec "$INCHAN" "$OUCHAN" false true "$@"
+    local REPLACE=false BACKGROUND=true
+    mbfl_p_program_exec "$INCHAN" "$OUCHAN" $REPLACE $BACKGROUND "$@"
 }
 function mbfl_program_replace () {
     # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
     # /dev/fd/1 do not exist when the script is run from a cron job.
     local INCHAN=0 OUCHAN=1
-    mbfl_p_program_exec $INCHAN $OUCHAN true false "$@"
+    local REPLACE=true BACKGROUND=false
+    mbfl_p_program_exec $INCHAN $OUCHAN $REPLACE $BACKGROUND "$@"
 }
 
 #page
@@ -298,57 +301,172 @@ function mbfl_p_program_exec () {
     fi
 
     # If this run is not dry: actually run the program.
+    #
+    # NOTE This is a hellish nested  tree of "if" statements, I know!  I
+    # really, really, really tried to write  it in different ways; and I
+    # failed.   With the  other solutions  (for example:  a sequence  of
+    # nested function  calls) there is  always some problem with  one or
+    # more among:
+    #
+    # * Correctly detecting program execution errors.
+    #
+    # * Correctly detecting input/output channel opening errors.
+    #
+    # * Correctly registering the PID of the process run in background.
+    #
+    # So I wrote it this way.  Fortunately I do not have to look at this
+    # code very often.  (Marco Maggi; Nov 24, 2018)
+    #
     if ! mbfl_option_test
-    then mbfl_p_program_exec_1 "$@"
-    fi
-}
-
-### --------------------------------------------------------------------
-
-function mbfl_p_program_exec_1 () {
-    if $STDERR_TO_STDOUT
-    then mbfl_p_program_exec_2 "$@" 2>&1
-    else mbfl_p_program_exec_2 "$@"
-    fi
-}
-function mbfl_p_program_exec_2 () {
-    if mbfl_string_is_digit "$OUCHAN"
-    then mbfl_p_program_exec_3 "$@" >&"$OUCHAN"
-    else mbfl_p_program_exec_3 "$@" >"$OUCHAN"
-    fi
-}
-function mbfl_p_program_exec_3 () {
-    if mbfl_string_is_digit "$INCHAN"
-    then mbfl_p_program_exec_4 "$@" <&"$INCHAN"
-    else mbfl_p_program_exec_4 "$@" <"$INCHAN"
-    fi
-}
-function mbfl_p_program_exec_4 () {
-    local EXEC
-
-    # NOTE We might be tempted to  use "command" as value of "EXEC" when
-    # we  are not  replacing the  current  process.  We  must avoid  it,
-    # because "command" causes  an additional process to  be spawned and
-    # this botches the value of  "mbfl_program_BGPID" we want to collect
-    # when running the process in background.
-    if $REPLACE
-    then EXEC=exec
-    else EXEC=
-    fi
-    if $USE_SUDO
-    then mbfl_p_program_exec_5 $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
-    else mbfl_p_program_exec_5 $EXEC                                     "$@"
-    fi
-}
-function mbfl_p_program_exec_5 () {
-    if $BACKGROUND
     then
-	local -i EXIT_CODE
-	"$@" &
-	EXIT_CODE=$?
-	mbfl_program_BGPID=$!
-	return $EXIT_CODE
-    else "$@"
+	# NOTE We might  be tempted to use "command" as  value of "EXEC"
+	# when we are not replacing  the current process.  We must avoid
+	# it,  because  "command" causes  an  additional  process to  be
+	# spawned and this botches  the value of "mbfl_program_BGPID" we
+	# want to collect when running the process in background.
+	if $REPLACE
+	then EXEC=exec
+	else EXEC=
+	fi
+
+	if $STDERR_TO_STDOUT
+	then
+	    # Stderr-to-stdout.
+	    if mbfl_string_is_digit "$OUCHAN"
+	    then
+		# Stderr-to-stdout, digit ouchan.
+		if mbfl_string_is_digit "$INCHAN"
+		then
+		    # Stderr-to-stdout, digit ouchan, digit inchan.
+		    if $BACKGROUND
+		    then
+			# Stderr-to-stdout, digit ouchan, digit inchan, background.
+			local -i EXIT_CODE
+			"$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
+			EXIT_CODE=$?
+			mbfl_program_BGPID=$!
+			return $EXIT_CODE
+		    else
+			# Stderr-to-stdout, digit ouchan, digit inchan, foreground.
+			"$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
+		    fi
+		else
+		    # Stderr-to-stdout, digit ouchan, string inchan.
+		    if $BACKGROUND
+		    then
+			# Stderr-to-stdout, digit ouchan, string inchan, background.
+			local -i EXIT_CODE
+			"$@" <"$INCHAN" >&"$OUCHAN" 2>&1 &
+			EXIT_CODE=$?
+			mbfl_program_BGPID=$!
+			return $EXIT_CODE
+		    else
+			# Stderr-to-stdout, digit ouchan, string inchan, foreground.
+			"$@" <"$INCHAN" >&"$OUCHAN" 2>&1
+		    fi
+		fi
+	    else
+		# Stderr-to-stdout, string ouchan.
+		if mbfl_string_is_digit "$INCHAN"
+		then
+		    # Stderr-to-stdout, string ouchan, digit inchan.
+		    if $BACKGROUND
+		    then
+			# Stderr-to-stdout, string ouchan, digit inchan, background.
+			local -i EXIT_CODE
+			"$@" <&"$INCHAN" >"$OUCHAN" 2>&1 &
+			EXIT_CODE=$?
+			mbfl_program_BGPID=$!
+			return $EXIT_CODE
+		    else
+			# Stderr-to-stdout, string ouchan, digit inchan, foreground.
+			"$@" <&"$INCHAN" >"$OUCHAN" 2>&1
+		    fi
+		else
+		    # Stderr-to-stdout, string ouchan, string inchan.
+		    if $BACKGROUND
+		    then
+			# Stderr-to-stdout, string ouchan, string inchan, background.
+			local -i EXIT_CODE
+			"$@" <"$INCHAN" >"$OUCHAN" 2>&1 &
+			EXIT_CODE=$?
+			mbfl_program_BGPID=$!
+			return $EXIT_CODE
+		    else
+			# Stderr-to-stdout, string ouchan, string inchan, foreground.
+			"$@" <"$INCHAN" >"$OUCHAN" 2>&1
+		    fi
+		fi
+	    fi
+	else
+	    # Stderr-to-stderr.
+	    if mbfl_string_is_digit "$OUCHAN"
+	    then
+		# Stderr-to-stderr, digit ouchan.
+		if mbfl_string_is_digit "$INCHAN"
+		then
+		    # Stderr-to-stderr, digit ouchan, digit inchan.
+		    if $BACKGROUND
+		    then
+			# Stderr-to-stderr, digit ouchan, digit inchan, background.
+			local -i EXIT_CODE
+			"$@" <&"$INCHAN" >&"$OUCHAN" &
+			EXIT_CODE=$?
+			mbfl_program_BGPID=$!
+			return $EXIT_CODE
+		    else
+			# Stderr-to-stderr, digit ouchan, digit inchan, foreground.
+			"$@" <&"$INCHAN" >&"$OUCHAN"
+		    fi
+		else
+		    # Stderr-to-stderr, digit ouchan, string inchan.
+		    if $BACKGROUND
+		    then
+			# Stderr-to-stderr, digit ouchan, string inchan, background.
+			local -i EXIT_CODE
+			"$@" <"$INCHAN" >&"$OUCHAN" &
+			EXIT_CODE=$?
+			mbfl_program_BGPID=$!
+			return $EXIT_CODE
+		    else
+			# Stderr-to-stderr, digit ouchan, string inchan, foreground.
+			"$@" <"$INCHAN" >&"$OUCHAN"
+		    fi
+		fi
+	    else
+		# Stderr-to-stderr, string ouchan.
+		if mbfl_string_is_digit "$INCHAN"
+		then
+		    # Stderr-to-stderr, string ouchan, digit inchan.
+		    if $BACKGROUND
+		    then
+			# Stderr-to-stderr, string ouchan, digit inchan, background.
+			local -i EXIT_CODE
+			"$@" <&"$INCHAN" >"$OUCHAN" &
+			EXIT_CODE=$?
+			mbfl_program_BGPID=$!
+			return $EXIT_CODE
+		    else
+			# Stderr-to-stderr, string ouchan, digit inchan, foreground.
+			"$@" <&"$INCHAN" >"$OUCHAN"
+		    fi
+		else
+		    # Stderr-to-stderr, string ouchan, string inchan.
+		    if $BACKGROUND
+		    then
+			# Stderr-to-stderr, string ouchan, string inchan, background.
+			local -i EXIT_CODE
+			"$@" <"$INCHAN" >"$OUCHAN" &
+			EXIT_CODE=$?
+			mbfl_program_BGPID=$!
+			return $EXIT_CODE
+		    else
+			# Stderr-to-stderr, string ouchan, string inchan, foreground.
+			"$@" <"$INCHAN" >"$OUCHAN"
+		    fi
+		fi
+	    fi
+	fi
     fi
 }
 
