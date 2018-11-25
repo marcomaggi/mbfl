@@ -342,13 +342,19 @@ function mbfl_p_program_exec () {
 		    then
 			# Stderr-to-stdout, digit ouchan, digit inchan, background.
 			local -i EXIT_CODE
-			"$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
+			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
+			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stdout, digit ouchan, digit inchan, foreground.
-			"$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
+			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
+			fi
 		    fi
 		else
 		    # Stderr-to-stdout, digit ouchan, string inchan.
@@ -356,13 +362,19 @@ function mbfl_p_program_exec () {
 		    then
 			# Stderr-to-stdout, digit ouchan, string inchan, background.
 			local -i EXIT_CODE
-			"$@" <"$INCHAN" >&"$OUCHAN" 2>&1 &
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" 2>&1 &
+			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" 2>&1 &
+			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stdout, digit ouchan, string inchan, foreground.
-			"$@" <"$INCHAN" >&"$OUCHAN" 2>&1
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" 2>&1
+			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" 2>&1
+			fi
 		    fi
 		fi
 	    else
@@ -374,13 +386,19 @@ function mbfl_p_program_exec () {
 		    then
 			# Stderr-to-stdout, string ouchan, digit inchan, background.
 			local -i EXIT_CODE
-			"$@" <&"$INCHAN" >"$OUCHAN" 2>&1 &
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" 2>&1 &
+			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" 2>&1 &
+			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stdout, string ouchan, digit inchan, foreground.
-			"$@" <&"$INCHAN" >"$OUCHAN" 2>&1
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" 2>&1
+			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" 2>&1
+			fi
 		    fi
 		else
 		    # Stderr-to-stdout, string ouchan, string inchan.
@@ -388,13 +406,19 @@ function mbfl_p_program_exec () {
 		    then
 			# Stderr-to-stdout, string ouchan, string inchan, background.
 			local -i EXIT_CODE
-			"$@" <"$INCHAN" >"$OUCHAN" 2>&1 &
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" 2>&1 &
+			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" 2>&1 &
+			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stdout, string ouchan, string inchan, foreground.
-			"$@" <"$INCHAN" >"$OUCHAN" 2>&1
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" 2>&1
+			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" 2>&1
+			fi
 		    fi
 		fi
 	    fi
@@ -410,13 +434,19 @@ function mbfl_p_program_exec () {
 		    then
 			# Stderr-to-stderr, digit ouchan, digit inchan, background.
 			local -i EXIT_CODE
-			"$@" <&"$INCHAN" >&"$OUCHAN" &
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" &
+			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" &
+			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stderr, digit ouchan, digit inchan, foreground.
-			"$@" <&"$INCHAN" >&"$OUCHAN"
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"
+			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN"
+			fi
 		    fi
 		else
 		    # Stderr-to-stderr, digit ouchan, string inchan.
@@ -424,13 +454,19 @@ function mbfl_p_program_exec () {
 		    then
 			# Stderr-to-stderr, digit ouchan, string inchan, background.
 			local -i EXIT_CODE
-			"$@" <"$INCHAN" >&"$OUCHAN" &
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" &
+			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" &
+			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stderr, digit ouchan, string inchan, foreground.
-			"$@" <"$INCHAN" >&"$OUCHAN"
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN"
+			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN"
+			fi
 		    fi
 		fi
 	    else
@@ -442,13 +478,19 @@ function mbfl_p_program_exec () {
 		    then
 			# Stderr-to-stderr, string ouchan, digit inchan, background.
 			local -i EXIT_CODE
-			"$@" <&"$INCHAN" >"$OUCHAN" &
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" &
+			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" &
+			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stderr, string ouchan, digit inchan, foreground.
-			"$@" <&"$INCHAN" >"$OUCHAN"
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN"
+			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN"
+			fi
 		    fi
 		else
 		    # Stderr-to-stderr, string ouchan, string inchan.
@@ -456,13 +498,19 @@ function mbfl_p_program_exec () {
 		    then
 			# Stderr-to-stderr, string ouchan, string inchan, background.
 			local -i EXIT_CODE
-			"$@" <"$INCHAN" >"$OUCHAN" &
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" &
+			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" &
+			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stderr, string ouchan, string inchan, foreground.
-			"$@" <"$INCHAN" >"$OUCHAN"
+			if $USE_SUDO
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN"
+			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN"
+			fi
 		    fi
 		fi
 	    fi
