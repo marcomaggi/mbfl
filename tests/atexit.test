@@ -1,0 +1,102 @@
+# atexit.test --
+#
+# Part of: Marco's BASH Functions Library
+# Contents: tests for the atexit module
+# Date: Nov 25, 2018
+#
+# Abstract
+#
+#	To select the tests in this file:
+#
+#		$ make all test TESTMATCH=atexit-
+#
+# Copyright (c) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+#
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 2, or (at your  option) any later
+# version.
+#
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# General Public License for more details.
+#
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
+#
+
+#PAGE
+#### setup
+
+source setup.sh
+
+#page
+#### helpers
+
+declare -i flag1=0 flag2=0 flag3=0
+
+function reset_flags () {
+    flag1=0
+    flag2=0
+    flag3=0
+}
+
+function flag_it_1 () {
+    let ++flag1
+}
+function flag_it_2 () {
+    let ++flag2
+}
+function flag_it_3 () {
+    let ++flag3
+}
+
+#page
+#### tests with no identifiers
+
+function atexit-1.1 () {
+    reset_flags
+    mbfl_atexit_enable
+    mbfl_atexit_register flag_it_1
+    mbfl_atexit_run
+    dotest-equal 1 ${flag1} && dotest-equal 0 ${flag2} && dotest-equal 0 ${flag3}
+}
+
+function atexit-1.2 () {
+    reset_flags
+    mbfl_atexit_enable
+    mbfl_atexit_register flag_it_1
+    mbfl_atexit_register flag_it_2
+    mbfl_atexit_register flag_it_3
+    mbfl_atexit_run
+    dotest-equal 1 ${flag1} && dotest-equal 1 ${flag2} && dotest-equal 1 ${flag3}
+}
+
+#page
+#### tests with identifier
+
+function atexit-2.1 () {
+    local ID1 ID2 ID3
+
+    reset_flags
+    mbfl_atexit_enable
+    mbfl_atexit_register flag_it_1 ID1
+    mbfl_atexit_register flag_it_2 ID2
+    mbfl_atexit_register flag_it_3 ID3
+    mbfl_atexit_forget $ID2
+    mbfl_atexit_run
+    dotest-equal 1 ${flag1} && dotest-equal 0 ${flag2} && dotest-equal 1 ${flag3}
+}
+
+#PAGE
+
+dotest atexit-
+dotest-final-report
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

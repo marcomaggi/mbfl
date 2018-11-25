@@ -173,6 +173,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * variables::                   Manipulating variables.
 * arrays::                      Manipulating arrays.
 * system::                      Interfacing with the system.
+* atexit::                      Running scripts at exit-time.
 * main::                        Main function.
 * testing::                     Building test suites.
 
@@ -5231,6 +5232,53 @@ digit.
 @defun mbfl_system_octal_to_symbolic_permissions @var{mode}
 Convert a single octal digit representing file permissions into three
 chars.
+@end defun
+
+@c page
+@node atexit
+@chapter Running scripts at exit--time
+
+
+Bash allows us to execute a command whenever it exit by issuing the command:
+
+@example
+trap @meta{script} EXIT
+@end example
+
+@noindent
+the atexit @mbfl{} module uses this mechanism to register, forget and run multiple commands.
+
+
+@defun mbfl_atexit_enable
+@defunx mbfl_atexit_disable
+Register or delete @bfunc{mbfl_atexit_run} as command for the @code{EXIT} event.  We must call this
+function first if we want to use this module.
+@end defun
+
+
+@defun mbfl_atexit_register @var{handler}
+@defunx mbfl_atexit_register @var{handler} @var{idvar}
+Register a new @var{handler} command.  If the optional argument @var{idvar} is present, it must be
+the name of a variable in the scope of the caller: store into such variable a unique identifier
+associated to the handler.
+@end defun
+
+
+@defun mbfl_atexit_forget @var{id}
+Remove the, previously registered, handler command associated to @var{id}.  If no handler is
+associated to it: nothing happens.
+@end defun
+
+
+@defun mbfl_atexit_run
+Run all the registered handlers, from the last registered to the first.  Whenever a handler is run:
+it is removed from the internal registry.
+@end defun
+
+
+@defun mbfl_atexit_clear
+Remove all the registered handlers from the internal registry.  This renders invalid all the handler
+identifiers that were created.
 @end defun
 
 @c page

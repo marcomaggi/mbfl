@@ -55,6 +55,7 @@ EXTRA_DIST	+= \
 	src/modules/arrays.sh.m4		\
 	src/modules/system.sh.m4		\
 	src/modules/interfaces.sh.m4		\
+	src/modules/atexit.sh.m4		\
 	\
 	src/lib/libmbfl.sh.m4			\
 	src/lib/libmbfltest.sh			\
@@ -73,7 +74,7 @@ MBFL_MODULES		= \
 	src/modules/program.sh	src/modules/signal.sh		src/modules/string.sh	      \
 	src/modules/dialog.sh	src/modules/main.sh		src/modules/variable.sh	      \
 	src/modules/system.sh	src/modules/arrays.sh		src/modules/interfaces.sh     \
-	src/modules/times-and-dates.sh
+	src/modules/atexit.sh	src/modules/times-and-dates.sh
 
 MBFL_PREPRO		= src/lib/preprocessor.m4
 
@@ -221,6 +222,7 @@ endif
 
 EXTRA_DIST	+= \
 	tests/arrays.test		\
+	tests/atexit.test		\
 	tests/compress.test		\
 	tests/encode.test		\
 	tests/file.test			\
@@ -264,6 +266,7 @@ AM_TEST_LOG_FLAGS	= $(user_flags)
 
 TESTS			= \
 	tests/arrays.test		\
+	tests/atexit.test		\
 	tests/compress.test		\
 	tests/encode.test		\
 	tests/file.test			\
@@ -280,7 +283,7 @@ TESTS			= \
 ## --------------------------------------------------------------------
 ## additional test rules
 
-.PHONY: test test-template test-template-actions
+.PHONY: test test-template test-template-actions test-script-atexit
 
 test: all $(check_SCRIPTS)
 	for item in $(srcdir)/tests/*$(file)*.test;					\
@@ -288,10 +291,13 @@ test: all $(check_SCRIPTS)
 	done
 
 test-template: examples/template.sh src/lib/libmbfl.sh
-	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(builddir)/examples/template.sh $(MFLAGS)
+	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(builddir)/examples/template.sh $(MBFLFLAGS)
 
 test-template-actions: examples/template-actions.sh src/lib/libmbfl.sh
-	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(builddir)/examples/template-actions.sh $(MFLAGS)
+	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(builddir)/examples/template-actions.sh $(MBFLFLAGS)
+
+test-script-atexit:
+	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/tests/script-atexit.sh $(MBFLFLAGS)
 
 
 #### interface to "make installcheck"
