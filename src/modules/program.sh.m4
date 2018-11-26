@@ -195,7 +195,7 @@ function mbfl_program_declare_sudo_user () {
     then mbfl_program_SUDO_USER=$PERSONA
     else
 	mbfl_message_error_printf 'attempt to select invalid "sudo" user: "%s"' "$PERSONA"
-	exit_because_invalid_username
+	exit_because_invalid_sudo_username
     fi
 }
 function mbfl_program_reset_sudo_user () {

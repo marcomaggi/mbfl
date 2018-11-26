@@ -3516,18 +3516,20 @@ This function does @strong{not} use @bfunc{mbfl_declare_program}.
 
 
 @defun mbfl_program_declare_sudo_user @var{user}
-Register @var{user} as the user under which to execute the next program
-through @command{sudo}; the user will be selected using the @code{-u}
-option of @command{sudo}.  The value @code{nosudo} means: do not use
-@command{sudo}.
+Register @var{user} as the user under which to execute the next program through @command{sudo}; the
+user will be selected using the @code{-u} option of @command{sudo}.  The value @code{nosudo} means:
+do not use @command{sudo}.
 
-The string @var{user} must satisfy the function
-@bfunc{mbfl_string_is_username}, else the function will print an error
-message to @stderr{} and exit with
-@bfunc{exit_because_invalid_username}.
+The string @var{user} must satisfy the function @bfunc{mbfl_string_is_username}, else the function
+will print an error message to @stderr{} and exit with @bfunc{exit_because_invalid_sudo_username}.
 
-When the time comes: if the selected user name equals the value printed
-by @command{whoami}, @command{sudo} is not used.
+When the time comes: if the selected user name equals the value printed by @command{whoami},
+@command{sudo} is not used.
+@end defun
+
+
+@defun exit_because_invalid_sudo_username
+Exit with code @code{90}.
 @end defun
 
 

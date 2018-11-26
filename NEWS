@@ -103,6 +103,9 @@ changes!
 * Added  functions  to  the  system   module  to  inspect  entries  from
   /etc/passwd and /etc/group.
 
+* BACKWARDS INCOMPATIBILITY The function "exit_because_invalid_username"
+  has been renamed to "exit_because_invalid_sudo_username".
+
 
 Notes for revision 2.2.0
 ------------------------
