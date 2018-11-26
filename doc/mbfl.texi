@@ -43,6 +43,20 @@ The function variant @code{_var} stores the result in the variable @var{RV}, rat
 @end macro
 
 
+@macro stdin{}
+@code{stdin}
+@end macro
+
+
+@macro stdout{}
+@code{stdout}
+@end macro
+
+
+@macro stderr{}
+@code{stderr}
+@end macro
+
 @c page
 @c ------------------------------------------------------------
 @c Values.
@@ -2254,8 +2268,8 @@ A string describing this action, to be used to compose the help screen.
 
 
 @defun mbfl_actions_dispatch @var{action-set}
-Parse the next command line argument and select accordingly the
-functions for the main module making use of the functions:
+Parse the next command line argument and select accordingly the functions for the main module making
+use of the functions:
 
 @example
 mbfl_main_set_before_parsing_options
@@ -2264,22 +2278,20 @@ mbfl_main_set_main
 @end example
 
 @noindent
-If successful return true, else return false and print an error message
-to @code{stderr}.  This function recursively calls itself, parsing
-command line arguments and traversing the tree of declared actions.
+If successful return true, else return false and print an error message to @stderr{}.  This
+function recursively calls itself, parsing command line arguments and traversing the tree of
+declared actions.
 
-@var{action-set} must be the name of an action set previously declared
-with @bfunc{mbfl_declare_action_set}.  It is an error if this function is
-called with an @var{action-set} name specifying a non--existent action
-set.  If there are no command line arguments left upon entering this
-function: the values previously selected are silently accepted.
+@var{action-set} must be the name of an action set previously declared with
+@bfunc{mbfl_declare_action_set}.  It is an error if this function is called with an @var{action-set}
+name specifying a non--existent action set.  If there are no command line arguments left upon
+entering this function: the values previously selected are silently accepted.
 
-The function @bfunc{mbfl_main} verifies that the action set @code{MAIN}
-exists and, if it does, it calls this function with argument
-@code{MAIN}.
+The function @bfunc{mbfl_main} verifies that the action set @code{MAIN} exists and, if it does, it
+calls this function with argument @code{MAIN}.
 
-Upon entering this function, the following global variables must exist
-and have the specified values:
+Upon entering this function, the following global variables must exist and have the specified
+values:
 
 @table @code
 @item ARGV1
@@ -2290,13 +2302,12 @@ A non--negative integer representing the number of values in
 @code{ARGV1}.
 
 @item ARG1ST
-A non--negative integer representing the index in @code{ARGV1} of the
-next argument to be processed.
+A non--negative integer representing the index in @code{ARGV1} of the next argument to be processed.
 @end table
 
 @noindent
-all these variables are created by default by the @mbfl{} @code{main}
-module, @ref{main variables, Command line arguments variables}.
+all these variables are created by default by the @mbfl{} @code{main} module, @ref{main variables,
+Command line arguments variables}.
 @end defun
 
 @c page
@@ -2305,14 +2316,13 @@ module, @ref{main variables, Command line arguments variables}.
 
 
 @defun mbfl_actions_set_exists @var{action-set}
-Return true if @var{action-set} is the identifier of an existent action
-set; else return false.
+Return true if @var{action-set} is the identifier of an existent action set; else return false.
 @end defun
 
 
 @defun mbfl_actions_set_exists_or_none @var{action-set}
-Return true if @var{action-set} is the identifier of an existent action
-set or it is the string @code{NONE}; else return false.
+Return true if @var{action-set} is the identifier of an existent action set or it is the string
+@code{NONE}; else return false.
 @end defun
 
 @c page
@@ -2321,15 +2331,14 @@ set or it is the string @code{NONE}; else return false.
 
 
 @defun mbfl_actions_fake_action_set @var{action-set}
-Mutate @mbfl{} state to mimic the selection of an action set.  It is an
-error if @var{action-set} is not the name of an existent action set.
-This function should be used with care.
+Mutate @mbfl{}'s state to mimic the selection of an action set.  It is an error if @var{action-set}
+is not the name of an existent action set.  This function should be used with care.
 @end defun
 
 
 @defun mbfl_actions_print_usage_screen
-If an action set has been selected and its name is not @samp{NONE}:
-print the help screen documenting the available actions.
+If an action set has been selected and its name is not @samp{NONE}: print the help screen
+documenting the actions available in the set.
 @end defun
 
 
@@ -3135,7 +3144,7 @@ Set the script's official name to put at the beginning of messages.  This value 
 @defun mbfl_message_set_channel @var{channel}
 Select the channel to be used to output messages.  @var{channel} must be a numeric string,
 otherwise: an error is printed on the old channel and the function returns false.  This value is
-initialised to @code{2}, which is @code{stderr}.
+initialised to @code{2}, which is @stderr{}.
 @end defun
 
 @c page
@@ -3514,7 +3523,7 @@ option of @command{sudo}.  The value @code{nosudo} means: do not use
 
 The string @var{user} must satisfy the function
 @bfunc{mbfl_string_is_username}, else the function will print an error
-message to @code{stderr} and exit with
+message to @stderr{} and exit with
 @bfunc{exit_because_invalid_username}.
 
 When the time comes: if the selected user name equals the value printed
@@ -3791,8 +3800,8 @@ If no error occurs: print to stdout the identifier of the scheduled job; the ide
 as argument to @bfunc{mbfl_at_drop}.
 
 @quotation
-The @command{at} command outputs some text (in which the job is embedded) on its @code{stderr}
-channel, so this function redirects @code{stderr} to @code{stdout} to return the value; this
+The @command{at} command outputs some text (in which the job is embedded) on its @stderr{}
+channel, so this function redirects @stderr{} to @stdout{} to return the value; this
 operation conflicts with the use of the ``show program'' feature of @bfunc{mbfl_program_exec}.
 @end quotation
 
@@ -4777,7 +4786,7 @@ We are meant to call these function after a call to @bfunc{mbfl_system_passwd_re
 
 
 @defun mbfl_system_passwd_print_entries
-Print to @code{stdout} the entries of @file{passwd}, one per line.  The format of each line is:
+Print to @stdout{} the entries of @file{passwd}, one per line.  The format of each line is:
 
 @example
 name='root' passwd='x' uid=0 gid=0 gecos='' dir='/root' \
@@ -4787,7 +4796,7 @@ shell='/bin/bash'
 
 
 @defun mbfl_system_passwd_print_entries_as_xml
-Print to @code{stdout} the entries of @file{passwd}, one per line, in @acronym{XML} format.  The
+Print to @stdout{} the entries of @file{passwd}, one per line, in @acronym{XML} format.  The
 format of each line is:
 
 @example
@@ -4798,7 +4807,7 @@ dir='/root' shell='/bin/bash'/>
 
 
 @defun mbfl_system_passwd_print_entries_as_json
-Print to @code{stdout} the entries of @file{passwd}, one per line, in @acronym{JSON} format.  The
+Print to @stdout{} the entries of @file{passwd}, one per line, in @acronym{JSON} format.  The
 format of each line is:
 
 @example
@@ -4820,7 +4829,7 @@ indexes are valid only until the next call to @bfunc{mbfl_system_passwd_reset}.
 @defun mbfl_system_passwd_find_entry_by_name @var{name}
 @defunx mbfl_system_passwd_find_entry_by_name_var @var{RV} @var{name}
 Search the entries of @file{passwd} for one whose user name is @var{name}.  When successful: print
-to @code{stdout} the index of the entry and return true; otherwise return false.  We can use the
+to @stdout{} the index of the entry and return true; otherwise return false.  We can use the
 index with the functions described in @ref{system passwd inspect, Inspecting entries from
 @file{passwd}}.
 
@@ -4831,7 +4840,7 @@ index with the functions described in @ref{system passwd inspect, Inspecting ent
 @defun mbfl_system_passwd_find_entry_by_uid @var{uid}
 @defunx mbfl_system_passwd_find_entry_by_uid_var @var{RV} @var{uid}
 Search the entries of @file{passwd} for one whose user id is @var{uid}.  When successful: print to
-@code{stdout} the index of the entry and return true; otherwise return false.  We can use the index
+@stdout{} the index of the entry and return true; otherwise return false.  We can use the index
 with the functions described in @ref{system passwd inspect, Inspecting entries from @file{passwd}}.
 
 @DocVarVariant{}
@@ -4849,7 +4858,7 @@ obtain indexes with the functions described in @ref{system passwd searching, Sea
 
 @defun mbfl_system_passwd_get_name @var{idx}
 @defunx mbfl_system_passwd_get_name_var @var{RV} @var{idx}
-Print to @code{stdout} the field name of the @file{passwd} entry at index @var{idx}.
+Print to @stdout{} the field name of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
 
@@ -4869,7 +4878,7 @@ fi
 
 @defun mbfl_system_passwd_get_passwd @var{idx}
 @defunx mbfl_system_passwd_get_passwd_var @var{RV} @var{idx}
-Print to @code{stdout} the field passwd of the @file{passwd} entry at index @var{idx}.
+Print to @stdout{} the field passwd of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
 @end defun
@@ -4877,7 +4886,7 @@ Print to @code{stdout} the field passwd of the @file{passwd} entry at index @var
 
 @defun mbfl_system_passwd_get_uid @var{idx}
 @defunx mbfl_system_passwd_get_uid_var @var{RV} @var{idx}
-Print to @code{stdout} the field uid of the @file{passwd} entry at index @var{idx}.
+Print to @stdout{} the field uid of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
 @end defun
@@ -4885,7 +4894,7 @@ Print to @code{stdout} the field uid of the @file{passwd} entry at index @var{id
 
 @defun mbfl_system_passwd_get_gid @var{idx}
 @defunx mbfl_system_passwd_get_gid_var @var{RV} @var{idx}
-Print to @code{stdout} the field gid of the @file{passwd} entry at index @var{idx}.
+Print to @stdout{} the field gid of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
 @end defun
@@ -4893,7 +4902,7 @@ Print to @code{stdout} the field gid of the @file{passwd} entry at index @var{id
 
 @defun mbfl_system_passwd_get_gecos @var{idx}
 @defunx mbfl_system_passwd_get_gecos_var @var{RV} @var{idx}
-Print to @code{stdout} the field gecos of the @file{passwd} entry at index @var{idx}.
+Print to @stdout{} the field gecos of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
 @end defun
@@ -4901,7 +4910,7 @@ Print to @code{stdout} the field gecos of the @file{passwd} entry at index @var{
 
 @defun mbfl_system_passwd_get_dir @var{idx}
 @defunx mbfl_system_passwd_get_dir_var @var{RV} @var{idx}
-Print to @code{stdout} the field dir of the @file{passwd} entry at index @var{idx}.
+Print to @stdout{} the field dir of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
 @end defun
@@ -4909,7 +4918,7 @@ Print to @code{stdout} the field dir of the @file{passwd} entry at index @var{id
 
 @defun mbfl_system_passwd_get_shell @var{idx}
 @defunx mbfl_system_passwd_get_shell_var @var{RV} @var{idx}
-Print to @code{stdout} the field shell of the @file{passwd} entry at index @var{idx}.
+Print to @stdout{} the field shell of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
 @end defun
@@ -4925,7 +4934,7 @@ passwd reading, Reading the file @file{passwd}}.
 
 @defun mbfl_system_passwd_uid_to_name @var{uid}
 @defunx mbfl_system_passwd_uid_to_name_var @var{RV} @var{uid}
-Print to @code{stdout} the name of the user whose uid is @var{uid}.  When successful return true;
+Print to @stdout{} the name of the user whose uid is @var{uid}.  When successful return true;
 otherwise return false.
 
 @DocVarVariant{}
@@ -4949,7 +4958,7 @@ fi
 
 @defun mbfl_system_passwd_name_to_uid @var{name}
 @defunx mbfl_system_passwd_name_to_uid_var @var{RV} @var{name}
-Print to @code{stdout} the id of the user whose uid is @var{uid}.  When successful return true;
+Print to @stdout{} the id of the user whose uid is @var{uid}.  When successful return true;
 otherwise return false.
 
 @DocVarVariant{}
@@ -4974,13 +4983,13 @@ fi
 
 @defun mbfl_system_numerical_user_id_to_name @var{id}
 Convert the numerical user @var{id} to the user name found in the @file{/etc/passwd} file; print the
-result to @code{stdout}.  When successful return true; otherwise return false.
+result to @stdout{}.  When successful return true; otherwise return false.
 @end defun
 
 
 @defun mbfl_system_numerical_user_id_to_name @var{name}
 Convert the symbolic user @var{name} to the numerical identifier found in the @file{/etc/passwd}
-file; print the result to @code{stdout}.  When successful return true; otherwise return false.
+file; print the result to @stdout{}.  When successful return true; otherwise return false.
 @end defun
 
 @c page
@@ -5022,7 +5031,7 @@ We are meant to call these function after a call to @bfunc{mbfl_system_group_rea
 
 
 @defun mbfl_system_group_print_entries
-Print to @code{stdout} the entries of @file{/etc/group}, one per line.  The format of each line is:
+Print to @stdout{} the entries of @file{/etc/group}, one per line.  The format of each line is:
 
 @example
 name='root' passwd='x' gid=0 users='root'
@@ -5031,7 +5040,7 @@ name='root' passwd='x' gid=0 users='root'
 
 
 @defun mbfl_system_group_print_entries_as_xml
-Print to @code{stdout} the entries of @file{/etc/group}, one per line, in @acronym{XML} format.  The
+Print to @stdout{} the entries of @file{/etc/group}, one per line, in @acronym{XML} format.  The
 format of each line is:
 
 @example
@@ -5041,7 +5050,7 @@ format of each line is:
 
 
 @defun mbfl_system_group_print_entries_as_json
-Print to @code{stdout} the entries of @file{/etc/group}, one per line, in @acronym{JSON} format.
+Print to @stdout{} the entries of @file{/etc/group}, one per line, in @acronym{JSON} format.
 The format of each line is:
 
 @example
@@ -5062,7 +5071,7 @@ are valid only until the next call to @bfunc{mbfl_system_group_reset}.
 @defun mbfl_system_group_find_entry_by_name @var{name}
 @defunx mbfl_system_group_find_entry_by_name_var @var{RV} @var{name}
 Search the entries of @file{/etc/group} for one whose group name is @var{name}.  When successful:
-print to @code{stdout} the index of the entry and return true; otherwise return false.  We can use
+print to @stdout{} the index of the entry and return true; otherwise return false.  We can use
 the index with the functions described in @ref{system group inspect, Inspecting entries from
 @file{/etc/group}}.
 
@@ -5073,7 +5082,7 @@ the index with the functions described in @ref{system group inspect, Inspecting 
 @defun mbfl_system_group_find_entry_by_gid @var{gid}
 @defunx mbfl_system_group_find_entry_by_gid_var @var{RV} @var{gid}
 Search the entries of @file{/etc/group} for one whose group id is @var{gid}.  When successful: print
-to @code{stdout} the index of the entry and return true; otherwise return false.  We can use the
+to @stdout{} the index of the entry and return true; otherwise return false.  We can use the
 index with the functions described in @ref{system group inspect, Inspecting entries from
 @file{/etc/group}}.
 
@@ -5092,7 +5101,7 @@ obtain indexes with the functions described in @ref{system group searching, Sear
 
 @defun mbfl_system_group_get_name @var{group_idx}
 @defunx mbfl_system_group_get_name_var @var{RV} @var{group_idx}
-Print to @code{stdout} the field name of the @file{/etc/group} entry at index @var{group_idx}.
+Print to @stdout{} the field name of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
 
@@ -5112,7 +5121,7 @@ fi
 
 @defun mbfl_system_group_get_passwd @var{group_idx}
 @defunx mbfl_system_group_get_passwd_var @var{RV} @var{group_idx}
-Print to @code{stdout} the field passwd of the @file{/etc/group} entry at index @var{group_idx}.
+Print to @stdout{} the field passwd of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
 @end defun
@@ -5120,7 +5129,7 @@ Print to @code{stdout} the field passwd of the @file{/etc/group} entry at index 
 
 @defun mbfl_system_group_get_gid @var{group_idx}
 @defunx mbfl_system_group_get_gid_var @var{RV} @var{group_idx}
-Print to @code{stdout} the field gid of the @file{/etc/group} entry at index @var{group_idx}.
+Print to @stdout{} the field gid of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
 @end defun
@@ -5128,7 +5137,7 @@ Print to @code{stdout} the field gid of the @file{/etc/group} entry at index @va
 
 @defun mbfl_system_group_get_users @var{group_idx}
 @defunx mbfl_system_group_get_users_var @var{RV} @var{group_idx}
-Print to @code{stdout} the field users of the @file{/etc/group} entry at index @var{group_idx}.
+Print to @stdout{} the field users of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
 @end defun
@@ -5136,7 +5145,7 @@ Print to @code{stdout} the field users of the @file{/etc/group} entry at index @
 
 @defun mbfl_system_group_get_users_count @var{group_idx}
 @defunx mbfl_system_group_get_users_count_var @var{RV} @var{group_idx}
-Print to @code{stdout} the number of user names in the list of users for the entry at index
+Print to @stdout{} the number of user names in the list of users for the entry at index
 @var{group_idx}.
 
 @DocVarVariant{}
@@ -5145,7 +5154,7 @@ Print to @code{stdout} the number of user names in the list of users for the ent
 
 @defun mbfl_system_group_get_user_name @var{group_idx} @var{user_idx}
 @defunx mbfl_system_group_get_user_name_var @var{RV} @var{group_idx} @var{user_idx}
-Print to @code{stdout} the name of the user at index @var{user_idx} in the list of users for the
+Print to @stdout{} the name of the user at index @var{user_idx} in the list of users for the
 entry at index @var{group_idx}.
 
 @DocVarVariant{}
@@ -5190,7 +5199,7 @@ group reading, Reading the file @file{/etc/group}}.
 
 @defun mbfl_system_group_gid_to_name @var{gid}
 @defunx mbfl_system_group_gid_to_name_var @var{RV} @var{gid}
-Print to @code{stdout} the name of the group whose gid is @var{gid}.  When successful return true;
+Print to @stdout{} the name of the group whose gid is @var{gid}.  When successful return true;
 otherwise return false.
 
 @DocVarVariant{}
@@ -5214,7 +5223,7 @@ fi
 
 @defun mbfl_system_group_name_to_gid @var{name}
 @defunx mbfl_system_group_name_to_gid_var @var{RV} @var{name}
-Print to @code{stdout} the id of the group whose gid is @var{gid}.  When successful return true;
+Print to @stdout{} the id of the group whose gid is @var{gid}.  When successful return true;
 otherwise return false.
 
 @DocVarVariant{}
@@ -5239,13 +5248,13 @@ fi
 
 @defun mbfl_system_numerical_group_id_to_name @var{id}
 Convert the numerical group @var{id} to the group name found in the @file{/etc/group} file; print the
-result to @code{stdout}.  When successful return true; otherwise return false.
+result to @stdout{}.  When successful return true; otherwise return false.
 @end defun
 
 
 @defun mbfl_system_numerical_group_id_to_name @var{name}
 Convert the symbolic group @var{name} to the numerical identifier found in the @file{/etc/group}
-file; print the result to @code{stdout}.  When successful return true; otherwise return false.
+file; print the result to @stdout{}.  When successful return true; otherwise return false.
 @end defun
 
 @c page
@@ -5534,7 +5543,7 @@ type -t @var{FUNCNAME} = function
 
 @defun mbfl_invoke_existent_script_function @var{funcname}
 Like @bfunc{mbfl_invoke_script_function}, but if the function does not
-exist: print an error message to @code{stderr} and exit with failure.
+exist: print an error message to @stderr{} and exit with failure.
 @end defun
 
 
@@ -5949,14 +5958,13 @@ dotest mytest
 
 @deffn Alias dotest-echo @var{string} [@var{arg} @dots{}]
 @deffnx Alias dotest-debug @var{string} [@var{arg} @dots{}]
-Print the parameters on @code{stderr}.  @code{dotest-debug} prints some @code{*} to make the message
+Print the parameters on @stderr{}.  @code{dotest-debug} prints some @code{*} to make the message
 more visible.
 @end deffn
 
 
 @deffn dotest-printf @var{template} [@var{arg} @dots{}]
-Format the @var{template} with the optional @var{arg} values, then print the result on
-@code{stderr}.
+Format the @var{template} with the optional @var{arg} values, then print the result on @stderr{}.
 @end deffn
 
 @c page
