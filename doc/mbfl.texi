@@ -2343,22 +2343,26 @@ documenting the actions available in the set.
 
 
 @defun exit_because_invalid_action_declaration
-Exit with code @code{96}.
+@defunx return_because_invalid_action_declaration
+Exit or return with code @code{96}.
 @end defun
 
 
 @defun exit_because_invalid_action_set
-Exit with code @code{97}.
+@defunx return_because_invalid_action_set
+Exit or return with code @code{97}.
 @end defun
 
 
 @defun exit_because_invalid_action_argument
-Exit with code @code{95}
+@defunx return_because_invalid_action_argument
+Exit or return with code @code{95}
 @end defun
 
 
 @defun exit_because_missing_action_function
-Exit with code @code{94}.
+@defunx return_because_missing_action_function
+Exit or return with code @code{94}.
 @end defun
 
 @c page
@@ -3071,7 +3075,8 @@ Validate the number of arguments.  @var{argc} must be between
 
 
 @defun exit_because_wrong_num_args
-Exit with code @code{98}.
+@defunx return_because_wrong_num_args
+Exit or return with code @code{98}.
 @end defun
 
 
@@ -3100,12 +3105,14 @@ useful to retrieve the option for Bash programmable completion.
 
 
 @defun exit_because_invalid_option_declaration
-Exit with code @code{93}.
+@defunx return_because_invalid_option_declaration
+Exit or return with code @code{93}.
 @end defun
 
 
 @defun exit_because_invalid_option_argument
-Exit with code @code{92}.
+@defunx return_because_invalid_option_argument
+Exit or return with code @code{92}.
 @end defun
 
 @c page
@@ -3529,7 +3536,8 @@ When the time comes: if the selected user name equals the value printed by @comm
 
 
 @defun exit_because_invalid_sudo_username
-Exit with code @code{90}.
+@defunx return_because_invalid_sudo_username
+Exit or return with code @code{90}.
 @end defun
 
 
@@ -3728,7 +3736,8 @@ will not be reported.
 
 
 @defun exit_because_program_not_found
-Terminate the script with exit code @code{99}.
+@defunx return_because_program_not_found
+Exit or return with code @code{99}.
 @end defun
 
 @c page
@@ -5386,44 +5395,39 @@ present: this variable is set to zero.
 
 
 @defun mbfl_main
-The invocation to this function must be the last line of code in the
-script.  It does the following:
+The invocation to this function must be the last line of code in the script.  It does the following:
 
 @enumerate
 @item
-Register the value of the variable @code{script_PROGNAME} in the message
-module using the function @bfunc{mbfl_message_set_progname}.
+Register the value of the variable @code{script_PROGNAME} in the message module using the function
+@bfunc{mbfl_message_set_progname}.
 
 @item
-Invoke @bfunc{mbfl_main_create_exit_functions}.  @ref{main exit,
-Declaring exit codes}.
+Invoke @bfunc{mbfl_main_create_exit_functions}.  @ref{main exit, Declaring exit codes}.
 
 @item
-Parse the command line arguments according to the command actions
-configuration; this step may change the selection of: main function,
-``before parsing options'' function, ``after parsing options'' function;
-if no command actions are configured: nothing is done.
+Parse the command line arguments according to the command actions configuration; this step may
+change the selection of: main function, ``before parsing options'' function, ``after parsing
+options'' function; if no command actions are configured: nothing is done.
 
-This function searches for a declared action set with name @code{MAIN}:
-if such set exists, it expects the first argument to be an action
-identifier in the set.
+This function searches for a declared action set with name @code{MAIN}: if such set exists, it
+expects the first command line argument to be an action identifier in the set.
 
 @item
-If it exists: invoke the function @bfunc{script_before_parsing_options}
-or the one selected by @bfunc{mbfl_main_set_before_parsing_options}.
+If it exists: invoke the function @bfunc{script_before_parsing_options} or the one selected by
+@bfunc{mbfl_main_set_before_parsing_options}.
 
 @item
 Parse command line options with @bfunc{mbfl_getopts_parse}.
 
 @item
-If it exists: invoke the function @bfunc{script_after_parsing_options}
-or the one selected by @bfunc{mbfl_main_set_after_parsing_options}.
+If it exists: invoke the function @bfunc{script_after_parsing_options} or the one selected by
+@bfunc{mbfl_main_set_after_parsing_options}.
 
 @item
-Invoke the function whose name is stored in the global variable
-@code{mbfl_main_SCRIPT_FUNCTION}, if it exists, with no arguments; if
-its return value is non--zero: exit the script with the same code.  The
-default value is @code{main}.
+Invoke the function whose name is stored in the global variable @code{mbfl_main_SCRIPT_FUNCTION}, if
+it exists, with no arguments; if its return value is non--zero: exit the script with the same code.
+The default value is @code{main}.
 
 @item
 Exit the script with the return code of the action function or zero.
@@ -5432,32 +5436,29 @@ Exit the script with the return code of the action function or zero.
 
 
 @defun mbfl_main_set_main @var{funcname}
-Select the main function storing @var{funcname} into
-@code{mbfl_main_SCRIPT_FUNCTION}.
+Select the main function storing @var{funcname} into @code{mbfl_main_SCRIPT_FUNCTION}.
 @end defun
 
 
 @defvar mbfl_main_SCRIPT_FUNCTION
-Global variable that holds the name of the custom main script function.
-The default name is @code{main}.
+Global variable that holds the name of the custom main script function.  The default name is
+@code{main}.
 @end defvar
 
 
 @defun mbfl_main_set_before_parsing_options @var{funcname}
-The name of the function to be called right before parsing command line
-options.  This value can be customised by both the @mbfl{} and the user
-script.
+The name of the function to be called right before parsing command line options.  This value can be
+customised by both the @mbfl{} and the user script.
 
-The default function name is: @bfunc{script_before_parsing_options}.
+The default function name is: @code{script_before_parsing_options}.
 @end defun
 
 
 @defun mbfl_main_set_after_parsing_options @var{funcname}
-The name of the function to be called right after parsing command line
-options.  This value can be customised by both the @mbfl{} and the user
-script.
+The name of the function to be called right after parsing command line options.  This value can be
+customised by both the @mbfl{} and the user script.
 
-The default function name is: @bfunc{script_after_parsing_options}.
+The default function name is: @code{script_after_parsing_options}.
 @end defun
 
 @c page
@@ -5465,7 +5466,10 @@ The default function name is: @bfunc{script_after_parsing_options}.
 @section Declaring exit codes
 
 
-Some functions and global variables are provided to declare script's exit codes.
+Some functions and global variables are provided to declare script's exit codes.  The @mbfl{}
+declares its own exit codes starting from @code{100} and decreasing; we should declare our exit
+codes starting from @code{3} and increasing.  The exit codes @code{0} and @code{1} are reserved for
+the functions @bfunc{exit_because_success} and @bfunc{exit_because_failure}.
 
 
 @defun mbfl_main_declare_exit_code @var{code} @var{name}
@@ -5475,7 +5479,8 @@ Declare an exit code with value @var{code} and identifier @var{name}.
 
 @defun mbfl_main_create_exit_functions
 For each of the codes declared with @bfunc{mbfl_main_declare_exit_code}: create a function for the
-@code{exit} command using the numerical code.  For example, if a code is declared as:
+@code{exit} command using the numerical code; create an alias for the @code{return} command using
+the numerical code.  For example, if a code is declared as:
 
 @example
 mbfl_main_declare_exit_code 4 unexistent_file
@@ -5489,8 +5494,16 @@ function exit_because_unexistent_file () @{ exit 4; @}
 @end example
 
 @noindent
-the name of the function is the string @code{exit_because_} followed by the exit code name.  The
-function may be used in the script to exit the process.
+and an alias is created with:
+
+@example
+alias return_because_unexistent_file='return 4'
+@end example
+
+@noindent
+the name of the function is the string @code{exit_because_} followed by the exit code name; the name
+of the alias is the string @code{return_because_} followed by the exit code name.  The function may
+be used in the script to exit the process.
 @end defun
 
 
@@ -5500,18 +5513,35 @@ By default the exit code @code{0} is associated to the name @code{success} and t
 
 @defun exit_because_success
 @defunx exit_success
-Exit the script with code zero.
+Exit the script with code @code{0}.
+@end defun
+
+
+@defun return_because_success
+@defunx return_success
+Return with code @code{0}.
 @end defun
 
 
 @defun exit_because_failure
 @defunx exit_failure
-Exit the script with code one.
+Exit the script with code @code{1}.
+@end defun
+
+
+@defun return_because_failure
+@defunx return_failure
+Return with code @code{1}.
 @end defun
 
 
 @defun exit_because_error_loading_library
 Exit the script with code @code{100}.
+@end defun
+
+
+@defun return_because_error_loading_library
+Return with code @code{100}.
 @end defun
 
 
@@ -5531,6 +5561,8 @@ value is the one of the called function.  The existence test is performed with:
 @example
 type -t @var{FUNCNAME} = function
 @end example
+
+If the function does not exist: return by calling @code{return_because_invalid_function_name}.
 @end defun
 
 
@@ -5541,7 +5573,8 @@ to @stderr{} and exit by calling @bfunc{exit_because_invalid_function_name}.
 
 
 @defun exit_because_invalid_function_name
-Exit with code @code{91}.
+@defunx return_because_invalid_function_name
+Exit or return with code @code{91}.
 @end defun
 
 

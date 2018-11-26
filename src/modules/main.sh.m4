@@ -107,35 +107,35 @@ then
     mbfl_main_EXIT_CODES[2]=100
     mbfl_main_EXIT_NAMES[2]=error_loading_library
 
-    mbfl_main_EXIT_CODES[2]=99
-    mbfl_main_EXIT_NAMES[2]=program_not_found
+    mbfl_main_EXIT_CODES[3]=99
+    mbfl_main_EXIT_NAMES[3]=program_not_found
 
-    mbfl_main_EXIT_CODES[3]=98
-    mbfl_main_EXIT_NAMES[3]=wrong_num_args
+    mbfl_main_EXIT_CODES[4]=98
+    mbfl_main_EXIT_NAMES[4]=wrong_num_args
 
-    mbfl_main_EXIT_CODES[4]=97
-    mbfl_main_EXIT_NAMES[4]=invalid_action_set
+    mbfl_main_EXIT_CODES[5]=97
+    mbfl_main_EXIT_NAMES[5]=invalid_action_set
 
-    mbfl_main_EXIT_CODES[5]=96
-    mbfl_main_EXIT_NAMES[5]=invalid_action_declaration
+    mbfl_main_EXIT_CODES[6]=96
+    mbfl_main_EXIT_NAMES[6]=invalid_action_declaration
 
-    mbfl_main_EXIT_CODES[6]=95
-    mbfl_main_EXIT_NAMES[6]=invalid_action_argument
+    mbfl_main_EXIT_CODES[7]=95
+    mbfl_main_EXIT_NAMES[7]=invalid_action_argument
 
-    mbfl_main_EXIT_CODES[7]=94
-    mbfl_main_EXIT_NAMES[7]=missing_action_function
+    mbfl_main_EXIT_CODES[8]=94
+    mbfl_main_EXIT_NAMES[8]=missing_action_function
 
-    mbfl_main_EXIT_CODES[8]=93
-    mbfl_main_EXIT_NAMES[8]=invalid_option_declaration
+    mbfl_main_EXIT_CODES[9]=93
+    mbfl_main_EXIT_NAMES[9]=invalid_option_declaration
 
-    mbfl_main_EXIT_CODES[9]=92
-    mbfl_main_EXIT_NAMES[9]=invalid_option_argument
+    mbfl_main_EXIT_CODES[10]=92
+    mbfl_main_EXIT_NAMES[10]=invalid_option_argument
 
-    mbfl_main_EXIT_CODES[10]=91
-    mbfl_main_EXIT_NAMES[10]=invalid_function_name
+    mbfl_main_EXIT_CODES[11]=91
+    mbfl_main_EXIT_NAMES[11]=invalid_function_name
 
-    mbfl_main_EXIT_CODES[11]=90
-    mbfl_main_EXIT_NAMES[11]=invalid_sudo_username
+    mbfl_main_EXIT_CODES[12]=90
+    mbfl_main_EXIT_NAMES[12]=invalid_sudo_username
 fi
 
 function exit_success () {
@@ -144,6 +144,8 @@ function exit_success () {
 function exit_failure () {
     exit_because_failure
 }
+alias return_success='return 0'
+alias return_failure='return 1'
 function mbfl_main_declare_exit_code () {
     mbfl_mandatory_parameter(CODE, 1, exit code)
     mbfl_mandatory_parameter(DESCRIPTION, 2, exit code name)
@@ -158,6 +160,8 @@ function mbfl_main_create_exit_functions () {
     do
         name=exit_because_${mbfl_main_EXIT_NAMES[${i}]}
         eval function "$name" "()" "{ exit ${mbfl_main_EXIT_CODES[${i}]}; }"
+	name=return_because_${mbfl_main_EXIT_NAMES[${i}]}
+	alias $name="return ${mbfl_main_EXIT_CODES[${i}]}"
     done
 }
 function mbfl_main_list_exit_codes () {
@@ -426,13 +430,13 @@ function mbfl_main () {
 	fi
     fi
     if ! mbfl_invoke_script_function $mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS
-    then exit_failure
+    then exit_because_invalid_function_name
     fi
     if ! mbfl_getopts_parse
     then exit_because_invalid_option_argument
     fi
     if ! mbfl_invoke_script_function $mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS
-    then exit_failure
+    then exit_because_invalid_function_name
     fi
     if mbfl_string_is_not_empty "$mbfl_main_PRIVATE_SCRIPT_FUNCTION"
     then mbfl_invoke_existent_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
@@ -445,7 +449,7 @@ function mbfl_main () {
 #
 function mbfl_invoke_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if mbfl_string_equal "$(type -t $FUNC)" 'function'
+    if mbfl_string_equal 'function' "$(type -t $FUNC)"
     then $FUNC
     else return 0
     fi
@@ -455,7 +459,7 @@ function mbfl_invoke_script_function () {
 #
 function mbfl_invoke_existent_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if mbfl_string_equal "$(type -t $FUNC)" 'function'
+    if mbfl_string_equal 'function' "$(type -t $FUNC)"
     then $FUNC
     else
 	mbfl_message_error_printf 'internal error: request to call non-existent function \"%s\"' "$FUNC"
