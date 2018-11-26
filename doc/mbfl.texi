@@ -5327,12 +5327,9 @@ identifiers that were created.
 @chapter Main function
 
 
-@mbfl{} declares a function to drive the execution of the script; its
-purpose is to make use of the other modules to reduce the size of
-scripts depending on @mbfl{}.   All the code blocks in the script, with
-the exception of global variables declaration, should be enclosed in
-functions.
-
+@mbfl{} declares a function to drive the execution of the script; its purpose is to make use of the
+other modules to reduce the size of scripts depending on @mbfl{}.  All the code blocks in the
+script, with the exception of global variables declaration, should be enclosed in functions.
 
 @menu
 * main variables::              Command line arguments variables.
@@ -5350,38 +5347,33 @@ The following global variables are defined by default.
 
 
 @defvar ARGV1
-An array containing all the command line arguments.  When no command
-line arguments are present: this array is empty.
+An array containing all the command line arguments.  When no command line arguments are present:
+this array is empty.
 @end defvar
 
 
 @defvar ARGC1
-A non--negative integer representing the number of values in
-@code{ARGV1}.  When no command line arguments are present: this variable
-is set to zero.
+A non--negative integer representing the number of values in @code{ARGV1}.  When no command line
+arguments are present: this variable is set to zero.
 @end defvar
 
 
 @defvar ARG1ST
-A non--negative integer representing the index in @code{ARGV1} of the
-next argument to be processed.  It is initialised to zero; the
-@code{actions} module increments it to reflect its consuming of action
-arguments; the @code{getopts} module uses this value to locate the first
-argument to parse.
+A non--negative integer representing the index in @code{ARGV1} of the next argument to be processed.
+It is initialised to zero; the @code{actions} module increments it to reflect its consuming of
+action arguments; the @code{getopts} module uses this value to locate the first argument to parse.
 @end defvar
 
 
 @defvar ARGV
-An array containing all the non--action and non--option command line
-arguments.  When no such arguments are present: this array is empty.
-This variable is filled by the @code{getopts} module.
+An array containing all the non--action and non--option command line arguments.  When no such
+arguments are present: this array is empty.  This variable is filled by the @code{getopts} module.
 @end defvar
 
 
 @defvar ARGC
-A non--negative integer representing the number of values in
-@code{ARGV}.  When no arguments are present: this variable is set to
-zero.
+A non--negative integer representing the number of values in @code{ARGV}.  When no arguments are
+present: this variable is set to zero.
 @end defvar
 
 @c page
@@ -5533,9 +5525,8 @@ Print the code associated to @var{name}.
 
 
 @defun mbfl_invoke_script_function @var{funcname}
-If @var{funcname} is the name of an existing function: it is invoked
-with no arguments; the return value is the one of the called function.
-The existence test is performed with:
+If @var{funcname} is the name of an existing function: it is invoked with no arguments; the return
+value is the one of the called function.  The existence test is performed with:
 
 @example
 type -t @var{FUNCNAME} = function
@@ -5544,20 +5535,23 @@ type -t @var{FUNCNAME} = function
 
 
 @defun mbfl_invoke_existent_script_function @var{funcname}
-Like @bfunc{mbfl_invoke_script_function}, but if the function does not
-exist: print an error message to @stderr{} and exit with failure.
+Like @bfunc{mbfl_invoke_script_function}, but if the function does not exist: print an error message
+to @stderr{} and exit by calling @bfunc{exit_because_invalid_function_name}.
+@end defun
+
+
+@defun exit_because_invalid_function_name
+Exit with code @code{91}.
 @end defun
 
 
 @defun mbfl_main_print_usage_screen_long
-Print the help screen, long version.  It @strong{includes} the
-predefined command line options.
+Print the help screen, long version.  It @strong{includes} the predefined command line options.
 @end defun
 
 
 @defun mbfl_main_print_usage_screen_brief
-Print the help screen, brief version.  It @strong{excludes} the
-predefined command line options.
+Print the help screen, brief version.  It @strong{excludes} the predefined command line options.
 @end defun
 
 @c page

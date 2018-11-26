@@ -22,6 +22,10 @@ EXTRA_DIST		+= \
 
 AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
 
+# Notice that  we need the  *.sh files in  the doc directory  to allow
+# generation of PDF documents.  Unfortunately, texi2pdf does not allow
+# the selection of include directories.  (Marco Maggi; Nov 26, 2018)
+#
 info_TEXINFOS		= doc/mbfl.texi
 doc_mbfl_TEXINFOS	= \
 	doc/fdl-1.3.texi				\
@@ -29,8 +33,8 @@ doc_mbfl_TEXINFOS	= \
 	doc/macros.texi					\
 	doc/one-level-actions.sh			\
 	doc/loader.sh					\
-	$(srcdir)/examples/sendmail-plain.sh		\
-	$(srcdir)/examples/sendmail-connector.sh
+	doc/sendmail-plain.sh				\
+	doc/sendmail-connector.sh
 
 
 #### source modules
