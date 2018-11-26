@@ -179,7 +179,7 @@ function mbfl_declare_action () {
 #
 function mbfl_actions_set_exists () {
     mbfl_mandatory_parameter(ACTION_SET,1,action set)
-    mbfl_string_is_name "$ACTION_SET" && mbfl_string_equal 'true' "${mbfl_action_sets_EXISTS[${ACTION_SET}]}"
+    mbfl_string_is_name "$ACTION_SET" && ${mbfl_action_sets_EXISTS[${ACTION_SET}]:-false}
 }
 
 # Return 0 if ACTION_SET is the  identifier of an existent action set or
