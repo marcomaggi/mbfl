@@ -442,7 +442,7 @@ function mbfl_main () {
     then mbfl_invoke_existent_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
     else mbfl_invoke_existent_script_function $mbfl_main_SCRIPT_FUNCTION
     fi
-    exit_success
+    exit $?
 }
 # Called with a  function name argument: if such  function exists invoke
 # it, else return with success.
