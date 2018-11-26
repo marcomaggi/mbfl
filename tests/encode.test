@@ -10,7 +10,8 @@
 #
 #		$ TESTMATCH=encode- make all tests
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -28,20 +29,12 @@
 # 02111-1307, USA.
 #
 
-#PAGE
-## ------------------------------------------------------------
-## Setup.
-## ------------------------------------------------------------
+#page
+#### setup
 
 source setup.sh
 
-#PAGE
-
-# function encode-hex-1.1 () {
-#     mbfl_encode_hex ABC | dotest-output 414243
-# }
-
-#PAGE
+#page
 
 function decode-hex-2.1 () {
     mbfl_decode_hex 414243 | dotest-output ABC
@@ -51,7 +44,7 @@ function decode-oct-1.1 () {
     mbfl_decode_oct 101102103 | dotest-output ABC
 }
 
-#PAGE
+#page
 
 dotest encode-
 dotest decode-
