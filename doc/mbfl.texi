@@ -2332,6 +2332,26 @@ If an action set has been selected and its name is not @samp{NONE}:
 print the help screen documenting the available actions.
 @end defun
 
+
+@defun exit_because_invalid_action_declaration
+Exit with code @code{96}.
+@end defun
+
+
+@defun exit_because_invalid_action_set
+Exit with code @code{97}.
+@end defun
+
+
+@defun exit_because_invalid_action_argument
+Exit with code @code{95}
+@end defun
+
+
+@defun exit_because_missing_action_function
+Exit with code @code{94}.
+@end defun
+
 @c page
 @node getopts
 @chapter Parsing command line options
@@ -3067,6 +3087,16 @@ and return with code 1.
 @defun mbfl_getopts_print_long_switches
 Print all the long switches in a row, separated by spaces.  This is
 useful to retrieve the option for Bash programmable completion.
+@end defun
+
+
+@defun exit_because_invalid_option_declaration
+Exit with code @code{93}.
+@end defun
+
+
+@defun exit_because_invalid_option_argument
+Exit with code @code{92}.
 @end defun
 
 @c page
@@ -5432,8 +5462,7 @@ The default function name is: @bfunc{script_after_parsing_options}.
 @section Declaring exit codes
 
 
-Some functions and global variables are provided to declare script's
-exit codes.
+Some functions and global variables are provided to declare script's exit codes.
 
 
 @defun mbfl_main_declare_exit_code @var{code} @var{name}
@@ -5442,9 +5471,8 @@ Declare an exit code with value @var{code} and identifier @var{name}.
 
 
 @defun mbfl_main_create_exit_functions
-For each of the codes declared with @bfunc{mbfl_main_declare_exit_code}:
-Create a function for the @code{exit} command using the numerical code.
-For example, if a code is declared as:
+For each of the codes declared with @bfunc{mbfl_main_declare_exit_code}: create a function for the
+@code{exit} command using the numerical code.  For example, if a code is declared as:
 
 @example
 mbfl_main_declare_exit_code 4 unexistent_file
@@ -5458,15 +5486,13 @@ function exit_because_unexistent_file () @{ exit 4; @}
 @end example
 
 @noindent
-the name of the function is the string @code{exit_because_} followed by
-the exit code name.  The function may be used in the script to exit the
-process.
+the name of the function is the string @code{exit_because_} followed by the exit code name.  The
+function may be used in the script to exit the process.
 @end defun
 
 
-By default the exit code @code{0} is associated to the name
-@code{success} and the exit code @code{1} is associated to the name
-@code{failure}; so the following functions exist.
+By default the exit code @code{0} is associated to the name @code{success} and the exit code
+@code{1} is associated to the name @code{failure}; so the following functions exist.
 
 
 @defun exit_because_success
