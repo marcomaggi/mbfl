@@ -51,6 +51,16 @@ function main-return-value-1.3 () {
     dotest-equal 100 $?
 }
 
+### ------------------------------------------------------------------------
+
+function main-return-value-2.1 () {
+    return_because_success
+}
+
+function main-return-value-2.2 () {
+    return_success
+}
+
 #PAGE
 
 dotest main-
