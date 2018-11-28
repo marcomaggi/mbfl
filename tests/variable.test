@@ -8,34 +8,34 @@
 #
 #	To select the tests in this file:
 #
-#		$ make all test TESTMATCH=variable-
+#		$ make all test file=variable
 #
-# Copyright (c) 2004, 2005, 2013 Marco Maggi
+# Copyright (c) 2004, 2005, 2013, 2018 Marco Maggi
+# <marco.maggi-ipsu@poste.it>
 #
-# This is free  software you can redistribute it  and/or modify it under
-# the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
-# version.
+# This is free software; you  can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the
+# Free Software  Foundation; either version  3.0 of the License,  or (at
+# your option) any later version.
 #
-# This  file is  distributed in  the hope  that it  will be  useful, but
-# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# This library  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
 # MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# General Public License for more details.
+# Lesser General Public License for more details.
 #
-# You  should have received  a copy  of the  GNU General  Public License
-# along with this file; see the file COPYING.  If not, write to the Free
-# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
-# 02111-1307, USA.
+# You  should have  received a  copy of  the GNU  Lesser  General Public
+# License along  with this library; if  not, write to  the Free Software
+# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+# USA.
 #
 
 #PAGE
-## ------------------------------------------------------------
-## Setup.
-## ------------------------------------------------------------
+#### setup
 
 source setup.sh
 
 #page
+#### arrays
 
 function variable-1.1 () {
     declare -a mbfl_FIELDS=(abc def ghi lmn)
@@ -71,6 +71,7 @@ function variable-2.3 () {
     ! mbfl_variable_element_is_in_array gasp
 }
 #page
+#### colon variables
 
 function variable-3.1 () {
     local v=a:b:c:d:e
@@ -91,7 +92,7 @@ function variable-3.2 () {
     mbfl_variable_array_to_colon_variable v
     dotest-equal a:b:c:d:e $v
 }
-#page
+### ------------------------------------------------------------------------
 
 function variable-4.1 () {
     local v=a:b:c:b:d:e:e
@@ -100,7 +101,19 @@ function variable-4.1 () {
     dotest-equal a:b:c:d:e $v
 }
 
-#PAGE
+#page
+#### variables allocation
+
+function variable-alloc-1.1 () {
+    local NAME
+    mbfl_variable_alloc NAME
+    local -n NAMEREF=$NAME
+
+    NAMEREF=123
+    dotest-equal 123 ${!NAME}
+}
+
+#page
 
 dotest variable-
 dotest-final-report

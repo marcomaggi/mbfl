@@ -4613,6 +4613,7 @@ mbfl_date_iso_timestamp
 @menu
 * variables arrays::            Manipulating arrays.
 * variables colon::             Manipulating colon variables.
+* variables misc::              Miscellaneous variable functions.
 @end menu
 
 @c page
@@ -4685,6 +4686,22 @@ echo $VAR                       @print{} a:b:c:d:e
 @defun mbfl_variable_colon_variable_drop_duplicate @var{varname}
 Take @var{varname}'s value, a colon separated list of string, and
 remove duplicates.  Reset @var{varname} to the result.
+@end defun
+
+@c page
+@node variables misc
+@section Miscellaneous variable functions.
+
+
+@defun mbfl_variable_alloc @var{RV}
+Generate a unique variable name and store it in the variable @var{RV}
+
+@example
+local NAME
+
+mbfl_variable_alloc NAME
+$NAME   @result{} mbfl_a_variable_2323_7652
+@end example
 @end defun
 
 @c page

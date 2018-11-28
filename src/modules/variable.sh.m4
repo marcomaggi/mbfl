@@ -106,6 +106,24 @@ function mbfl_variable_colon_variable_drop_duplicate () {
     return 0
 }
 
+#page
+#### variables allocation
+
+function mbfl_variable_alloc () {
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    local mbfl_NAME
+
+    while true
+    do
+	mbfl_NAME=mbfl_a_variable_${RANDOM}_${RANDOM}
+	if mbfl_string_is_empty ${!mbfl_NAME}
+	then break
+	fi
+    done
+    mbfl_RESULT_VARREF=$mbfl_NAME
+    return 0
+}
+
 ### end of file
 # Local Variables:
 # mode: sh
