@@ -42,16 +42,13 @@ The function variant @code{_var} stores the result in the variable @var{RV}, rat
 ;$? @result{}
 @end macro
 
-
 @macro stdin{}
 @code{stdin}
 @end macro
 
-
 @macro stdout{}
 @code{stdout}
 @end macro
-
 
 @macro stderr{}
 @code{stderr}
