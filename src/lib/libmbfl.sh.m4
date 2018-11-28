@@ -34,6 +34,7 @@ shopt -s expand_aliases
 m4_include(base.sh)
 m4_include(string.sh)
 m4_include(atexit.sh)
+m4_include(locations.sh)
 m4_include(encode.sh)
 m4_include(file.sh)
 m4_include(actions.sh)

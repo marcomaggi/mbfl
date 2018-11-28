@@ -185,6 +185,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * arrays::                      Manipulating arrays.
 * system::                      Interfacing with the system.
 * atexit::                      Running scripts at exit-time.
+* locations::                   Running location handlers.
 * main::                        Main function.
 * testing::                     Building test suites.
 
@@ -5327,6 +5328,174 @@ it is removed from the internal registry.
 Remove all the registered handlers from the internal registry.  This renders invalid all the handler
 identifiers that were created.
 @end defun
+
+@c page
+@node locations
+@chapter Running location handlers
+
+
+A @dfn{location} is a chunk of code between the following enter and leave actions:
+
+@example
+mbfl_location_enter
+@{
+   ...
+@}
+mbfl_location_leave
+@end example
+
+@noindent
+inside a location we can register a ``handler command'' that is automatically executed whenever the
+location is left by calling @bfunc{mbfl_location_leave}.  We can nest locations at will.  We can run
+all the handlers registered so far in a stack of locations.
+
+
+@defun mbfl_location_enter
+Enter into a new location.  Initialise the internal state.
+@end defun
+
+
+@defun mbfl_location_leave
+Leave the current location.  Run all the registered handlers in reverse order.
+@end defun
+
+
+@defun mbfl_location_handler @var{handler_script}
+Register a new handler in the current location.  It is an error if this function is called outside a
+location.
+@end defun
+
+
+@defun mbfl_location_run_all
+Run all the handlers unwinding all the locations.  This is useful as atexit handler, @ref{atexit,
+Running scripts at exit--time}.
+@end defun
+
+
+@menu
+* locations example1::          Single location, syntactic scoping.
+* locations example2::          Nested locations.
+* locations example3::          Nested function calls.
+@end menu
+
+@c page
+@node locations example1
+@section Single location, syntactic scoping
+
+
+The handler functions can access the variables in the uplevel function frames.
+
+@example
+function one   () @{ R_one=$X;   @}
+function two   () @{ R_two=$Y;   @}
+function three () @{ R_three=$Z; @}
+
+@{
+  local R_one R_two R_three
+  local X=1 Y=2 Z=3
+
+  mbfl_location_enter
+  @{
+    mbfl_location_handler one
+    mbfl_location_handler two
+    mbfl_location_handler three
+  @}
+  mbfl_location_leave
+
+  $R_one          @result{} 1
+  $R_two          @result{} 2
+  $R_three        @result{} 3
+@}
+@end example
+
+@c page
+@node locations example2
+@section Nested locations
+
+
+Remember that the handlers are called when a location is left:
+
+@example
+function handler_append () @{
+    local THING=$@{1:?"missing thing parameter"@}
+    RESULT+=$THING
+@}
+
+@{
+    local RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    @{
+        mbfl_location_handler "handler_append 1"
+        mbfl_location_enter
+        @{
+            mbfl_location_handler "handler_append 2"
+            mbfl_location_enter
+            @{
+                mbfl_location_handler "handler_append 3"
+            @}
+            mbfl_location_leave
+            mbfl_location_handler "handler_append 4"
+        @}
+        mbfl_location_leave
+        mbfl_location_handler "handler_append 5"
+    @}
+    mbfl_location_leave
+    handler_append 6
+
+    "$RESULT"   @result{} 0342516
+@}
+@end example
+
+@c page
+@node locations example3
+@section Nested function calls
+
+
+Remember that the handlers are called when a location is left:
+
+@example
+declare RESULT
+
+function handler_append () @{
+    local THING=$@{1:?"missing thing parameter"@}
+    RESULT+=$THING
+@}
+
+function func () @{
+    handler_append 0
+    mbfl_location_enter
+    @{
+        sub-func
+    @}
+    mbfl_location_leave
+    handler_append 6
+@}
+
+function sub-func () @{
+    mbfl_location_handler "handler_append 1"
+    mbfl_location_enter
+    @{
+        sub-sub-func
+    @}
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 5"
+@}
+
+function sub-sub-func () @{
+    mbfl_location_handler "handler_append 2"
+    mbfl_location_enter
+    @{
+        mbfl_location_handler "handler_append 3"
+    @}
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 4"
+@}
+
+func
+"$RESULT"       @result{} 0342516
+@end example
 
 @c page
 @node main

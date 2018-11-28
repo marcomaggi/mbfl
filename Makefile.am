@@ -60,6 +60,7 @@ EXTRA_DIST	+= \
 	src/modules/system.sh.m4		\
 	src/modules/interfaces.sh.m4		\
 	src/modules/atexit.sh.m4		\
+	src/modules/locations.sh.m4		\
 	\
 	src/lib/libmbfl.sh.m4			\
 	src/lib/libmbfltest.sh			\
@@ -78,7 +79,7 @@ MBFL_MODULES		= \
 	src/modules/program.sh	src/modules/signal.sh		src/modules/string.sh	      \
 	src/modules/dialog.sh	src/modules/main.sh		src/modules/variable.sh	      \
 	src/modules/system.sh	src/modules/arrays.sh		src/modules/interfaces.sh     \
-	src/modules/atexit.sh	src/modules/times-and-dates.sh
+	src/modules/atexit.sh	src/modules/locations.sh	src/modules/times-and-dates.sh
 
 MBFL_PREPRO		= src/lib/preprocessor.m4
 
@@ -231,6 +232,7 @@ EXTRA_DIST	+= \
 	tests/encode.test		\
 	tests/file.test			\
 	tests/getopts.test		\
+	tests/locations.test		\
 	tests/message.test		\
 	tests/program.test		\
 	tests/script.test		\
@@ -275,6 +277,7 @@ TESTS			= \
 	tests/encode.test		\
 	tests/file.test			\
 	tests/getopts.test		\
+	tests/locations.test		\
 	tests/message.test		\
 	tests/program.test		\
 	tests/script.test		\

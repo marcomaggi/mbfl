@@ -106,6 +106,8 @@ changes!
 * BACKWARDS INCOMPATIBILITY The function "exit_because_invalid_username"
   has been renamed to "exit_because_invalid_sudo_username".
 
+* Added locations module.
+
 
 Notes for revision 2.2.0
 ------------------------
