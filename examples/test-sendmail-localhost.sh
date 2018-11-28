@@ -14,11 +14,11 @@ function print_message () {
     MESSAGE="Sender: $FROM_ADDRESS
 From: $FROM_ADDRESS
 To: $TO_ADDRESS
-Subject: proof from $PROGNAME
+Subject: demo from $PROGNAME
 Message-ID: <$MESSAGE_ID>
 Date: $DATE
 
-This is a text proof from the $PROGNAME script.
+This is a text demo from the $PROGNAME script.
 .This is a line starting with a dot.
 --\x20
 Marco
@@ -26,29 +26,68 @@ Marco
     printf "$MESSAGE"
 }
 
-true && bash "$SCRIPT"				\
-	     --debug --verbose --test-message	\
-	     --host=localhost --port=25		\
-	     --envelope-from=$FROM_ADDRESS	\
-	     --envelope-to=$TO_ADDRESS
+declare -r COMMON_OPTIONS="--debug --verbose	\
+   --host=localhost				\
+   --envelope-from=$FROM_ADDRESS		\
+   --envelope-to=$TO_ADDRESS"
 
-true && print_message | bash "$SCRIPT"				\
-			     --debug --verbose --message=-      \
-			     --host=localhost --port=25         \
-			     --envelope-from=$FROM_ADDRESS      \
-			     --envelope-to=$TO_ADDRESS
+declare FURTHER_OPTIONS
 
-true && {
+# Send the test message.
+if true
+then
+    FURTHER_OPTIONS='--test-message'
+
+    # Explicitly selects the port number.
+    if true
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --port=25
+	echo
+    fi
+
+    # Read the port number from the hostinfo file.
+    if true
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS}
+	echo
+    fi
+
+    # Read the port  number from the hostinfo file.  Send  a copy of the
+    # message to the sender.
+    if true
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --envelope-to=$FROM_ADDRESS
+	echo
+    fi
+fi
+
+# Read the message from stdin
+if true
+then
+    FURTHER_OPTIONS='--message=-'
+
+    if true
+    then
+	print_message | bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS}
+	echo
+    fi
+fi
+
+# Reaad the message from a file.
+if true
+then
     : ${TMPDIR:=/tmp}
     PATHNAME=${TMPDIR}/message.$RANDOM.$$
     print_message >$PATHNAME
     trap "rm -f '$PATHNAME'" EXIT
-    bash "$SCRIPT"				\
-	 --debug --verbose --message=$PATHNAME	\
-	 --host=localhost			\
-	 --envelope-from=$FROM_ADDRESS		\
-	 --envelope-to=$FROM_ADDRESS		\
-	 --envelope-to=$TO_ADDRESS
-}
+
+    FURTHER_OPTIONS="--message=$PATHNAME"
+
+    if true
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS}
+	echo
+    fi
+fi
 
 ### end of file
