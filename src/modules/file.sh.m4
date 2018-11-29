@@ -87,11 +87,11 @@ function mbfl_p_file_looking_at_component_beginning () {
 #### changing directory functions
 
 function mbfl_cd () {
-    mbfl_mandatory_parameter(DIRECTORY, 1, directory)
+    mbfl_mandatory_parameter(_DIRECTORY, 1, directory)
     shift 1
-    DIRECTORY=$(mbfl_file_normalise "$DIRECTORY")
-    mbfl_message_verbose "entering directory: '${DIRECTORY}'\n"
-    mbfl_change_directory "$DIRECTORY" "$@"
+    mbfl_file_normalise_var _DIRECTORY "$_DIRECTORY"
+    mbfl_message_verbose "entering directory: '${_DIRECTORY}'\n"
+    mbfl_change_directory "$_DIRECTORY" "$@"
 }
 function mbfl_change_directory () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory)
@@ -384,40 +384,40 @@ function mbfl_file_strip_leading_slash () {
 #### pathname normalisation: full normalisation
 
 function mbfl_file_normalise_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    mbfl_optional_parameter(PREFIX, 3)
-    local dirname tailame result ORGPWD=$PWD
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    mbfl_optional_parameter(mbfl_PREFIX, 3)
+    local mbfl_result mbfl_ORGPWD=$PWD
 
-    if mbfl_file_is_absolute "$PATHNAME"
+    if mbfl_file_is_absolute "$mbfl_PATHNAME"
     then
-	mbfl_p_file_normalise1_var result "$PATHNAME"
-	RESULT_VARREF=$result
-    elif mbfl_file_is_directory "$PREFIX"
+	mbfl_p_file_normalise1_var mbfl_result "$mbfl_PATHNAME"
+	mbfl_RESULT_VARREF=$mbfl_result
+    elif mbfl_file_is_directory "$mbfl_PREFIX"
     then
-        PATHNAME=${PREFIX}/${PATHNAME}
-        mbfl_p_file_normalise1_var result "$PATHNAME"
-	RESULT_VARREF=$result
-    elif test -n "$PREFIX"
+        mbfl_PATHNAME=${mbfl_PREFIX}/${mbfl_PATHNAME}
+        mbfl_p_file_normalise1_var mbfl_result "$mbfl_PATHNAME"
+	mbfl_RESULT_VARREF=$mbfl_result
+    elif mbfl_string_is_not_empty "$mbfl_PREFIX"
     then
-	local PATHNAME1 PATHNAME2
-        mbfl_p_file_remove_dots_from_pathname_var PREFIX   "$PREFIX"
-        mbfl_p_file_remove_dots_from_pathname_var PATHNAME1 "$PATHNAME"
-        mbfl_file_strip_trailing_slash_var        PATHNAME2 "$PATHNAME1"
-        printf -v RESULT_VARREF '%s/%s' "$PREFIX" "$PATHNAME2"
+	local mbfl_PATHNAME1 mbfl_PATHNAME2
+        mbfl_p_file_remove_dots_from_pathname_var mbfl_PREFIX   "$mbfl_PREFIX"
+        mbfl_p_file_remove_dots_from_pathname_var mbfl_PATHNAME1 "$mbfl_PATHNAME"
+        mbfl_file_strip_trailing_slash_var        mbfl_PATHNAME2 "$mbfl_PATHNAME1"
+        printf -v mbfl_RESULT_VARREF '%s/%s' "$mbfl_PREFIX" "$mbfl_PATHNAME2"
     else
-	mbfl_p_file_normalise1_var result "$PATHNAME"
-	RESULT_VARREF=$result
+	mbfl_p_file_normalise1_var mbfl_result "$mbfl_PATHNAME"
+	mbfl_RESULT_VARREF=$mbfl_result
     fi
-    cd "$ORGPWD" >/dev/null
+    cd "$mbfl_ORGPWD" >/dev/null
     return 0
 }
 
 function mbfl_file_normalise () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    mbfl_optional_parameter(PREFIX, 2)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 1, pathname)
+    mbfl_optional_parameter(mbfl_PREFIX, 2)
     local RESULT_VARNAME
-    if mbfl_file_normalise_var RESULT_VARNAME "$PATHNAME" "$PREFIX"
+    if mbfl_file_normalise_var RESULT_VARNAME "$mbfl_PATHNAME" "$mbfl_PREFIX"
     then echo "$RESULT_VARNAME"
     else return $?
     fi
@@ -427,62 +427,62 @@ function mbfl_file_normalise () {
 
 function mbfl_p_file_remove_dots_from_pathname_var () {
     mbfl_mandatory_nameref_parameter(RESULT_VARREF1, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
     local -a SPLITPATH
     local -i SPLITCOUNT
-    local -a output
-    local -i output_counter input_counter
+    local -a mbfl_output
+    local -i mbfl_output_counter mbfl_input_counter
 
-    mbfl_file_split "$PATHNAME"
-    for ((input_counter=0, output_counter=0; input_counter < SPLITCOUNT; ++input_counter))
+    mbfl_file_split "$mbfl_PATHNAME"
+    for ((mbfl_input_counter=0, mbfl_output_counter=0; mbfl_input_counter < SPLITCOUNT; ++mbfl_input_counter))
     do
-        case ${SPLITPATH[$input_counter]} in
+        case ${SPLITPATH[$mbfl_input_counter]} in
             '.')
             ;;
             '..')
-                let --output_counter
+                let --mbfl_output_counter
                 ;;
             *)
-                output[$output_counter]=${SPLITPATH[$input_counter]}
-                let ++output_counter
+                mbfl_output[$mbfl_output_counter]=${SPLITPATH[$mbfl_input_counter]}
+                let ++mbfl_output_counter
                 ;;
         esac
     done
     {
 	local -i i
-	PATHNAME=${output[0]}
-	for ((i=1; $i < $output_counter; ++i))
-	do PATHNAME+=/${output[$i]}
+	mbfl_PATHNAME=${mbfl_output[0]}
+	for ((i=1; $i < $mbfl_output_counter; ++i))
+	do mbfl_PATHNAME+=/${mbfl_output[$i]}
 	done
     }
-    RESULT_VARREF1=$PATHNAME
+    RESULT_VARREF1=$mbfl_PATHNAME
 }
 
 function mbfl_p_file_normalise1_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF1, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF1, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
 
-    if mbfl_file_is_directory "$PATHNAME"
-    then mbfl_p_file_normalise2_var RESULT_VARREF1 "$PATHNAME"
+    if mbfl_file_is_directory "$mbfl_PATHNAME"
+    then mbfl_p_file_normalise2_var mbfl_RESULT_VARREF1 "$mbfl_PATHNAME"
     else
-        local TAILNAME DIRNAME
-	mbfl_file_tail_var    TAILNAME "$PATHNAME"
-        mbfl_file_dirname_var DIRNAME  "$PATHNAME"
-        if mbfl_file_is_directory "$DIRNAME"
-        then mbfl_p_file_normalise2_var RESULT_VARREF1 "$DIRNAME" "$TAILNAME"
-        else mbfl_file_strip_trailing_slash_var RESULT_VARREF1 "$PATHNAME"
+        local mbfl_TAILNAME mbfl_DIRNAME
+	mbfl_file_tail_var    mbfl_TAILNAME "$mbfl_PATHNAME"
+        mbfl_file_dirname_var mbfl_DIRNAME  "$mbfl_PATHNAME"
+        if mbfl_file_is_directory "$mbfl_DIRNAME"
+        then mbfl_p_file_normalise2_var mbfl_RESULT_VARREF1 "$mbfl_DIRNAME" "$mbfl_TAILNAME"
+        else mbfl_file_strip_trailing_slash_var mbfl_RESULT_VARREF1 "$mbfl_PATHNAME"
         fi
     fi
 }
 function mbfl_p_file_normalise2_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF2, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    mbfl_optional_parameter(TAILNAME, 3)
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF2, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    mbfl_optional_parameter(mbfl_TAILNAME, 3)
 
-    cd "$PATHNAME" >/dev/null
-    if test -n "$TAILNAME"
-    then printf -v RESULT_VARREF2 '%s/%s' "$PWD" "$TAILNAME"
-    else RESULT_VARREF2=$PWD
+    cd "$mbfl_PATHNAME" >/dev/null
+    if mbfl_string_is_not_empty "$mbfl_TAILNAME"
+    then printf -v mbfl_RESULT_VARREF2 '%s/%s' "$PWD" "$mbfl_TAILNAME"
+    else mbfl_RESULT_VARREF2=$PWD
     fi
     cd - >/dev/null
 }
@@ -497,17 +497,17 @@ function mbfl_file_enable_realpath () {
 function mbfl_file_realpath () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local REALPATH
-    mbfl_program_found_var REALPATH realpath || exit $?
-    mbfl_program_exec "$REALPATH" "$@" -- "$PATHNAME"
+    local _REALPATH
+    mbfl_program_found_var _REALPATH realpath || exit $?
+    mbfl_program_exec "$_REALPATH" "$@" -- "$PATHNAME"
 }
 
 function mbfl_file_realpath_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
     shift 2
 
-    if ! RESULT_VARREF=$(mbfl_file_realpath "$PATHNAME" "$@")
+    if ! mbfl_RESULT_VARREF=$(mbfl_file_realpath "$mbfl_PATHNAME" "$@")
     then return $?
     fi
 }
@@ -589,7 +589,7 @@ function mbfl_file_find_tmpdir_var () {
     then
         RESULT_VARREF=$TMPDIR
         return 0
-    elif test -n "$USER"
+    elif mbfl_string_is_not_empty "$USER"
     then
         TMPDIR=/tmp/${USER}
         if mbfl_file_directory_is_writable "$TMPDIR"
