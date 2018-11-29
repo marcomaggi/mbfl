@@ -242,7 +242,8 @@ $ ./configure \
 * overview reliable::           Reliable run--time loading.
 * overview direct::             Direct inclusion.
 * overview interactive::        Using the library interactively.
-* overview notes::              Notes.
+* overview rv::                 Result variables.
+* overview notes::              Miscellaneous notes.
 @end menu
 
 @c page
@@ -419,6 +420,106 @@ not mean that the functions are not there: only the global variable declarations
 is a little dirty, but, at present, it should work.
 
 @c page
+@node overview rv
+@section Result variables
+
+
+Some functions have a @code{_var} variant; for example, two functions exists to extract the filename
+extension:
+
+@example
+mbfl_file_extension
+mbfl_file_extension_var
+@end example
+
+@noindent
+the first variant will print the result to stdout, while the @code{_var} variant will store the
+result in a ``result variable'' whose name is handed to it as first argument; this mechanism is
+built using the @code{local -n} feature of Bash.  Example:
+
+@example
+mbfl_file_extension /path/to/file.ext
+@print{} ext
+
+local _RV
+mbfl_file_extension_var _RV /path/to/file.ext
+"$_RV"  @result{} ext
+@end example
+
+The @code{_var} variants are often a bit faster because the output variant is often a wrapper for
+the @code{_var} variant.
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Dangers of result variables
+
+@strong{We must be careful when using this feature!}  Let's consider this script:
+
+@example
+function main () @{
+    local X=0
+    mbfl_func X
+    echo X=$X >&2
+@}
+function mbfl_func () @{
+    local -n Y=$@{1:?@}
+    Y=1
+@}
+
+main
+@end example
+
+@noindent
+everything is fine: the script will print @code{X=1} because the call to @code{mbfl_func} will
+mutate the variable @code{X} in its execution environment, and such variable happens to be defined
+in the scope of @code{main}.
+
+Now let's consider this script:
+
+@example
+function main () @{
+    local X
+    mbfl_func X
+    echo X=$X >&2
+@}
+function mbfl_func () @{
+    local -n Y=$@{1:?@}
+    local X
+    Y=1
+@}
+
+main
+@end example
+
+@noindent
+it will print @code{X=0} because @code{mbfl_func} accesses the variable @code{X} in its execution
+environment, and such variable is defined by @code{mbfl_func} itself; the local definition of
+@code{X} shadows the upper level definition.
+
+There is no true escape from this problem!  There is no definitive way to avoid ``fishing'' a local
+variable in a lower function from an upper function.  @mbfl{} attempts to mitigate the problem by
+prefixing its variables with @code{mbfl_} when a function uses reference variables.  We should also
+prefix our ``result variables'', for example with a leading or trailing underscore: @mbfl{} never
+uses such a prefix or suffix.
+
+So we should write the script as follows:
+
+@example
+function main () @{
+    local _X=0
+    mbfl_func _X
+    echo _X=$_X >&2
+@}
+function mbfl_func () @{
+    local -n mbfl_Y=$@{1:?@}
+    local mbfl_X
+    mbfl_Y=1
+@}
+
+main
+@end example
+
+@c page
 @node overview notes
 @section Notes
 
@@ -481,31 +582,6 @@ To avoid the mutation of text read with @code{read}, @mbfl{} always sets @code{I
 string in the environment in which @code{read} is evaluated.  This happens in functions like
 @bfunc{mbfl_read_maybe_null} and @bfunc{mbfl_dialog_ask_password}; notice, though, that these
 functions @strong{do not} mutate the @code{IFS} value in the environment of the caller.
-
-@item
-Some functions have a @code{_var} variant; for example, two functions exists to extract the filename
-extension:
-
-@example
-mbfl_file_extension
-mbfl_file_extension_var
-@end example
-
-@noindent
-the first variant will print the result to stdout, while the @code{_var} variant will store the
-result in a ``result variable'' whose name is handed to it as first argument.  Example:
-
-@example
-mbfl_file_extension /path/to/file.ext
-@print{} ext
-
-local RV
-mbfl_file_extension_var RV /path/to/file.ext
-"$RV"  @result{} ext
-@end example
-
-The @code{_var} variants are often a bit faster because the output variant is often a wrapper for
-the @code{_var} variant.
 @end itemize
 
 @c page
