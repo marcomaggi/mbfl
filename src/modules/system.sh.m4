@@ -141,9 +141,9 @@ function mbfl_system_passwd_print_entries_as_json () {
 
 m4_define([[[MBFL_PASSWD_DECLARE_GETTER]]],[[[
 function mbfl_system_passwd_get_$1_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_integer_parameter(INDEX, 2, passwd entry index)
-    RESULT_VARREF=${mbfl_system_PASSWD_ENTRIES[${INDEX}:$1]}
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(mbfl_INDEX, 2, passwd entry index)
+    mbfl_RESULT_VARREF=${mbfl_system_PASSWD_ENTRIES[${mbfl_INDEX}:$1]}
 }
 function mbfl_system_passwd_get_$1 () {
     mbfl_mandatory_integer_parameter(INDEX, 1, passwd entry index)
@@ -162,15 +162,15 @@ MBFL_PASSWD_DECLARE_GETTER(shell)
 #### searching passwd entries
 
 function mbfl_system_passwd_find_entry_by_name_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(THE_NAME, 2, user name)
-    local -i i
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_THE_NAME, 2, user name)
+    local -i mbfl_I
 
-    for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+    for ((mbfl_I=0; mbfl_I < mbfl_system_PASSWD_COUNT; ++mbfl_I))
     do
-	if mbfl_string_equal "$THE_NAME" "${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
+	if mbfl_string_equal "$mbfl_THE_NAME" "${mbfl_system_PASSWD_ENTRIES[${mbfl_I}:name]}"
 	then
-	    RESULT_VARREF=$i
+	    mbfl_RESULT_VARREF=$mbfl_I
 	    return 0
 	fi
     done
@@ -189,15 +189,15 @@ function mbfl_system_passwd_find_entry_by_name () {
 ### ------------------------------------------------------------------------
 
 function mbfl_system_passwd_find_entry_by_uid_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(THE_UID, 2, user id)
-    local -i i
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_THE_UID, 2, user id)
+    local -i mbfl_I
 
-    for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
+    for ((mbfl_I=0; mbfl_I < mbfl_system_PASSWD_COUNT; ++mbfl_I))
     do
-	if mbfl_string_equal "$THE_UID" "${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
+	if mbfl_string_equal "$mbfl_THE_UID" "${mbfl_system_PASSWD_ENTRIES[${mbfl_I}:uid]}"
 	then
-	    RESULT_VARREF=$i
+	    mbfl_RESULT_VARREF=$mbfl_I
 	    return 0
 	fi
     done
@@ -217,11 +217,11 @@ function mbfl_system_passwd_find_entry_by_uid () {
 #### user id conversion
 
 function mbfl_system_passwd_uid_to_name_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_integer_parameter(THE_UID,       2, user id)
-    local -i USER_INDEX
-    if mbfl_system_passwd_find_entry_by_uid_var USER_INDEX $THE_UID
-    then mbfl_system_passwd_get_name_var RESULT_VARREF $USER_INDEX
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(mbfl_THE_UID,       2, user id)
+    local -i mbfl_USER_INDEX
+    if mbfl_system_passwd_find_entry_by_uid_var mbfl_USER_INDEX $mbfl_THE_UID
+    then mbfl_system_passwd_get_name_var mbfl_RESULT_VARREF $mbfl_USER_INDEX
     else return 1
     fi
 }
@@ -237,11 +237,11 @@ function mbfl_system_passwd_uid_to_name () {
 ### ------------------------------------------------------------------------
 
 function mbfl_system_passwd_name_to_uid_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(THE_NAME,              2, user name)
-    local -i USER_INDEX
-    if mbfl_system_passwd_find_entry_by_name_var USER_INDEX "$THE_NAME"
-    then mbfl_system_passwd_get_uid_var RESULT_VARREF $USER_INDEX
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_THE_NAME,              2, user name)
+    local -i mbfl_USER_INDEX
+    if mbfl_system_passwd_find_entry_by_name_var mbfl_USER_INDEX "$mbfl_THE_NAME"
+    then mbfl_system_passwd_get_uid_var mbfl_RESULT_VARREF $mbfl_USER_INDEX
     else return 1
     fi
 }
@@ -376,9 +376,9 @@ function mbfl_system_group_print_entries_as_json () {
 
 m4_define([[[MBFL_GROUP_DECLARE_GETTER]]],[[[
 function mbfl_system_group_get_$1_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_integer_parameter(GROUP_INDEX, 2, group entry index)
-    RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:$1]}
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(mbfl_GROUP_INDEX, 2, group entry index)
+    mbfl_RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${mbfl_GROUP_INDEX}:$1]}
 }
 function mbfl_system_group_get_$1 () {
     mbfl_mandatory_integer_parameter(GROUP_INDEX, 1, group entry index)
@@ -393,9 +393,9 @@ MBFL_GROUP_DECLARE_GETTER(users)
 ### ------------------------------------------------------------------------
 
 function mbfl_system_group_get_users_count_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_integer_parameter(GROUP_INDEX, 2, group entry index)
-    RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:users:count]}
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(mbfl_GROUP_INDEX, 2, group entry index)
+    mbfl_RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${mbfl_GROUP_INDEX}:users:count]}
 }
 function mbfl_system_group_get_users_count () {
     mbfl_mandatory_integer_parameter(GROUP_INDEX, 1, group entry index)
@@ -405,10 +405,10 @@ function mbfl_system_group_get_users_count () {
 ### ------------------------------------------------------------------------
 
 function mbfl_system_group_get_user_name_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_integer_parameter(GROUP_INDEX,   2, group entry index)
-    mbfl_mandatory_integer_parameter(USER_INDEX,    3, user index)
-    RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:users:${USER_INDEX}]}
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(mbfl_GROUP_INDEX,   2, group entry index)
+    mbfl_mandatory_integer_parameter(mbfl_USER_INDEX,    3, user index)
+    mbfl_RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${mbfl_GROUP_INDEX}:users:${mbfl_USER_INDEX}]}
 }
 function mbfl_system_group_get_user_name () {
     mbfl_mandatory_integer_parameter(GROUP_INDEX, 1, group entry index)
@@ -420,15 +420,15 @@ function mbfl_system_group_get_user_name () {
 #### searching group entries
 
 function mbfl_system_group_find_entry_by_name_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(THE_NAME, 2, group name)
-    local -i i
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_THE_NAME, 2, group name)
+    local -i mbfl_I
 
-    for ((i=0; i < mbfl_system_GROUP_COUNT; ++i))
+    for ((mbfl_I=0; mbfl_I < mbfl_system_GROUP_COUNT; ++mbfl_I))
     do
-	if mbfl_string_equal "$THE_NAME" "${mbfl_system_GROUP_ENTRIES[${i}:name]}"
+	if mbfl_string_equal "$mbfl_THE_NAME" "${mbfl_system_GROUP_ENTRIES[${mbfl_I}:name]}"
 	then
-	    RESULT_VARREF=$i
+	    mbfl_RESULT_VARREF=$mbfl_I
 	    return 0
 	fi
     done
@@ -447,15 +447,15 @@ function mbfl_system_group_find_entry_by_name () {
 ### ------------------------------------------------------------------------
 
 function mbfl_system_group_find_entry_by_gid_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(THE_GID, 2, group id)
-    local -i i
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_THE_GID, 2, group id)
+    local -i mbfl_I
 
-    for ((i=0; i < mbfl_system_GROUP_COUNT; ++i))
+    for ((mbfl_I=0; mbfl_I < mbfl_system_GROUP_COUNT; ++mbfl_I))
     do
-	if mbfl_string_equal "$THE_GID" "${mbfl_system_GROUP_ENTRIES[${i}:gid]}"
+	if mbfl_string_equal "$mbfl_THE_GID" "${mbfl_system_GROUP_ENTRIES[${mbfl_I}:gid]}"
 	then
-	    RESULT_VARREF=$i
+	    mbfl_RESULT_VARREF=$mbfl_I
 	    return 0
 	fi
     done
@@ -475,11 +475,11 @@ function mbfl_system_group_find_entry_by_gid () {
 #### group id conversion
 
 function mbfl_system_group_gid_to_name_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_integer_parameter(THE_GID,       2, group id)
-    local -i GROUP_INDEX
-    if mbfl_system_group_find_entry_by_gid_var GROUP_INDEX $THE_GID
-    then mbfl_system_group_get_name_var RESULT_VARREF $GROUP_INDEX
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_integer_parameter(mbfl_THE_GID,       2, group id)
+    local -i mbfl_GROUP_INDEX
+    if mbfl_system_group_find_entry_by_gid_var mbfl_GROUP_INDEX $mbfl_THE_GID
+    then mbfl_system_group_get_name_var mbfl_RESULT_VARREF $mbfl_GROUP_INDEX
     else return 1
     fi
 }
@@ -495,11 +495,11 @@ function mbfl_system_group_gid_to_name () {
 ### ------------------------------------------------------------------------
 
 function mbfl_system_group_name_to_gid_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(THE_NAME,              2, group name)
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_THE_NAME,              2, group name)
     local -i GROUP_INDEX
-    if mbfl_system_group_find_entry_by_name_var GROUP_INDEX "$THE_NAME"
-    then mbfl_system_group_get_gid_var RESULT_VARREF $GROUP_INDEX
+    if mbfl_system_group_find_entry_by_name_var GROUP_INDEX "$mbfl_THE_NAME"
+    then mbfl_system_group_get_gid_var mbfl_RESULT_VARREF $GROUP_INDEX
     else return 1
     fi
 }
