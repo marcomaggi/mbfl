@@ -58,18 +58,18 @@ function mbfl_string_is_equal_unquoted_char () {
 }
 
 function mbfl_string_quote_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_optional_parameter(STRING, 2)
-    local -i i
-    local ch
-    RESULT_VARREF=
-    for ((i=0; i < ${#STRING}; ++i))
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_optional_parameter(mbfl_STRING, 2)
+    local -i mbfl_I
+    local mbfl_ch
+    mbfl_RESULT_VARREF=
+    for ((mbfl_I=0; mbfl_I < ${#mbfl_STRING}; ++mbfl_I))
     do
-        ch=${STRING:$i:1}
-        if test "$ch" = \\
-	then ch=\\\\
+        mbfl_ch=${mbfl_STRING:$mbfl_I:1}
+        if test "$mbfl_ch" = \\
+	then mbfl_ch=\\\\
 	fi
-        RESULT_VARREF+=$ch
+        mbfl_RESULT_VARREF+=$mbfl_ch
     done
 }
 function mbfl_string_quote () {
@@ -111,16 +111,16 @@ function mbfl_string_is_not_empty () {
 }
 
 function mbfl_string_first_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(STRING, 2, string)
-    mbfl_mandatory_parameter(CHAR, 3, char)
-    mbfl_optional_parameter(BEGIN, 4, 0)
-    local -i i
-    for ((i=$BEGIN; i < ${#STRING}; ++i))
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_STRING, 2, string)
+    mbfl_mandatory_parameter(mbfl_CHAR, 3, char)
+    mbfl_optional_parameter(mbfl_BEGIN, 4, 0)
+    local -i mbfl_I
+    for ((mbfl_I=mbfl_BEGIN; mbfl_I < ${#mbfl_STRING}; ++mbfl_I))
     do
-	if test "${STRING:$i:1}" = "$CHAR"
+	if test "${mbfl_STRING:$mbfl_I:1}" = "$mbfl_CHAR"
 	then
-            RESULT_VARREF=$i
+            mbfl_RESULT_VARREF=$mbfl_I
 	    # Found!  Return with exit status 0.
             return 0
         fi
@@ -142,17 +142,17 @@ function mbfl_string_first () {
 }
 
 function mbfl_string_last_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(STRING, 2, string)
-    mbfl_mandatory_parameter(CHAR, 3, char)
-    mbfl_optional_parameter(BEGIN, 4)
-    local -i i
-    for ((i=${BEGIN:-((${#STRING}-1))}; i >= 0; --i))
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_STRING, 2, string)
+    mbfl_mandatory_parameter(mbfl_CHAR, 3, char)
+    mbfl_optional_parameter(mbfl_BEGIN, 4)
+    local -i mbfl_I
+    for ((mbfl_I=${mbfl_BEGIN:-((${#mbfl_STRING}-1))}; mbfl_I >= 0; --mbfl_I))
     do
-	if test "${STRING:$i:1}" = "$CHAR"
+	if test "${mbfl_STRING:$mbfl_I:1}" = "$mbfl_CHAR"
 	then
 	    # Found!  Return with exit status 0.
-            RESULT_VARREF=$i
+            mbfl_RESULT_VARREF=$mbfl_I
 	    return 0
         fi
     done
@@ -173,10 +173,10 @@ function mbfl_string_last () {
 }
 
 function mbfl_string_index_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(STRING, 2, string)
-    mbfl_mandatory_parameter(INDEX, 3, index)
-    RESULT_VARREF=${STRING:$INDEX:1}
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_STRING, 2, string)
+    mbfl_mandatory_parameter(mbfl_INDEX, 3, index)
+    mbfl_RESULT_VARREF=${mbfl_STRING:${mbfl_INDEX}:1}
 }
 function mbfl_string_index () {
     mbfl_mandatory_parameter(STRING, 1, string)
@@ -185,13 +185,13 @@ function mbfl_string_index () {
 }
 
 function mbfl_string_range_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(STRING, 2, string)
-    mbfl_mandatory_parameter(BEGIN, 3, begin)
-    mbfl_optional_parameter(END, 4)
-    if test -z "$END" -o "$END" = 'end' -o "$END" = 'END'
-    then RESULT_VARREF=${STRING:$BEGIN}
-    else RESULT_VARREF=${STRING:$BEGIN:$END}
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_STRING, 2, string)
+    mbfl_mandatory_parameter(mbfl_BEGIN, 3, begin)
+    mbfl_optional_parameter(mbfl_END, 4)
+    if test -z "$mbfl_END" -o "$mbfl_END" = 'end' -o "$mbfl_END" = 'END'
+    then mbfl_RESULT_VARREF=${mbfl_STRING:$mbfl_BEGIN}
+    else mbfl_RESULT_VARREF=${mbfl_STRING:$mbfl_BEGIN:$mbfl_END}
     fi
 }
 function mbfl_string_range () {
@@ -491,12 +491,12 @@ function mbfl_string_tolower () {
 }
 
 function mbfl_string_toupper_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    RESULT_VARREF="${2^^}"
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_RESULT_VARREF="${2^^}"
 }
 function mbfl_string_tolower_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    RESULT_VARREF="${2,,}"
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_RESULT_VARREF="${2,,}"
 }
 
 #page
@@ -509,19 +509,19 @@ function mbfl_string_replace () {
     printf '%s\n' "${STRING//$PATTERN/$SUBST}"
 }
 function mbfl_string_replace_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_parameter(STRING, 2, string)
-    mbfl_mandatory_parameter(PATTERN, 3, pattern)
-    mbfl_optional_parameter(SUBST, 4)
-    RESULT_VARREF=${STRING//$PATTERN/$SUBST}
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_parameter(mbfl_STRING, 2, string)
+    mbfl_mandatory_parameter(mbfl_PATTERN, 3, pattern)
+    mbfl_optional_parameter(mbfl_SUBST, 4)
+    mbfl_RESULT_VARREF=${mbfl_STRING//${mbfl_PATTERN}/${mbfl_SUBST}}
 }
 
 function mbfl_string_skip () {
-    mbfl_mandatory_parameter(STRING, 1, string)
-    mbfl_mandatory_nameref_parameter(POSNAME, 2, position)
-    mbfl_mandatory_parameter(CHAR, 3, char)
-    while test "${STRING:$POSNAME:1}" = "$CHAR"
-    do let ++POSNAME
+    mbfl_mandatory_parameter(mbfl_STRING, 1, string)
+    mbfl_mandatory_nameref_parameter(mbfl_POSNAME, 2, position)
+    mbfl_mandatory_parameter(mbfl_CHAR, 3, char)
+    while test "${mbfl_STRING:$mbfl_POSNAME:1}" = "$mbfl_CHAR"
+    do let ++mbfl_POSNAME
     done
 }
 

@@ -395,6 +395,10 @@ function string-range-1.4 () {
     mbfl_string_range abcdefghilm 4 end | dotest-output efghilm
 }
 
+function string-range-1.5 () {
+    mbfl_string_range abcdefghilm 4 END | dotest-output efghilm
+}
+
 ### --------------------------------------------------------------------
 
 function string-range-var-1.1 () {
@@ -422,6 +426,13 @@ function string-range-var-1.4 () {
     local RV
     if mbfl_string_range_var RV abcdefghilm 4 end
     then dotest-equal efghilm "$RV"
+    fi
+}
+
+function string-range-var-1.5 () {
+    local RV
+    if mbfl_string_range_var RV abcdefghilm 0 END
+    then dotest-equal abcdefghilm "$RV"
     fi
 }
 
