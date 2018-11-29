@@ -35,7 +35,8 @@
 @end macro
 
 @macro DocVarVariant{}
-The function variant @code{_var} stores the result in the variable @var{RV}, rather than print it.
+The function variant @code{_var} stores the result in the variable @var{_RV}, rather than print it;
+@ref{overview rv, Result variables}.
 @end macro
 
 @macro ExitCode{}
@@ -1037,7 +1038,7 @@ mbfl_decode_hex 414243
 
 
 @defun mbfl_file_extension @var{pathname}
-@defunx mbfl_file_extension_var @var{RV} @var{pathname}
+@defunx mbfl_file_extension_var @var{_RV} @var{pathname}
 Extract the extension from a file name.  Starting from the end of the string @var{pathname}: search
 the last dot character in the argument string and echo to stdout the range of characters from the
 dot to the end, not including the dot.  If a slash character or the beginning of the string is found
@@ -1053,15 +1054,15 @@ mbfl_file_extension /path/to/.file.ext  @print{} ext
 mbfl_file_extension /path/to/.dotfile   @print{} <no output>
 mbfl_file_extension .dotfile            @print{} <no output>
 
-local RV
-mbfl_file_extension_var RV /path/to/file.ext
-"$RV"  @result{} ext
+local _RV
+mbfl_file_extension_var _RV /path/to/file.ext
+"$_RV"  @result{} ext
 @end example
 @end defun
 
 
 @defun mbfl_file_dirname @var{pathname}
-@defunx mbfl_file_dirname_var @var{rv} @var{pathname}
+@defunx mbfl_file_dirname_var @var{_RV} @var{pathname}
 Extract the directory part from a fully qualified file name.  Search the last slash character in the
 input string and echo to stdout the range of characters from the first to the slash, not including
 the slash.
@@ -1089,15 +1090,15 @@ mbfl_file_dirname ./abcd                @print{} .
 mbfl_file_dirname ../abcd/efgh          @print{} ../abcd
 mbfl_file_dirname ./abcd/efgh           @print{} ./abcd
 
-local RV
-mbfl_file_dirname_var RV /path/to/file.ext
-"$RV" @result{} /path/to
+local _RV
+mbfl_file_dirname_var _RV /path/to/file.ext
+"$_RV" @result{} /path/to
 @end example
 @end defun
 
 
 @defun mbfl_file_rootname @var{pathname}
-@defunx mbfl_file_rootname_var @var{RV} @var{pathname}
+@defunx mbfl_file_rootname_var @var{_RV} @var{pathname}
 Extract the root portion of a file pathname: everything excluding the last component's extension and
 the extension's dot separator.  Search the last dot character in the argument string and echo to
 stdout the range of characters from the beginning to the dot, not including the dot.  If a slash is
@@ -1121,9 +1122,9 @@ mbfl_file_rootname /                     @print{} /
 mbfl_file_rootname .                     @print{} .
 mbfl_file_rootname ..                    @print{} ..
 
-local RV
+local _RV
 mbfl_file_rootname_var /path/to/file.ext
-"$RV" @result{} /path/to/file
+"$_RV" @result{} /path/to/file
 @end example
 @end defun
 
@@ -1141,9 +1142,9 @@ mbfl_file_tail /path/to/file.ext  @print{} file.ext
 mbfl_file_tail /path/to/          @print{} <no output>
 mbfl_file_tail file.ext           @print{} file.ext
 
-local RV
-mbfl_file_tail_var RV /path/to/file.ext
-"$RV" @result{} file.ext
+local _RV
+mbfl_file_tail_var _RV /path/to/file.ext
+"$_RV" @result{} file.ext
 @end example
 @end defun
 
@@ -1168,7 +1169,7 @@ $SPLITCOUNT             @result{} 3
 
 
 @defun mbfl_file_strip_trailing_slash @var{pathname}
-@defunx mbfl_file_strip_trailing_slash_var @var{RV} @var{pathname}
+@defunx mbfl_file_strip_trailing_slash_var @var{_RV} @var{pathname}
 Remove all the trailing slashes from @var{pathname} and print the result on stdout.  If
 @var{pathname} consists only of slashes: print a single dot.
 
@@ -1188,15 +1189,15 @@ mbfl_file_strip_trailing_slash '/'      @print{} .
 mbfl_file_strip_trailing_slash '///'    @print{} .
 mbfl_file_strip_trailing_slash 'file'   @print{} file
 
-local RV
-mbfl_file_strip_trailing_slash_var RV '/path/to/dir.ext/'
-"$RV" @result{} /path/to/dir.ext
+local _RV
+mbfl_file_strip_trailing_slash_var _RV '/path/to/dir.ext/'
+"$_RV" @result{} /path/to/dir.ext
 @end example
 @end defun
 
 
 @defun mbfl_file_strip_leading_slash @var{pathname}
-@defunx mbfl_file_strip_leading_slash_var @var{RV} @var{pathname}
+@defunx mbfl_file_strip_leading_slash_var @var{_RV} @var{pathname}
 Remove all the leading slashes from @var{pathname} and print the result on stdout.  If
 @var{pathname} consists only of slashes: print a single dot.
 
@@ -1221,8 +1222,8 @@ mbfl_file_strip_leading_slash 'file'    @print{} file
 
 @defun mbfl_file_normalise @var{pathname}
 @defunx mbfl_file_normalise @var{pathname} @var{prefix}
-@defunx mbfl_file_normalise_var @var{RV} @var{pathname}
-@defunx mbfl_file_normalise_var @var{RV} @var{pathname} @var{prefix}
+@defunx mbfl_file_normalise_var @var{_RV} @var{pathname}
+@defunx mbfl_file_normalise_var @var{_RV} @var{pathname} @var{prefix}
 Normalise a file name: remove all the occurrences of @code{.} and @code{..}.
 
 If @var{pathname} is relative (according to @bfunc{mbfl_file_is_absolute}) and @var{prefix} is not
@@ -1243,7 +1244,7 @@ Echo to stdout the normalised file name.  Return true.
 
 
 @defun mbfl_file_subpathname @var{pathname} @var{basedir}
-@defunx mbfl_file_subpathname_var @var{RV} @var{pathname} @var{basedir}
+@defunx mbfl_file_subpathname_var @var{_RV} @var{pathname} @var{basedir}
 If @var{pathname} is a subdirectory or file under @var{basedir}: print to stdout the subpathname
 portion.  Example:
 
@@ -1265,9 +1266,9 @@ mbfl_file_subpathname /a/b/c /a   @print{} ./b/c
 
 mbfl_file_subpathname /a/b/c /d   @error{} no match
 
-local RV
-mbfl_file_subpathname_var RV /a/b/c /a
-"$RV" @result{} ./b/c
+local _RV
+mbfl_file_subpathname_var _RV /a/b/c /a
+"$_RV" @result{} ./b/c
 @end example
 @end defun
 
@@ -1315,8 +1316,8 @@ pathname according to @bfunc{mbfl_file_is_relative}.
 
 @defun mbfl_file_find_tmpdir
 @defunx mbfl_file_find_tmpdir @var{PATHNAME}
-@defunx mbfl_file_find_tmpdir_var @var{RV}
-@defunx mbfl_file_find_tmpdir_var @var{RV} @var{PATHNAME}
+@defunx mbfl_file_find_tmpdir_var @var{_RV}
+@defunx mbfl_file_find_tmpdir_var @var{_RV} @var{PATHNAME}
 Find a value for a temporary directory according to the following rules:
 
 @enumerate
@@ -1442,7 +1443,7 @@ Declare the intention to use the program @command{stat}.
 
 
 @defun mbfl_file_stat @var{pathname} [@var{opt} @dots{}]
-@defunx mbfl_file_stat_var @var{RV} @var{pathname} [@var{opt} @dots{}]
+@defunx mbfl_file_stat_var @var{_RV} @var{pathname} [@var{opt} @dots{}]
 Execute @command{stat} with @var{pathname} as first argument and @var{arg} as other arguments.
 
 @example
@@ -1462,7 +1463,7 @@ mbfl_file_stat /bin --format='%F'
 
 
 @defun mbfl_file_get_size @var{pathname}
-@defunx mbfl_file_get_size_var @var{RV} @var{pathname}
+@defunx mbfl_file_get_size_var @var{_RV} @var{pathname}
 Print the size of the file in bytes.
 
 @DocVarVariant{}
@@ -1699,7 +1700,7 @@ The programs are: @command{realpath}.
 
 
 @defun mbfl_file_realpath @var{pathname} [@var{opt} @dots{}]
-@defunx mbfl_file_realpath_var @var{RV} @var{pathname} [@var{opt} @dots{}]
+@defunx mbfl_file_realpath_var @var{_RV} @var{pathname} [@var{opt} @dots{}]
 Normalise the given @var{pathname} using @command{realpath} and print the result to stdout.  The
 optional arguments @var{opt} are added, as options, to the command line of @command{realpath}.
 
@@ -1798,7 +1799,7 @@ The programs are: @command{stat}, @command{chmod}.
 
 
 @defun mbfl_file_get_permissions @var{pathname}
-@defunx mbfl_file_get_permissions_var @var{RV} @var{pathname}
+@defunx mbfl_file_get_permissions_var @var{_RV} @var{pathname}
 Print the access permissions for @var{pathname}, in octal format.
 
 @DocVarVariant{}
@@ -1808,7 +1809,7 @@ mbfl_file_get_permissions /bin/ls       @print{} 0755
 
 local PERMS
 mbfl_file_get_permissions_var PERMS /bin/ls
-"$RV" @result{} 0755
+"$_RV" @result{} 0755
 @end example
 @end defun
 
@@ -1859,7 +1860,7 @@ The optional arguments @var{opt} are handed to @command{chgrp} as options.
 
 
 @defun mbfl_file_get_owner @var{pathname}
-@defunx mbfl_file_get_owner_var @var{RV} @var{pathname}
+@defunx mbfl_file_get_owner_var @var{_RV} @var{pathname}
 Print the owner of the file as symbolic name.
 
 @DocVarVariant{}
@@ -1867,7 +1868,7 @@ Print the owner of the file as symbolic name.
 
 
 @defun mbfl_file_get_group @var{pathname}
-@defunx mbfl_file_get_group_var @var{RV} @var{pathname}
+@defunx mbfl_file_get_group_var @var{_RV} @var{pathname}
 Print the group of the file as symbolic name.
 
 @DocVarVariant{}
@@ -3416,7 +3417,7 @@ mbfl_split_PATH=()
 
 
 @defun mbfl_program_find @var{program}
-@defunx mbfl_program_find_var @var{RV} @var{program}
+@defunx mbfl_program_find_var @var{_RV} @var{program}
 Search for a program in the standard search path.  Print the full pathname of the program found, or
 an empty string if nothing is found.  If an executable file is found: return true; otherwise return
 false.
@@ -3439,7 +3440,7 @@ If @var{program} is a relative pathname without slash characters in it: the stan
 used.
 @end itemize
 
-The @code{_var} function variant will store the result in the variable @var{RV} rather than print
+The @code{_var} function variant will store the result in the variable @var{_RV} rather than print
 it.
 @end defun
 
@@ -3774,7 +3775,7 @@ from the command line the option @option{--verbose} must be used before
 
 
 @defun mbfl_program_found @var{program}
-@defunx mbfl_program_found_var @var{RV} @var{program}
+@defunx mbfl_program_found_var @var{_RV} @var{program}
 Print the pathname of the previously declared @var{program}.  Return zero if the program was found,
 otherwise print an error message and exit the current (sub)shell by invoking
 @bfunc{exit_because_program_not_found}.
@@ -3782,7 +3783,7 @@ otherwise print an error message and exit the current (sub)shell by invoking
 This function should be used to retrieve the pathname of the program to be used as first argument to
 @bfunc{mbfl_program_exec}:
 
-The function variant @code{_var} will store the result in @var{RV} rather than printing it.
+The function variant @code{_var} will store the result in @var{_RV} rather than printing it.
 
 @example
 function program_wrapper () @{
@@ -4007,7 +4008,7 @@ mbfl_string_is_equal_unquoted_char 'abc\defg' 3 d
 
 
 @defun mbfl_string_quote @var{string}
-@defunx mbfl_string_quote_var @var{RV} @var{string}
+@defunx mbfl_string_quote_var @var{_RV} @var{string}
 Print @var{string} with quoted characters.  All the occurrences of the backslash character,
 @code{\}, are substituted with a quoted backslash, @code{\\}.  Return true.
 
@@ -4018,9 +4019,9 @@ mbfl_string_quote \\a\\b\\c     @print{} \\\\a\\\\b\\\\c
 mbfl_string_quote abc           @print{} abc
 mbfl_string_quote "a b\tc\n\r"  @print{} a\ b\\\\tc\\\\n\\\\r
 
-local RV
-mbfl_string_quote_var RV \\a\\b\\c
-"$RV"   @result{} \\\\a\\\\b\\\\c
+local _RV
+mbfl_string_quote_var _RV \\a\\b\\c
+"$_RV"   @result{} \\\\a\\\\b\\\\c
 @end example
 @end defun
 
@@ -4052,7 +4053,7 @@ Return successfully if @var{string} is not empty.
 
 
 @defun mbfl_string_index @var{string} @var{index}
-@defunx mbfl_string_index_var @var{RV} @var{string} @var{index}
+@defunx mbfl_string_index_var @var{_RV} @var{string} @var{index}
 Select a character from a string.  Echo to stdout the selected character.  If the index is out of
 range: the empty string is echoed to stdout, that is: a newline is echoed to stdout.
 
@@ -4064,17 +4065,17 @@ mbfl_string_index abcdefghilm  4        @print{} e
 mbfl_string_index abcdefghilm 10        @print{} m
 mbfl_string_index abcdefghilm 11        @print{} <empty string>
 
-local RV
-mbfl_string_index_var RV abcdefghilm 0
-"$RV" @result{} a
+local _RV
+mbfl_string_index_var _RV abcdefghilm 0
+"$_RV" @result{} a
 @end example
 @end defun
 
 
 @defun mbfl_string_first @var{string} @var{char}
 @defunx mbfl_string_first @var{string} @var{char} @var{begin}
-@defunx mbfl_string_first_var @var{RV} @var{string} @var{char}
-@defunx mbfl_string_first_var @var{RV} @var{string} @var{char} @var{begin}
+@defunx mbfl_string_first_var @var{_RV} @var{string} @var{char}
+@defunx mbfl_string_first_var @var{_RV} @var{string} @var{char} @var{begin}
 Search characters in a string.  Arguments: @var{string}, the target string; @var{char}, the
 character to look for; @var{begin}, optional, the index of the character in the target string from
 which the search begins (defaults to zero).
@@ -4095,17 +4096,17 @@ mbfl_string_first abcdeabcde  a 3       @print{} 5
 mbfl_string_first abcdeabcde  e 5       @print{} 9
 mbfl_string_first abcdeabcde  e 4       @print{} 4
 
-local RV
-mbfl_string_first_var RV abcdefghilm d
-"$RV" @result{} 3
+local _RV
+mbfl_string_first_var _RV abcdefghilm d
+"$_RV" @result{} 3
 @end example
 @end defun
 
 
 @defun mbfl_string_last @var{string} @var{char}
 @defunx mbfl_string_last @var{string} @var{char} @var{begin}
-@defunx mbfl_string_last_var @var{RV} @var{string} @var{char}
-@defunx mbfl_string_last_var @var{RV} @var{string} @var{char} @var{begin}
+@defunx mbfl_string_last_var @var{_RV} @var{string} @var{char}
+@defunx mbfl_string_last_var @var{_RV} @var{string} @var{char} @var{begin}
 Search characters in a string starting from the end.  Arguments: @var{string}, the target string;
 @var{char}, the character to look for; @var{begin}, optional, the index of the character in the
 target string from which the search begins (defaults to zero).
@@ -4127,17 +4128,17 @@ mbfl_string_last abcdeabcde  a 7        @print{} 5
 mbfl_string_last abcdeabcde  e 7        @print{} 4
 mbfl_string_last abcdeabcde  e 4        @print{} 4
 
-local RV
-mbfl_string_last_var RV abcdefghilm d
-"$RV" @result{} 3
+local _RV
+mbfl_string_last_var _RV abcdefghilm d
+"$_RV" @result{} 3
 @end example
 @end defun
 
 
 @defun mbfl_string_range @var{string} @var{begin}
 @defunx mbfl_string_range @var{string} @var{begin} @var{end}
-@defunx mbfl_string_range_var @var{RV} @var{string} @var{begin}
-@defunx mbfl_string_range_var @var{RV} @var{string} @var{begin} @var{end}
+@defunx mbfl_string_range_var @var{_RV} @var{string} @var{begin}
+@defunx mbfl_string_range_var @var{_RV} @var{string} @var{begin} @var{end}
 Extract a range of characters from a string.  Arguments: @var{string}, the source string;
 @var{begin}, the index of the first character in the range; @var{end}, optional, the index of the
 character past the last in the range, this character is not extracted.
@@ -4155,9 +4156,9 @@ mbfl_string_range abcdefghilm 0         @print{} abcdefghilm
 mbfl_string_range abcdefghilm 0 4       @print{} abcd
 mbfl_string_range abcdefghilm 4 end     @print{} efghilm
 
-local RV
-mbfl_string_range_var RV abcdefghilm 4 end
-"$RV" @result{} efghilm
+local _RV
+mbfl_string_range_var _RV abcdefghilm 4 end
+"$_RV" @result{} efghilm
 @end example
 @end defun
 
@@ -4251,7 +4252,7 @@ $SPLITCOUNT             @result{} 6
 
 
 @defun mbfl_string_toupper @var{string}
-@defunx mbfl_string_toupper_var @var{RV} @var{string}
+@defunx mbfl_string_toupper_var @var{_RV} @var{string}
 Output @var{string} with all the occurrences of lower case @ascii{} characters (no accents) turned
 into upper case.
 
@@ -4260,7 +4261,7 @@ into upper case.
 
 
 @defun mbfl_string_tolower @var{string}
-@defunx mbfl_string_tolower_var @var{RV} @var{string}
+@defunx mbfl_string_tolower_var @var{_RV} @var{string}
 Output @var{string} with all the occurrences of upper case @ascii{} characters (no accents) turned
 into lower case.
 
@@ -4478,8 +4479,8 @@ the return value is false, always.
 
 @defun mbfl_string_replace @var{string} @var{pattern}
 @defunx mbfl_string_replace @var{string} @var{pattern} @var{subst}
-@defunx mbfl_string_replace_var @var{RV} @var{string} @var{pattern}
-@defunx mbfl_string_replace_var @var{RV} @var{string} @var{pattern} @var{subst}
+@defunx mbfl_string_replace_var @var{_RV} @var{string} @var{pattern}
+@defunx mbfl_string_replace_var @var{_RV} @var{string} @var{pattern} @var{subst}
 Replace all the occurrences of @var{pattern} in @var{string} with @var{subst}, then print the
 result.  If not used, @var{subst} defaults to the empty string.
 
@@ -4489,9 +4490,9 @@ result.  If not used, @var{subst} defaults to the empty string.
 mbfl_string_replace 'abcdefg' 'cde' '123'
 @print{} 'ab123fg'
 
-local RV
-mbfl_string_replace_var RV 'abcdefg' 'cde' '123'
-"$RV" @result{} ab123fg
+local _RV
+mbfl_string_replace_var _RV 'abcdefg' 'cde' '123'
+"$_RV" @result{} ab123fg
 @end example
 @end defun
 
@@ -4560,7 +4561,7 @@ Declare the usage of the external program @command{stty}, which is used by
 
 
 @defun mbfl_dialog_ask_password @var{prompt}
-@defunx mbfl_dialog_ask_password_var @var{RV} @var{prompt}
+@defunx mbfl_dialog_ask_password_var @var{_RV} @var{prompt}
 Print @var{prompt} followed by a colon and a space, then reads a password from the terminal.  Print
 the password.
 
@@ -4769,8 +4770,8 @@ remove duplicates.  Reset @var{varname} to the result.
 @section Miscellaneous variable functions.
 
 
-@defun mbfl_variable_alloc @var{RV}
-Generate a unique variable name and store it in the variable @var{RV}
+@defun mbfl_variable_alloc @var{_RV}
+Generate a unique variable name and store it in the variable @var{_RV}
 
 @example
 local NAME
@@ -4810,7 +4811,7 @@ mbfl_array_is_not_empty ARRY    @result{} 0
 
 
 @defun mbfl_array_length @var{ARRAY_VARNAME}
-@defunx mbfl_array_length_var @var{RV} @var{ARRAY_VARNAME}
+@defunx mbfl_array_length_var @var{_RV} @var{ARRAY_VARNAME}
 Print the number of pairs in the array.
 
 @DocVarVariant{}
@@ -4821,9 +4822,9 @@ mbfl_array_length ARRY          @print{} 0
 ARRY=(a b c)
 mbfl_array_length ARRY          @print{} 3
 
-local RV
-mbfl_array_length_var RV ARRY
-"$RV"   @print{} 3
+local _RV
+mbfl_array_length_var _RV ARRY
+"$_RV"   @print{} 3
 @end example
 @end defun
 
@@ -4929,7 +4930,7 @@ indexes are valid only until the next call to @bfunc{mbfl_system_passwd_reset}.
 
 
 @defun mbfl_system_passwd_find_entry_by_name @var{name}
-@defunx mbfl_system_passwd_find_entry_by_name_var @var{RV} @var{name}
+@defunx mbfl_system_passwd_find_entry_by_name_var @var{_RV} @var{name}
 Search the entries of @file{passwd} for one whose user name is @var{name}.  When successful: print
 to @stdout{} the index of the entry and return true; otherwise return false.  We can use the
 index with the functions described in @ref{system passwd inspect, Inspecting entries from
@@ -4940,7 +4941,7 @@ index with the functions described in @ref{system passwd inspect, Inspecting ent
 
 
 @defun mbfl_system_passwd_find_entry_by_uid @var{uid}
-@defunx mbfl_system_passwd_find_entry_by_uid_var @var{RV} @var{uid}
+@defunx mbfl_system_passwd_find_entry_by_uid_var @var{_RV} @var{uid}
 Search the entries of @file{passwd} for one whose user id is @var{uid}.  When successful: print to
 @stdout{} the index of the entry and return true; otherwise return false.  We can use the index
 with the functions described in @ref{system passwd inspect, Inspecting entries from @file{passwd}}.
@@ -4959,7 +4960,7 @@ obtain indexes with the functions described in @ref{system passwd searching, Sea
 
 
 @defun mbfl_system_passwd_get_name @var{idx}
-@defunx mbfl_system_passwd_get_name_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_name_var @var{_RV} @var{idx}
 Print to @stdout{} the field name of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4979,7 +4980,7 @@ fi
 
 
 @defun mbfl_system_passwd_get_passwd @var{idx}
-@defunx mbfl_system_passwd_get_passwd_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_passwd_var @var{_RV} @var{idx}
 Print to @stdout{} the field passwd of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4987,7 +4988,7 @@ Print to @stdout{} the field passwd of the @file{passwd} entry at index @var{idx
 
 
 @defun mbfl_system_passwd_get_uid @var{idx}
-@defunx mbfl_system_passwd_get_uid_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_uid_var @var{_RV} @var{idx}
 Print to @stdout{} the field uid of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4995,7 +4996,7 @@ Print to @stdout{} the field uid of the @file{passwd} entry at index @var{idx}.
 
 
 @defun mbfl_system_passwd_get_gid @var{idx}
-@defunx mbfl_system_passwd_get_gid_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_gid_var @var{_RV} @var{idx}
 Print to @stdout{} the field gid of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -5003,7 +5004,7 @@ Print to @stdout{} the field gid of the @file{passwd} entry at index @var{idx}.
 
 
 @defun mbfl_system_passwd_get_gecos @var{idx}
-@defunx mbfl_system_passwd_get_gecos_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_gecos_var @var{_RV} @var{idx}
 Print to @stdout{} the field gecos of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -5011,7 +5012,7 @@ Print to @stdout{} the field gecos of the @file{passwd} entry at index @var{idx}
 
 
 @defun mbfl_system_passwd_get_dir @var{idx}
-@defunx mbfl_system_passwd_get_dir_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_dir_var @var{_RV} @var{idx}
 Print to @stdout{} the field dir of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -5019,7 +5020,7 @@ Print to @stdout{} the field dir of the @file{passwd} entry at index @var{idx}.
 
 
 @defun mbfl_system_passwd_get_shell @var{idx}
-@defunx mbfl_system_passwd_get_shell_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_shell_var @var{_RV} @var{idx}
 Print to @stdout{} the field shell of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -5035,7 +5036,7 @@ passwd reading, Reading the file @file{passwd}}.
 
 
 @defun mbfl_system_passwd_uid_to_name @var{uid}
-@defunx mbfl_system_passwd_uid_to_name_var @var{RV} @var{uid}
+@defunx mbfl_system_passwd_uid_to_name_var @var{_RV} @var{uid}
 Print to @stdout{} the name of the user whose uid is @var{uid}.  When successful return true;
 otherwise return false.
 
@@ -5059,7 +5060,7 @@ fi
 
 
 @defun mbfl_system_passwd_name_to_uid @var{name}
-@defunx mbfl_system_passwd_name_to_uid_var @var{RV} @var{name}
+@defunx mbfl_system_passwd_name_to_uid_var @var{_RV} @var{name}
 Print to @stdout{} the id of the user whose uid is @var{uid}.  When successful return true;
 otherwise return false.
 
@@ -5171,7 +5172,7 @@ are valid only until the next call to @bfunc{mbfl_system_group_reset}.
 
 
 @defun mbfl_system_group_find_entry_by_name @var{name}
-@defunx mbfl_system_group_find_entry_by_name_var @var{RV} @var{name}
+@defunx mbfl_system_group_find_entry_by_name_var @var{_RV} @var{name}
 Search the entries of @file{/etc/group} for one whose group name is @var{name}.  When successful:
 print to @stdout{} the index of the entry and return true; otherwise return false.  We can use
 the index with the functions described in @ref{system group inspect, Inspecting entries from
@@ -5182,7 +5183,7 @@ the index with the functions described in @ref{system group inspect, Inspecting 
 
 
 @defun mbfl_system_group_find_entry_by_gid @var{gid}
-@defunx mbfl_system_group_find_entry_by_gid_var @var{RV} @var{gid}
+@defunx mbfl_system_group_find_entry_by_gid_var @var{_RV} @var{gid}
 Search the entries of @file{/etc/group} for one whose group id is @var{gid}.  When successful: print
 to @stdout{} the index of the entry and return true; otherwise return false.  We can use the
 index with the functions described in @ref{system group inspect, Inspecting entries from
@@ -5202,7 +5203,7 @@ obtain indexes with the functions described in @ref{system group searching, Sear
 
 
 @defun mbfl_system_group_get_name @var{group_idx}
-@defunx mbfl_system_group_get_name_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_name_var @var{_RV} @var{group_idx}
 Print to @stdout{} the field name of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
@@ -5222,7 +5223,7 @@ fi
 
 
 @defun mbfl_system_group_get_passwd @var{group_idx}
-@defunx mbfl_system_group_get_passwd_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_passwd_var @var{_RV} @var{group_idx}
 Print to @stdout{} the field passwd of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
@@ -5230,7 +5231,7 @@ Print to @stdout{} the field passwd of the @file{/etc/group} entry at index @var
 
 
 @defun mbfl_system_group_get_gid @var{group_idx}
-@defunx mbfl_system_group_get_gid_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_gid_var @var{_RV} @var{group_idx}
 Print to @stdout{} the field gid of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
@@ -5238,7 +5239,7 @@ Print to @stdout{} the field gid of the @file{/etc/group} entry at index @var{gr
 
 
 @defun mbfl_system_group_get_users @var{group_idx}
-@defunx mbfl_system_group_get_users_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_users_var @var{_RV} @var{group_idx}
 Print to @stdout{} the field users of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
@@ -5246,7 +5247,7 @@ Print to @stdout{} the field users of the @file{/etc/group} entry at index @var{
 
 
 @defun mbfl_system_group_get_users_count @var{group_idx}
-@defunx mbfl_system_group_get_users_count_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_users_count_var @var{_RV} @var{group_idx}
 Print to @stdout{} the number of user names in the list of users for the entry at index
 @var{group_idx}.
 
@@ -5255,7 +5256,7 @@ Print to @stdout{} the number of user names in the list of users for the entry a
 
 
 @defun mbfl_system_group_get_user_name @var{group_idx} @var{user_idx}
-@defunx mbfl_system_group_get_user_name_var @var{RV} @var{group_idx} @var{user_idx}
+@defunx mbfl_system_group_get_user_name_var @var{_RV} @var{group_idx} @var{user_idx}
 Print to @stdout{} the name of the user at index @var{user_idx} in the list of users for the
 entry at index @var{group_idx}.
 
@@ -5300,7 +5301,7 @@ group reading, Reading the file @file{/etc/group}}.
 
 
 @defun mbfl_system_group_gid_to_name @var{gid}
-@defunx mbfl_system_group_gid_to_name_var @var{RV} @var{gid}
+@defunx mbfl_system_group_gid_to_name_var @var{_RV} @var{gid}
 Print to @stdout{} the name of the group whose gid is @var{gid}.  When successful return true;
 otherwise return false.
 
@@ -5324,7 +5325,7 @@ fi
 
 
 @defun mbfl_system_group_name_to_gid @var{name}
-@defunx mbfl_system_group_name_to_gid_var @var{RV} @var{name}
+@defunx mbfl_system_group_name_to_gid_var @var{_RV} @var{name}
 Print to @stdout{} the id of the group whose gid is @var{gid}.  When successful return true;
 otherwise return false.
 
