@@ -87,11 +87,11 @@ function mbfl_p_file_looking_at_component_beginning () {
 #### changing directory functions
 
 function mbfl_cd () {
-    mbfl_mandatory_parameter(_DIRECTORY, 1, directory)
+    mbfl_mandatory_parameter(DIRECTORY, 1, directory)
     shift 1
-    mbfl_file_normalise_var _DIRECTORY "$_DIRECTORY"
-    mbfl_message_verbose "entering directory: '${_DIRECTORY}'\n"
-    mbfl_change_directory "$_DIRECTORY" "$@"
+    mbfl_file_normalise_var DIRECTORY "$DIRECTORY"
+    mbfl_message_verbose "entering directory: '${DIRECTORY}'\n"
+    mbfl_change_directory "$DIRECTORY" "$@"
 }
 function mbfl_change_directory () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory)
@@ -201,7 +201,7 @@ function mbfl_file_dirname () {
 function mbfl_file_rootname_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
-    local -i mbfl_i=${#mbfl_PATHNAME}
+    local -i mbfl_I=${#mbfl_PATHNAME}
     local mbfl_ch mbfl_result
 
     # Special handling for standalone  slash, standalone dot, standalone
@@ -210,21 +210,21 @@ function mbfl_file_rootname_var () {
     then mbfl_result=$mbfl_PATHNAME
     else
 	# Skip the trailing slashes.
-	while ((0 < mbfl_i)) && test "${mbfl_PATHNAME:$((mbfl_i - 1)):1}" = '/'
-	do let --mbfl_i
+	while ((0 < mbfl_I)) && test "${mbfl_PATHNAME:$((mbfl_I - 1)):1}" = '/'
+	do let --mbfl_I
 	done
-	mbfl_PATHNAME=${mbfl_PATHNAME:0:$mbfl_i}
+	mbfl_PATHNAME=${mbfl_PATHNAME:0:$mbfl_I}
 
-	if ((1 == mbfl_i))
+	if ((1 == mbfl_I))
 	then mbfl_result=$mbfl_PATHNAME
 	else
-	    for ((mbfl_i=${#mbfl_PATHNAME}; $mbfl_i >= 0; --mbfl_i))
+	    for ((mbfl_I=${#mbfl_PATHNAME}; $mbfl_I >= 0; --mbfl_I))
 	    do
-		mbfl_ch=${mbfl_PATHNAME:$mbfl_i:1}
+		mbfl_ch=${mbfl_PATHNAME:$mbfl_I:1}
 		if test "$mbfl_ch" = '.'
 		then
-		    if mbfl_p_file_backwards_looking_at_double_dot "$mbfl_PATHNAME" $mbfl_i || \
-			    mbfl_p_file_looking_at_component_beginning "$mbfl_PATHNAME" $mbfl_i
+		    if mbfl_p_file_backwards_looking_at_double_dot "$mbfl_PATHNAME" $mbfl_I || \
+			    mbfl_p_file_looking_at_component_beginning "$mbfl_PATHNAME" $mbfl_I
 		    then
 			# The pathname is one among:
 			#
@@ -234,9 +234,9 @@ function mbfl_file_rootname_var () {
 			# print the full pathname.
 			mbfl_result=$mbfl_PATHNAME
 			break
-		    elif ((0 < mbfl_i))
+		    elif ((0 < mbfl_I))
 		    then
-			mbfl_result=${mbfl_PATHNAME:0:$mbfl_i}
+			mbfl_result=${mbfl_PATHNAME:0:$mbfl_I}
 			break
 		    else
 			mbfl_result=$mbfl_PATHNAME
@@ -269,15 +269,15 @@ function mbfl_file_rootname () {
 function mbfl_file_tail_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
-    local -i mbfl_i
+    local -i mbfl_I
     # If no slash is present: the result is the full pathname.
     local result=$mbfl_PATHNAME
 
-    for ((mbfl_i=${#mbfl_PATHNAME}; $mbfl_i >= 0; --mbfl_i))
+    for ((mbfl_I=${#mbfl_PATHNAME}; $mbfl_I >= 0; --mbfl_I))
     do
-        if test "${mbfl_PATHNAME:$mbfl_i:1}" = '/'
+        if test "${mbfl_PATHNAME:$mbfl_I:1}" = '/'
 	then
-            result=${mbfl_PATHNAME:$((mbfl_i + 1))}
+            result=${mbfl_PATHNAME:$((mbfl_I + 1))}
             break
 	fi
     done
@@ -325,16 +325,16 @@ function mbfl_file_split () {
 function mbfl_file_strip_trailing_slash_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
-    local -i mbfl_i=${#mbfl_PATHNAME}
+    local -i mbfl_I=${#mbfl_PATHNAME}
     local mbfl_result
 
     # Skip the trailing slashes.
-    while ((0 < mbfl_i)) && test "${mbfl_PATHNAME:$((mbfl_i - 1)):1}" = '/'
-    do let --mbfl_i
+    while ((0 < mbfl_I)) && test "${mbfl_PATHNAME:$((mbfl_I - 1)):1}" = '/'
+    do let --mbfl_I
     done
-    if ((0 == mbfl_i))
+    if ((0 == mbfl_I))
     then mbfl_result='.'
-    else mbfl_result=${mbfl_PATHNAME:0:$mbfl_i}
+    else mbfl_result=${mbfl_PATHNAME:0:$mbfl_I}
     fi
     mbfl_RESULT_VARREF=$mbfl_result
 }
@@ -357,14 +357,14 @@ function mbfl_file_strip_leading_slash_var () {
 
     if test "${mbfl_PATHNAME:0:1}" = '/'
     then
-	local -i mbfl_i=1 len=${#mbfl_PATHNAME}
+	local -i mbfl_I=1 mbfl_len=${#mbfl_PATHNAME}
 	# Skip the leading slashes.
-	while ((mbfl_i < len)) && test "${mbfl_PATHNAME:$mbfl_i:1}" = '/'
-	do let ++mbfl_i
+	while ((mbfl_I < mbfl_len)) && test "${mbfl_PATHNAME:$mbfl_I:1}" = '/'
+	do let ++mbfl_I
 	done
-	if ((len == mbfl_i))
+	if ((mbfl_len == mbfl_I))
 	then mbfl_result='.'
-	else mbfl_result=${mbfl_PATHNAME:$mbfl_i}
+	else mbfl_result=${mbfl_PATHNAME:$mbfl_I}
 	fi
     else mbfl_result=$mbfl_PATHNAME
     fi
@@ -497,9 +497,9 @@ function mbfl_file_enable_realpath () {
 function mbfl_file_realpath () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local _REALPATH
-    mbfl_program_found_var _REALPATH realpath || exit $?
-    mbfl_program_exec "$_REALPATH" "$@" -- "$PATHNAME"
+    local REALPATH
+    mbfl_program_found_var REALPATH realpath || exit $?
+    mbfl_program_exec "$REALPATH" "$@" -- "$PATHNAME"
 }
 
 function mbfl_file_realpath_var () {
@@ -516,22 +516,22 @@ function mbfl_file_realpath_var () {
 #### relative pathnames: extracting subpathnames
 
 function mbfl_file_subpathname_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    mbfl_mandatory_parameter(BASEDIR, 3, base directory)
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    mbfl_mandatory_parameter(mbfl_BASEDIR, 3, base directory)
 
-    # If BASEDIR ends with a slash: remove it.
-    if test "${BASEDIR:$((${#BASEDIR}-1))}" = '/'
-    then BASEDIR=${BASEDIR:0:$((${#BASEDIR}-1))}
+    # If mbfl_BASEDIR ends with a slash: remove it.
+    if test "${mbfl_BASEDIR:$((${#mbfl_BASEDIR}-1))}" = '/'
+    then mbfl_BASEDIR=${mbfl_BASEDIR:0:$((${#mbfl_BASEDIR}-1))}
     fi
 
-    if test "$PATHNAME" = "$BASEDIR"
+    if test "$mbfl_PATHNAME" = "$mbfl_BASEDIR"
     then
-        RESULT_VARREF='./'
+        mbfl_RESULT_VARREF='./'
         return 0
-    elif test "${PATHNAME:0:${#BASEDIR}}" = "$BASEDIR"
+    elif test "${mbfl_PATHNAME:0:${#mbfl_BASEDIR}}" = "$mbfl_BASEDIR"
     then
-        printf -v RESULT_VARREF './%s' "${PATHNAME:$((${#BASEDIR}+1))}"
+        printf -v mbfl_RESULT_VARREF './%s' "${mbfl_PATHNAME:$((${#mbfl_BASEDIR}+1))}"
         return 0
     else return 1
     fi
@@ -582,30 +582,30 @@ function mbfl_file_is_relative_filename () {
 #### temporary directory functions
 
 function mbfl_file_find_tmpdir_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_optional_parameter(TMPDIR, 2, "$mbfl_option_TMPDIR")
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_optional_parameter(mbfl_TMPDIR, 2, "$mbfl_option_mbfl_TMPDIR")
 
-    if mbfl_file_directory_is_writable "$TMPDIR"
+    if mbfl_file_directory_is_writable "$mbfl_TMPDIR"
     then
-        RESULT_VARREF=$TMPDIR
+        mbfl_RESULT_VARREF=$mbfl_TMPDIR
         return 0
     elif mbfl_string_is_not_empty "$USER"
     then
-        TMPDIR=/tmp/${USER}
-        if mbfl_file_directory_is_writable "$TMPDIR"
+        mbfl_TMPDIR=/tmp/${USER}
+        if mbfl_file_directory_is_writable "$mbfl_TMPDIR"
 	then
-            RESULT_VARREF=$TMPDIR
+            mbfl_RESULT_VARREF=$mbfl_TMPDIR
             return 0
 	else return 1
 	fi
     else
-	TMPDIR=/tmp
-	if mbfl_file_directory_is_writable "$TMPDIR"
+	mbfl_TMPDIR=/tmp
+	if mbfl_file_directory_is_writable "$mbfl_TMPDIR"
 	then
-            RESULT_VARREF=$TMPDIR
+            mbfl_RESULT_VARREF=$mbfl_TMPDIR
             return 0
 	else
-	    mbfl_message_error 'cannot find usable value for "TMPDIR"'
+	    mbfl_message_error 'cannot find usable value for "mbfl_TMPDIR"'
 	    return 1
 	fi
     fi
@@ -1162,9 +1162,9 @@ function mbfl_file_set_permissions () {
 }
 
 function mbfl_file_get_permissions_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --format='0%a')
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    mbfl_RESULT_VARREF=$(mbfl_file_stat "$mbfl_PATHNAME" --format='0%a')
 }
 
 #page
@@ -1478,10 +1478,10 @@ function mbfl_file_stat () {
     mbfl_program_exec "$STAT" ${FLAGS} "$@" -- "$PATHNAME"
 }
 function mbfl_file_stat_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
     shift 2
-    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" "$@")
+    mbfl_RESULT_VARREF=$(mbfl_file_stat "$mbfl_PATHNAME" "$@")
 }
 
 ### --------------------------------------------------------------------
@@ -1502,19 +1502,19 @@ function mbfl_file_get_size () {
 ### --------------------------------------------------------------------
 
 function mbfl_file_get_owner_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --printf='%U')
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    mbfl_RESULT_VARREF=$(mbfl_file_stat "$mbfl_PATHNAME" --printf='%U')
 }
 function mbfl_file_get_group_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --printf='%G')
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    mbfl_RESULT_VARREF=$(mbfl_file_stat "$mbfl_PATHNAME" --printf='%G')
 }
 function mbfl_file_get_size_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    RESULT_VARREF=$(mbfl_file_stat "$PATHNAME" --printf='%s')
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    mbfl_RESULT_VARREF=$(mbfl_file_stat "$mbfl_PATHNAME" --printf='%s')
 }
 
 
