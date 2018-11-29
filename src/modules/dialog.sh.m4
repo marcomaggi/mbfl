@@ -47,17 +47,17 @@ function mbfl_dialog_yes_or_no () {
 }
 
 function mbfl_dialog_ask_password_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PROMPT, 2, prompt)
-    local PASSWORD STTY
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PROMPT, 2, prompt)
+    local mbfl_PASSWORD mbfl_STTY
 
-    mbfl_program_found_var STTY stty || exit $?
-    printf '%s: ' "prompt" >&2
-    "$STTY" cbreak -echo </dev/tty >/dev/tty 2>&1
-    IFS= read -rs PASSWORD
-    "$STTY" -cbreak echo </dev/tty >/dev/tty 2>&1
+    mbfl_program_found_var mbfl_STTY stty || exit $?
+    printf '%s: ' "mbfl_PROMPT" >&2
+    "$mbfl_STTY" cbreak -echo </dev/tty >/dev/tty 2>&1
+    IFS= read -rs mbfl_PASSWORD
+    "$mbfl_STTY" -cbreak echo </dev/tty >/dev/tty 2>&1
     echo >&2
-    RESULT_VARREF=$PASSWORD
+    mbfl_RESULT_VARREF=$mbfl_PASSWORD
 }
 function mbfl_dialog_ask_password () {
     mbfl_mandatory_parameter(PROMPT, 1, prompt)

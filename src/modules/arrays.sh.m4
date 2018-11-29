@@ -30,30 +30,30 @@
 #### array inspection
 
 function mbfl_array_is_empty () {
-    mbfl_mandatory_nameref_parameter(ARRAY_VARREF, 1, array variable name)
-    if ((0 == ${#ARRAY_VARREF[@]}))
+    mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF, 1, array variable name)
+    if ((0 == ${#mbfl_ARRAY_VARREF[@]}))
     then return 0
     else return 1
     fi
 }
 
 function mbfl_array_is_not_empty () {
-    mbfl_mandatory_nameref_parameter(ARRAY_VARREF, 1, array variable name)
-    if ((0 != ${#ARRAY_VARREF[@]}))
+    mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF, 1, array variable name)
+    if ((0 != ${#mbfl_ARRAY_VARREF[@]}))
     then return 0
     else return 1
     fi
 }
 
 function mbfl_array_length_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable name)
-    mbfl_mandatory_nameref_parameter(ARRAY_VARREF,  2, array variable name)
-    RESULT_VARREF=${#ARRAY_VARREF[@]}
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF,  2, array variable name)
+    mbfl_RESULT_VARREF=${#mbfl_ARRAY_VARREF[@]}
 }
 
 function mbfl_array_length () {
-    mbfl_mandatory_nameref_parameter(ARRAY_VARREF, 1, array variable name)
-    echo ${#ARRAY_VARREF[@]}
+    mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF, 1, array variable name)
+    echo ${#mbfl_ARRAY_VARREF[@]}
 }
 
 ### end of file

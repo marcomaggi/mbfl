@@ -103,10 +103,10 @@ function mbfl_change_directory () {
 #### pathname name functions: extension
 
 function mbfl_file_extension_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    local -i i
-    local result
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    local -i mbfl_I
+    local mbfl_result
 
     # We search for the last dot  character in the pathname.  If we find
     # a slash first: we return with empty extension.
@@ -127,27 +127,27 @@ function mbfl_file_extension_var () {
     #
     # there is no extension.  So we check for this case.
     #
-    for ((i=${#PATHNAME}; $i > 0; --i))
+    for ((mbfl_I=${#mbfl_PATHNAME}; $mbfl_I > 0; --mbfl_I))
     do
-        if test "${PATHNAME:$i:1}" = '/'
+        if test "${mbfl_PATHNAME:$mbfl_I:1}" = '/'
 	then break
 	else
-	    if mbfl_string_is_equal_unquoted_char "$PATHNAME" $i .
+	    if mbfl_string_is_equal_unquoted_char "$mbfl_PATHNAME" $mbfl_I .
 	    then
-		if test "${PATHNAME:$((i - 1)):1}" = '/'
+		if test "${mbfl_PATHNAME:$((mbfl_I - 1)):1}" = '/'
 		then
 		    # There is no extension.   So we break because there
 		    # is no point in continuing.
 		    break
 		else
 		    # Found an extension.  Store it and break.
-		    result=${PATHNAME:$((i + 1))}
+		    mbfl_result=${mbfl_PATHNAME:$((mbfl_I + 1))}
 		    break
 		fi
 	    fi
 	fi
     done
-    RESULT_VARREF=$result
+    mbfl_RESULT_VARREF=$mbfl_result
     return 0
 }
 function mbfl_file_extension () {
@@ -163,27 +163,27 @@ function mbfl_file_extension () {
 #### pathname name functions: dirname
 
 function mbfl_file_dirname_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_optional_parameter(PATHNAME, 2)
-    local -i i
-    local result=.
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_optional_parameter(mbfl_PATHNAME, 2)
+    local -i mbfl_I
+    local mbfl_result=.
 
     # We search for the last slash character in the pathname.
     #
-    for ((i=${#PATHNAME}; $i >= 0; --i))
+    for ((mbfl_I=${#mbfl_PATHNAME}; mbfl_I >= 0; --mbfl_I))
     do
-        if test "${PATHNAME:$i:1}" = '/'
+        if test "${mbfl_PATHNAME:${mbfl_I}:1}" = '/'
 	then
 	    # Skip consecutive slashes.
-            while test \( $i -gt 0 \) -a \( "${PATHNAME:$i:1}" = '/' \)
-            do let --i
+            while test \( ${mbfl_I} -gt 0 \) -a \( "${mbfl_PATHNAME:${mbfl_I}:1}" = '/' \)
+            do let --mbfl_I
             done
 
-	    result=${PATHNAME:0:$((i + 1))}
+	    mbfl_result=${mbfl_PATHNAME:0:$((mbfl_I + 1))}
 	    break
         fi
     done
-    RESULT_VARREF=$result
+    mbfl_RESULT_VARREF=$mbfl_result
     return 0
 }
 function mbfl_file_dirname () {
@@ -199,32 +199,32 @@ function mbfl_file_dirname () {
 #### pathname name functions: rootname
 
 function mbfl_file_rootname_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    local -i i=${#PATHNAME}
-    local ch result
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    local -i mbfl_i=${#mbfl_PATHNAME}
+    local mbfl_ch mbfl_result
 
     # Special handling for standalone  slash, standalone dot, standalone
     # double-dot.
-    if test \( "$PATHNAME" = '/' \) -o \( "$PATHNAME" = '.' \) -o \( "$PATHNAME" = '..' \)
-    then result=$PATHNAME
+    if test \( "$mbfl_PATHNAME" = '/' \) -o \( "$mbfl_PATHNAME" = '.' \) -o \( "$mbfl_PATHNAME" = '..' \)
+    then mbfl_result=$mbfl_PATHNAME
     else
 	# Skip the trailing slashes.
-	while ((0 < i)) && test "${PATHNAME:$((i - 1)):1}" = '/'
-	do let --i
+	while ((0 < mbfl_i)) && test "${mbfl_PATHNAME:$((mbfl_i - 1)):1}" = '/'
+	do let --mbfl_i
 	done
-	PATHNAME=${PATHNAME:0:$i}
+	mbfl_PATHNAME=${mbfl_PATHNAME:0:$mbfl_i}
 
-	if ((1 == i))
-	then result=$PATHNAME
+	if ((1 == mbfl_i))
+	then mbfl_result=$mbfl_PATHNAME
 	else
-	    for ((i=${#PATHNAME}; $i >= 0; --i))
+	    for ((mbfl_i=${#mbfl_PATHNAME}; $mbfl_i >= 0; --mbfl_i))
 	    do
-		ch=${PATHNAME:$i:1}
-		if test "$ch" = '.'
+		mbfl_ch=${mbfl_PATHNAME:$mbfl_i:1}
+		if test "$mbfl_ch" = '.'
 		then
-		    if mbfl_p_file_backwards_looking_at_double_dot "$PATHNAME" $i || \
-			    mbfl_p_file_looking_at_component_beginning "$PATHNAME" $i
+		    if mbfl_p_file_backwards_looking_at_double_dot "$mbfl_PATHNAME" $mbfl_i || \
+			    mbfl_p_file_looking_at_component_beginning "$mbfl_PATHNAME" $mbfl_i
 		    then
 			# The pathname is one among:
 			#
@@ -232,25 +232,25 @@ function mbfl_file_rootname_var () {
 			#   ..
 			#
 			# print the full pathname.
-			result=$PATHNAME
+			mbfl_result=$mbfl_PATHNAME
 			break
-		    elif ((0 < i))
+		    elif ((0 < mbfl_i))
 		    then
-			result=${PATHNAME:0:$i}
+			mbfl_result=${mbfl_PATHNAME:0:$mbfl_i}
 			break
 		    else
-			result=$PATHNAME
+			mbfl_result=$mbfl_PATHNAME
 			break
 		    fi
-		elif test "$ch" = '/'
+		elif test "$mbfl_ch" = '/'
 		then
-		    result=$PATHNAME
+		    mbfl_result=$mbfl_PATHNAME
 		    break
 		fi
 	    done
 	fi
     fi
-    RESULT_VARREF=$result
+    mbfl_RESULT_VARREF=$mbfl_result
     return 0
 }
 
@@ -267,21 +267,21 @@ function mbfl_file_rootname () {
 #### pathname name functions: tailname
 
 function mbfl_file_tail_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    local -i i
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    local -i mbfl_i
     # If no slash is present: the result is the full pathname.
-    local result=$PATHNAME
+    local result=$mbfl_PATHNAME
 
-    for ((i=${#PATHNAME}; $i >= 0; --i))
+    for ((mbfl_i=${#mbfl_PATHNAME}; $mbfl_i >= 0; --mbfl_i))
     do
-        if test "${PATHNAME:$i:1}" = '/'
+        if test "${mbfl_PATHNAME:$mbfl_i:1}" = '/'
 	then
-            result=${PATHNAME:$((i + 1))}
+            result=${mbfl_PATHNAME:$((mbfl_i + 1))}
             break
 	fi
     done
-    RESULT_VARREF=$result
+    mbfl_RESULT_VARREF=$result
     return 0
 }
 
@@ -323,26 +323,26 @@ function mbfl_file_split () {
 #### pathname normalisation: stripping slashes
 
 function mbfl_file_strip_trailing_slash_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    local -i i=${#PATHNAME}
-    local result
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    local -i mbfl_i=${#mbfl_PATHNAME}
+    local mbfl_result
 
     # Skip the trailing slashes.
-    while ((0 < i)) && test "${PATHNAME:$((i - 1)):1}" = '/'
-    do let --i
+    while ((0 < mbfl_i)) && test "${mbfl_PATHNAME:$((mbfl_i - 1)):1}" = '/'
+    do let --mbfl_i
     done
-    if ((0 == i))
-    then result='.'
-    else result=${PATHNAME:0:$i}
+    if ((0 == mbfl_i))
+    then mbfl_result='.'
+    else mbfl_result=${mbfl_PATHNAME:0:$mbfl_i}
     fi
-    RESULT_VARREF=$result
+    mbfl_RESULT_VARREF=$mbfl_result
 }
 
 function mbfl_file_strip_trailing_slash () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 1, pathname)
     local RESULT_VARNAME
-    if mbfl_file_strip_trailing_slash_var RESULT_VARNAME "$PATHNAME"
+    if mbfl_file_strip_trailing_slash_var RESULT_VARNAME "$mbfl_PATHNAME"
     then echo "$RESULT_VARNAME"
     else return $?
     fi
@@ -351,24 +351,24 @@ function mbfl_file_strip_trailing_slash () {
 ### --------------------------------------------------------------------
 
 function mbfl_file_strip_leading_slash_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    local result
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    local mbfl_result
 
-    if test "${PATHNAME:0:1}" = '/'
+    if test "${mbfl_PATHNAME:0:1}" = '/'
     then
-	local -i i=1 len=${#PATHNAME}
+	local -i mbfl_i=1 len=${#mbfl_PATHNAME}
 	# Skip the leading slashes.
-	while ((i < len)) && test "${PATHNAME:$i:1}" = '/'
-	do let ++i
+	while ((mbfl_i < len)) && test "${mbfl_PATHNAME:$mbfl_i:1}" = '/'
+	do let ++mbfl_i
 	done
-	if ((len == i))
-	then result='.'
-	else result=${PATHNAME:$i}
+	if ((len == mbfl_i))
+	then mbfl_result='.'
+	else mbfl_result=${mbfl_PATHNAME:$mbfl_i}
 	fi
-    else result=$PATHNAME
+    else mbfl_result=$mbfl_PATHNAME
     fi
-    RESULT_VARREF=$result
+    mbfl_RESULT_VARREF=$mbfl_result
 }
 
 function mbfl_file_strip_leading_slash () {
