@@ -4771,7 +4771,11 @@ remove duplicates.  Reset @var{varname} to the result.
 
 
 @defun mbfl_variable_alloc @var{_RV}
-Generate a unique variable name and store it in the variable @var{_RV}
+Generate a unique variable name and store it in the variable @var{_RV}.
+
+To avoid allocating the same name twice: the function examines the new name testing if its value as
+variable is empty; if it is empty, it considers it ``new''.  So, whenever we allocate a name: we
+should locally initialise the variable to some non--empty value.
 
 @example
 local NAME
