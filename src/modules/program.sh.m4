@@ -47,36 +47,36 @@ function mbfl_program_split_path () {
 }
 
 function mbfl_program_find_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PROGRAM, 2, program)
-    local dummy
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PROGRAM, 2, program)
+    local mbfl_DUMMY
 
     # NOTE We do *not* want to test for the executability of the program
     # here!  This  is because  we also  want to find  a program  that is
     # executable only  by some other user,  for example "/sbin/ifconfig"
     # is executable only by root (or it should be).
 
-    if mbfl_file_is_absolute "$PROGRAM"
+    if mbfl_file_is_absolute "$mbfl_PROGRAM"
     then
-	RESULT_VARREF="$PROGRAM"
+	mbfl_RESULT_VARREF="$mbfl_PROGRAM"
 	return 0
-    elif mbfl_string_first_var dummy "$PROGRAM" '/'
+    elif mbfl_string_first_var mbfl_DUMMY "$mbfl_PROGRAM" '/'
     then
-	# The $PROGRAM it not an absolute pathname, but it is a relative
+	# The $mbfl_PROGRAM it not an absolute pathname, but it is a relative
 	# pathname with at least one slash in it.
-	RESULT_VARREF="$PROGRAM"
+	mbfl_RESULT_VARREF="$mbfl_PROGRAM"
 	return 0
     else
 	mbfl_program_split_path
-	local PATHNAME
-	local -i i number_of_components=${#mbfl_split_PATH[@]}
+	local mbfl_PATHNAME
+	local -i mbfl_I mbfl_NUMBER_OF_COMPONENTS=${#mbfl_split_PATH[@]}
 
-	for ((i=0; i < number_of_components; ++i))
+	for ((mbfl_I=0; mbfl_I < mbfl_NUMBER_OF_COMPONENTS; ++mbfl_I))
 	do
-	    printf -v PATHNAME '%s/%s' "${mbfl_split_PATH[$i]}" "$PROGRAM"
-	    if mbfl_file_is_file "$PATHNAME"
+	    printf -v mbfl_PATHNAME '%s/%s' "${mbfl_split_PATH[${mbfl_I}]}" "$mbfl_PROGRAM"
+	    if mbfl_file_is_file "$mbfl_PATHNAME"
 	    then
-		RESULT_VARREF="$PATHNAME"
+		mbfl_RESULT_VARREF="$mbfl_PATHNAME"
 		return 0
 	    fi
 	done
@@ -131,27 +131,27 @@ function mbfl_program_validate_declared () {
     return $retval
 }
 function mbfl_program_found_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(PROGRAM, 2, program name)
-    local -r PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+    mbfl_mandatory_parameter(mbfl_PROGRAM, 2, program name)
+    local -r mbfl_PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$mbfl_PROGRAM"]}
 
     # NOTE We do *not* want to test for the executability of the program
     # here!  This  is because  we also  want to find  a program  that is
     # executable only  by some other user,  for example "/sbin/ifconfig"
     # is executable only by root (or it should be).
-    if mbfl_file_is_file "$PROGRAM_PATHNAME"
+    if mbfl_file_is_file "$mbfl_PROGRAM_PATHNAME"
     then
-	RESULT_VARREF=$PROGRAM_PATHNAME
+	mbfl_RESULT_VARREF=$mbfl_PROGRAM_PATHNAME
         return 0
     else
-	mbfl_message_error_printf 'invalid pathname for program "%s": "%s"' "$PROGRAM" "$PROGRAM_PATHNAME"
+	mbfl_message_error_printf 'invalid pathname for program "%s": "%s"' "$mbfl_PROGRAM" "$mbfl_PROGRAM_PATHNAME"
 	exit_because_program_not_found
     fi
 }
 function mbfl_program_found () {
-    mbfl_mandatory_parameter(THE_PROGRAM, 1, program name)
+    mbfl_mandatory_parameter(PROGRAM, 1, program name)
     local RESULT_VARNAME EXIT_STATUS
-    mbfl_program_found_var RESULT_VARNAME "$THE_PROGRAM"
+    mbfl_program_found_var RESULT_VARNAME "$PROGRAM"
     EXIT_STATUS=$?
     if ((0 == EXIT_STATUS))
     then
