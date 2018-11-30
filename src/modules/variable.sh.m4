@@ -115,7 +115,7 @@ function mbfl_variable_alloc () {
 
     while true
     do
-	mbfl_NAME=mbfl_a_variable_${RANDOM}_${RANDOM}
+	mbfl_NAME=mbfl_u_variable_${RANDOM}
 	local -n mbfl_REF=$mbfl_NAME
 	if ((0 == ${#mbfl_REF} && 0 == ${#mbfl_REF[@]}))
 	then break
