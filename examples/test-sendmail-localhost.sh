@@ -41,14 +41,18 @@ then
     # Explicitly selects the port number.
     if true
     then
+	set -x
 	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --port=25
+	set +x
 	echo
     fi
 
     # Read the port number from the hostinfo file.
     if true
     then
+	set -x
 	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS}
+	set +x
 	echo
     fi
 
@@ -56,7 +60,9 @@ then
     # message to the sender.
     if true
     then
+	set -x
 	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --envelope-to=$FROM_ADDRESS
+	set +x
 	echo
     fi
 fi
@@ -73,7 +79,7 @@ then
     fi
 fi
 
-# Reaad the message from a file.
+# Read the message from a file.
 if true
 then
     : ${TMPDIR:=/tmp}

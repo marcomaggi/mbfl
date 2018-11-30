@@ -768,7 +768,7 @@ function connect_cleanup_fifos () {
 #
 function strip_carriage_return_var () {
     mbfl_mandatory_nameref_parameter(RESULT_NAMEREF, 1, result variable name)
-    mbfl_optional_parameter(LINE, 2, input string)
+    mbfl_optional_parameter(LINE, 2)
     local CH
 
     mbfl_string_index_var CH "$LINE" $((${#LINE} - 1))
@@ -892,7 +892,7 @@ function recv_until_string () {
 #
 function write_to_server () {
     mbfl_mandatory_parameter(OUFD, 1, output file descriptor)
-    mbfl_optional_parameter(LINE, 2, text line)
+    mbfl_optional_parameter(LINE, 2)
 
     if printf '%s\r\n' "$LINE" >&"$OUFD"
     then
@@ -908,7 +908,7 @@ function write_to_server () {
 #
 function write_to_server_no_log () {
     mbfl_mandatory_parameter(OUFD, 1, output file descriptor)
-    mbfl_optional_parameter(LINE, 2, text line)
+    mbfl_optional_parameter(LINE, 2)
 
     if printf '%s\r\n' "$LINE" >&"$OUFD"
     then return 0
@@ -1020,9 +1020,15 @@ function read_and_send_message () {
 # be in the variables "$script_option_EMAIL_FROM_ADDRESS" and "TO_ADDRESS".
 #
 function print_email_test_message () {
-    local DATE MESSAGE_ID MESSAGE
+    local TO_ADDRESS DATE MESSAGE_ID MESSAGE
+    local -i i
 
     acquire_local_hostname
+
+    TO_ADDRESS=" <${script_option_RECIPIENTS[$i]}>"
+    for ((i=1; i < ${#script_option_RECIPIENTS[@]}; ++i))
+    do TO_ADDRESS+=", <${script_option_RECIPIENTS[$i]}>"
+    done
 
     if ! DATE=$(mbfl_date_email_timestamp)
     then
@@ -1032,7 +1038,7 @@ function print_email_test_message () {
 
     printf -v MESSAGE_ID '%d-%d-%d@%s' "$RANDOM" "$RANDOM" "$RANDOM" "$LOCAL_HOSTNAME"
     MESSAGE="Sender: ${script_option_EMAIL_FROM_ADDRESS}
-From: ${script_option_EMAIL_FROM_ADDRESS}
+From: <${script_option_EMAIL_FROM_ADDRESS}>
 To: $TO_ADDRESS
 Subject: test message from $script_PROGNAME
 Message-ID: <$MESSAGE_ID>
@@ -1086,8 +1092,6 @@ function esmtp_exchange_greetings () {
 #
 function esmtp_authentication () {
     mbfl_mandatory_parameter(AUTH_TYPE,  1, authorisation type)
-    mbfl_mandatory_parameter(LOGIN_NAME, 2, login name)
-    mbfl_mandatory_parameter(PASSWORD,   3, login password)
 
     case $AUTH_TYPE in
         none)
@@ -1095,6 +1099,8 @@ function esmtp_authentication () {
             ;;
 
         plain)
+	    mbfl_mandatory_parameter(LOGIN_NAME, 2, login name)
+	    mbfl_mandatory_parameter(PASSWORD,   3, login password)
             local AUTH_PREFIX='AUTH PLAIN ' ENCODED_STRING
             mbfl_message_verbose 'performing AUTH PLAIN authentication\n'
             if ! ENCODED_STRING=$(printf '\x00%s\x00%s' "$LOGIN_NAME" "$PASSWORD" | pipe_base64)
@@ -1108,6 +1114,8 @@ function esmtp_authentication () {
             ;;
 
         login)
+	    mbfl_mandatory_parameter(LOGIN_NAME, 2, login name)
+	    mbfl_mandatory_parameter(PASSWORD,   3, login password)
             local ENCODED_USER_STRING ENCODED_PASS_STRING
             mbfl_message_verbose 'performing AUTH LOGIN authentication\n'
 
