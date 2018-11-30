@@ -497,8 +497,8 @@ function mbfl_file_enable_realpath () {
 function mbfl_file_realpath () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local REALPATH
-    mbfl_program_found_var REALPATH realpath || exit $?
+    mbfl_local_varref(REALPATH)
+    mbfl_program_found_var mbfl_varname(REALPATH) realpath || exit $?
     mbfl_program_exec "$REALPATH" "$@" -- "$PATHNAME"
 }
 
@@ -633,8 +633,9 @@ function mbfl_file_enable_remove () {
 function mbfl_exec_rm () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local RM FLAGS
-    mbfl_program_found_var RM rm || exit $?
+    mbfl_local_varref(RM)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(RM) rm || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$RM" ${FLAGS} "$@" -- "$PATHNAME"
 }
@@ -700,8 +701,9 @@ function mbfl_file_remove_file_or_symlink () {
 function mbfl_exec_rmdir () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local RMDIR FLAGS
-    mbfl_program_found_var RMDIR rmdir || exit $?
+    mbfl_local_varref(RMDIR)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(RMDIR) rmdir || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$RMDIR" $FLAGS "$@" "$PATHNAME"
 }
@@ -740,8 +742,9 @@ function mbfl_exec_cp () {
     mbfl_mandatory_parameter(SOURCE, 1, source pathname)
     mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
-    local CP FLAGS
-    mbfl_program_found_var CP cp || exit $?
+    mbfl_local_varref(CP)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(CP) cp || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$CP" ${FLAGS} "$@" -- "$SOURCE" "$TARGET"
 }
@@ -753,8 +756,9 @@ function mbfl_exec_cp_to_dir () {
     mbfl_mandatory_parameter(SOURCE, 1, source pathname)
     mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
-    local CP FLAGS
-    mbfl_program_found_var CP cp || exit $?
+    mbfl_local_varref(CP)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(CP) cp || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$CP" ${FLAGS} "$@" --target-directory="${TARGET}/" -- "$SOURCE"
 }
@@ -811,8 +815,9 @@ function mbfl_exec_mv () {
     mbfl_mandatory_parameter(SOURCE, 1, source pathname)
     mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
-    local MV FLAGS
-    mbfl_program_found_var MV mv || exit $?
+    mbfl_local_varref(MV)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(MV) mv || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$MV" ${FLAGS} "$@" -- "$SOURCE" "$TARGET"
 }
@@ -823,8 +828,9 @@ function mbfl_exec_mv_to_dir () {
     mbfl_mandatory_parameter(SOURCE, 1, source pathname)
     mbfl_mandatory_parameter(TARGET, 2, target pathname)
     shift 2
-    local MV FLAGS
-    mbfl_program_found_var MV mv || exit $?
+    mbfl_local_varref(MV)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(MV) mv || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$MV" ${FLAGS} "$@" --target-directory="${TARGET}/" -- "$SOURCE"
 }
@@ -869,8 +875,9 @@ function mbfl_file_enable_make_directory () {
 function mbfl_file_make_directory () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     mbfl_optional_parameter(PERMISSIONS, 2, 0775)
-    local MKDIR FLAGS
-    mbfl_program_found_var MKDIR mkdir || exit $?
+    mbfl_local_varref(MKDIR)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(MKDIR) mkdir || exit $?
     FLAGS="--parents --mode=${PERMISSIONS}"
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$MKDIR" $FLAGS -- "$PATHNAME"
@@ -896,8 +903,9 @@ function mbfl_exec_ln () {
     mbfl_mandatory_parameter(ORIGINAL_NAME, 1, original name)
     mbfl_mandatory_parameter(LINK_NAME,     2, link name)
     shift 2
-    local LN FLAGS
-    mbfl_program_found_var LN ln || exit $?
+    mbfl_local_varref(LN)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(LN) ln || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$LN" ${FLAGS} "$@" -- "$ORIGINAL_NAME" "$LINK_NAME"
 }
@@ -921,16 +929,16 @@ function mbfl_file_enable_listing () {
 function mbfl_file_listing () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift 1
-    local LS
-    mbfl_program_found_var LS ls || exit $?
+    mbfl_local_varref(LS)
+    mbfl_program_found_var mbfl_varname(LS) ls || exit $?
     mbfl_program_exec "$LS" "$@" -- "$PATHNAME"
 }
 # This is a raw, private, executor  for the "ls" program.  This function
 # uses the variable LS_FLAGS in the scope of the caller.
 #
 function mbfl_file_p_invoke_ls () {
-    local LS
-    mbfl_program_found_var LS ls || exit $?
+    mbfl_local_varref(LS)
+    mbfl_program_found_var mbfl_varname(LS) ls || exit $?
     mbfl_file_is_directory "$PATHNAME" && LS_FLAGS+=' -d'
     mbfl_program_exec "$LS" ${LS_FLAGS} "$PATHNAME"
 }
@@ -947,9 +955,12 @@ function mbfl_file_long_listing () {
 function mbfl_exec_readlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local READLINK FLAGS
-    mbfl_option_verbose_program && FLAGS+=' --verbose'
-    mbfl_program_found_var READLINK readlink || exit $?
+    mbfl_local_varref(READLINK)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(READLINK) readlink || exit $?
+    if mbfl_option_verbose_program
+    then FLAGS+=' --verbose'
+    fi
     mbfl_program_exec "$READLINK" ${FLAGS} "$@" -- "$PATHNAME"
 }
 
@@ -1089,8 +1100,9 @@ function mbfl_file_enable_tar () {
     mbfl_declare_program tar
 }
 function mbfl_exec_tar () {
-    local TAR FLAGS
-    mbfl_program_found_var TAR tar || exit $?
+    mbfl_local_varref(TAR)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(TAR) tar || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$TAR" ${FLAGS} "$@"
 }
@@ -1145,8 +1157,9 @@ function mbfl_file_enable_permissions () {
 function mbfl_exec_chmod () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local CHMOD FLAGS
-    mbfl_program_found_var CHMOD chmod || exit $?
+    mbfl_local_varref(CHMOD)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(CHMOD) chmod || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$CHMOD" ${FLAGS} "$@" -- "$PATHNAME"
 }
@@ -1179,16 +1192,18 @@ function mbfl_file_enable_owner_and_group () {
 function mbfl_exec_chown () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local CHOWN FLAGS
-    mbfl_program_found_var CHOWN chown || exit $?
+    mbfl_local_varref(CHOWN)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(CHOWN) chown || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$CHOWN" ${FLAGS} "$@" -- "$PATHNAME"
 }
 function mbfl_exec_chgrp () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local CHGRP FLAGS
-    mbfl_program_found_var CHGRP chgrp || exit $?
+    mbfl_local_varref(CHGRP)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(CHGRP) chgrp || exit $?
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$CHGRP" ${FLAGS} "$@" -- "$PATHNAME"
 }
@@ -1292,9 +1307,10 @@ function mbfl_p_file_compress_gzip () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, source file)
     shift 2
-    local COMPRESSOR FLAGS='--force' DEST
+    mbfl_local_varref(COMPRESSOR)
+    local FLAGS='--force' DEST
 
-    mbfl_program_found_var COMPRESSOR gzip || exit $?
+    mbfl_program_found_var mbfl_varname(COMPRESSOR) gzip || exit $?
     case $COMPRESS in
         compress)
             printf -v DEST '%s.gz' "$SOURCE"
@@ -1336,9 +1352,10 @@ function mbfl_p_file_compress_bzip2 () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, target file)
     shift 2
-    local COMPRESSOR FLAGS='--force' DEST
+    mbfl_local_varref(COMPRESSOR)
+    local FLAGS='--force' DEST
 
-    mbfl_program_found_var COMPRESSOR bzip2 || exit $?
+    mbfl_program_found_var mbfl_varname(COMPRESSOR) bzip2 || exit $?
     case $COMPRESS in
         compress)
             printf -v DEST '%s.bz2' "$SOURCE"
@@ -1381,9 +1398,10 @@ function mbfl_p_file_compress_lzip () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, source file)
     shift 2
-    local COMPRESSOR FLAGS='--force' DEST
+    mbfl_local_varref(COMPRESSOR)
+    local FLAGS='--force' DEST
 
-    mbfl_program_found_var COMPRESSOR lzip || exit $?
+    mbfl_program_found_var mbfl_varname(COMPRESSOR) lzip || exit $?
     case $COMPRESS in
         compress)
             printf -v DEST '%s.lz' "$SOURCE"
@@ -1425,9 +1443,10 @@ function mbfl_p_file_compress_xz () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, source file)
     shift 2
-    local COMPRESSOR FLAGS='--force' DEST
+    mbfl_local_varref(COMPRESSOR)
+    local FLAGS='--force' DEST
 
-    mbfl_program_found_var COMPRESSOR xz || exit $?
+    mbfl_program_found_var mbfl_varname(COMPRESSOR) xz || exit $?
     case $COMPRESS in
         compress)
             printf -v DEST '%s.xz' "$SOURCE"
@@ -1473,8 +1492,9 @@ function mbfl_file_enable_stat () {
 function mbfl_file_stat () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    local STAT FLAGS
-    mbfl_program_found_var STAT stat || exit $?
+    mbfl_local_varref(STAT)
+    local FLAGS
+    mbfl_program_found_var mbfl_varname(STAT) stat || exit $?
     mbfl_program_exec "$STAT" ${FLAGS} "$@" -- "$PATHNAME"
 }
 function mbfl_file_stat_var () {
