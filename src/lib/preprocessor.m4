@@ -67,5 +67,59 @@ fi
 
 m4_define([[[mbfl_embed_library]]],[[[m4_include(__MBFL_LIBRARY__)]]])
 
+dnl Synopsis:
+dnl
+dnl   mbfl_local_varref(VARNAME, INIT_VALUE, LOCAL_OPTIONS)
+dnl
+dnl Expands into:
+dnl
+dnl   local mbfl_a_varname_VARNAME
+dnl   mbfl_variable_alloc mbfl_a_varname_VARNAME
+dnl   local LOCAL_OPTIONS $mbfl_a_varname_VARNAME=INIT_VALUE
+dnl   local -n VARNAME=$mbfl_a_varname_VARNAME
+dnl
+dnl Define a  local "proxy variable"  VARNAME referencing a  local "data
+dnl variable"  with unique  name.  The  data variable  has the  optional
+dnl attributes    LOCAL_OPTIONS.      A    further     local    variable
+dnl mbfl_a_varname_VARNAME holds the name of the data variable.
+dnl
+m4_define([[[mbfl_local_varref]]],[[[m4_dnl
+  local mbfl_a_varname_$1
+  mbfl_variable_alloc mbfl_a_varname_$1
+  local $3 $[[[mbfl_a_varname_$1]]]=$2
+  local -n $1=$[[[]]]mbfl_a_varname_$1
+]]])
+
+dnl Synopsis:
+dnl
+dnl   mbfl_global_varref(VARNAME, INIT_VALUE, GLOBAL_OPTIONS)
+dnl
+dnl Expands into:
+dnl
+dnl   declare -g mbfl_a_varname_VARNAME
+dnl   mbfl_variable_alloc mbfl_a_varname_VARNAME
+dnl   declare -g GLOBAL_OPTIONS $mbfl_a_varname_VARNAME=INIT_VALUE
+dnl   declare -g -n VARNAME=$mbfl_a_varname_VARNAME
+dnl
+dnl Define a global "proxy variable"  VARNAME referencing a global "data
+dnl variable"  with unique  name.  The  data variable  has the  optional
+dnl attributes    GLOBAL_OPTIONS.     A    further    global    variable
+dnl mbfl_a_varname_VARNAME holds the name of the data variable.
+dnl
+m4_define([[[mbfl_global_varref]]],[[[m4_dnl
+  declare -g mbfl_a_varname_$1
+  mbfl_variable_alloc mbfl_a_varname_$1
+  declare -g $3 $[[[mbfl_a_varname_$1]]]=$2
+  declare -g -n $1=$[[[]]]mbfl_a_varname_$1
+]]])
+
+m4_define([[[mbfl_varname]]],[[[$mbfl_a_varname_$1]]])
+
+m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
+  unset -v $mbfl_a_varname_$1
+  unset -v mbfl_a_varname_$1
+  unset -v -n $1
+]]])
+
 m4_dnl end of file
 m4_divert(0)m4_dnl

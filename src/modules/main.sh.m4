@@ -136,6 +136,9 @@ then
 
     mbfl_main_EXIT_CODES[12]=90
     mbfl_main_EXIT_NAMES[12]=invalid_sudo_username
+
+    mbfl_main_EXIT_CODES[13]=89
+    mbfl_main_EXIT_NAMES[13]=no_location
 fi
 
 function exit_success () {

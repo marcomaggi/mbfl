@@ -40,15 +40,16 @@ function mbfl_atexit_disable () {
 }
 
 function mbfl_atexit_register () {
-    mbfl_mandatory_parameter(HANDLER, 1, handler script)
-    local THE_IDVAR=$2
-    if mbfl_string_is_not_empty "$THE_IDVAR"
-    then local -n IDVAR=$THE_IDVAR
-    else local IDVAR
+    mbfl_mandatory_parameter(mbfl_HANDLER, 1, handler script)
+    mbfl_optional_parameter(mbfl_IDVAR, 2)
+
+    if mbfl_string_is_not_empty "$mbfl_IDVAR"
+    then local -n mbfl_ID_VARREF=$mbfl_IDVAR
+    else local mbfl_ID_VARREF
     fi
 
-    mbfl_atexit_HANDLERS[$mbfl_atexit_NEXT]=$HANDLER
-    IDVAR=$mbfl_atexit_NEXT
+    mbfl_atexit_HANDLERS[$mbfl_atexit_NEXT]=$mbfl_HANDLER
+    mbfl_ID_VARREF=$mbfl_atexit_NEXT
     let ++mbfl_atexit_NEXT
 }
 

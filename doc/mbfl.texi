@@ -35,23 +35,21 @@
 @end macro
 
 @macro DocVarVariant{}
-The function variant @code{_var} stores the result in the variable @var{RV}, rather than print it.
+The function variant @code{_var} stores the result in the variable @var{_RV}, rather than print it;
+@ref{overview rv, Result variables}.
 @end macro
 
 @macro ExitCode{}
 ;$? @result{}
 @end macro
 
-
 @macro stdin{}
 @code{stdin}
 @end macro
 
-
 @macro stdout{}
 @code{stdout}
 @end macro
-
 
 @macro stderr{}
 @code{stderr}
@@ -188,6 +186,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * arrays::                      Manipulating arrays.
 * system::                      Interfacing with the system.
 * atexit::                      Running scripts at exit-time.
+* locations::                   Running location handlers.
 * main::                        Main function.
 * testing::                     Building test suites.
 
@@ -244,7 +243,8 @@ $ ./configure \
 * overview reliable::           Reliable run--time loading.
 * overview direct::             Direct inclusion.
 * overview interactive::        Using the library interactively.
-* overview notes::              Notes.
+* overview rv::                 Result variables.
+* overview notes::              Miscellaneous notes.
 @end menu
 
 @c page
@@ -421,6 +421,150 @@ not mean that the functions are not there: only the global variable declarations
 is a little dirty, but, at present, it should work.
 
 @c page
+@node overview rv
+@section Result variables
+
+
+Some functions have a @code{_var} variant; for example, two functions exists to extract the filename
+extension:
+
+@example
+mbfl_file_extension
+mbfl_file_extension_var
+@end example
+
+@noindent
+the first variant will print the result to stdout, while the @code{_var} variant will store the
+result in a ``result variable'' whose name is handed to it as first argument; this mechanism is
+built using the @code{local -n} feature of Bash.  Example:
+
+@example
+mbfl_file_extension /path/to/file.ext
+@print{} ext
+
+local _RV
+mbfl_file_extension_var _RV /path/to/file.ext
+"$_RV"  @result{} ext
+@end example
+
+The @code{_var} variants are often a bit faster because the output variant is often a wrapper for
+the @code{_var} variant.
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Dangers of result variables
+
+@strong{We must be careful when using this feature!}  Let's consider this script:
+
+@example
+function main () @{
+    local -i X=0
+    mbfl_func X
+    echo X=$X >&2
+@}
+function mbfl_func () @{
+    local -n Y=$@{1:?@}
+    Y=1
+@}
+
+main
+@end example
+
+@noindent
+everything is fine: the script will print @code{X=1} because the call to @code{mbfl_func} will
+mutate the variable @code{X} in its execution environment, and such variable happens to be defined
+in the scope of @code{main}.
+
+Now let's consider this script:
+
+@example
+function main () @{
+    local -i X=0
+    mbfl_func X
+    echo X=$X >&2
+@}
+function mbfl_func () @{
+    local -n Y=$@{1:?@}
+    local X
+    Y=1
+@}
+
+main
+@end example
+
+@noindent
+it will print @code{X=0} because @code{mbfl_func} accesses the variable @code{X} in its execution
+environment, and such variable is defined by @code{mbfl_func} itself; the local definition of
+@code{X} shadows the upper level definition.
+
+There is no true escape from this problem!  There is no definitive way to avoid ``fishing'' a local
+variable in a lower function from an upper function.  @mbfl{} attempts to mitigate the problem by
+prefixing its variables with @code{mbfl_} when a function uses reference variables.  We should also
+prefix our ``result variables'', for example with a leading or trailing underscore: @mbfl{} never
+uses such a prefix or suffix.
+
+So we should write the script as follows:
+
+@example
+function main () @{
+    local -i _X=0
+    mbfl_func _X
+    echo _X=$_X >&2
+@}
+function mbfl_func () @{
+    local -n mbfl_Y=$@{1:?@}
+    local mbfl_X
+    mbfl_Y=1
+@}
+
+main
+@end example
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Using the preprocessor
+
+
+@mbfl{}'s preprocessor has facilities to help us create variables with unique names that we can
+safely use as argument to functions, @ref{preprocessor, Using the script preprocessor}.
+
+With these facilities, the first example should be written as:
+
+@example
+mbfl_local_varref(RV)
+
+mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
+"$RV"  @result{} ext
+@end example
+
+@noindent
+and the demo script as:
+
+@example
+function main () @{
+    mbfl_local_varref(X, 0, -i)
+    mbfl_func mbfl_varname(X)
+    echo X=$X >&2
+@}
+function mbfl_func () @{
+    local -n Y=$@{1:?@}
+    Y=1
+@}
+
+main
+@end example
+
+Using such preprocessor facilities consumes some computation time; they should be used when we do
+not care about execution time and when such time is significantly less than running a subshell.
+Otherwise we should just run the functions in a subshell:
+
+@example
+RESULT=$(mbfl_file_extension /path/to/file.ext)
+
+"$RESULT" @result{} ext
+@end example
+
+@c page
 @node overview notes
 @section Notes
 
@@ -483,31 +627,6 @@ To avoid the mutation of text read with @code{read}, @mbfl{} always sets @code{I
 string in the environment in which @code{read} is evaluated.  This happens in functions like
 @bfunc{mbfl_read_maybe_null} and @bfunc{mbfl_dialog_ask_password}; notice, though, that these
 functions @strong{do not} mutate the @code{IFS} value in the environment of the caller.
-
-@item
-Some functions have a @code{_var} variant; for example, two functions exists to extract the filename
-extension:
-
-@example
-mbfl_file_extension
-mbfl_file_extension_var
-@end example
-
-@noindent
-the first variant will print the result to stdout, while the @code{_var} variant will store the
-result in a ``result variable'' whose name is handed to it as first argument.  Example:
-
-@example
-mbfl_file_extension /path/to/file.ext
-@print{} ext
-
-local RV
-mbfl_file_extension_var RV /path/to/file.ext
-"$RV"  @result{} ext
-@end example
-
-The @code{_var} variants are often a bit faster because the output variant is often a wrapper for
-the @code{_var} variant.
 @end itemize
 
 @c page
@@ -527,7 +646,12 @@ without the preprocessor.
 
 @menu
 * preprocessor invoking::       Invoking the preprocessor.
-* preprocessor macros::         Macros library.
+* preprocessor quoting::        Quotes and quoted macro names.
+* preprocessor defines::        Predefined symbols.
+* preprocessor library::        Loading or including the library.
+* preprocessor parameters::     Function parameters handling.
+* preprocessor arguments::      Script arguments handling.
+* preprocessor varrefs::        Variable name references.
 @end menu
 
 @c page
@@ -588,8 +712,8 @@ the option @option{--library} to load a replacement macros library from a known 
 @end table
 
 @c page
-@node preprocessor macros
-@section Macros library
+@node preprocessor quoting
+@section Quotes and quoted macro names
 
 
 The @mfour{} preprocessor is invoked by @command{mbflpp.sh} with the @option{--prefix-builtins}
@@ -600,6 +724,13 @@ The quoting for the preprocessor is changed with:
 @example
 m4_changequote(`[[[', `]]]')
 @end example
+
+@c page
+@node preprocessor defines
+@section Predefined symbols
+
+
+The preprocessor predefines the following symbols.
 
 
 @deffn {Preprocessor Macro} __PACKAGE_VERSION__
@@ -625,6 +756,14 @@ Expands into the absolute pathname of the @value{PACKAGE} library file.  For exa
 @end example
 @end deffn
 
+@c page
+@node preprocessor library
+@section Loading or including the library
+
+
+We can include in scripts the code needed to source the library at run--time or the whole library
+itself.
+
 
 @deffn {Preprocessor Macro} mbfl_embed_library
 Expands into the contents of the library file.  The selected library is the one used by the
@@ -638,6 +777,10 @@ Expand to a block of code that reliably loads the @value{PACKAGE} library.  The 
 @var{hardcoded_pathname} must be the absolute pathname to a file containing the library itself.
 @ref{overview reliable} for details.
 @end deffn
+
+@c page
+@node preprocessor parameters
+@section Function parameters handling
 
 
 @deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{varname} @var{number} @var{description}
@@ -736,6 +879,10 @@ local COUNT=$@{2:-@}"
 @end smallexample
 @end deffn
 
+@c page
+@node preprocessor arguments
+@section Script arguments handling
+
 
 @deffn {Preprocessor Macro} mbfl_command_line_argument @var{varname} @var{argindex}
 Define a variable local to a shell function holding an argument to the script.  @var{varname} is the
@@ -753,6 +900,84 @@ is expanded to:
 @example
 local PATHNAME=$@{ARGV[3]@}
 @end example
+@end deffn
+
+@c page
+@node preprocessor varrefs
+@section Variable name references
+
+
+The preprocessor implements facilities to declare variables with unique names and use them as target
+for variable with the NAMEREF attribute.  With these facilities we can use the @code{_var} variants
+of @mbfl{} functions as follows:
+
+@example
+mbfl_local_varref(RV)
+
+mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
+"$RV"  @result{} ext
+@end example
+
+@noindent
+without risking a variable name collision.
+
+
+@deffn {Preprocessor Macro} mbfl_local_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+Expand into:
+
+@example
+local mbfl_a_varname_@var{VARNAME}
+mbfl_variable_alloc mbfl_a_varname_@var{VARNAME}
+local @var{LOCAL_OPTIONS} $mbfl_a_varname_@var{VARNAME}=@var{INIT_VALUE}
+local -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+@end example
+
+Define a local ``proxy variable'' @var{VARNAME} referencing a local ``data variable'' with unique
+name.  The data variable has the optional attributes @var{LOCAL_OPTIONS}.  A further local variable
+@code{mbfl_a_varname_@var{VARNAME}} holds the name of the data variable.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_global_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{GLOBAL_OPTIONS})
+Expand into:
+
+@example
+declare -g mbfl_a_varname_@var{VARNAME}
+mbfl_variable_alloc mbfl_a_varname_@var{VARNAME}
+declare -g @var{GLOBAL_OPTIONS} $mbfl_a_varname_@var{VARNAME}=@var{INIT_VALUE}
+declare -g -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+@end example
+
+Define a global ``proxy variable'' @var{VARNAME} referencing a global ``data variable'' with unique
+name.  The data variable has the optional attributes @var{GLOBAL_OPTIONS}.  A further global
+variable @code{mbfl_a_varname_@var{VARNAME}} holds the name of the data variable.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_varname (@var{VARNAME})
+The argument @var{VARNAME} must be the first argument to a previous call to
+@bfunc{mbfl_local_varref} or @bfunc{mbfl_global_varref}.  Expand into:
+
+@example
+$mbfl_a_varname_@var{VARNAME}
+@end example
+
+Given the name of a proxy variable: expand into code that, executed at run--time, returns the name
+of the data variable.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_unset_varref (@var{VARNAME})
+The argument @var{VARNAME} must be the first argument to a previous call to
+@bfunc{mbfl_local_varref} or @bfunc{mbfl_global_varref}.  Expand into:
+
+@example
+unset -v $mbfl_a_varname_@var{VARNAME}
+unset -v mbfl_a_varname_@var{VARNAME}
+unset -v -n @var{VARNAME}
+@end example
+
+Unset all the proxy variable @var{VARNAME} and all the variables associated to it.
 @end deffn
 
 @c page
@@ -963,7 +1188,7 @@ mbfl_decode_hex 414243
 
 
 @defun mbfl_file_extension @var{pathname}
-@defunx mbfl_file_extension_var @var{RV} @var{pathname}
+@defunx mbfl_file_extension_var @var{_RV} @var{pathname}
 Extract the extension from a file name.  Starting from the end of the string @var{pathname}: search
 the last dot character in the argument string and echo to stdout the range of characters from the
 dot to the end, not including the dot.  If a slash character or the beginning of the string is found
@@ -979,15 +1204,15 @@ mbfl_file_extension /path/to/.file.ext  @print{} ext
 mbfl_file_extension /path/to/.dotfile   @print{} <no output>
 mbfl_file_extension .dotfile            @print{} <no output>
 
-local RV
-mbfl_file_extension_var RV /path/to/file.ext
-"$RV"  @result{} ext
+local _RV
+mbfl_file_extension_var _RV /path/to/file.ext
+"$_RV"  @result{} ext
 @end example
 @end defun
 
 
 @defun mbfl_file_dirname @var{pathname}
-@defunx mbfl_file_dirname_var @var{rv} @var{pathname}
+@defunx mbfl_file_dirname_var @var{_RV} @var{pathname}
 Extract the directory part from a fully qualified file name.  Search the last slash character in the
 input string and echo to stdout the range of characters from the first to the slash, not including
 the slash.
@@ -1015,15 +1240,15 @@ mbfl_file_dirname ./abcd                @print{} .
 mbfl_file_dirname ../abcd/efgh          @print{} ../abcd
 mbfl_file_dirname ./abcd/efgh           @print{} ./abcd
 
-local RV
-mbfl_file_dirname_var RV /path/to/file.ext
-"$RV" @result{} /path/to
+local _RV
+mbfl_file_dirname_var _RV /path/to/file.ext
+"$_RV" @result{} /path/to
 @end example
 @end defun
 
 
 @defun mbfl_file_rootname @var{pathname}
-@defunx mbfl_file_rootname_var @var{RV} @var{pathname}
+@defunx mbfl_file_rootname_var @var{_RV} @var{pathname}
 Extract the root portion of a file pathname: everything excluding the last component's extension and
 the extension's dot separator.  Search the last dot character in the argument string and echo to
 stdout the range of characters from the beginning to the dot, not including the dot.  If a slash is
@@ -1047,9 +1272,9 @@ mbfl_file_rootname /                     @print{} /
 mbfl_file_rootname .                     @print{} .
 mbfl_file_rootname ..                    @print{} ..
 
-local RV
+local _RV
 mbfl_file_rootname_var /path/to/file.ext
-"$RV" @result{} /path/to/file
+"$_RV" @result{} /path/to/file
 @end example
 @end defun
 
@@ -1067,9 +1292,9 @@ mbfl_file_tail /path/to/file.ext  @print{} file.ext
 mbfl_file_tail /path/to/          @print{} <no output>
 mbfl_file_tail file.ext           @print{} file.ext
 
-local RV
-mbfl_file_tail_var RV /path/to/file.ext
-"$RV" @result{} file.ext
+local _RV
+mbfl_file_tail_var _RV /path/to/file.ext
+"$_RV" @result{} file.ext
 @end example
 @end defun
 
@@ -1094,7 +1319,7 @@ $SPLITCOUNT             @result{} 3
 
 
 @defun mbfl_file_strip_trailing_slash @var{pathname}
-@defunx mbfl_file_strip_trailing_slash_var @var{RV} @var{pathname}
+@defunx mbfl_file_strip_trailing_slash_var @var{_RV} @var{pathname}
 Remove all the trailing slashes from @var{pathname} and print the result on stdout.  If
 @var{pathname} consists only of slashes: print a single dot.
 
@@ -1114,15 +1339,15 @@ mbfl_file_strip_trailing_slash '/'      @print{} .
 mbfl_file_strip_trailing_slash '///'    @print{} .
 mbfl_file_strip_trailing_slash 'file'   @print{} file
 
-local RV
-mbfl_file_strip_trailing_slash_var RV '/path/to/dir.ext/'
-"$RV" @result{} /path/to/dir.ext
+local _RV
+mbfl_file_strip_trailing_slash_var _RV '/path/to/dir.ext/'
+"$_RV" @result{} /path/to/dir.ext
 @end example
 @end defun
 
 
 @defun mbfl_file_strip_leading_slash @var{pathname}
-@defunx mbfl_file_strip_leading_slash_var @var{RV} @var{pathname}
+@defunx mbfl_file_strip_leading_slash_var @var{_RV} @var{pathname}
 Remove all the leading slashes from @var{pathname} and print the result on stdout.  If
 @var{pathname} consists only of slashes: print a single dot.
 
@@ -1147,8 +1372,8 @@ mbfl_file_strip_leading_slash 'file'    @print{} file
 
 @defun mbfl_file_normalise @var{pathname}
 @defunx mbfl_file_normalise @var{pathname} @var{prefix}
-@defunx mbfl_file_normalise_var @var{RV} @var{pathname}
-@defunx mbfl_file_normalise_var @var{RV} @var{pathname} @var{prefix}
+@defunx mbfl_file_normalise_var @var{_RV} @var{pathname}
+@defunx mbfl_file_normalise_var @var{_RV} @var{pathname} @var{prefix}
 Normalise a file name: remove all the occurrences of @code{.} and @code{..}.
 
 If @var{pathname} is relative (according to @bfunc{mbfl_file_is_absolute}) and @var{prefix} is not
@@ -1169,7 +1394,7 @@ Echo to stdout the normalised file name.  Return true.
 
 
 @defun mbfl_file_subpathname @var{pathname} @var{basedir}
-@defunx mbfl_file_subpathname_var @var{RV} @var{pathname} @var{basedir}
+@defunx mbfl_file_subpathname_var @var{_RV} @var{pathname} @var{basedir}
 If @var{pathname} is a subdirectory or file under @var{basedir}: print to stdout the subpathname
 portion.  Example:
 
@@ -1191,9 +1416,9 @@ mbfl_file_subpathname /a/b/c /a   @print{} ./b/c
 
 mbfl_file_subpathname /a/b/c /d   @error{} no match
 
-local RV
-mbfl_file_subpathname_var RV /a/b/c /a
-"$RV" @result{} ./b/c
+local _RV
+mbfl_file_subpathname_var _RV /a/b/c /a
+"$_RV" @result{} ./b/c
 @end example
 @end defun
 
@@ -1241,8 +1466,8 @@ pathname according to @bfunc{mbfl_file_is_relative}.
 
 @defun mbfl_file_find_tmpdir
 @defunx mbfl_file_find_tmpdir @var{PATHNAME}
-@defunx mbfl_file_find_tmpdir_var @var{RV}
-@defunx mbfl_file_find_tmpdir_var @var{RV} @var{PATHNAME}
+@defunx mbfl_file_find_tmpdir_var @var{_RV}
+@defunx mbfl_file_find_tmpdir_var @var{_RV} @var{PATHNAME}
 Find a value for a temporary directory according to the following rules:
 
 @enumerate
@@ -1368,7 +1593,7 @@ Declare the intention to use the program @command{stat}.
 
 
 @defun mbfl_file_stat @var{pathname} [@var{opt} @dots{}]
-@defunx mbfl_file_stat_var @var{RV} @var{pathname} [@var{opt} @dots{}]
+@defunx mbfl_file_stat_var @var{_RV} @var{pathname} [@var{opt} @dots{}]
 Execute @command{stat} with @var{pathname} as first argument and @var{arg} as other arguments.
 
 @example
@@ -1388,7 +1613,7 @@ mbfl_file_stat /bin --format='%F'
 
 
 @defun mbfl_file_get_size @var{pathname}
-@defunx mbfl_file_get_size_var @var{RV} @var{pathname}
+@defunx mbfl_file_get_size_var @var{_RV} @var{pathname}
 Print the size of the file in bytes.
 
 @DocVarVariant{}
@@ -1625,7 +1850,7 @@ The programs are: @command{realpath}.
 
 
 @defun mbfl_file_realpath @var{pathname} [@var{opt} @dots{}]
-@defunx mbfl_file_realpath_var @var{RV} @var{pathname} [@var{opt} @dots{}]
+@defunx mbfl_file_realpath_var @var{_RV} @var{pathname} [@var{opt} @dots{}]
 Normalise the given @var{pathname} using @command{realpath} and print the result to stdout.  The
 optional arguments @var{opt} are added, as options, to the command line of @command{realpath}.
 
@@ -1724,7 +1949,7 @@ The programs are: @command{stat}, @command{chmod}.
 
 
 @defun mbfl_file_get_permissions @var{pathname}
-@defunx mbfl_file_get_permissions_var @var{RV} @var{pathname}
+@defunx mbfl_file_get_permissions_var @var{_RV} @var{pathname}
 Print the access permissions for @var{pathname}, in octal format.
 
 @DocVarVariant{}
@@ -1734,7 +1959,7 @@ mbfl_file_get_permissions /bin/ls       @print{} 0755
 
 local PERMS
 mbfl_file_get_permissions_var PERMS /bin/ls
-"$RV" @result{} 0755
+"$_RV" @result{} 0755
 @end example
 @end defun
 
@@ -1785,7 +2010,7 @@ The optional arguments @var{opt} are handed to @command{chgrp} as options.
 
 
 @defun mbfl_file_get_owner @var{pathname}
-@defunx mbfl_file_get_owner_var @var{RV} @var{pathname}
+@defunx mbfl_file_get_owner_var @var{_RV} @var{pathname}
 Print the owner of the file as symbolic name.
 
 @DocVarVariant{}
@@ -1793,7 +2018,7 @@ Print the owner of the file as symbolic name.
 
 
 @defun mbfl_file_get_group @var{pathname}
-@defunx mbfl_file_get_group_var @var{RV} @var{pathname}
+@defunx mbfl_file_get_group_var @var{_RV} @var{pathname}
 Print the group of the file as symbolic name.
 
 @DocVarVariant{}
@@ -3342,7 +3567,7 @@ mbfl_split_PATH=()
 
 
 @defun mbfl_program_find @var{program}
-@defunx mbfl_program_find_var @var{RV} @var{program}
+@defunx mbfl_program_find_var @var{_RV} @var{program}
 Search for a program in the standard search path.  Print the full pathname of the program found, or
 an empty string if nothing is found.  If an executable file is found: return true; otherwise return
 false.
@@ -3365,7 +3590,7 @@ If @var{program} is a relative pathname without slash characters in it: the stan
 used.
 @end itemize
 
-The @code{_var} function variant will store the result in the variable @var{RV} rather than print
+The @code{_var} function variant will store the result in the variable @var{_RV} rather than print
 it.
 @end defun
 
@@ -3700,7 +3925,7 @@ from the command line the option @option{--verbose} must be used before
 
 
 @defun mbfl_program_found @var{program}
-@defunx mbfl_program_found_var @var{RV} @var{program}
+@defunx mbfl_program_found_var @var{_RV} @var{program}
 Print the pathname of the previously declared @var{program}.  Return zero if the program was found,
 otherwise print an error message and exit the current (sub)shell by invoking
 @bfunc{exit_because_program_not_found}.
@@ -3708,7 +3933,7 @@ otherwise print an error message and exit the current (sub)shell by invoking
 This function should be used to retrieve the pathname of the program to be used as first argument to
 @bfunc{mbfl_program_exec}:
 
-The function variant @code{_var} will store the result in @var{RV} rather than printing it.
+The function variant @code{_var} will store the result in @var{_RV} rather than printing it.
 
 @example
 function program_wrapper () @{
@@ -3933,7 +4158,7 @@ mbfl_string_is_equal_unquoted_char 'abc\defg' 3 d
 
 
 @defun mbfl_string_quote @var{string}
-@defunx mbfl_string_quote_var @var{RV} @var{string}
+@defunx mbfl_string_quote_var @var{_RV} @var{string}
 Print @var{string} with quoted characters.  All the occurrences of the backslash character,
 @code{\}, are substituted with a quoted backslash, @code{\\}.  Return true.
 
@@ -3944,9 +4169,9 @@ mbfl_string_quote \\a\\b\\c     @print{} \\\\a\\\\b\\\\c
 mbfl_string_quote abc           @print{} abc
 mbfl_string_quote "a b\tc\n\r"  @print{} a\ b\\\\tc\\\\n\\\\r
 
-local RV
-mbfl_string_quote_var RV \\a\\b\\c
-"$RV"   @result{} \\\\a\\\\b\\\\c
+local _RV
+mbfl_string_quote_var _RV \\a\\b\\c
+"$_RV"   @result{} \\\\a\\\\b\\\\c
 @end example
 @end defun
 
@@ -3978,7 +4203,7 @@ Return successfully if @var{string} is not empty.
 
 
 @defun mbfl_string_index @var{string} @var{index}
-@defunx mbfl_string_index_var @var{RV} @var{string} @var{index}
+@defunx mbfl_string_index_var @var{_RV} @var{string} @var{index}
 Select a character from a string.  Echo to stdout the selected character.  If the index is out of
 range: the empty string is echoed to stdout, that is: a newline is echoed to stdout.
 
@@ -3990,17 +4215,17 @@ mbfl_string_index abcdefghilm  4        @print{} e
 mbfl_string_index abcdefghilm 10        @print{} m
 mbfl_string_index abcdefghilm 11        @print{} <empty string>
 
-local RV
-mbfl_string_index_var RV abcdefghilm 0
-"$RV" @result{} a
+local _RV
+mbfl_string_index_var _RV abcdefghilm 0
+"$_RV" @result{} a
 @end example
 @end defun
 
 
 @defun mbfl_string_first @var{string} @var{char}
 @defunx mbfl_string_first @var{string} @var{char} @var{begin}
-@defunx mbfl_string_first_var @var{RV} @var{string} @var{char}
-@defunx mbfl_string_first_var @var{RV} @var{string} @var{char} @var{begin}
+@defunx mbfl_string_first_var @var{_RV} @var{string} @var{char}
+@defunx mbfl_string_first_var @var{_RV} @var{string} @var{char} @var{begin}
 Search characters in a string.  Arguments: @var{string}, the target string; @var{char}, the
 character to look for; @var{begin}, optional, the index of the character in the target string from
 which the search begins (defaults to zero).
@@ -4021,17 +4246,17 @@ mbfl_string_first abcdeabcde  a 3       @print{} 5
 mbfl_string_first abcdeabcde  e 5       @print{} 9
 mbfl_string_first abcdeabcde  e 4       @print{} 4
 
-local RV
-mbfl_string_first_var RV abcdefghilm d
-"$RV" @result{} 3
+local _RV
+mbfl_string_first_var _RV abcdefghilm d
+"$_RV" @result{} 3
 @end example
 @end defun
 
 
 @defun mbfl_string_last @var{string} @var{char}
 @defunx mbfl_string_last @var{string} @var{char} @var{begin}
-@defunx mbfl_string_last_var @var{RV} @var{string} @var{char}
-@defunx mbfl_string_last_var @var{RV} @var{string} @var{char} @var{begin}
+@defunx mbfl_string_last_var @var{_RV} @var{string} @var{char}
+@defunx mbfl_string_last_var @var{_RV} @var{string} @var{char} @var{begin}
 Search characters in a string starting from the end.  Arguments: @var{string}, the target string;
 @var{char}, the character to look for; @var{begin}, optional, the index of the character in the
 target string from which the search begins (defaults to zero).
@@ -4053,17 +4278,17 @@ mbfl_string_last abcdeabcde  a 7        @print{} 5
 mbfl_string_last abcdeabcde  e 7        @print{} 4
 mbfl_string_last abcdeabcde  e 4        @print{} 4
 
-local RV
-mbfl_string_last_var RV abcdefghilm d
-"$RV" @result{} 3
+local _RV
+mbfl_string_last_var _RV abcdefghilm d
+"$_RV" @result{} 3
 @end example
 @end defun
 
 
 @defun mbfl_string_range @var{string} @var{begin}
 @defunx mbfl_string_range @var{string} @var{begin} @var{end}
-@defunx mbfl_string_range_var @var{RV} @var{string} @var{begin}
-@defunx mbfl_string_range_var @var{RV} @var{string} @var{begin} @var{end}
+@defunx mbfl_string_range_var @var{_RV} @var{string} @var{begin}
+@defunx mbfl_string_range_var @var{_RV} @var{string} @var{begin} @var{end}
 Extract a range of characters from a string.  Arguments: @var{string}, the source string;
 @var{begin}, the index of the first character in the range; @var{end}, optional, the index of the
 character past the last in the range, this character is not extracted.
@@ -4081,9 +4306,9 @@ mbfl_string_range abcdefghilm 0         @print{} abcdefghilm
 mbfl_string_range abcdefghilm 0 4       @print{} abcd
 mbfl_string_range abcdefghilm 4 end     @print{} efghilm
 
-local RV
-mbfl_string_range_var RV abcdefghilm 4 end
-"$RV" @result{} efghilm
+local _RV
+mbfl_string_range_var _RV abcdefghilm 4 end
+"$_RV" @result{} efghilm
 @end example
 @end defun
 
@@ -4177,7 +4402,7 @@ $SPLITCOUNT             @result{} 6
 
 
 @defun mbfl_string_toupper @var{string}
-@defunx mbfl_string_toupper_var @var{RV} @var{string}
+@defunx mbfl_string_toupper_var @var{_RV} @var{string}
 Output @var{string} with all the occurrences of lower case @ascii{} characters (no accents) turned
 into upper case.
 
@@ -4186,7 +4411,7 @@ into upper case.
 
 
 @defun mbfl_string_tolower @var{string}
-@defunx mbfl_string_tolower_var @var{RV} @var{string}
+@defunx mbfl_string_tolower_var @var{_RV} @var{string}
 Output @var{string} with all the occurrences of upper case @ascii{} characters (no accents) turned
 into lower case.
 
@@ -4404,8 +4629,8 @@ the return value is false, always.
 
 @defun mbfl_string_replace @var{string} @var{pattern}
 @defunx mbfl_string_replace @var{string} @var{pattern} @var{subst}
-@defunx mbfl_string_replace_var @var{RV} @var{string} @var{pattern}
-@defunx mbfl_string_replace_var @var{RV} @var{string} @var{pattern} @var{subst}
+@defunx mbfl_string_replace_var @var{_RV} @var{string} @var{pattern}
+@defunx mbfl_string_replace_var @var{_RV} @var{string} @var{pattern} @var{subst}
 Replace all the occurrences of @var{pattern} in @var{string} with @var{subst}, then print the
 result.  If not used, @var{subst} defaults to the empty string.
 
@@ -4415,9 +4640,9 @@ result.  If not used, @var{subst} defaults to the empty string.
 mbfl_string_replace 'abcdefg' 'cde' '123'
 @print{} 'ab123fg'
 
-local RV
-mbfl_string_replace_var RV 'abcdefg' 'cde' '123'
-"$RV" @result{} ab123fg
+local _RV
+mbfl_string_replace_var _RV 'abcdefg' 'cde' '123'
+"$_RV" @result{} ab123fg
 @end example
 @end defun
 
@@ -4486,7 +4711,7 @@ Declare the usage of the external program @command{stty}, which is used by
 
 
 @defun mbfl_dialog_ask_password @var{prompt}
-@defunx mbfl_dialog_ask_password_var @var{RV} @var{prompt}
+@defunx mbfl_dialog_ask_password_var @var{_RV} @var{prompt}
 Print @var{prompt} followed by a colon and a space, then reads a password from the terminal.  Print
 the password.
 
@@ -4615,6 +4840,7 @@ mbfl_date_iso_timestamp
 @menu
 * variables arrays::            Manipulating arrays.
 * variables colon::             Manipulating colon variables.
+* variables misc::              Miscellaneous variable functions.
 @end menu
 
 @c page
@@ -4690,6 +4916,26 @@ remove duplicates.  Reset @var{varname} to the result.
 @end defun
 
 @c page
+@node variables misc
+@section Miscellaneous variable functions.
+
+
+@defun mbfl_variable_alloc @var{_RV}
+Generate a unique variable name and store it in the variable @var{_RV}.
+
+To avoid allocating the same name twice: the function examines the new name testing if its value as
+variable is empty; if it is empty, it considers it ``new''.  So, whenever we allocate a name: we
+should locally initialise the variable to some non--empty value.
+
+@example
+local NAME
+
+mbfl_variable_alloc NAME
+$NAME   @result{} mbfl_a_variable_2323_7652
+@end example
+@end defun
+
+@c page
 @node arrays
 @chapter Manipulating arrays
 
@@ -4719,7 +4965,7 @@ mbfl_array_is_not_empty ARRY    @result{} 0
 
 
 @defun mbfl_array_length @var{ARRAY_VARNAME}
-@defunx mbfl_array_length_var @var{RV} @var{ARRAY_VARNAME}
+@defunx mbfl_array_length_var @var{_RV} @var{ARRAY_VARNAME}
 Print the number of pairs in the array.
 
 @DocVarVariant{}
@@ -4730,9 +4976,9 @@ mbfl_array_length ARRY          @print{} 0
 ARRY=(a b c)
 mbfl_array_length ARRY          @print{} 3
 
-local RV
-mbfl_array_length_var RV ARRY
-"$RV"   @print{} 3
+local _RV
+mbfl_array_length_var _RV ARRY
+"$_RV"   @print{} 3
 @end example
 @end defun
 
@@ -4838,7 +5084,7 @@ indexes are valid only until the next call to @bfunc{mbfl_system_passwd_reset}.
 
 
 @defun mbfl_system_passwd_find_entry_by_name @var{name}
-@defunx mbfl_system_passwd_find_entry_by_name_var @var{RV} @var{name}
+@defunx mbfl_system_passwd_find_entry_by_name_var @var{_RV} @var{name}
 Search the entries of @file{passwd} for one whose user name is @var{name}.  When successful: print
 to @stdout{} the index of the entry and return true; otherwise return false.  We can use the
 index with the functions described in @ref{system passwd inspect, Inspecting entries from
@@ -4849,7 +5095,7 @@ index with the functions described in @ref{system passwd inspect, Inspecting ent
 
 
 @defun mbfl_system_passwd_find_entry_by_uid @var{uid}
-@defunx mbfl_system_passwd_find_entry_by_uid_var @var{RV} @var{uid}
+@defunx mbfl_system_passwd_find_entry_by_uid_var @var{_RV} @var{uid}
 Search the entries of @file{passwd} for one whose user id is @var{uid}.  When successful: print to
 @stdout{} the index of the entry and return true; otherwise return false.  We can use the index
 with the functions described in @ref{system passwd inspect, Inspecting entries from @file{passwd}}.
@@ -4868,7 +5114,7 @@ obtain indexes with the functions described in @ref{system passwd searching, Sea
 
 
 @defun mbfl_system_passwd_get_name @var{idx}
-@defunx mbfl_system_passwd_get_name_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_name_var @var{_RV} @var{idx}
 Print to @stdout{} the field name of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4888,7 +5134,7 @@ fi
 
 
 @defun mbfl_system_passwd_get_passwd @var{idx}
-@defunx mbfl_system_passwd_get_passwd_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_passwd_var @var{_RV} @var{idx}
 Print to @stdout{} the field passwd of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4896,7 +5142,7 @@ Print to @stdout{} the field passwd of the @file{passwd} entry at index @var{idx
 
 
 @defun mbfl_system_passwd_get_uid @var{idx}
-@defunx mbfl_system_passwd_get_uid_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_uid_var @var{_RV} @var{idx}
 Print to @stdout{} the field uid of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4904,7 +5150,7 @@ Print to @stdout{} the field uid of the @file{passwd} entry at index @var{idx}.
 
 
 @defun mbfl_system_passwd_get_gid @var{idx}
-@defunx mbfl_system_passwd_get_gid_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_gid_var @var{_RV} @var{idx}
 Print to @stdout{} the field gid of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4912,7 +5158,7 @@ Print to @stdout{} the field gid of the @file{passwd} entry at index @var{idx}.
 
 
 @defun mbfl_system_passwd_get_gecos @var{idx}
-@defunx mbfl_system_passwd_get_gecos_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_gecos_var @var{_RV} @var{idx}
 Print to @stdout{} the field gecos of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4920,7 +5166,7 @@ Print to @stdout{} the field gecos of the @file{passwd} entry at index @var{idx}
 
 
 @defun mbfl_system_passwd_get_dir @var{idx}
-@defunx mbfl_system_passwd_get_dir_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_dir_var @var{_RV} @var{idx}
 Print to @stdout{} the field dir of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4928,7 +5174,7 @@ Print to @stdout{} the field dir of the @file{passwd} entry at index @var{idx}.
 
 
 @defun mbfl_system_passwd_get_shell @var{idx}
-@defunx mbfl_system_passwd_get_shell_var @var{RV} @var{idx}
+@defunx mbfl_system_passwd_get_shell_var @var{_RV} @var{idx}
 Print to @stdout{} the field shell of the @file{passwd} entry at index @var{idx}.
 
 @DocVarVariant{}
@@ -4944,7 +5190,7 @@ passwd reading, Reading the file @file{passwd}}.
 
 
 @defun mbfl_system_passwd_uid_to_name @var{uid}
-@defunx mbfl_system_passwd_uid_to_name_var @var{RV} @var{uid}
+@defunx mbfl_system_passwd_uid_to_name_var @var{_RV} @var{uid}
 Print to @stdout{} the name of the user whose uid is @var{uid}.  When successful return true;
 otherwise return false.
 
@@ -4968,7 +5214,7 @@ fi
 
 
 @defun mbfl_system_passwd_name_to_uid @var{name}
-@defunx mbfl_system_passwd_name_to_uid_var @var{RV} @var{name}
+@defunx mbfl_system_passwd_name_to_uid_var @var{_RV} @var{name}
 Print to @stdout{} the id of the user whose uid is @var{uid}.  When successful return true;
 otherwise return false.
 
@@ -5080,7 +5326,7 @@ are valid only until the next call to @bfunc{mbfl_system_group_reset}.
 
 
 @defun mbfl_system_group_find_entry_by_name @var{name}
-@defunx mbfl_system_group_find_entry_by_name_var @var{RV} @var{name}
+@defunx mbfl_system_group_find_entry_by_name_var @var{_RV} @var{name}
 Search the entries of @file{/etc/group} for one whose group name is @var{name}.  When successful:
 print to @stdout{} the index of the entry and return true; otherwise return false.  We can use
 the index with the functions described in @ref{system group inspect, Inspecting entries from
@@ -5091,7 +5337,7 @@ the index with the functions described in @ref{system group inspect, Inspecting 
 
 
 @defun mbfl_system_group_find_entry_by_gid @var{gid}
-@defunx mbfl_system_group_find_entry_by_gid_var @var{RV} @var{gid}
+@defunx mbfl_system_group_find_entry_by_gid_var @var{_RV} @var{gid}
 Search the entries of @file{/etc/group} for one whose group id is @var{gid}.  When successful: print
 to @stdout{} the index of the entry and return true; otherwise return false.  We can use the
 index with the functions described in @ref{system group inspect, Inspecting entries from
@@ -5111,7 +5357,7 @@ obtain indexes with the functions described in @ref{system group searching, Sear
 
 
 @defun mbfl_system_group_get_name @var{group_idx}
-@defunx mbfl_system_group_get_name_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_name_var @var{_RV} @var{group_idx}
 Print to @stdout{} the field name of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
@@ -5131,7 +5377,7 @@ fi
 
 
 @defun mbfl_system_group_get_passwd @var{group_idx}
-@defunx mbfl_system_group_get_passwd_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_passwd_var @var{_RV} @var{group_idx}
 Print to @stdout{} the field passwd of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
@@ -5139,7 +5385,7 @@ Print to @stdout{} the field passwd of the @file{/etc/group} entry at index @var
 
 
 @defun mbfl_system_group_get_gid @var{group_idx}
-@defunx mbfl_system_group_get_gid_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_gid_var @var{_RV} @var{group_idx}
 Print to @stdout{} the field gid of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
@@ -5147,7 +5393,7 @@ Print to @stdout{} the field gid of the @file{/etc/group} entry at index @var{gr
 
 
 @defun mbfl_system_group_get_users @var{group_idx}
-@defunx mbfl_system_group_get_users_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_users_var @var{_RV} @var{group_idx}
 Print to @stdout{} the field users of the @file{/etc/group} entry at index @var{group_idx}.
 
 @DocVarVariant{}
@@ -5155,7 +5401,7 @@ Print to @stdout{} the field users of the @file{/etc/group} entry at index @var{
 
 
 @defun mbfl_system_group_get_users_count @var{group_idx}
-@defunx mbfl_system_group_get_users_count_var @var{RV} @var{group_idx}
+@defunx mbfl_system_group_get_users_count_var @var{_RV} @var{group_idx}
 Print to @stdout{} the number of user names in the list of users for the entry at index
 @var{group_idx}.
 
@@ -5164,7 +5410,7 @@ Print to @stdout{} the number of user names in the list of users for the entry a
 
 
 @defun mbfl_system_group_get_user_name @var{group_idx} @var{user_idx}
-@defunx mbfl_system_group_get_user_name_var @var{RV} @var{group_idx} @var{user_idx}
+@defunx mbfl_system_group_get_user_name_var @var{_RV} @var{group_idx} @var{user_idx}
 Print to @stdout{} the name of the user at index @var{user_idx} in the list of users for the
 entry at index @var{group_idx}.
 
@@ -5209,7 +5455,7 @@ group reading, Reading the file @file{/etc/group}}.
 
 
 @defun mbfl_system_group_gid_to_name @var{gid}
-@defunx mbfl_system_group_gid_to_name_var @var{RV} @var{gid}
+@defunx mbfl_system_group_gid_to_name_var @var{_RV} @var{gid}
 Print to @stdout{} the name of the group whose gid is @var{gid}.  When successful return true;
 otherwise return false.
 
@@ -5233,7 +5479,7 @@ fi
 
 
 @defun mbfl_system_group_name_to_gid @var{name}
-@defunx mbfl_system_group_name_to_gid_var @var{RV} @var{name}
+@defunx mbfl_system_group_name_to_gid_var @var{_RV} @var{name}
 Print to @stdout{} the id of the group whose gid is @var{gid}.  When successful return true;
 otherwise return false.
 
@@ -5330,6 +5576,174 @@ it is removed from the internal registry.
 Remove all the registered handlers from the internal registry.  This renders invalid all the handler
 identifiers that were created.
 @end defun
+
+@c page
+@node locations
+@chapter Running location handlers
+
+
+A @dfn{location} is a chunk of code between the following enter and leave actions:
+
+@example
+mbfl_location_enter
+@{
+   ...
+@}
+mbfl_location_leave
+@end example
+
+@noindent
+inside a location we can register a ``handler command'' that is automatically executed whenever the
+location is left by calling @bfunc{mbfl_location_leave}.  We can nest locations at will.  We can run
+all the handlers registered so far in a stack of locations.
+
+
+@defun mbfl_location_enter
+Enter into a new location.  Initialise the internal state.
+@end defun
+
+
+@defun mbfl_location_leave
+Leave the current location.  Run all the registered handlers in reverse order.
+@end defun
+
+
+@defun mbfl_location_handler @var{handler_script}
+Register a new handler in the current location.  It is an error if this function is called outside a
+location.
+@end defun
+
+
+@defun mbfl_location_run_all
+Run all the handlers unwinding all the locations.  This is useful as atexit handler, @ref{atexit,
+Running scripts at exit--time}.
+@end defun
+
+
+@menu
+* locations example1::          Single location, syntactic scoping.
+* locations example2::          Nested locations.
+* locations example3::          Nested function calls.
+@end menu
+
+@c page
+@node locations example1
+@section Single location, syntactic scoping
+
+
+The handler functions can access the variables in the uplevel function frames.
+
+@example
+function one   () @{ R_one=$X;   @}
+function two   () @{ R_two=$Y;   @}
+function three () @{ R_three=$Z; @}
+
+@{
+  local R_one R_two R_three
+  local X=1 Y=2 Z=3
+
+  mbfl_location_enter
+  @{
+    mbfl_location_handler one
+    mbfl_location_handler two
+    mbfl_location_handler three
+  @}
+  mbfl_location_leave
+
+  $R_one          @result{} 1
+  $R_two          @result{} 2
+  $R_three        @result{} 3
+@}
+@end example
+
+@c page
+@node locations example2
+@section Nested locations
+
+
+Remember that the handlers are called when a location is left:
+
+@example
+function handler_append () @{
+    local THING=$@{1:?"missing thing parameter"@}
+    RESULT+=$THING
+@}
+
+@{
+    local RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    @{
+        mbfl_location_handler "handler_append 1"
+        mbfl_location_enter
+        @{
+            mbfl_location_handler "handler_append 2"
+            mbfl_location_enter
+            @{
+                mbfl_location_handler "handler_append 3"
+            @}
+            mbfl_location_leave
+            mbfl_location_handler "handler_append 4"
+        @}
+        mbfl_location_leave
+        mbfl_location_handler "handler_append 5"
+    @}
+    mbfl_location_leave
+    handler_append 6
+
+    "$RESULT"   @result{} 0342516
+@}
+@end example
+
+@c page
+@node locations example3
+@section Nested function calls
+
+
+Remember that the handlers are called when a location is left:
+
+@example
+declare RESULT
+
+function handler_append () @{
+    local THING=$@{1:?"missing thing parameter"@}
+    RESULT+=$THING
+@}
+
+function func () @{
+    handler_append 0
+    mbfl_location_enter
+    @{
+        sub-func
+    @}
+    mbfl_location_leave
+    handler_append 6
+@}
+
+function sub-func () @{
+    mbfl_location_handler "handler_append 1"
+    mbfl_location_enter
+    @{
+        sub-sub-func
+    @}
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 5"
+@}
+
+function sub-sub-func () @{
+    mbfl_location_handler "handler_append 2"
+    mbfl_location_enter
+    @{
+        mbfl_location_handler "handler_append 3"
+    @}
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 4"
+@}
+
+func
+"$RESULT"       @result{} 0342516
+@end example
 
 @c page
 @node main

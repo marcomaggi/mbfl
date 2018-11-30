@@ -1,0 +1,293 @@
+# locations.test --
+#
+# Part of: Marco's BASH Functions Library
+# Contents: tests for the locations module functions
+# Date: Nov 28, 2018
+#
+# Abstract
+#
+#	To select the tests in this file:
+#
+#		$ make all test file=locations
+#
+# Copyright (c) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+#
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 2, or (at your  option) any later
+# version.
+#
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# General Public License for more details.
+#
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
+#
+
+#page
+#### setup
+
+source setup.sh
+
+#page
+#### simple handlers
+
+# Access  the  variables  "R_one"  and  "X"  in  the  uplevel  syntactic
+# environment.
+#
+function one () {
+    R_one=$X
+}
+
+# Access  the  variables  "R_two"  and  "Y"  in  the  uplevel  syntactic
+# environment.
+#
+function two () {
+    R_two=$Y
+}
+
+# Access  the  variables "R_three"  and  "Z"  in the  uplevel  syntactic
+# environment.
+#
+function three () {
+    R_three=$Z
+}
+
+### ------------------------------------------------------------------------
+
+function handler_append () {
+    local THING=${1:?"missing thing parameter for '${FUNCNAME}'"}
+    RESULT+=$THING
+}
+
+#page
+#### basics
+
+function locations-01.1 () {
+    local R_one R_two R_three
+    local X=1 Y=2 Z=3
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler one
+	mbfl_location_handler two
+	mbfl_location_handler three
+    }
+    mbfl_location_leave
+    { dotest-equal 1 $R_one; } && { dotest-equal 2 $R_two; } && { dotest-equal 3 $R_three; }
+}
+
+#page
+#### nested locations
+#
+# Remember that the handlers are called when a location is left.
+#
+
+# Two nested locations.
+#
+function locations-02.1 () {
+    local RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_location_handler "handler_append 1"
+	mbfl_location_enter
+	{
+	    mbfl_location_handler "handler_append 2"
+	}
+	mbfl_location_leave
+	mbfl_location_handler "handler_append 3"
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 02314 "$RESULT"
+}
+
+# Three nested locations.
+#
+function locations-02.2 () {
+    local RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_location_handler "handler_append 1"
+	mbfl_location_enter
+	{
+	    mbfl_location_handler "handler_append 2"
+	    mbfl_location_enter
+	    {
+		mbfl_location_handler "handler_append 3"
+	    }
+	    mbfl_location_leave
+	    mbfl_location_handler "handler_append 4"
+	}
+	mbfl_location_leave
+	mbfl_location_handler "handler_append 5"
+    }
+    mbfl_location_leave
+    handler_append 6
+
+    dotest-equal 0342516 "$RESULT"
+}
+
+#page
+#### nested function calls
+
+# Two nested function calls.
+#
+function locations-03.1 () {
+    local RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	sub-locations-03.1
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 02314 "$RESULT"
+}
+function sub-locations-03.1 () {
+    mbfl_location_handler "handler_append 1"
+    mbfl_location_enter
+    {
+	mbfl_location_handler "handler_append 2"
+    }
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 3"
+}
+
+### ------------------------------------------------------------------------
+
+# Three nested function calls.
+#
+function locations-03.2 () {
+    local RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	sub-locations-03.2
+    }
+    mbfl_location_leave
+    handler_append 6
+
+    dotest-equal 0342516 "$RESULT"
+}
+function sub-locations-03.2 () {
+    mbfl_location_handler "handler_append 1"
+    mbfl_location_enter
+    {
+	sub-sub-locations-03.2
+    }
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 5"
+}
+function sub-sub-locations-03.2 () {
+    mbfl_location_handler "handler_append 2"
+    mbfl_location_enter
+    {
+	mbfl_location_handler "handler_append 3"
+    }
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 4"
+}
+
+#page
+#### locations sequence
+
+function locations-04.1 () {
+    local RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'handler_append 1'
+    }
+    mbfl_location_leave
+    handler_append 2
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'handler_append 3'
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 01234 "$RESULT"
+}
+
+#page
+#### internals inspection
+
+# After all the tests we have run: the counter must be back to zero.
+#
+function locations-98.1 () {
+    dotest-equal 0 ${mbfl_location_COUNTER}
+}
+
+# After all the tests we have run: all count fields must be empty.
+#
+function locations-98.2 () {
+    local -i i max=100
+
+    for ((i=0; i < max; ++i))
+    do dotest-equal '' "${mbfl_location_HANDLERS[${mbfl_location_COUNTER}:count]}"
+    done
+}
+
+#page
+#### running all location handlers
+
+function locations-99.1 () {
+    local RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	sub-locations-99.2
+	mbfl_location_run_all
+	locations-98.1
+	locations-98.2
+    }
+    mbfl_location_leave
+    handler_append 6
+
+    dotest-equal 0342516 "$RESULT"
+}
+function sub-locations-99.2 () {
+    mbfl_location_handler "handler_append 1"
+    mbfl_location_enter
+    {
+	sub-sub-locations-99.2
+    }
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 5"
+}
+function sub-sub-locations-99.2 () {
+    mbfl_location_handler "handler_append 2"
+    mbfl_location_enter
+    {
+	mbfl_location_handler "handler_append 3"
+    }
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 4"
+}
+
+#page
+#### let's go
+
+dotest locations-
+dotest-final-report
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:
