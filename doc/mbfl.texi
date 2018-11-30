@@ -458,7 +458,7 @@ the @code{_var} variant.
 
 @example
 function main () @{
-    local X=0
+    local -i X=0
     mbfl_func X
     echo X=$X >&2
 @}
@@ -479,7 +479,7 @@ Now let's consider this script:
 
 @example
 function main () @{
-    local X
+    local -i X=0
     mbfl_func X
     echo X=$X >&2
 @}
@@ -507,7 +507,7 @@ So we should write the script as follows:
 
 @example
 function main () @{
-    local _X=0
+    local -i _X=0
     mbfl_func _X
     echo _X=$_X >&2
 @}
@@ -518,6 +518,50 @@ function mbfl_func () @{
 @}
 
 main
+@end example
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Using the preprocessor
+
+
+@mbfl{}'s preprocessor has facilities to help us create variables with unique names that we can
+safely use as argument to functions, @ref{preprocessor, Using the script preprocessor}.
+
+With these facilities, the first example should be written as:
+
+@example
+mbfl_local_varref(RV)
+
+mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
+"$RV"  @result{} ext
+@end example
+
+@noindent
+and the demo script as:
+
+@example
+function main () @{
+    mbfl_local_varref(X, 0, -i)
+    mbfl_func mbfl_varname(X)
+    echo X=$X >&2
+@}
+function mbfl_func () @{
+    local -n Y=$@{1:?@}
+    Y=1
+@}
+
+main
+@end example
+
+Using such preprocessor facilities consumes some computation time; they should be used when we do
+not care about execution time and when such time is significantly less than running a subshell.
+Otherwise we should just run the functions in a subshell:
+
+@example
+RESULT=$(mbfl_file_extension /path/to/file.ext)
+
+"$RESULT" @result{} ext
 @end example
 
 @c page
@@ -602,7 +646,12 @@ without the preprocessor.
 
 @menu
 * preprocessor invoking::       Invoking the preprocessor.
-* preprocessor macros::         Macros library.
+* preprocessor quoting::        Quotes and quoted macro names.
+* preprocessor defines::        Predefined symbols.
+* preprocessor library::        Loading or including the library.
+* preprocessor parameters::     Function parameters handling.
+* preprocessor arguments::      Script arguments handling.
+* preprocessor varrefs::        Variable name references.
 @end menu
 
 @c page
@@ -663,8 +712,8 @@ the option @option{--library} to load a replacement macros library from a known 
 @end table
 
 @c page
-@node preprocessor macros
-@section Macros library
+@node preprocessor quoting
+@section Quotes and quoted macro names
 
 
 The @mfour{} preprocessor is invoked by @command{mbflpp.sh} with the @option{--prefix-builtins}
@@ -675,6 +724,13 @@ The quoting for the preprocessor is changed with:
 @example
 m4_changequote(`[[[', `]]]')
 @end example
+
+@c page
+@node preprocessor defines
+@section Predefined symbols
+
+
+The preprocessor predefines the following symbols.
 
 
 @deffn {Preprocessor Macro} __PACKAGE_VERSION__
@@ -700,6 +756,14 @@ Expands into the absolute pathname of the @value{PACKAGE} library file.  For exa
 @end example
 @end deffn
 
+@c page
+@node preprocessor library
+@section Loading or including the library
+
+
+We can include in scripts the code needed to source the library at run--time or the whole library
+itself.
+
 
 @deffn {Preprocessor Macro} mbfl_embed_library
 Expands into the contents of the library file.  The selected library is the one used by the
@@ -713,6 +777,10 @@ Expand to a block of code that reliably loads the @value{PACKAGE} library.  The 
 @var{hardcoded_pathname} must be the absolute pathname to a file containing the library itself.
 @ref{overview reliable} for details.
 @end deffn
+
+@c page
+@node preprocessor parameters
+@section Function parameters handling
 
 
 @deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{varname} @var{number} @var{description}
@@ -811,6 +879,10 @@ local COUNT=$@{2:-@}"
 @end smallexample
 @end deffn
 
+@c page
+@node preprocessor arguments
+@section Script arguments handling
+
 
 @deffn {Preprocessor Macro} mbfl_command_line_argument @var{varname} @var{argindex}
 Define a variable local to a shell function holding an argument to the script.  @var{varname} is the
@@ -828,6 +900,84 @@ is expanded to:
 @example
 local PATHNAME=$@{ARGV[3]@}
 @end example
+@end deffn
+
+@c page
+@node preprocessor varrefs
+@section Variable name references
+
+
+The preprocessor implements facilities to declare variables with unique names and use them as target
+for variable with the NAMEREF attribute.  With these facilities we can use the @code{_var} variants
+of @mbfl{} functions as follows:
+
+@example
+mbfl_local_varref(RV)
+
+mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
+"$RV"  @result{} ext
+@end example
+
+@noindent
+without risking a variable name collision.
+
+
+@deffn {Preprocessor Macro} mbfl_local_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+Expand into:
+
+@example
+local mbfl_a_varname_@var{VARNAME}
+mbfl_variable_alloc mbfl_a_varname_@var{VARNAME}
+local @var{LOCAL_OPTIONS} $mbfl_a_varname_@var{VARNAME}=@var{INIT_VALUE}
+local -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+@end example
+
+Define a local ``proxy variable'' @var{VARNAME} referencing a local ``data variable'' with unique
+name.  The data variable has the optional attributes @var{LOCAL_OPTIONS}.  A further local variable
+@code{mbfl_a_varname_@var{VARNAME}} holds the name of the data variable.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_global_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{GLOBAL_OPTIONS})
+Expand into:
+
+@example
+declare -g mbfl_a_varname_@var{VARNAME}
+mbfl_variable_alloc mbfl_a_varname_@var{VARNAME}
+declare -g @var{GLOBAL_OPTIONS} $mbfl_a_varname_@var{VARNAME}=@var{INIT_VALUE}
+declare -g -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+@end example
+
+Define a global ``proxy variable'' @var{VARNAME} referencing a global ``data variable'' with unique
+name.  The data variable has the optional attributes @var{GLOBAL_OPTIONS}.  A further global
+variable @code{mbfl_a_varname_@var{VARNAME}} holds the name of the data variable.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_varname (@var{VARNAME})
+The argument @var{VARNAME} must be the first argument to a previous call to
+@bfunc{mbfl_local_varref} or @bfunc{mbfl_global_varref}.  Expand into:
+
+@example
+$mbfl_a_varname_@var{VARNAME}
+@end example
+
+Given the name of a proxy variable: expand into code that, executed at run--time, returns the name
+of the data variable.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_unset_varref (@var{VARNAME})
+The argument @var{VARNAME} must be the first argument to a previous call to
+@bfunc{mbfl_local_varref} or @bfunc{mbfl_global_varref}.  Expand into:
+
+@example
+unset -v $mbfl_a_varname_@var{VARNAME}
+unset -v mbfl_a_varname_@var{VARNAME}
+unset -v -n @var{VARNAME}
+@end example
+
+Unset all the proxy variable @var{VARNAME} and all the variables associated to it.
 @end deffn
 
 @c page
