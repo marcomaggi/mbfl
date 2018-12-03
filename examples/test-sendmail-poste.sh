@@ -16,19 +16,19 @@ declare -r COMMON_OPTIONS='--debug --verbose --test-message	\
    --host=relay.poste.it					\
    --envelope-from=marco.maggi-ipsu@poste.it			\
    --envelope-to=mrc.mgg@gmail.com				\
-   --tls							\
+   --tls --timeout=15						\
    --username=marco.maggi'
 
 # These will use "gnutls-cli".
 if true
 then
     # Use AUTH PLAIN.  Automatically select GNU TLS.
-    if false
+    if true
     then bash "$SCRIPT" ${COMMON_OPTIONS} --auth-plain
     fi
 
     # Use AUTH LOGIN.  Explicitly select GNU TLS.
-    if true
+    if false
     then bash "$SCRIPT" ${COMMON_OPTIONS} --auth-login --gnutls
     fi
 fi

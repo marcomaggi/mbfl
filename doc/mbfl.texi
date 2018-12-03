@@ -7445,7 +7445,18 @@ Select the file, in @code{netrc} format, from which read the
 authorisation credentials.  Defaults to @file{~/.mbfl-authinfo}.
 
 @item --username=@var{user}
-Specify a string used to select an account in the authorisation file.
+Specify a string used to select an account in the authorisation file.  @var{user} must be a
+substring of the username present in the file, the first matching line from the file is selected.
+So, if the authinfo file is:
+
+@example
+machine smtp.gmail.com login mrc.mgg@@gmail.com password <password>
+machine relay.poste.it login marco.maggi-ipsu password <password>
+@end example
+
+@noindent
+we can use @option{--username=mrc.mgg} to select the first line and @option{marco.maggi} to select
+the second line.
 
 @item --auth-none
 @itemx --auth-plain

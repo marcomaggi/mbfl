@@ -20,6 +20,16 @@
 
 * Sendmail
 
-  Understand if the  gsasl executable installed by GNU  SASL can be used
+  Understand if the  gsasl executable installed by GNU SASL  can be used
   to implement the other authentication mechanism.
 
+** DONE Test with gmail, gnutls, auth plain
+** DONE Test with gmail, gnutls, auth login
+** Test with gmail, openssl, auth plain
+** Test with gmail, openssl, auth login
+** DONE Test with poste, gnutls, auth plain
+** DONE Test with poste, gnutls, auth login
+** Test with poste, openssl, auth plain
+** Test with poste, openssl, auth login
+
+* end of file

@@ -86,8 +86,8 @@ declare script_option_SMTP_HOSTNAME=localhost
 #
 declare script_option_SMTP_PORT
 
-# Select the type  of session; valid values: plain,  tls, starttls.  The
-# value can be selected:
+# Select the type of session;  valid values: plain, tls, starttls.  This
+# variable should never be empty.  The value can be selected:
 #
 # * by the options "--plain", "--tls" and "--starttls";
 #
@@ -98,7 +98,7 @@ declare script_option_SMTP_PORT
 declare script_option_SESSION_TYPE
 
 # Selected ESMTP authorisation type.   Valid values: none, login, plain.
-# The value can be selected:
+# This variable should never be empty.  The value can be selected:
 #
 # * by the options "--auth-none", "--auth-plain" and "--auth-login";
 #
@@ -491,12 +491,10 @@ function validate_and_normalise_configuration () {
 
 	    authinfo_read "$script_option_AUTHINFO_FILE" "$script_option_SMTP_HOSTNAME" "$script_option_AUTH_USER" \
 			  authinfo_AUTH_USER authinfo_AUTH_PASSWORD
-	    if mbfl_string_is_empty "$script_option_AUTH_USER"
-	    then script_option_AUTH_USER=$authinfo_AUTH_USER
-	    fi
-	    if mbfl_string_is_empty "$script_option_AUTH_PASSWORD"
-	    then script_option_AUTH_PASSWORD=$authinfo_AUTH_PASSWORD
-	    fi
+	    # Override  the values  with  those read  from the  authinfo
+	    # file.
+	    script_option_AUTH_USER=$authinfo_AUTH_USER
+	    script_option_AUTH_PASSWORD=$authinfo_AUTH_PASSWORD
 	}
     fi
 }
@@ -769,12 +767,15 @@ function connect_cleanup_fifos () {
 function strip_carriage_return_var () {
     mbfl_mandatory_nameref_parameter(RESULT_NAMEREF, 1, result variable name)
     mbfl_optional_parameter(LINE, 2)
-    local CH
+    if mbfl_string_is_not_empty "$LINE"
+    then
+	mbfl_local_varref(CH)
 
-    mbfl_string_index_var CH "$LINE" $((${#LINE} - 1))
-    if test "$CH" = $'\r'
-    then RESULT_NAMEREF=${LINE:0:((${#LINE} - 1))}
-    else RESULT_NAMEREF=$LINE
+	mbfl_string_index_var mbfl_varname(CH) "$LINE" $((${#LINE} - 1))
+	if mbfl_string_equal "$CH" $'\r'
+	then RESULT_NAMEREF=${LINE:0:((${#LINE} - 1))}
+	else RESULT_NAMEREF=$LINE
+	fi
     fi
 }
 
@@ -793,9 +794,9 @@ function read_from_server () {
     EXIT_CODE=$?
     strip_carriage_return_var REPLY "$REPLY"
     mbfl_message_debug_printf 'recv: %s' "$REPLY"
-    if ((0 == $EXIT_CODE))
+    if ((0 == EXIT_CODE))
     then return 0
-    elif ((128 < $EXIT_CODE))
+    elif ((128 < EXIT_CODE))
     then
         mbfl_message_error 'read timeout exceeded'
         exit_because_read_timeout_expired
@@ -1132,7 +1133,7 @@ function esmtp_authentication () {
 
             send 'AUTH LOGIN'
             recv 334
-	    mbfl_message_debug_printf 'sent (%d bytes): <encoded string>' ${#ENCODED_USER_STRING}
+	    mbfl_message_debug_printf 'sent (%d bytes): <encoded string> %s' ${#ENCODED_USER_STRING} ${ENCODED_USER_STRING}
             send_no_log "$ENCODED_USER_STRING"
             recv 334
 	    mbfl_message_debug_printf 'sent (%d bytes): <encoded string>' ${#ENCODED_PASS_STRING}

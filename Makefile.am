@@ -290,7 +290,7 @@ TESTS			= \
 ## --------------------------------------------------------------------
 ## additional test rules
 
-.PHONY: test test-template test-template-actions test-script-atexit
+.PHONY: test test-template test-template-actions test-script-atexit test-sendmail-gmail test-sendmail-poste test-sendmail-localhost
 
 test: all $(check_SCRIPTS)
 	for item in $(srcdir)/tests/*$(file)*.test;					\
@@ -305,6 +305,15 @@ test-template-actions: examples/template-actions.sh src/lib/libmbfl.sh
 
 test-script-atexit:
 	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/tests/script-atexit.sh $(MBFLFLAGS)
+
+test-sendmail-gmail:
+	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/examples/test-sendmail-gmail.sh $(MBFLFLAGS)
+
+test-sendmail-poste:
+	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/examples/test-sendmail-poste.sh $(MBFLFLAGS)
+
+test-sendmail-localhost:
+	MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh $(BASH_PROGRAM) $(srcdir)/examples/test-sendmail-localhost.sh $(MBFLFLAGS)
 
 
 #### interface to "make installcheck"
