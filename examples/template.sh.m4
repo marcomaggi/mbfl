@@ -81,6 +81,12 @@ mbfl_main_declare_exit_code 3 fourth_error
 mbfl_main_declare_exit_code 8 eighth_error
 
 #page
+#### configure global behaviour
+
+mbfl_atexit_enable
+mbfl_location_enable_cleanup_atexit
+
+#page
 #### script options
 
 # keyword default-value brief-option long-option has-argument description
@@ -113,7 +119,7 @@ function script_option_update_alpha () {
 function script_before_parsing_options () {
     mbfl_message_verbose "$FUNCNAME\n"
 
-    if test -n "$script_option_BETA"
+    if mbfl_string_is_not_empty "$script_option_BETA"
     then printf 'option beta: %s\n' "$script_option_BETA"
     fi
     return 0
