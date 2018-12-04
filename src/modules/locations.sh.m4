@@ -78,7 +78,6 @@ function mbfl_location_leave () {
 	done
 	unset -v mbfl_location_HANDLERS[${mbfl_location_COUNTER}:count]
 	let --mbfl_location_COUNTER
-
     fi
 }
 
