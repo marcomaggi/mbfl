@@ -35,19 +35,110 @@
 source setup.sh
 
 #page
+#### encoding/decoding hex
+
+function encode-hex-var-1.1 () {
+    # No null bytes!!!
+    local PLAIN='\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F' ENCODED
+    local EXPECTED='0102030405060708090A0B0C0D0E0F'
+
+    PLAIN=$(echo -e "$PLAIN")
+
+    mbfl_encode_hex_var ENCODED "$PLAIN"
+    dotest-equal "$EXPECTED" "$ENCODED"
+}
+
+### ------------------------------------------------------------------------
 
 function decode-hex-2.1 () {
     mbfl_decode_hex 414243 | dotest-output ABC
 }
 
+### ------------------------------------------------------------------------
+
+function filter-hex-var-1.1 () {
+    local PLAIN=ABCDE ENCODED DECODED
+
+    mbfl_encode_hex_var ENCODED "$PLAIN"
+    mbfl_decode_hex_var DECODED "$ENCODED"
+    dotest-equal "$PLAIN" "$DECODED"
+}
+
+function filter-hex-var-1.2 () {
+    local PLAIN='\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F' ENCODED DECODED
+    printf -v PLAIN "$PLAIN"
+
+    mbfl_encode_hex_var ENCODED "$PLAIN"
+    mbfl_decode_hex_var DECODED "$ENCODED"
+    dotest-equal "$PLAIN" "$DECODED"
+}
+
+### ------------------------------------------------------------------------
+
+function filter-hex-1.1 () {
+    local PLAIN=ABCDE ENCODED DECODED
+
+    ENCODED=$(mbfl_encode_hex "$PLAIN")
+    DECODED=$(mbfl_decode_hex "$ENCODED")
+    dotest-equal "$PLAIN" "$DECODED"
+}
+
+function filter-hex-1.2 () {
+    local PLAIN='\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F' ENCODED DECODED
+    printf -v PLAIN "$PLAIN"
+
+    ENCODED=$(mbfl_encode_hex "$PLAIN")
+    DECODED=$(mbfl_decode_hex "$ENCODED")
+    dotest-equal "$PLAIN" "$DECODED"
+}
+
+#page
+#### encoding/decoding octal
+
+function encode-oct-var-1.1 () {
+    # No null bytes!!!
+    local PLAIN='ABCDEFG' ENCODED
+    local EXPECTED='101102103104105106107'
+
+    mbfl_encode_oct_var ENCODED "$PLAIN"
+    dotest-equal "$EXPECTED" "$ENCODED"
+}
+
+### ------------------------------------------------------------------------
+
+function decode-oct-var-1.1 () {
+    # No null bytes!!!
+    local INPUT='101102103104105106107'
+    local DECODED
+    local EXPECTED=$'\101\102\103\104\105\106\107'
+
+    mbfl_decode_oct_var DECODED "$INPUT"
+    dotest-equal "$EXPECTED" "$DECODED"
+}
+
+### ------------------------------------------------------------------------
+
 function decode-oct-1.1 () {
     mbfl_decode_oct 101102103 | dotest-output ABC
 }
 
+### ------------------------------------------------------------------------
+
+function filter-oct-var-1.1 () {
+    local PLAIN='\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F' ENCODED DECODED
+    printf -v PLAIN "$PLAIN"
+
+    mbfl_encode_oct_var ENCODED "$PLAIN"
+    mbfl_decode_oct_var DECODED "$ENCODED"
+    dotest-equal "$PLAIN" "$DECODED"
+}
+
 #page
+#### let's go
 
 dotest encode-
 dotest decode-
+dotest filter-
 dotest-final-report
 
 ### end of file
