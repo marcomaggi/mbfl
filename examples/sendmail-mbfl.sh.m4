@@ -1133,7 +1133,7 @@ function esmtp_authentication () {
 
             send 'AUTH LOGIN'
             recv 334
-	    mbfl_message_debug_printf 'sent (%d bytes): <encoded string> %s' ${#ENCODED_USER_STRING} ${ENCODED_USER_STRING}
+	    mbfl_message_debug_printf 'sent (%d bytes): <encoded string>' ${#ENCODED_USER_STRING}
             send_no_log "$ENCODED_USER_STRING"
             recv 334
 	    mbfl_message_debug_printf 'sent (%d bytes): <encoded string>' ${#ENCODED_PASS_STRING}
