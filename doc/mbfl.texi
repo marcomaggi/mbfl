@@ -1125,25 +1125,41 @@ IFS= read -d $'\x00'
 @chapter Encoding and decoding strings
 
 
-The purpose of this module is to let an external process invoke a Bash
-script with @emph{damned} command line arguments: strings including
-blanks or strange characters that may trigger quoting rules.
+The purpose of this module is to let an external process invoke a Bash script with @emph{damned}
+command line arguments: strings including blanks or strange characters that may trigger quoting
+rules.  This problem can arise when using scripting languages with some sort of @code{eval} command.
 
-This problem can arise when using scripting languages with some sort of
-@code{eval} command.
+The solution is to encode the argument string in hexadecimal or octal format strings, so that all
+the damned characters are converted to ``good'' ones.  The Bash script can convert them back.
 
-The solution is to encode the argument string in hexadecimal or octal
-format strings, so that all the damned characters are converted to
-``good'' ones.  The Bash script can convert them back.
+@quotation
+@strong{NOTE} Internally Bash represents strings as C language style @asciiz{} arrays, so it is
+impossible to correctly handle null bytes in a Bash variable: the string will get truncated at the
+null byte.
+@end quotation
+
+
+@defun mbfl_encode_hex @var{ascii_string}
+@defunx mbfl_encode_hex_var @var{_RV} @var{ascii_string}
+Encode a hex string and outputs it on @stdout{}.
+
+@DocVarVariant{}
+@end defun
 
 
 @defun mbfl_decode_hex @var{hex_string}
-Decode a hex string and outputs it on stdout.
+@defunx mbfl_decode_hex_var @var{_RV} @var{hex_string}
+Decode a hex string and outputs it on @stdout{}.
+
+@DocVarVariant{}
 @end defun
 
 
 @defun mbfl_decode_oct @var{oct_string}
-Decode a oct string and outputs it on stdout.
+@defunx mbfl_decode_oct_var @var{_RV} @var{oct_string}
+Decode a oct string and outputs it on @stdout{}.
+
+@DocVarVariant{}
 @end defun
 
 
@@ -1151,7 +1167,7 @@ Example:
 
 @example
 mbfl_decode_hex 414243
--> ABC
+@print{} ABC
 @end example
 
 @c page
@@ -6306,7 +6322,8 @@ The following environment variables will influence the behaviour of
 
 
 @defvar TESTMATCH
-Override the @var{pattern} argument to @bfunc{dotest}.
+Restrict the @var{pattern} argument to @bfunc{dotest}.  First function names are matched against
+@var{pattern}, then, the ones that match, are matched against @env{TESTMATCH}.
 @end defvar
 
 
@@ -7452,7 +7469,18 @@ Select the file, in @code{netrc} format, from which read the
 authorisation credentials.  Defaults to @file{~/.mbfl-authinfo}.
 
 @item --username=@var{user}
-Specify a string used to select an account in the authorisation file.
+Specify a string used to select an account in the authorisation file.  @var{user} must be a
+substring of the username present in the file, the first matching line from the file is selected.
+So, if the authinfo file is:
+
+@example
+machine smtp.gmail.com login mrc.mgg@@gmail.com password <password>
+machine relay.poste.it login marco.maggi-ipsu password <password>
+@end example
+
+@noindent
+we can use @option{--username=mrc.mgg} to select the first line and @option{marco.maggi} to select
+the second line.
 
 @item --auth-none
 @itemx --auth-plain

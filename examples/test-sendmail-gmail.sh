@@ -1,43 +1,64 @@
 # test-sendmail-gmail.sh --
 #
+# For this SMTP server we want a line like the following in the hostinfo
+# file:
+#
+#   machine smtp.gmail.com service smtp port 587 session starttls auth plain
+#
+# and a line like the following in the authinfo file:
+#
+#   machine smtp.gmail.com login mrc.mgg@gmail.com password <the-password>
+#
 
 declare -r SCRIPT=examples/sendmail-mbfl.sh
 
-# These will use gnutls.
-true && {
-    true && bash "$SCRIPT" \
-        --debug --verbose --test-message                        \
-        --starttls						\
-        --host=smtp.gmail.com --port=587                        \
-        --envelope-from=mrc.mgg@gmail.com                       \
-        --envelope-to=marco.maggi-ipsu@poste.it                 \
-        --username=mrc.mgg --auth-plain
+declare -r COMMON_OPTIONS='--verbose --debug --test-message	\
+   --host=smtp.gmail.com					\
+   --envelope-from=mrc.mgg@gmail.com				\
+   --envelope-to=marco.maggi-ipsu@poste.it			\
+   --username=mrc.mgg						\
+   --starttls'
 
-    true && bash "$SCRIPT" \
-        --debug --verbose --test-message                        \
-        --gnutls --starttls					\
-        --host=smtp.gmail.com --port=587                        \
-        --envelope-from=mrc.mgg@gmail.com                       \
-        --envelope-to=marco.maggi-ipsu@poste.it                 \
-        --username=mrc.mgg --auth-login
-}
+declare FURTHER_OPTIONS
 
-true && {
-    true && bash "$SCRIPT" \
-        --debug --verbose --test-message                        \
-        --openssl --starttls					\
-        --host=smtp.gmail.com --port=587                        \
-        --envelope-from=mrc.mgg@gmail.com                       \
-        --envelope-to=marco.maggi-ipsu@poste.it                 \
-        --username=mrc.mgg --auth-plain
+# These will use: GNU TLS.
+if false
+then
+    FURTHER_OPTIONS=
 
-    true && bash "$SCRIPT" \
-        --debug --verbose --test-message                        \
-        --openssl --starttls					\
-        --host=smtp.gmail.com --port=587                        \
-        --envelope-from=mrc.mgg@gmail.com                       \
-        --envelope-to=marco.maggi-ipsu@poste.it                 \
-        --username=mrc.mgg --auth-login
-}
+    # Defaults to "gnutls-cli".  Uses AUTH PLAIN.
+    if true
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --auth-plain
+	echo
+    fi
+
+    # Explicitly selects "gnutls-cli".  Uses AUTH LOGIN.
+    if true
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --auth-login --gnutls
+	echo
+    fi
+fi
+
+# These will use OpenSSL.
+if true
+then
+    declare FURTHER_OPTIONS='--openssl'
+
+    if true
+    then
+	# Uses AUTH PLAIN.
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --auth-plain
+	echo
+    fi
+
+    if false
+    then
+	# Uses AUTH LOGIN.
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --auth-login
+	echo
+    fi
+fi
 
 ### end of file

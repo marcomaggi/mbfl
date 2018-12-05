@@ -89,51 +89,53 @@ dotest-p-create-option-functions
 #### test execution
 
 function dotest () {
-    local PATTERN=${1:?missing test function pattern parameter to ${FUNCNAME}}
+    local PATTERN=${1:?"missing test function pattern parameter to '${FUNCNAME}'"}
     local -a FUNCTIONS
     local name item result ORGPWD=$PWD
     local -i exit_status
 
-
-    PATTERN=${TESTMATCH:-${PATTERN}}
     dotest-p-report-start-from-environment
     dotest-p-report-success-from-environment
 
     for item in `compgen -A function "$PATTERN"`
     do
-        # When a single test function name is selected, "$item" is equal
-        # to "$PATTERN", then here "name" is set to the empty string.
-
-	let ++dotest_TEST_NUMBER
-	name=${item##${PATTERN}}
-	if test -n "$name" -o "$item" = "$PATTERN"
+	if [[ $item =~ $TESTMATCH ]]
 	then
-	    item="${PATTERN}${name}"
-	    if dotest-option-report-start
-	    then dotest-echo "${item} -- start"
-            fi
-	    #echo ---$FUNCNAME--$item--- >&2
-	    result=$("$item")
-	    exit_status=$?
-	    #echo ---$FUNCNAME--$exit_status--- >&2
-	    if ((0 == exit_status))
+            # When a single  test function name is  selected, "$item" is
+            # equal to "$PATTERN", then here  "name" is set to the empty
+            # string.
+
+	    let ++dotest_TEST_NUMBER
+	    name=${item##${PATTERN}}
+	    if test -n "$name" -o "$item" = "$PATTERN"
 	    then
-		if dotest-option-report-success
-		then dotest-echo "${item} -- success"
-                else
-                    if dotest-option-report-start
-		    then echo
+		item="${PATTERN}${name}"
+		if dotest-option-report-start
+		then dotest-echo "${item} -- start"
+		fi
+		#echo ---$FUNCNAME--$item--- >&2
+		result=$("$item")
+		exit_status=$?
+		#echo ---$FUNCNAME--$exit_status--- >&2
+		if ((0 == exit_status))
+		then
+		    if dotest-option-report-success
+		    then dotest-echo "${item} -- success"
+                    else
+			if dotest-option-report-start
+			then echo
+			fi
                     fi
-                fi
-	    else
-		dotest-echo "${item} -- *** FAILED ***\n"
-		dotest_TEST_FAILED+=("$item")
-		let ++dotest_TEST_FAILED_NUMBER
+		else
+		    dotest-echo "${item} -- *** FAILED ***\n"
+		    dotest_TEST_FAILED+=("$item")
+		    let ++dotest_TEST_FAILED_NUMBER
+		fi
+		if test -n "$result"
+		then printf '%s\n' "$result" >&2
+		fi
+		dotest-cd "$ORGPWD"
 	    fi
-	    if test -n "$result"
-	    then printf '%s\n' "$result" >&2
-	    fi
-	    dotest-cd "$ORGPWD"
 	fi
     done
 
