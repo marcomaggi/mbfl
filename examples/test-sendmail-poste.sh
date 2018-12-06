@@ -28,13 +28,13 @@ then
     fi
 
     # Use AUTH LOGIN.  Explicitly select GNU TLS.
-    if false
+    if true
     then bash "$SCRIPT" ${COMMON_OPTIONS} --auth-login --gnutls
     fi
 fi
 
 # These will use "openssl".
-if false
+if true
 then
     FURTHER_OPTIONS='--openssl'
 

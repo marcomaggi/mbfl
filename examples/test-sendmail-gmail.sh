@@ -22,7 +22,7 @@ declare -r COMMON_OPTIONS='--verbose --debug --test-message	\
 declare FURTHER_OPTIONS
 
 # These will use: GNU TLS.
-if false
+if true
 then
     FURTHER_OPTIONS=
 
@@ -53,7 +53,7 @@ then
 	echo
     fi
 
-    if false
+    if true
     then
 	# Uses AUTH LOGIN.
 	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --auth-login
