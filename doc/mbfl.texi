@@ -879,6 +879,15 @@ local COUNT=$@{2:-@}"
 @end smallexample
 @end deffn
 
+
+@deffn {Preprocessor Macro} mbfl_optional_integer_parameter @var{varname} @var{number}
+@deffnx {Preprocessor Macro} mbfl_optional_integer_parameter @var{varname} @var{number} @var{default_value}
+Like @bfunc{mbfl_optional_parameter} but use the @code{-i} attribute when declaring the variable;
+this assigns the integer attribute to the variable; @bashref{Bash Builtins, Bash Builtins}.
+
+@strong{NOTE} When the default value is missing: Bash automatically sets the variable to zero!
+@end deffn
+
 @c page
 @node preprocessor arguments
 @section Script arguments handling
