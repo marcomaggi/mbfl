@@ -312,16 +312,19 @@ function script_option_update_read_timeout () {
 
 #page
 function main () {
-    local LOGIN_NAME= PASSWORD= MESSAGE=
     # Input  and   output  file  descriptors  when   using  a  connector
-    # subprocess.
-    local -i INFD=3 OUFD=4
+    # subprocess.  This  script reads from  INFD to acquire  output from
+    # the connector.   This script writes to  OUFD to send input  to the
+    # connector.
+    mbfl_local_varref(INFD, 3, -i)
+    mbfl_local_varref(OUFD, 4, -i)
     # Pathnames  of the  FIFOs used  to  talk to  the connector's  child
     # process.
     local INFIFO OUFIFO
-    # This is for the PID of the connector external program, executed as
-    # child process.
-    local -i CONNECTOR_PID
+    # The  PID of  the  connector external  program,  executed as  child
+    # process.  If set to zero: it  means this process uses no connector
+    # process.
+    mbfl_local_varref(CONNECTOR_PID, 0, -i)
 
     validate_and_normalise_configuration
 
@@ -329,7 +332,8 @@ function main () {
     mbfl_message_verbose_printf 'session type: %s, authentication %s\n' "$script_option_SESSION_TYPE" "$script_option_AUTH_TYPE"
     case $script_option_SESSION_TYPE in
 	plain)
-            connect_establish_plain_connection "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+            connect_establish_plain_connection mbfl_varname(INFD) mbfl_varname(OUFD) \
+					       "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 	    mbfl_message_verbose 'connection established, exchange greetings\n'
             esmtp_exchange_greetings helo
             ;;
@@ -338,10 +342,12 @@ function main () {
             connect_make_fifos_for_connector
             case $script_option_CONNECTOR in
 		gnutls)
-		    connect_using_gnutls "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+		    connect_using_gnutls mbfl_varname(INFD) mbfl_varname(OUFD) mbfl_varname(CONNECTOR_PID) \
+					 "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
 		openssl)
-		    connect_using_openssl "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+		    connect_using_openssl mbfl_varname(INFD) mbfl_varname(OUFD) mbfl_varname(CONNECTOR_PID) \
+					  "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
             esac
 	    mbfl_message_verbose 'connection established, exchange greetings\n'
@@ -352,10 +358,12 @@ function main () {
             connect_make_fifos_for_connector
             case $script_option_CONNECTOR in
 		gnutls)
-		    connect_using_gnutls_starttls "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+		    connect_using_gnutls_starttls mbfl_varname(INFD) mbfl_varname(OUFD) mbfl_varname(CONNECTOR_PID) \
+						  "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
 		openssl)
-		    connect_using_openssl_starttls "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+		    connect_using_openssl_starttls mbfl_varname(INFD) mbfl_varname(OUFD) mbfl_varname(CONNECTOR_PID) \
+						   "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
             esac
 	    mbfl_message_verbose 'connection established, exchange greetings\n'
@@ -367,7 +375,7 @@ function main () {
     mbfl_message_verbose 'authentication performed, send message\n'
     esmtp_send_message
     esmtp_quit
-    wait_for_connector_process
+    wait_for_connector_process $CONNECTOR_PID
     exit_because_success
 }
 
@@ -512,19 +520,23 @@ function validate_and_normalise_configuration () {
 # The hostname must be in the parameter "SMTP_HOSTNAME" as a string; the
 # port must be in the parameter "SMTP_PORT" as an integer.
 #
+# The input file  descriptor, to read from the device,  is stored in the
+# result variable  "INFD_RV".  The output  file descriptor, to  write to
+# the device, is stored in the output variable "OUFD_RV".
+#
 # Errors are detected when opening the file descriptor connected to the
 # device representing the remote host.
 #
 function connect_establish_plain_connection () {
-    mbfl_mandatory_nameref_parameter(INFD,      1, input file descriptor reference variable)
-    mbfl_mandatory_nameref_parameter(OUFD,      2, output file descriptor reference variable)
+    mbfl_mandatory_nameref_parameter(INFD_RV,   1, input file descriptor reference variable)
+    mbfl_mandatory_nameref_parameter(OUFD_RV,   2, output file descriptor reference variable)
     mbfl_mandatory_parameter(SMTP_HOSTNAME,     3, SMTP hostname)
     mbfl_mandatory_integer_parameter(SMTP_PORT, 4, SMTP port)
     local DEVICE
     printf -v DEVICE '/dev/tcp/%s/%d' "$SMTP_HOSTNAME" "$SMTP_PORT"
-    INFD=3
-    OUFD=$INFD
-    if exec ${INFD}<>"$DEVICE"
+    INFD_RV=3
+    OUFD_RV=$INFD_RV
+    if eval "exec ${INFD_RV}<>\"\$DEVICE\""
     then recv 220
     else
         mbfl_message_error_printf 'failed establishing connection to %s:%d' "$SMTP_HOSTNAME" $SMTP_PORT
@@ -540,16 +552,25 @@ function connect_establish_plain_connection () {
 #
 # The process is executed in  background with stdin and stdout connected
 # to FIFOs,  which are  then connected to  file descriptors.   The FIFOs
-# pathnames must  be in  the variables "OUFIFO"  and "INFIFO";  the file
-# descriptors are in the variables "INFD" and "OUFD".
+# pathnames must  be in  the variables "OUFIFO"  and "INFIFO".
+#
+# The input  file descriptor, to read  from the connector, is  stored in
+# the result variable  "INFD_RV".  The output file  descriptor, to write
+# to the connector, is stored in the output variable "OUFD_RV".
+#
+# The PID  of the  connector process  is stored  in the  result variable
+# referenced by "CONNECTOR_PID_RV".
 #
 # Text from  the process  is read  until a line  starting with  "220" is
 # found:  this is  the line  of greetings  from the  remote server.   If
 # end-of-file comes first: exit the script with an error code.
 #
 function connect_using_gnutls () {
-    mbfl_mandatory_parameter(SMTP_HOSTNAME, 1, SMTP hostname)
-    mbfl_mandatory_integer_parameter(SMTP_PORT, 2, SMTP port)
+    mbfl_mandatory_parameter(INFD_RV,                  1, input file descriptor reference variable)
+    mbfl_mandatory_parameter(OUFD_RV,                  2, output file descriptor reference variable)
+    mbfl_mandatory_nameref_parameter(CONNECTOR_PID_RV, 3, connector PID reference variable)
+    mbfl_mandatory_parameter(SMTP_HOSTNAME,            4, SMTP hostname)
+    mbfl_mandatory_integer_parameter(SMTP_PORT,        5, SMTP port)
     local GNUTLS GNUTLS_FLAGS="--debug 0 --port ${SMTP_PORT}"
     mbfl_program_found_var GNUTLS gnutls-cli || exit $?
 
@@ -557,10 +578,10 @@ function connect_using_gnutls () {
     mbfl_program_redirect_stderr_to_stdout
     if mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOSTNAME"
     then
-	CONNECTOR_PID=$mbfl_program_BGPID
-	mbfl_message_debug_printf 'pid of gnutls: %d' $CONNECTOR_PID
-	connect_open_file_descriptors_to_fifos $INFD $OUFD
-	trap terminate_and_wait_for_connector_process EXIT
+	CONNECTOR_PID_RV=$mbfl_program_BGPID
+	mbfl_message_debug_printf 'pid of gnutls: %d' $CONNECTOR_PID_RV
+	connect_open_file_descriptors_to_fifos $INFD_RV $OUFD_RV
+	trap "terminate_and_wait_for_connector_process $CONNECTOR_PID_RV" EXIT
 	recv_until_string 220
     else
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOSTNAME" "$SMTP_PORT"
@@ -577,16 +598,25 @@ function connect_using_gnutls () {
 #
 # The process is executed in  background with stdin and stdout connected
 # to FIFOs,  which are  then connected to  file descriptors.   The FIFOs
-# pathnames must  be in  the variables "OUFIFO"  and "INFIFO";  the file
-# descriptors are in the variables "INFD" and "OUFD".
+# pathnames must  be in  the variables "OUFIFO"  and "INFIFO".
+#
+# The input  file descriptor, to read  from the connector, is  stored in
+# the result variable  "INFD_RV".  The output file  descriptor, to write
+# to the connector, is stored in the output variable "OUFD_RV".
+#
+# The PID  of the  connector process  is stored  in the  result variable
+# referenced by "CONNECTOR_PID_RV".
 #
 # Text from  the process  is read  until a line  starting with  "220" is
 # found:  this is  the line  of greetings  from the  remote server.   If
 # end-of-file comes first: exit the script with an error code.
 #
 function connect_using_gnutls_starttls () {
-    mbfl_mandatory_parameter(SMTP_HOSTNAME, 1, SMTP hostname)
-    mbfl_mandatory_integer_parameter(SMTP_PORT, 2, SMTP port)
+    mbfl_mandatory_parameter(INFD_RV,                  1, input file descriptor reference variable)
+    mbfl_mandatory_parameter(OUFD_RV,                  2, output file descriptor reference variable)
+    mbfl_mandatory_nameref_parameter(CONNECTOR_PID_RV, 3, connector PID reference variable)
+    mbfl_mandatory_parameter(SMTP_HOSTNAME,            4, SMTP hostname)
+    mbfl_mandatory_integer_parameter(SMTP_PORT,        5, SMTP port)
     local GNUTLS GNUTLS_FLAGS="--debug 0 --starttls --port ${SMTP_PORT}"
     mbfl_program_found_var GNUTLS gnutls-cli || exit $?
 
@@ -594,15 +624,15 @@ function connect_using_gnutls_starttls () {
     mbfl_program_redirect_stderr_to_stdout
     if mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOSTNAME"
     then
-	CONNECTOR_PID=$mbfl_program_BGPID
-	mbfl_message_debug_printf 'pid of gnutls: %d' $CONNECTOR_PID
-	connect_open_file_descriptors_to_fifos $INFD $OUFD
-	trap terminate_and_wait_for_connector_process EXIT
+	CONNECTOR_PID_RV=$mbfl_program_BGPID
+	mbfl_message_debug_printf 'pid of gnutls: %d' $CONNECTOR_PID_RV
+	connect_open_file_descriptors_to_fifos $INFD_RV $OUFD_RV
+	trap "terminate_and_wait_for_connector_process $CONNECTOR_PID_RV" EXIT
 	recv_until_string 220
 	esmtp_exchange_greetings ehlo
 	send STARTTLS
 	recv 220
-	kill -SIGALRM $CONNECTOR_PID
+	kill -SIGALRM $CONNECTOR_PID_RV
 	esmtp_exchange_greetings ehlo
     else
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOSTNAME" "$SMTP_PORT"
@@ -618,16 +648,25 @@ function connect_using_gnutls_starttls () {
 #
 # The process is executed in  background with stdin and stdout connected
 # to FIFOs,  which are  then connected to  file descriptors.   The FIFOs
-# pathnames must  be in  the variables "OUFIFO"  and "INFIFO";  the file
-# descriptors are in the variables "INFD" and "OUFD".
+# pathnames must be in the variables "OUFIFO" and "INFIFO".
+#
+# The input  file descriptor, to read  from the connector, is  stored in
+# the result variable  "INFD_RV".  The output file  descriptor, to write
+# to the connector, is stored in the output variable "OUFD_RV".
+#
+# The PID  of the  connector process  is stored  in the  result variable
+# referenced by "CONNECTOR_PID_RV".
 #
 # Text from  the process  is read  until a line  starting with  "220" is
 # found:  this is  the line  of greetings  from the  remote server.   If
 # end-of-file comes first: exit the script with an error code.
 #
 function connect_using_openssl () {
-    mbfl_mandatory_parameter(SMTP_HOSTNAME, 1, SMTP hostname)
-    mbfl_mandatory_integer_parameter(SMTP_PORT, 2, SMTP port)
+    mbfl_mandatory_parameter(INFD_RV,                  1, input file descriptor reference variable)
+    mbfl_mandatory_parameter(OUFD_RV,                  2, output file descriptor reference variable)
+    mbfl_mandatory_nameref_parameter(CONNECTOR_PID_RV, 3, connector PID reference variable)
+    mbfl_mandatory_parameter(SMTP_HOSTNAME,            4, SMTP hostname)
+    mbfl_mandatory_integer_parameter(SMTP_PORT,        5, SMTP port)
     local OPENSSL OPENSSL_FLAGS="s_client -quiet -connect ${SMTP_HOSTNAME}:${SMTP_PORT}"
     mbfl_program_found_var OPENSSL openssl || exit $?
 
@@ -635,10 +674,10 @@ function connect_using_openssl () {
     mbfl_program_redirect_stderr_to_stdout
     if mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS
     then
-	CONNECTOR_PID=$mbfl_program_BGPID
-	mbfl_message_debug 'pid of openssl: %d' $CONNECTOR_PID
-	connect_open_file_descriptors_to_fifos $INFD $OUFD
-	trap terminate_and_wait_for_connector_process EXIT
+	CONNECTOR_PID_RV=$mbfl_program_BGPID
+	mbfl_message_debug 'pid of openssl: %d' $CONNECTOR_PID_RV
+	connect_open_file_descriptors_to_fifos $INFD_RV $OUFD_RV
+	trap "terminate_and_wait_for_connector_process $CONNECTOR_PID_RV" EXIT
 	recv_until_string 220
     else
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOSTNAME" "$SMTP_PORT"
@@ -658,17 +697,25 @@ function connect_using_openssl () {
 #
 # The process is executed in  background with stdin and stdout connected
 # to FIFOs,  which are  then connected to  file descriptors.   The FIFOs
-# pathnames must  be in  the variables "OUFIFO"  and "INFIFO";  the file
-# descriptors are  in the  variables "INFD"  and "OUFD".   This function
-# stores the PID of the background process in "CONNECTOR_PID".
+# pathnames must be in the variables "OUFIFO" and "INFIFO".
+#
+# The input  file descriptor, to read  from the connector, is  stored in
+# the result variable  "INFD_RV".  The output file  descriptor, to write
+# to the connector, is stored in the output variable "OUFD_RV".
+#
+# The PID  of the  connector process  is stored  in the  result variable
+# referenced by "CONNECTOR_PID_RV".
 #
 # Text from  the process  is read  until a line  starting with  "250" is
 # found:  this is  the line  of greetings  from the  remote server.   If
 # end-of-file comes first: exit the script with an error code.
 #
 function connect_using_openssl_starttls () {
-    mbfl_mandatory_parameter(SMTP_HOSTNAME, 1, SMTP hostname)
-    mbfl_mandatory_integer_parameter(SMTP_PORT, 2, SMTP port)
+    mbfl_mandatory_parameter(INFD_RV,                  1, input file descriptor reference variable)
+    mbfl_mandatory_parameter(OUFD_RV,                  2, output file descriptor reference variable)
+    mbfl_mandatory_nameref_parameter(CONNECTOR_PID_RV, 3, connector PID reference variable)
+    mbfl_mandatory_parameter(SMTP_HOSTNAME,            4, SMTP hostname)
+    mbfl_mandatory_integer_parameter(SMTP_PORT,        5, SMTP port)
     local OPENSSL OPENSSL_FLAGS="s_client -quiet -starttls smtp -connect ${SMTP_HOSTNAME}:${SMTP_PORT}"
     mbfl_program_found_var OPENSSL openssl || exit $?
 
@@ -676,10 +723,10 @@ function connect_using_openssl_starttls () {
     mbfl_program_redirect_stderr_to_stdout
     if mbfl_program_execbg $OUFIFO $INFIFO "$OPENSSL" $OPENSSL_FLAGS
     then
-	CONNECTOR_PID=$mbfl_program_BGPID
-	mbfl_message_debug 'pid of openssl: %d' $CONNECTOR_PID
-	connect_open_file_descriptors_to_fifos $INFD $OUFD
-	trap terminate_and_wait_for_connector_process EXIT
+	CONNECTOR_PID_RV=$mbfl_program_BGPID
+	mbfl_message_debug 'pid of openssl: %d' $CONNECTOR_PID_RV
+	connect_open_file_descriptors_to_fifos $INFD_RV $OUFD_RV
+	trap "terminate_and_wait_for_connector_process $CONNECTOR_PID_RV" EXIT
 	recv_until_string 250
     else
         mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOSTNAME" "$SMTP_PORT"
@@ -692,14 +739,21 @@ function connect_using_openssl_starttls () {
 
 # To be  called when  successfully exiting the  script.  Use  the "wait"
 # command to wait for the termination of the connector process (to avoid
-# leaving around zombie processes).  The pid of the connector must be in
-# "CONNECTOR_PID".
+# leaving around zombie processes).
+#
+# If this process uses a connector: the  pid of the connector must be in
+# "CONNECTOR_PID".   If   this  process   does  not  use   a  connector:
+# "CONNECTOR_PID" must be the empty string.
 #
 function wait_for_connector_process () {
-    if mbfl_string_is_not_empty "$CONNECTOR_PID"
+    mbfl_optional_integer_parameter(CONNECTOR_PID, 1)
+
+    if ((0 < CONNECTOR_PID))
     then
+	# Remove       the       EXIT        trap       that       calls
+	# "terminate_and_wait_for_connector_process()".
         trap '' EXIT
-        mbfl_message_debug_printf 'waiting for connector process (pid %s)' $CONNECTOR_PID
+        mbfl_message_debug_printf 'waiting for connector process (pid %d)' $CONNECTOR_PID
         wait $CONNECTOR_PID
         mbfl_message_debug_printf 'gathered connector process'
     fi
@@ -707,15 +761,20 @@ function wait_for_connector_process () {
 
 # To be  called when  an error  occurs by the  "trap ...  EXIT" handler.
 # Force the  termination of the  connector process  and wait for  it (to
-# avoid leaving around zombie processes).  The pid of the connector must
-# be in "CONNECTOR_PID".
+# avoid leaving around zombie processes).
+#
+# If this process uses a connector: the  pid of the connector must be in
+# "CONNECTOR_PID".   If   this  process   does  not  use   a  connector:
+# "CONNECTOR_PID" must be the empty string.
 #
 function terminate_and_wait_for_connector_process () {
-    if mbfl_string_is_not_empty "$CONNECTOR_PID"
+    mbfl_optional_integer_parameter(CONNECTOR_PID, 1)
+
+    if ((0 < CONNECTOR_PID))
     then
-        mbfl_message_debug_printf 'forcing termination of connector process (pid %s)' $CONNECTOR_PID
+        mbfl_message_debug_printf 'forcing termination of connector process (pid %d)' $CONNECTOR_PID
         kill -SIGTERM $CONNECTOR_PID &>/dev/null
-        mbfl_message_debug_printf 'waiting for connector process (pid %s)' $CONNECTOR_PID
+        mbfl_message_debug_printf 'waiting for connector process (pid %d)' $CONNECTOR_PID
         wait $CONNECTOR_PID &>/dev/null
         mbfl_message_debug_printf 'gathered connector process'
     fi
@@ -765,9 +824,9 @@ function connect_make_fifos_for_connector () {
 # Bourne shells.
 #
 function connect_open_file_descriptors_to_fifos () {
-    mbfl_mandatory_parameter(INFD, 1, input-from-connector file descriptor)
-    mbfl_mandatory_parameter(OUFD, 2, output-from-connector file descriptor)
-    eval "exec ${INFD}<>\"\$INFIFO\" ${OUFD}>\"\$OUFIFO\""
+    mbfl_mandatory_nameref_parameter(INFD, 1, input-from-connector file descriptor reference variable)
+    mbfl_mandatory_nameref_parameter(OUFD, 2, output-from-connector file descriptor reference variable)
+    eval "exec ${INFD}<>\"\${INFIFO}\" ${OUFD}>\"\${OUFIFO}\""
     connect_cleanup_fifos
     trap "" EXIT
     return 0
