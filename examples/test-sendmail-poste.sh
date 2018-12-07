@@ -24,12 +24,16 @@ if true
 then
     # Use AUTH PLAIN.  Automatically select GNU TLS.
     if true
-    then bash "$SCRIPT" ${COMMON_OPTIONS} --auth-plain
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} --auth-plain
+	echo
     fi
 
     # Use AUTH LOGIN.  Explicitly select GNU TLS.
     if true
-    then bash "$SCRIPT" ${COMMON_OPTIONS} --auth-login --gnutls
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} --auth-login --gnutls
+	echo
     fi
 fi
 
@@ -39,11 +43,15 @@ then
     FURTHER_OPTIONS='--openssl'
 
     if true
-    then bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --auth-plain
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --auth-plain
+	echo
     fi
 
     if true
-    then bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --auth-login
+    then
+	bash "$SCRIPT" ${COMMON_OPTIONS} ${FURTHER_OPTIONS} --auth-login
+	echo
     fi
 fi
 

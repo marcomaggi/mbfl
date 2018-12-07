@@ -329,7 +329,7 @@ function main () {
     mbfl_message_verbose_printf 'session type: %s, authentication %s\n' "$script_option_SESSION_TYPE" "$script_option_AUTH_TYPE"
     case $script_option_SESSION_TYPE in
 	plain)
-            connect_establish_plain_connection
+            connect_establish_plain_connection "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 	    mbfl_message_verbose 'connection established, exchange greetings\n'
             esmtp_exchange_greetings helo
             ;;
@@ -338,10 +338,10 @@ function main () {
             connect_make_fifos_for_connector
             case $script_option_CONNECTOR in
 		gnutls)
-		    connect_using_gnutls
+		    connect_using_gnutls "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
 		openssl)
-		    connect_using_openssl
+		    connect_using_openssl "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
             esac
 	    mbfl_message_verbose 'connection established, exchange greetings\n'
@@ -352,10 +352,10 @@ function main () {
             connect_make_fifos_for_connector
             case $script_option_CONNECTOR in
 		gnutls)
-		    connect_using_gnutls_starttls
+		    connect_using_gnutls_starttls "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
 		openssl)
-		    connect_using_openssl_starttls
+		    connect_using_openssl_starttls "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
             esac
 	    mbfl_message_verbose 'connection established, exchange greetings\n'
@@ -505,31 +505,38 @@ function validate_and_normalise_configuration () {
 #page
 #### establishing connections to remote servers
 
-# Establish  a  plain connection  with  the  selected SMTP  server:  the
-# hostname must be  in the variable "script_option_SMTP_HOSTNAME", the  port must be
-# in the variable "script_option_SMTP_PORT".  Read  the first line of greetings from
-# the server, expecting a line starting with "220".
+# Establish a plain connection with the selected SMTP server.  Read the
+# first line  of greetings  from the server,  expecting a  line starting
+# with "220".
 #
-# Errors are detected when opening  the file descriptor connected to the
+# The hostname must be in the parameter "SMTP_HOSTNAME" as a string; the
+# port must be in the parameter "SMTP_PORT" as an integer.
+#
+# Errors are detected when opening the file descriptor connected to the
 # device representing the remote host.
 #
 function connect_establish_plain_connection () {
+    mbfl_mandatory_nameref_parameter(INFD,      1, input file descriptor reference variable)
+    mbfl_mandatory_nameref_parameter(OUFD,      2, output file descriptor reference variable)
+    mbfl_mandatory_parameter(SMTP_HOSTNAME,     3, SMTP hostname)
+    mbfl_mandatory_integer_parameter(SMTP_PORT, 4, SMTP port)
     local DEVICE
-    printf -v DEVICE '/dev/tcp/%s/%d' "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+    printf -v DEVICE '/dev/tcp/%s/%d' "$SMTP_HOSTNAME" "$SMTP_PORT"
     INFD=3
     OUFD=$INFD
-    if exec 3<>"$DEVICE"
+    if exec ${INFD}<>"$DEVICE"
     then recv 220
     else
-        mbfl_message_error_printf 'failed establishing connection to %s:%d' "$script_option_SMTP_HOSTNAME" $script_option_SMTP_PORT
+        mbfl_message_error_printf 'failed establishing connection to %s:%d' "$SMTP_HOSTNAME" $SMTP_PORT
         exit_because_failed_connection
     fi
 }
 
 # Establish an  encrypted connection  with the  selected host  using the
-# program  "gnutls-cli"  as connector.   The  hostname  must be  in  the
-# variable  "script_option_SMTP_HOSTNAME",   the  port  must  be   in  the  variable
-# "script_option_SMTP_PORT".
+# program "gnutls-cli" as connector.
+#
+# The hostname must be in the parameter "SMTP_HOSTNAME" as a string; the
+# port must be in the parameter "SMTP_PORT" as an integer.
 #
 # The process is executed in  background with stdin and stdout connected
 # to FIFOs,  which are  then connected to  file descriptors.   The FIFOs
@@ -541,20 +548,22 @@ function connect_establish_plain_connection () {
 # end-of-file comes first: exit the script with an error code.
 #
 function connect_using_gnutls () {
-    local GNUTLS GNUTLS_FLAGS="--debug 0 --port ${script_option_SMTP_PORT}"
+    mbfl_mandatory_parameter(SMTP_HOSTNAME, 1, SMTP hostname)
+    mbfl_mandatory_integer_parameter(SMTP_PORT, 2, SMTP port)
+    local GNUTLS GNUTLS_FLAGS="--debug 0 --port ${SMTP_PORT}"
     mbfl_program_found_var GNUTLS gnutls-cli || exit $?
 
     mbfl_message_verbose_printf 'connecting with gnutls, immediate encrypted bridge\n'
     mbfl_program_redirect_stderr_to_stdout
-    if mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$script_option_SMTP_HOSTNAME"
+    if mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOSTNAME"
     then
 	CONNECTOR_PID=$mbfl_program_BGPID
 	mbfl_message_debug_printf 'pid of gnutls: %d' $CONNECTOR_PID
-	connect_open_file_descriptors_to_fifos
+	connect_open_file_descriptors_to_fifos $INFD $OUFD
 	trap terminate_and_wait_for_connector_process EXIT
 	recv_until_string 220
     else
-        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOSTNAME" "$SMTP_PORT"
         exit_because_failed_connection
     fi
 }
@@ -563,8 +572,8 @@ function connect_using_gnutls () {
 # "gnutls-cli" program  as connector;  exchange greetings then  send the
 # "STARTTLS" command and establish an encrypted bridge.
 #
-# The hostname  must be  in the  variable "script_option_SMTP_HOSTNAME",
-# the port must be in the variable "script_option_SMTP_PORT".
+# The hostname must be in the parameter "SMTP_HOSTNAME" as a string; the
+# port must be in the parameter "SMTP_PORT" as an integer.
 #
 # The process is executed in  background with stdin and stdout connected
 # to FIFOs,  which are  then connected to  file descriptors.   The FIFOs
@@ -576,16 +585,18 @@ function connect_using_gnutls () {
 # end-of-file comes first: exit the script with an error code.
 #
 function connect_using_gnutls_starttls () {
-    local GNUTLS GNUTLS_FLAGS="--debug 0 --starttls --port ${script_option_SMTP_PORT}"
+    mbfl_mandatory_parameter(SMTP_HOSTNAME, 1, SMTP hostname)
+    mbfl_mandatory_integer_parameter(SMTP_PORT, 2, SMTP port)
+    local GNUTLS GNUTLS_FLAGS="--debug 0 --starttls --port ${SMTP_PORT}"
     mbfl_program_found_var GNUTLS gnutls-cli || exit $?
 
     mbfl_message_verbose_printf 'connecting with gnutls, delayed encrypted bridge\n'
     mbfl_program_redirect_stderr_to_stdout
-    if mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$script_option_SMTP_HOSTNAME"
+    if mbfl_program_execbg $OUFIFO $INFIFO "$GNUTLS" $GNUTLS_FLAGS "$SMTP_HOSTNAME"
     then
 	CONNECTOR_PID=$mbfl_program_BGPID
 	mbfl_message_debug_printf 'pid of gnutls: %d' $CONNECTOR_PID
-	connect_open_file_descriptors_to_fifos
+	connect_open_file_descriptors_to_fifos $INFD $OUFD
 	trap terminate_and_wait_for_connector_process EXIT
 	recv_until_string 220
 	esmtp_exchange_greetings ehlo
@@ -594,15 +605,16 @@ function connect_using_gnutls_starttls () {
 	kill -SIGALRM $CONNECTOR_PID
 	esmtp_exchange_greetings ehlo
     else
-        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOSTNAME" "$SMTP_PORT"
         exit_because_failed_connection
     fi
 }
 
 # Establish an  encrypted connection  with the  selected host  using the
-# "openssl" program as connector.  The hostname must be in the variable
-# "script_option_SMTP_HOSTNAME",  the  port  must  be  in  the  variable
-# "script_option_SMTP_PORT".
+# "openssl" program as connector.
+#
+# Read the  first line of  greetings from  the server, expecting  a line
+# starting with "220".
 #
 # The process is executed in  background with stdin and stdout connected
 # to FIFOs,  which are  then connected to  file descriptors.   The FIFOs
@@ -614,7 +626,9 @@ function connect_using_gnutls_starttls () {
 # end-of-file comes first: exit the script with an error code.
 #
 function connect_using_openssl () {
-    local OPENSSL OPENSSL_FLAGS="s_client -quiet -connect ${script_option_SMTP_HOSTNAME}:${script_option_SMTP_PORT}"
+    mbfl_mandatory_parameter(SMTP_HOSTNAME, 1, SMTP hostname)
+    mbfl_mandatory_integer_parameter(SMTP_PORT, 2, SMTP port)
+    local OPENSSL OPENSSL_FLAGS="s_client -quiet -connect ${SMTP_HOSTNAME}:${SMTP_PORT}"
     mbfl_program_found_var OPENSSL openssl || exit $?
 
     mbfl_message_verbose_printf 'connecting with openssl, immediate encrypted bridge\n'
@@ -623,19 +637,20 @@ function connect_using_openssl () {
     then
 	CONNECTOR_PID=$mbfl_program_BGPID
 	mbfl_message_debug 'pid of openssl: %d' $CONNECTOR_PID
-	connect_open_file_descriptors_to_fifos
+	connect_open_file_descriptors_to_fifos $INFD $OUFD
 	trap terminate_and_wait_for_connector_process EXIT
 	recv_until_string 220
     else
-        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOSTNAME" "$SMTP_PORT"
         exit_because_failed_connection
     fi
 }
 
 # Establish  a  plain  connection  with  the  selected  host  using  the
-# "openssl" program as connector.  The  hostname must be in the variable
-# "script_option_SMTP_HOSTNAME",  the  port  must  be  in  the  variable
-# "script_option_SMTP_PORT".
+# "openssl" program as connector.
+#
+# Read the  first line of  greetings from  the server, expecting  a line
+# starting with "220".
 #
 # NOTE!!!!   The encrypted  bridge  is established  by "openssl"  itself
 # after exchanging greetings  using the ESMTP protocol; we  just have to
@@ -643,14 +658,18 @@ function connect_using_openssl () {
 #
 # The process is executed in  background with stdin and stdout connected
 # to FIFOs,  which are  then connected to  file descriptors.   The FIFOs
-# pathnames must be in the variables "OUFIFO" and "INFIFO".
+# pathnames must  be in  the variables "OUFIFO"  and "INFIFO";  the file
+# descriptors are  in the  variables "INFD"  and "OUFD".   This function
+# stores the PID of the background process in "CONNECTOR_PID".
 #
 # Text from  the process  is read  until a line  starting with  "250" is
 # found:  this is  the line  of greetings  from the  remote server.   If
 # end-of-file comes first: exit the script with an error code.
 #
 function connect_using_openssl_starttls () {
-    local OPENSSL OPENSSL_FLAGS="s_client -quiet -starttls smtp -connect ${script_option_SMTP_HOSTNAME}:${script_option_SMTP_PORT}"
+    mbfl_mandatory_parameter(SMTP_HOSTNAME, 1, SMTP hostname)
+    mbfl_mandatory_integer_parameter(SMTP_PORT, 2, SMTP port)
+    local OPENSSL OPENSSL_FLAGS="s_client -quiet -starttls smtp -connect ${SMTP_HOSTNAME}:${SMTP_PORT}"
     mbfl_program_found_var OPENSSL openssl || exit $?
 
     mbfl_message_verbose_printf 'connecting with openssl, delayed encrypted bridge\n'
@@ -659,11 +678,11 @@ function connect_using_openssl_starttls () {
     then
 	CONNECTOR_PID=$mbfl_program_BGPID
 	mbfl_message_debug 'pid of openssl: %d' $CONNECTOR_PID
-	connect_open_file_descriptors_to_fifos
+	connect_open_file_descriptors_to_fifos $INFD $OUFD
 	trap terminate_and_wait_for_connector_process EXIT
 	recv_until_string 250
     else
-        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
+        mbfl_message_error_printf 'failed connection to \"%s:%s\"' "$SMTP_HOSTNAME" "$SMTP_PORT"
         exit_because_failed_connection
     fi
 }
@@ -746,6 +765,8 @@ function connect_make_fifos_for_connector () {
 # Bourne shells.
 #
 function connect_open_file_descriptors_to_fifos () {
+    mbfl_mandatory_parameter(INFD, 1, input-from-connector file descriptor)
+    mbfl_mandatory_parameter(OUFD, 2, output-from-connector file descriptor)
     eval "exec ${INFD}<>\"\$INFIFO\" ${OUFD}>\"\$OUFIFO\""
     connect_cleanup_fifos
     trap "" EXIT
@@ -1045,24 +1066,26 @@ function print_email_test_message () {
     printf -v MESSAGE_ID '%d-%d-%d@%s' "$RANDOM" "$RANDOM" "$RANDOM" "$LOCAL_HOSTNAME"
     MESSAGE="Sender: ${script_option_EMAIL_FROM_ADDRESS}
 From: <${script_option_EMAIL_FROM_ADDRESS}>
-To: $TO_ADDRESS
-Subject: test message from $script_PROGNAME
-Message-ID: <$MESSAGE_ID>
-Date: $DATE
+To: ${TO_ADDRESS}
+Subject: test message from ${script_PROGNAME}
+Message-ID: <${MESSAGE_ID}>
+Date: ${DATE}
 \n\
-This is a test message from the $script_PROGNAME script.
+This is a test message from the ${script_PROGNAME} script.
 Configuration:
-\tsession type:\t\t\t$script_option_SESSION_TYPE
-\tuse gnutls-cli connector:\t$script_option_GNUTLS_CONNECTOR
-\tuse openssl connector:\t\t$script_option_OPENSSL_CONNECTOR
-\tselected connector:\t\t$script_option_CONNECTOR
-\tauth file:\t\t\t'$script_option_AUTHINFO_FILE'
-\tauth user:\t\t\t'$script_option_AUTH_USER'
-\tauth method plain:\t\t$script_option_AUTH_PLAIN
-\tauth method login:\t\t$script_option_AUTH_LOGIN
+\tSMTP hostname:\t\t\t${script_option_SMTP_HOSTNAME}
+\tSMTP port:\t\t\t${script_option_SMTP_PORT}
+\tsession type:\t\t\t${script_option_SESSION_TYPE}
+\tscript option gnutls-cli:\t${script_option_GNUTLS_CONNECTOR}
+\tscript option openssl:\t\t${script_option_OPENSSL_CONNECTOR}
+\tselected connector:\t\t${script_option_CONNECTOR}
+\tauth file:\t\t\t'${script_option_AUTHINFO_FILE}'
+\tauth user:\t\t\t'${script_option_AUTH_USER}'
+\tauth method plain:\t\t${script_option_AUTH_PLAIN}
+\tauth method login:\t\t${script_option_AUTH_LOGIN}
 --\x20
-The $script_PROGNAME script
-Copyright $script_COPYRIGHT_YEARS $script_AUTHOR
+The ${script_PROGNAME} script
+Copyright ${script_COPYRIGHT_YEARS} $script_AUTHOR
 "
     printf "$MESSAGE"
 }
