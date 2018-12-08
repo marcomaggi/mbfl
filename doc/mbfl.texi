@@ -4720,6 +4720,17 @@ $i @result{} 7
 @end example
 @end defun
 
+
+@defun mbfl_string_strip_carriage_return_var @var{_RV} @var{LINE}
+When exchanging strings with a remote process through a network socket we, usually, need to end a
+line with a carriage return plus line feed sequence.  If we use the command @command{read} to read a
+line from a socket: we can instruct it to discard the ending line feed, yielding us a line ending
+with a carriage return.
+
+This function strips the ending carriage return from @var{LINE}, if any, and stores the result in
+the result variable @var{_RV}.  It is fine if @var{LINE} is the empty string.
+@end defun
+
 @c page
 @node dialog
 @chapter Interacting with the user

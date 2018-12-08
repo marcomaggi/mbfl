@@ -547,6 +547,22 @@ function mbfl_sprintf () {
     eval "$VARNAME"=\'"$OUTPUT"\'
 }
 
+function mbfl_string_strip_carriage_return_var () {
+    mbfl_mandatory_nameref_parameter(RESULT_NAMEREF, 1, result variable name)
+    mbfl_optional_parameter(LINE, 2)
+
+    if mbfl_string_is_not_empty "$LINE"
+    then
+	mbfl_local_varref(CH)
+
+	mbfl_string_index_var mbfl_varname(CH) "$LINE" $((${#LINE} - 1))
+	if mbfl_string_equal "$CH" $'\r'
+	then RESULT_NAMEREF=${LINE:0:((${#LINE} - 1))}
+	else RESULT_NAMEREF=$LINE
+	fi
+    fi
+}
+
 ### end of file
 # Local Variables:
 # mode: sh
