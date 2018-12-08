@@ -729,7 +729,7 @@ function string-split-blanks-1.5 () {
 	dotest-equal rs  "${SPLITFIELD[5]}"
 }
 
-#PAGE
+#page
 
 function string-is-1.1 () { mbfl_string_is_alpha abcd; }
 function string-is-1.2 () { ! mbfl_string_is_alpha 123 ; }
@@ -1006,6 +1006,7 @@ function string-skip-1.3 () {
 }
 
 #page
+#### comparison
 
 function string-equal-1.1 () {
     mbfl_string_equal '' ''
@@ -1151,6 +1152,24 @@ function string-greater-or-equal-1.4 () {
 
 function string-greater-or-equal-1.4 () {
     mbfl_string_greater_or_equal 'hello' 'ciao'
+}
+
+### ------------------------------------------------------------------------
+
+function string-is-yes-1.1 () {
+    mbfl_string_is_yes 'yes'
+}
+
+function string-is-yes-1.2 () {
+    ! mbfl_string_is_yes 'no'
+}
+
+function string-is-no-1.1 () {
+    mbfl_string_is_no 'no'
+}
+
+function string-is-no-1.2 () {
+    ! mbfl_string_is_no 'yes'
 }
 
 #page

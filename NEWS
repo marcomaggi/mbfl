@@ -81,6 +81,8 @@ changes!
     mbfl_string_is_network_hostname
     mbfl_string_is_network_port
     mbfl_string_is_network_ip_address
+    mbfl_string_is_yes
+    mbfl_string_is_no
 
 * Added times and dates module.
 

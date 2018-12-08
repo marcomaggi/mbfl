@@ -4580,6 +4580,13 @@ strings; otherwise return unsuccessfully.
 @end defun
 
 
+@defun mbfl_string_is_yes @var{str}
+@defunx mbfl_string_is_no @var{str}
+Return true if the string @var{str} is equal to, respectively, @samp{yes} or @samp{no}; otherwise
+return false.
+@end defun
+
+
 @defun mbfl_string_less @vari{str} @varii{str}
 Return successfully if @vari{str} is less than @varii{str} when lexicographically compared as
 strings; otherwise return unsuccessfully.  Examples:

@@ -289,6 +289,8 @@ function mbfl_string_split_blanks () {
 }
 
 #page
+#### comparison
+
 function mbfl_string_equal () {
     mbfl_optional_parameter(STR1, 1)
     mbfl_optional_parameter(STR2, 2)
@@ -299,6 +301,17 @@ function mbfl_string_not_equal () {
     mbfl_optional_parameter(STR2, 2)
     test "$STR1" '!=' "$STR2"
 }
+
+function mbfl_string_is_yes () {
+    mbfl_optional_parameter(STR, 1)
+    test "$STR" = 'yes'
+}
+function mbfl_string_is_no () {
+    mbfl_optional_parameter(STR, 1)
+    test "$STR" = 'no'
+}
+
+### ------------------------------------------------------------------------
 
 function mbfl_string_less () {
     mbfl_optional_parameter(STR1, 1)
