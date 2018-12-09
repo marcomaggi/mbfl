@@ -6512,10 +6512,9 @@ Change the working directory to the temporary directory.
 
 
 @defun dotest-mktmpdir
-Create the temporary directory.  This is automatically invoked by
-@bfunc{dotest-mkfile} before creating files; @bfunc{dotest-mkdir}
-creates the temporary directory automatically by using the
-@option{--parents} option of @command{mkdir}.
+Create the temporary directory.  @bfunc{dotest-mkdir} creates the temporary directory automatically
+by using the @option{--parents} option of @command{mkdir}.  This function is automatically invoked
+by @bfunc{dotest-mkfile} and @bfunc{dotest-mkpathname}.
 @end defun
 
 @c page
@@ -6538,6 +6537,16 @@ at the end of each function that creates temporary files or directories.
 Return the value of the last command executed before the invocation,
 that way it can be used right after @bfunc{dotest-output} and
 @bfunc{dotest-equal} without loosing the return value of the function.
+@end defun
+
+
+@defun dotest-mkpathname @var{pathname}
+@defunx dotest-mkpathname @var{pathname} @var{prefix}
+Compose a pathname under the temporary testing directory.  The optional @var{prefix} is a relative
+pathname that is prepended to @var{pathname}: It is useful to prepend the name of a parent
+directory.  Print to stdout the full pathname of the file.
+
+This function invokes @bfunc{dotest-mktmpdir}.
 @end defun
 
 

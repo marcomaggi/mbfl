@@ -294,6 +294,20 @@ function dotest-clean-files () {
     return $result
 }
 
+function dotest-mkpathname () {
+    local NAME="${1:?missing file name parameter to ${FUNCNAME}}"
+    local PREFIX="$2"
+
+    if test -n "$PREFIX"
+    then PREFIX="$(dotest-echo-tmpdir)/${PREFIX}"
+    else PREFIX="$(dotest-echo-tmpdir)"
+    fi
+    NAME=${PREFIX}/${NAME}
+
+    dotest-mktmpdir
+    echo "$NAME"
+}
+
 function dotest-assert-file-exists () {
     local FILE_NAME=${1:?"missing file name to '${FUNCNAME}'"}
     local ERROR_MESSAGE=${2:?"missing error message to '${FUNCNAME}'"}
