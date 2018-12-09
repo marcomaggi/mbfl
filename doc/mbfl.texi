@@ -2457,6 +2457,60 @@ Duplicate the source file descriptor @var{SRCFD} to the destination file descrip
 @end defun
 
 
+Let's see how we can use a FIFO for reading and writing with two duplicate file descriptors:
+
+@example
+mbfl_declare_program mkfifo
+mbfl_file_enable_remove
+
+function program_mkfifo () @{
+    local PATHNAME=$@{1:?@}
+    shift 1
+    local MKFIFO
+    mbfl_program_found_var MKFIFO mkfifo || exit $?
+
+    "$MKFIFO" --mode=0600 "$@@" "$PATHNAME"
+@}
+
+declare TESTFILE=/path/to/fifo.ext
+declare INFD=3 OUFD=4 DUP_INFD=5 DUP_OUFD=6
+declare LINE1 LINE2 LINE3
+
+mbfl_location_enter
+@{
+    program_mkfifo "$TESTFIFO"
+    mbfl_location_handler "mbfl_file_remove $@{TESTFIFO@}"
+
+    mbfl_fd_open_input_output $INFD "$TESTFIFO"
+    mbfl_location_handler "mbfl_fd_close $@{INFD@}"
+
+    mbfl_fd_open_output $OUFD "$TESTFIFO"
+    mbfl_location_handler "mbfl_fd_close $@{OUFD@}"
+
+    echo 1234 >&$@{OUFD@}
+    read -u $@{INFD@} LINE1
+
+    mbfl_location_enter
+    @{
+        mbfl_fd_dup_input  $INFD $DUP_INFD
+        mbfl_location_handler "mbfl_fd_close $@{DUP_INFD@}"
+
+        mbfl_fd_dup_output $INFD $DUP_OUFD
+        mbfl_location_handler "mbfl_fd_close $@{DUP_OUFD@}"
+
+        echo 5678 >&$@{DUP_OUFD@}
+        read -u $@{DUP_INFD@} LINE2
+    @}
+    mbfl_location_leave
+
+    echo 90 >&$@{OUFD@}
+    read -u $@{INFD@} LINE3
+@}
+mbfl_location_leave
+
+echo $LINE1 $LINE2 $LINE3
+@end example
+
 @c page
 @node actions
 @chapter Selecting actions to perform

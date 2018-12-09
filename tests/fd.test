@@ -252,7 +252,6 @@ function fd-dup-fifo-read-write-1.1 () {
     dotest-equal '1234' "$LINE1" && dotest-equal '5678' "$LINE2" && dotest-equal '90' "$LINE3"
 }
 
-
 #page
 #### let's go
 
