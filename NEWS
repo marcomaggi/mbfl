@@ -123,6 +123,12 @@ changes!
 
 * Added locations module.
 
+* Added module "atexit" implementing atexit handlers.
+
+* Started interface to "stat" from GNU Coreutils.
+
+* Added module "fd" implementing file descriptors handlers.
+
 
 Notes for revision 2.2.0
 ------------------------
@@ -188,10 +194,6 @@ Notes for revision 2.0d1
   ugly, but it allows test suites to use them.
 
 * Added module "actions" implementing a tree of script actions.
-
-* Added module "atexit" implementing atexit handlers.
-
-* Started interface to "stat" from GNU Coreutils.
 
 ### end of file
 # Local Variables:

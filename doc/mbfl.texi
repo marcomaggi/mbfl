@@ -173,6 +173,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * base::                        Some base functions.
 * encoding::                    Encoding and decoding strings.
 * file::                        Manipulating files and pathnames.
+* fd::                          Handling file descriptors.
 * actions::                     Selecting actions to perform.
 * getopts::                     Parsing command line options.
 * message::                     Printing messages to the console.
@@ -2319,6 +2320,142 @@ be appended.
 Wrapper for @bfunc{mbfl_change_directory}.  If verbose mode is on:
 print a message.
 @end defun
+
+@c page
+@node fd
+@chapter Handling file descriptors
+
+
+@menu
+* fd open::                     Opening file descriptors.
+* fd close::                    Closing file descriptors.
+* fd dup::                      Duplicating file descriptors.
+@end menu
+
+@c page
+@node fd open
+@section Opening file descriptors
+
+
+@defun mbfl_fd_open_input @var{FD} @var{FILE}
+Open the file descriptor @var{FD} to read from @var{FILE}.  When successful: return true; otherwise
+return false.
+
+@strong{NOTE} When @var{FILE} is a FIFO: we need to call @bfunc{mbfl_fd_open_input_output}, not this
+function.
+@end defun
+
+
+@defun mbfl_fd_open_output @var{FD} @var{FILE}
+Open the file descriptor @var{FD} to write to @var{FILE}.  When successful: return true; otherwise
+return false.
+@end defun
+
+
+@defun mbfl_fd_open_input_output @var{FD} @var{FILE}
+Open the file descriptor @var{FD} to read from and write to @var{FILE}.  When successful: return
+true; otherwise return false.
+@end defun
+
+
+Let's see how we can open a file for reading and writing with two file descriptors:
+
+@example
+declare TESTFILE=/path/to/file.ext
+declare INFD=3 OUFD=4
+declare LINE
+
+mbfl_fd_open_output $OUFD "$TESTFILE"
+echo 1234 >&$@{OUFD@}
+mbfl_fd_close $OUFD
+
+mbfl_fd_open_input  $INFD "$TESTFILE"
+read -u $@{INFD@} LINE
+mbfl_fd_close $INFD
+
+echo "$LINE"
+@end example
+
+@noindent
+now let's use a location to automatically close the file descriptors:
+
+@example
+declare TESTFILE=/path/to/file.ext
+declare INFD=3 OUFD=4
+declare LINE
+
+mbfl_location_enter
+@{
+    mbfl_fd_open_output $OUFD "$TESTFILE"
+    mbfl_location_handler "mbfl_fd_close $@{OUFD@}"
+    echo 1234 >&$@{OUFD@}
+
+    mbfl_fd_open_input  $INFD "$TESTFILE"
+    mbfl_location_handler "mbfl_fd_close $@{INFD@}"
+    read -u $@{INFD@} LINE
+
+    echo "$LINE"
+@}
+mbfl_location_leave
+@end example
+
+Let's see how we can use a FIFO for reading and writing with two file descriptors:
+
+@example
+mbfl_declare_program mkfifo
+mbfl_file_enable_remove
+
+function program_mkfifo () @{
+    local PATHNAME=$@{1:?@}
+    shift 1
+    local MKFIFO
+    mbfl_program_found_var MKFIFO mkfifo || exit $?
+
+    "$MKFIFO" --mode=0600 "$@@" "$PATHNAME"
+@}
+
+declare TESTFILE=/path/to/fifo.ext
+declare INFD=3 OUFD=4
+declare LINE
+
+mbfl_location_enter
+@{
+    program_mkfifo "$TESTFIFO"
+    mbfl_location_handler "mbfl_file_remove $@{TESTFIFO@}"
+
+    mbfl_fd_open_input_output $INFD "$TESTFIFO"
+    mbfl_location_handler "mbfl_fd_close $@{INFD@}"
+
+    mbfl_fd_open_output $OUFD "$TESTFIFO"
+    mbfl_location_handler "mbfl_fd_close $@{OUFD@}"
+
+    echo 1234 >&$@{OUFD@}
+    read -u $@{INFD@} LINE
+
+    echo "$LINE"
+@}
+mbfl_location_leave
+@end example
+
+@c page
+@node fd close
+@section Closing file descriptors
+
+
+@defun mbfl_fd_close @var{FD}
+Close the file descriptor @var{FD}.
+@end defun
+
+@c page
+@node fd dup
+@section Duplicating file descriptors
+
+
+@defun mbfl_fd_dup_input @var{SRCFD} @var{DSTFD}
+@defunx mbfl_fd_dup_output @var{SRCFD} @var{DSTFD}
+Duplicate the source file descriptor @var{SRCFD} to the destination file descriptor @var{DSTFD}.
+@end defun
+
 
 @c page
 @node actions
