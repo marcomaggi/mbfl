@@ -274,10 +274,10 @@ function fd-move-fifo-read-write-1.1 () {
 	mbfl_fd_open_input_output $INFD "$TESTFIFO"
 	mbfl_fd_open_output       $OUFD "$TESTFIFO"
 
-	mbfl_fd_move_input  $INFD $DUP_INFD
+	mbfl_fd_move $INFD $DUP_INFD
 	mbfl_location_handler "mbfl_fd_close ${DUP_INFD}; dotest-debug '${FUNCNAME}: closed ${DUP_INFD}'"
 
-	mbfl_fd_move_output $OUFD $DUP_OUFD
+	mbfl_fd_move $OUFD $DUP_OUFD
 	mbfl_location_handler "mbfl_fd_close ${DUP_OUFD}; dotest-debug '${FUNCNAME}: closed ${DUP_OUFD}'"
 
 	echo 1234 >&${DUP_OUFD}
@@ -303,10 +303,10 @@ function fd-move-file-read-write-1.1 () {
 	mbfl_fd_open_input_output $INFD "$TESTFIFO"
 	mbfl_fd_open_output       $OUFD "$TESTFIFO"
 
-	mbfl_fd_move_input  $INFD $DUP_INFD
+	mbfl_fd_move $INFD $DUP_INFD
 	mbfl_location_handler "mbfl_fd_close ${DUP_INFD}; dotest-debug '${FUNCNAME}: closed ${DUP_INFD}'"
 
-	mbfl_fd_move_output $OUFD $DUP_OUFD
+	mbfl_fd_move $OUFD $DUP_OUFD
 	mbfl_location_handler "mbfl_fd_close ${DUP_OUFD}; dotest-debug '${FUNCNAME}: closed ${DUP_OUFD}'"
 
 	echo 1234 >&${DUP_OUFD}
