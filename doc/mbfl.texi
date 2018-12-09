@@ -6587,7 +6587,7 @@ more visible.
 @end deffn
 
 
-@deffn dotest-printf @var{template} [@var{arg} @dots{}]
+@deffn Alias dotest-printf @var{template} [@var{arg} @dots{}]
 Format the @var{template} with the optional @var{arg} values, then print the result on @stderr{}.
 @end deffn
 
