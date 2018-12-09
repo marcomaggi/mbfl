@@ -74,6 +74,12 @@ mbfl_library_loader
 # mbfl_main_declare_exit_code 8 eighth_error
 
 #page
+#### configure global behaviour
+
+mbfl_atexit_enable
+mbfl_location_enable_cleanup_atexit
+
+#page
 #### declaration of script actions tree
 #
 # main --+-- one ---+--- green --+--- solid

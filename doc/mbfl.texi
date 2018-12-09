@@ -5854,6 +5854,13 @@ Running scripts at exit--time}.
 @end defun
 
 
+@defun mbfl_enable_location_cleanup_atexit
+@defunx mbfl_disable_location_cleanup_atexit
+Enable or disable running the location handlers through an atexit handler.  The enable operation
+registers an atexit handler that cleans up the current stack of locations.
+@end defun
+
+
 @menu
 * locations example1::          Single location, syntactic scoping.
 * locations example2::          Nested locations.

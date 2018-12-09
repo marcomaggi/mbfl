@@ -31,6 +31,11 @@
 declare -A mbfl_location_HANDLERS
 declare -i mbfl_location_COUNTER=0
 
+# Identifier from  the atexit module,  associated to the  atexit handler
+# that cleans up the stack of locations.
+#
+declare mbfl_location_ATEXIT_ID
+
 #page
 #### location delimiters
 
@@ -73,7 +78,6 @@ function mbfl_location_leave () {
 	done
 	unset -v mbfl_location_HANDLERS[${mbfl_location_COUNTER}:count]
 	let --mbfl_location_COUNTER
-
     fi
 }
 
@@ -83,6 +87,14 @@ function mbfl_location_run_all () {
     while ((0 < mbfl_location_COUNTER))
     do mbfl_location_leave
     done
+}
+
+function mbfl_location_enable_cleanup_atexit () {
+    mbfl_atexit_register mbfl_location_run_all mbfl_location_ATEXIT_ID
+}
+
+function mbfl_location_disable_cleanup_atexit () {
+    mbfl_atexit_forget $mbfl_location_ATEXIT_ID
 }
 
 #page
