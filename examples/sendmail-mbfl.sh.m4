@@ -320,7 +320,8 @@ function main () {
     mbfl_local_varref(OUFD, 4, -i)
     # Pathnames  of the  FIFOs used  to  talk to  the connector's  child
     # process.
-    local INFIFO OUFIFO
+    mbfl_local_varref(INFIFO)
+    mbfl_local_varref(OUFIFO)
     # The  PID of  the  connector external  program,  executed as  child
     # process.  If set to zero: it  means this process uses no connector
     # process.
@@ -342,11 +343,13 @@ function main () {
             connect_make_fifos_for_connector
             case $script_option_CONNECTOR in
 		gnutls)
-		    connect_using_gnutls mbfl_varname(INFD) mbfl_varname(OUFD) mbfl_varname(CONNECTOR_PID) \
+		    connect_using_gnutls mbfl_varname(INFD) mbfl_varname(OUFD) \
+					 mbfl_varname(CONNECTOR_PID) \
 					 "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
 		openssl)
-		    connect_using_openssl mbfl_varname(INFD) mbfl_varname(OUFD) mbfl_varname(CONNECTOR_PID) \
+		    connect_using_openssl mbfl_varname(INFD) mbfl_varname(OUFD) \
+					  mbfl_varname(CONNECTOR_PID) \
 					  "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
             esac
@@ -358,11 +361,13 @@ function main () {
             connect_make_fifos_for_connector
             case $script_option_CONNECTOR in
 		gnutls)
-		    connect_using_gnutls_starttls mbfl_varname(INFD) mbfl_varname(OUFD) mbfl_varname(CONNECTOR_PID) \
+		    connect_using_gnutls_starttls mbfl_varname(INFD) mbfl_varname(OUFD) \
+						  mbfl_varname(CONNECTOR_PID) \
 						  "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
 		openssl)
-		    connect_using_openssl_starttls mbfl_varname(INFD) mbfl_varname(OUFD) mbfl_varname(CONNECTOR_PID) \
+		    connect_using_openssl_starttls mbfl_varname(INFD) mbfl_varname(OUFD) \
+						   mbfl_varname(CONNECTOR_PID) \
 						   "$script_option_SMTP_HOSTNAME" "$script_option_SMTP_PORT"
 		    ;;
             esac
@@ -409,7 +414,7 @@ function validate_and_normalise_configuration () {
     # message  is requested:  the  message source  is  ignored.  If  the
     # message source is '-': we must read the message from the stdin.
     #
-    if mbfl_string_not_equal "$script_option_EMAIL_TEST_MESSAGE" 'yes'
+    if ! mbfl_string_is_yes "$script_option_EMAIL_TEST_MESSAGE"
     then
         if mbfl_string_is_empty "$script_option_EMAIL_MESSAGE_SOURCE"
 	then
@@ -511,6 +516,67 @@ function validate_and_normalise_configuration () {
 }
 
 #page
+#### connection data structure
+
+function connector_init () {
+    mbfl_mandatory_nameref_parameter(SELF, 1, struct reference variable)
+    local TMPDIR
+
+    # Input  and   output  file  descriptors  when   using  a  connector
+    # subprocess.  This  script reads from  INFD to acquire  output from
+    # the connector.   This script writes to  OUFD to send input  to the
+    # connector.
+    SELF[INFD]=3
+    SELF[OUFD]=4
+
+    if ! mbfl_file_find_tmpdir_var TMPDIR
+    then
+        mbfl_message_error 'unable to determine pathname of temporary directory'
+        exit_failure
+    fi
+
+    # Pathnames  of the  FIFOs used  to  talk to  the connector's  child
+    # process.
+    SELF[INFIFO]=${TMPDIR}/connector-to-script.${RANDOM}.$$
+    SELF[OUFIFO]=${TMPDIR}/script-to-connector.${RANDOM}.$$
+
+    # The  PID of  the  connector external  program,  executed as  child
+    # process.  If set to zero: it  means this process uses no connector
+    # process.
+    SELF[CONNECTOR_PID]=0
+}
+
+function connector_final () {
+    mbfl_mandatory_nameref_parameter(SELF, 1, struct reference variable)
+
+    if ((0 < ${SELF[CONNECTOR_PID]}))
+    then
+        #kill -SIGTERM $CONNECTOR_PID &>/dev/null
+	mbfl_message_debug_printf 'waiting for connector process (pid %d)' ${SELF[CONNECTOR_PID]}
+	wait ${SELF[CONNECTOR_PID]}
+	mbfl_message_debug_printf 'gathered connector process'
+    fi
+
+    # Remove the FIFOs.
+    if mbfl_file_is_file "${SELF[INFIFO]}"
+    then mbfl_file_remove "${SELF[INFIFO]}"
+    fi
+    if mbfl_file_is_file "${SELF[OUFIFO]}"
+    then mbfl_file_remove "${SELF[OUFIFO]}"
+    fi
+
+    # Close the file descriptors.
+    if ((0 << ${SELF[INFD]}))
+    then exec ${SELF[INFD]}<-
+    fi
+    if ((0 << ${SELF[OUFD]}))
+    then exec ${SELF[OUFD]}>-
+    fi
+
+    return 0
+}
+
+#page
 #### establishing connections to remote servers
 
 # Establish a plain connection with the selected SMTP server.  Read the
@@ -536,7 +602,22 @@ function connect_establish_plain_connection () {
     printf -v DEVICE '/dev/tcp/%s/%d' "$SMTP_HOSTNAME" "$SMTP_PORT"
     INFD_RV=3
     OUFD_RV=$INFD_RV
-    if eval "exec ${INFD_RV}<>\"\$DEVICE\""
+
+    # Notice how this works:
+    #
+    # 1. The external double quotes are processed, the line becomes:
+    #
+    #    eval exec 3<>"${DEVICE}"
+    #
+    # 2. The command "eval" is executed:
+    #
+    # 2.1. The internal double quotes are processed, the line becomes:
+    #
+    #    exec 3<>/dev/tcp/localhost/25
+    #
+    # 2.2. The command "exec" is executed.
+    #
+    if eval "exec ${INFD_RV}<>\"\${DEVICE}\""
     then recv 220
     else
         mbfl_message_error_printf 'failed establishing connection to %s:%d' "$SMTP_HOSTNAME" $SMTP_PORT
@@ -826,9 +907,26 @@ function connect_make_fifos_for_connector () {
 function connect_open_file_descriptors_to_fifos () {
     mbfl_mandatory_nameref_parameter(INFD, 1, input-from-connector file descriptor reference variable)
     mbfl_mandatory_nameref_parameter(OUFD, 2, output-from-connector file descriptor reference variable)
+
+    # Notice how this works:
+    #
+    # 1. The external double quotes are processed, the line becomes:
+    #
+    #    eval exec 3<>"${INFIFO}" 4>"${OUFIFO}"
+    #
+    # 2. The command "eval" is executed:
+    #
+    # 2.1. The internal double quotes are processed, the line becomes:
+    #
+    #    exec 3<>/tmp/connector-to-script.1234.555 4>script-to-connector.5678.555
+    #
+    # 2.2. The command "exec" is executed.
+    #
     eval "exec ${INFD}<>\"\${INFIFO}\" ${OUFD}>\"\${OUFIFO}\""
-    connect_cleanup_fifos
+
+    # Remove the EXIT trap that calls "connect_cleanup_fifos()".
     trap "" EXIT
+    connect_cleanup_fifos
     return 0
 }
 
@@ -843,27 +941,6 @@ function connect_cleanup_fifos () {
 #page
 #### basic reading operations from the server
 
-# We know that the reply from the  server is a line ending with carriage
-# return  + line  feed.   The  command "read"  has  stripped the  ending
-# linefeed.  Here we strip the ending carriage return, if any.
-#
-# We want to accept empty lines.
-#
-function strip_carriage_return_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_NAMEREF, 1, result variable name)
-    mbfl_optional_parameter(LINE, 2)
-    if mbfl_string_is_not_empty "$LINE"
-    then
-	mbfl_local_varref(CH)
-
-	mbfl_string_index_var mbfl_varname(CH) "$LINE" $((${#LINE} - 1))
-	if mbfl_string_equal "$CH" $'\r'
-	then RESULT_NAMEREF=${LINE:0:((${#LINE} - 1))}
-	else RESULT_NAMEREF=$LINE
-	fi
-    fi
-}
-
 # Read a line  from "INFD" and store  it in the variable  "REPLY" in the
 # environment  of the  caller.  When  successful return  zero; otherwise
 # exit the script with the appropriate exit code.
@@ -877,7 +954,7 @@ function read_from_server () {
 
     IFS= read -rs -t $READ_TIMEOUT -u $INFD REPLY
     EXIT_CODE=$?
-    strip_carriage_return_var REPLY "$REPLY"
+    mbfl_string_strip_carriage_return_var REPLY "$REPLY"
     mbfl_message_debug_printf 'recv: %s' "$REPLY"
     if ((0 == EXIT_CODE))
     then return 0
@@ -1050,7 +1127,7 @@ function read_and_send_message () {
 
     {
         local LINE
-        if test "$script_option_EMAIL_TEST_MESSAGE" = yes
+        if mbfl_string_is_yes "$script_option_EMAIL_TEST_MESSAGE"
         then
             # Here  we can  detect an  error  through the  exit code  of
             # "print_email_test_message".
