@@ -33,7 +33,10 @@
 
 source setup.sh
 
+#dotest-set-debug
+
 mbfl_atexit_enable
+mbfl_location_enable_cleanup_atexit
 mbfl_file_enable_remove
 
 mbfl_declare_program mkfifo
@@ -88,11 +91,11 @@ function fd-file-read-write-1.2 () {
 	mbfl_location_handler dotest-clean-files
 
 	mbfl_fd_open_output $OUFD "$TESTFILE"
-	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; echo ${FUNCNAME}: closed ${OUFD}"
+	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; dotest-debug '${FUNCNAME}: closed ${OUFD}'"
 	echo 1234 >&${OUFD}
 
 	mbfl_fd_open_input  $INFD "$TESTFILE"
-	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; echo ${FUNCNAME}: closed ${INFD}"
+	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; dotest-debug '${FUNCNAME}: closed ${INFD}'"
 	read -u ${INFD} LINE
     }
     mbfl_location_leave
@@ -114,11 +117,11 @@ function fd-file-read-write-2.1 () {
 	mbfl_location_handler dotest-clean-files
 
 	mbfl_fd_open_output $OUFD "$TESTFILE"
-	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; echo ${FUNCNAME}: closed ${OUFD}"
+	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; dotest-debug '${FUNCNAME}: closed ${OUFD}'"
 	echo 1234 >&${OUFD}
 
 	mbfl_fd_open_input  $INFD "$TESTFILE"
-	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; echo ${FUNCNAME}: closed ${INFD}"
+	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; dotest-debug '${FUNCNAME}: closed ${INFD}'"
 	read -u ${INFD} LINE
     }
     mbfl_location_leave
@@ -165,10 +168,10 @@ function fd-fifo-read-write-1.2 () {
 	program_mkfifo "$TESTFIFO"
 
 	mbfl_fd_open_input_output $INFD "$TESTFIFO"
-	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; echo ${FUNCNAME}: closed ${INFD}"
+	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; dotest-debug '${FUNCNAME}: closed ${INFD}'"
 
 	mbfl_fd_open_output       $OUFD "$TESTFIFO"
-	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; echo ${FUNCNAME}: closed ${OUFD}"
+	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; dotest-debug '${FUNCNAME}: closed ${OUFD}'"
 
 	echo 1234 >&${OUFD}
 	read -u ${INFD} LINE
@@ -187,13 +190,13 @@ function fd-fifo-read-write-1.3 () {
     {
 	mbfl_location_handler dotest-clean-files
 	program_mkfifo "$TESTFIFO"
-	mbfl_location_handler "mbfl_file_remove '${TESTFIFO}'; echo ${FUNCNAME}: removing FIFO"
+	mbfl_location_handler "mbfl_file_remove '${TESTFIFO}'; dotest-debug '${FUNCNAME}: removing FIFO'"
 
 	mbfl_fd_open_input_output $INFD "$TESTFIFO"
-	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; echo ${FUNCNAME}: closed ${INFD}"
+	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; dotest-debug '${FUNCNAME}: closed ${INFD}'"
 
 	mbfl_fd_open_output       $OUFD "$TESTFIFO"
-	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; echo ${FUNCNAME}: closed ${OUFD}"
+	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; dotest-debug '${FUNCNAME}: closed ${OUFD}'"
 
 	echo 1234 >&${OUFD}
 	read -u ${INFD} LINE
@@ -220,10 +223,10 @@ function fd-dup-fifo-read-write-1.1 () {
 	program_mkfifo "$TESTFIFO"
 
 	mbfl_fd_open_input_output $INFD "$TESTFIFO"
-	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; echo ${FUNCNAME}: closed ${INFD}"
+	mbfl_location_handler "mbfl_fd_close ${INFD}; CLOSED_INFD=true; dotest-debug '${FUNCNAME}: closed ${INFD}'"
 
 	mbfl_fd_open_output       $OUFD "$TESTFIFO"
-	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; echo ${FUNCNAME}: closed ${OUFD}"
+	mbfl_location_handler "mbfl_fd_close ${OUFD}; CLOSED_OUFD=true; dotest-debug '${FUNCNAME}: closed ${OUFD}'"
 
 	echo 1234 >&${OUFD}
 	read -u ${INFD} LINE1
@@ -231,10 +234,10 @@ function fd-dup-fifo-read-write-1.1 () {
 	mbfl_location_enter
 	{
 	    mbfl_fd_dup_input  $INFD $DUP_INFD
-	    mbfl_location_handler "mbfl_fd_close ${DUP_INFD}; echo ${FUNCNAME}: closed ${DUP_INFD}"
+	    mbfl_location_handler "mbfl_fd_close ${DUP_INFD}; dotest-debug '${FUNCNAME}: closed ${DUP_INFD}'"
 
-	    mbfl_fd_dup_output $INFD $DUP_OUFD
-	    mbfl_location_handler "mbfl_fd_close ${DUP_OUFD}; echo ${FUNCNAME}: closed ${DUP_OUFD}"
+	    mbfl_fd_dup_output $OUFD $DUP_OUFD
+	    mbfl_location_handler "mbfl_fd_close ${DUP_OUFD}; dotest-debug '${FUNCNAME}: closed ${DUP_OUFD}'"
 
 	    echo 5678 >&${DUP_OUFD}
 	    read -u ${DUP_INFD} LINE2
@@ -250,6 +253,69 @@ function fd-dup-fifo-read-write-1.1 () {
     dotest-debug LINE2="$LINE2"
     dotest-debug LINE3="$LINE3"
     dotest-equal '1234' "$LINE1" && dotest-equal '5678' "$LINE2" && dotest-equal '90' "$LINE3"
+}
+
+#page
+#### moving file descriptors
+
+# Write to a test FIFO, then read from it.  Use location handlers to
+# close the file descriptors.  Use duplicated file descriptors.
+#
+function fd-move-fifo-read-write-1.1 () {
+    local TESTFIFO=$(dotest-mkpathname fifo)
+    local INFD=3 OUFD=4 DUP_INFD=5 DUP_OUFD=6
+    local LINE
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler dotest-clean-files
+	program_mkfifo "$TESTFIFO"
+
+	mbfl_fd_open_input_output $INFD "$TESTFIFO"
+	mbfl_fd_open_output       $OUFD "$TESTFIFO"
+
+	mbfl_fd_move_input  $INFD $DUP_INFD
+	mbfl_location_handler "mbfl_fd_close ${DUP_INFD}; dotest-debug '${FUNCNAME}: closed ${DUP_INFD}'"
+
+	mbfl_fd_move_output $OUFD $DUP_OUFD
+	mbfl_location_handler "mbfl_fd_close ${DUP_OUFD}; dotest-debug '${FUNCNAME}: closed ${DUP_OUFD}'"
+
+	echo 1234 >&${DUP_OUFD}
+	read -u ${DUP_INFD} LINE
+    }
+    mbfl_location_leave
+
+    dotest-debug LINE="$LINE"
+    dotest-equal '1234' "$LINE"
+}
+
+### ------------------------------------------------------------------------
+
+function fd-move-file-read-write-1.1 () {
+    local TESTFIFO=$(dotest-mkpathname file)
+    local INFD=3 OUFD=4 DUP_INFD=5 DUP_OUFD=6
+    local LINE
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler dotest-clean-files
+
+	mbfl_fd_open_input_output $INFD "$TESTFIFO"
+	mbfl_fd_open_output       $OUFD "$TESTFIFO"
+
+	mbfl_fd_move_input  $INFD $DUP_INFD
+	mbfl_location_handler "mbfl_fd_close ${DUP_INFD}; dotest-debug '${FUNCNAME}: closed ${DUP_INFD}'"
+
+	mbfl_fd_move_output $OUFD $DUP_OUFD
+	mbfl_location_handler "mbfl_fd_close ${DUP_OUFD}; dotest-debug '${FUNCNAME}: closed ${DUP_OUFD}'"
+
+	echo 1234 >&${DUP_OUFD}
+	read -u ${DUP_INFD} LINE
+    }
+    mbfl_location_leave
+
+    dotest-debug LINE="$LINE"
+    dotest-equal '1234' "$LINE"
 }
 
 #page

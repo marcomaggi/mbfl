@@ -2330,6 +2330,7 @@ print a message.
 * fd open::                     Opening file descriptors.
 * fd close::                    Closing file descriptors.
 * fd dup::                      Duplicating file descriptors.
+* fd move::                     Moving file descriptors.
 @end menu
 
 @c page
@@ -2495,7 +2496,7 @@ mbfl_location_enter
         mbfl_fd_dup_input  $INFD $DUP_INFD
         mbfl_location_handler "mbfl_fd_close $@{DUP_INFD@}"
 
-        mbfl_fd_dup_output $INFD $DUP_OUFD
+        mbfl_fd_dup_output $OUFD $DUP_OUFD
         mbfl_location_handler "mbfl_fd_close $@{DUP_OUFD@}"
 
         echo 5678 >&$@{DUP_OUFD@}
@@ -2509,6 +2510,44 @@ mbfl_location_enter
 mbfl_location_leave
 
 echo $LINE1 $LINE2 $LINE3
+@end example
+
+@c page
+@node fd move
+@section Moving file descriptors
+
+
+@defun mbfl_fd_move_input @var{SRCFD} @var{DSTFD}
+@defunx mbfl_fd_move_output @var{SRCFD} @var{DSTFD}
+Move the source file descriptor @var{SRCFD} to the destination file descriptor @var{DSTFD}.  The
+source file descriptor is closed.
+@end defun
+
+
+Let's see how we can use a file for reading and writing with two moved file descriptors:
+
+@example
+declare TESTFILE=/path/to/file.ext
+declare INFD=3 OUFD=4 DUP_INFD=5 DUP_OUFD=6
+declare LINE
+
+mbfl_location_enter
+@{
+    mbfl_fd_open_input_output $INFD "$TESTFILE"
+    mbfl_fd_open_output       $OUFD "$TESTFILE"
+
+    mbfl_fd_move_input  $INFD $DUP_INFD
+    mbfl_location_handler "mbfl_fd_close $@{DUP_INFD@}"
+
+    mbfl_fd_move_output $OUFD $DUP_OUFD
+    mbfl_location_handler "mbfl_fd_close $@{DUP_OUFD@}"
+
+    echo 1234 >&$@{DUP_OUFD@}
+    read -u $@{DUP_INFD@} LINE
+@}
+mbfl_location_leave
+
+echo LINE="$LINE"
 @end example
 
 @c page

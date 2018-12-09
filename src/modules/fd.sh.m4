@@ -120,6 +120,27 @@ function mbfl_fd_dup_output () {
     eval "exec ${DSTFD}>&${SRCFD}"
 }
 
+#page
+#### moving file descriptors
+
+function mbfl_fd_move_input () {
+    mbfl_mandatory_parameter(SRCFD, 1, source file descriptor)
+    mbfl_mandatory_parameter(DSTFD, 2, dest file descriptor)
+
+    MBFL_CHECK_FD($SRCFD, 1)
+    MBFL_CHECK_FD($DSTFD, 2)
+    eval "exec ${DSTFD}<&${SRCFD}-"
+}
+
+function mbfl_fd_move_output () {
+    mbfl_mandatory_parameter(SRCFD, 1, source file descriptor)
+    mbfl_mandatory_parameter(DSTFD, 2, dest file descriptor)
+
+    MBFL_CHECK_FD($SRCFD, 1)
+    MBFL_CHECK_FD($DSTFD, 2)
+    eval "exec ${DSTFD}<&${SRCFD}-"
+}
+
 ### end of file
 # Local Variables:
 # mode: sh
