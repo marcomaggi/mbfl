@@ -1,0 +1,83 @@
+# bash-feature-coproc.test --
+#
+# Part of: Marco's BASH Functions Library
+# Contents: tests for the Bash feature "coproc"
+# Date: Mon Dec 10, 2018
+#
+# Abstract
+#
+#	To select the tests in this file:
+#
+#		$ make all test file=bash-feature-coproc
+#
+# Copyright (c) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+#
+# This is free  software you can redistribute it  and/or modify it under
+# the terms of  the GNU General Public License as  published by the Free
+# Software Foundation; either  version 3, or (at your  option) any later
+# version.
+#
+# This  file is  distributed in  the hope  that it  will be  useful, but
+# WITHOUT   ANY  WARRANTY;  without   even  the   implied  warranty   of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# General Public License for more details.
+#
+# You  should have received  a copy  of the  GNU General  Public License
+# along with this file; see the file COPYING.  If not, write to the Free
+# Software Foundation,  Inc., 59  Temple Place -  Suite 330,  Boston, MA
+# 02111-1307, USA.
+#
+
+#page
+#### setup
+
+source setup.sh
+
+#page
+#### chatting with a coprocess
+
+function coproc-1.1 () {
+    local LINE1 LINE2 EXIT_CODE
+
+    coproc worker-coproc-1.1
+
+    if read -t 4 -u ${COPROC[0]} LINE1
+    then
+	printf 'hello slave\n' >&${COPROC[1]}
+	if read -t 4 -u ${COPROC[0]} LINE2
+	then printf 'bye slave\n' >&${COPROC[1]}
+	else return 1
+	fi
+    else return 1
+    fi
+
+    wait $COPROC_PID
+    EXIT_CODE=$?
+    dotest-equal 0 $EXIT_CODE && dotest-equal 'hello master' "$LINE1" && dotest-equal 'bye master' "$LINE2"
+}
+function worker-coproc-1.1 () {
+    local LINE1 LINE2
+
+    printf 'hello master\n'
+    if read -t 4 LINE1
+    then
+	printf 'bye master\n'
+	if ! read -t 4 LINE2
+	then exit 1
+	fi
+    else exit 1
+    fi
+    dotest-equal 'hello slave' "$LINE1" && dotest-equal 'bye slave' "$LINE2"
+    exit $?
+}
+
+#page
+#### let's go
+
+dotest coproc-
+dotest-final-report
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

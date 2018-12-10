@@ -245,6 +245,8 @@ EXTRA_DIST	+= \
 	tests/times-and-dates.test	\
 	tests/variable.test		\
 	\
+	tests/bash-feature-coproc.test	\
+	\
 	tests/setup.sh			\
 	tests/signaltest.sh
 
@@ -289,7 +291,9 @@ TESTS			= \
 	tests/string.test		\
 	tests/system.test		\
 	tests/times-and-dates.test	\
-	tests/variable.test
+	tests/variable.test		\
+	\
+	tests/bash-feature-coproc.test
 
 ## --------------------------------------------------------------------
 ## additional test rules
