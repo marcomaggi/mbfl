@@ -225,6 +225,43 @@ function locations-04.1 () {
 }
 
 #page
+#### running location handlers upon exiting a script
+
+function locations-05.1 () {
+    local LINE1 LINE2 EXIT_CODE
+
+    coproc worker-locations-05.1
+
+    if ! read -t 4 -u ${COPROC[0]} LINE1
+    then return 1
+    fi
+
+    if ! read -t 4 -u ${COPROC[0]} LINE2
+    then return 1
+    fi
+
+    wait $COPROC_PID
+    EXIT_CODE=$?
+
+    dotest-equal 0 $EXIT_CODE && dotest-equal 456 "$LINE1" && dotest-equal 123 "$LINE2"
+}
+function worker-locations-05.1 () {
+    mbfl_atexit_enable
+    mbfl_location_enable_cleanup_atexit
+
+    #dotest-set-debug
+    dotest-debug "worker function"
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'echo 123'
+	mbfl_location_handler 'echo 456'
+	exit 0
+    }
+    mbfl_location_leave
+}
+
+#page
 #### internals inspection
 
 # After all the tests we have run: the counter must be back to zero.
