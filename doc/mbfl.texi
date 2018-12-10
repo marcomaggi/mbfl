@@ -6165,6 +6165,23 @@ codes starting from @code{3} and increasing.  The exit codes @code{0} and @code{
 the functions @bfunc{exit_because_success} and @bfunc{exit_because_failure}.
 
 
+@defun mbfl_exit
+Wrapper for the @command{exit} command that updates the internal state.
+@end defun
+
+
+@defvar mbfl_main_pending_EXIT_CODE
+Set by @bfunc{mbfl_exit} to the exit code this script is using.  This variable might be accessed by
+atexit commands to appropriately react to an error condition.
+@end defvar
+
+
+@defun mbfl_main_is_exiting
+Return true if the script is exiting.  This function might be called by a location command being run
+by an atexit command.
+@end defun
+
+
 @defun mbfl_main_declare_exit_code @var{code} @var{name}
 Declare an exit code with value @var{code} and identifier @var{name}.
 @end defun
@@ -6183,7 +6200,7 @@ mbfl_main_declare_exit_code 4 unexistent_file
 a function is created with:
 
 @example
-function exit_because_unexistent_file () @{ exit 4; @}
+function exit_because_unexistent_file () @{ mbfl_exit 4; @}
 @end example
 
 @noindent

@@ -139,7 +139,21 @@ then
 
     mbfl_main_EXIT_CODES[13]=89
     mbfl_main_EXIT_NAMES[13]=no_location
+
+    declare mbfl_main_EXITING=false
+    declare -i mbfl_main_pending_EXIT_CODE=0
 fi
+
+function mbfl_main_is_exiting () {
+    $mbfl_main_EXITING
+}
+function mbfl_exit () {
+    mbfl_optional_parameter(CODE, 1, 0)
+
+    mbfl_main_pending_EXIT_CODE=$CODE
+    mbfl_main_EXITING=true
+    exit $CODE
+}
 
 function exit_success () {
     exit_because_success
@@ -162,7 +176,7 @@ function mbfl_main_create_exit_functions () {
     for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do
         name=exit_because_${mbfl_main_EXIT_NAMES[${i}]}
-        eval function "$name" "()" "{ exit ${mbfl_main_EXIT_CODES[${i}]}; }"
+        eval function "$name" "()" "{ mbfl_exit ${mbfl_main_EXIT_CODES[${i}]}; }"
 	name=return_because_${mbfl_main_EXIT_NAMES[${i}]}
 	alias $name="return ${mbfl_main_EXIT_CODES[${i}]}"
     done
