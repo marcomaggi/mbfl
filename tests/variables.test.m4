@@ -118,9 +118,400 @@ function variable-alloc-1.1 () {
 }
 
 #page
+#### local variable references, simple variables
+
+# Local varref, no init value, no attributes.  Variable set and ref.
+#
+function varref-local-simple-1.1 () {
+    mbfl_local_varref(VAR)
+
+    VAR=123
+    dotest-equal 123 "$VAR"
+}
+
+# Local varref, init value, no attributes.  Variable set and ref.
+#
+function varref-local-simple-1.2 () {
+    mbfl_local_varref(VAR,, -i)
+
+    VAR=123
+    dotest-equal 123 "$VAR"
+}
+
+# Local varref, init value, attributes.  Variable set and ref.
+#
+function varref-local-simple-1.3 () {
+    mbfl_local_varref(VAR, 123, -i)
+
+    dotest-equal 123 "$VAR"
+}
+
+# Local varref, init value, no attributes.  Variable set and ref.
+#
+function varref-local-simple-1.4 () {
+    mbfl_local_varref(VAR, 123)
+
+    dotest-equal 123 "$VAR"
+}
+
+### ------------------------------------------------------------------------
+
+# Local varref, no init value, no attributes.  Variable set and ref in a
+# sub-function.
+#
+function varref-local-simple-2.1 () {
+    mbfl_local_varref(VAR)
+    local RV
+
+    worker-varref-local-simple-2.1 mbfl_varname(VAR) RV
+
+    dotest-equal 123 "$RV" && dotest-equal 123 "$VAR"
+}
+function worker-varref-local-simple-2.1 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 VAR=$VAR"
+
+    VAR=123
+    RV="$VAR"
+}
+
+#page
+#### local variable references, array variables
+
+# Local varref, no init value, no attributes.  Variable set and ref.
+#
+function varref-local-array-1.1 () {
+    mbfl_local_varref(VAR)
+
+    VAR[KEY]=123
+    dotest-equal 123 "${VAR[KEY]}"
+}
+
+# Local varref, init value, no attributes.  Variable set and ref.
+#
+function varref-local-array-1.2 () {
+    mbfl_local_varref(VAR,, -A)
+
+    VAR[KEY]=123
+    dotest-equal 123 "${VAR[KEY]}"
+}
+
+### ------------------------------------------------------------------------
+
+# Local varref, no init value, no attributes.  Variable set and ref in a
+# sub-function.
+#
+function varref-local-array-2.1 () {
+    mbfl_local_varref(VAR)
+    local RV
+
+    worker-varref-local-array-2.1 mbfl_varname(VAR) RV
+
+    dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
+}
+function worker-varref-local-array-2.1 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 VAR=$VAR"
+
+    VAR[KEY]=123
+    RV="${VAR[KEY]}"
+}
+
+### ------------------------------------------------------------------------
+
+# Local  varref, no  init value,  no attributes.   Variable set  in the
+# uplevel function, lower level function.
+#
+function varref-local-array-2.2 () {
+    mbfl_local_varref(VAR)
+    local RV
+
+    VAR[KEY]=123
+    worker-varref-local-array-2.2 mbfl_varname(VAR) RV
+
+    dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
+}
+function worker-varref-local-array-2.2 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 VAR=$VAR"
+
+    RV="${VAR[KEY]}"
+}
+
+### ------------------------------------------------------------------------
+
+# Local varref, no init value,  associative array attribute.  A value of
+# the array is itself  a local varref.  Another value of  the array is a
+# simple value.
+#
+function varref-local-array-3.1 () {
+    mbfl_local_varref(ARRY,,-A)
+    mbfl_local_varref(VAR)
+    local RV1 RV2
+
+    ARRY[KEY]=mbfl_varname(VAR)
+    ARRY[VAL]=456
+    worker-varref-local-array-3.1 mbfl_varname(ARRY) RV1 RV2
+
+    dotest-equal 123 "$VAR" && \
+	dotest-equal 456 "${ARRY[VAL]}" && \
+	dotest-equal 123 "$RV1" && \
+	dotest-equal 456 "$RV2"
+}
+function worker-varref-local-array-3.1 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV1, 2, result variable reference)
+    mbfl_mandatory_nameref_parameter(RV2, 3, result variable reference)
+    local -n VAR=${ARRY[KEY]}
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 ARRY[KEY]=${ARRY[KEY]}"
+    VAR=123
+    RV1=$VAR
+    RV2=${ARRY[VAL]}
+}
+
+### ------------------------------------------------------------------------
+
+# Local varref, no init value, array attribute.  A value of the array is
+# itself a local varref.  Another value of the array is a simple value.
+#
+function varref-local-array-3.2 () {
+    mbfl_local_varref(ARRY,,-a)
+    mbfl_local_varref(VAR)
+    local RV1 RV2
+
+    ARRY[1]=mbfl_varname(VAR)
+    ARRY[2]=456
+    worker-varref-local-array-3.2 mbfl_varname(ARRY) RV1 RV2
+
+    dotest-equal 123 "$VAR" && \
+	dotest-equal 456 "${ARRY[2]}" && \
+	dotest-equal 123 "$RV1" && \
+	dotest-equal 456 "$RV2"
+}
+function worker-varref-local-array-3.2 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV1, 2, result variable reference)
+    mbfl_mandatory_nameref_parameter(RV2, 3, result variable reference)
+    local -n VAR=${ARRY[1]}
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 ARRY[1]=${ARRY[1]}"
+    VAR=123
+    RV1=$VAR
+    RV2=${ARRY[2]}
+}
+
+#page
+#### global variable references, simple variables
+
+# Global varref, no init value, no attributes.  Variable set and ref.
+#
+function varref-global-simple-1.1 () {
+    mbfl_global_varref(VAR)
+
+    VAR=123
+    dotest-equal 123 "$VAR"
+}
+
+# Global varref, init value, no attributes.  Variable set and ref.
+#
+function varref-global-simple-1.2 () {
+    mbfl_global_varref(VAR,, -i)
+
+    VAR=123
+    dotest-equal 123 "$VAR"
+}
+
+# Global varref, init value, attributes.  Variable set and ref.
+#
+function varref-global-simple-1.3 () {
+    mbfl_global_varref(VAR, 123, -i)
+
+    dotest-equal 123 "$VAR"
+}
+
+# Global varref, init value, no attributes.  Variable set and ref.
+#
+function varref-global-simple-1.4 () {
+    mbfl_global_varref(VAR, 123)
+
+    dotest-equal 123 "$VAR"
+}
+
+### ------------------------------------------------------------------------
+
+# Global varref, no init value, no attributes.  Variable set and ref in a
+# sub-function.
+#
+function varref-global-simple-2.1 () {
+    mbfl_global_varref(VAR)
+    local RV
+
+    worker-varref-global-simple-2.1 mbfl_varname(VAR) RV
+
+    dotest-equal 123 "$RV" && dotest-equal 123 "$VAR"
+}
+function worker-varref-global-simple-2.1 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 VAR=$VAR"
+
+    VAR=123
+    RV="$VAR"
+}
+
+#page
+#### global variable references, array variables
+
+# Global varref, no init value, no attributes.  Variable set and ref.
+#
+function varref-global-array-1.1 () {
+    mbfl_global_varref(VAR)
+
+    VAR[KEY]=123
+    dotest-equal 123 "${VAR[KEY]}"
+}
+
+# Global varref, init value, no attributes.  Variable set and ref.
+#
+function varref-global-array-1.2 () {
+    mbfl_global_varref(VAR,, -A)
+
+    VAR[KEY]=123
+    dotest-equal 123 "${VAR[KEY]}"
+}
+
+### ------------------------------------------------------------------------
+
+# Global varref, no init value, no attributes.  Variable set and ref in a
+# sub-function.
+#
+function varref-global-array-2.1 () {
+    mbfl_global_varref(VAR)
+    local RV
+
+    worker-varref-global-array-2.1 mbfl_varname(VAR) RV
+
+    dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
+}
+function worker-varref-global-array-2.1 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 VAR=$VAR"
+
+    VAR[KEY]=123
+    RV="${VAR[KEY]}"
+}
+
+### ------------------------------------------------------------------------
+
+# Global  varref, no  init value,  no attributes.   Variable set  in the
+# uplevel function, lower level function.
+#
+function varref-global-array-2.2 () {
+    mbfl_global_varref(VAR)
+    local RV
+
+    VAR[KEY]=123
+    worker-varref-global-array-2.2 mbfl_varname(VAR) RV
+
+    dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
+}
+function worker-varref-global-array-2.2 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 VAR=$VAR"
+
+    RV="${VAR[KEY]}"
+}
+
+### ------------------------------------------------------------------------
+
+# Global varref, no init value,  associative array attribute.  A value of
+# the array is itself  a global varref.  Another value of  the array is a
+# simple value.
+#
+function varref-global-array-3.1 () {
+    mbfl_global_varref(ARRY,,-A)
+    mbfl_global_varref(VAR)
+    local RV1 RV2
+
+    ARRY[KEY]=mbfl_varname(VAR)
+    ARRY[VAL]=456
+    worker-varref-global-array-3.1 mbfl_varname(ARRY) RV1 RV2
+
+    dotest-equal 123 "$VAR" && \
+	dotest-equal 456 "${ARRY[VAL]}" && \
+	dotest-equal 123 "$RV1" && \
+	dotest-equal 456 "$RV2"
+}
+function worker-varref-global-array-3.1 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV1, 2, result variable reference)
+    mbfl_mandatory_nameref_parameter(RV2, 3, result variable reference)
+    local -n VAR=${ARRY[KEY]}
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 ARRY[KEY]=${ARRY[KEY]}"
+    VAR=123
+    RV1=$VAR
+    RV2=${ARRY[VAL]}
+}
+
+### ------------------------------------------------------------------------
+
+# Global varref, no init value, array attribute.  A value of the array is
+# itself a global varref.  Another value of the array is a simple value.
+#
+function varref-global-array-3.2 () {
+    mbfl_global_varref(ARRY,,-a)
+    mbfl_global_varref(VAR)
+    local RV1 RV2
+
+    ARRY[1]=mbfl_varname(VAR)
+    ARRY[2]=456
+    worker-varref-global-array-3.2 mbfl_varname(ARRY) RV1 RV2
+
+    dotest-equal 123 "$VAR" && \
+	dotest-equal 456 "${ARRY[2]}" && \
+	dotest-equal 123 "$RV1" && \
+	dotest-equal 456 "$RV2"
+}
+function worker-varref-global-array-3.2 () {
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+    mbfl_mandatory_nameref_parameter(RV1, 2, result variable reference)
+    mbfl_mandatory_nameref_parameter(RV2, 3, result variable reference)
+    local -n VAR=${ARRY[1]}
+
+    #dotest-set-debug
+    dotest-debug "VARNAME=$1 ARRY[1]=${ARRY[1]}"
+    VAR=123
+    RV1=$VAR
+    RV2=${ARRY[2]}
+}
+
+#page
 #### let's go
 
 dotest variable-
+dotest varref-
 dotest-final-report
 
 ### end of file
