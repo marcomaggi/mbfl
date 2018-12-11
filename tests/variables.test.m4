@@ -286,7 +286,7 @@ function worker-varref-local-array-3.1 () {
 # itself a local varref.  Another value of the array is a simple value.
 #
 function varref-local-array-3.2 () {
-    mbfl_local_varref(ARRY,,-a)
+    mbfl_local_index_array_varref(ARRY)
     mbfl_local_varref(VAR)
     local RV1 RV2
 
@@ -481,7 +481,7 @@ function worker-varref-global-array-3.1 () {
 # itself a global varref.  Another value of the array is a simple value.
 #
 function varref-global-array-3.2 () {
-    mbfl_global_varref(ARRY,,-a)
+    mbfl_global_index_array_varref(ARRY)
     mbfl_global_varref(VAR)
     local RV1 RV2
 

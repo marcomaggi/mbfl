@@ -968,6 +968,18 @@ data variable.
 @end deffn
 
 
+@deffn {Preprocessor Macro} mbfl_local_index_array_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+Like @bfunc{mbfl_local_varref} but always include the @code{-a} option to the @command{local}
+definition of the data variable.  This makes the data variable an indexed array.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_local_assoc_array_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+Like @bfunc{mbfl_local_varref} but always include the @code{-A} option to the @command{local}
+definition of the data variable.  This makes the data variable an associative array.
+@end deffn
+
+
 @deffn {Preprocessor Macro} mbfl_global_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
 Expands into:
 
@@ -989,6 +1001,18 @@ Define a @strong{local} ``proxy variable'' @var{VARNAME} referencing a @strong{g
 variable'' with unique name.  The data variable has the optional attributes @var{DECLARE_OPTIONS}.
 A further @strong{local} ``name variable'' @code{mbfl_a_varname_@var{VARNAME}} holds the name of the
 data variable.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_global_index_array_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
+Like @bfunc{mbfl_global_varref} but always include the @code{-a} option to the @command{declare}
+definition of the data variable.  This makes the data variable an indexed array.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_global_assoc_array_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
+Like @bfunc{mbfl_global_varref} but always include the @code{-A} option to the @command{declare}
+definition of the data variable.  This makes the data variable an associative array.
 @end deffn
 
 

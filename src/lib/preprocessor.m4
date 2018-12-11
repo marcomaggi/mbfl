@@ -128,6 +128,11 @@ m4_define([[[mbfl_global_varref]]],[[[m4_dnl
   m4_ifelse($2,,,$1=$2)m4_dnl
 ]]])
 
+m4_define([[[mbfl_local_index_array_varref]]],[[[mbfl_local_varref($1,$2,-a $3)]]])
+m4_define([[[mbfl_local_assoc_array_varref]]],[[[mbfl_local_varref($1,$2,-A $3)]]])
+m4_define([[[mbfl_global_index_array_varref]]],[[[mbfl_global_varref($1,$2,-a $3)]]])
+m4_define([[[mbfl_global_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3)]]])
+
 m4_define([[[mbfl_varname]]],[[[$mbfl_a_varname_$1]]])
 
 m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
