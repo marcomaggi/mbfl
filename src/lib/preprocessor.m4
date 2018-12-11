@@ -73,12 +73,16 @@ dnl Synopsis:
 dnl
 dnl   mbfl_local_varref(VARNAME, INIT_VALUE, LOCAL_OPTIONS)
 dnl
-dnl Expands into:
+dnl It expands into:
 dnl
 dnl   local mbfl_a_varname_VARNAME
 dnl   mbfl_variable_alloc mbfl_a_varname_VARNAME
-dnl   local LOCAL_OPTIONS $mbfl_a_varname_VARNAME=INIT_VALUE
+dnl   local LOCAL_OPTIONS $mbfl_a_varname_VARNAME
 dnl   local -n VARNAME=$mbfl_a_varname_VARNAME
+dnl
+dnl and when INIT_VALUE is not empty, it finishes with:
+dnl
+dnl   VARNAME=INIT_VALUE
 dnl
 dnl Define a  local "proxy variable"  VARNAME referencing a  local "data
 dnl variable"  with unique  name.  The  data variable  has the  optional
@@ -88,8 +92,9 @@ dnl
 m4_define([[[mbfl_local_varref]]],[[[m4_dnl
   local mbfl_a_varname_$1
   mbfl_variable_alloc mbfl_a_varname_$1
-  local $3 $[[[mbfl_a_varname_$1]]]=$2
+  local $3 $[[[mbfl_a_varname_$1]]]
   local -n $1=$[[[]]]mbfl_a_varname_$1
+  m4_ifelse($2,,,$1=$2)m4_dnl
 ]]])
 
 dnl Synopsis:
@@ -98,10 +103,14 @@ dnl   mbfl_global_varref(VARNAME, INIT_VALUE, GLOBAL_OPTIONS)
 dnl
 dnl Expands into:
 dnl
-dnl   declare -g mbfl_a_varname_VARNAME
+dnl   local mbfl_a_varname_VARNAME
 dnl   mbfl_variable_alloc mbfl_a_varname_VARNAME
-dnl   declare -g GLOBAL_OPTIONS $mbfl_a_varname_VARNAME=INIT_VALUE
-dnl   declare -g -n VARNAME=$mbfl_a_varname_VARNAME
+dnl   declare -g GLOBAL_OPTIONS $mbfl_a_varname_VARNAME
+dnl   local -n VARNAME=$mbfl_a_varname_VARNAME
+dnl
+dnl and when INIT_VALUE is not empty, it finishes with:
+dnl
+dnl   VARNAME=INIT_VALUE
 dnl
 dnl Define a global "proxy variable"  VARNAME referencing a global "data
 dnl variable"  with unique  name.  The  data variable  has the  optional
@@ -109,10 +118,11 @@ dnl attributes    GLOBAL_OPTIONS.     A    further    global    variable
 dnl mbfl_a_varname_VARNAME holds the name of the data variable.
 dnl
 m4_define([[[mbfl_global_varref]]],[[[m4_dnl
-  declare -g mbfl_a_varname_$1
+  local mbfl_a_varname_$1
   mbfl_variable_alloc mbfl_a_varname_$1
-  declare -g $3 $[[[mbfl_a_varname_$1]]]=$2
-  declare -g -n $1=$[[[]]]mbfl_a_varname_$1
+  declare -g $3 $[[[mbfl_a_varname_$1]]]
+  local   -n $1=$[[[]]]mbfl_a_varname_$1
+  m4_ifelse($2,,,$1=$2)m4_dnl
 ]]])
 
 m4_define([[[mbfl_varname]]],[[[$mbfl_a_varname_$1]]])

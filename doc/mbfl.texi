@@ -938,8 +938,15 @@ Expand into:
 @example
 local mbfl_a_varname_@var{VARNAME}
 mbfl_variable_alloc mbfl_a_varname_@var{VARNAME}
-local @var{LOCAL_OPTIONS} $mbfl_a_varname_@var{VARNAME}=@var{INIT_VALUE}
+local @var{LOCAL_OPTIONS} $mbfl_a_varname_@var{VARNAME}
 local -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+@end example
+
+@noindent
+and when @var{INIT_VALUE} is @strong{not} empty, it finishes with:
+
+@example
+@var{VARNAME}=@var{INIT_VALUE}
 @end example
 
 Define a local ``proxy variable'' @var{VARNAME} referencing a local ``data variable'' with unique
@@ -952,10 +959,17 @@ name.  The data variable has the optional attributes @var{LOCAL_OPTIONS}.  A fur
 Expand into:
 
 @example
-declare -g mbfl_a_varname_@var{VARNAME}
+local mbfl_a_varname_@var{VARNAME}
 mbfl_variable_alloc mbfl_a_varname_@var{VARNAME}
-declare -g @var{GLOBAL_OPTIONS} $mbfl_a_varname_@var{VARNAME}=@var{INIT_VALUE}
-declare -g -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+declare -g @var{GLOBAL_OPTIONS} $mbfl_a_varname_@var{VARNAME}
+local -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+@end example
+
+@noindent
+and when @var{INIT_VALUE} is @strong{not} empty, it finishes with:
+
+@example
+@var{VARNAME}=@var{INIT_VALUE}
 @end example
 
 Define a global ``proxy variable'' @var{VARNAME} referencing a global ``data variable'' with unique
