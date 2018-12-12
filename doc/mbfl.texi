@@ -653,6 +653,8 @@ without the preprocessor.
 * preprocessor parameters::     Function parameters handling.
 * preprocessor arguments::      Script arguments handling.
 * preprocessor varrefs::        Variable name references.
+* preprocessor strings::        Manipulating strings with macros.
+* preprocessor arrays::         Manipulating arrays with macros.
 @end menu
 
 @c page
@@ -1042,6 +1044,64 @@ unset -v @var{VARNAME}
 @end example
 
 Unset all the proxy variable @var{VARNAME} and all the variables associated to it.
+@end deffn
+
+@c page
+@node preprocessor strings
+@section Manipulating strings with macros
+
+
+@deffn {Preprocessor Macros} mbfl_string_len (@var{VAR})
+Expands into the expression:
+
+@example
+$@{#@var{VAR}@}
+@end example
+
+@noindent
+which evaluates to the number of characters in the string in the variable @var{VAR}.
+@end deffn
+
+
+@deffn {Preprocessor Macros} mbfl_string_idx (@var{VAR}, @var{EXPR})
+Expands into the expression:
+
+@example
+$@{@var{VAR}:@var{EXPR}:1@}
+@end example
+
+@noindent
+which evaluates to the character at index @var{EXPR} in the string in the variable @var{VAR}.
+@end deffn
+
+@c page
+@node preprocessor arrays
+@section Manipulating arrays with macros
+
+
+@deffn {Preprocessor Macros} mbfl_slot_ref (@var{VAR}, @var{KEY})
+Expands into the expression:
+
+@example
+$@{@var{VAR}[@var{KEY}]@}
+@end example
+
+@noindent
+which evaluates to the value of the slot @var{KEY} in the array variable @var{VAR}.  This macro
+works with both indexed and associative arrays.
+@end deffn
+
+
+@deffn {Preprocessor Macros} mbfl_slot_set (@var{VAR}, @var{KEY}, @var{EXPR})
+Expands into the expression:
+
+@example
+@var{VAR}[@var{KEY}]=@var{EXPR}
+@end example
+
+@noindent
+which stores the value of @var{EXPR} in the slot @var{KEY} of the array variable @var{VAR}.  This
+macro works with both indexed and associative arrays.
 @end deffn
 
 @c page

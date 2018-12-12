@@ -1,4 +1,4 @@
-y# string.test --
+# string.test --
 #
 # Part of: Marco's BASH function libraries
 # Contents: tests for the string library
@@ -145,6 +145,20 @@ function string-length-1.2 () {
 
 function string-length-1.3 () {
     mbfl_string_length abcdefghilm | dotest-output 11
+}
+
+### --------------------------------------------------------------------
+
+function string-len-1.1 () {
+    local VAR=ciao
+
+    dotest-equal 4 mbfl_string_len(VAR)
+}
+
+function string-len-1.2 () {
+    local VAR=
+
+    dotest-equal 0 mbfl_string_len(VAR)
 }
 
 ### --------------------------------------------------------------------
