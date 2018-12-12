@@ -43,8 +43,8 @@ m4_define([[[mbfl_optional_parameter]]],[[[local $1="${$2:-$3}"]]])
 m4_define([[[mbfl_optional_integer_parameter]]],[[[local -i $1="${$2:-$3}"]]])
 
 m4_define([[[mbfl_mandatory_nameref_parameter]]],[[[m4_dnl
-local mbfl_a_varname_$1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}
-local -n $1=$[[[]]]mbfl_a_varname_$1
+local mbfl_a_variable_$1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}
+local -n $1=$[[[]]]mbfl_a_variable_$1
 ]]])
 
 
@@ -93,10 +93,10 @@ m4_dnl   mbfl_local_varref(VARNAME, INIT_VALUE, LOCAL_OPTIONS)
 m4_dnl
 m4_dnl It expands into:
 m4_dnl
-m4_dnl   local mbfl_a_varname_VARNAME
-m4_dnl   mbfl_variable_alloc mbfl_a_varname_VARNAME
-m4_dnl   local LOCAL_OPTIONS $mbfl_a_varname_VARNAME
-m4_dnl   local -n VARNAME=$mbfl_a_varname_VARNAME
+m4_dnl   local mbfl_a_variable_VARNAME
+m4_dnl   mbfl_variable_alloc mbfl_a_variable_VARNAME
+m4_dnl   local LOCAL_OPTIONS $mbfl_a_variable_VARNAME
+m4_dnl   local -n VARNAME=$mbfl_a_variable_VARNAME
 m4_dnl
 m4_dnl and when INIT_VALUE is not empty, it finishes with:
 m4_dnl
@@ -105,13 +105,13 @@ m4_dnl
 m4_dnl Define a  local "proxy variable"  VARNAME referencing a  local "data
 m4_dnl variable"  with unique  name.  The  data variable  has the  optional
 m4_dnl attributes    LOCAL_OPTIONS.      A    further     local    variable
-m4_dnl mbfl_a_varname_VARNAME holds the name of the data variable.
+m4_dnl mbfl_a_variable_VARNAME holds the name of the data variable.
 m4_dnl
 m4_define([[[mbfl_local_varref]]],[[[m4_dnl
-  local mbfl_a_varname_$1
-  mbfl_variable_alloc mbfl_a_varname_$1
-  local $3 $[[[mbfl_a_varname_$1]]]
-  local -n $1=$[[[]]]mbfl_a_varname_$1
+  local mbfl_a_variable_$1
+  mbfl_variable_alloc mbfl_a_variable_$1
+  local $3 $[[[mbfl_a_variable_$1]]]
+  local -n $1=$[[[]]]mbfl_a_variable_$1
   m4_ifelse($2,,,$1=$2)m4_dnl
 ]]])
 
@@ -121,10 +121,10 @@ m4_dnl   mbfl_global_varref(VARNAME, INIT_VALUE, DECLARE_OPTIONS)
 m4_dnl
 m4_dnl Expands into:
 m4_dnl
-m4_dnl   local mbfl_a_varname_VARNAME
-m4_dnl   mbfl_variable_alloc mbfl_a_varname_VARNAME
-m4_dnl   declare -g DECLARE_OPTIONS $mbfl_a_varname_VARNAME
-m4_dnl   local -n VARNAME=$mbfl_a_varname_VARNAME
+m4_dnl   local mbfl_a_variable_VARNAME
+m4_dnl   mbfl_variable_alloc mbfl_a_variable_VARNAME
+m4_dnl   declare -g DECLARE_OPTIONS $mbfl_a_variable_VARNAME
+m4_dnl   local -n VARNAME=$mbfl_a_variable_VARNAME
 m4_dnl
 m4_dnl and when INIT_VALUE is not empty, it finishes with:
 m4_dnl
@@ -133,13 +133,13 @@ m4_dnl
 m4_dnl Define a global "proxy variable"  VARNAME referencing a global "data
 m4_dnl variable"  with unique  name.  The  data variable  has the  optional
 m4_dnl attributes    DECLARE_OPTIONS.     A   further    global    variable
-m4_dnl mbfl_a_varname_VARNAME holds the name of the data variable.
+m4_dnl mbfl_a_variable_VARNAME holds the name of the data variable.
 m4_dnl
 m4_define([[[mbfl_global_varref]]],[[[m4_dnl
-  local mbfl_a_varname_$1
-  mbfl_variable_alloc mbfl_a_varname_$1
-  declare -g $3 $[[[mbfl_a_varname_$1]]]
-  local   -n $1=$[[[]]]mbfl_a_varname_$1
+  local mbfl_a_variable_$1
+  mbfl_variable_alloc mbfl_a_variable_$1
+  declare -g $3 $[[[mbfl_a_variable_$1]]]
+  local   -n $1=$[[[]]]mbfl_a_variable_$1
   m4_ifelse($2,,,$1=$2)m4_dnl
 ]]])
 
@@ -148,11 +148,12 @@ m4_define([[[mbfl_local_assoc_array_varref]]],[[[mbfl_local_varref($1,$2,-A $3)]
 m4_define([[[mbfl_global_index_array_varref]]],[[[mbfl_global_varref($1,$2,-a $3)]]])
 m4_define([[[mbfl_global_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3)]]])
 
-m4_define([[[mbfl_varname]]],[[[$mbfl_a_varname_$1]]])
+m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
+m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar($1)]]])
 
 m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
-  unset -v $mbfl_a_varname_$1
-  unset -v mbfl_a_varname_$1
+  unset -v $mbfl_a_variable_$1
+  unset -v mbfl_a_variable_$1
   unset -v -n $1
   unset -v $1
 ]]])

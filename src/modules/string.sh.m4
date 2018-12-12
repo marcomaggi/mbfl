@@ -555,7 +555,7 @@ function mbfl_string_strip_carriage_return_var () {
     then
 	mbfl_local_varref(CH)
 
-	mbfl_string_index_var mbfl_varname(CH) "$LINE" $((${#LINE} - 1))
+	mbfl_string_index_var mbfl_datavar(CH) "$LINE" $((${#LINE} - 1))
 	if mbfl_string_equal "$CH" $'\r'
 	then RESULT_NAMEREF=${LINE:0:((${#LINE} - 1))}
 	else RESULT_NAMEREF=$LINE

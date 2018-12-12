@@ -534,7 +534,7 @@ With these facilities, the first example should be written as:
 @example
 mbfl_local_varref(RV)
 
-mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
+mbfl_file_extension_var mbfl_datavar(RV) /path/to/file.ext
 "$RV"  @result{} ext
 @end example
 
@@ -544,7 +544,7 @@ and the demo script as:
 @example
 function main () @{
     mbfl_local_varref(X, 0, -i)
-    mbfl_func mbfl_varname(X)
+    mbfl_func mbfl_datavar(X)
     echo X=$X >&2
 @}
 function mbfl_func () @{
@@ -652,7 +652,7 @@ without the preprocessor.
 * preprocessor library::        Loading or including the library.
 * preprocessor parameters::     Function parameters handling.
 * preprocessor arguments::      Script arguments handling.
-* preprocessor varrefs::        Variable name references.
+* preprocessor nameref::        Variable name references.
 * preprocessor strings::        Manipulating strings with macros.
 * preprocessor arrays::         Manipulating arrays with macros.
 @end menu
@@ -832,22 +832,23 @@ and so it is a function with two mandatory parameters.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_mandatory_nameref_parameter @var{varname} @var{number} @var{description}
+@deffn {Preprocessor Macro} mbfl_mandatory_nameref_parameter @var{name} @var{number} @var{description}
 Similar to @bfunc{mbfl_mandatory_parameter} but use the @code{-n} attribute when declaring the
-variable.  This makes the new variable a nameref for the given variable name; @bashref{Shell
+variable.  This makes the new variable a NAMEREF for the given variable name; @bashref{Shell
 Parameters, Shell Parameters}.
 
 A use of this macro roughly expands into:
 
 @example
-local mbfl_a_varname_@var{VARNAME}=$@{@var{NUMBER}:?@}
-local -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+local mbfl_a_variable_@var{NAME}=$@{@var{NUMBER}:?@}
+local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 @end example
 
 @noindent
-where the ``proxy variable'' @var{VARNAME} is defined as an alias of the ``data variable''; the
-additional ``name variable'' @code{mbfl_a_varname_@var{VARNAME}} holds the data variable's name.  We
-can use the macro @bfunc{mbfl_varname} to retrieve the name of the data variable.
+where the @emph{proxy variable} @var{NAME} is defined as an alias of the @emph{data variable}, whose
+name is stored in the numeric parameter; the additional @emph{name variable}
+@code{mbfl_a_variable_@var{NAME}} holds the name of the @emph{data variable}.  We can use the macro
+@bfunc{mbfl_datavar} to retrieve the name of the data variable.
 @end deffn
 
 
@@ -927,18 +928,18 @@ local PATHNAME=$@{ARGV[3]@}
 @end deffn
 
 @c page
-@node preprocessor varrefs
+@node preprocessor nameref
 @section Variable name references
 
 
 The preprocessor implements facilities to declare variables with unique names and use them as target
-for variable with the NAMEREF attribute.  With these facilities we can use the @code{_var} variants
-of @mbfl{} functions as follows:
+for variables with the @code{NAMEREF} attribute.  With these facilities we can use the @code{_var}
+variants of @mbfl{} functions as follows:
 
 @example
 mbfl_local_varref(RV)
 
-mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
+mbfl_file_extension_var mbfl_datavar(RV) /path/to/file.ext
 "$RV"  @result{} ext
 @end example
 
@@ -946,104 +947,117 @@ mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
 without risking a variable name collision.
 
 
-@deffn {Preprocessor Macro} mbfl_local_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+@deffn {Preprocessor Macro} mbfl_local_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
 Expands into:
 
 @example
-local mbfl_a_varname_@var{VARNAME}
-mbfl_variable_alloc mbfl_a_varname_@var{VARNAME}
-local @var{LOCAL_OPTIONS} $mbfl_a_varname_@var{VARNAME}
-local -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+local mbfl_a_variable_@var{NAME}
+mbfl_variable_alloc mbfl_a_variable_@var{NAME}
+local @var{LOCAL_OPTIONS} $mbfl_a_variable_@var{NAME}
+local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 @end example
 
 @noindent
 and when @var{INIT_VALUE} is @strong{not} empty, it finishes with:
 
 @example
-@var{VARNAME}=@var{INIT_VALUE}
+@var{NAME}=@var{INIT_VALUE}
 @end example
 
-Define a @strong{local} ``proxy variable'' @var{VARNAME} referencing a @strong{local} ``data
-variable'' with unique name.  The data variable has the optional attributes @var{LOCAL_OPTIONS}.  A
-further @strong{local} ``name variable'' @code{mbfl_a_varname_@var{VARNAME}} holds the name of the
-data variable.
+Define a @strong{local} @emph{proxy variable} @var{NAME} referencing a @strong{local} @emph{data
+variable} with unique name.  The data variable has the optional attributes @var{LOCAL_OPTIONS}.  A
+further @strong{local} @emph{name variable} @code{mbfl_a_variable_@var{NAME}} holds the name of
+the data variable.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_local_index_array_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+@deffn {Preprocessor Macro} mbfl_local_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
 Like @bfunc{mbfl_local_varref} but always include the @code{-a} option to the @command{local}
 definition of the data variable.  This makes the data variable an indexed array.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_local_assoc_array_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+@deffn {Preprocessor Macro} mbfl_local_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
 Like @bfunc{mbfl_local_varref} but always include the @code{-A} option to the @command{local}
 definition of the data variable.  This makes the data variable an associative array.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_global_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
+@deffn {Preprocessor Macro} mbfl_global_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
 Expands into:
 
 @example
-local mbfl_a_varname_@var{VARNAME}
-mbfl_variable_alloc mbfl_a_varname_@var{VARNAME}
-declare -g @var{DECLARE_OPTIONS} $mbfl_a_varname_@var{VARNAME}
-local -n @var{VARNAME}=$mbfl_a_varname_@var{VARNAME}
+local mbfl_a_variable_@var{NAME}
+mbfl_variable_alloc mbfl_a_variable_@var{NAME}
+declare -g @var{DECLARE_OPTIONS} $mbfl_a_variable_@var{NAME}
+local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 @end example
 
 @noindent
 and when @var{INIT_VALUE} is @strong{not} empty, it finishes with:
 
 @example
-@var{VARNAME}=@var{INIT_VALUE}
+@var{NAME}=@var{INIT_VALUE}
 @end example
 
-Define a @strong{local} ``proxy variable'' @var{VARNAME} referencing a @strong{global} ``data
-variable'' with unique name.  The data variable has the optional attributes @var{DECLARE_OPTIONS}.
-A further @strong{local} ``name variable'' @code{mbfl_a_varname_@var{VARNAME}} holds the name of the
-data variable.
+Define a @strong{local} @emph{proxy variable} @var{NAME} referencing a @strong{global} @emph{data
+variable} with unique name.  The data variable has the optional attributes @var{DECLARE_OPTIONS}.  A
+further @strong{local} @emph{name variable} @code{mbfl_a_variable_@var{NAME}} holds the name of
+the data variable.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_global_index_array_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
+@deffn {Preprocessor Macro} mbfl_global_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
 Like @bfunc{mbfl_global_varref} but always include the @code{-a} option to the @command{declare}
 definition of the data variable.  This makes the data variable an indexed array.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_global_assoc_array_varref (@var{VARNAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
+@deffn {Preprocessor Macro} mbfl_global_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
 Like @bfunc{mbfl_global_varref} but always include the @code{-A} option to the @command{declare}
 definition of the data variable.  This makes the data variable an associative array.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_varname (@var{VARNAME})
-The argument @var{VARNAME} must be the first argument to a previous call to
+@deffn {Preprocessor Macro} mbfl_datavar (@var{NAME})
+The argument @var{NAME} must be the first argument to a previous call to
 @bfunc{mbfl_local_varref}, @bfunc{mbfl_global_varref} or @bfunc{mbfl_mandatory_nameref_parameter}.
 Expand into:
 
 @example
-$mbfl_a_varname_@var{VARNAME}
+$mbfl_a_variable_@var{NAME}
 @end example
 
-Given the name of a proxy variable: expand into code that, executed at run--time, returns the name
-of the data variable.
+Given the name of a @emph{proxy variable}: expand into code that, executed at run--time, returns the
+name of the @emph{data variable}.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_unset_varref (@var{VARNAME})
-The argument @var{VARNAME} must be the first argument to a previous call to
+@deffn {Preprocessor Macro} mbfl_namevar (@var{NAME})
+The argument @var{NAME} must be the first argument to a previous call to
+@bfunc{mbfl_local_varref}, @bfunc{mbfl_global_varref} or @bfunc{mbfl_mandatory_nameref_parameter}.
+Expand into:
+
+@example
+mbfl_a_variable_@var{NAME}
+@end example
+
+Given the name of a @emph{proxy variable}: expand into the name of the @emph{name variable}.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_unset_varref (@var{NAME})
+The argument @var{NAME} must be the first argument to a previous call to
 @bfunc{mbfl_local_varref} or @bfunc{mbfl_global_varref}.  Expand into:
 
 @example
-unset -v $mbfl_a_varname_@var{VARNAME}
-unset -v mbfl_a_varname_@var{VARNAME}
-unset -v -n @var{VARNAME}
-unset -v @var{VARNAME}
+unset -v $mbfl_a_variable_@var{NAME}
+unset -v mbfl_a_variable_@var{NAME}
+unset -v -n @var{NAME}
+unset -v @var{NAME}
 @end example
 
-Unset all the proxy variable @var{VARNAME} and all the variables associated to it.
+Unset all the @emph{proxy variable} @var{NAME} and all the variables associated to it.
 @end deffn
 
 @c page

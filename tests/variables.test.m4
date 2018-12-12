@@ -163,7 +163,7 @@ function varref-local-simple-2.1 () {
     mbfl_local_varref(VAR)
     local RV
 
-    worker-varref-local-simple-2.1 mbfl_varname(VAR) RV
+    worker-varref-local-simple-2.1 mbfl_datavar(VAR) RV
 
     dotest-equal 123 "$RV" && dotest-equal 123 "$VAR"
 }
@@ -208,7 +208,7 @@ function varref-local-array-2.1 () {
     mbfl_local_varref(VAR)
     local RV
 
-    worker-varref-local-array-2.1 mbfl_varname(VAR) RV
+    worker-varref-local-array-2.1 mbfl_datavar(VAR) RV
 
     dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
 }
@@ -233,7 +233,7 @@ function varref-local-array-2.2 () {
     local RV
 
     VAR[KEY]=123
-    worker-varref-local-array-2.2 mbfl_varname(VAR) RV
+    worker-varref-local-array-2.2 mbfl_datavar(VAR) RV
 
     dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
 }
@@ -258,9 +258,9 @@ function varref-local-array-3.1 () {
     mbfl_local_varref(VAR)
     local RV1 RV2
 
-    ARRY[KEY]=mbfl_varname(VAR)
+    ARRY[KEY]=mbfl_datavar(VAR)
     ARRY[VAL]=456
-    worker-varref-local-array-3.1 mbfl_varname(ARRY) RV1 RV2
+    worker-varref-local-array-3.1 mbfl_datavar(ARRY) RV1 RV2
 
     dotest-equal 123 "$VAR" && \
 	dotest-equal 456 "${ARRY[VAL]}" && \
@@ -290,9 +290,9 @@ function varref-local-array-3.2 () {
     mbfl_local_varref(VAR)
     local RV1 RV2
 
-    ARRY[1]=mbfl_varname(VAR)
+    ARRY[1]=mbfl_datavar(VAR)
     ARRY[2]=456
-    worker-varref-local-array-3.2 mbfl_varname(ARRY) RV1 RV2
+    worker-varref-local-array-3.2 mbfl_datavar(ARRY) RV1 RV2
 
     dotest-equal 123 "$VAR" && \
 	dotest-equal 456 "${ARRY[2]}" && \
@@ -358,7 +358,7 @@ function varref-global-simple-2.1 () {
     mbfl_global_varref(VAR)
     local RV
 
-    worker-varref-global-simple-2.1 mbfl_varname(VAR) RV
+    worker-varref-global-simple-2.1 mbfl_datavar(VAR) RV
 
     dotest-equal 123 "$RV" && dotest-equal 123 "$VAR"
 }
@@ -403,7 +403,7 @@ function varref-global-array-2.1 () {
     mbfl_global_varref(VAR)
     local RV
 
-    worker-varref-global-array-2.1 mbfl_varname(VAR) RV
+    worker-varref-global-array-2.1 mbfl_datavar(VAR) RV
 
     dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
 }
@@ -428,7 +428,7 @@ function varref-global-array-2.2 () {
     local RV
 
     VAR[KEY]=123
-    worker-varref-global-array-2.2 mbfl_varname(VAR) RV
+    worker-varref-global-array-2.2 mbfl_datavar(VAR) RV
 
     dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
 }
@@ -453,9 +453,9 @@ function varref-global-array-3.1 () {
     mbfl_global_varref(VAR)
     local RV1 RV2
 
-    ARRY[KEY]=mbfl_varname(VAR)
+    ARRY[KEY]=mbfl_datavar(VAR)
     ARRY[VAL]=456
-    worker-varref-global-array-3.1 mbfl_varname(ARRY) RV1 RV2
+    worker-varref-global-array-3.1 mbfl_datavar(ARRY) RV1 RV2
 
     dotest-equal 123 "$VAR" && \
 	dotest-equal 456 "${ARRY[VAL]}" && \
@@ -485,9 +485,9 @@ function varref-global-array-3.2 () {
     mbfl_global_varref(VAR)
     local RV1 RV2
 
-    ARRY[1]=mbfl_varname(VAR)
+    ARRY[1]=mbfl_datavar(VAR)
     ARRY[2]=456
-    worker-varref-global-array-3.2 mbfl_varname(ARRY) RV1 RV2
+    worker-varref-global-array-3.2 mbfl_datavar(ARRY) RV1 RV2
 
     dotest-equal 123 "$VAR" && \
 	dotest-equal 456 "${ARRY[2]}" && \
@@ -513,7 +513,7 @@ function worker-varref-global-array-3.2 () {
 function varref-unset-1.1 () {
     mbfl_local_varref(VAR, 123)
     local VAR_VAL=$VAR
-    local VAR_NAM=mbfl_varname(VAR)
+    local VAR_NAM=mbfl_datavar(VAR)
 
     mbfl_unset_varref(VAR)
 
@@ -524,7 +524,7 @@ function varref-unset-1.1 () {
 function varref-unset-2.1 () {
     mbfl_global_varref(VAR, 123)
     local VAR_VAL=$VAR
-    local VAR_NAM=mbfl_varname(VAR)
+    local VAR_NAM=mbfl_datavar(VAR)
 
     mbfl_unset_varref(VAR)
 
