@@ -508,6 +508,31 @@ function worker-varref-global-array-3.2 () {
 }
 
 #page
+#### unsetting nameref variables
+
+function varref-unset-1.1 () {
+    mbfl_local_varref(VAR, 123)
+    local VAR_VAL=$VAR
+    local VAR_NAM=mbfl_varname(VAR)
+
+    mbfl_unset_varref(VAR)
+
+    dotest-equal '' "$VAR" && \
+	dotest-equal '' $(eval "$VAR_NAM")
+}
+
+function varref-unset-2.1 () {
+    mbfl_global_varref(VAR, 123)
+    local VAR_VAL=$VAR
+    local VAR_NAM=mbfl_varname(VAR)
+
+    mbfl_unset_varref(VAR)
+
+    dotest-equal '' "$VAR" && \
+	dotest-equal '' $(eval "$VAR_NAM")
+}
+
+#page
 #### let's go
 
 dotest variable-

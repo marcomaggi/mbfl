@@ -1038,6 +1038,7 @@ The argument @var{VARNAME} must be the first argument to a previous call to
 unset -v $mbfl_a_varname_@var{VARNAME}
 unset -v mbfl_a_varname_@var{VARNAME}
 unset -v -n @var{VARNAME}
+unset -v @var{VARNAME}
 @end example
 
 Unset all the proxy variable @var{VARNAME} and all the variables associated to it.

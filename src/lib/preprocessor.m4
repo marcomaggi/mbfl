@@ -139,6 +139,7 @@ m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
   unset -v $mbfl_a_varname_$1
   unset -v mbfl_a_varname_$1
   unset -v -n $1
+  unset -v $1
 ]]])
 
 m4_dnl end of file

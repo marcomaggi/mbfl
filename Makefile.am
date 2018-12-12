@@ -272,6 +272,7 @@ MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
 #MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(BASH_PROGRAM)
 
+MBFL_TESTS_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
 MBFL_TESTS_PREPRO	= $(builddir)/src/scripts/mbflpp.sh
 MBFL_TESTS_PPFLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 --add-bash $(MBFLPPFLAGS)
 MBFL_TESTS_RUNPP	= $(MBFL_TESTS_ENV) $(BASH_PROGRAM) $(MBFL_TESTS_PREPRO) $(MBFL_TESTS_PPFLAGS)
