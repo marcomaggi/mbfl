@@ -933,8 +933,8 @@ local PATHNAME=$@{ARGV[3]@}
 
 
 The preprocessor implements facilities to declare variables with unique names and use them as target
-for variables with the @code{NAMEREF} attribute.  With these facilities we can use the @code{_var}
-variants of @mbfl{} functions as follows:
+for variables with the NAMEREF attribute.  With these facilities we can use the @code{_var} variants
+of @mbfl{} functions as follows:
 
 @example
 mbfl_local_varref(RV)
