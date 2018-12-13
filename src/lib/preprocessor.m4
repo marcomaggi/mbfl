@@ -87,6 +87,23 @@ m4_define([[[mbfl_embed_library]]],[[[m4_include(__MBFL_LIBRARY__)]]])
 
 m4_dnl handling of variables with NAMEREF attribute
 
+dnl Synopsis:
+dnl
+dnl   mbfl_local_nameref(NAME, DATA_VARNAME_EXPR)
+dnl
+dnl It expands into:
+dnl
+dnl   local mbfl_a_variable_NAME=DATA_VARNAME_EXPR
+dnl   local -n NAME=$mbfl_a_variable_NAME
+dnl
+dnl Declare a proxy variable NAME aliasing the data variable whose value
+dnl is the result of evaluating DATA_VARNAME_EXPR.
+dnl
+m4_define([[[mbfl_local_nameref]]],[[[m4_dnl
+  local mbfl_a_variable_$1=$2
+  local -n $1=$[[[]]]mbfl_a_variable_$1
+]]])
+
 m4_dnl Synopsis:
 m4_dnl
 m4_dnl   mbfl_local_varref(VARNAME, INIT_VALUE, LOCAL_OPTIONS)

@@ -518,7 +518,7 @@ function varref-unset-1.1 () {
     mbfl_unset_varref(VAR)
 
     dotest-equal '' "$VAR" && \
-	dotest-equal '' $(eval "$VAR_NAM")
+	dotest-equal '' $(eval \$"$VAR_NAM")
 }
 
 function varref-unset-2.1 () {
@@ -529,7 +529,26 @@ function varref-unset-2.1 () {
     mbfl_unset_varref(VAR)
 
     dotest-equal '' "$VAR" && \
-	dotest-equal '' $(eval "$VAR_NAM")
+	dotest-equal '' $(eval \$"$VAR_NAM")
+}
+
+#page
+#### NAMEREF variables, generation in sub-function
+
+function varref-sub-generation-1.1 () {
+    local VARNAME
+
+    worker-varref-sub-generation-1.1 VARNAME
+    mbfl_local_nameref(VAR, $VARNAME)
+
+    dotest-equal 123 "$VAR"
+    mbfl_unset_varref(VAR)
+}
+function worker-varref-sub-generation-1.1 () {
+    mbfl_mandatory_nameref_parameter(RV, 1, result variable name)
+    mbfl_global_varref(VAR, 123)
+
+    RV=mbfl_datavar(VAR)
 }
 
 #page
