@@ -532,6 +532,25 @@ function varref-unset-2.1 () {
 	dotest-equal '' $(eval \$"$VAR_NAM")
 }
 
+### ------------------------------------------------------------------------
+
+# Unsetting the data variable using locations.
+#
+function varref-unset-3.1 () {
+    mbfl_global_varref(VAR, 123)
+    local RV
+
+    mbfl_location_enter
+    {
+        mbfl_location_handler "unset -v mbfl_datavar(VAR)"
+
+	RV=$VAR
+    }
+    mbfl_location_leave
+
+    dotest-equal 123 "$RV" && dotest-equal '' $VAR
+}
+
 #page
 #### NAMEREF variables, generation in sub-function
 
