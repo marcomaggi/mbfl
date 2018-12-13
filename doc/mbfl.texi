@@ -9,54 +9,6 @@
 
 @c page
 @c ------------------------------------------------------------
-@c Custom macros.
-@c ------------------------------------------------------------
-
-@macro mbfl{}
-@acronym{MBFL}
-@end macro
-
-@macro bfunc{NAME}
-@code{\NAME\()}
-@end macro
-
-@macro bashref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,bash}
-@end macro
-
-@macro mfour{}
-@command{m4}
-@end macro
-
-@macro CindexCommand{COMMAND}
-@cindex @command{\COMMAND\}, command
-@cindex Command @command{\COMMAND\}
-@cindex Executing command @command{\COMMAND\}
-@end macro
-
-@macro DocVarVariant{}
-The function variant @code{_var} stores the result in the variable @var{_RV}, rather than print it;
-@ref{overview rv, Result variables}.
-@end macro
-
-@macro ExitCode{}
-;$? @result{}
-@end macro
-
-@macro stdin{}
-@code{stdin}
-@end macro
-
-@macro stdout{}
-@code{stdout}
-@end macro
-
-@macro stderr{}
-@code{stderr}
-@end macro
-
-@c page
-@c ------------------------------------------------------------
 @c Values.
 @c ------------------------------------------------------------
 
@@ -626,7 +578,7 @@ printf '\tciao\n' | @{
 
 To avoid the mutation of text read with @code{read}, @mbfl{} always sets @code{IFS} to the empty
 string in the environment in which @code{read} is evaluated.  This happens in functions like
-@bfunc{mbfl_read_maybe_null} and @bfunc{mbfl_dialog_ask_password}; notice, though, that these
+@func{mbfl_read_maybe_null} and @func{mbfl_dialog_ask_password}; notice, though, that these
 functions @strong{do not} mutate the @code{IFS} value in the environment of the caller.
 @end itemize
 
@@ -833,7 +785,7 @@ and so it is a function with two mandatory parameters.
 
 
 @deffn {Preprocessor Macro} mbfl_mandatory_nameref_parameter @var{name} @var{number} @var{description}
-Similar to @bfunc{mbfl_mandatory_parameter} but use the @code{-n} attribute when declaring the
+Similar to @func{mbfl_mandatory_parameter} but use the @code{-n} attribute when declaring the
 variable.  This makes the new variable a NAMEREF for the given variable name; @bashref{Shell
 Parameters, Shell Parameters}.
 
@@ -848,12 +800,12 @@ local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 where the @emph{proxy variable} @var{NAME} is defined as an alias of the @emph{data variable}, whose
 name is stored in the numeric parameter; the additional @emph{name variable}
 @code{mbfl_a_variable_@var{NAME}} holds the name of the @emph{data variable}.  We can use the macro
-@bfunc{mbfl_datavar} to retrieve the name of the data variable.
+@func{mbfl_datavar} to retrieve the name of the data variable.
 @end deffn
 
 
 @deffn {Preprocessor Macro} mbfl_mandatory_integer_parameter @var{varname} @var{number} @var{description}
-Like @bfunc{mbfl_mandatory_parameter} but use the @code{-i} attribute when declaring the variable.
+Like @func{mbfl_mandatory_parameter} but use the @code{-i} attribute when declaring the variable.
 This assigns the integer attribute to the variable; @bashref{Bash Builtins, Bash Builtins}.
 @end deffn
 
@@ -898,7 +850,7 @@ local COUNT=$@{2:-@}"
 
 @deffn {Preprocessor Macro} mbfl_optional_integer_parameter @var{varname} @var{number}
 @deffnx {Preprocessor Macro} mbfl_optional_integer_parameter @var{varname} @var{number} @var{default_value}
-Like @bfunc{mbfl_optional_parameter} but use the @code{-i} attribute when declaring the variable;
+Like @func{mbfl_optional_parameter} but use the @code{-i} attribute when declaring the variable;
 this assigns the integer attribute to the variable; @bashref{Bash Builtins, Bash Builtins}.
 
 @strong{NOTE} When the default value is missing: Bash automatically sets the variable to zero!
@@ -944,7 +896,53 @@ mbfl_file_extension_var mbfl_datavar(RV) /path/to/file.ext
 @end example
 
 @noindent
-without risking a variable name collision.
+without risking a variable name collision.  In this example, the use of @func{mbfl_local_varref}
+expands into:
+
+@example
+local mbfl_a_variable_RV
+mbfl_variable_alloc mbfl_a_variable_RV
+local $mbfl_a_variable_RV
+local -n RV=$mbfl_a_variable_RV
+@end example
+
+@noindent
+so it defines a @strong{local} @emph{proxy variable} @var{RV} referencing a @strong{local}
+@emph{data variable} with unique name; a @strong{local} @emph{name variable}
+@code{mbfl_a_variable_RV} holds the name of the data variable.
+
+
+@deffn {Preprocessor Macro} mbfl_local_nameref (@var{NAME}, @var{DATA_VARNAME_EXPR})
+It expands into:
+
+@example
+local mbfl_a_variable_@var{NAME}=@var{DATA_VARNAME_EXPR}
+local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
+@end example
+
+Declare a proxy variable @var{NAME} aliasing the data variable whose value is the result of
+evaluating @var{DATA_VARNAME_EXPR}.
+
+We can use this macro as follows:
+
+@example
+function main () @{
+    local VARNAME
+    worker VARNAME
+    mbfl_local_nameref(VAR, $VARNAME)
+    ...
+    mbfl_unset_varref(VAR)
+@}
+
+function worker () @{
+    mbfl_mandatory_nameref_parameter(RV, 1)
+    mbfl_global_varref(VAR, 123)
+    RV=mbfl_datavar(VAR)
+@}
+
+main
+@end example
+@end deffn
 
 
 @deffn {Preprocessor Macro} mbfl_local_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
@@ -972,13 +970,13 @@ the data variable.
 
 
 @deffn {Preprocessor Macro} mbfl_local_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
-Like @bfunc{mbfl_local_varref} but always include the @code{-a} option to the @command{local}
+Like @func{mbfl_local_varref} but always include the @code{-a} option to the @command{local}
 definition of the data variable.  This makes the data variable an indexed array.
 @end deffn
 
 
 @deffn {Preprocessor Macro} mbfl_local_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
-Like @bfunc{mbfl_local_varref} but always include the @code{-A} option to the @command{local}
+Like @func{mbfl_local_varref} but always include the @code{-A} option to the @command{local}
 definition of the data variable.  This makes the data variable an associative array.
 @end deffn
 
@@ -1008,20 +1006,20 @@ the data variable.
 
 
 @deffn {Preprocessor Macro} mbfl_global_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
-Like @bfunc{mbfl_global_varref} but always include the @code{-a} option to the @command{declare}
+Like @func{mbfl_global_varref} but always include the @code{-a} option to the @command{declare}
 definition of the data variable.  This makes the data variable an indexed array.
 @end deffn
 
 
 @deffn {Preprocessor Macro} mbfl_global_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
-Like @bfunc{mbfl_global_varref} but always include the @code{-A} option to the @command{declare}
+Like @func{mbfl_global_varref} but always include the @code{-A} option to the @command{declare}
 definition of the data variable.  This makes the data variable an associative array.
 @end deffn
 
 
 @deffn {Preprocessor Macro} mbfl_datavar (@var{NAME})
 The argument @var{NAME} must be the first argument to a previous call to
-@bfunc{mbfl_local_varref}, @bfunc{mbfl_global_varref} or @bfunc{mbfl_mandatory_nameref_parameter}.
+@func{mbfl_local_varref}, @func{mbfl_global_varref} or @func{mbfl_mandatory_nameref_parameter}.
 Expand into:
 
 @example
@@ -1035,7 +1033,7 @@ name of the @emph{data variable}.
 
 @deffn {Preprocessor Macro} mbfl_namevar (@var{NAME})
 The argument @var{NAME} must be the first argument to a previous call to
-@bfunc{mbfl_local_varref}, @bfunc{mbfl_global_varref} or @bfunc{mbfl_mandatory_nameref_parameter}.
+@func{mbfl_local_varref}, @func{mbfl_global_varref} or @func{mbfl_mandatory_nameref_parameter}.
 Expand into:
 
 @example
@@ -1048,7 +1046,7 @@ Given the name of a @emph{proxy variable}: expand into the name of the @emph{nam
 
 @deffn {Preprocessor Macro} mbfl_unset_varref (@var{NAME})
 The argument @var{NAME} must be the first argument to a previous call to
-@bfunc{mbfl_local_varref} or @bfunc{mbfl_global_varref}.  Expand into:
+@func{mbfl_local_varref} or @func{mbfl_global_varref}.  Expand into:
 
 @example
 unset -v $mbfl_a_variable_@var{NAME}
@@ -1250,7 +1248,7 @@ value of @var{name} is left untouched.
 
 @defun mbfl_read_maybe_null @var{varname}
 Read a line from its stdin and store it in a variable named
-@var{varname}.  If @bfunc{mbfl_option_null} returns true: the null
+@var{varname}.  If @func{mbfl_option_null} returns true: the null
 character is used as terminator, as in:
 
 @example
@@ -1530,12 +1528,12 @@ mbfl_file_strip_leading_slash 'file'    @print{} file
 @defunx mbfl_file_normalise_var @var{_RV} @var{pathname} @var{prefix}
 Normalise a file name: remove all the occurrences of @code{.} and @code{..}.
 
-If @var{pathname} is relative (according to @bfunc{mbfl_file_is_absolute}) and @var{prefix} is not
+If @var{pathname} is relative (according to @func{mbfl_file_is_absolute}) and @var{prefix} is not
 present or it is the empty string: the current process working directory is prepended to
 @var{pathname}.
 
 If @var{prefix} is present and non empty, and @var{pathname} is relative (according to
-@bfunc{mbfl_file_is_absolute}): @var{prefix} is prepended to @var{pathname} and normalised, too.
+@func{mbfl_file_is_absolute}): @var{prefix} is prepended to @var{pathname} and normalised, too.
 
 Echo to stdout the normalised file name.  Return true.
 
@@ -1584,14 +1582,14 @@ Return true if the first character in @var{pathname} is a slash (@code{/}); else
 
 
 @defun mbfl_file_is_absolute_dirname @var{pathname}
-Return true if @var{pathname} is a directory according to @bfunc{mbfl_file_is_directory} and an
-absolute pathname according to @bfunc{mbfl_file_is_absolute}.
+Return true if @var{pathname} is a directory according to @func{mbfl_file_is_directory} and an
+absolute pathname according to @func{mbfl_file_is_absolute}.
 @end defun
 
 
 @defun mbfl_file_is_absolute_filename @var{pathname}
-Return true if @var{pathname} is a file according to @bfunc{mbfl_file_is_file} and an absolute
-pathname according to @bfunc{mbfl_file_is_absolute}.
+Return true if @var{pathname} is a file according to @func{mbfl_file_is_file} and an absolute
+pathname according to @func{mbfl_file_is_absolute}.
 @end defun
 
 @c ------------------------------------------------------------------------
@@ -1603,14 +1601,14 @@ false.
 
 
 @defun mbfl_file_is_relative_dirname @var{pathname}
-Return true if @var{pathname} is a directory according to @bfunc{mbfl_file_is_directory} and an
-relative pathname according to @bfunc{mbfl_file_is_relative}.
+Return true if @var{pathname} is a directory according to @func{mbfl_file_is_directory} and an
+relative pathname according to @func{mbfl_file_is_relative}.
 @end defun
 
 
 @defun mbfl_file_is_relative_filename @var{pathname}
-Return true if @var{pathname} is a file according to @bfunc{mbfl_file_is_file} and an relative
-pathname according to @bfunc{mbfl_file_is_relative}.
+Return true if @var{pathname} is a file according to @func{mbfl_file_is_file} and an relative
+pathname according to @func{mbfl_file_is_relative}.
 @end defun
 
 @c page
@@ -1804,7 +1802,7 @@ is always executed.
 
 @defun mbfl_file_make_if_not_directory @var{pathname}
 @defunx mbfl_file_make_if_not_directory @var{pathname} @var{permissions}
-Wrapper for @bfunc{mbfl_file_make_directory} that creates the
+Wrapper for @func{mbfl_file_make_directory} that creates the
 directory if it does not exist.
 
 If a @command{sudo} user was requested: this function resets the request
@@ -1952,7 +1950,7 @@ not exist or an error occurs: return 1.
 
 
 @defun mbfl_file_remove_directory_silently @var{pathname}
-Like @bfunc{mbfl_file_remove_directory}, but do not print messages if
+Like @func{mbfl_file_remove_directory}, but do not print messages if
 the directory is not empty.
 @end defun
 
@@ -2072,7 +2070,7 @@ to this function.  In case of error return 1.
 
 
 @defun mbfl_tar_archive_directory_to_file @var{directory} @var{archive} ?...?
-Like @bfunc{mbfl_tar_create_to_file} but archive all the contents of
+Like @func{mbfl_tar_create_to_file} but archive all the contents of
 @var{directory}, including the directory itself (not its parents).
 @end defun
 
@@ -2284,7 +2282,7 @@ Decompress @var{PATHNAME}, a file pathname, with the currently selected compress
 
 When using the following functions: the optional argument
 @var{PRINT_ERROR} will cause an error message to be printed with
-@bfunc{mbfl_message_error} if the test fails; the argument value must be
+@func{mbfl_message_error} if the test fails; the argument value must be
 @code{print_error}.
 
 @c ------------------------------------------------------------
@@ -2407,7 +2405,7 @@ printf '%s' "$(<$filename)"
 @end example
 
 The functions act differently in that they spawn a @command{bash}
-subprocess, by invoking @bfunc{mbfl_program_exec}, and let it do the
+subprocess, by invoking @func{mbfl_program_exec}, and let it do the
 operation; this allows us to request the usage of @command{sudo} and so
 to read and write files with modified privileges, but only for the time
 needed to do the operation, not for the whole script.
@@ -2445,7 +2443,7 @@ be appended.
 
 
 @defun mbfl_cd @var{dirname} ?...?
-Wrapper for @bfunc{mbfl_change_directory}.  If verbose mode is on:
+Wrapper for @func{mbfl_change_directory}.  If verbose mode is on:
 print a message.
 @end defun
 
@@ -2470,7 +2468,7 @@ print a message.
 Open the file descriptor @var{FD} to read from @var{FILE}.  When successful: return true; otherwise
 return false.
 
-@strong{NOTE} When @var{FILE} is a FIFO: we need to call @bfunc{mbfl_fd_open_input_output}, not this
+@strong{NOTE} When @var{FILE} is a FIFO: we need to call @func{mbfl_fd_open_input_output}, not this
 function.
 @end defun
 
@@ -2747,7 +2745,7 @@ action @samp{TWO} and exit.
 
 @item one-level-actions.sh help
 With the action argument @code{help}: print a generic help screen and exit.  Notice how the
-@samp{HELP} action function makes use of @bfunc{mbfl_actions_fake_action_set} to print the same help
+@samp{HELP} action function makes use of @func{mbfl_actions_fake_action_set} to print the same help
 screen of the main action.
 @end table
 
@@ -2769,7 +2767,7 @@ With no action argument: print a generic help screen and exit.
 
 @item two-levels-actions.sh help
 With the action argument @code{help}: print a generic help screen and exit.  Notice how the
-@samp{HELP} action function makes use of @bfunc{mbfl_actions_fake_action_set} to print the same help
+@samp{HELP} action function makes use of @func{mbfl_actions_fake_action_set} to print the same help
 screen of the main action.
 
 @item two-levels-actions.sh one
@@ -2829,7 +2827,7 @@ never try to access such variables directly.
 
 
 @defun mbfl_declare_action_set @var{action-set}
-Declare a new action set.  @var{action-set} must be a string satisfying @bfunc{mbfl_string_is_name}
+Declare a new action set.  @var{action-set} must be a string satisfying @func{mbfl_string_is_name}
 and representing the identifier of the action set.  It is an error to declare the same action set
 twice.
 @end defun
@@ -2841,10 +2839,10 @@ Declare a new action belonging to an action set.  The arguments are:
 @table @var
 @item action-set
 A string representing the name of the action set this action belongs to.  The action set must have
-been previously declared with a call to @bfunc{mbfl_declare_action_set}.
+been previously declared with a call to @func{mbfl_declare_action_set}.
 
 @item keyword
-A unique string (in this script) satisfying @bfunc{mbfl_string_is_name} and identifying this action.
+A unique string (in this script) satisfying @func{mbfl_string_is_name} and identifying this action.
 The ``main'', ``before parsing options'' and ``after parsing options'' function names associated to
 this action are built as:
 
@@ -2858,10 +2856,10 @@ script_after_parsing_options_$@var{keyword}
 If @var{subset} is the string @code{NONE} it means that this action is a leaf and it implements a
 script action; else @var{subset} must be the identifier of an action set subordinate to
 @var{action-set}: this function is recursively called to process it.  The subordinate action set
-must have been previously declared with a call to @bfunc{mbfl_declare_action_set}.
+must have been previously declared with a call to @func{mbfl_declare_action_set}.
 
 @item identifier
-A string satisfying @bfunc{mbfl_string_is_identifier} and representing the argument on the command
+A string satisfying @func{mbfl_string_is_identifier} and representing the argument on the command
 line used to select this action.  This string must be unique for this @var{action-set}.
 
 @item description
@@ -2890,11 +2888,11 @@ function recursively calls itself, parsing command line arguments and traversing
 declared actions.
 
 @var{action-set} must be the name of an action set previously declared with
-@bfunc{mbfl_declare_action_set}.  It is an error if this function is called with an @var{action-set}
+@func{mbfl_declare_action_set}.  It is an error if this function is called with an @var{action-set}
 name specifying a non--existent action set.  If there are no command line arguments left upon
 entering this function: the values previously selected are silently accepted.
 
-The function @bfunc{mbfl_main} verifies that the action set @code{MAIN} exists and, if it does, it
+The function @func{mbfl_main} verifies that the action set @code{MAIN} exists and, if it does, it
 calls this function with argument @code{MAIN}.
 
 Upon entering this function, the following global variables must exist and have the specified
@@ -3070,12 +3068,12 @@ affected.  @ref{actions intro, Introduction to action trees}.
 
 
 To use this module we have to declare a set of script options with the
-function @bfunc{mbfl_declare_option}.  Options declarations should be
+function @func{mbfl_declare_option}.  Options declarations should be
 done at the beginning of the script, before doing anything else, or in
 the ``before parsing options'' functions.
 
 In the main block of the script, options are parsed by invoking
-@bfunc{mbfl_getopts_parse}: this function will update global variables
+@func{mbfl_getopts_parse}: this function will update global variables
 and invoke a script function for each option on the command line.  It
 can also select a function to be invoked as the main action of the
 script.
@@ -3200,14 +3198,14 @@ a function as main function for the script.  @ref{main function, Driving
 script execution}.
 
 Additionally, if the default value is @code{yes}: the main function is
-selected at declaration time (that is by @bfunc{mbfl_declare_option});
+selected at declaration time (that is by @func{mbfl_declare_option});
 this is useful to declare an action option and select automatically the
 action function.  In the example: the function
-@bfunc{script_action_delta} is selected as main action function.
+@func{script_action_delta} is selected as main action function.
 
 It is an error to declare a keyword prefixed with @code{ACTION_} with an
 option with argument (@code{witharg} as argument to
-@bfunc{mbfl_declare_option}).
+@func{mbfl_declare_option}).
 
 @c page
 @node getopts options
@@ -3234,7 +3232,7 @@ values are encoded in hexadecimal strings.  Encoding is useful to avoid
 quoting problems when invoking a script from another one.
 
 If this option is used: the values are decoded by
-@bfunc{mbfl_getopts_parse} before storing them in the @code{ARGV}
+@func{mbfl_getopts_parse} before storing them in the @code{ARGV}
 array and before being stored in the option's specific global variables.
 
 @item -v
@@ -3244,21 +3242,21 @@ array and before being stored in the option's specific global variables.
 @cindex @option{--verbose}, predefined option
 @cindex Predefined option @option{--verbose}
 Turns on verbose messages.  If this option is used: The function
-@bfunc{mbfl_option_verbose} returns true.  @ref{message, Printing
+@func{mbfl_option_verbose} returns true.  @ref{message, Printing
 messages to the console}.
 
 @item --silent
 @cindex @option{--silent}, predefined option
 @cindex Predefined option @option{--silent}
 Turns off verbose messages.  If this option is used: The function
-@bfunc{mbfl_option_verbose} returns false.
+@func{mbfl_option_verbose} returns false.
 
 @item --verbose-program
 @cindex @option{--verbose-program}, predefined option
 @cindex Predefined option @option{--verbose-program}
 If used: The @option{--verbose} option is added to the command line of
 external programs that support it.  The function
-@bfunc{mbfl_option_verbose_program} returns true or false depending on
+@func{mbfl_option_verbose_program} returns true or false depending on
 the state of this option.
 
 @item --show-program
@@ -3366,7 +3364,7 @@ variables, Required user defined variables}.
 Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
-declared with @bfunc{mbfl_declare_option}; a string describing the
+declared with @func{mbfl_declare_option}; a string describing the
 @mbfl{} default options; the contents of the global variable
 @code{script_EXAMPLES}.  Then exits with code zero.  @ref{service
 variables, Required user defined variables}.
@@ -3383,7 +3381,7 @@ variables, Required user defined variables}.
 Prints to the standard output of the script: the contents of the global
 variable @code{script_USAGE}; a newline; the string @code{options:}; a
 newline; an automatically generated string describing the options
-declared with @bfunc{mbfl_declare_option}.  Then exits with code zero.
+declared with @func{mbfl_declare_option}.  Then exits with code zero.
 
 The difference with @option{--help} is that predefined options and usage
 examples are not displayed.
@@ -3392,7 +3390,7 @@ examples are not displayed.
 @cindex @option{--print-options}, predefined option
 @cindex Predefined option @option{--print-options}
 Print all the long options with
-@bfunc{mbfl_getopts_print_long_switches}, then exit the script with code
+@func{mbfl_getopts_print_long_switches}, then exit the script with code
 zero.
 @end table
 
@@ -3406,7 +3404,7 @@ the predefined options.
 @defunx mbfl_unset_option_encoded_args
 Query/set/unset the encoded arguments option.
 
-@bfunc{mbfl_option_encoded_args} returns true if the option
+@func{mbfl_option_encoded_args} returns true if the option
 @option{--encoded-args} was used on the command line.
 @end defun
 
@@ -3416,7 +3414,7 @@ Query/set/unset the encoded arguments option.
 @defunx mbfl_unset_option_verbose
 Query/set/unset the verbose messages option.
 
-@bfunc{mbfl_option_verbose} returns true if the option
+@func{mbfl_option_verbose} returns true if the option
 @option{--verbose} was used on the command line after all the
 occurrences of @option{--silent}; it returns false if the option
 @option{--silent} was used on the command line after all the occurrences
@@ -3431,7 +3429,7 @@ Query/set/unset verbose execution for external programs.
 
 This option, of course, is supported only for programs that are known by
 @mbfl{} (like @command{rm}): if a program is executed with
-@bfunc{mbfl_program_exec}, it is responsibility of the caller to use
+@func{mbfl_program_exec}, it is responsibility of the caller to use
 the option.
 @end defun
 
@@ -3471,7 +3469,7 @@ Query/set/unset the null list separator option.
 @defunx mbfl_unset_option_interactive
 Query/set/unset the interactive execution option.
 
-@bfunc{mbfl_option_interactive} returns true if the option
+@func{mbfl_option_interactive} returns true if the option
 @option{--interactive} was used on the command line after all the
 occurrences of @option{--force}; it returns false if the option
 @option{--force} was used on the command line after all the occurrences
@@ -3484,12 +3482,12 @@ The following are special option functions.
 
 @defun mbfl_option_test_save
 Save the current state of the test option then invokes
-@bfunc{mbfl_unset_option_test}.
+@func{mbfl_unset_option_test}.
 @end defun
 
 @defun mbfl_option_test_restore
 Restore the state of the test option to the one before the invocation to
-@bfunc{mbfl_option_test_save}.
+@func{mbfl_option_test_save}.
 @end defun
 
 @c page
@@ -3775,7 +3773,7 @@ characters supported by @code{printf} are allowed in @var{string}.
 
 @defun mbfl_message_verbose @var{string}
 Output a message to the selected output channel, but only if the evaluation of the function
-@bfunc{mbfl_option_verbose} returns true.
+@func{mbfl_option_verbose} returns true.
 
 Echo a string composed of: the selected program name, a colon, a space, @var{string}.  No newline
 character is appended to the message.  Escape characters supported by @code{printf} are allowed in
@@ -3785,7 +3783,7 @@ character is appended to the message.  Escape characters supported by @code{prin
 
 @defun mbfl_message_verbose_end @var{string}
 Output a message to the selected output channel, but only if the evaluation of the function
-@bfunc{mbfl_option_verbose} returns true.  Echo the string.  No newline character is appended to the
+@func{mbfl_option_verbose} returns true.  Echo the string.  No newline character is appended to the
 message.  Escape characters supported by @code{printf} are allowed in @var{string}.
 
 If @var{string} is empty: this function just prints a newline when verbose execution is enabled.
@@ -3808,7 +3806,7 @@ character.  Escape characters supported by @code{printf} are allowed in @var{str
 
 @defun mbfl_message_debug @var{string}
 Output a message to the selected output channel, but only if the evaluation of the function
-@bfunc{mbfl_option_debug} returns true.  Echo a string composed of: the selected program name, a
+@func{mbfl_option_debug} returns true.  Echo a string composed of: the selected program name, a
 colon, a space, @var{string}, a newline character.  Escape characters supported by @code{printf} are
 allowed in @var{string}.
 @end defun
@@ -3820,7 +3818,7 @@ allowed in @var{string}.
 
 @defun mbfl_message_verbose_printf @var{template} [@var{arg} @dots{}]
 Format the arguments in the same way @code{printf} would do; output the resulting string to the
-selected output channel, but only if the evaluation of the function @bfunc{mbfl_option_verbose}
+selected output channel, but only if the evaluation of the function @func{mbfl_option_verbose}
 returns true.
 
 Echo a string composed of: the selected program name, a colon, a space, the formatting result.  No
@@ -3848,7 +3846,7 @@ colon, a space, the formatting result, a newline character.
 
 @defun mbfl_message_debug_printf @var{template} [@var{arg} @dots{}]
 Format the arguments in the same way @code{printf} would do; output the resulting string to the
-selected output channel, but only if the evaluation of the function @bfunc{mbfl_option_debug}
+selected output channel, but only if the evaluation of the function @func{mbfl_option_debug}
 returns true.
 
 Echo a string composed of: the selected program name, a colon, a space, the string @code{debug}, a
@@ -3878,7 +3876,7 @@ perform any operation on the system, just print messages describing what
 will happen if the script is executed with the selected options.  This
 implies, in the @mbfl{} model, that no external program is executed.
 
-When this feature is turned on: @bfunc{mbfl_program_exec} does not
+When this feature is turned on: @func{mbfl_program_exec} does not
 execute the program, instead it prints the command line on standard
 error and it returns true.
 
@@ -3917,7 +3915,7 @@ The simpler way to test the availability of a program is to look for it just bef
 
 
 @defvr Array mbfl_split_PATH
-After a call to @bfunc{mbfl_program_split_path}: this array is filled with the components of the
+After a call to @func{mbfl_program_split_path}: this array is filled with the components of the
 @env{PATH} variable.
 @end defvr
 
@@ -3955,12 +3953,12 @@ an empty string if nothing is found.  If an executable file is found: return tru
 false.
 
 The search path is the one in the environment variable @var{ENV} as found by
-@bfunc{mbfl_program_split_path}.  The contained directories are searched in the order in which they
+@func{mbfl_program_split_path}.  The contained directories are searched in the order in which they
 appear in @env{PATH}.  There are rules:
 
 @itemize
 @item
-If @var{program} is an absolute pathname (according to @bfunc{mbfl_file_is_absolute}): only that
+If @var{program} is an absolute pathname (according to @func{mbfl_file_is_absolute}): only that
 absolute pathname is verified as executable file.  @var{PATH} is ignored.
 
 @item
@@ -4062,17 +4060,17 @@ function ``consumes'' a @command{sudo} request.
 
 See below for the redirection of the standard error channel.
 
-If the function @bfunc{mbfl_option_test} returns true: instead of
+If the function @func{mbfl_option_test} returns true: instead of
 evaluation, the command line is sent to stderr.
 
-If the function @bfunc{mbfl_option_show_program} returns true: the
+If the function @func{mbfl_option_show_program} returns true: the
 command line is sent to stderr, then it is executed.
 @end defun
 
 
 @defun mbfl_program_execbg @var{inchan} @var{ouchan} @var{program}
 @defunx mbfl_program_execbg @var{inchan} @var{ouchan} @var{program} @var{arg} ...
-Does all the same things of @bfunc{mbfl_program_exec}, running the given
+Does all the same things of @func{mbfl_program_exec}, running the given
 command line as:
 
 @example
@@ -4109,14 +4107,14 @@ The readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0}, @f
 
 @defun mbfl_program_replace @var{program}
 @defunx mbfl_program_replace @var{program} [@var{opt} @dots{}]
-Like @bfunc{mbfl_program_exec}, but execute the program through the Bash
+Like @func{mbfl_program_exec}, but execute the program through the Bash
 command @code{exec}, so replacing the current process without creating a
 new one.
 @end defun
 
 
 @defvar mbfl_program_BGPID
-Used by @bfunc{mbfl_program_execbg} to store the process id of the
+Used by @func{mbfl_program_execbg} to store the process id of the
 program executed in background.
 @end defvar
 
@@ -4125,7 +4123,7 @@ program executed in background.
 Declare the intention to use @command{sudo} and other commands required
 to use it.  The declared programs are: @command{sudo}, @command{whoami}.
 
-This function does @strong{not} use @bfunc{mbfl_declare_program}.
+This function does @strong{not} use @func{mbfl_declare_program}.
 @end defun
 
 
@@ -4134,8 +4132,8 @@ Register @var{user} as the user under which to execute the next program through 
 user will be selected using the @code{-u} option of @command{sudo}.  The value @code{nosudo} means:
 do not use @command{sudo}.
 
-The string @var{user} must satisfy the function @bfunc{mbfl_string_is_username}, else the function
-will print an error message to @stderr{} and exit with @bfunc{exit_because_invalid_sudo_username}.
+The string @var{user} must satisfy the function @func{mbfl_string_is_username}, else the function
+will print an error message to @stderr{} and exit with @func{exit_because_invalid_sudo_username}.
 
 When the time comes: if the selected user name equals the value printed by @command{whoami},
 @command{sudo} is not used.
@@ -4169,13 +4167,13 @@ next command execution.
 @defun mbfl_program_declare_sudo_options [@var{opt} @dots{}]
 Select additional command line options to use on the next invocation of
 @command{sudo}.  These values are consumed by the first use of
-@bfunc{mbfl_program_exec}.
+@func{mbfl_program_exec}.
 @end defun
 
 
 @defun mbfl_program_reset_sudo_options
 Clean the options previously set by
-@bfunc{mbfl_program_declare_sudo_options}.
+@func{mbfl_program_declare_sudo_options}.
 @end defun
 
 @c ------------------------------------------------------------
@@ -4205,14 +4203,14 @@ channel (example: the @command{at} command).
 
 
 @defun mbfl_program_redirect_stderr_to_stdout
-Just for the next invocation to @bfunc{mbfl_program_exec} redirect
+Just for the next invocation to @func{mbfl_program_exec} redirect
 stderr to stdout, that is: use the @code{2>&1} redirection for the
 executed program.
 @end defun
 
 
 This is useful because redirecting the output of
-@bfunc{mbfl_program_exec}:
+@func{mbfl_program_exec}:
 
 @example
 echo ls | \
@@ -4223,7 +4221,7 @@ echo ls | \
 @noindent
 redirects also the ``show program'' output (@ref{getopts options} for
 the @option{--show-program} option explanation and see the above
-description of @bfunc{mbfl_program_exec}).  Instead By using:
+description of @func{mbfl_program_exec}).  Instead By using:
 
 @example
 mbfl_program_redirect_stderr_to_stdout
@@ -4235,7 +4233,7 @@ echo ls | \
 @noindent
 the ``show program'' output goes to stderr and the stderr output of the
 @command{at} command is, internally, redirected to the stdout of
-@bfunc{mbfl_program_exec}.
+@func{mbfl_program_exec}.
 
 @c page
 @node program declaring
@@ -4253,7 +4251,7 @@ control.  On a system where executables may vanish from one moment to
 another, no matter how we test a program's existence, there's always the
 possibility that the program is not ``there'' when we invoke it.
 
-If we just use @bfunc{mbfl_program_exec} to invoke an external
+If we just use @func{mbfl_program_exec} to invoke an external
 program, the function will try and fail if the executable is
 unavailable: the return code will be false.
 
@@ -4269,7 +4267,7 @@ availability of all the declared programs before invoking the script.
 
 @defun mbfl_declare_program @var{program}
 Register @var{program} as the name of a program required by the script;
-@bfunc{mbfl_program_find} is used to locate the program on the system.
+@func{mbfl_program_find} is used to locate the program on the system.
 @ref{program checking, Checking programs existence}.
 
 If @var{program} is a file name with no directory part (examples:
@@ -4279,7 +4277,7 @@ of the file in one of the directories of @env{PATH}.
 If @var{program} is a relative pathname (examples: @file{../bin/sed},
 @file{./grep}): the selected program is the full pathname of the file
 normalised by this function with respect to the current working
-directory (with a call to @bfunc{mbfl_file_normalise}).
+directory (with a call to @func{mbfl_file_normalise}).
 
 The return value is always zero.
 @end defun
@@ -4289,7 +4287,7 @@ The return value is always zero.
 Validate the existence of all the declared programs.  The return value
 is zero if all the programs are found, one otherwise.
 
-This function is invoked by @bfunc{mbfl_getopts_parse} when the
+This function is invoked by @func{mbfl_getopts_parse} when the
 @option{--validate-programs} option is used on the command line.
 
 It may be a good idea to invoke this function at the beginning of a
@@ -4310,10 +4308,10 @@ from the command line the option @option{--verbose} must be used before
 @defunx mbfl_program_found_var @var{_RV} @var{program}
 Print the pathname of the previously declared @var{program}.  Return zero if the program was found,
 otherwise print an error message and exit the current (sub)shell by invoking
-@bfunc{exit_because_program_not_found}.
+@func{exit_because_program_not_found}.
 
 This function should be used to retrieve the pathname of the program to be used as first argument to
-@bfunc{mbfl_program_exec}:
+@func{mbfl_program_exec}:
 
 The function variant @code{_var} will store the result in @var{_RV} rather than printing it.
 
@@ -4337,7 +4335,7 @@ local PROGNAME=$(mbfl_program_found 'myprog') || exit $?
 @end example
 
 @noindent
-because @code{local} has exit status zero even if @bfunc{mbfl_program_found} fails, so the error
+because @code{local} has exit status zero even if @func{mbfl_program_found} fails, so the error
 will not be reported.
 @end defun
 
@@ -4407,7 +4405,7 @@ return false.  A false return code means that an internal error has corrupted th
 
 @defun mbfl_at_select_queue @var{letter}
 Select and register in an internal state a queue identifier; invoke
-@bfunc{mbfl_at_validate_queue_letter} to validate the selection.
+@func{mbfl_at_validate_queue_letter} to validate the selection.
 @end defun
 
 
@@ -4415,12 +4413,12 @@ Select and register in an internal state a queue identifier; invoke
 Schedule @var{command} in the currently selected queue; the script will be executed at @var{time}.
 
 If no error occurs: print to stdout the identifier of the scheduled job; the identifier can be used
-as argument to @bfunc{mbfl_at_drop}.
+as argument to @func{mbfl_at_drop}.
 
 @quotation
 The @command{at} command outputs some text (in which the job is embedded) on its @stderr{}
 channel, so this function redirects @stderr{} to @stdout{} to return the value; this
-operation conflicts with the use of the ``show program'' feature of @bfunc{mbfl_program_exec}.
+operation conflicts with the use of the ``show program'' feature of @func{mbfl_program_exec}.
 @end quotation
 
 @var{command} must be a string representing the invocation of an external executable program: it is
@@ -4526,7 +4524,7 @@ mbfl_string_is_quoted_char 'ab\ndefg' 3 @ExitCode{} 0
 
 @defun mbfl_string_is_equal_unquoted_char @var{string} @var{position} @var{char}
 Return true if the character at @var{position} in @var{string} is equal to @var{char} and is not
-quoted (according to @bfunc{mbfl_string_is_quoted_char}); else return false.  @var{position} is a
+quoted (according to @func{mbfl_string_is_quoted_char}); else return false.  @var{position} is a
 zero--based index.
 
 @example
@@ -4700,12 +4698,12 @@ mbfl_string_range_var _RV abcdefghilm 4 end
 
 
 @defvar SPLITFIELD
-Array used by @bfunc{mbfl_string_chars} to store the result of splitting a string.
+Array used by @func{mbfl_string_chars} to store the result of splitting a string.
 @end defvar
 
 
 @defvar SPLITCOUNT
-Array used by @bfunc{mbfl_string_chars} to store the number of values in @code{SPLITFIELD}.
+Array used by @func{mbfl_string_chars} to store the number of values in @code{SPLITFIELD}.
 @end defvar
 
 
@@ -4720,7 +4718,7 @@ example, the sequence @code{\n} is treated as a single char.
 @end defun
 
 
-Example of usage for @bfunc{mbfl_string_chars}:
+Example of usage for @func{mbfl_string_chars}:
 
 @example
 local SPLITFIELD
@@ -4839,20 +4837,20 @@ $'char'
 
 
 @defun mbfl_string_is_name_char @var{char}
-Return true if @bfunc{mbfl_string_is_alnum_char} returns true when
+Return true if @func{mbfl_string_is_alnum_char} returns true when
 applied to @var{char} or @var{char} is an underscore, @samp{_}.
 @end defun
 
 
 @defun mbfl_string_is_identifier_char @var{char}
-Return true if @bfunc{mbfl_string_is_alnum_char} returns true when
+Return true if @func{mbfl_string_is_alnum_char} returns true when
 applied to @var{char} or @var{char} is an underscore, @samp{_}, or dash,
 @samp{-}.
 @end defun
 
 
 @defun mbfl_string_is_extended_identifier_char @var{char}
-Like @bfunc{mbfl_string_is_identifier_char}, but also accept dots
+Like @func{mbfl_string_is_identifier_char}, but also accept dots
 @samp{.}.
 @end defun
 
@@ -4870,13 +4868,13 @@ constraint:
 
 @itemize
 @item
-@bfunc{mbfl_string_is_name} returns false if @bfunc{mbfl_string_is_digit}
+@func{mbfl_string_is_name} returns false if @func{mbfl_string_is_digit}
 returns true when applied to the first character of @var{string}.
 
 @item
-@bfunc{mbfl_string_is_identifier} and
-@bfunc{mbfl_string_is_extended_identifier} return false if
-@bfunc{mbfl_string_is_digit} returns true when applied to the first
+@func{mbfl_string_is_identifier} and
+@func{mbfl_string_is_extended_identifier} return false if
+@func{mbfl_string_is_digit} returns true when applied to the first
 character of @var{string} or the first char of @var{string} is a dash.
 @end itemize
 @end defun
@@ -5106,7 +5104,7 @@ the value of @code{script_PROGNAME}.  @ref{service variables, Required user defi
 
 @defun mbfl_dialog_enable_programs
 Declare the usage of the external program @command{stty}, which is used by
-@bfunc{mbfl_dialog_ask_password} to turn of password echoing on the terminal.
+@func{mbfl_dialog_ask_password} to turn of password echoing on the terminal.
 @end defun
 
 
@@ -5263,7 +5261,7 @@ indexes starting at zero.
 
 
 @defun mbfl_variable_element_is_in_array @var{element}
-A wrapper for @bfunc{mbfl_variable_find_in_array} that does not print
+A wrapper for @func{mbfl_variable_find_in_array} that does not print
 anything.
 @end defun
 
@@ -5425,12 +5423,12 @@ compatibility.
 @defun mbfl_system_passwd_read
 Read the file @file{/etc/passwd} and store the resulting fields in an internal global array
 variable.  Only the first call to this function will actually read the file, unless
-@bfunc{mbfl_system_passwd_reset} has been called.
+@func{mbfl_system_passwd_reset} has been called.
 @end defun
 
 
 @defun mbfl_system_passwd_reset
-Reset the internal state so that the next call to @bfunc{mbfl_system_passwd_read} will actually
+Reset the internal state so that the next call to @func{mbfl_system_passwd_read} will actually
 load, or reaload, the contents of @file{/etc/passwd}.
 @end defun
 
@@ -5439,7 +5437,7 @@ load, or reaload, the contents of @file{/etc/passwd}.
 @subsection Printing entries from @file{passwd}
 
 
-We are meant to call these function after a call to @bfunc{mbfl_system_passwd_read}.
+We are meant to call these function after a call to @func{mbfl_system_passwd_read}.
 
 
 @defun mbfl_system_passwd_print_entries
@@ -5478,9 +5476,9 @@ format of each line is:
 @subsection Searching entries from @file{passwd}
 
 
-We are meant to call these function after a call to @bfunc{mbfl_system_passwd_read}.  The following
+We are meant to call these function after a call to @func{mbfl_system_passwd_read}.  The following
 functions inspect entries from @file{/etc/passwd} and locate them using numeric indexes; such
-indexes are valid only until the next call to @bfunc{mbfl_system_passwd_reset}.
+indexes are valid only until the next call to @func{mbfl_system_passwd_reset}.
 
 
 @defun mbfl_system_passwd_find_entry_by_name @var{name}
@@ -5585,7 +5583,7 @@ Print to @stdout{} the field shell of the @file{passwd} entry at index @var{idx}
 @subsection Converting user identifiers
 
 
-We are meant to call these function after a call to @bfunc{mbfl_system_passwd_read}; @ref{system
+We are meant to call these function after a call to @func{mbfl_system_passwd_read}; @ref{system
 passwd reading, Reading the file @file{passwd}}.
 
 
@@ -5670,12 +5668,12 @@ file; print the result to @stdout{}.  When successful return true; otherwise ret
 @defun mbfl_system_group_read
 Read the file @file{/etc/group} and store the resulting fields in an internal global array variable.
 Only the first call to this function will actually read the file, unless
-@bfunc{mbfl_system_group_reset} has been called.
+@func{mbfl_system_group_reset} has been called.
 @end defun
 
 
 @defun mbfl_system_group_reset
-Reset the internal state so that the next call to @bfunc{mbfl_system_group_read} will actually load,
+Reset the internal state so that the next call to @func{mbfl_system_group_read} will actually load,
 or reaload, the contents of @file{/etc/group}.
 @end defun
 
@@ -5684,7 +5682,7 @@ or reaload, the contents of @file{/etc/group}.
 @subsection Printing entries from @file{/etc/group}
 
 
-We are meant to call these function after a call to @bfunc{mbfl_system_group_read}.
+We are meant to call these function after a call to @func{mbfl_system_group_read}.
 
 
 @defun mbfl_system_group_print_entries
@@ -5720,9 +5718,9 @@ The format of each line is:
 @subsection Searching entries from @file{/etc/group}
 
 
-We are meant to call these function after a call to @bfunc{mbfl_system_group_read}.  The following
+We are meant to call these function after a call to @func{mbfl_system_group_read}.  The following
 functions inspect entries from @file{/etc/group} and locate them using numeric indexes; such indexes
-are valid only until the next call to @bfunc{mbfl_system_group_reset}.
+are valid only until the next call to @func{mbfl_system_group_reset}.
 
 
 @defun mbfl_system_group_find_entry_by_name @var{name}
@@ -5850,7 +5848,7 @@ fi
 @subsection Converting group identifiers
 
 
-We are meant to call these function after a call to @bfunc{mbfl_system_group_read}; @ref{system
+We are meant to call these function after a call to @func{mbfl_system_group_read}; @ref{system
 group reading, Reading the file @file{/etc/group}}.
 
 
@@ -5947,7 +5945,7 @@ the atexit @mbfl{} module uses this mechanism to register, forget and run multip
 
 @defun mbfl_atexit_enable
 @defunx mbfl_atexit_disable
-Register or delete @bfunc{mbfl_atexit_run} as command for the @code{EXIT} event.  We must call this
+Register or delete @func{mbfl_atexit_run} as command for the @code{EXIT} event.  We must call this
 function first if we want to use this module.
 @end defun
 
@@ -5994,7 +5992,7 @@ mbfl_location_leave
 
 @noindent
 inside a location we can register a ``handler command'' that is automatically executed whenever the
-location is left by calling @bfunc{mbfl_location_leave}.  We can nest locations at will.  We can run
+location is left by calling @func{mbfl_location_leave}.  We can nest locations at will.  We can run
 all the handlers registered so far in a stack of locations.
 
 
@@ -6221,10 +6219,10 @@ The invocation to this function must be the last line of code in the script.  It
 @enumerate
 @item
 Register the value of the variable @code{script_PROGNAME} in the message module using the function
-@bfunc{mbfl_message_set_progname}.
+@func{mbfl_message_set_progname}.
 
 @item
-Invoke @bfunc{mbfl_main_create_exit_functions}.  @ref{main exit, Declaring exit codes}.
+Invoke @func{mbfl_main_create_exit_functions}.  @ref{main exit, Declaring exit codes}.
 
 @item
 Parse the command line arguments according to the command actions configuration; this step may
@@ -6235,15 +6233,15 @@ This function searches for a declared action set with name @code{MAIN}: if such 
 expects the first command line argument to be an action identifier in the set.
 
 @item
-If it exists: invoke the function @bfunc{script_before_parsing_options} or the one selected by
-@bfunc{mbfl_main_set_before_parsing_options}.
+If it exists: invoke the function @func{script_before_parsing_options} or the one selected by
+@func{mbfl_main_set_before_parsing_options}.
 
 @item
-Parse command line options with @bfunc{mbfl_getopts_parse}.
+Parse command line options with @func{mbfl_getopts_parse}.
 
 @item
-If it exists: invoke the function @bfunc{script_after_parsing_options} or the one selected by
-@bfunc{mbfl_main_set_after_parsing_options}.
+If it exists: invoke the function @func{script_after_parsing_options} or the one selected by
+@func{mbfl_main_set_after_parsing_options}.
 
 @item
 Invoke the function whose name is stored in the global variable @code{mbfl_main_SCRIPT_FUNCTION}, if
@@ -6290,7 +6288,7 @@ The default function name is: @code{script_after_parsing_options}.
 Some functions and global variables are provided to declare script's exit codes.  The @mbfl{}
 declares its own exit codes starting from @code{100} and decreasing; we should declare our exit
 codes starting from @code{3} and increasing.  The exit codes @code{0} and @code{1} are reserved for
-the functions @bfunc{exit_because_success} and @bfunc{exit_because_failure}.
+the functions @func{exit_because_success} and @func{exit_because_failure}.
 
 
 @defun mbfl_exit
@@ -6299,7 +6297,7 @@ Wrapper for the @command{exit} command that updates the internal state.
 
 
 @defvar mbfl_main_pending_EXIT_CODE
-Set by @bfunc{mbfl_exit} to the exit code this script is using.  This variable might be accessed by
+Set by @func{mbfl_exit} to the exit code this script is using.  This variable might be accessed by
 atexit commands to appropriately react to an error condition.
 @end defvar
 
@@ -6316,7 +6314,7 @@ Declare an exit code with value @var{code} and identifier @var{name}.
 
 
 @defun mbfl_main_create_exit_functions
-For each of the codes declared with @bfunc{mbfl_main_declare_exit_code}: create a function for the
+For each of the codes declared with @func{mbfl_main_declare_exit_code}: create a function for the
 @code{exit} command using the numerical code; create an alias for the @code{return} command using
 the numerical code.  For example, if a code is declared as:
 
@@ -6405,8 +6403,8 @@ If the function does not exist: return by calling @code{return_because_invalid_f
 
 
 @defun mbfl_invoke_existent_script_function @var{funcname}
-Like @bfunc{mbfl_invoke_script_function}, but if the function does not exist: print an error message
-to @stderr{} and exit by calling @bfunc{exit_because_invalid_function_name}.
+Like @func{mbfl_invoke_script_function}, but if the function does not exist: print an error message
+to @stderr{} and exit by calling @func{exit_because_invalid_function_name}.
 @end defun
 
 
@@ -6471,7 +6469,7 @@ test file.  This means that the variables that you set may interfere
 with the ones in the library; this should not happen because the test
 library prefixes variable names with @code{mbfl_} or @code{dotest_}, but
 one exception is @env{TMPDIR}: do not set it in your script, use
-@bfunc{dotest-echo-tmpdir} to access that value.  @ref{testing files,
+@func{dotest-echo-tmpdir} to access that value.  @ref{testing files,
 Handling files in tests}.
 
 
@@ -6564,11 +6562,11 @@ options, Predefined options}) and additionally:
 @table @code
 @item --start
 Print start messages for tests, it is the same as invoking
-@bfunc{dotest-set-report-start}.
+@func{dotest-set-report-start}.
 
 @item --end
 Print end messages for tests, it is the same as invoking
-@bfunc{dotest-set-report-success}.
+@func{dotest-set-report-success}.
 
 @item --match=VALUE
 Select match pattern for tests, it is the same as setting the
@@ -6644,7 +6642,7 @@ Return true if test mode is on, false otherwise.
 
 @defun dotest-set-debug
 @defunx dotest-unset-debug
-Enable or disable printing debug messages.  If debug mode is on: the function @bfunc{dotest-debug}
+Enable or disable printing debug messages.  If debug mode is on: the function @func{dotest-debug}
 will print its message; otherwise it will print nothing.
 @end defun
 
@@ -6707,38 +6705,38 @@ saved, and it is restored after the execution is terminated.
 The return value of the test functions is used as result of the test:
 true, the test succeeded; false, the test failed.  Remembering that the
 return value of a function is the return value of its last executed
-command, the functions @bfunc{dotest-equal} and @bfunc{dotest-output}, and
+command, the functions @func{dotest-equal} and @func{dotest-output}, and
 of course the @command{test} command, may be used to return the correct
 value.
 @end defun
 
 
 Messages are printed before and after the execution of each function,
-according to the mode selected with: @bfunc{dotest-set-report-success},
-@bfunc{dotest-set-report-start}, @dots{}  @ref{testing config,
+according to the mode selected with: @func{dotest-set-report-success},
+@func{dotest-set-report-start}, @dots{}  @ref{testing config,
 Configuring the package}
 
 The following environment variables will influence the behaviour of
-@bfunc{dotest}.
+@func{dotest}.
 
 
 @defvar TESTMATCH
-Restrict the @var{pattern} argument to @bfunc{dotest}.  First function names are matched against
+Restrict the @var{pattern} argument to @func{dotest}.  First function names are matched against
 @var{pattern}, then, the ones that match, are matched against @env{TESTMATCH}.
 @end defvar
 
 
 @defvar TESTSTART
 If @code{yes}: It is equivalent to invoking
-@bfunc{dotest-set-report-start}.  If @code{no}: It is equivalent to
-invoking @bfunc{dotest-unset-report-start}.
+@func{dotest-set-report-start}.  If @code{no}: It is equivalent to
+invoking @func{dotest-unset-report-start}.
 @end defvar
 
 
 @defvar TESTSUCCESS
 If @code{yes}: It is equivalent to invoking
-@bfunc{dotest-set-report-success}.  If @code{no}: It is equivalent to
-invoking @bfunc{dotest-unset-report-success}.
+@func{dotest-set-report-success}.  If @code{no}: It is equivalent to
+invoking @func{dotest-unset-report-success}.
 @end defvar
 
 @c page
@@ -6844,7 +6842,7 @@ In this section are described functions to be used to create temporary
 files; it is a common task to write scripts to manipulate files and
 directories.  All the files should be created under a temporary
 directory that must be removed after each test function is invoked; the
-library automatically invokes @bfunc{dotest-clean-files} when exiting
+library automatically invokes @func{dotest-clean-files} when exiting
 (using @code{trap}), but it is safer to invoke it at the end of each
 function that creates files.
 
@@ -6893,9 +6891,9 @@ Change the working directory to the temporary directory.
 
 
 @defun dotest-mktmpdir
-Create the temporary directory.  @bfunc{dotest-mkdir} creates the temporary directory automatically
+Create the temporary directory.  @func{dotest-mkdir} creates the temporary directory automatically
 by using the @option{--parents} option of @command{mkdir}.  This function is automatically invoked
-by @bfunc{dotest-mkfile} and @bfunc{dotest-mkpathname}.
+by @func{dotest-mkfile} and @func{dotest-mkpathname}.
 @end defun
 
 @c page
@@ -6916,8 +6914,8 @@ Remove the temporary directory and all its children.  Should be invoked
 at the end of each function that creates temporary files or directories.
 
 Return the value of the last command executed before the invocation,
-that way it can be used right after @bfunc{dotest-output} and
-@bfunc{dotest-equal} without loosing the return value of the function.
+that way it can be used right after @func{dotest-output} and
+@func{dotest-equal} without loosing the return value of the function.
 @end defun
 
 
@@ -6927,7 +6925,7 @@ Compose a pathname under the temporary testing directory.  The optional @var{pre
 pathname that is prepended to @var{pathname}: It is useful to prepend the name of a parent
 directory.  Print to stdout the full pathname of the file.
 
-This function invokes @bfunc{dotest-mktmpdir}.
+This function invokes @func{dotest-mktmpdir}.
 @end defun
 
 
@@ -6936,14 +6934,14 @@ This function invokes @bfunc{dotest-mktmpdir}.
 
 @defun dotest-assert-file-exists @var{file} @var{error_message}
 Test that @var{file} exists: If true returns with code zero; else print
-@var{error_message}, invoke @bfunc{dotest-clean-files} and return with
+@var{error_message}, invoke @func{dotest-clean-files} and return with
 code one.
 @end defun
 
 
 @defun dotest-assert-file-unexists @var{file} @var{error_message}
 Test that @var{file} does not exist: If true return with code zero; else
-print @var{error_message}, invoke @bfunc{dotest-clean-files} and return
+print @var{error_message}, invoke @func{dotest-clean-files} and return
 with code one.
 @end defun
 
@@ -7196,7 +7194,7 @@ script, it is there for completeness.
 
 @defun send @var{string}
 @defunx send @var{template} [@var{opt} @dots{}]
-Send a string to the @smtp{} server.  Use @bfunc{printf} to format the string @var{template} with
+Send a string to the @smtp{} server.  Use @func{printf} to format the string @var{template} with
 the optional arguments, then write the resulting string to file descriptor 3.  The string written
 out is terminated with the sequence @code{\r\n} as mandated by the @smtp{} protocol.
 @end defun
@@ -7234,19 +7232,19 @@ background and talk to them via pipes.  This keyword in @strong{not} used in thi
 
 The purpose of the script is to understand how to send a message through a process in background.
 It does the same things of the example described in @ref{sendmail plain, Just send an email
-message}.  The main difference is that the single function @bfunc{open_session} is replaced by the
-two functions @bfunc{open_session} and @bfunc{connector}.
+message}.  The main difference is that the single function @func{open_session} is replaced by the
+two functions @func{open_session} and @func{connector}.
 
-What is important to understand, is how @bfunc{open_session} runs @bfunc{connector} in background
+What is important to understand, is how @func{open_session} runs @func{connector} in background
 and sets up two file descriptors to talk to it.  In the real world we never use this technique with
-a function; this example script makes use of @bfunc{connector} as a replacement for an external
+a function; this example script makes use of @func{connector} as a replacement for an external
 program that can establish sophisticated connections to remote hosts, for example using the
 @tls{}/@ssl{} protocols.
 
 
 @defun open_session @var{hostname}
 Open a connection to the @smtp{} server spawning a background process represented by the
-@bfunc{connector} function.  It makes use of two @fifo{}s (First In, First Out).
+@func{connector} function.  It makes use of two @fifo{}s (First In, First Out).
 
 If we were to do it from a C language program: we would use the @cfunc{pipe} system function to
 create two pipes connecting script's process to the background process.
@@ -7270,8 +7268,8 @@ mkfifo --mode=0600 $INFIFO $OUFIFO
 @end example
 
 @noindent
-the script will use @code{INFIFO} to read characters from @bfunc{connector}, and @code{OUFIFO} to
-send characters to @bfunc{connector}.
+the script will use @code{INFIFO} to read characters from @func{connector}, and @code{OUFIFO} to
+send characters to @func{connector}.
 
 @example
  ---------  OUFIFO   -----------  socket  --------
@@ -7280,7 +7278,7 @@ send characters to @bfunc{connector}.
  ---------  INFIFO   -----------          --------
 @end example
 
-Once the @fifo{}s exist on the file system, we run @bfunc{connector} in background, connecting its
+Once the @fifo{}s exist on the file system, we run @func{connector} in background, connecting its
 standard input and output to the @fifo{}s:
 
 @example
@@ -7289,7 +7287,7 @@ connector $HOSTNAME $SMTP_PORT <$OUFIFO >$INFIFO &
 
 @noindent
 be careful in selecting the redirections.  Notice that, in this simple example, we ignore errors
-running @bfunc{connector}.
+running @func{connector}.
 
 Now we open file descriptors connecting them to the @fifo{}s:
 
@@ -7298,8 +7296,8 @@ exec 3<>$INFIFO 4>$OUFIFO
 @end example
 
 @noindent
-the script will use file descriptor 3 to read characters from @bfunc{connector}, and file descriptor
-4 to send characters to @bfunc{connector}.  We open the input @fifo{} for both reading and writing,
+the script will use file descriptor 3 to read characters from @func{connector}, and file descriptor
+4 to send characters to @func{connector}.  We open the input @fifo{} for both reading and writing,
 else @code{exec} will block waiting for the first char.
 
 We have connected both the ends of both the @fifo{}s, so we can remove them from the file system:
