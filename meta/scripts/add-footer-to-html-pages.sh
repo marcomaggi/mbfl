@@ -12,7 +12,7 @@ declare -r RM=/bin/rm
 
 declare SEXP
 printf -v SEXP \
-       's_</body>_<p class="customfooter12345"><font size="-1">This document describes version %s of <em>%s</em>.</font></p></body>_' \
+       's_</body>_<p class="customfooter12345">This document describes version <tt>%s</tt> of <em>%s</em>.</p></body>_' \
        "$PACKAGE_VERSION" "$PACKAGE_NAME"
 
 for htmlfile in "$@"
