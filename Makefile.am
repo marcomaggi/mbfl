@@ -21,6 +21,9 @@ EXTRA_DIST		+= \
 	doc/two-levels-actions.sh
 
 AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
+AM_MAKEINFOHTMLFLAGS	= \
+	--split=node  -I $(srcdir)/examples \
+	-c PROGRAM_NAME_IN_FOOTER=1 -c WORDS_IN_PAGE=0
 
 # Notice that  we need the  *.sh files in  the doc directory  to allow
 # generation of PDF documents.  Unfortunately, texi2pdf does not allow
