@@ -516,67 +516,6 @@ function validate_and_normalise_configuration () {
 }
 
 #page
-#### connection data structure
-
-function connector_init () {
-    mbfl_mandatory_nameref_parameter(SELF, 1, struct reference variable)
-    local TMPDIR
-
-    # Input  and   output  file  descriptors  when   using  a  connector
-    # subprocess.  This  script reads from  INFD to acquire  output from
-    # the connector.   This script writes to  OUFD to send input  to the
-    # connector.
-    SELF[INFD]=3
-    SELF[OUFD]=4
-
-    if ! mbfl_file_find_tmpdir_var TMPDIR
-    then
-        mbfl_message_error 'unable to determine pathname of temporary directory'
-        exit_failure
-    fi
-
-    # Pathnames  of the  FIFOs used  to  talk to  the connector's  child
-    # process.
-    SELF[INFIFO]=${TMPDIR}/connector-to-script.${RANDOM}.$$
-    SELF[OUFIFO]=${TMPDIR}/script-to-connector.${RANDOM}.$$
-
-    # The  PID of  the  connector external  program,  executed as  child
-    # process.  If set to zero: it  means this process uses no connector
-    # process.
-    SELF[CONNECTOR_PID]=0
-}
-
-function connector_final () {
-    mbfl_mandatory_nameref_parameter(SELF, 1, struct reference variable)
-
-    if ((0 < ${SELF[CONNECTOR_PID]}))
-    then
-        #kill -SIGTERM $CONNECTOR_PID &>/dev/null
-	mbfl_message_debug_printf 'waiting for connector process (pid %d)' ${SELF[CONNECTOR_PID]}
-	wait ${SELF[CONNECTOR_PID]}
-	mbfl_message_debug_printf 'gathered connector process'
-    fi
-
-    # Remove the FIFOs.
-    if mbfl_file_is_file "${SELF[INFIFO]}"
-    then mbfl_file_remove "${SELF[INFIFO]}"
-    fi
-    if mbfl_file_is_file "${SELF[OUFIFO]}"
-    then mbfl_file_remove "${SELF[OUFIFO]}"
-    fi
-
-    # Close the file descriptors.
-    if ((0 << ${SELF[INFD]}))
-    then exec ${SELF[INFD]}<-
-    fi
-    if ((0 << ${SELF[OUFD]}))
-    then exec ${SELF[OUFD]}>-
-    fi
-
-    return 0
-}
-
-#page
 #### establishing connections to remote servers
 
 # Establish a plain connection with the selected SMTP server.  Read the
