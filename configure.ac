@@ -2,7 +2,7 @@
 #
 
 AC_PREREQ([2.69])
-MMUX_PKG_VERSIONS([3],[0],[0],[devel.0],[noarch])
+MMUX_PKG_VERSIONS([3],[0],[0],[devel.1],[noarch])
 AC_INIT([Marcos Bash Functions Library],MMUX_PACKAGE_VERSION,[marco.maggi-ipsu@poste.it],
   [mbfl],[http://github.com/marcomaggi/mbfl])
 MMUX_INIT
