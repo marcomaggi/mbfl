@@ -14,7 +14,7 @@
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
-# Software Foundation; either  version 2, or (at your  option) any later
+# Software Foundation; either  version 3, or (at your  option) any later
 # version.
 #
 # This  file is  distributed in  the hope  that it  will be  useful, but
@@ -222,6 +222,79 @@ function locations-04.1 () {
     handler_append 4
 
     dotest-equal 01234 "$RESULT"
+}
+
+#page
+#### running location handlers upon exiting a script
+
+function locations-05.1 () {
+    local LINE1 LINE2 EXIT_CODE
+
+    coproc worker-locations-05.1
+
+    if ! read -t 4 -u ${COPROC[0]} LINE1
+    then return 1
+    fi
+
+    if ! read -t 4 -u ${COPROC[0]} LINE2
+    then return 1
+    fi
+
+    wait $COPROC_PID
+    EXIT_CODE=$?
+
+    dotest-equal 0 $EXIT_CODE && dotest-equal 456 "$LINE1" && dotest-equal 123 "$LINE2"
+}
+function worker-locations-05.1 () {
+    mbfl_atexit_enable
+    mbfl_location_enable_cleanup_atexit
+
+    #dotest-set-debug
+    dotest-debug "worker function"
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'echo 123'
+	mbfl_location_handler 'echo 456'
+	exit_because_success
+    }
+    mbfl_location_leave
+}
+
+### ------------------------------------------------------------------------
+
+function locations-06.1 () {
+    local LINE1 LINE2 EXIT_CODE
+
+    coproc worker-locations-06.1
+
+    if ! read -t 4 -u ${COPROC[0]} LINE1
+    then return 1
+    fi
+
+    if ! read -t 4 -u ${COPROC[0]} LINE2
+    then return 1
+    fi
+
+    wait $COPROC_PID
+    EXIT_CODE=$?
+
+    dotest-equal 77 $EXIT_CODE && dotest-equal 77 "$LINE1" && dotest-equal 66 "$LINE2"
+}
+function worker-locations-06.1 () {
+    mbfl_atexit_enable
+    mbfl_location_enable_cleanup_atexit
+
+    #dotest-set-debug
+    dotest-debug "worker function"
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'if mbfl_main_is_exiting ; then echo 66 ; else echo bad; fi'
+	mbfl_location_handler 'echo $mbfl_main_pending_EXIT_CODE'
+	mbfl_exit 77
+    }
+    mbfl_location_leave
 }
 
 #page

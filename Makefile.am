@@ -21,6 +21,7 @@ EXTRA_DIST		+= \
 	doc/two-levels-actions.sh
 
 AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
+AM_MAKEINFOHTMLFLAGS	= --split=node  -I $(srcdir)/examples -c WORDS_IN_PAGE=0
 
 # Notice that  we need the  *.sh files in  the doc directory  to allow
 # generation of PDF documents.  Unfortunately, texi2pdf does not allow
@@ -35,6 +36,9 @@ doc_mbfl_TEXINFOS	= \
 	doc/loader.sh					\
 	doc/sendmail-plain.sh				\
 	doc/sendmail-connector.sh
+
+html-local:
+	$(top_srcdir)/meta/scripts/add-footer-to-html-pages.sh "$(PACKAGE_NAME)" "$(PACKAGE_VERSION)" $(builddir)/doc/mbfl.html/*.html
 
 
 #### source modules
@@ -161,8 +165,8 @@ EXTRA_DIST		+= \
 	examples/compress.sh.m4			\
 	examples/pwentries.sh.m4		\
 	examples/sendmail-mbfl.sh.m4		\
-	examples/template.sh.m4			\
 	examples/template-actions.sh.m4		\
+	examples/template.sh.m4			\
 	\
 	examples/sendmail-connector.sh		\
 	examples/sendmail-plain.sh		\
@@ -170,23 +174,17 @@ EXTRA_DIST		+= \
 	examples/test-sendmail-localhost.sh	\
 	examples/test-sendmail-poste.sh
 
-CHECK_EXAMPLES		= \
-	examples/compress.sh		\
-	examples/template.sh		\
-	examples/template-actions.sh
+EXAMPLES_BUILT_FILES	= \
+	examples/at.sh				\
+	examples/compress.sh			\
+	examples/pwentries.sh			\
+	examples/sendmail-mbfl.sh		\
+	examples/template-actions.sh		\
+	examples/template.sh
 
-SOME_EXAMPLES	= \
-	examples/at.sh			\
-	examples/pwentries.sh		\
-	examples/sendmail-mbfl.sh	\
-	examples/compress.sh		\
-	examples/template.sh		\
-	examples/template-actions.sh
+noinst_SCRIPTS		= $(EXAMPLES_BUILT_FILES)
 
-check_SCRIPTS		= $(CHECK_EXAMPLES)
-noinst_SCRIPTS		= $(SOME_EXAMPLES)
-
-CLEANFILES		+= $(CHECK_EXAMPLES) $(SOME_EXAMPLES) examples/$(am__dirstamp)
+CLEANFILES		+= $(EXAMPLES_BUILT_FILES) examples/$(am__dirstamp)
 
 MBFL_EXAMPLES_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
 MBFL_EXAMPLES_ENV	= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBRARY); export MBFL_LIBRARY;
@@ -225,9 +223,12 @@ bin_SCRIPTS		+= examples/sendmail-mbfl.sh
 endif
 
 
-#### tests
+#### interface to "make check"
 
 EXTRA_DIST	+= \
+	tests/variables.test.m4		\
+	tests/strings.test.m4		\
+	\
 	tests/arrays.test		\
 	tests/atexit.test		\
 	tests/compress.test		\
@@ -240,16 +241,28 @@ EXTRA_DIST	+= \
 	tests/program.test		\
 	tests/script.test		\
 	tests/signal.test		\
-	tests/string.test		\
 	tests/system.test		\
 	tests/times-and-dates.test	\
-	tests/variable.test		\
+	\
+	tests/bash-feature-coproc.test	\
 	\
 	tests/setup.sh			\
 	tests/signaltest.sh
 
+CHECK_BUILT_EXAMPLES	= \
+	examples/compress.sh		\
+	examples/template.sh		\
+	examples/template-actions.sh
+
+CHECK_BUILT_TESTS		= \
+	tests/strings.test		\
+	tests/variables.test
+
+check_SCRIPTS		= $(CHECK_BUILT_EXAMPLES) $(CHECK_BUILT_TESTS)
+
+CLEANFILES		+= $(CHECK_BUILT_TESTS) tests/$(am__dirstamp)
+
 ## --------------------------------------------------------------------
-## interface to "make check"
 
 # Resetting the PATH allows us to load files with the "source" command.
 MBFL_TESTS_ENV		= PATH=$(srcdir)/tests:$(builddir)/tests:$(srcdir)/src/lib:$(PATH); export PATH;
@@ -264,6 +277,12 @@ MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
 #MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(BASH_PROGRAM)
 
+MBFL_TESTS_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
+MBFL_TESTS_PREPRO	= $(builddir)/src/scripts/mbflpp.sh
+MBFL_TESTS_PPFLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 --add-bash $(MBFLPPFLAGS)
+MBFL_TESTS_RUNPP	= $(MBFL_TESTS_ENV) $(BASH_PROGRAM) $(MBFL_TESTS_PREPRO) $(MBFL_TESTS_PPFLAGS)
+MBFL_TESTS_PREREQ	= tests/$(am__dirstamp) $(MBFL_TESTS_PREPRO) $(MBFL_TESTS_LIBRARY)
+
 # Read "Parallel Test Harness" in the documentation of GNU Automake to
 # understand how to use this interface for "make check".
 #
@@ -271,7 +290,7 @@ MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export 
 AM_TESTS_ENVIRONMENT	= $(MBFL_TESTS_VERBENV) $(MBFL_TESTS_ENV)
 TEST_EXTENSIONS		= .test
 TEST_LOG_COMPILER	= $(BASH_PROGRAM)
-AM_TEST_LOG_FLAGS	= $(user_flags)
+AM_TEST_LOG_FLAGS	= $(MBFLFLAGS)
 
 TESTS			= \
 	tests/arrays.test		\
@@ -286,18 +305,31 @@ TESTS			= \
 	tests/program.test		\
 	tests/script.test		\
 	tests/signal.test		\
-	tests/string.test		\
+	tests/strings.test		\
 	tests/system.test		\
 	tests/times-and-dates.test	\
-	tests/variable.test
+	tests/variables.test		\
+	\
+	tests/bash-feature-coproc.test
 
-## --------------------------------------------------------------------
-## additional test rules
+tests/variables.test: tests/variables.test.m4 $(MBFL_TESTS_PREREQ)
+	$(MBFL_TESTS_RUNPP) <$< >$@
 
-.PHONY: test test-template test-template-actions test-script-atexit test-sendmail-gmail test-sendmail-poste test-sendmail-localhost
+tests/strings.test: tests/strings.test.m4 $(MBFL_TESTS_PREREQ)
+	$(MBFL_TESTS_RUNPP) <$< >$@
+
+tests/$(am__dirstamp):
+	@$(MKDIR_P) tests
+	@: > tests/$(am__dirstamp)
+
+
+#### additional test rules
+
+.PHONY: test test-template test-template-actions test-script-atexit
+.PHONY: test-sendmail-gmail test-sendmail-poste test-sendmail-localhost
 
 test: all $(check_SCRIPTS)
-	for item in $(srcdir)/tests/*$(file)*.test;					\
+	shopt -s nullglob; for item in $(srcdir)/tests/*$(file)*.test $(builddir)/tests/*$(file)*.test;	\
 	do $(AM_TESTS_ENVIRONMENT) $(BASH_PROGRAM) "$$item" $(AM_TEST_LOG_FLAGS);	\
 	done
 

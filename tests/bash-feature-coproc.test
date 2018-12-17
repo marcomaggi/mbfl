@@ -1,14 +1,14 @@
-# main.test --
+# bash-feature-coproc.test --
 #
 # Part of: Marco's BASH Functions Library
-# Contents: tests for the main module
-# Date: Nov 26, 2018
+# Contents: tests for the Bash feature "coproc"
+# Date: Mon Dec 10, 2018
 #
 # Abstract
 #
 #	To select the tests in this file:
 #
-#		$ TESTMATCH=main- make all tests
+#		$ make all test file=bash-feature-coproc
 #
 # Copyright (c) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
@@ -28,42 +28,53 @@
 # 02111-1307, USA.
 #
 
-#PAGE
+#page
 #### setup
 
 source setup.sh
 
 #page
-#### return values
+#### chatting with a coprocess
 
-function main-return-value-1.1 () {
-    (return_because_success)
-    dotest-equal 0 $?
+function coproc-1.1 () {
+    local LINE1 LINE2 EXIT_CODE
+
+    coproc worker-coproc-1.1
+
+    if read -t 4 -u ${COPROC[0]} LINE1
+    then
+	printf 'hello slave\n' >&${COPROC[1]}
+	if read -t 4 -u ${COPROC[0]} LINE2
+	then printf 'bye slave\n' >&${COPROC[1]}
+	else return 1
+	fi
+    else return 1
+    fi
+
+    wait $COPROC_PID
+    EXIT_CODE=$?
+    dotest-equal 0 $EXIT_CODE && dotest-equal 'hello master' "$LINE1" && dotest-equal 'bye master' "$LINE2"
+}
+function worker-coproc-1.1 () {
+    local LINE1 LINE2
+
+    printf 'hello master\n'
+    if read -t 4 LINE1
+    then
+	printf 'bye master\n'
+	if ! read -t 4 LINE2
+	then exit 1
+	fi
+    else exit 1
+    fi
+    dotest-equal 'hello slave' "$LINE1" && dotest-equal 'bye slave' "$LINE2"
+    exit $?
 }
 
-function main-return-value-1.2 () {
-    (return_because_failure)
-    dotest-equal 1 $?
-}
+#page
+#### let's go
 
-function main-return-value-1.3 () {
-    (return_because_error_loading_library)
-    dotest-equal 100 $?
-}
-
-### ------------------------------------------------------------------------
-
-function main-return-value-2.1 () {
-    return_because_success
-}
-
-function main-return-value-2.2 () {
-    return_success
-}
-
-#PAGE
-
-dotest main-
+dotest coproc-
 dotest-final-report
 
 ### end of file

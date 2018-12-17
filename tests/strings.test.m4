@@ -17,8 +17,8 @@
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  3.0 of the License,  or (at
-# your option) any later version.
+# Free Software Foundation; either version 3 of the License, or (at your
+# option) any later version.
 #
 # This library  is distributed in the  hope that it will  be useful, but
 # WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
@@ -145,6 +145,20 @@ function string-length-1.2 () {
 
 function string-length-1.3 () {
     mbfl_string_length abcdefghilm | dotest-output 11
+}
+
+### --------------------------------------------------------------------
+
+function string-len-1.1 () {
+    local VAR=ciao
+
+    dotest-equal 4 mbfl_string_len(VAR)
+}
+
+function string-len-1.2 () {
+    local VAR=
+
+    dotest-equal 0 mbfl_string_len(VAR)
 }
 
 ### --------------------------------------------------------------------
