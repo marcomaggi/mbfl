@@ -21,7 +21,8 @@ EXTRA_DIST		+= \
 	doc/two-levels-actions.sh
 
 AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
-AM_MAKEINFOHTMLFLAGS	= --split=node  -I $(srcdir)/examples -c WORDS_IN_PAGE=0
+AM_MAKEINFOHTMLFLAGS	= --split=node  -I $(srcdir)/examples -c WORDS_IN_PAGE=0 \
+	-c PRE_BODY_CLOSE="<p>This document describes version <tt>$(PACKAGE_VERSION)</tt> of <em>$(PACKAGE_NAME)</em>.</p>"
 
 # Notice that  we need the  *.sh files in  the doc directory  to allow
 # generation of PDF documents.  Unfortunately, texi2pdf does not allow
@@ -36,9 +37,6 @@ doc_mbfl_TEXINFOS	= \
 	doc/loader.sh					\
 	doc/sendmail-plain.sh				\
 	doc/sendmail-connector.sh
-
-html-local:
-	$(top_srcdir)/meta/scripts/add-footer-to-html-pages.sh "$(PACKAGE_NAME)" "$(PACKAGE_VERSION)" $(builddir)/doc/mbfl.html/*.html
 
 
 #### source modules
