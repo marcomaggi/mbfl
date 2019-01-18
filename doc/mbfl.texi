@@ -33,7 +33,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017-2018
+@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017-2019
 
 @c ------------------------------------------------------------------------
 
@@ -1487,7 +1487,7 @@ mbfl_file_rootname_var /path/to/file.ext
 
 
 @defun mbfl_file_tail @var{pathname}
-@defunx mbfl_file_tail_var @var{pathname}
+@defunx mbfl_file_tail_var @var{_RV} @var{pathname}
 Extract the file portion from a fully qualified pathname.  Search the last slash character in the
 input string and echo to stdout the range of characters from the slash to the end, not including the
 slash.  If no slash is found: echo the whole string.
