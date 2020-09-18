@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2013, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (C) 2013, 2018, 2020 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -41,7 +41,7 @@ then
     #
     #   ${ACTION_SET}-${ACTION_IDENTIFIER}
     #
-    # the  values are  the names  o the  actions sets  being subsets  of
+    # the values  are the  names of  the actions  sets being  subsets of
     # $ACTION_SET.
     #
     # Every  action   set  might   be  associated  to   multiple  action
@@ -212,7 +212,7 @@ function mbfl_actions_dispatch () {
         return 1
     fi
 
-    # If  there are  no  more  command lin  arguments:  just accept  the
+    # If  there are  no more  command  line arguments:  just accept  the
     # previously selected values for the functions.
     if (( ARG1ST == ARGC1 ))
     then return 0
