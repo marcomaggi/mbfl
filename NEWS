@@ -58,7 +58,7 @@ changes!
      mbfl_local_varref(RV)
 
      mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
-     "$RV" @result{} ext
+     "$RV" => ext
 
   without risking a variable name collision.
 
