@@ -11,7 +11,7 @@
 #	"--extract" and the like.
 #
 # Copyright (c) 2004, 2005, 2009, 2012, 2013, 2014, 2018 Marco Maggi
-# <marco.maggi-ipsu@poste.it>
+# <mrc.mgg@gmail.com>
 #
 # The author hereby grants  permission to use, copy, modify, distribute,
 # and  license this  software  and its  documentation  for any  purpose,

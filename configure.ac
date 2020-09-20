@@ -3,12 +3,12 @@
 
 AC_PREREQ([2.69])
 MMUX_PKG_VERSIONS([3],[0],[0],[devel.1],[noarch])
-AC_INIT([Marcos Bash Functions Library],MMUX_PACKAGE_VERSION,[marco.maggi-ipsu@poste.it],
+AC_INIT([Marcos Bash Functions Library],MMUX_PACKAGE_VERSION,[mrc.mgg@gmail.com],
   [mbfl],[http://github.com/marcomaggi/mbfl])
 MMUX_INIT
 dnl This is the revision number of this configure.ac
 AC_REVISION([0.1])
-AC_COPYRIGHT([Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+AC_COPYRIGHT([Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 
 This is  free software; you can  redistribute it and/or modify  it under
 the terms of  the GNU Lesser General Public License  as published by the

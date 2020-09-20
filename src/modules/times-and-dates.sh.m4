@@ -1,4 +1,3 @@
-#! /bin/bash
 # times-and-dates.sh --
 #
 # Part of: Marco's BASH functions library
@@ -10,7 +9,7 @@
 #       This is  a collection of times  and dates functions for  the GNU
 #       BASH shell.
 #
-# Copyright (c) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2018 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the

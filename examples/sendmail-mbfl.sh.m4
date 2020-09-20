@@ -9,7 +9,7 @@
 #	programs.
 #
 # Copyright (c) 2009, 2010, 2015, 2018 Marco Maggi
-# <marco.maggi-ipsu@poste.it>
+# <mrc.mgg@gmail.com>
 #
 # The author hereby grants  permission to use, copy, modify, distribute,
 # and  license this  software  and its  documentation  for any  purpose,

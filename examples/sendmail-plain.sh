@@ -13,7 +13,7 @@
 #         The purpose of this script is  to understand how to handle the
 #       SMTP protocol.
 #
-# Copyright (c) 2009, 2010, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2009, 2010, 2018 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby grants  permission to use, copy, modify, distribute,
 # and  license this  software  and its  documentation  for any  purpose,

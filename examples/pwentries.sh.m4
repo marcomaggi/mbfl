@@ -6,7 +6,7 @@
 #
 #	This script reads entries from "/etc/passwd".
 #
-# Copyright (c) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2018 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby grants  permission to use, copy, modify, distribute,
 # and  license this  software  and its  documentation  for any  purpose,

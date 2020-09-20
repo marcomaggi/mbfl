@@ -13,7 +13,7 @@
 #       work at all.
 #
 # Copyright (c) 2003-2005, 2009, 2013, 2014, 2018 Marco Maggi
-# <marco.maggi-ipsu@poste.it>
+# <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the

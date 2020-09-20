@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (C) 2018 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author  hereby grant permission to use,  copy, modify, distribute,
 # and  license this  software  and its  documentation  for any  purpose,

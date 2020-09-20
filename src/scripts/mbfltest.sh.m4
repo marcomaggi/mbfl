@@ -8,7 +8,7 @@
 #
 #	Execute a Bash subprocess running test files in it.
 #
-# Copyright (c) 2005, 2009, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2005, 2009, 2018 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This program is  free software: you can redistribute  it and/or modify
 # it under the  terms of the GNU General Public  License as published by
@@ -29,7 +29,7 @@
 
 script_PROGNAME=mbfltest.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2005'
+script_COPYRIGHT_YEARS='2005, 2009, 2018'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL3
 script_USAGE="usage: ${script_PROGNAME} [options] FILE ..."

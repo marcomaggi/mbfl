@@ -7,7 +7,7 @@
 #	This example script shows how to use the 'at' interface.
 #
 # Copyright (c) 2005, 2009, 2018 Marco Maggi
-# <marco.maggi-ipsu@poste.it>
+# <mrc.mgg@gmail.com>
 #
 # The author hereby grants  permission to use, copy, modify, distribute,
 # and  license this  software  and its  documentation  for any  purpose,

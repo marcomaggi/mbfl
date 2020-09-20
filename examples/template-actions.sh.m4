@@ -9,7 +9,7 @@
 #	This  script   uses  the  "actions"  module   to  configure  its
 #	behaviour, similarly to what "git" does with its subcommands.
 #
-# Copyright (c) 2013, 2014, 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2013, 2014, 2018 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby grants  permission to use, copy, modify, distribute,
 # and  license this  software  and its  documentation  for any  purpose,

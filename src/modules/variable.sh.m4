@@ -8,8 +8,8 @@
 #
 #
 #
-# Copyright   (c)    2004-2005,   2009,    2013,   2018    Marco   Maggi
-# <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi
+# <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the

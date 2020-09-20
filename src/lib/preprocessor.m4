@@ -10,7 +10,7 @@ m4_dnl
 m4_dnl	Library of macros to preprocess BASH scripts using MBFL.
 m4_dnl
 m4_dnl Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi
-m4_dnl <marco.maggi-ipsu@poste.it>
+m4_dnl <mrc.mgg@gmail.com>
 m4_dnl
 m4_dnl This  is free  software; you  can redistribute  it and/or  modify it
 m4_dnl under  the  terms  of  the  GNU Lesser  General  Public  License  as

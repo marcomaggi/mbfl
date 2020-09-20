@@ -1,10 +1,10 @@
 ;;; sendmail-mbfl.el --- send mail with sendmail-mbfl.sh
 
-;; Copyright (C) 2009, 2013, 2015  Marco Maggi <marco.maggi-ipsu@poste.it>
+;; Copyright (C) 2009, 2013, 2015  Marco Maggi <mrc.mgg@gmail.com>
 ;; Copyright (C) 1995,  1996, 1999, 2000, 2001, 2002,  2003, 2004, 2005,
 ;; 2006, 2007, 2008 Free Software Foundation, Inc.
 
-;; Author: Marco Maggi <marco.maggi-ipsu@poste.it>
+;; Author: Marco Maggi <mrc.mgg@gmail.com>
 ;; Keywords: mail
 
 ;; Bits  of   this  library  are   from  "starttls.el"  by   Daiki  Ueno
