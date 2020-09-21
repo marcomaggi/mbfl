@@ -1748,8 +1748,9 @@ The programs are: @command{ls}, @command{readlink}.
 @end defun
 
 
-@defun mbfl_file_listing @var{pathname}
-Execute @command{ls} with @var{pathname} as argument.
+@defun mbfl_file_listing @var{pathname} @ldots{}
+Execute @command{ls} with @var{pathname} as argument.  If other arguments are present: they are
+places, as they are, on the command line of @command{ls}.
 @end defun
 
 
