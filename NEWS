@@ -129,6 +129,9 @@ changes!
 
 * Added module "fd" implementing file descriptors handlers.
 
+* Added  support for  automatic  generation  of command-line  completion
+  scripts.
+
 
 Notes for revision 2.2.0
 ------------------------

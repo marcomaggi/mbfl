@@ -4,35 +4,29 @@
 #
 # Abstract
 #
-#	This  script  template  shows  how  an  MBFL  script  should  be
-#	organised  to use  MBFL  with command  line actions  processing.
-#	This  script   uses  the  "actions"  module   to  configure  its
-#	behaviour, similarly to what "git" does with its subcommands.
+#	This script template shows  how an MBFL script should be organised to  use MBFL with command
+#	line actions processing.  This script uses  the "actions" module to configure its behaviour,
+#	similarly to what "git" does with its subcommands.
 #
-# Copyright (c) 2013, 2014, 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2013, 2014, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
-# The author hereby grants  permission to use, copy, modify, distribute,
-# and  license this  software  and its  documentation  for any  purpose,
-# provided that  existing copyright notices  are retained in  all copies
-# and that  this notice  is included verbatim in any  distributions.  No
-# written agreement, license, or royalty  fee is required for any of the
-# authorized uses.  Modifications to this software may be copyrighted by
-# their authors and need not  follow the licensing terms described here,
-# provided that the new terms are clearly indicated on the first page of
-# each file where they apply.
+# The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
+# and its documentation  for any purpose, provided  that existing copyright notices  are retained in
+# all copies and that this notice is  included verbatim in any distributions.  No written agreement,
+# license,  or royalty  fee is  required for  any  of the  authorized uses.   Modifications to  this
+# software may  be copyrighted by their  authors and need  not follow the licensing  terms described
+# here, provided that the new terms are clearly indicated  on the first page of each file where they
+# apply.
 #
-# IN NO  EVENT SHALL THE AUTHOR  OR DISTRIBUTORS BE LIABLE  TO ANY PARTY
-# FOR  DIRECT, INDIRECT, SPECIAL,  INCIDENTAL, OR  CONSEQUENTIAL DAMAGES
-# ARISING OUT  OF THE  USE OF THIS  SOFTWARE, ITS DOCUMENTATION,  OR ANY
-# DERIVATIVES  THEREOF, EVEN  IF THE  AUTHOR  HAVE BEEN  ADVISED OF  THE
-# POSSIBILITY OF SUCH DAMAGE.
+# IN NO EVENT SHALL THE AUTHOR OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL,
+# INCIDENTAL, OR CONSEQUENTIAL DAMAGES  ARISING OUT OF THE USE OF  THIS SOFTWARE, ITS DOCUMENTATION,
+# OR ANY  DERIVATIVES THEREOF,  EVEN IF  THE AUTHOR  HAVE BEEN  ADVISED OF  THE POSSIBILITY  OF SUCH
+# DAMAGE.
 #
-# THE  AUTHOR  AND DISTRIBUTORS  SPECIFICALLY  DISCLAIM ANY  WARRANTIES,
-# INCLUDING,   BUT   NOT  LIMITED   TO,   THE   IMPLIED  WARRANTIES   OF
-# MERCHANTABILITY,    FITNESS   FOR    A    PARTICULAR   PURPOSE,    AND
-# NON-INFRINGEMENT.  THIS  SOFTWARE IS PROVIDED  ON AN "AS  IS" BASIS,
-# AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
-# MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+# THE AUTHOR AND  DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES, INCLUDING,  BUT NOT LIMITED TO,
+# THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS"  BASIS, AND THE AUTHOR AND DISTRIBUTORS HAVE NO OBLIGATION
+# TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
 #page
@@ -40,9 +34,11 @@
 
 script_PROGNAME=template-actions.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2013, 2014, 2018'
+script_COPYRIGHT_YEARS='2013, 2014, 2018, 2020'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=liberal
+
+declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
 
 #page
 #### library loading
@@ -106,17 +102,22 @@ mbfl_location_enable_cleanup_atexit
 #        |                       +--- liquid
 #        |                        --- gas
 #        |
-#         -- three -+--- green --+--- solid
-#                   |            +--- liquid
-#                   |             --- gas
+#        +-- three -+--- green --+--- solid
+#        !          |            +--- liquid
+#        !          |             --- gas
+#        !          |
+#        !          +--- white --+--- solid
+#        !          |            +--- liquid
+#        !          |             --- gas
+#        !          |
+#        !           --- red ----+--- solid
+#        !                       +--- liquid
+#        !                        --- gas
+#        |
+#         -- help --+--- usage
 #                   |
-#                   +--- white --+--- solid
-#                   |            +--- liquid
-#                   |             --- gas
-#                   |
-#                    --- red ----+--- solid
-#                                +--- liquid
-#                                 --- gas
+#                    --- print-completions-script
+#
 
 mbfl_declare_action_set ONE_GREEN
 #                   action-set	keyword		subset		identifier	description
@@ -188,6 +189,12 @@ mbfl_declare_action THREE	THREE_GREEN	THREE_GREEN	green		'Do main action three g
 mbfl_declare_action THREE	THREE_WHITE	THREE_WHITE	white		'Do main action three white.'
 mbfl_declare_action THREE	THREE_RED	THREE_RED	red		'Do main action three red.'
 
+## --------------------------------------------------------------------
+
+mbfl_declare_action_set HELP
+mbfl_declare_action HELP	HELP_USAGE	NONE		usage		'Print the help screen and exit.'
+mbfl_declare_action HELP	HELP_PRINT_COMPLETIONS_SCRIPT NONE print-completions-script 'Print the completions script for this program.'
+
 ### --------------------------------------------------------------------
 
 mbfl_declare_action_set MAIN
@@ -195,6 +202,7 @@ mbfl_declare_action_set MAIN
 mbfl_declare_action MAIN	ONE		ONE		one		'Do main action one.'
 mbfl_declare_action MAIN	TWO		TWO		two		'Do main action two.'
 mbfl_declare_action MAIN	THREE		THREE		three		'Do main action three.'
+mbfl_declare_action MAIN	HELP		HELP		help		'Help the user of this script.'
 
 #page
 #### script action functions: main
@@ -275,6 +283,19 @@ function script_before_parsing_options_THREE () {
 \t${script_PROGNAME} three green solid"
 }
 function script_action_THREE () {
+    mbfl_main_print_usage_screen_brief
+}
+
+### ------------------------------------------------------------------------
+
+function script_before_parsing_options_HELP () {
+    script_USAGE="usage: ${script_PROGNAME} help [action] [options]"
+    script_DESCRIPTION='Help the user of this program.'
+}
+function script_action_HELP () {
+    # By faking the  selection of the MAIN action: we  cause "mbfl_main_print_usage_screen_brief" to
+    # print the main usage screen.
+    mbfl_actions_fake_action_set MAIN
     mbfl_main_print_usage_screen_brief
 }
 
@@ -432,6 +453,41 @@ function script_before_parsing_options_THREE_RED () {
 }
 function script_action_THREE_RED () {
     mbfl_main_print_usage_screen_brief
+}
+
+#page
+#### script action functions: second level, action root "help"
+
+function script_before_parsing_options_HELP_USAGE () {
+    script_USAGE="usage: ${script_PROGNAME} help usage [options]"
+    script_DESCRIPTION='Print the usage screen and exit.'
+}
+function script_action_HELP_USAGE () {
+    if mbfl_wrong_num_args 0 $ARGC
+    then
+	# By faking the selection of  the MAIN action: we cause "mbfl_main_print_usage_screen_brief"
+	# to print the main usage screen.
+	mbfl_actions_fake_action_set MAIN
+	mbfl_main_print_usage_screen_brief
+    else
+	mbfl_main_print_usage_screen_brief
+	exit_because_wrong_num_args
+    fi
+}
+
+## --------------------------------------------------------------------
+
+function script_before_parsing_options_HELP_PRINT_COMPLETIONS_SCRIPT () {
+    script_PRINT_COMPLETIONS="usage: ${script_PROGNAME} help print-completions-script [options]"
+    script_DESCRIPTION='Print the command-line completions script and exit.'
+}
+function script_action_HELP_PRINT_COMPLETIONS_SCRIPT () {
+    if mbfl_wrong_num_args 0 $ARGC
+    then mbfl_actions_completion_print_script "$COMPLETIONS_SCRIPT_NAMESPACE" "$script_PROGNAME"
+    else
+	mbfl_main_print_usage_screen_brief
+	exit_because_wrong_num_args
+    fi
 }
 
 #page

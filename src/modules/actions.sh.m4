@@ -285,6 +285,165 @@ function mbfl_actions_print_usage_screen () {
     return 0
 }
 
+#page
+# Print a GNU  Bash script to be  evaluated in a Bash  terminal to implement auto  completion of the
+# command line.
+#
+# The argument "NAMESPACE" must  be a string representing a namespace  for function names; functions
+# in the script have names starting with this string.
+#
+# The argument  "PROGNAME" must  be a  string representing  the name  of the  command for  which the
+# completion script is generated.  It is usually the value of "script_PROGNAME".
+#
+function mbfl_actions_completion_print_script () {
+    mbfl_mandatory_parameter(NAMESPACE, 1, namespace for the names of completion functions)
+    mbfl_mandatory_parameter(PROGNAME,  2, name of the command for which the completion script is built)
+
+    # Function name.  The function is the entry point of the completion procedure; it is an argument
+    # to the built-in "complete".
+    local FUNCNAME_ENTRY_POINT
+
+    # Function  name.   The function  executes  the  built-in  "compgen"  to actually  generate  the
+    # completion.
+    local FUNCNAME_COMPGEN
+
+    # Function name.  The function selects the candidate  completions for the command line word that
+    # must be completed.
+    local FUNCNAME_DISPATCH
+
+    printf -v FUNCNAME_ENTRY_POINT '%s-completion-%s'          "$NAMESPACE" "$PROGNAME"
+    printf -v FUNCNAME_DISPATCH    '%s-dispatch-completion-%s' "$NAMESPACE" "$PROGNAME"
+    printf -v FUNCNAME_COMPGEN     '%s-compgen-%s'             "$NAMESPACE" "$PROGNAME"
+
+    mbfl_actions_completion_fake_cat <<END
+
+# Setup completion for the command "$PROGNAME".
+complete -F $FUNCNAME_ENTRY_POINT -o default $PROGNAME
+
+function $FUNCNAME_ENTRY_POINT () {
+    local -r word_to_be_completed=\${COMP_WORDS[\${COMP_CWORD}]}
+    $FUNCNAME_DISPATCH 0
+}
+
+# Perform the "compgen" call to select the completion from a list of candidate words.
+function $FUNCNAME_COMPGEN () {
+    local -r candidate_completions=\${1:?"missing candidate completions argument"}
+    COMPREPLY=(\`compgen -W "\$candidate_completions" -- "\$word_to_be_completed"\`)
+}
+
+END
+
+    # We visit  the tree  of actions  with a  preorder iteration.   We use  the array  "ITERATOR" to
+    # represent the next node to visit.
+    #
+    # NOTE I  hate how we are  handling the "ITERATOR" array;  but with the limited  features of the
+    # shell language: I do not know how else we could do it.  (Marco Maggi; Sep 19, 2020)
+    local -A ITERATOR
+    ITERATOR[ACTION_SET]='MAIN'
+    ITERATOR[COMMANDS_LIST]=$PROGNAME
+    ITERATOR[FUNCTIONS_SUFFIX]=$PROGNAME
+    mbfl_actions_completion_visit_node
+    exit_success
+}
+
+function mbfl_actions_completion_visit_node () {
+    local ACTION_IDENTIFIER KEY
+    local -A TMP
+
+    mbfl_actions_completion_print_dispatcher
+    KEY=${ITERATOR[ACTION_SET]}
+    for ACTION_IDENTIFIER in ${mbfl_action_sets_IDENTIFIERS[$KEY]}
+    do
+	# Save the ITERATOR array.
+	TMP[ACTION_SET]=${ITERATOR[ACTION_SET]}
+	TMP[COMMANDS_LIST]=${ITERATOR[COMMANDS_LIST]}
+	TMP[FUNCTIONS_SUFFIX]=${ITERATOR[FUNCTIONS_SUFFIX]}
+
+	# Update ITERATOR to represent the next node.
+	printf -v KEY '%s-%s' ${ITERATOR[ACTION_SET]} $ACTION_IDENTIFIER
+	ITERATOR[ACTION_SET]=${mbfl_action_sets_SUBSETS[$KEY]}
+	printf -v ITERATOR[COMMANDS_LIST]    '%s %s' "${ITERATOR[COMMANDS_LIST]}"    $ACTION_IDENTIFIER
+	printf -v ITERATOR[FUNCTIONS_SUFFIX] '%s-%s' "${ITERATOR[FUNCTIONS_SUFFIX]}" $ACTION_IDENTIFIER
+
+	if mbfl_string_equal 'NONE' "${ITERATOR[ACTION_SET]}"
+	then mbfl_actions_completion_print_leaf
+	else mbfl_actions_completion_visit_node
+	fi
+
+	# Restore the ITERATOR array.
+	ITERATOR[ACTION_SET]=${TMP[ACTION_SET]}
+	ITERATOR[COMMANDS_LIST]=${TMP[COMMANDS_LIST]}
+	ITERATOR[FUNCTIONS_SUFFIX]=${TMP[FUNCTIONS_SUFFIX]}
+    done
+}
+
+function mbfl_actions_completion_print_leaf () {
+    local FUNCNAME_DISPATCH
+
+    printf -v FUNCNAME_DISPATCH '%s-dispatch-completion-%s' "$NAMESPACE" "${ITERATOR[FUNCTIONS_SUFFIX]}"
+    mbfl_actions_completion_fake_cat <<EOF
+# Command-line completion for the command "${ITERATOR[COMMANDS_LIST]}",
+# which has no subcommands.
+#
+function $FUNCNAME_DISPATCH () {
+    local -ir index_of_command=\${1:?'missing argument: index of command'}
+    local -ir index_of_next_arg=\$((1 + index_of_command))
+    :
+}
+
+EOF
+}
+
+function mbfl_actions_completion_print_dispatcher () {
+    # Function name.  The function selects the candidate  completions for the command line word that
+    # must be completed.
+    local FUNCNAME_DISPATCH
+    local ACTION_SET=${ITERATOR[ACTION_SET]} ACTION_IDENTIFIER
+
+    printf -v FUNCNAME_DISPATCH '%s-dispatch-completion-%s' "$NAMESPACE" "${ITERATOR[FUNCTIONS_SUFFIX]}"
+
+    mbfl_actions_completion_fake_cat <<EOF
+# Dispatch command-line completion for the command "${ITERATOR[COMMANDS_LIST]}".
+#
+function $FUNCNAME_DISPATCH () {
+    local -ir index_of_command=\${1:?\'missing argument: index of command\'}
+    local -ir index_of_subcommand=\$((1 + index_of_command))
+
+    # Are we completing a subcommand name of "${ITERATOR[COMMANDS_LIST]}"?
+    if (( index_of_subcommand == COMP_CWORD))
+    then
+        # Yes!  Let's complete using the subcommand names as candidates.
+        $FUNCNAME_COMPGEN '${mbfl_action_sets_IDENTIFIERS[$ACTION_SET]}'
+    elif (( index_of_subcommand < COMP_CWORD))
+    then
+        # No!  We are completing the command line of a subcommand.  Let's find out which one.
+        case "\${COMP_WORDS[\$index_of_subcommand]}" in
+EOF
+    for ACTION_IDENTIFIER in ${mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]}
+    do
+	mbfl_actions_completion_fake_cat <<EOF
+            '$ACTION_IDENTIFIER')
+                 $NAMESPACE-dispatch-completion-${ITERATOR[FUNCTIONS_SUFFIX]}-${ACTION_IDENTIFIER} \$index_of_subcommand
+                 ;;
+EOF
+    done
+    mbfl_actions_completion_fake_cat <<EOF
+        esac
+    else
+        printf 'error: command-line completion function invoked incorrectly: %s\\\\n' "\$FUNCNAME" >&2
+        return 1
+    fi
+}
+
+EOF
+}
+
+function mbfl_actions_completion_fake_cat () {
+    while read
+    do echo "$REPLY"
+    done
+}
+
 ### end of file
 # Local Variables:
 # mode: sh

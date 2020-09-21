@@ -1181,23 +1181,26 @@ code is evaluated.  They are used by @mbfl{} to compute values for its
 own variables.
 
 
+@anchor{script_PROGNAME}
 @defvar script_PROGNAME
-The name of the script.  It is used, for example, in error and verbose
-messages.
+The name of the script.  It is used, for example, in error and verbose messages.
 @end defvar
 
 
+@anchor{script_AUTHOR}
 @defvar script_AUTHOR
 The name of the script author(s).  It is used in copyright statements.
 @end defvar
 
 
+@anchor{script_COPYRIGHT_YEARS}
 @defvar script_COPYRIGHT_YEARS
 A comma separated list of years of copyright.  It is used in copyright
 statements.
 @end defvar
 
 
+@anchor{script_VERSION}
 @defvar script_VERSION
 The version number of the script.  It is used in copyright statements
 and it can be directly queried using the command line options
@@ -1205,6 +1208,7 @@ and it can be directly queried using the command line options
 @end defvar
 
 
+@anchor{script_LICENSE}
 @defvar script_LICENSE
 The identifier of the license under which the script is released.  Accepted values are: @code{GPL}
 or @code{GPL2}, @code{GPL3}, @code{LGPL} or @code{LGPL2}, @code{LGPL3}, @code{BSD}, @code{liberal}.
@@ -1212,6 +1216,8 @@ It is used to select the appropriate value to be displayed when the user of the 
 @code{--license} option.  @ref{getopts options, Predefined options}
 @end defvar
 
+
+@anchor{script_USAGE}
 @defvar script_USAGE
 Must be a string, of one or more lines, describing the synopsis of the
 program.  It is usually something like:
@@ -1236,6 +1242,7 @@ variable in the action--specific ``before parsing options'' function.
 @end defvar
 
 
+@anchor{script_DESCRIPTION}
 @defvar script_DESCRIPTION
 One line string providing a brief description of the program.  It is used
 in the help screen (the one echoed when the @option{--help} option is
@@ -1247,6 +1254,8 @@ action--specific ``before parsing options'' function.  @ref{actions} for
 details.
 @end defvar
 
+
+@anchor{script_EXAMPLES}
 @defvar script_EXAMPLES
 One or more lines of text to be displayed at the end of the help screen,
 after the options description.  It should contain examples of common
@@ -2744,6 +2753,7 @@ perform.
 * actions declare::             Declaring actions and action sets.
 * actions dispatch::            Dispatching action arguments.
 * actions inspect::             Inspecting action trees.
+* actions completion::          Automatic generation of programmable completion script.
 * actions misc::                Other functions.
 @end menu
 
@@ -2752,20 +2762,20 @@ perform.
 @section Introduction to action trees
 
 
-Traditional Unix--style command line programs perform a single action, with behaviour variants
-selected by command line dash and double--dash options.  For example @command{ls} prints a list of
+Traditional Unix--style command--line programs perform a single action, with behaviour variants
+selected by command--line dash and double--dash options.  For example @command{ls} prints a list of
 directory entries and the format of the output can be custommised with options like @option{-1} and
 @option{--color}.  @mbfl{} implements this behaviour by default when the @code{actions} module is
 @strong{not} used.
 
-Other Unix--style command line programs offer a set of possible actions and allow the executor to
-select one by specifying command line options.  For example @command{tar} acts on archive files and
+Other Unix--style command--line programs offer a set of possible actions and allow the executor to
+select one by specifying command--line options.  For example @command{tar} acts on archive files and
 it can pack, unpack, validate them along with other actions selected with by the double--dash
 options @option{--create}, @option{--extract}, @option{--validate} and others.  @mbfl{} implements
 this behaviour through ``action options'' provided by the @code{getopts} module; action options are
 available also when using the @code{actions} module.
 
-Other command line programs break this Unix--style to offer action selection throuh ``action
+Other command--line programs break this Unix--style to offer action selection throuh ``action
 arguments''.  For example @command{git} acts upon revision control repositories offering a big set
 of actions selected with its first argument: @samp{commit}, @samp{log}, @samp{merge} and many
 others; the behaviour of each ``subcommand'' can be customised with a specific set of dash and
@@ -2946,7 +2956,8 @@ declared actions.
 @var{action-set} must be the name of an action set previously declared with
 @func{mbfl_declare_action_set}.  It is an error if this function is called with an @var{action-set}
 name specifying a non--existent action set.  If there are no command line arguments left upon
-entering this function: the values previously selected are silently accepted.
+entering this function: the values previously selected with the functions @code{mbfl_main_set_*} are
+silently accepted.
 
 The function @func{mbfl_main} verifies that the action set @code{MAIN} exists and, if it does, it
 calls this function with argument @code{MAIN}.
@@ -2985,6 +2996,143 @@ Return true if @var{action-set} is the identifier of an existent action set; els
 Return true if @var{action-set} is the identifier of an existent action set or it is the string
 @code{NONE}; else return false.
 @end defun
+
+@c page
+@node actions completion
+@section Automatic generation of programmable completion script
+
+
+It is almost certain that we are running @gnu{} Bash in an environment with support for @gnu{}
+Readline completion of the command line; it is quite useful to provide programmable completion for
+the scripts we write.  When a script has a tree hierarchy of actions it is useful to automatically
+generate the completion facilities for the action commands; this is what the functions documented
+here are for.
+
+@menu
+* actions completion api::          Application interface to completion script generation.
+* actions completion declaration::  How to declare automatic script generation.
+* actions completion script::       How to use the generated script.
+@end menu
+
+@c page
+@node actions completion api
+@subsection Application interface to completion script generation
+
+
+@defun mbfl_actions_completion_print_script @var{NAMESPACE} @var{PROGNAME}
+Print to the standard output a @gnu{} Bash script, to be evaluated in a terminal running Bash, to
+implement automatic completion of the command line.  The script is composed by a call to the Bash
+built--in @command{complete} followed by a number of functions.
+
+The argument @var{NAMESPACE} must be a string representing a namespace for function names; functions
+in the script have names starting with this string.
+
+The argument @var{PROGNAME} must be a string representing the name of the command for which the
+completion script is generated.  It is usually the value of the service variable
+@env{script_PROGNAME}, @ref{script_PROGNAME} for details.
+@end defun
+
+@c page
+@node actions completion declaration
+@subsection How to declare automatic script generation
+
+
+When using the actions module we should add ``standard'' subcommands to access the automatic script
+generation.  We can do it by plugging in the following actions declarations:
+
+@example
+mbfl_declare_action_set HELP
+mbfl_declare_action HELP HELP_USAGE NONE                        \
+    usage                                                       \
+    'Print the help screen and exit.'
+mbfl_declare_action HELP HELP_PRINT_COMPLETIONS_SCRIPT NONE     \
+    print-completions-script                                    \
+    'Print the completions script for this program.'
+
+mbfl_declare_action_set MAIN
+mbfl_declare_action MAIN HELP HELP                              \
+    help                                                        \
+    'Help the user of this script.'
+@end example
+
+@noindent
+and add the following action functions:
+
+@example
+declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
+
+function script_before_parsing_options_HELP () @{
+    script_USAGE="usage: $@{script_PROGNAME@} help [action] [options]"
+    script_DESCRIPTION='Help the user of this program.'
+@}
+function script_action_HELP () @{
+    # By faking the  selection of the MAIN action: we  cause "mbfl_main_print_usage_screen_brief" to
+    # print the main usage screen.
+    mbfl_actions_fake_action_set MAIN
+    mbfl_main_print_usage_screen_brief
+@}
+
+function script_before_parsing_options_HELP_USAGE () @{
+    script_USAGE="usage: $@{script_PROGNAME@} help usage [options]"
+    script_DESCRIPTION='Print the usage screen and exit.'
+@}
+function script_action_HELP_USAGE () @{
+    if mbfl_wrong_num_args 0 $ARGC
+    then
+        # By faking the selection of  the MAIN action: we cause "mbfl_main_print_usage_screen_brief"
+        # to print the main usage screen.
+        mbfl_actions_fake_action_set MAIN
+        mbfl_main_print_usage_screen_brief
+    else
+        mbfl_main_print_usage_screen_brief
+        exit_because_wrong_num_args
+    fi
+@}
+
+function script_before_parsing_options_HELP_PRINT_COMPLETIONS_SCRIPT () @{
+    script_PRINT_COMPLETIONS="usage: $@{script_PROGNAME@} help print-completions-script [options]"
+    script_DESCRIPTION='Print the command-line completions script and exit.'
+@}
+function script_action_HELP_PRINT_COMPLETIONS_SCRIPT () @{
+    if mbfl_wrong_num_args 0 $ARGC
+    then mbfl_actions_completion_print_script "$COMPLETIONS_SCRIPT_NAMESPACE" "$script_PROGNAME"
+    else
+        mbfl_main_print_usage_screen_brief
+        exit_because_wrong_num_args
+    fi
+@}
+@end example
+
+@c page
+@node actions completion script
+@subsection How to use the generated script
+
+
+We can store the generated script in a file to be sourced upon launching the terminal, or we can
+evaluate it with the command:
+
+@example
+eval "$(my-script help print-completions-script)"
+@end example
+
+For a script named @command{my-script}, it is a good idea to install a file with pathname:
+
+@example
+/etc/bash_completions.d/my-script.bash
+@end example
+
+@noindent
+with contents:
+
+@example
+# my-script.bash --
+#
+# Completions for the "my-script" script.
+
+eval "$(my-script help print-completions-script)"
+
+### end of file
+@end example
 
 @c page
 @node actions misc
