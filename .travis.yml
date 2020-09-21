@@ -49,7 +49,7 @@ matrix:
           packages:
             - lzip
             - texinfo
-      script: "./configure --enable-maintainer-mode && make all && { make check || { cat test-suite.log; false; }; };"
+      script: "./configure --enable-maintainer-mode && make all && { make check VERBOSE=1 || { cat test-suite.log; false; }; };"
 
     # Plain build under OS X, XCode 7.3.
     - os: osx
@@ -58,7 +58,7 @@ matrix:
         homebrew:
           packages:
             - bash
-      script: "./configure --enable-maintainer-mode && make all && { make check || { cat test-suite.log; false; }; };"
+      script: "./configure --enable-maintainer-mode && make all && { make check VERBOSE=1 || { cat test-suite.log; false; }; };"
 
     # Plain build under OS X, XCode 8.3.
     - os: osx
@@ -67,7 +67,7 @@ matrix:
         homebrew:
           packages:
             - bash
-      script: "./configure --enable-maintainer-mode && make all && { make check || { cat test-suite.log; false; }; };"
+      script: "./configure --enable-maintainer-mode && make all && { make check VERBOSE=1 || { cat test-suite.log; false; }; };"
 
 #page
 #### done
