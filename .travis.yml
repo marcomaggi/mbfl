@@ -29,6 +29,7 @@ branches:
 env:
   global:
     - MAKEFLAGS="-j 2"
+    - VERBOSE=1
 
 #page
 #### build scripts
@@ -40,9 +41,9 @@ matrix:
   fast_finish: true
 
   include:
-    # Plain build under Ubuntu GNU+Linux "trusty".
+    # Plain build under Ubuntu GNU+Linux "xenial".
     - os: linux
-      dist: trusty
+      dist: xenial
       addons:
         apt:
           sources:
@@ -50,33 +51,28 @@ matrix:
           packages:
             - lzip
             - texinfo
-      script: "./configure --enable-maintainer-mode && make all && { make check VERBOSE=1 || { cat test-suite.log; false; }; };"
+            - coreutils
+      script: |
+        ./configure --enable-maintainer-mode;
+        make all;
+        make check || { cat test-suite.log; false; };
+        (umask 0; sudo make install);
+        make installcheck;
 
-    # Plain build under OS X, XCode 7.3.
+    # Plain build under OS X, XCode 10.1.
     - os: osx
-      osx_image: xcode7.3
+      osx_image: xcode10.1
       addons:
         homebrew:
           packages:
             - bash
-      script: "./configure --enable-maintainer-mode && make all && { make check VERBOSE=1 || { cat test-suite.log; false; }; };"
-
-    # Plain build under OS X, XCode 8.3.
-    - os: osx
-      osx_image: xcode8.3
-      addons:
-        homebrew:
-          packages:
-            - bash
-      script: "./configure --enable-maintainer-mode && make all && { make check VERBOSE=1 || { cat test-suite.log; false; }; };"
-
-#page
-#### done
+            - coreutils
+      script: |
+        ./configure --enable-maintainer-mode;
+        make all;
+        make check || { cat test-suite.log; false; };
+        (umask 0; sudo make install);
+        make installcheck;
 
 ### end of file
-# Local Variables:
-# paragraph-start: "#[ \t].+\\|$"
-# paragraph-separate: "#[ \t]*$"
-# fill-prefix: "# "
-# page-delimiter: "^#page"
-# End:
+
