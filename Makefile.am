@@ -302,13 +302,14 @@ TESTS			= \
 	tests/message.test		\
 	tests/program.test		\
 	tests/script.test		\
-	tests/signal.test		\
 	tests/strings.test		\
 	tests/system.test		\
 	tests/times-and-dates.test	\
 	tests/variables.test		\
 	\
 	tests/bash-feature-coproc.test
+
+#	tests/signal.test
 
 tests/variables.test: tests/variables.test.m4 $(MBFL_TESTS_PREREQ)
 	$(MBFL_TESTS_RUNPP) <$< >$@
