@@ -66,9 +66,10 @@ matrix:
       addons:
         homebrew:
           packages:
-            - bash-4
+            - bash
             - coreutils
       script: |
+        echo bash --version ; bash --version;
         ./configure --enable-maintainer-mode;
         make all;
         make check || { cat test-suite.log; false; };
