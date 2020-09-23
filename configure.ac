@@ -60,6 +60,14 @@ AC_SUBST([PATHNAME_WHOAMI])
 
 dnl --------------------------------------------------------------------
 
+# If we  find an executable  "realpath" in  the current "PATH":  set the
+# variable     "REALPATH_PATHNAME"    to     it.     Otherwise     leave
+# "REALPATH_PATHNAME" set to the empty string.
+AS_VAR_SET([REALPATH_PATHNAME])
+AC_CHECK_PROGS([REALPATH_PATHNAME],[realpath])
+
+dnl --------------------------------------------------------------------
+
 AC_ARG_WITH([sendmail],
   AS_HELP_STRING([--with-sendmail],[enable installation of sendmail example script and emacs interface]),
   [true],[with_sendmail=no])
@@ -70,7 +78,8 @@ AS_VAR_IF(with_sendmail,'yes',
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 
 AC_CONFIG_FILES([Makefile]
-  [meta/scripts/mbfl-config])
+  [meta/scripts/mbfl-config]
+  [tests/setup.sh])
 MMUX_OUTPUT
 AC_OUTPUT
 

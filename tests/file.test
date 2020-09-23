@@ -12,7 +12,7 @@
 #
 #	that will select these tests.
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free  software you can redistribute it  and/or modify it under
@@ -647,41 +647,51 @@ function file-normalise-2.6 () {
 
 #page
 #### pathname normalisation: realpath
-
-function file-realpath-1.1 () {
-    local testpath
-    testpath=$(dotest-mkdir a/b) || exit $?
-
-    mbfl_file_enable_realpath
-
-    {
-	dotest-cd-tmpdir
-	mbfl_file_realpath a/b
-	dotest-clean-files
-    } | dotest-output "$testpath"
-}
-
-# Try realpath on a file that does not exist.
 #
-function file-realpath-1.2 () {
-    mbfl_file_enable_realpath
-    ! mbfl_file_realpath a/b/c
-}
+# We run these tests  only if an executable "realpath" is found  at package configuration-time.  For
+# some reason  I cannot figure out:  the Ubuntu installation at  Travis CI may not  have a reachable
+# "realpath".  (Marco Maggi; Sep 23, 2020)
+#
+
+if test -n "$REALPATH_PATHNAME"
+then
+
+    function file-realpath-1.1 () {
+	local testpath
+	testpath=$(dotest-mkdir a/b) || exit $?
+
+	mbfl_file_enable_realpath
+
+	{
+	    dotest-cd-tmpdir
+	    mbfl_file_realpath a/b
+	    dotest-clean-files
+	} | dotest-output "$testpath"
+    }
+
+    # Try realpath on a file that does not exist.
+    #
+    function file-realpath-1.2 () {
+	mbfl_file_enable_realpath
+	! mbfl_file_realpath a/b/c
+    }
 
 ### --------------------------------------------------------------------
 
-function file-realpath-var-1.1 () {
-    local testpath
-    testpath=$(dotest-mkdir a/b) || exit $?
-    local RV
+    function file-realpath-var-1.1 () {
+	local testpath
+	testpath=$(dotest-mkdir a/b) || exit $?
+	local RV
 
-    mbfl_file_enable_realpath
+	mbfl_file_enable_realpath
 
-    dotest-cd-tmpdir
-    mbfl_file_realpath_var RV a/b
-    dotest-clean-files
-    dotest-equal "$testpath" "$RV"
-}
+	dotest-cd-tmpdir
+	mbfl_file_realpath_var RV a/b
+	dotest-clean-files
+	dotest-equal "$testpath" "$RV"
+    }
+
+fi
 
 #page
 #### relative pathnames: extracting subpathnames
