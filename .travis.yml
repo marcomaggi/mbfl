@@ -22,6 +22,7 @@ git:
 branches:
   only:
     - master
+    - test-signal-module.marcomaggi-2020-0923
 
 # NOTE There must be only *one* env.global key!!!  Otherwise the earlier
 # settings will be ineffective.
