@@ -59,7 +59,7 @@ matrix:
             - texinfo
             - coreutils
       script: |
-        ./configure --enable-maintainer-mode;
+        ./configure --enable-maintainer-mode BASH_PROGRAM=/usr/local/bin/bash;
         make all;
         make check || { cat test-suite.log; false; };
         (umask 0; sudo make install);
@@ -73,7 +73,7 @@ matrix:
           packages:
             - coreutils
       script: |
-        ./configure --enable-maintainer-mode;
+        ./configure --enable-maintainer-mode BASH_PROGRAM=/usr/local/bin/bash;
         make all;
         make check || { cat test-suite.log; false; };
         (umask 0; sudo make install);
