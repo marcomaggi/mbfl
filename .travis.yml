@@ -35,6 +35,7 @@ env:
 #### build scripts
 
 before_script:
+  - echo bash --version ; bash --version;
   - sh ./autogen.sh;
 
 matrix:
@@ -68,6 +69,7 @@ matrix:
             - bash
             - coreutils
       script: |
+        echo bash --version ; bash --version;
         ./configure --enable-maintainer-mode;
         make all;
         make check || { cat test-suite.log; false; };
