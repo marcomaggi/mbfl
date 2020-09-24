@@ -32,10 +32,15 @@ env:
     - VERBOSE=1
 
 #page
+#### dependencies management
+
+install:
+  - ./meta/travis-ci/install-bash-4.sh;
+
+#page
 #### build scripts
 
 before_script:
-  - echo bash --version ; bash --version;
   - sh ./autogen.sh;
 
 matrix:
@@ -66,10 +71,8 @@ matrix:
       addons:
         homebrew:
           packages:
-            - bash
             - coreutils
       script: |
-        echo bash --version ; bash --version;
         ./configure --enable-maintainer-mode;
         make all;
         make check || { cat test-suite.log; false; };
