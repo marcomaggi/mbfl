@@ -34,11 +34,13 @@ source setup.sh
 #### searching entries in /etc/passwd: by name
 
 function system-passwd-find-entry-by-name-var-1.1 () {
-    local IDX NAME
+    mbfl_local_varref(IDX)
+    mbfl_local_varref(NAME)
+
     mbfl_system_passwd_read
-    if mbfl_system_passwd_find_entry_by_name_var IDX root
+    if mbfl_system_passwd_find_entry_by_name_var mbfl_datavar(IDX) root
     then
-	if mbfl_system_passwd_get_name_var NAME $IDX
+	if mbfl_system_passwd_get_name_var mbfl_datavar(NAME) $IDX
 	then dotest-equal root "$NAME"
 	else return 1
 	fi
@@ -65,11 +67,13 @@ function system-passwd-find-entry-by-name-1.1 () {
 #### searching entries in /etc/passwd: by uid
 
 function system-passwd-find-entry-by-uid-var-1.1 () {
-    local IDX NAME
+    mbfl_local_varref(IDX)
+    mbfl_local_varref(NAME)
+
     mbfl_system_passwd_read
-    if mbfl_system_passwd_find_entry_by_uid_var IDX 0
+    if mbfl_system_passwd_find_entry_by_uid_var mbfl_datavar(IDX) 0
     then
-	if mbfl_system_passwd_get_name_var NAME $IDX
+	if mbfl_system_passwd_get_name_var mbfl_datavar(NAME) $IDX
 	then dotest-equal root "$NAME"
 	else return 1
 	fi
@@ -96,11 +100,11 @@ function system-passwd-find-entry-by-uid-1.1 () {
 #### /etc/passwd: conversion between names and UIDs
 
 function system-passwd-uid-to-name-var-1.1 () {
-    local USER_NAME
+    mbfl_local_varref(USER_NAME)
 
     if mbfl_system_passwd_read
     then
-	if mbfl_system_passwd_uid_to_name_var USER_NAME 0
+	if mbfl_system_passwd_uid_to_name_var mbfl_datavar(USER_NAME) 0
 	then dotest-equal 'root' "$USER_NAME"
 	else return 1
 	fi
@@ -157,21 +161,18 @@ function system-passwd-numerical-uid-to-name-1.1 () {
 #### printing entries in /etc/passwd
 
 function system-passwd-print-entries-raw-1.1 () {
-    local IDX NAME
     if mbfl_system_passwd_read
     then mbfl_system_passwd_print_entries >/dev/null
     fi
 }
 
 function system-passwd-print-entries-xml-2.1 () {
-    local IDX NAME
     if mbfl_system_passwd_read
     then mbfl_system_passwd_print_entries_as_xml >/dev/null
     fi
 }
 
 function system-passwd-print-entries-xml-3.1 () {
-    local IDX NAME
     if mbfl_system_passwd_read
     then mbfl_system_passwd_print_entries_as_json >/dev/null
     fi
@@ -181,11 +182,13 @@ function system-passwd-print-entries-xml-3.1 () {
 #### searching entries in /etc/group: by name
 
 function system-group-find-entry-by-name-var-1.1 () {
-    local IDX NAME
+    mbfl_local_varref(IDX)
+    mbfl_local_varref(NAME)
+
     mbfl_system_group_read
-    if mbfl_system_group_find_entry_by_name_var IDX root
+    if mbfl_system_group_find_entry_by_name_var mbfl_datavar(IDX) root
     then
-	if mbfl_system_group_get_name_var NAME $IDX
+	if mbfl_system_group_get_name_var mbfl_datavar(NAME) $IDX
 	then dotest-equal root "$NAME"
 	else return 1
 	fi
@@ -212,11 +215,13 @@ function system-group-find-entry-by-name-1.1 () {
 #### searching entries in /etc/group: by gid
 
 function system-group-find-entry-by-gid-var-1.1 () {
-    local IDX NAME
+    mbfl_local_varref(IDX)
+    mbfl_local_varref(NAME)
+
     mbfl_system_group_read
-    if mbfl_system_group_find_entry_by_gid_var IDX 0
+    if mbfl_system_group_find_entry_by_gid_var mbfl_datavar(IDX) 0
     then
-	if mbfl_system_group_get_name_var NAME $IDX
+	if mbfl_system_group_get_name_var mbfl_datavar(NAME) $IDX
 	then dotest-equal root "$NAME"
 	else return 1
 	fi
@@ -243,21 +248,18 @@ function system-group-find-entry-by-gid-1.1 () {
 #### printing entries in /etc/group
 
 function system-group-print-entries-raw-1.1 () {
-    local IDX NAME
     if mbfl_system_group_read
     then mbfl_system_group_print_entries >/dev/null
     fi
 }
 
 function system-group-print-entries-xml-2.1 () {
-    local IDX NAME
     if mbfl_system_group_read
     then mbfl_system_group_print_entries_as_xml >/dev/null
     fi
 }
 
 function system-group-print-entries-xml-3.1 () {
-    local IDX NAME
     if mbfl_system_group_read
     then mbfl_system_group_print_entries_as_json >/dev/null
     fi
@@ -267,16 +269,19 @@ function system-group-print-entries-xml-3.1 () {
 #### retrieving users from /etc/group
 
 function system-group-get-user-in-group-var-1.1 () {
-    local -i GROUP_IDX USER_COUNT USER_IDX
-    local USER_NAME
+    mbfl_local_varref(GROUP_IDX,,  -i)
+    mbfl_local_varref(USER_COUNT,, -i)
+    mbfl_local_varref(USER_NAME)
+    local -i USER_IDX
+
     if mbfl_system_group_read
     then
-	if mbfl_system_group_find_entry_by_name_var GROUP_IDX root
+	if mbfl_system_group_find_entry_by_name_var mbfl_datavar(GROUP_IDX) root
 	then
-	    mbfl_system_group_get_users_count_var USER_COUNT $GROUP_IDX
+	    mbfl_system_group_get_users_count_var mbfl_datavar(USER_COUNT) $GROUP_IDX
 	    for ((USER_IDX=0; USER_IDX < USER_COUNT; ++USER_IDX))
 	    do
-		mbfl_system_group_get_user_name_var USER_NAME $GROUP_IDX $USER_IDX
+		mbfl_system_group_get_user_name_var mbfl_datavar(USER_NAME) $GROUP_IDX $USER_IDX
 		dotest-equal 'root' "$USER_NAME"
 	    done
 	else return 1
@@ -307,11 +312,11 @@ function system-group-get-user-in-group-1.1 () {
 #### /etc/group: conversion between names and GIDs
 
 function system-group-gid-to-name-var-1.1 () {
-    local GROUP_NAME
+    mbfl_local_varref(GROUP_NAME)
 
     if mbfl_system_group_read
     then
-	if mbfl_system_group_gid_to_name_var GROUP_NAME 0
+	if mbfl_system_group_gid_to_name_var mbfl_datavar(GROUP_NAME) 0
 	then dotest-equal 'root' "$GROUP_NAME"
 	else return 1
 	fi
@@ -331,11 +336,11 @@ function system-group-gid-to-name-1.1 () {
 ### ------------------------------------------------------------------------
 
 function system-group-name-to-gid-var-1.1 () {
-    local GROUP_ID
+    mbfl_local_varref(GROUP_ID)
 
     if mbfl_system_group_read
     then
-	if mbfl_system_group_name_to_gid_var GROUP_ID 'root'
+	if mbfl_system_group_name_to_gid_var mbfl_datavar(GROUP_ID) 'root'
 	then dotest-equal 0 "$GROUP_ID"
 	else return 1
 	fi
