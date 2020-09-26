@@ -303,14 +303,13 @@ TESTS			= \
 	tests/message.test		\
 	tests/program.test		\
 	tests/script.test		\
+	tests/signal.test		\
 	tests/strings.test		\
 	tests/system.test		\
 	tests/times-and-dates.test	\
 	tests/variables.test		\
 	\
 	tests/bash-feature-coproc.test
-
-#	tests/signal.test
 
 ## --------------------------------------------------------------------
 
