@@ -223,9 +223,10 @@ endif
 
 #### interface to "make check"
 
-EXTRA_DIST	+= \
+EXTRA_DIST	+=			\
 	tests/variables.test.m4		\
 	tests/strings.test.m4		\
+	tests/system.test.m4		\
 	\
 	tests/arrays.test		\
 	tests/atexit.test		\
@@ -239,7 +240,6 @@ EXTRA_DIST	+= \
 	tests/program.test		\
 	tests/script.test		\
 	tests/signal.test		\
-	tests/system.test		\
 	tests/times-and-dates.test	\
 	\
 	tests/bash-feature-coproc.test	\
@@ -247,18 +247,19 @@ EXTRA_DIST	+= \
 	tests/setup.sh			\
 	tests/signaltest.sh
 
-CHECK_BUILT_EXAMPLES	= \
+CHECK_BUILT_EXAMPLES	=		\
 	examples/compress.sh		\
 	examples/template.sh		\
 	examples/template-actions.sh
 
-CHECK_BUILT_TESTS		= \
+CHECK_BUILT_TESTS	=		\
 	tests/strings.test		\
+	tests/system.test		\
 	tests/variables.test
 
 check_SCRIPTS		= $(CHECK_BUILT_EXAMPLES) $(CHECK_BUILT_TESTS)
 
-CLEANFILES		+= $(CHECK_BUILT_TESTS) tests/$(am__dirstamp)
+CLEANFILES		+= $(CHECK_BUILT_TESTS) $(builddir)/tests/$(am__dirstamp)
 
 ## --------------------------------------------------------------------
 
@@ -311,15 +312,22 @@ TESTS			= \
 
 #	tests/signal.test
 
-tests/variables.test: tests/variables.test.m4 $(MBFL_TESTS_PREREQ)
-	$(MBFL_TESTS_RUNPP) <$< >$@
+## --------------------------------------------------------------------
 
-tests/strings.test: tests/strings.test.m4 $(MBFL_TESTS_PREREQ)
-	$(MBFL_TESTS_RUNPP) <$< >$@
-
-tests/$(am__dirstamp):
+$(builddir)/tests/$(am__dirstamp):
 	@$(MKDIR_P) tests
 	@: > tests/$(am__dirstamp)
+
+## --------------------------------------------------------------------
+
+# tests/variables.test: tests/variables.test.m4 $(MBFL_TESTS_PREREQ)
+# 	$(MBFL_TESTS_RUNPP) <$< >$@
+
+# tests/strings.test: tests/strings.test.m4 $(MBFL_TESTS_PREREQ)
+# 	$(MBFL_TESTS_RUNPP) <$< >$@
+
+tests/%.test: tests/%.test.m4 $(MBFL_TESTS_PREREQ)
+	$(MBFL_TESTS_RUNPP) <$< >$@
 
 
 #### additional test rules

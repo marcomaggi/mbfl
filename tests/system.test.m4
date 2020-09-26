@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2005, 2013, 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2005, 2013, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -120,11 +120,11 @@ function system-passwd-uid-to-name-1.1 () {
 ### ------------------------------------------------------------------------
 
 function system-passwd-name-to-uid-var-1.1 () {
-    local USER_ID
+    mbfl_local_varref(USER_ID)
 
     if mbfl_system_passwd_read
     then
-	if mbfl_system_passwd_name_to_uid_var USER_ID 'root'
+	if mbfl_system_passwd_name_to_uid_var mbfl_datavar(USER_ID) 'root'
 	then dotest-equal 0 "$USER_ID"
 	else return 1
 	fi

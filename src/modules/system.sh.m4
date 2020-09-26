@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -247,10 +247,10 @@ function mbfl_system_passwd_name_to_uid_var () {
 }
 
 function mbfl_system_passwd_name_to_uid () {
-    mbfl_mandatory_parameter(THE_NAME, 1, user name)
-    local -i USER_INDEX
-    if mbfl_system_passwd_find_entry_by_name_var USER_INDEX "$THE_NAME"
-    then mbfl_system_passwd_get_uid $USER_INDEX
+    mbfl_mandatory_parameter(mbfl_THE_NAME, 1, user name)
+    local -i mbfl_USER_INDEX
+    if mbfl_system_passwd_find_entry_by_name_var mbfl_USER_INDEX "$mbfl_THE_NAME"
+    then mbfl_system_passwd_get_uid $mbfl_USER_INDEX
     else return 1
     fi
 }
@@ -258,15 +258,15 @@ function mbfl_system_passwd_name_to_uid () {
 ### ------------------------------------------------------------------------
 
 function mbfl_system_numerical_user_id_to_name () {
-    mbfl_mandatory_integer_parameter(THE_UID, 1, user id)
+    mbfl_mandatory_integer_parameter(mbfl_THE_UID, 1, user id)
     if mbfl_system_passwd_read
-    then mbfl_system_passwd_uid_to_name "$THE_UID"
+    then mbfl_system_passwd_uid_to_name "$mbfl_THE_UID"
     fi
 }
 function mbfl_system_user_name_to_numerical_id () {
-    mbfl_mandatory_parameter(THE_NAME, 1, user name)
+    mbfl_mandatory_parameter(mbfl_THE_NAME, 1, user name)
     if mbfl_system_passwd_read
-    then mbfl_system_passwd_name_to_uid "$THE_NAME"
+    then mbfl_system_passwd_name_to_uid "$mbfl_THE_NAME"
     fi
 }
 

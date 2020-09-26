@@ -10,7 +10,7 @@
 #
 #		$ make all test file=variables
 #
-# Copyright (c) 2004, 2005, 2013, 2018 Marco Maggi
+# Copyright (c) 2004, 2005, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -163,13 +163,12 @@ function varref-local-simple-2.1 () {
     mbfl_local_varref(VAR)
     local RV
 
-    worker-varref-local-simple-2.1 mbfl_datavar(VAR) RV
+    worker-varref-local-simple-2.1 mbfl_datavar(VAR)
 
     dotest-equal 123 "$RV" && dotest-equal 123 "$VAR"
 }
 function worker-varref-local-simple-2.1 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
 
     #dotest-set-debug
     dotest-debug "VARNAME=$1 VAR=$VAR"
@@ -208,13 +207,12 @@ function varref-local-array-2.1 () {
     mbfl_local_varref(VAR)
     local RV
 
-    worker-varref-local-array-2.1 mbfl_datavar(VAR) RV
+    worker-varref-local-array-2.1 mbfl_datavar(VAR)
 
     dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
 }
 function worker-varref-local-array-2.1 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
 
     #dotest-set-debug
     dotest-debug "VARNAME=$1 VAR=$VAR"
@@ -233,13 +231,12 @@ function varref-local-array-2.2 () {
     local RV
 
     VAR[KEY]=123
-    worker-varref-local-array-2.2 mbfl_datavar(VAR) RV
+    worker-varref-local-array-2.2 mbfl_datavar(VAR)
 
     dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
 }
 function worker-varref-local-array-2.2 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
 
     #dotest-set-debug
     dotest-debug "VARNAME=$1 VAR=$VAR"
@@ -260,7 +257,7 @@ function varref-local-array-3.1 () {
 
     ARRY[KEY]=mbfl_datavar(VAR)
     ARRY[VAL]=456
-    worker-varref-local-array-3.1 mbfl_datavar(ARRY) RV1 RV2
+    worker-varref-local-array-3.1 mbfl_datavar(ARRY)
 
     dotest-equal 123 "$VAR" && \
 	dotest-equal 456 "${ARRY[VAL]}" && \
@@ -269,8 +266,6 @@ function varref-local-array-3.1 () {
 }
 function worker-varref-local-array-3.1 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV1, 2, result variable reference)
-    mbfl_mandatory_nameref_parameter(RV2, 3, result variable reference)
     local -n VAR=${ARRY[KEY]}
 
     #dotest-set-debug
@@ -292,7 +287,7 @@ function varref-local-array-3.2 () {
 
     ARRY[1]=mbfl_datavar(VAR)
     ARRY[2]=456
-    worker-varref-local-array-3.2 mbfl_datavar(ARRY) RV1 RV2
+    worker-varref-local-array-3.2 mbfl_datavar(ARRY)
 
     dotest-equal 123 "$VAR" && \
 	dotest-equal 456 "${ARRY[2]}" && \
@@ -301,8 +296,6 @@ function varref-local-array-3.2 () {
 }
 function worker-varref-local-array-3.2 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV1, 2, result variable reference)
-    mbfl_mandatory_nameref_parameter(RV2, 3, result variable reference)
     local -n VAR=${ARRY[1]}
 
     #dotest-set-debug
@@ -358,13 +351,12 @@ function varref-global-simple-2.1 () {
     mbfl_global_varref(VAR)
     local RV
 
-    worker-varref-global-simple-2.1 mbfl_datavar(VAR) RV
+    worker-varref-global-simple-2.1 mbfl_datavar(VAR)
 
     dotest-equal 123 "$RV" && dotest-equal 123 "$VAR"
 }
 function worker-varref-global-simple-2.1 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
 
     #dotest-set-debug
     dotest-debug "VARNAME=$1 VAR=$VAR"
@@ -403,13 +395,12 @@ function varref-global-array-2.1 () {
     mbfl_global_varref(VAR)
     local RV
 
-    worker-varref-global-array-2.1 mbfl_datavar(VAR) RV
+    worker-varref-global-array-2.1 mbfl_datavar(VAR)
 
     dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
 }
 function worker-varref-global-array-2.1 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
 
     #dotest-set-debug
     dotest-debug "VARNAME=$1 VAR=$VAR"
@@ -428,13 +419,12 @@ function varref-global-array-2.2 () {
     local RV
 
     VAR[KEY]=123
-    worker-varref-global-array-2.2 mbfl_datavar(VAR) RV
+    worker-varref-global-array-2.2 mbfl_datavar(VAR)
 
     dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
 }
 function worker-varref-global-array-2.2 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV, 2, result variable reference)
 
     #dotest-set-debug
     dotest-debug "VARNAME=$1 VAR=$VAR"
@@ -455,7 +445,7 @@ function varref-global-array-3.1 () {
 
     ARRY[KEY]=mbfl_datavar(VAR)
     ARRY[VAL]=456
-    worker-varref-global-array-3.1 mbfl_datavar(ARRY) RV1 RV2
+    worker-varref-global-array-3.1 mbfl_datavar(ARRY)
 
     dotest-equal 123 "$VAR" && \
 	dotest-equal 456 "${ARRY[VAL]}" && \
@@ -464,8 +454,6 @@ function varref-global-array-3.1 () {
 }
 function worker-varref-global-array-3.1 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV1, 2, result variable reference)
-    mbfl_mandatory_nameref_parameter(RV2, 3, result variable reference)
     local -n VAR=${ARRY[KEY]}
 
     #dotest-set-debug
@@ -487,7 +475,7 @@ function varref-global-array-3.2 () {
 
     ARRY[1]=mbfl_datavar(VAR)
     ARRY[2]=456
-    worker-varref-global-array-3.2 mbfl_datavar(ARRY) RV1 RV2
+    worker-varref-global-array-3.2 mbfl_datavar(ARRY)
 
     dotest-equal 123 "$VAR" && \
 	dotest-equal 456 "${ARRY[2]}" && \
@@ -496,8 +484,6 @@ function varref-global-array-3.2 () {
 }
 function worker-varref-global-array-3.2 () {
     mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    mbfl_mandatory_nameref_parameter(RV1, 2, result variable reference)
-    mbfl_mandatory_nameref_parameter(RV2, 3, result variable reference)
     local -n VAR=${ARRY[1]}
 
     #dotest-set-debug
