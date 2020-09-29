@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2003 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2003, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -52,7 +52,7 @@ declare SIGSPEC='none'
 #### functions
 
 function main () {
-    local flag=0
+    local -i flag=0
 
     # Enable job control.  So we can "suspend" later.
     set -m
@@ -95,14 +95,12 @@ function handler_four () {
 function output_and_debug () {
     echo "$1"
     mbfl_message_debug "$1"
-    sync
 }
 function quitting () {
     local msg="exiting with no interruption"
 
-    if test $flag != 0
-    then
-	msg="exiting after interruption ($SIGSPEC, $flag handlers)"
+    if ((0 != flag))
+    then msg="exiting after interruption ($SIGSPEC, $flag handlers)"
     fi
     output_and_debug "$msg"
 }

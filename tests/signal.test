@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003, 2004, 2005, 2013, 2018 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free  software you can redistribute it  and/or modify it under
@@ -34,8 +34,9 @@ source setup.sh
 dotest-set-debug
 
 function debug-wait () {
-    local i
-    for ((i=0; $i < $(($1 * 1000)); ++i)); do :; done
+    local -i thousands=${1:?"missing thousands argument to '${FUNCNAME}'"}
+    local -i i
+    for ((i=0; i < ((thousands * 1000)); ++i)); do :; done
 }
 
 function signaltest () {
@@ -66,6 +67,7 @@ function signaltest () {
     dotest-debug "waiting for pid '$pid'"
     wait $pid
     dotest-debug "received finalisation of pid '$pid'"
+    debug-wait 30
     dotest-equal "exiting after interruption ($SIGSPEC, 2 handlers)" "$(<${tmpfile})"
     dotest-clean-files
 }
