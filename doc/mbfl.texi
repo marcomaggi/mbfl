@@ -3020,16 +3020,33 @@ here are for.
 
 
 @defun mbfl_actions_completion_print_script @var{NAMESPACE} @var{PROGNAME}
-Print to the standard output a @gnu{} Bash script, to be evaluated in a terminal running Bash, to
-implement automatic completion of the command line.  The script is composed by a call to the Bash
-built--in @command{complete} followed by a number of functions.
+@defunx mbfl_actions_completion_print_script @var{NAMESPACE} @var{PROGNAME} @var{SCRIPT_TYPE}
+Print to the standard output a @gnu{} Bash script, the @dfn{completions--script}, to be evaluated in
+a terminal running Bash, to implement automatic completion of the command line for a
+@dfn{subject--script}.
 
 The argument @var{NAMESPACE} must be a string representing a namespace for function names; functions
-in the script have names starting with this string.
+in the completions--script have names starting with this string.
 
-The argument @var{PROGNAME} must be a string representing the name of the command for which the
-completion script is generated.  It is usually the value of the service variable
+The argument @var{PROGNAME} must be a string representing the name of the subject--script for which
+the completions--script is generated.  It is usually the value of the service variable
 @env{script_PROGNAME}, @ref{script_PROGNAME} for details.
+
+The optional argument @var{SCRIPT_TYPE} selects the type of script to output:
+
+@table @code
+@item main
+Output the full completions--script for a subject--script; this is the default.  When sourced: such
+completions--script will provide full completions for the subject--script.  The completions--script
+is composed by a call to the Bash built--in @command{complete} followed by a number of functions.
+
+@item subscript
+Output only the completion functions for the actions of the subject--script; do @strong{not} output
+a call to the Bash built--in @command{complete}.  This completions--script type is meant to be used
+for subject--scripts that are not directly invoked by the user; rather they are subordinate scripts
+invoked by a main script: the actions of the subordinate script are ``plugged'' in the actions of
+the main script as a subtree.
+@end table
 @end defun
 
 @c page

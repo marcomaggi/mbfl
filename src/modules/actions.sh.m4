@@ -298,6 +298,7 @@ function mbfl_actions_print_usage_screen () {
 function mbfl_actions_completion_print_script () {
     mbfl_mandatory_parameter(NAMESPACE, 1, namespace for the names of completion functions)
     mbfl_mandatory_parameter(PROGNAME,  2, name of the command for which the completion script is built)
+    mbfl_optional_parameter(SCRIPTTYPE, 3, main)
 
     # Function name.  The function is the entry point of the completion procedure; it is an argument
     # to the built-in "complete".
@@ -315,7 +316,9 @@ function mbfl_actions_completion_print_script () {
     printf -v FUNCNAME_DISPATCH    '%s-dispatch-completion-%s' "$NAMESPACE" "$PROGNAME"
     printf -v FUNCNAME_COMPGEN     '%s-compgen-%s'             "$NAMESPACE" "$PROGNAME"
 
-    mbfl_actions_completion_fake_cat <<END
+    case "$SCRIPTTYPE" in
+	'main')
+	    mbfl_actions_completion_fake_cat <<END
 
 # Setup completion for the command "$PROGNAME".
 complete -F $FUNCNAME_ENTRY_POINT -o default $PROGNAME
@@ -332,6 +335,23 @@ function $FUNCNAME_COMPGEN () {
 }
 
 END
+	    ;;
+	'subscript')
+	    mbfl_actions_completion_fake_cat <<END
+
+# Perform the "compgen" call to select the completion from a list of candidate words.
+function $FUNCNAME_COMPGEN () {
+    local -r candidate_completions=\${1:?"missing candidate completions argument"}
+    COMPREPLY=(\`compgen -W "\$candidate_completions" -- "\$word_to_be_completed"\`)
+}
+
+END
+	    ;;
+	*)
+	    mbfl_message_error_printf 'invalid script type to function %s: %s' "$FUNCNAME" "$SCRIPTTYPE"
+	    return_failure
+	    ;;
+    esac
 
     # We visit  the tree  of actions  with a  preorder iteration.   We use  the array  "ITERATOR" to
     # represent the next node to visit.
