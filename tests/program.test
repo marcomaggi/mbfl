@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2004, 2005, 2012, 2013, 2014, 2018 Marco Maggi
+# Copyright (c) 2004, 2005, 2012, 2013, 2014, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free  software you can redistribute it  and/or modify it under
@@ -44,6 +44,7 @@ function program-split-path-1.1 () {
 }
 
 #PAGE
+#### run simple programs
 
 function program-1.1 () {
     mbfl_program_exec echo 123 | dotest-output 123
@@ -60,6 +61,7 @@ function program-1.4 () {
 }
 
 #page
+#### tests for mbfl_declare_program and related stuff
 
 function program-3.1 () {
     {
@@ -94,6 +96,7 @@ function program-3.5 () {
 }
 
 #page
+#### tests for sudo invocation
 
 function program-4.1 () {
     local CODE
@@ -121,6 +124,135 @@ function program-4.2 () {
     }
     mbfl_unset_option_test
     return $CODE
+}
+
+#page
+#### tests for background execution
+
+# Background execution with "mbfl_program_execbg2()".
+#
+function program-5.1 () {
+    local -r DIR=$(dotest-echo-tmpdir)
+
+    dotest-mkfile test-input.txt
+    dotest-mkfile test-output.txt
+    dotest-mkfile test-error.txt
+    {
+	echo inp >"$DIR"/test-input.txt
+
+	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
+	then
+	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
+	    then
+		if mbfl_fd_open_output 12 "$DIR"/test-error.txt
+		then
+		    mbfl_set_option_show_program
+		    mbfl_program_execbg2 10 11 12 "$BASH" -c 'echo -n out >&1; echo -n err >&2; read -n 0 ; echo -n "$REPLY" >&1'
+		    if wait $mbfl_program_BGPID
+		    then
+			if false
+			then
+			    echo  input="$(<"$DIR"/test-input.txt)"  >&2
+			    echo output="$(<"$DIR"/test-output.txt)" >&2
+			    echo  error="$(<"$DIR"/test-error.txt)"  >&2
+			fi
+			dotest-equal     'inp'    "$(<"$DIR"/test-input.txt)"  && \
+			    dotest-equal 'outinp' "$(<"$DIR"/test-output.txt)" && \
+			    dotest-equal 'err'    "$(<"$DIR"/test-error.txt)"
+		    else dotest-printf 'error in the background process'
+		    fi
+		else dotest-printf 'error opening error file'
+		fi
+	    else dotest-printf 'error opening output file'
+	    fi
+	else dotest-printf 'error opening input file'
+	fi
+
+	mbfl_fd_close 10
+	mbfl_fd_close 11
+	mbfl_fd_close 12
+    }
+    dotest-clean-files
+}
+
+#page
+#### tests for background execution
+
+# Background execution with "mbfl_program_execbg()".
+#
+function program-5.2.1 () {
+    local -r DIR=$(dotest-echo-tmpdir)
+
+    dotest-mkfile test-input.txt
+    dotest-mkfile test-output.txt
+    {
+	echo inp >"$DIR"/test-input.txt
+
+	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
+	then
+	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
+	    then
+		mbfl_set_option_show_program
+		mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; read -n 0 ; echo -n "$REPLY" >&1'
+		if wait $mbfl_program_BGPID
+		then
+		    if false
+		    then
+			echo  input="$(<"$DIR"/test-input.txt)"  >&2
+			echo output="$(<"$DIR"/test-output.txt)" >&2
+		    fi
+		    dotest-equal     'inp'    "$(<"$DIR"/test-input.txt)"  && \
+			dotest-equal 'outinp' "$(<"$DIR"/test-output.txt)"
+		else dotest-printf 'error in the background process'
+		fi
+	    else dotest-printf 'error opening output file'
+	    fi
+	else dotest-printf 'error opening input file'
+	fi
+
+	mbfl_fd_close 10
+	mbfl_fd_close 11
+    }
+    dotest-clean-files
+}
+
+# Background execution with "mbfl_program_execbg()" with stderr-to-stdout redirection.
+#
+function program-5.2.2 () {
+    local -r DIR=$(dotest-echo-tmpdir)
+
+    dotest-mkfile test-input.txt
+    dotest-mkfile test-output.txt
+    {
+	echo inp >"$DIR"/test-input.txt
+
+	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
+	then
+	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
+	    then
+		mbfl_program_redirect_stderr_to_stdout
+		mbfl_set_option_show_program
+		mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; echo -n err >&2 ; read -n 0 ; echo -n "$REPLY" >&1'
+		if wait $mbfl_program_BGPID
+		then
+		    if false
+		    then
+			echo  input="$(<"$DIR"/test-input.txt)"  >&2
+			echo output="$(<"$DIR"/test-output.txt)" >&2
+		    fi
+		    dotest-equal     'inp'       "$(<"$DIR"/test-input.txt)"  && \
+			dotest-equal 'outerrinp' "$(<"$DIR"/test-output.txt)"
+		else dotest-printf 'error in the background process'
+		fi
+	    else dotest-printf 'error opening output file'
+	    fi
+	else dotest-printf 'error opening input file'
+	fi
+
+	mbfl_fd_close 10
+	mbfl_fd_close 11
+    }
+    dotest-clean-files
 }
 
 #PAGE

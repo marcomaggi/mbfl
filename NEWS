@@ -112,6 +112,7 @@ changes!
 * Added functions to the program module:
 
     mbfl_program_split_path
+    mbfl_program_execbg2
 
 * Started arrays module.
 

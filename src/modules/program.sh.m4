@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013-2014, 2017-2018 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013-2014, 2017-2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -228,41 +228,57 @@ function mbfl_program_redirect_stderr_to_stdout () {
 function mbfl_program_exec () {
     # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
     # /dev/fd/1 do not exist when the script is run from a cron job.
-    local INCHAN=0 OUCHAN=1
+    local -ir INCHAN=0 OUCHAN=1 ERCHAN=2
     local REPLACE=false BACKGROUND=false
-    mbfl_p_program_exec $INCHAN $OUCHAN $REPLACE $BACKGROUND "$@"
+    mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
 }
 function mbfl_program_execbg () {
     mbfl_mandatory_parameter(INCHAN, 1, numeric input channel)
     mbfl_mandatory_parameter(OUCHAN, 2, numeric output channel)
+    local -ir ERCHAN=2
     shift 2
     local REPLACE=false BACKGROUND=true
-    mbfl_p_program_exec "$INCHAN" "$OUCHAN" $REPLACE $BACKGROUND "$@"
+    mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
+}
+function mbfl_program_execbg2 () {
+    mbfl_mandatory_parameter(INCHAN, 1, numeric input channel)
+    mbfl_mandatory_parameter(OUCHAN, 2, numeric output channel)
+    mbfl_mandatory_parameter(ERCHAN, 3, numeric error channel)
+    shift 3
+    local REPLACE=false BACKGROUND=true
+
+    # Reset this redirection.
+    if $mbfl_program_STDERR_TO_STDOUT
+    then mbfl_program_STDERR_TO_STDOUT=false
+    fi
+
+    mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
 }
 function mbfl_program_replace () {
     # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
     # /dev/fd/1 do not exist when the script is run from a cron job.
-    local INCHAN=0 OUCHAN=1
+    local -ir INCHAN=0 OUCHAN=1 ERCHAN=2
     local REPLACE=true BACKGROUND=false
-    mbfl_p_program_exec $INCHAN $OUCHAN $REPLACE $BACKGROUND "$@"
+    mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
 }
 
 #page
 #### program execution mechanism functions
 
 function mbfl_p_program_exec () {
-    mbfl_mandatory_parameter(INCHAN,     1, input channel)
-    mbfl_mandatory_parameter(OUCHAN,     2, output channel)
-    mbfl_mandatory_parameter(REPLACE,    3, replace argument)
-    mbfl_mandatory_parameter(BACKGROUND, 4, background argument)
-    shift 4
-    local PERSONA=$mbfl_program_SUDO_USER
+    mbfl_mandatory_parameter(INCHAN,    1, input channel)
+    mbfl_mandatory_parameter(OUCHAN,    2, output channel)
+    mbfl_mandatory_parameter(ERCHAN,    3, error channel)
+    mbfl_mandatory_parameter(REPLACE,	4, replace argument)
+    mbfl_mandatory_parameter(BACKGROUND,5, background argument)
+    shift 5
+    local -r PERSONA=$mbfl_program_SUDO_USER
     local USE_SUDO=false
     local SUDO=__PATHNAME_SUDO__
     local WHOAMI=__PATHNAME_WHOAMI__
     local USERNAME
-    local SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
-    local STDERR_TO_STDOUT=$mbfl_program_STDERR_TO_STDOUT
+    local -r SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
+    local -r STDERR_TO_STDOUT=$mbfl_program_STDERR_TO_STDOUT
 
     # Reset request for sudo.
     mbfl_program_SUDO_USER=nosudo
@@ -343,8 +359,8 @@ function mbfl_p_program_exec () {
 			# Stderr-to-stdout, digit ouchan, digit inchan, background.
 			local -i EXIT_CODE
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
-			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1 &
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&"$OUCHAN" &
+			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" 2>&"$OUCHAN" &
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
@@ -352,8 +368,8 @@ function mbfl_p_program_exec () {
 		    else
 			# Stderr-to-stdout, digit ouchan, digit inchan, foreground.
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
-			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" 2>&1
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&"$OUCHAN"
+			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" 2>&"$OUCHAN"
 			fi
 		    fi
 		else
@@ -363,8 +379,8 @@ function mbfl_p_program_exec () {
 			# Stderr-to-stdout, digit ouchan, string inchan, background.
 			local -i EXIT_CODE
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" 2>&1 &
-			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" 2>&1 &
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" 2>&"$OUCHAN" &
+			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" 2>&"$OUCHAN" &
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
@@ -372,8 +388,8 @@ function mbfl_p_program_exec () {
 		    else
 			# Stderr-to-stdout, digit ouchan, string inchan, foreground.
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" 2>&1
-			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" 2>&1
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" 2>&"$OUCHAN"
+			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" 2>&"$OUCHAN"
 			fi
 		    fi
 		fi
@@ -387,8 +403,8 @@ function mbfl_p_program_exec () {
 			# Stderr-to-stdout, string ouchan, digit inchan, background.
 			local -i EXIT_CODE
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" 2>&1 &
-			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" 2>&1 &
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" 2>&"$OUCHAN" &
+			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" 2>&"$OUCHAN" &
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
@@ -396,8 +412,8 @@ function mbfl_p_program_exec () {
 		    else
 			# Stderr-to-stdout, string ouchan, digit inchan, foreground.
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" 2>&1
-			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" 2>&1
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" 2>&"$OUCHAN"
+			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" 2>&"$OUCHAN"
 			fi
 		    fi
 		else
@@ -407,8 +423,8 @@ function mbfl_p_program_exec () {
 			# Stderr-to-stdout, string ouchan, string inchan, background.
 			local -i EXIT_CODE
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" 2>&1 &
-			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" 2>&1 &
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" 2>&"$OUCHAN" &
+			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" 2>&"$OUCHAN" &
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
@@ -416,8 +432,8 @@ function mbfl_p_program_exec () {
 		    else
 			# Stderr-to-stdout, string ouchan, string inchan, foreground.
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" 2>&1
-			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" 2>&1
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" 2>&"$OUCHAN"
+			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" 2>&"$OUCHAN"
 			fi
 		    fi
 		fi
@@ -435,17 +451,18 @@ function mbfl_p_program_exec () {
 			# Stderr-to-stderr, digit ouchan, digit inchan, background.
 			local -i EXIT_CODE
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" &
-			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" &
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&"$ERCHAN" &
+			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" 2>&"$ERCHAN" &
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stderr, digit ouchan, digit inchan, foreground.
+			#echo INCHAN=$INCHAN OUCHAN=$OUCHAN ERCHAN=$ERCHAN >&2
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN"
-			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN"
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >&"$OUCHAN" 2>&"$ERCHAN"
+			else $EXEC                                     "$@" <&"$INCHAN" >&"$OUCHAN" 2>&"$ERCHAN"
 			fi
 		    fi
 		else
@@ -455,8 +472,8 @@ function mbfl_p_program_exec () {
 			# Stderr-to-stderr, digit ouchan, string inchan, background.
 			local -i EXIT_CODE
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" &
-			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" &
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" 2>&"$ERCHAN" &
+			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" 2>&"$ERCHAN" &
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
@@ -464,8 +481,8 @@ function mbfl_p_program_exec () {
 		    else
 			# Stderr-to-stderr, digit ouchan, string inchan, foreground.
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN"
-			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN"
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >&"$OUCHAN" 2>&"$ERCHAN"
+			else $EXEC                                     "$@" <"$INCHAN" >&"$OUCHAN" 2>&"$ERCHAN"
 			fi
 		    fi
 		fi
@@ -479,8 +496,8 @@ function mbfl_p_program_exec () {
 			# Stderr-to-stderr, string ouchan, digit inchan, background.
 			local -i EXIT_CODE
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" &
-			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" &
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" 2>&"$ERCHAN" &
+			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" 2>&"$ERCHAN" &
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
@@ -488,8 +505,8 @@ function mbfl_p_program_exec () {
 		    else
 			# Stderr-to-stderr, string ouchan, digit inchan, foreground.
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN"
-			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN"
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <&"$INCHAN" >"$OUCHAN" 2>&"$ERCHAN"
+			else $EXEC                                     "$@" <&"$INCHAN" >"$OUCHAN" 2>&"$ERCHAN"
 			fi
 		    fi
 		else
@@ -499,8 +516,8 @@ function mbfl_p_program_exec () {
 			# Stderr-to-stderr, string ouchan, string inchan, background.
 			local -i EXIT_CODE
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" &
-			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" &
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" 2>&"$ERCHAN" &
+			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" 2>&"$ERCHAN" &
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
@@ -508,8 +525,8 @@ function mbfl_p_program_exec () {
 		    else
 			# Stderr-to-stderr, string ouchan, string inchan, foreground.
 			if $USE_SUDO
-			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN"
-			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN"
+			then $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@" <"$INCHAN" >"$OUCHAN" 2>&"$ERCHAN"
+			else $EXEC                                     "$@" <"$INCHAN" >"$OUCHAN" 2>&"$ERCHAN"
 			fi
 		    fi
 		fi
@@ -532,7 +549,8 @@ function mbfl_p_program_log_1 () {
 function mbfl_p_program_log_2 () {
     mbfl_p_program_log_3 "$@"
     if $STDERR_TO_STDOUT
-    then echo -n ' 2>&1'
+    then echo -n " 2>&$OUCHAN"
+    else echo -n " 2>&$ERCHAN"
     fi
 }
 function mbfl_p_program_log_3 () {
@@ -550,16 +568,28 @@ function mbfl_p_program_log_4 () {
     fi
 }
 function mbfl_p_program_log_5 () {
-    local EXEC
+    local EXEC PROG=$1
+    shift 1
 
     if $REPLACE
     then EXEC=exec
     else EXEC=command
     fi
+
     if $USE_SUDO
-    then echo -n $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$@"
-    else echo -n $EXEC                                     "$@"
+    then echo -n $EXEC "$SUDO" $SUDO_OPTIONS -u "$PERSONA" "$PROG"
+    else echo -n $EXEC "$PROG"
     fi
+
+    {
+	mbfl_local_varref(QUOTED_ARG)
+	local arg
+	for arg in "$@"
+	do
+	    mbfl_string_quote_var mbfl_datavar(QUOTED_ARG) "$arg"
+	    printf " '%s'" "$QUOTED_ARG"
+	done
+    }
 }
 
 #page

@@ -4326,6 +4326,16 @@ The readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0}, @f
 @end defun
 
 
+@defun mbfl_program_execbg2 @var{inchan} @var{ouchan} @var{erchan} @var{program}
+@defunx mbfl_program_execbg2 @var{inchan} @var{ouchan} @var{erchan} @var{program} @var{arg} ...
+Like @func{mbfl_program_execbg}, but redirects also the standard error of the executed process to
+@var{erchan}, which must be a numeric file descriptor.
+
+If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.
+@end defun
+
+
 @defun mbfl_program_replace @var{program}
 @defunx mbfl_program_replace @var{program} [@var{opt} @dots{}]
 Like @func{mbfl_program_exec}, but execute the program through the Bash
