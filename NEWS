@@ -133,6 +133,11 @@ changes!
 * Added  support for  automatic  generation  of command-line  completion
   scripts.
 
+* Added preprocessor directives for variables handling:
+
+    mbfl_unset_variable
+    mbfl_variable_unset
+
 
 Notes for revision 2.2.0
 ------------------------
