@@ -51,7 +51,7 @@ function program-1.1 () {
 }
 function program-1.2 () {
     mbfl_set_option_test
-    mbfl_program_exec echo 123 2>&1 | dotest-output "command echo 123 <&0 >&1"
+    mbfl_program_exec echo 123 2>&1 | dotest-output "command echo '123' <&0 >&1 2>&2"
 }
 function program-1.3 () {
     mbfl_program_exec true
@@ -99,31 +99,45 @@ function program-3.5 () {
 #### tests for sudo invocation
 
 function program-4.1 () {
-    local CODE
-    mbfl_program_enable_sudo
-    mbfl_set_option_test
-    {
-	mbfl_program_declare_sudo_user root
-	echo 123 | mbfl_program_exec cat 2>&1 | \
-            dotest-output "command $mbfl_program_SUDO -u root cat <&0 >&1"
-	CODE=$?
-    }
-    mbfl_unset_option_test
-    return $CODE
+    local USERNAME
+
+    if USERNAME=$("$mbfl_program_WHOAMI")
+    then
+	local CODE
+	mbfl_program_enable_sudo
+	mbfl_set_option_test
+	{
+	    mbfl_program_FORCE_USE_SUDO=true
+	    mbfl_program_declare_sudo_user "$USERNAME"
+	    echo 123 | mbfl_program_exec cat 2>&1 | \
+		dotest-output "command $mbfl_program_SUDO -u $USERNAME cat <&0 >&1 2>&2"
+	    CODE=$?
+	}
+	mbfl_unset_option_test
+	return $CODE
+    else true
+    fi
 }
 function program-4.2 () {
-    local CODE
-    mbfl_program_enable_sudo
-    mbfl_set_option_test
-    {
-	mbfl_program_declare_sudo_user root
-	mbfl_program_declare_sudo_options -H VAL=val
-	echo 123 | mbfl_program_exec cat 2>&1 | \
-            dotest-output "command $mbfl_program_SUDO -H VAL=val -u root cat <&0 >&1"
-	CODE=$?
-    }
-    mbfl_unset_option_test
-    return $CODE
+    local USERNAME
+
+    if USERNAME=$("$mbfl_program_WHOAMI")
+    then
+	local CODE
+	mbfl_program_enable_sudo
+	mbfl_set_option_test
+	{
+	    mbfl_program_FORCE_USE_SUDO=true
+	    mbfl_program_declare_sudo_user "$USERNAME"
+	    mbfl_program_declare_sudo_options -H VAL=val
+	    echo 123 | mbfl_program_exec cat 2>&1 | \
+		dotest-output "command $mbfl_program_SUDO -H VAL=val -u $USERNAME cat <&0 >&1 2>&2"
+	    CODE=$?
+	}
+	mbfl_unset_option_test
+	return $CODE
+    else true
+    fi
 }
 
 #page

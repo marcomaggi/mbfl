@@ -179,6 +179,12 @@ declare mbfl_program_STDERR_TO_STDOUT=false
 declare mbfl_program_BASH=$BASH
 declare mbfl_program_BGPID
 
+# This is an undocumented variable; it is used only for testing.  Setting its value to 'true' causes
+# "mbfl_p_program_exec()" to use sudo even when  the "$mbfl_program_SUDO_USER" is equal to the value
+# printed by "whoami".
+#
+declare mbfl_program_FORCE_USE_SUDO=false
+
 function mbfl_program_enable_sudo () {
     local SUDO=__PATHNAME_SUDO__
     if ! test -x "$SUDO"
@@ -306,8 +312,10 @@ function mbfl_p_program_exec () {
 	    mbfl_message_error 'unable to determine current user name'
 	    exit_because_failure
 	fi
-	if test "$PERSONA" != "$USERNAME"
-	then USE_SUDO=true
+	if test "$PERSONA" != "$USERNAME" -o "$mbfl_program_FORCE_USE_SUDO" = true
+	then
+	    USE_SUDO=true
+	    mbfl_program_FORCE_USE_SUDO=false
 	fi
     fi
 
