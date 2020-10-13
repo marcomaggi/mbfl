@@ -1019,6 +1019,9 @@ A local @dfn{name variable} @code{mbfl_a_variable_@var{NAME}} is declared and fi
 local; finally a @dfn{proxy variable} @code{NAME} is defined as alias for the @dfn{data variable}.
 
 The data variable is given the @var{LOCAL_OPTIONS}.
+
+All the declared variables can be unset using @func{mbfl_unset_varref}; for details
+@ref{mbfl_unset_varref, Unsetting NAMEREF declarations}.
 @end deffn
 
 
@@ -1044,6 +1047,9 @@ A local @dfn{name variable} @code{mbfl_a_variable_@var{NAME}} is declared and fi
 global; finally a @dfn{proxy variable} @code{NAME} is defined as alias for the @dfn{data variable}.
 
 The data variable is given the @var{DECLARE_OPTIONS}.
+
+All the declared variables can be unset using @func{mbfl_unset_varref}; for details
+@ref{mbfl_unset_varref, Unsetting NAMEREF declarations}.
 @end deffn
 
 
@@ -1134,6 +1140,7 @@ definition of the data variable.  This makes the data variable an associative ar
 @subsection Unsetting NAMEREF declarations
 
 
+@anchor{mbfl_unset_varref}
 @deffn {Preprocessor Macro} mbfl_unset_varref (@var{NAME})
 The argument @var{NAME} must be the first argument to a previous call to
 @func{mbfl_local_varref} or @func{mbfl_global_varref}.  Expand into:
