@@ -528,7 +528,7 @@ function varref-unset-3.1 () {
 
     mbfl_location_enter
     {
-        mbfl_location_handler "unset -v mbfl_datavar(VAR)"
+        mbfl_location_handler "mbfl_variable_unset(mbfl_datavar(VAR))"
 
 	RV=$VAR
     }

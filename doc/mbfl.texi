@@ -606,6 +606,7 @@ without the preprocessor.
 * preprocessor arguments::      Script arguments handling.
 * preprocessor nameref::        Variable name references.
 * preprocessor strings::        Manipulating strings with macros.
+* preprocessor variables::      Manipulating variables with macros.
 * preprocessor arrays::         Manipulating arrays with macros.
 @end menu
 
@@ -784,6 +785,7 @@ and so it is a function with two mandatory parameters.
 @end deffn
 
 
+@anchor{mbfl_mandatory_nameref_parameter}
 @deffn {Preprocessor Macro} mbfl_mandatory_nameref_parameter @var{name} @var{number} @var{description}
 Similar to @func{mbfl_mandatory_parameter} but use the @code{-n} attribute when declaring the
 variable.  This makes the new variable a NAMEREF for the given variable name; @bashref{Shell
@@ -885,8 +887,48 @@ local PATHNAME=$@{ARGV[3]@}
 
 
 The preprocessor implements facilities to declare variables with unique names and use them as target
-for variables with the NAMEREF attribute.  With these facilities we can use the @code{_var} variants
-of @mbfl{} functions as follows:
+for variables with the NAMEREF attribute.
+
+The basic usage pattern is to declare a variable in a caller function with the preprocessor
+directive @func{mbfl_local_varref} and to access a such variable from a callee function using the
+preprocessor directive @func{mbfl_mandatory_nameref_parameter} as follows:
+
+@example
+function caller () @{
+    mbfl_local_varref(VAR)
+
+    callee mbfl_datavar(VAR)
+    echo $VAR
+@}
+
+function callee () @{
+    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
+
+    VAR=123
+@}
+@end example
+
+@noindent
+mutating the variable @samp{VAR} in @func{callee} will mutate the variable @var{VAR} in
+@func{caller}.  For details on declaring the variable @ref{mbfl_local_varref, Full NAMEREF
+declarations}.  For details on accessing the variable @ref{mbfl_mandatory_nameref_parameter,
+Preprocessor parameters}.
+
+@menu
+* preprocessor nameref intro::    Introduction to the NAMEREF mechanism.
+* preprocessor nameref access::   Variables accessors.
+* preprocessor nameref full::     Full NAMEREF declarations.
+* preprocessor nameref partial::  Partial NAMEREF declarations.
+* preprocessor nameref special::  Special NAMEREF declarations.
+* preprocessor nameref unset::    Unsetting NAMEREF declarations.
+@end menu
+
+@c page
+@node preprocessor nameref intro
+@subsection Introduction to the NAMEREF mechanism
+
+
+With these facilities we can use the @code{_var} variants of @mbfl{} functions as follows:
 
 @example
 mbfl_local_varref(RV)
@@ -896,8 +938,8 @@ mbfl_file_extension_var mbfl_datavar(RV) /path/to/file.ext
 @end example
 
 @noindent
-without risking a variable name collision.  In this example, the use of @func{mbfl_local_varref}
-expands into:
+without risking a variable name collision and without using the standard output of callee functions
+to acquire a result.  In this example, the use of @func{mbfl_local_varref} expands into:
 
 @example
 local mbfl_a_variable_RV
@@ -917,14 +959,6 @@ with the macro @func{mbfl_namevar}; we can retrieve its @dfn{data variable} name
 
 Other macros declare variables similarly, using the same scheme of 3 variable declarations: name
 variable, data variable, proxy variable.
-
-@menu
-* preprocessor nameref access::   Variables accessors.
-* preprocessor nameref full::     Full NAMEREF declarations.
-* preprocessor nameref partial::  Partial NAMEREF declarations.
-* preprocessor nameref special::  Special NAMEREF declarations.
-* preprocessor nameref unset::    Unsetting NAMEREF declarations.
-@end menu
 
 @c page
 @node preprocessor nameref access
@@ -962,6 +996,7 @@ When defining array variables we must use the specific macros, rather than the o
 @ref{preprocessor nameref special, Special NAMEREF declarations}.
 
 
+@anchor{mbfl_local_varref}
 @deffn {Preprocessor Macro} mbfl_local_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
 Expands into:
 
@@ -1021,7 +1056,7 @@ function main () @{
 
     mbfl_location_enter
     @{
-        mbfl_location_handler "unset -v mbfl_datavar(VAR)"
+        mbfl_location_handler "mbfl_variable_unset(mbfl_datavar(VAR))"
 
         # Do something here with VAR.
         ...
@@ -1139,6 +1174,20 @@ $@{@var{VAR}:@var{EXPR}:1@}
 
 @noindent
 which evaluates to the character at index @var{EXPR} in the string in the variable @var{VAR}.
+@end deffn
+
+@c page
+@node preprocessor variables
+@section Manipulating variables with macros
+
+
+@deffn {Preprocessor Macro} mbfl_variable_unset (@var{VAR})
+@deffnx {Preprocessor Macro} mbfl_unset_variable (@var{VAR})
+These macros are synonyms.  Expand into a command that unsets the variable @var{VAR}:
+
+@example
+unset -v @var{VAR}
+@end example
 @end deffn
 
 @c page
