@@ -881,6 +881,23 @@ local PATHNAME=$@{ARGV[3]@}
 @end example
 @end deffn
 
+
+@deffn {Preprocessor Macro} mbfl_extract_command_line_argument @var{varname} @var{argindex}
+Expand into an equivalent of:
+
+@example
+mbfl_command_line_argument(@var{varname}, @var{argindex})
+mbfl_variable_unset(@var{varname}[@var{argindex}])
+@end example
+
+We use this macro to access a non--option command line argument and to remove it from the array
+@env{ARGV}, so that it will no longer be included in expansions like:
+
+@example
+$@{ARGV[@@]@}
+@end example
+@end deffn
+
 @c page
 @node preprocessor nameref
 @section Variable name references

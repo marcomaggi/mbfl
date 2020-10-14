@@ -52,6 +52,8 @@ m4_dnl script's command line arguments handling
 
 m4_define([[[mbfl_command_line_argument]]],[[[local $1="${ARGV[$2]}"]]])
 
+m4_define([[[mbfl_extract_command_line_argument]]],[[[mbfl_command_line_argument($1,$2); mbfl_variable_unset(ARGV[$2])]]])
+
 
 m4_dnl library loading and embedding
 
