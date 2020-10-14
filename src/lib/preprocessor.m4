@@ -50,7 +50,7 @@ local -n $1=$[[[]]]mbfl_a_variable_$1
 
 m4_dnl script's command line arguments handling
 
-m4_define([[[mbfl_command_line_argument]]],[[[local $1="${ARGV[$2]]]}"]]])
+m4_define([[[mbfl_command_line_argument]]],[[[local $1="${ARGV[$2]}"]]])
 
 
 m4_dnl library loading and embedding
