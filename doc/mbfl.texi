@@ -6480,7 +6480,7 @@ The following global variables are defined by default.
 
 @defvar ARGV1
 An array containing all the command line arguments.  When no command line arguments are present:
-this array is empty.
+this array is empty.  The indexes in this array are zero--based.
 @end defvar
 
 
@@ -6500,6 +6500,13 @@ action arguments; the @code{getopts} module uses this value to locate the first 
 @defvar ARGV
 An array containing all the non--action and non--option command line arguments.  When no such
 arguments are present: this array is empty.  This variable is filled by the @code{getopts} module.
+The indexes in this array are zero--based.
+
+Remembering the Bash syntax for arrays, we can expand the array to all its items with:
+
+@example
+"$@{ARGV[@@]@}"
+@end example
 @end defvar
 
 
