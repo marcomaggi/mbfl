@@ -9,7 +9,7 @@
 #	This is the library file of MBFL. It must be sourced in shell
 #	scripts at the beginning of evaluation.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -49,6 +49,7 @@ m4_include(times-and-dates.sh)
 m4_include(dialog.sh)
 m4_include(system.sh)
 m4_include(arrays.sh)
+m4_include(semver.sh)
 m4_include(interfaces.sh)
 m4_include(main.sh)
 

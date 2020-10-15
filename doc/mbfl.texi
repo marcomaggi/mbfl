@@ -140,6 +140,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * system::                      Interfacing with the system.
 * atexit::                      Running scripts at exit-time.
 * locations::                   Running location handlers.
+* semver::                      Semantic versioning parser.
 * main::                        Main function.
 * testing::                     Building test suites.
 
@@ -6455,6 +6456,405 @@ func
 @end example
 
 @c page
+@node semver
+@chapter Semantic versioning parser
+
+
+This module implements a parser for semantic version strings.
+
+@menu
+* semver spec::                 @emph{Semantic Versioning} specification.
+* semver parser::               Parsing facilities.
+* semver examples::             Parsing examples.
+@end menu
+
+@c page
+@node semver spec
+@section @emph{Semantic Versioning} specification
+
+
+The specification of @emph{Semantic Versioning} is publicly available at the site:
+
+@center @url{https://semver.org/}
+
+@noindent
+under the terms of the @url{https://creativecommons.org/licenses/by/3.0/, Creative Commons --- CC BY
+3.0}.  The @emph{Semantic Versioning} specification is authored by Tom Preston--Werner, inventor of
+Gravatars and cofounder of GitHub.  @value{PACKAGE} implements a parser for version 2.0.0 of the
+specification; it also adds specifications for ranges.  The full text of the specification is
+included here, with small formatting changes.
+
+Given a version number @samp{MAJOR.MINOR.PATCH}, increment the:
+
+@enumerate
+@item
+@samp{MAJOR} version when you make incompatible @api{} changes.
+
+@item
+@samp{MINOR} version when you add functionality in a backwards--compatible manner.
+
+@item
+@samp{PATCH} version when you make backwards--compatible bug fixes.
+@end enumerate
+
+Additional labels for pre--release and build metadata are available as extensions to the
+@samp{MAJOR.MINOR.PATCH} format.
+
+@menu
+* semver spec introduction::    Introduction.
+* semver spec semver::          Semantic Versioning Specification (SemVer).
+* semver spec why::             Why use semantic versioning?
+* semver spec faq::             Frequently asked questions.
+@end menu
+
+@c page
+@node semver spec introduction
+@subsection Introduction
+
+
+In the world of software management there exists a dreaded place called ``dependency hell''.  The
+bigger your system grows and the more packages you integrate into your software, the more likely you
+are to find yourself, one day, in this pit of despair.
+
+In systems with many dependencies, releasing new package versions can quickly become a nightmare.
+If the dependency specifications are too tight, you are in danger of version lock (the inability to
+upgrade a package without having to release new versions of every dependent package).  If
+dependencies are specified too loosely, you will inevitably be bitten by version promiscuity
+(assuming compatibility with more future versions than is reasonable).  Dependency hell is where you
+are when version lock and/or version promiscuity prevent you from easily and safely moving your
+project forward.
+
+As a solution to this problem, I propose a simple set of rules and requirements that dictate how
+version numbers are assigned and incremented.  These rules are based on but not necessarily limited
+to pre--existing widespread common practices in use in both closed and open--source software.  For
+this system to work, you first need to declare a public @api{}.  This may consist of documentation
+or be enforced by the code itself.  Regardless, it is important that this @api{} be clear and
+precise.  Once you identify your public @api{}, you communicate changes to it with specific
+increments to your version number.  Consider a version format of @samp{X.Y.Z}
+(@samp{MAJOR.MINOR.PATCH}).  Bug fixes not affecting the @api{} increment the patch version,
+backwards compatible @api{} additions/changes increment the minor version, and backwards
+incompatible @api{} changes increment the major version.
+
+I call this system @dfn{Semantic Versioning}.  Under this scheme, version numbers and the way they
+change convey meaning about the underlying code and what has been modified from one version to the
+next.
+
+@c page
+@node semver spec semver
+@subsection Semantic Versioning Specification (SemVer)
+
+
+The key words ``MUST'', ``MUST NOT'', ``REQUIRED'', ``SHALL'', ``SHALL NOT'', ``SHOULD'', ``SHOULD
+NOT'', ``RECOMMENDED'', ``MAY'', and ``OPTIONAL'' in this document are to be interpreted as
+described in @rfc{} 2119.
+
+@enumerate
+@item
+Software using @emph{Semantic Versioning} MUST declare a public @api{}.  This @api{} could be
+declared in the code itself or exist strictly in documentation.  However it is done, it should be
+precise and comprehensive.
+
+@item
+A normal version number MUST take the form @samp{X.Y.Z} where @samp{X}, @samp{Y}, and @samp{Z} are
+non--negative integers, and MUST NOT contain leading zeroes.  @samp{X} is the major version,
+@samp{Y} is the minor version, and @samp{Z} is the patch version.  Each element MUST increase
+numerically.  For instance: @samp{1.9.0 -> 1.10.0 -> 1.11.0}.
+
+@item
+Once a versioned package has been released, the contents of that version MUST NOT be modified.  Any
+modifications MUST be released as a new version.
+
+@item
+Major version zero (@samp{0.y.z}) is for initial development.  Anything may change at any time.  The
+public @api{} should not be considered stable.
+
+@item
+Version @samp{1.0.0} defines the public @api{}.  The way in which the version number is incremented
+after this release is dependent on this public @api{} and how it changes.
+
+@item
+Patch version @samp{Z} (@samp{x.y.Z | x > 0}) MUST be incremented if only backwards compatible bug
+fixes are introduced.  A bug fix is defined as an internal change that fixes incorrect behavior.
+
+@item
+Minor version @samp{Y} (@samp{x.Y.z | x > 0}) MUST be incremented if new, backwards compatible
+functionality is introduced to the public @api{}.  It MUST be incremented if any public @api{}
+functionality is marked as deprecated.  It MAY be incremented if substantial new functionality or
+improvements are introduced within the private code.  It MAY include patch level changes.  Patch
+version MUST be reset to @samp{0} when minor version is incremented.
+
+@item
+Major version @samp{X} (@samp{X.y.z | X > 0}) MUST be incremented if any backwards incompatible
+changes are introduced to the public @api{}.  It MAY include minor and patch level changes.  Patch
+and minor version MUST be reset to @samp{0} when major version is incremented.
+
+@item
+A pre--release version MAY be denoted by appending a hyphen and a series of dot separated
+identifiers immediately following the patch version.  Identifiers MUST comprise only @ascii{}
+alphanumerics and hyphen @samp{[0-9A-Za-z-]}.  Identifiers MUST NOT be empty.  Numeric identifiers
+MUST NOT include leading zeroes.  Pre--release versions have a lower precedence than the associated
+normal version.  A pre--release version indicates that the version is unstable and might not satisfy
+the intended compatibility requirements as denoted by its associated normal version.  Examples:
+@samp{1.0.0-alpha}, @samp{1.0.0-alpha.1}, @samp{1.0.0-0.3.7}, @samp{1.0.0-x.7.z.92}.
+
+@item
+Build metadata MAY be denoted by appending a plus sign and a series of dot separated identifiers
+immediately following the patch or pre--release version.  Identifiers MUST comprise only @ascii{}
+alphanumerics and hyphen @samp{[0-9A-Za-z-]}.  Identifiers MUST NOT be empty.  Build metadata SHOULD
+be ignored when determining version precedence.  Thus two versions that differ only in the build
+metadata, have the same precedence.  Examples: @samp{1.0.0-alpha+001}, @samp{1.0.0+20130313144700},
+@samp{1.0.0-beta+exp.sha.5114f85}.
+
+@item
+Precedence refers to how versions are compared to each other when ordered.  Precedence MUST be
+calculated by separating the version into major, minor, patch and pre-release identifiers in that
+order (build metadata does not figure into precedence).  Precedence is determined by the first
+difference when comparing each of these identifiers from left to right as follows: @samp{MAJOR},
+@samp{MINOR}, and @samp{PATCH} versions are always compared numerically.  Example:
+
+@example
+1.0.0 < 2.0.0 < 2.1.0 < 2.1.1
+@end example
+
+When @samp{MAJOR}, @samp{MINOR}, and @samp{PATCH} are equal, a pre--release version has lower
+precedence than a normal version.  Example:
+
+@example
+1.0.0-alpha < 1.0.0
+@end example
+
+Precedence for two pre--release versions with the same @samp{MAJOR}, @samp{MINOR}, and @samp{PATCH}
+version MUST be determined by comparing each dot separated identifier from left to right until a
+difference is found as follows: identifiers consisting of only digits are compared numerically and
+identifiers with letters or hyphens are compared lexically in @ascii{} sort order.  Numeric
+identifiers always have lower precedence than non--numeric identifiers.  A larger set of
+pre--release fields has a higher precedence than a smaller set, if all of the preceding identifiers
+are equal.  Example:
+
+@example
+1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta < 1.0.0-beta <
+< 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0
+@end example
+@end enumerate
+
+@c page
+@node semver spec why
+@subsection Why use semantic versioning?
+
+
+This is not a new or revolutionary idea.  In fact, you probably do something close to this already.
+The problem is that ``close'' isn't good enough.  Without compliance to some sort of formal
+specification, version numbers are essentially useless for dependency management.  By giving a name
+and clear definition to the above ideas, it becomes easy to communicate your intentions to the users
+of your software.  Once these intentions are clear, flexible (but not too flexible) dependency
+specifications can finally be made.
+
+A simple example will demonstrate how @emph{Semantic Versioning} can make dependency hell a thing of
+the past.  Consider a library called ``Firetruck''.  It requires a Semantically Versioned package
+named ``Ladder''.  At the time that Firetruck is created, Ladder is at version @samp{3.1.0}.  Since
+Firetruck uses some functionality that was first introduced in @samp{3.1.0}, you can safely specify
+the Ladder dependency as greater than or equal to @samp{3.1.0} but less than @samp{4.0.0}.  Now,
+when Ladder version @samp{3.1.1} and @samp{3.2.0} become available, you can release them to your
+package management system and know that they will be compatible with existing dependent software.
+
+As a responsible developer you will, of course, want to verify that any package upgrades function as
+advertised.  The real world is a messy place; there's nothing we can do about that but be vigilant.
+What you can do is let @emph{Semantic Versioning} provide you with a sane way to release and upgrade
+packages without having to roll new versions of dependent packages, saving you time and hassle.
+
+If all of this sounds desirable, all you need to do to start using @emph{Semantic Versioning} is to
+declare that you are doing so and then follow the rules.  Link to this website from your README so
+others know the rules and can benefit from them.
+
+@c page
+@node semver spec faq
+@subsection Frequently asked questions
+
+
+@enumerate
+@item How should I deal with revisions in the @samp{0.y.z} initial development phase?
+
+The simplest thing to do is start your initial development release at @samp{0.1.0} and then
+increment the minor version for each subsequent release.
+
+@c ------------------------------------------------------------------------
+
+@item How do I know when to release @samp{1.0.0}?
+
+If your software is being used in production, it should probably already be @samp{1.0.0}.  If you
+have a stable @api{} on which users have come to depend, you should be @samp{1.0.0}.  If you're
+worrying a lot about backwards compatibility, you should probably already be @samp{1.0.0}.
+
+@c ------------------------------------------------------------------------
+
+@item Doesn't this discourage rapid development and fast iteration?
+
+Major version zero is all about rapid development.  If you're changing the @api{} every day you
+should either still be in version @samp{0.y.z} or on a separate development branch working on the
+next major version.
+
+@c ------------------------------------------------------------------------
+
+@item If even the tiniest backwards incompatible changes to the public @api{} require a major version bump, won't I end up at version @samp{42.0.0} very rapidly?
+
+This is a question of responsible development and foresight.  Incompatible changes should not be
+introduced lightly to software that has a lot of dependent code.  The cost that must be incurred to
+upgrade can be significant.  Having to bump major versions to release incompatible changes means
+you'll think through the impact of your changes, and evaluate the cost/benefit ratio involved.
+
+@c ------------------------------------------------------------------------
+
+@item Documenting the entire public @api{} is too much work!
+
+It is your responsibility as a professional developer to properly document software that is intended
+for use by others.  Managing software complexity is a hugely important part of keeping a project
+efficient, and that's hard to do if nobody knows how to use your software, or what methods are safe
+to call.  In the long run, @emph{Semantic Versioning}, and the insistence on a well defined public
+@api{} can keep everyone and everything running smoothly.
+
+@c ------------------------------------------------------------------------
+
+@item What do I do if I accidentally release a backwards incompatible change as a minor version?
+
+As soon as you realize that you've broken the @emph{Semantic Versioning} spec, fix the problem and
+release a new minor version that corrects the problem and restores backwards compatibility.  Even
+under this circumstance, it is unacceptable to modify versioned releases.  If it's appropriate,
+document the offending version and inform your users of the problem so that they are aware of the
+offending version.
+
+@c ------------------------------------------------------------------------
+
+@item What should I do if I update my own dependencies without changing the public @api{}?
+
+That would be considered compatible since it does not affect the public @api{}.  Software that
+explicitly depends on the same dependencies as your package should have their own dependency
+specifications and the author will notice any conflicts.  Determining whether the change is a patch
+level or minor level modification depends on whether you updated your dependencies in order to fix a
+bug or introduce new functionality.  I would usually expect additional code for the latter instance,
+in which case it's obviously a minor level increment.
+
+@c ------------------------------------------------------------------------
+
+@item What if I inadvertently alter the public @api{} in a way that is not compliant with the version number change (i.e. the code incorrectly introduces a major breaking change in a patch release)?
+
+Use your best judgment.  If you have a huge audience that will be drastically impacted by changing
+the behavior back to what the public @api{} intended, then it may be best to perform a major version
+release, even though the fix could strictly be considered a patch release.  Remember, @emph{Semantic
+Versioning} is all about conveying meaning by how the version number changes.  If these changes are
+important to your users, use the version number to inform them.
+
+@c ------------------------------------------------------------------------
+
+@item How should I handle deprecating functionality?
+
+Deprecating existing functionality is a normal part of software development and is often required to
+make forward progress.  When you deprecate part of your public @api{}, you should do two things: (1)
+update your documentation to let users know about the change, (2) issue a new minor release with the
+deprecation in place.  Before you completely remove the functionality in a new major release there
+should be at least one minor release that contains the deprecation so that users can smoothly
+transition to the new @api{}.
+
+@c ------------------------------------------------------------------------
+
+@item Does @emph{Semantic Versioning} have a size limit on the version string?
+
+No, but use good judgement.  A 255 character version string is probably overkill, for example.
+Also, specific systems may impose their own limits on the size of the string.
+@end enumerate
+
+@c page
+@node semver parser
+@section Parsing facilities
+
+
+@defun mbfl_semver_parse @var{_RV} @var{INPUT_STRING} @var{START_INDEX_VAR}
+Parse the semantic version specification in a substring of @var{INPUT_STRING} according to the
+current values in the global configuration array @env{mbfl_semver_CONFIG}; when successful return 0,
+otherwise return 1.
+
+Parsing starts at the zero--based numeric index stored in the variable named @var{START_INDEX_VAR}.
+
+When successful: store the parsing results in the array whose name is @var{_RV} and mutate the
+variable whose name is @var{START_INDEX_VAR} to the numeric index of the next character in
+@var{INPUT_STRING} to be parsed.
+
+The associative array @var{_RV} is filled with the result of the parsing operation.  When parsing is
+successful, it will hold the following keys:
+
+@table @code
+@item MAJOR_NUMBER
+The major version number.
+
+@item MINOR_NUMBER
+The minor version number.
+
+@item PATCH_LEVEL
+The patch level number
+
+@item PRERELEASE_VERSION
+The prerelease version specification; it @strong{does not} contain the leading hyphen character
+@samp{-}.
+
+@item BUILD_METADATA
+The build metadata specification; it @strong{does not} contain the leading plus character @samp{+}.
+
+@item END_INDEX
+An integer representing the index of the first character in @var{INPUT_STRING} @strong{after} the
+last parsed character.  If the string holds further text after the semantic version specification:
+we can start parsing it at this index.
+@end table
+
+In addition, if an error occurred while parsing: a pair with  key @code{PARSING_ERROR_MESSAGE} is
+added to the array; its value is a string describing the parsing error.
+@end defun
+
+
+@defun mbfl_semver_reset_config
+Reset the parser configuration array @env{mbfl_semver_CONFIG} to its default values.
+@end defun
+
+
+@defvr {Array Variable} mbfl_semver_CONFIG
+Global associative array variable holding the configuration of the semantic version specification
+parser.  It has the following keys:
+
+@table @code
+@item PARSE_LEADING_V
+When @code{true}: parse a leading character @samp{v} in the @var{INPUT_STRING}; the default is
+@code{false}.
+
+@item ACCEPT_UNDERSCORE_IN_BUILD_METADATA
+When @code{true}: accept underscore characters @samp{_} in the identifiers of the build metadata;
+this is an extension of the standard; the default is @code{false}.
+@end table
+@end defvr
+
+@c page
+@node semver examples
+@section Parsing examples
+
+
+Parse a correct semantic version specification; with prerelease version; with build metadata.
+
+@example
+local -r INPUT_STRING='1.2.3-alpha.1+x86-64'
+mbfl_local_varref(START_INDEX, 0, -i)
+mbfl_local_varref(RV,,-A)
+
+mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
+
+$?                                      @result{} 0
+"$@{RV[PARSING_ERROR_MESSAGE]@}"          @result{} ''
+"$@{RV[MAJOR_NUMBER]@}"                   @result{} 1
+"$@{RV[MINOR_NUMBER]@}"                   @result{} 2
+"$@{RV[PATCH_LEVEL]@}"                    @result{} 3
+"$@{RV[PRERELEASE_VERSION]@}"             @result{} alpha.1
+"$@{RV[BUILD_METADATA]@}"                 @result{} x86-64
+"$@{RV[END_INDEX]@}"                      @result{} $@{#INPUT_STRING@}
+"$START_INDEX"                          @result{} $@{#INPUT_STRING@}
+@end example
+
+@c page
 @node main
 @chapter Main function
 
@@ -7056,10 +7456,13 @@ invoking @func{dotest-unset-report-success}.
 
 
 @defun dotest-equal @var{expected} @var{got}
-Compare the two parameters and return true if they are equal; return
-false otherwise.  In the latter case print a message showing the
-expected value and the wrong one.  Must be used as last command in a
-function, so that its return value is equal to that of the function.
+@defunx dotest-equal @var{expected} @var{got} @var{description}
+Compare the two parameters and return true if they are equal; return false otherwise.  In the latter
+case print a message showing the expected value and the wrong one.  Must be used as last command in
+a function, so that its return value is equal to that of the function.
+
+The optional argument @var{description} should be a short, one--line, string describing the expected
+value; it is used in the output text describing the failed comparison.
 @end defun
 
 
@@ -7097,10 +7500,13 @@ dotest mytest-
 
 @defun dotest-output
 @defunx dotest-output @var{string}
-Read all the available lines from stdin accumulating them into a local
-variable, separated by @code{\n}; then compare the input with
-@var{string}, or the empty string if @var{string} is not present, and
-return true if they are equal, false otherwise.
+@defunx dotest-output @var{string} @var{description}
+Read all the available lines from stdin accumulating them into a local variable, separated by
+@code{\n}; then compare the input with @var{string}, or the empty string if @var{string} is not
+present, and return true if they are equal, false otherwise.
+
+The optional argument @var{description} should be a short, one--line, string describing the expected
+value; it is used in the output text describing the failed comparison.
 @end defun
 
 
