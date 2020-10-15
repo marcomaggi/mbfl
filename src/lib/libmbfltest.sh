@@ -10,7 +10,7 @@
 #	test suite. It must be sources  at the beginning of all the test
 #	files.
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -167,6 +167,7 @@ function dotest-p-report-success-from-environment () {
 
 function dotest-output () {
     local expected_output="$1"
+    local description="$3"
     local -i globmode=0 expected_output_len
     local output
 
@@ -196,7 +197,7 @@ function dotest-output () {
 	if dotest-string-is-not-empty "$output"
 	then
 	    {
-		echo "${FUNCNAME}:"
+		echo "${FUNCNAME}: output mismatching $description"
 		echo "   expected output of zero length"
 		echo "   got:      '$output'"
 	    } >&2
@@ -208,7 +209,7 @@ function dotest-output () {
 	    \( $globmode -eq 1 -a "$expected_output" != "${output:0:${expected_output_len}}" \)
 	then
 	    {
-		echo "${FUNCNAME}:"
+		echo "${FUNCNAME}: output mismatching $description"
 		echo "   expected: '$expected_output'"
 		echo "   got:      '$output'"
 	    } >&2
@@ -220,12 +221,13 @@ function dotest-output () {
 function dotest-equal () {
     local expected="$1"
     local got="$2"
+    local description="$3"
 
     if test "$expected" = "$got"
     then return 0
     else
 	{
-	    echo "${FUNCNAME}:"
+	    echo "${FUNCNAME}: result mismatching $3"
 	    echo "   expected: '$expected'"
 	    echo "   got:      '$got'"
 	} >&2
