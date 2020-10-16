@@ -61,6 +61,9 @@ function mbfl_location_enter () {
 # reverse order.
 #
 function mbfl_location_leave () {
+    # Capture return status of the last executed command.
+    local RETURN_STATUS=$?
+
     if ((0 < mbfl_location_COUNTER))
     then
 	local -i i HANDLERS_COUNT=${mbfl_location_HANDLERS[${mbfl_location_COUNTER}:count]}
@@ -79,6 +82,9 @@ function mbfl_location_leave () {
 	unset -v mbfl_location_HANDLERS[${mbfl_location_COUNTER}:count]
 	let --mbfl_location_COUNTER
     fi
+
+    #echo ${FUNCNAME}: returning "$RETURN_STATUS" >&2
+    return $RETURN_STATUS
 }
 
 # Run all the handlers.  This is useful as atexit handler.

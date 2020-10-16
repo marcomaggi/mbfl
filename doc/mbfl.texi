@@ -6307,7 +6307,8 @@ Enter into a new location.  Initialise the internal state.
 
 
 @defun mbfl_location_leave
-Leave the current location.  Run all the registered handlers in reverse order.
+Leave the current location.  Run all the registered handlers in reverse order.  Return the return
+status of the last command executed before the call to this function (@code{$?}).
 @end defun
 
 
