@@ -132,10 +132,10 @@ function mbfl_p_semver_init_result_array () {
 function mbfl_p_semver_parse_version_numbers () {
     # If a version number is  a single digit: it can be 0.  If there  are multiple digits: the first
     # digit cannot be 0.
-    local -r REX='^((([0-9])|([1-9][0-9]+))\.(([0-9])|([1-9][0-9]+))\.(([0-9])|([1-9][0-9]+)))($|[\-\+]|[^0-9A-Za-z])'
-    #              123       4               56       7               89       0              1
-    #              |-------------------------------------------------------------------------||----------------------|
-    #                                      major.minor.patch                                   end or one char after
+    local -r REX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))($|[\-\+]|[^0-9A-Za-z])'
+    #              1  2               3  4               5  6
+    #              |-------------------------------------------------------||----------------------|
+    #                                    major.minor.patch                   end or one char after
 
     if [[ "${mbfl_INPUT_STRING:$mbfl_START_INDEX}" =~ $REX ]]
     then
@@ -145,10 +145,10 @@ function mbfl_p_semver_parse_version_numbers () {
 	# echo ${FUNCNAME}: MINOR_NUMBER="${BASH_REMATCH[4]}" >&2
 	# echo ${FUNCNAME}: PATCH_LEVEL="${BASH_REMATCH[7]}" >&2
 
-	mbfl_MAJOR_NUMBER=${BASH_REMATCH[2]}
-	mbfl_MINOR_NUMBER=${BASH_REMATCH[5]}
-	mbfl_PATCH_LEVEL=${BASH_REMATCH[8]}
-	let mbfl_START_INDEX+=${#BASH_REMATCH[1]}
+	mbfl_MAJOR_NUMBER=${BASH_REMATCH[1]}
+	mbfl_MINOR_NUMBER=${BASH_REMATCH[3]}
+	mbfl_PATCH_LEVEL=${BASH_REMATCH[5]}
+	let mbfl_START_INDEX+=2+${#mbfl_MAJOR_NUMBER}+${#mbfl_MINOR_NUMBER}+${#mbfl_PATCH_LEVEL}
 	return 0
     else
 	# For debugging purposes.
