@@ -175,7 +175,7 @@ function mbfl_p_semver_parse_version_numbers () {
 #
 # $				the end of the input string
 # \+				a build metadata specification
-# [^0-9A-Za-z\-\.]		a character that is invalid for an identifier
+# [^0-9A-Za-z\.\-]		a character that is invalid for an identifier
 #
 function mbfl_p_semver_parse_prerelease_version () {
     local -r IDREX='(0|[1-9][0-9]*|[0-9A-Za-z\-][0-9A-Za-z\-]+)'
@@ -187,8 +187,9 @@ function mbfl_p_semver_parse_prerelease_version () {
     REX+='(\.'
     REX+=$IDREX
     REX+=')*'
-    # Whatever comes after the prerelease version.
-    REX+=')($|\+|[^0-9A-Za-z\-\.])'
+    # Whatever comes  after the prerelease version.   Let's make sure  that the quoted hypen  is the
+    # last character in the range!
+    REX+=')($|\+|[^0-9A-Za-z\.\-])'
 
     # For debugging purposes.
     #echo ${FUNCNAME}: INPUT_STRING="${mbfl_INPUT_STRING:$mbfl_START_INDEX}" START_INDEX=$mbfl_START_INDEX >&2
