@@ -167,11 +167,9 @@ function mbfl_p_semver_parse_version_numbers () {
 #
 # So a prerelease version idenifier can be:
 #
-# [0-9]				a single-digit numeric identifier
-# [1-9][0-9]+			a multi-digit numeric identifier
-# [A-Za-z\-]			a single-char identifier
-# [A-Za-z\-][0-9A-Za-z\-]+	a multi-char identifier whose first char is non-numeric
-# [0-9][0-9A-Za-z\-]+		a multi-char identifier whose first char is numeric
+# 0				a single-digit numeric identifier whose digit is zero
+# [1-9][0-9]*			a numeric identifier whose first digit is not zero
+# [0-9A-Za-z\-][0-9A-Za-z\-]+	a multi-char identifier
 #
 # After the prerelease version specification, we can have:
 #
@@ -180,7 +178,7 @@ function mbfl_p_semver_parse_version_numbers () {
 # [^0-9A-Za-z\-\.]		a character that is invalid for an identifier
 #
 function mbfl_p_semver_parse_prerelease_version () {
-    local -r IDREX='([0-9]|[1-9][0-9]+|[A-Za-z\-]|[A-Za-z\-][0-9A-Za-z\-]+|[0-9][0-9A-Za-z\-]+)'
+    local -r IDREX='(0|[1-9][0-9]*|[0-9A-Za-z\-][0-9A-Za-z\-]+)'
     # The leading hyphen.
     local REX='^\-('
     # The first identifier.  There must be at least one.
