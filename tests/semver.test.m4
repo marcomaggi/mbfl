@@ -28,395 +28,190 @@
 source setup.sh
 
 #page
+#### helper functions
+
+declare -A p_semver_CONFIG
+p_semver_CONFIG[PARSE_LEADING_V]=false
+
+function p-semver-parse-correct-specification () {
+    mbfl_optional_parameter(MAJOR_NUMBER,	1)
+    mbfl_optional_parameter(MINOR_NUMBER,	2)
+    mbfl_optional_parameter(PATCH_LEVEL,	3)
+    mbfl_optional_parameter(PRERELEASE_VERSION,	4)
+    mbfl_optional_parameter(BUILD_METADATA,	5)
+    mbfl_optional_parameter(TAIL,		6)
+
+    local SPEC=
+    if ${p_semver_CONFIG[PARSE_LEADING_V]}
+    then
+	SPEC+='v'
+	p_semver_CONFIG[PARSE_LEADING_V]=false
+    fi
+    SPEC+=${MAJOR_NUMBER}.${MINOR_NUMBER}.${PATCH_LEVEL}
+    if test -n "$PRERELEASE_VERSION"
+    then SPEC+=-$PRERELEASE_VERSION
+    fi
+    if test -n "$BUILD_METADATA"
+    then SPEC+=+$BUILD_METADATA
+    fi
+
+    local -r INPUT_STRING=${SPEC}${TAIL}
+    mbfl_local_varref(START_INDEX, 0, -i)
+    mbfl_local_varref(RV,,-A)
+
+    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
+
+    if dotest-equal 0 $? 'return status'
+    then
+	# For debugging purposes.
+	if false
+	then
+	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
+	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
+	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
+	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
+	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
+	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
+	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
+	fi
+
+	if false
+	then
+	    # For debugging purposes.
+	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
+	else
+	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
+		dotest-equal	"$MAJOR_NUMBER"		"${RV[MAJOR_NUMBER]}"		'major number'		      && \
+		dotest-equal	"$MINOR_NUMBER"		"${RV[MINOR_NUMBER]}"		'minor number'		      && \
+		dotest-equal	"$PATCH_LEVEL"		"${RV[PATCH_LEVEL]}"		'patch level'		      && \
+		dotest-equal	"$PRERELEASE_VERSION"	"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
+		dotest-equal	"$BUILD_METADATA"	"${RV[BUILD_METADATA]}"		'build metadata'	      && \
+		dotest-equal	${#SPEC}		"${RV[END_INDEX]}"		'end index'		      && \
+		dotest-equal	${#SPEC}		"$START_INDEX"			'start index'
+	fi
+    else return 1
+    fi
+}
+
+function p-semver-parse-correct-version-numbers () {
+    mbfl_mandatory_parameter(MAJOR_NUMBER,	1, major version number)
+    mbfl_mandatory_parameter(MINOR_NUMBER,	2, minor version number)
+    mbfl_mandatory_parameter(PATCH_LEVEL,	3, patch level number)
+    local -r PRERELEASE_VERSION=
+    local -r BUILD_METADATA=
+    mbfl_optional_parameter(TAIL,		4)
+
+    p-semver-parse-correct-specification "$MAJOR_NUMBER" "$MINOR_NUMBER" "$PATCH_LEVEL" "$PRERELEASE_VERSION" "$BUILD_METADATA" "$TAIL"
+}
+
+function p-semver-parse-correct-prerelease-version () {
+    local -r MAJOR_NUMBER='1'
+    local -r MINOR_NUMBER='2'
+    local -r PATCH_LEVEL='3'
+    mbfl_mandatory_parameter(PRERELEASE_VERSION,	1, prerelease version specification)
+    local -r BUILD_METADATA=
+    mbfl_optional_parameter(TAIL,			2)
+
+    p-semver-parse-correct-specification "$MAJOR_NUMBER" "$MINOR_NUMBER" "$PATCH_LEVEL" "$PRERELEASE_VERSION" "$BUILD_METADATA" "$TAIL"
+}
+
+function p-semver-parse-correct-build-metadata () {
+    local -r MAJOR_NUMBER='1'
+    local -r MINOR_NUMBER='2'
+    local -r PATCH_LEVEL='3'
+    local -r PRERELEASE_VERSION=''
+    mbfl_mandatory_parameter(BUILD_METADATA,	1, build metadata specification)
+    mbfl_optional_parameter(TAIL,		2)
+
+    p-semver-parse-correct-specification "$MAJOR_NUMBER" "$MINOR_NUMBER" "$PATCH_LEVEL" "$PRERELEASE_VERSION" "$BUILD_METADATA" "$TAIL"
+}
+
+#page
 #### Correct semantic version specification.  No prerelease version.  No build metadata.
 
-function semver-parse-1.1 () {
-    local -r INPUT_STRING='1.2.3'
-    mbfl_local_varref(START_INDEX, 0, -i)
-    mbfl_local_varref(RV,,-A)
+function semver-parse-1.1.01 () { p-semver-parse-correct-version-numbers  '1'  '2'  '3'	      ;}
+function semver-parse-1.1.02 () { p-semver-parse-correct-version-numbers  '0'  '0'  '0'	      ;}
+function semver-parse-1.1.03 () { p-semver-parse-correct-version-numbers '10' '20' '30'	      ;}
 
-    mbfl_semver_reset_config
-    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
-
-    if dotest-equal 0 $? 'return status'
-    then
-	# For debugging purposes.
-	if false
-	then
-	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
-	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
-	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
-	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
-	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
-	fi
-
-	if false
-	then
-	    # For debugging purposes.
-	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
-	else
-	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
-		dotest-equal	1			"${RV[MAJOR_NUMBER]}"		'major number'		      && \
-		dotest-equal	2			"${RV[MINOR_NUMBER]}"		'minor number'		      && \
-		dotest-equal	3			"${RV[PATCH_LEVEL]}"		'patch level'		      && \
-		dotest-equal	''			"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
-		dotest-equal	''			"${RV[BUILD_METADATA]}"		'build metadata'	      && \
-		dotest-equal	${#INPUT_STRING}	"${RV[END_INDEX]}"		'end index'		      && \
-		dotest-equal	${#INPUT_STRING}	"$START_INDEX"			'start index'
-	fi
-    else return 1
-    fi
-}
-
-function semver-parse-1.1 () {
-    local -r INPUT_STRING='1.2.3'
-    mbfl_local_varref(START_INDEX, 0, -i)
-    mbfl_local_varref(RV,,-A)
-
-    mbfl_semver_reset_config
-    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
-
-    if dotest-equal 0 $? 'return status'
-    then
-	# For debugging purposes.
-	if false
-	then
-	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
-	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
-	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
-	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
-	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
-	fi
-
-	if false
-	then
-	    # For debugging purposes.
-	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
-	else
-	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
-		dotest-equal	1			"${RV[MAJOR_NUMBER]}"		'major number'		      && \
-		dotest-equal	2			"${RV[MINOR_NUMBER]}"		'minor number'		      && \
-		dotest-equal	3			"${RV[PATCH_LEVEL]}"		'patch level'		      && \
-		dotest-equal	''			"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
-		dotest-equal	''			"${RV[BUILD_METADATA]}"		'build metadata'	      && \
-		dotest-equal	${#INPUT_STRING}	"${RV[END_INDEX]}"		'end index'		      && \
-		dotest-equal	${#INPUT_STRING}	"$START_INDEX"			'start index'
-	fi
-    else return 1
-    fi
-}
+# Tests for characters after the version numbers specification.
+function semver-parse-1.1.10 () { p-semver-parse-correct-version-numbers '1' '2' '3' '/'      ;}
+function semver-parse-1.1.11 () { p-semver-parse-correct-version-numbers '1' '2' '3' '_'      ;}
 
 #page
 #### Correct semantic version specification.  Prerelease version.  No build metadata.
 
-function semver-parse-1.2 () {
-    local -r INPUT_STRING='1.2.3-alpha.1'
-    mbfl_local_varref(START_INDEX, 0, -i)
-    mbfl_local_varref(RV,,-A)
+# Tests for single identifier specifications.
+function semver-parse-1.2.00 () { p-semver-parse-correct-prerelease-version 'alpha'		      ;}
+function semver-parse-1.2.01 () { p-semver-parse-correct-prerelease-version 'alpha-beta'	      ;}
+function semver-parse-1.2.02 () { p-semver-parse-correct-prerelease-version 'alpha-BETA'	      ;}
+function semver-parse-1.2.03 () { p-semver-parse-correct-prerelease-version 'alPHa-bETa-0123'	      ;}
+function semver-parse-1.2.04 () { p-semver-parse-correct-prerelease-version 'alPHa123bETa'	      ;}
+function semver-parse-1.2.05 () { p-semver-parse-correct-prerelease-version '123'		      ;}
+function semver-parse-1.2.06 () { p-semver-parse-correct-prerelease-version '12300'		      ;}
+function semver-parse-1.2.07 () { p-semver-parse-correct-prerelease-version '123AB'		      ;}
+function semver-parse-1.2.08 () { p-semver-parse-correct-prerelease-version '12-3A-B'		      ;}
 
-    mbfl_semver_reset_config
-    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
+# Tests for multi identifier specifications.
+function semver-parse-1.2.10 () { p-semver-parse-correct-prerelease-version 'alpha.beta.gamma'	      ;}
+function semver-parse-1.2.11 () { p-semver-parse-correct-prerelease-version 'alpha.12'		      ;}
+function semver-parse-1.2.12 () { p-semver-parse-correct-prerelease-version '12.alpha'		      ;}
+function semver-parse-1.2.13 () { p-semver-parse-correct-prerelease-version 'alpha.12.beta.34'	      ;}
+function semver-parse-1.2.14 () { p-semver-parse-correct-prerelease-version 'alpha.0.beta.0'	      ;}
 
-    if dotest-equal 0 $? 'return status'
-    then
-	# For debugging purposes.
-	if false
-	then
-	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
-	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
-	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
-	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
-	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
-	fi
-
-	if false
-	then
-	    # For debugging purposes.
-	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
-	else
-	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
-		dotest-equal	1			"${RV[MAJOR_NUMBER]}"		'major number'		      && \
-		dotest-equal	2			"${RV[MINOR_NUMBER]}"		'minor number'		      && \
-		dotest-equal	3			"${RV[PATCH_LEVEL]}"		'patch level'		      && \
-		dotest-equal	'alpha.1'		"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
-		dotest-equal	''			"${RV[BUILD_METADATA]}"		'build metadata'	      && \
-		dotest-equal	${#INPUT_STRING}	"${RV[END_INDEX]}"		'end index'		      && \
-		dotest-equal	${#INPUT_STRING}	"$START_INDEX"			'start index'
-	fi
-    else return 1
-    fi
-}
+# Tests for characters after the prerelease version specification.
+function semver-parse-1.2.20 () { p-semver-parse-correct-prerelease-version 'alpha' '_beta'	      ;}
+function semver-parse-1.2.21 () { p-semver-parse-correct-prerelease-version 'alpha' '[beta'	      ;}
 
 #page
 #### Correct semantic version specification.  No prerelease version.  Build metadata.
 
-function semver-parse-1.3 () {
-    local -r INPUT_STRING='1.2.3+x86-64'
-    mbfl_local_varref(START_INDEX, 0, -i)
-    mbfl_local_varref(RV,,-A)
+function semver-parse-1.3.01 () { p-semver-parse-correct-build-metadata 'x86-64'	      ;}
 
-    mbfl_semver_reset_config
-    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
-
-    if dotest-equal 0 $? 'return status'
-    then
-	# For debugging purposes.
-	if false
-	then
-	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
-	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
-	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
-	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
-	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
-	fi
-
-	if false
-	then
-	    # For debugging purposes.
-	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
-	else
-	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
-		dotest-equal	1			"${RV[MAJOR_NUMBER]}"		'major number'		      && \
-		dotest-equal	2			"${RV[MINOR_NUMBER]}"		'minor number'		      && \
-		dotest-equal	3			"${RV[PATCH_LEVEL]}"		'patch level'		      && \
-		dotest-equal	''			"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
-		dotest-equal	'x86-64'		"${RV[BUILD_METADATA]}"		'build metadata'	      && \
-		dotest-equal	${#INPUT_STRING}	"${RV[END_INDEX]}"		'end index'		      && \
-		dotest-equal	${#INPUT_STRING}	"$START_INDEX"			'start index'
-	fi
-    else return 1
-    fi
-}
+# Tests for the characters after the build metadata specification.
+function semver-parse-1.3.10 () { p-semver-parse-correct-build-metadata 'x86-64' '[alpha'     ;}
+function semver-parse-1.3.11 () { p-semver-parse-correct-build-metadata 'x86-64' '_alpha'     ;}
 
 #page
-#### Correct semantic version specification.  With prerelease version.  Build metadata.
+#### Correct semantic version specification.  With prerelease version.  With build metadata.
 
-function semver-parse-1.4 () {
-    local -r INPUT_STRING='1.2.3-alpha.1+x86-64'
-    mbfl_local_varref(START_INDEX, 0, -i)
-    mbfl_local_varref(RV,,-A)
-
-    mbfl_semver_reset_config
-    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
-
-    if dotest-equal 0 $? 'return status'
-    then
-	# For debugging purposes.
-	if false
-	then
-	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
-	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
-	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
-	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
-	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
-	fi
-
-	if false
-	then
-	    # For debugging purposes.
-	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
-	else
-	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
-		dotest-equal	1			"${RV[MAJOR_NUMBER]}"		'major number'		      && \
-		dotest-equal	2			"${RV[MINOR_NUMBER]}"		'minor number'		      && \
-		dotest-equal	3			"${RV[PATCH_LEVEL]}"		'patch level'		      && \
-		dotest-equal	'alpha.1'		"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
-		dotest-equal	'x86-64'		"${RV[BUILD_METADATA]}"		'build metadata'	      && \
-		dotest-equal	${#INPUT_STRING}	"${RV[END_INDEX]}"		'end index'		      && \
-		dotest-equal	${#INPUT_STRING}	"$START_INDEX"			'start index'
-	fi
-    else return 1
-    fi
+function semver-parse-1.4.01 () {
+    p-semver-parse-correct-specification '1' '2' '3' 'alpha.1' 'x86-64'
 }
 
-#page
-#### Correct semantic version specification.  Miscellaneous version number cases.  No prerelease version.  No build metadata.
+function semver-parse-1.4.02 () {
+    mbfl_location_enter
+    {
+	mbfl_semver_CONFIG[PARSE_LEADING_V]=true
+	mbfl_location_handler 'mbfl_semver_reset_config'
 
-# Parse a leading 'v' character.
-#
-function semver-parse-2.1 () {
-    local -r INPUT_STRING='v1.2.3'
-    mbfl_local_varref(START_INDEX, 0, -i)
-    mbfl_local_varref(RV,,-A)
-
-    mbfl_semver_reset_config
-    mbfl_semver_CONFIG[PARSE_LEADING_V]=true
-    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
-
-    if dotest-equal 0 $? 'return status'
-    then
-	# For debugging purposes.
-	if false
-	then
-	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
-	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
-	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
-	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
-	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
-	fi
-
-	if false
-	then
-	    # For debugging purposes.
-	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
-	else
-	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
-		dotest-equal	1			"${RV[MAJOR_NUMBER]}"		'major number'		      && \
-		dotest-equal	2			"${RV[MINOR_NUMBER]}"		'minor number'		      && \
-		dotest-equal	3			"${RV[PATCH_LEVEL]}"		'patch level'		      && \
-		dotest-equal	''			"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
-		dotest-equal	''			"${RV[BUILD_METADATA]}"		'build metadata'	      && \
-		dotest-equal	${#INPUT_STRING}	"${RV[END_INDEX]}"		'end index'		      && \
-		dotest-equal	${#INPUT_STRING}	"$START_INDEX"			'start index'
-	fi
-    else return 1
-    fi
+	p_semver_CONFIG[PARSE_LEADING_V]=true
+	p-semver-parse-correct-specification '1' '2' '3' 'alpha.1' 'x86-64'
+    }
+    mbfl_location_leave
 }
 
-# Multiple digits in version numbers.
-#
-function semver-parse-2.2 () {
-    local -r INPUT_STRING='111.222.333'
-    mbfl_local_varref(START_INDEX, 0, -i)
-    mbfl_local_varref(RV,,-A)
+function semver-parse-1.4.03 () {
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_semver_reset_config'
 
-    mbfl_semver_reset_config
-    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
-
-    if dotest-equal 0 $? 'return status'
-    then
-	# For debugging purposes.
-	if false
-	then
-	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
-	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
-	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
-	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
-	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
-	fi
-
-	if false
-	then
-	    # For debugging purposes.
-	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
-	else
-	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
-		dotest-equal	111			"${RV[MAJOR_NUMBER]}"		'major number'		      && \
-		dotest-equal	222			"${RV[MINOR_NUMBER]}"		'minor number'		      && \
-		dotest-equal	333			"${RV[PATCH_LEVEL]}"		'patch level'		      && \
-		dotest-equal	''			"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
-		dotest-equal	''			"${RV[BUILD_METADATA]}"		'build metadata'	      && \
-		dotest-equal	${#INPUT_STRING}	"${RV[END_INDEX]}"		'end index'		      && \
-		dotest-equal	${#INPUT_STRING}	"$START_INDEX"			'start index'
-	fi
-    else return 1
-    fi
+	mbfl_semver_CONFIG[ACCEPT_UNDERSCORE_IN_BUILD_METADATA]=true
+	p-semver-parse-correct-specification '1' '2' '3' 'alpha.1' 'x86_64'
+    }
+    mbfl_location_leave
 }
 
-# All zero digits in version numbers.
+# Enable underscore, but then do not use it.
 #
-function semver-parse-2.3 () {
-    local -r INPUT_STRING='0.0.0'
-    mbfl_local_varref(START_INDEX, 0, -i)
-    mbfl_local_varref(RV,,-A)
+function semver-parse-1.4.04 () {
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_semver_reset_config'
 
-    mbfl_semver_reset_config
-    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
-
-    if dotest-equal 0 $? 'return status'
-    then
-	# For debugging purposes.
-	if false
-	then
-	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
-	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
-	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
-	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
-	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
-	fi
-
-	if false
-	then
-	    # For debugging purposes.
-	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
-	else
-	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
-		dotest-equal	0			"${RV[MAJOR_NUMBER]}"		'major number'		      && \
-		dotest-equal	0			"${RV[MINOR_NUMBER]}"		'minor number'		      && \
-		dotest-equal	0			"${RV[PATCH_LEVEL]}"		'patch level'		      && \
-		dotest-equal	''			"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
-		dotest-equal	''			"${RV[BUILD_METADATA]}"		'build metadata'	      && \
-		dotest-equal	${#INPUT_STRING}	"${RV[END_INDEX]}"		'end index'		      && \
-		dotest-equal	${#INPUT_STRING}	"$START_INDEX"			'start index'
-	fi
-    else return 1
-    fi
-}
-
-#page
-#### Correct semantic version specification.  Miscellaneous prerelease version cases.  No build metadata.
-
-
-#page
-#### Correct semantic version specification.  No prerelease version.  Miscellaneous build metadata cases.
-
-# Accept underscore in build metadata.
-#
-function semver-parse-4.1 () {
-    local -r INPUT_STRING='1.2.3+x86_64'
-    mbfl_local_varref(START_INDEX, 0, -i)
-    mbfl_local_varref(RV,,-A)
-
-    mbfl_semver_reset_config
-    mbfl_semver_CONFIG[ACCEPT_UNDERSCORE_IN_BUILD_METADATA]=true
-    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
-
-    if dotest-equal 0 $? 'return status'
-    then
-	# For debugging purposes.
-	if false
-	then
-	    echo ${FUNCNAME}: RV="${RV[@]}" >&2
-	    echo ${FUNCNAME}: MAJOR_NUMBER="${RV[MAJOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: MINOR_NUMBER="${RV[MINOR_NUMBER]}" >&2
-	    echo ${FUNCNAME}: PATCH_LEVEL="${RV[PATCH_LEVEL]}" >&2
-	    echo ${FUNCNAME}: PRERELEASE_VERSION="${RV[PRERELEASE_VERSION]}" >&2
-	    echo ${FUNCNAME}: BUILD_METADATA="${RV[BUILD_METADATA]}" >&2
-	    echo ${FUNCNAME}: PARSING_ERROR_MESSAGE="${RV[PARSING_ERROR_MESSAGE]}" >&2
-	fi
-
-	if false
-	then
-	    # For debugging purposes.
-	    dotest-equal '' ${RV[PARSING_ERROR_MESSAGE]} 'parsing error message'
-	else
-	    dotest-equal	''			"${RV[PARSING_ERROR_MESSAGE]}"	'parsing error message'	      && \
-		dotest-equal	1			"${RV[MAJOR_NUMBER]}"		'major number'		      && \
-		dotest-equal	2			"${RV[MINOR_NUMBER]}"		'minor number'		      && \
-		dotest-equal	3			"${RV[PATCH_LEVEL]}"		'patch level'		      && \
-		dotest-equal	''			"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
-		dotest-equal	'x86_64'		"${RV[BUILD_METADATA]}"		'build metadata'	      && \
-		dotest-equal	${#INPUT_STRING}	"${RV[END_INDEX]}"		'end index'		      && \
-		dotest-equal	${#INPUT_STRING}	"$START_INDEX"			'start index'
-	fi
-    else return 1
-    fi
+	mbfl_semver_CONFIG[ACCEPT_UNDERSCORE_IN_BUILD_METADATA]=true
+	p-semver-parse-correct-specification '1' '2' '3' 'alpha.1' 'x86-64'
+    }
+    mbfl_location_leave
 }
 
 #page
@@ -523,6 +318,23 @@ function semver-parse-error-version-numbers-2.2 () {
 
     dotest-equal 1 $? 'return status' && \
 	dotest-equal 'invalid version numbers specification' "${RV[PARSING_ERROR_MESSAGE]}"
+}
+
+#page
+#### errors in prerelease version
+
+# Empty prerelease version after hypen character.
+#
+function semver-parse-error-prerelease-version-1.1 () {
+    local -r INPUT_STRING='1.2.3-'
+    mbfl_local_varref(START_INDEX, 0, -i)
+    mbfl_local_varref(RV,,-A)
+
+    mbfl_semver_reset_config
+    mbfl_semver_CONFIG[ACCEPT_UNDERSCORE_IN_BUILD_METADATA]=false
+    mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
+
+    dotest-equal 1 $? 'return status' && dotest-equal 'invalid prerelease version' "${RV[PARSING_ERROR_MESSAGE]}"
 }
 
 #page

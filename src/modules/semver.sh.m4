@@ -65,6 +65,9 @@ function mbfl_semver_parse () {
     local mbfl_BUILD_METADATA
     local mbfl_PARSING_ERROR_MESSAGE
 
+    # For debugging purposes.
+    #echo ${FUNCNAME}: INPUT_STRING="${mbfl_INPUT_STRING:$mbfl_START_INDEX}" START_INDEX=$mbfl_START_INDEX >&2
+
     if ${mbfl_semver_CONFIG[PARSE_LEADING_V]}
     then
 	if test "${INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
@@ -129,13 +132,10 @@ function mbfl_p_semver_init_result_array () {
 function mbfl_p_semver_parse_version_numbers () {
     # If a version number is  a single digit: it can be 0.  If there  are multiple digits: the first
     # digit cannot be 0.
-    local -r REX='^((([0-9])|([1-9][0-9]+))\.(([0-9])|([1-9][0-9]+))\.(([0-9])|([1-9][0-9]+)))($|[\+\-]|[^a-z0-9])'
+    local -r REX='^((([0-9])|([1-9][0-9]+))\.(([0-9])|([1-9][0-9]+))\.(([0-9])|([1-9][0-9]+)))($|[\-\+]|[^0-9A-Za-z])'
     #              123       4               56       7               89       0              1
-    #              |-------------------------------------------------------------------------||------------------|
+    #              |-------------------------------------------------------------------------||----------------------|
     #                                      major.minor.patch                                   end or one char after
-
-    # For debugging purposes.
-    #echo ${FUNCNAME}: INPUT_STRING="${mbfl_INPUT_STRING:$mbfl_START_INDEX}" START_INDEX=$mbfl_START_INDEX >&2
 
     if [[ "${mbfl_INPUT_STRING:$mbfl_START_INDEX}" =~ $REX ]]
     then
@@ -161,11 +161,36 @@ function mbfl_p_semver_parse_version_numbers () {
 #page
 #### parser functions: parse prerelease version
 
+# The prerelease version must start with a hyphen.  Then a non-empty identifier must follow.  Then a
+# number of optional identifiers separated by dots.  A numeric identifier with a single digit can be
+# zero.  A numeric identifier with multiple digits must not start with a zero.
+#
+# So a prerelease version idenifier can be:
+#
+# [0-9]				a single-digit numeric identifier
+# [1-9][0-9]+			a multi-digit numeric identifier
+# [A-Za-z\-]			a single-char identifier
+# [A-Za-z\-][0-9A-Za-z\-]+	a multi-char identifier whose first char is non-numeric
+# [0-9][0-9A-Za-z\-]+		a multi-char identifier whose first char is numeric
+#
+# After the prerelease version specification, we can have:
+#
+# $				the end of the input string
+# \+				a build metadata specification
+# [^0-9A-Za-z\-\.]		a character that is invalid for an identifier
+#
 function mbfl_p_semver_parse_prerelease_version () {
-    # The prerelease  version must start  with a hyphen.  Then  a non-empty identifier  must follow.
-    # Then a number of  optional identifiers separated by dots.  A  numeric identifier with multiple
-    # digits must not start with a zero.
-    local -r REX='^\-(([0-9A-Za-z\-]+)(\.(([0-9A-Za-z\-]+)|(([0-9])|([1-9][0-9]+)))))?'
+    local -r IDREX='([0-9]|[1-9][0-9]+|[A-Za-z\-]|[A-Za-z\-][0-9A-Za-z\-]+|[0-9][0-9A-Za-z\-]+)'
+    # The leading hyphen.
+    local REX='^\-('
+    # The first identifier.  There must be at least one.
+    REX+=$IDREX
+    # The optional trailing identifiers, separated by a dot.
+    REX+='(\.'
+    REX+=$IDREX
+    REX+=')*'
+    # Whatever comes after the prerelease version.
+    REX+=')($|\+|[^0-9A-Za-z\-\.])'
 
     # For debugging purposes.
     #echo ${FUNCNAME}: INPUT_STRING="${mbfl_INPUT_STRING:$mbfl_START_INDEX}" START_INDEX=$mbfl_START_INDEX >&2
@@ -173,11 +198,11 @@ function mbfl_p_semver_parse_prerelease_version () {
     if [[ "${mbfl_INPUT_STRING:$mbfl_START_INDEX}" =~ $REX ]]
     then
 	# For debugging purposes.
-	# echo ${FUNCNAME}: successful match "${BASH_REMATCH[@]}" >&2
-	# echo ${FUNCNAME}: PRERELEASE_VERSION="${BASH_REMATCH[1]}" >&2
+	#echo ${FUNCNAME}: successful match "${BASH_REMATCH[@]}" >&2
+	#echo ${FUNCNAME}: PRERELEASE_VERSION="${BASH_REMATCH[1]}" >&2
 
 	mbfl_PRERELEASE_VERSION=${BASH_REMATCH[1]}
-	let mbfl_START_INDEX+=${#BASH_REMATCH[0]}
+	let mbfl_START_INDEX+=1+${#BASH_REMATCH[1]}
 	return 0
     else
 	# For debugging purposes.
@@ -190,15 +215,30 @@ function mbfl_p_semver_parse_prerelease_version () {
 #page
 #### parser functions: parse build metadata
 
+# The build  metadata must  start with a  plus.  Then  a non-empty identifier  must follow.   Then a
+# number of optional identifiers separated by dots.
+#
 function mbfl_p_semver_parse_build_metadata () {
-    # The build metadta  must start with a plus.   Then a non-empty identifier must  follow.  Then a
-    # number of optional identifiers separated by dots.
+    local IDRANGE='0-9A-Za-z'
     if ${mbfl_semver_CONFIG[ACCEPT_UNDERSCORE_IN_BUILD_METADATA]}
-    then local -r REX='^\+(([0-9A-Za-z_\-]+)(\.([0-9A-Za-z_\-]+))?)'
-    else local -r REX='^\+(([0-9A-Za-z\-]+)(\.([0-9A-Za-z\-]+))?)'
+    then IDRANGE+='_'
     fi
+    # Let's make sure that the quoted hypen is the last character in the range!
+    IDRANGE+='\-'
+
+    local IDREX='(['
+    IDREX+=$IDRANGE
+    IDREX+=']+)'
+
+    local REX='^\+('
+    REX+=$IDREX
+    REX+='(\.'
+    REX+=$IDREX
+    REX+=')*'
+    REX+=')'
 
     # For debugging purposes.
+    #echo IDRANGE=\""$IDRANGE"\" IDREX=\""$IDREX"\" REX=\""$REX"\" >&2
     #echo ${FUNCNAME}: INPUT_STRING="${mbfl_INPUT_STRING:$mbfl_START_INDEX}" START_INDEX=$mbfl_START_INDEX >&2
 
     if [[ "${mbfl_INPUT_STRING:$mbfl_START_INDEX}" =~ $REX ]]
@@ -208,7 +248,7 @@ function mbfl_p_semver_parse_build_metadata () {
 	#echo ${FUNCNAME}: BUILD_METADATA="${BASH_REMATCH[1]}" >&2
 
 	mbfl_BUILD_METADATA=${BASH_REMATCH[1]}
-	let mbfl_START_INDEX+=${#BASH_REMATCH[0]}
+	let mbfl_START_INDEX+=1+${#BASH_REMATCH[1]}
 	return 0
     else
 	# For debugging purposes.
