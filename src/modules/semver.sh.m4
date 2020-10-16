@@ -257,6 +257,38 @@ function mbfl_p_semver_parse_build_metadata () {
     fi
 }
 
+#page
+#### split prerelease version specification
+
+function mbfl_semver_split_prerelease_version () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV, 1, result array variable)
+    mbfl_mandatory_parameter(mbfl_INPUT_SPEC, 2, input prerelease version specification)
+
+    local -r IDREX='(0|[1-9][0-9]*|[0-9A-Za-z\-][0-9A-Za-z\-]+)'
+    local -r DOTIDREX='\.(0|[1-9][0-9]*|[0-9A-Za-z\-][0-9A-Za-z\-]+)'
+    local -i i=0 j=0
+
+    # Parse the first, mandatory identifier.
+    if [[ "$mbfl_INPUT_SPEC" =~ $IDREX ]]
+    then
+	mbfl_RV[0]=${BASH_REMATCH[1]}
+	j=${#BASH_REMATCH[1]}
+    else return 1
+    fi
+
+    for ((i=1; 0 < (${#mbfl_INPUT_SPEC} - j); ++i))
+    do
+	if [[ "${mbfl_INPUT_SPEC:$j}" =~ $DOTIDREX ]]
+	then
+	    mbfl_RV[$i]=${BASH_REMATCH[1]}
+	    j+=1+${#BASH_REMATCH[1]}
+	else return 1
+	fi
+    done
+
+    return 0
+}
+
 ### end of file
 # Local Variables:
 # mode: sh

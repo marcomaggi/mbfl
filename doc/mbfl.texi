@@ -6830,12 +6830,22 @@ this is an extension of the standard; the default is @code{false}.
 @end table
 @end defvr
 
+
+@defun mbfl_semver_split_prerelease_version @var{_RV} @var{PRERELEASE_VERSION_SPEC}
+Split a @var{PRERELEASE_VERSION_SPEC} into its component identifiers and store them in the indexed
+array whose name is @var{_RV}.  If successful return 0; otherwise return 1.
+
+The string @var{PRERELEASE_VERSION_SPEC} must be correct prerelease version specification, without
+the leading hyphen character, like the one produced by calling @func{mbfl_semver_parse}.  If the
+string has an incorrect format: the behaviour of this function is undefined.
+@end defun
+
 @c page
 @node semver examples
 @section Parsing examples
 
 
-Parse a correct semantic version specification; with prerelease version; with build metadata.
+Parse a correct semantic version specification; with prerelease version; with build metadata:
 
 @example
 local -r INPUT_STRING='1.2.3-alpha.1+x86-64'
@@ -6853,6 +6863,23 @@ $?                                      @result{} 0
 "$@{RV[BUILD_METADATA]@}"                 @result{} x86-64
 "$@{RV[END_INDEX]@}"                      @result{} $@{#INPUT_STRING@}
 "$START_INDEX"                          @result{} $@{#INPUT_STRING@}
+@end example
+
+Split a prerelease version specification:
+
+@example
+mbfl_local_varref(RV,, -A)
+
+mbfl_semver_split_prerelease_version mbfl_datavar(RV) 'alpha.12.beta.34.gamma.56'
+
+$?            @result{} 0
+$@{#RV[@@]@}     @result{} 6
+$@{RV[0]@}      @result{} 'alpha'
+$@{RV[1]@}      @result{} '12'
+$@{RV[2]@}      @result{} 'beta'
+$@{RV[3]@}      @result{} '34'
+$@{RV[4]@}      @result{} 'gamma'
+$@{RV[5]@}      @result{} '56'
 @end example
 
 @c page

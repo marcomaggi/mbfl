@@ -399,6 +399,46 @@ function semver-parse-error-build-metadata-1.1 () {
 }
 
 #page
+#### splitting prerelease version
+
+function semver-split-prerelease-version-1.0 () {
+    mbfl_local_varref(RV,, -A)
+
+    mbfl_semver_split_prerelease_version mbfl_datavar(RV) 'alpha'
+
+    dotest-equal	0	$?		'return status'			&& \
+	dotest-equal	1	${#RV[@]}	'number or identifiers'		&& \
+	dotest-equal	'alpha'	${RV[0]}	'first identifier'
+}
+
+function semver-split-prerelease-version-1.1 () {
+    mbfl_local_varref(RV,, -A)
+
+    mbfl_semver_split_prerelease_version mbfl_datavar(RV) 'alpha.beta.gamma'
+
+    dotest-equal	0		$?		'return status'			&& \
+	dotest-equal	3		${#RV[@]}	'number or identifiers'		&& \
+	dotest-equal	'alpha'		${RV[0]}	'identifier 1'			&& \
+	dotest-equal	'beta'		${RV[1]}	'identifier 2'			&& \
+	dotest-equal	'gamma'		${RV[2]}	'identifier 3'
+}
+
+function semver-split-prerelease-version-1.2 () {
+    mbfl_local_varref(RV,, -A)
+
+    mbfl_semver_split_prerelease_version mbfl_datavar(RV) 'alpha.12.beta.34.gamma.56'
+
+    dotest-equal	0		$?		'return status'			&& \
+	dotest-equal	6		${#RV[@]}	'number or identifiers'		&& \
+	dotest-equal	'alpha'		${RV[0]}	'identifier 1'			&& \
+	dotest-equal	'12'		${RV[1]}	'identifier 2'			&& \
+	dotest-equal	'beta'		${RV[2]}	'identifier 3'			&& \
+	dotest-equal	'34'		${RV[3]}	'identifier 4'			&& \
+	dotest-equal	'gamma'		${RV[4]}	'identifier 5'			&& \
+	dotest-equal	'56'		${RV[5]}	'identifier 6'
+}
+
+#page
 #### end of tests
 
 dotest semver-
