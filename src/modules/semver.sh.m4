@@ -134,7 +134,7 @@ function mbfl_p_semver_parse_version_numbers () {
     # digit cannot be 0.
     local -r REX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))($|[\-\+]|[^0-9A-Za-z])'
     #              1  2               3  4               5  6
-    #              |-------------------------------------------------------||----------------------|
+    #              |-----------------------------------------------------||----------------------|
     #                                    major.minor.patch                   end or one char after
 
     if [[ "${mbfl_INPUT_STRING:$mbfl_START_INDEX}" =~ $REX ]]
