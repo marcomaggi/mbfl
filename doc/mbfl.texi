@@ -1259,9 +1259,9 @@ own variables.
 @defvar script_REQUIRED_MBFL_VERSION
 The full semantic version of the @mbfl{} library needed by this script, prefixed with a @code{v}
 character.  @ref{semver} for details on semantic version specifications.  The main module will
-compare the version of the library with the one required by the script: if library version's is
-lesser than the required script's version, @func{mbfl_main} will terminate the script by calling
-@func{exit_because_invalid_mbfl_version}.
+compare the version of the library with the one required by the script: if the hard--coded library's
+version is lesser than the required script's version, @func{mbfl_main} will terminate the script by
+calling @func{exit_because_invalid_mbfl_version}.
 @end defvar
 
 
@@ -7048,8 +7048,8 @@ Invoke @func{mbfl_main_create_exit_functions}.  @ref{main exit, Declaring exit c
 
 @item
 Compare the semantic version of the library with the one required by the script through the script
-variable @env{script_REQUIRED_MBFL_VERSION}: if library version's is lesser than the required
-script's version, @func{mbfl_main} terminates the script by calling
+variable @env{script_REQUIRED_MBFL_VERSION}: if the hard--coded library's version is lesser than the
+required script's version, @func{mbfl_main} will terminate the script by calling
 @func{exit_because_invalid_mbfl_version}.
 
 @item

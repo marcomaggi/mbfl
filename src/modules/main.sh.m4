@@ -482,7 +482,7 @@ function mbfl_main_check_mbfl_semantic_version () {
 	mbfl_location_leave
 	if (( 0 == $? ))
 	then
-	    if (( $RV <= 0 ))
+	    if (( $RV >= 0 ))
 	    then return 0
 	    else
 		mbfl_message_error_printf 'library version "%s" is higher than version required by the script "%s"' \
