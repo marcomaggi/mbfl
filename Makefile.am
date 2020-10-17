@@ -125,6 +125,7 @@ MBFLPP_MODULES_FLAGS	= --no-prepro 						\
 			  --define=__PACKAGE_VERSION__=$(MBFL_CORE_VERSION)	\
 			  --define=__PATHNAME_SUDO__=$(PATHNAME_SUDO)		\
 			  --define=__PATHNAME_WHOAMI__=$(PATHNAME_WHOAMI)	\
+			  --define=__SEMANTIC_VERSION__=$(MBFL_SEMANTIC_VERSION)\
 			  $(MBFLPPFLAGS)
 MBFLPP_LIBS_FLAGS	= --no-prepro 						\
 			  --include=$(srcdir)/src/lib				\

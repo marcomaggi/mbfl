@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -30,7 +30,8 @@
 #page
 #### global variables
 
-declare mbfl_LOADED='yes'
+declare -r mbfl_LOADED='yes'
+declare -r mbfl_SEMANTIC_VERSION='__SEMANTIC_VERSION__'
 
 : ${script_PROGNAME:='<unknown>'}
 : ${script_VERSION:='<unknown>'}

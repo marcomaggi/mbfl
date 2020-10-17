@@ -34,7 +34,7 @@
 
 shopt -s expand_aliases
 
-declare mbfl_LOADED_MBFL_TEST='yes'
+declare -r mbfl_LOADED_MBFL_TEST='yes'
 
 test -z ${dotest_TEST_NUMBER}        && declare -i dotest_TEST_NUMBER=0
 test -z ${dotest_TEST_FAILED_NUMBER} && declare -i dotest_TEST_FAILED_NUMBER=0

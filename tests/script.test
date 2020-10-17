@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free  software you can redistribute it  and/or modify it under
@@ -103,7 +103,7 @@ function script-template-3.1 () {
 
 function script-template-4.1 () {
     script --list-exit-codes | dotest-output \
-        "0 success\n1 failure\n100 error_loading_library\n99 program_not_found\n98 wrong_num_args\n97 invalid_action_set\n96 invalid_action_declaration\n95 invalid_action_argument\n94 missing_action_function\n93 invalid_option_declaration\n92 invalid_option_argument\n91 invalid_function_name\n90 invalid_sudo_username\n89 no_location\n2 second_error\n3 third_error\n3 fourth_error\n8 eighth_error"
+        "0 success\n1 failure\n100 error_loading_library\n99 program_not_found\n98 wrong_num_args\n97 invalid_action_set\n96 invalid_action_declaration\n95 invalid_action_argument\n94 missing_action_function\n93 invalid_option_declaration\n92 invalid_option_argument\n91 invalid_function_name\n90 invalid_sudo_username\n89 no_location\n88 invalid_mbfl_version\n2 second_error\n3 third_error\n3 fourth_error\n8 eighth_error"
 }
 function script-template-4.2 () {
     script --print-exit-code=second_error | dotest-output 2

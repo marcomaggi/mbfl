@@ -1255,6 +1255,16 @@ code is evaluated.  They are used by @mbfl{} to compute values for its
 own variables.
 
 
+@anchor{script_REQUIRED_MBFL_VERSION}
+@defvar script_REQUIRED_MBFL_VERSION
+The full semantic version of the @mbfl{} library needed by this script, prefixed with a @code{v}
+character.  @ref{semver} for details on semantic version specifications.  The main module will
+compare the version of the library with the one required by the script: if library version's is
+lesser than the required script's version, @func{mbfl_main} will terminate the script by calling
+@func{exit_because_invalid_mbfl_version}.
+@end defvar
+
+
 @anchor{script_PROGNAME}
 @defvar script_PROGNAME
 The name of the script.  It is used, for example, in error and verbose messages.
@@ -1355,6 +1365,7 @@ expanded.
 The following example shows how to declare the variables.
 
 @example
+script_REQUIRED_MBFL_VERSION=v3.0.0-devel.4
 script_PROGNAME=myscript.sh
 script_AUTHOR='Marco Maggi and Marco Maggi'
 script_COPYRIGHT_YEARS='2002, 2003, 2004'
@@ -7036,6 +7047,12 @@ Register the value of the variable @code{script_PROGNAME} in the message module 
 Invoke @func{mbfl_main_create_exit_functions}.  @ref{main exit, Declaring exit codes}.
 
 @item
+Compare the semantic version of the library with the one required by the script through the script
+variable @env{script_REQUIRED_MBFL_VERSION}: if library version's is lesser than the required
+script's version, @func{mbfl_main} terminates the script by calling
+@func{exit_because_invalid_mbfl_version}.
+
+@item
 Parse the command line arguments according to the command actions configuration; this step may
 change the selection of: main function, ``before parsing options'' function, ``after parsing
 options'' function; if no command actions are configured: nothing is done.
@@ -7189,6 +7206,11 @@ Exit the script with code @code{100}.
 
 @defun return_because_error_loading_library
 Return with code @code{100}.
+@end defun
+
+
+@defun exit_because_invalid_mbfl_version
+Exit the script with code @code{88}.
 @end defun
 
 

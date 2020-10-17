@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -139,6 +139,9 @@ then
 
     mbfl_main_EXIT_CODES[13]=89
     mbfl_main_EXIT_NAMES[13]=no_location
+
+    mbfl_main_EXIT_CODES[14]=88
+    mbfl_main_EXIT_NAMES[14]=invalid_mbfl_version
 
     declare mbfl_main_EXITING=false
     declare -i mbfl_main_pending_EXIT_CODE=0
@@ -440,6 +443,7 @@ function mbfl_main () {
     local exit_code=0 action_func item code
     mbfl_message_set_progname "$script_PROGNAME"
     mbfl_main_create_exit_functions
+    mbfl_main_check_mbfl_semantic_version
     if mbfl_actions_set_exists MAIN
     then
 	if ! mbfl_actions_dispatch MAIN
@@ -460,6 +464,36 @@ function mbfl_main () {
     else mbfl_invoke_existent_script_function $mbfl_main_SCRIPT_FUNCTION
     fi
     exit $?
+}
+function mbfl_main_check_mbfl_semantic_version () {
+    if test -n "$script_REQUIRED_MBFL_VERSION"
+    then
+	mbfl_local_varref(RV)
+
+	mbfl_message_debug_printf 'library version "%s", version required by the script "%s"' \
+				  "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
+
+	mbfl_location_enter
+	{
+	    mbfl_location_handler 'mbfl_semver_reset_config'
+	    mbfl_semver_CONFIG[PARSE_LEADING_V]=true
+	    mbfl_semver_compare_var mbfl_datavar(RV) "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
+	}
+	mbfl_location_leave
+	if (( 0 == $? ))
+	then
+	    if (( $RV <= 0 ))
+	    then return 0
+	    else
+		mbfl_message_error_printf 'library version "%s" is higher than version required by the script "%s"' \
+					  "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
+		exit_because_invalid_mbfl_version
+	    fi
+	else
+	    mbfl_message_error_printf 'invalid required semantic version for MBFL: %s' "$script_REQUIRED_MBFL_VERSION"
+	    exit_because_invalid_mbfl_version
+	fi
+    fi
 }
 # Called with a  function name argument: if such  function exists invoke
 # it, else return with success.

@@ -146,6 +146,9 @@ changes!
 * Added  module  semver:  parsing  and comparison  of  semantic  version
   specifications.
 
+* Added new script  variable "script_REQUIRED_MBFL_VERSION".  Introduced
+  validation of required MBFL semantic version.
+
 
 Notes for revision 2.2.0
 ------------------------

@@ -32,6 +32,7 @@
 #page
 #### MBFL's related options and variables
 
+script_REQUIRED_MBFL_VERSION=v3.0.0-devel.4
 script_PROGNAME=template-actions.sh
 script_VERSION=1.0
 script_COPYRIGHT_YEARS='2013, 2014, 2018, 2020'
