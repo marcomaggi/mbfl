@@ -70,7 +70,7 @@ function mbfl_semver_parse () {
 
     if ${mbfl_semver_CONFIG[PARSE_LEADING_V]}
     then
-	if test "${INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
+	if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
 	then let ++mbfl_START_INDEX
 	else
 	    mbfl_RV[PARSING_ERROR_MESSAGE]='missing leading "v" character'
