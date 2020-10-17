@@ -6465,8 +6465,8 @@ This module implements a parser for semantic version strings.
 
 @menu
 * semver spec::                 @emph{Semantic Versioning} specification.
-* semver parser::               Parsing facilities.
-* semver examples::             Parsing examples.
+* semver parser::               Parsing semantic version specifications.
+* semver compar::               Comparing semantic version specifications.
 @end menu
 
 @c page
@@ -6765,7 +6765,7 @@ Also, specific systems may impose their own limits on the size of the string.
 
 @c page
 @node semver parser
-@section Parsing facilities
+@section Parsing semantic version specifications
 
 
 @defun mbfl_semver_parse @var{_RV} @var{INPUT_STRING} @var{START_INDEX_VAR}
@@ -6807,6 +6807,27 @@ we can start parsing it at this index.
 
 In addition, if an error occurred while parsing: a pair with  key @code{PARSING_ERROR_MESSAGE} is
 added to the array; its value is a string describing the parsing error.
+
+In the following example we parse a correct semantic version specification; with prerelease version;
+with build metadata.
+
+@example
+local -r INPUT_STRING='1.2.3-alpha.1+x86-64'
+mbfl_local_varref(START_INDEX, 0, -i)
+mbfl_local_varref(RV,,-A)
+
+mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
+
+$?                                      @result{} 0
+"$@{RV[PARSING_ERROR_MESSAGE]@}"          @result{} ''
+"$@{RV[MAJOR_NUMBER]@}"                   @result{} 1
+"$@{RV[MINOR_NUMBER]@}"                   @result{} 2
+"$@{RV[PATCH_LEVEL]@}"                    @result{} 3
+"$@{RV[PRERELEASE_VERSION]@}"             @result{} alpha.1
+"$@{RV[BUILD_METADATA]@}"                 @result{} x86-64
+"$@{RV[END_INDEX]@}"                      @result{} $@{#INPUT_STRING@}
+"$START_INDEX"                          @result{} $@{#INPUT_STRING@}
+@end example
 @end defun
 
 
@@ -6838,34 +6859,8 @@ array whose name is @var{_RV}.  If successful return 0; otherwise return 1.
 The string @var{PRERELEASE_VERSION_SPEC} must be correct prerelease version specification, without
 the leading hyphen character, like the one produced by calling @func{mbfl_semver_parse}.  If the
 string has an incorrect format: the behaviour of this function is undefined.
-@end defun
 
-@c page
-@node semver examples
-@section Parsing examples
-
-
-Parse a correct semantic version specification; with prerelease version; with build metadata:
-
-@example
-local -r INPUT_STRING='1.2.3-alpha.1+x86-64'
-mbfl_local_varref(START_INDEX, 0, -i)
-mbfl_local_varref(RV,,-A)
-
-mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
-
-$?                                      @result{} 0
-"$@{RV[PARSING_ERROR_MESSAGE]@}"          @result{} ''
-"$@{RV[MAJOR_NUMBER]@}"                   @result{} 1
-"$@{RV[MINOR_NUMBER]@}"                   @result{} 2
-"$@{RV[PATCH_LEVEL]@}"                    @result{} 3
-"$@{RV[PRERELEASE_VERSION]@}"             @result{} alpha.1
-"$@{RV[BUILD_METADATA]@}"                 @result{} x86-64
-"$@{RV[END_INDEX]@}"                      @result{} $@{#INPUT_STRING@}
-"$START_INDEX"                          @result{} $@{#INPUT_STRING@}
-@end example
-
-Split a prerelease version specification:
+In the following exmample we split a prerelease version specification:
 
 @example
 mbfl_local_varref(RV,, -A)
@@ -6881,6 +6876,83 @@ $@{RV[3]@}      @result{} '34'
 $@{RV[4]@}      @result{} 'gamma'
 $@{RV[5]@}      @result{} '56'
 @end example
+@end defun
+
+@c page
+@node semver compar
+@section Comparing semantic version specifications
+
+
+@defun mbfl_semver_compare_var @var{_RV} @vari{SPEC} @varii{SPEC}
+Store in the data variable whose name is @var{_RV} the result of comparing the semantic version
+specifications @vari{SPEC} and  @varii{SPEC}; when successful return 0, otherwise return 1.
+
+The value stored in the result variable is the classic ternary comparison result:
+
+@table @code
+@item -1
+If @vari{spec} < @varii{SPEC}.
+
+@item 0
+If @vari{spec} = @varii{SPEC}.
+
+@item +1
+If @vari{spec} > @varii{SPEC}.
+@end table
+
+Usage examples:
+
+@example
+@{
+  mbfl_local_varref(RV)
+  mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3' '1.2.3'
+  $?            @result{} 0
+  $RV           @result{} 0
+@}
+
+@{
+  mbfl_local_varref(RV)
+  mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3' '1.9.3'
+  $?            @result{}  0
+  $RV           @result{} -1
+@}
+
+@{
+  mbfl_local_varref(RV)
+  mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3-alpha.1' '1.2.3-alpha.0'
+  $?            @result{}  0
+  $RV           @result{} +1
+@}
+@end example
+@end defun
+
+
+@defun mbfl_semver_compare_components_var @var{_RV} @vari{COMP} @varii{COMP}
+Like @func{mbfl_semver_compare_var} but compare already parsed semantic version specifications whose
+components are stored in two associative arrays whose variable names are @vari{COMP} and
+@varii{COMP}.  The arrays should be the ones set by @func{mbfl_semver_parse}.
+
+Examples:
+
+@example
+local -r SPEC1='1.2.3-alpha.3+x86-64'
+mbfl_local_varref(COMPONENTS1,, -A)
+mbfl_local_varref(INDEX1, 0, -i)
+
+local -r SPEC2='1.2.9-devel.2+x86-64'
+mbfl_local_varref(COMPONENTS2,, -A)
+mbfl_local_varref(INDEX2, 0, -i)
+
+mbfl_semver_parse mbfl_datavar(COMPONENTS1) "$SPEC1" mbfl_datavar(INDEX1)
+mbfl_semver_parse mbfl_datavar(COMPONENTS2) "$SPEC2" mbfl_datavar(INDEX2)
+
+mbfl_local_varref(RV)
+mbfl_semver_compare_components_var \
+  mbfl_datavar(RV) mbfl_datavar(COMPONENTS1) mbfl_datavar(COMPONENTS2)
+$?      @result{}  0
+$RV     @result{} -1
+@end example
+@end defun
 
 @c page
 @node main

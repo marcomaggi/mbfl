@@ -439,6 +439,105 @@ function semver-split-prerelease-version-1.2 () {
 }
 
 #page
+#### semantic version specifications comparison
+
+# Version numbers comparison.
+function semver-compare-1.0.01 () { p-semver-compare  0 '1.2.3' '1.2.3' ;}
+function semver-compare-1.0.02 () { p-semver-compare -1 '1.2.3' '9.2.3' ;}
+function semver-compare-1.0.03 () { p-semver-compare +1 '9.2.3' '1.2.3' ;}
+function semver-compare-1.0.04 () { p-semver-compare -1 '1.2.3' '1.9.3' ;}
+function semver-compare-1.0.05 () { p-semver-compare +1 '1.9.3' '1.2.3' ;}
+function semver-compare-1.0.06 () { p-semver-compare -1 '1.2.3' '1.2.9' ;}
+function semver-compare-1.0.07 () { p-semver-compare +1 '1.2.9' '1.2.3' ;}
+
+# Prerelease version comparison: equal multiple identifiers.
+function semver-compare-1.1.1 () { p-semver-compare  0 '1.2.3-alpha'		'1.2.3-alpha'	      ;}
+function semver-compare-1.1.2 () { p-semver-compare  0 '1.2.3-alpha.beta'	'1.2.3-alpha.beta'    ;}
+function semver-compare-1.1.3 () { p-semver-compare  0 '1.2.3-alpha.1.beta.2'	'1.2.3-alpha.1.beta.2';}
+
+# Prerelease version comparison: lexicographic comparison of the first non-numeric identifier.
+function semver-compare-1.2.1 () { p-semver-compare -1 '1.2.3-alpha'		'1.2.3-beta'	      ;}
+function semver-compare-1.2.2 () { p-semver-compare +1 '1.2.3-beta'		'1.2.3-alpha'	      ;}
+
+# Prerelease version comparison: lexicographic comparison of the second non-numeric identifier.
+function semver-compare-1.3.1 () { p-semver-compare -1 '1.2.3-alpha.beta'	'1.2.3-alpha.gamma'   ;}
+function semver-compare-1.3.2 () { p-semver-compare +1 '1.2.3-alpha.gamma'	'1.2.3-alpha.beta'    ;}
+
+# Prerelease version comparison: lexicographic comparison of the first numeric identifier.
+function semver-compare-1.4.1 () { p-semver-compare -1 '1.2.3-111'		'1.2.3-222'	      ;}
+function semver-compare-1.4.2 () { p-semver-compare +1 '1.2.3-222'		'1.2.3-111'	      ;}
+
+# Prerelease version comparison: lexicographic comparison of the second numeric identifier.
+function semver-compare-1.5.1 () { p-semver-compare -1 '1.2.3-111.222'		'1.2.3-111.333'	      ;}
+function semver-compare-1.5.2 () { p-semver-compare +1 '1.2.3-111.333'		'1.2.3-111.222'	      ;}
+function semver-compare-1.5.3 () { p-semver-compare -1 '1.2.3-alpha.222'	'1.2.3-alpha.333'     ;}
+function semver-compare-1.5.4 () { p-semver-compare +1 '1.2.3-alpha.333'	'1.2.3-alpha.222'     ;}
+function semver-compare-1.5.4 () { p-semver-compare +1 '1.2.3-alpha.1'		'1.2.3-alpha.0'       ;}
+
+# Prerelease version comparison: thw SemVer with the most identifiers is greater.
+function semver-compare-1.6.1 () { p-semver-compare -1 '1.2.3'			'1.2.3-alpha'	      ;}
+function semver-compare-1.6.2 () { p-semver-compare +1 '1.2.3-alpha'		'1.2.3'		      ;}
+function semver-compare-1.6.4 () { p-semver-compare -1 '1.2.3-alpha'		'1.2.3-alpha.beta'    ;}
+function semver-compare-1.6.3 () { p-semver-compare +1 '1.2.3-alpha.beta'	'1.2.3-alpha'	      ;}
+function semver-compare-1.6.5 () { p-semver-compare -1 '1.2.3-alpha.beta'	'1.2.3-alpha.beta.1'  ;}
+function semver-compare-1.6.6 () { p-semver-compare +1 '1.2.3-alpha.beta.1'	'1.2.3-alpha.beta'    ;}
+function semver-compare-1.6.7 () { p-semver-compare -1 '1.2.3-alpha.beta.gamma'	  '1.2.3-alpha.beta.gamma.1'  ;}
+function semver-compare-1.6.8 () { p-semver-compare +1 '1.2.3-alpha.beta.gamma.1' '1.2.3-alpha.beta.gamma'    ;}
+
+function p-semver-compare () {
+    mbfl_mandatory_parameter(RESULT, 1, first semantic version specification)
+    mbfl_mandatory_parameter(ONE,    2, first semantic version specification)
+    mbfl_mandatory_parameter(TWO,    3, second semantic version specification)
+    mbfl_local_varref(RV)
+
+    mbfl_semver_compare_var mbfl_datavar(RV) "$ONE" "$TWO"
+    dotest-equal 0 $? 'return status' && dotest-equal $RESULT $RV
+}
+
+### ------------------------------------------------------------------------
+
+function semver-compare-example-1.0 () {
+    mbfl_local_varref(RV)
+    mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3' '1.2.3'
+    dotest-equal 0 $? 'return status' && dotest-equal 0 $RV 'comparison result'
+}
+
+function semver-compare-example-1.1 () {
+    mbfl_local_varref(RV)
+    mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3' '1.9.3'
+    dotest-equal 0 $? 'return status' && dotest-equal -1 $RV 'comparison result'
+}
+
+function semver-compare-example-1.2 () {
+    mbfl_local_varref(RV)
+    mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3-alpha.1' '1.2.3-alpha.0'
+    dotest-equal 0 $? 'return status' && dotest-equal +1 $RV 'comparison result'
+}
+
+function semver-compare-example-2.0 () {
+    local -r SPEC1='1.2.3-alpha.3+x86-64'
+    mbfl_local_varref(COMPONENTS1,, -A)
+    mbfl_local_varref(INDEX1, 0, -i)
+
+    local -r SPEC2='1.2.9-devel.2+x86-64'
+    mbfl_local_varref(COMPONENTS2,, -A)
+    mbfl_local_varref(INDEX2, 0, -i)
+
+    mbfl_semver_parse mbfl_datavar(COMPONENTS1) "$SPEC1" mbfl_datavar(INDEX1)
+    mbfl_semver_parse mbfl_datavar(COMPONENTS2) "$SPEC2" mbfl_datavar(INDEX2)
+
+    #echo ${FUNCNAME}: COMPONENTS1="${COMPONENTS1[@]}" >&2
+    #echo ${FUNCNAME}: COMPONENTS2="${COMPONENTS2[@]}" >&2
+
+    mbfl_local_varref(RV)
+
+    mbfl_semver_compare_components_var \
+     	mbfl_datavar(RV) mbfl_datavar(COMPONENTS1) mbfl_datavar(COMPONENTS2)
+
+    dotest-equal 0 $? 'return status' && dotest-equal -1 $RV 'comparison result'
+}
+
+#page
 #### end of tests
 
 dotest semver-

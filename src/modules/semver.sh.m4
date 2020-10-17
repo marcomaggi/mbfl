@@ -258,7 +258,7 @@ function mbfl_p_semver_parse_build_metadata () {
 }
 
 #page
-#### split prerelease version specification
+#### split prerelease version specifications
 
 function mbfl_semver_split_prerelease_version () {
     mbfl_mandatory_nameref_parameter(mbfl_RV, 1, result array variable)
@@ -285,6 +285,153 @@ function mbfl_semver_split_prerelease_version () {
 	else return 1
 	fi
     done
+
+    return 0
+}
+
+#page
+#### compare semantic version specifications
+
+# The value stored in the NAMEREF variable RV is the classic ternary comparison result:
+#
+# -1 if ONE < TWO
+#  0 if ONE = TWO
+# +1 if ONE > TWO
+#
+function mbfl_semver_compare_var () {
+    mbfl_mandatory_nameref_parameter(RV, 1, result variable)
+    mbfl_mandatory_parameter(ONE,        2, first semantic version specification)
+    mbfl_mandatory_parameter(TWO,        3, second semantic version specification)
+    mbfl_local_varref(ONE_INDEX, 0, -i)
+    mbfl_local_varref(TWO_INDEX, 0, -i)
+    mbfl_local_varref(ONE_COMPONENTS,, -A)
+    mbfl_local_varref(TWO_COMPONENTS,, -A)
+
+    #echo ${FUNCNAME}: ONE=\""$ONE"\" ONE_INDEX=$ONE_INDEX ONE_COMPONENTS=mbfl_datavar(ONE_COMPONENTS) >&2
+    if ! mbfl_semver_parse mbfl_datavar(ONE_COMPONENTS) "$ONE" mbfl_datavar(ONE_INDEX)
+    then return 1
+    fi
+
+    #echo ${FUNCNAME}: TWO=\""$TWO"\" TWO_INDEX=$TWO_INDEX TWO_COMPONENTS=mbfl_datavar(TWO_COMPONENTS) >&2
+    if ! mbfl_semver_parse mbfl_datavar(TWO_COMPONENTS) "$TWO" mbfl_datavar(TWO_INDEX)
+    then return 1
+    fi
+
+    mbfl_semver_compare_components_var mbfl_datavar(RV) mbfl_datavar(ONE_COMPONENTS) mbfl_datavar(TWO_COMPONENTS)
+}
+
+function mbfl_semver_compare_components_var () {
+    mbfl_mandatory_nameref_parameter(RV,             1, result variable)
+    mbfl_mandatory_nameref_parameter(ONE_COMPONENTS, 2, first semantic version specification components)
+    mbfl_mandatory_nameref_parameter(TWO_COMPONENTS, 3, second semantic version specification components)
+
+    if   test "${ONE_COMPONENTS[MAJOR_NUMBER]}" -lt "${TWO_COMPONENTS[MAJOR_NUMBER]}"
+    then RV=-1
+    elif test "${ONE_COMPONENTS[MAJOR_NUMBER]}" -gt "${TWO_COMPONENTS[MAJOR_NUMBER]}"
+    then RV=+1
+    else
+    	if   test "${ONE_COMPONENTS[MINOR_NUMBER]}" -lt "${TWO_COMPONENTS[MINOR_NUMBER]}"
+    	then RV=-1
+    	elif test "${ONE_COMPONENTS[MINOR_NUMBER]}" -gt "${TWO_COMPONENTS[MINOR_NUMBER]}"
+    	then RV=+1
+    	else
+    	    if   test "${ONE_COMPONENTS[PATCH_LEVEL]}" -lt "${TWO_COMPONENTS[PATCH_LEVEL]}"
+    	    then RV=-1
+    	    elif test "${ONE_COMPONENTS[PATCH_LEVEL]}" -gt "${TWO_COMPONENTS[PATCH_LEVEL]}"
+    	    then RV=+1
+    	    else
+    		# Major  number, minor  number  and patch  level  are equal.   We  must compare  the
+    		# prerelease version specifications.
+    		#
+    		# If one is missing a prerelease version: that one is greater.
+    		if   (( 0 == ${#ONE_COMPONENTS[PRERELEASE_VERSION]} && 0 == ${#TWO_COMPONENTS[PRERELEASE_VERSION]} ))
+    		then RV=0
+    		elif (( 0 == ${#ONE_COMPONENTS[PRERELEASE_VERSION]} && 0 < ${#TWO_COMPONENTS[PRERELEASE_VERSION]} ))
+    		then RV=-1
+    		elif (( 0 == ${#TWO_COMPONENTS[PRERELEASE_VERSION]} && 0 < ${#ONE_COMPONENTS[PRERELEASE_VERSION]} ))
+    		then RV=+1
+    		else
+    		    # Both have  a non-empty prerelease  version.  Let's compare them  identifier by
+    		    # identifier.
+    		    mbfl_semver_compare_prerelease_version		\
+    			mbfl_datavar(RV)				\
+    			"${ONE_COMPONENTS[PRERELEASE_VERSION]}"		\
+    			"${TWO_COMPONENTS[PRERELEASE_VERSION]}"
+    		    return $?
+    		fi
+    	    fi
+    	fi
+    fi
+    return 0
+}
+
+function mbfl_semver_compare_prerelease_version () {
+    mbfl_mandatory_nameref_parameter(RV,            1, result variable)
+    mbfl_optional_parameter(ONE_PRERELEASE_VERSION, 2, first prerelease version specification)
+    mbfl_optional_parameter(TWO_PRERELEASE_VERSION, 3, second prerelease version specification)
+    mbfl_local_varref(ONE_IDENTIFIERS,, -a)
+    mbfl_local_varref(TWO_IDENTIFIERS,, -a)
+
+    if ! mbfl_semver_split_prerelease_version mbfl_datavar(ONE_IDENTIFIERS) "$ONE_PRERELEASE_VERSION"
+    then return 1
+    fi
+
+    if ! mbfl_semver_split_prerelease_version mbfl_datavar(TWO_IDENTIFIERS) "$TWO_PRERELEASE_VERSION"
+    then return 1
+    fi
+
+    local -i i ONE_IS_NUMERIC TWO_IS_NUMERIC MIN
+
+    RV=0
+
+    if (( ${#ONE_IDENTIFIERS[@]} < ${#TWO_IDENTIFIERS[@]} ))
+    then MIN=${#ONE_IDENTIFIERS[@]}
+    else MIN=${#TWO_IDENTIFIERS[@]}
+    fi
+
+    #echo ${FUNCNAME}: MIN=$MIN >&2
+    for ((i=0; i < MIN; ++i))
+    do
+	mbfl_string_is_digit "${ONE_IDENTIFIERS[$i]}"
+	ONE_IS_NUMERIC=$?
+
+	mbfl_string_is_digit "${TWO_IDENTIFIERS[$i]}"
+	TWO_IS_NUMERIC=$?
+
+	if (( 0 == ONE_IS_NUMERIC && 0 == TWO_IS_NUMERIC ))
+	then
+	    # They are both numeric, so let's compare them as numbers.
+	    if   test "${ONE_IDENTIFIERS[$i]}" -lt "${TWO_IDENTIFIERS[$i]}"
+	    then RV=-1 ; break
+	    elif test "${ONE_IDENTIFIERS[$i]}" -gt "${TWO_IDENTIFIERS[$i]}"
+	    then RV=+1 ; break
+	    fi
+	elif (( 0 == ONE_IS_NUMERIC ))
+	then RV=+1 ; break ;# ONE is numeric, TWO is not: ONE is lesser according to the standard.
+	elif (( 0 == TWO_IS_NUMERIC ))
+	then RV=-1 ; break ;# TWO is numeric, ONE is not: TWO is lesser according to the standard.
+	else
+	    #echo ${FUNCNAME}: ONE_IDENTIFIERS[$i]="${ONE_IDENTIFIERS[$i]}" TWO_IDENTIFIERS[$i]="${TWO_IDENTIFIERS[$i]}" >&2
+	    # They are both non-numeric, so let's compare them as strings.
+	    if   test "${ONE_IDENTIFIERS[$i]}" '<' "${TWO_IDENTIFIERS[$i]}"
+	    then RV=-1 ; break
+	    elif test "${ONE_IDENTIFIERS[$i]}" '>' "${TWO_IDENTIFIERS[$i]}"
+	    then RV=+1 ; break
+	    fi
+	fi
+    done
+
+    #echo ${FUNCNAME}: after iterating RV=$RV >&2
+    if (( 0 == RV ))
+    then
+	# All the identifiers compared  so far are equal.  If a  specification has more identifiers:
+	# it is greater.
+	if   (( ${#ONE_IDENTIFIERS[@]} < ${#TWO_IDENTIFIERS[@]} ))
+	then RV=-1
+	elif (( ${#ONE_IDENTIFIERS[@]} > ${#TWO_IDENTIFIERS[@]} ))
+	then RV=+1
+	fi
+    fi
 
     return 0
 }
