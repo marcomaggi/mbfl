@@ -143,6 +143,9 @@ changes!
 
     mbfl_extract_command_line_argument
 
+* Added  module  semver:  parsing  and comparison  of  semantic  version
+  specifications.
+
 
 Notes for revision 2.2.0
 ------------------------
