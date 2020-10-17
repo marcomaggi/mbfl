@@ -290,7 +290,7 @@ function mbfl_semver_split_prerelease_version () {
 }
 
 #page
-#### compare semantic version specifications
+#### semantic version specifications comparison
 
 # The value stored in the NAMEREF variable RV is the classic ternary comparison result:
 #
