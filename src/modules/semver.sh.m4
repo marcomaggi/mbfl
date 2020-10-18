@@ -33,8 +33,8 @@
 declare -A mbfl_semver_CONFIG
 
 function mbfl_semver_reset_config () {
-    mbfl_semver_CONFIG[PARSE_LEADING_V]=false
-    mbfl_semver_CONFIG[ACCEPT_UNDERSCORE_IN_BUILD_METADATA]=false
+    mbfl_semver_CONFIG[PARSE_LEADING_V]='optional'
+    mbfl_semver_CONFIG[ACCEPT_UNDERSCORE_IN_BUILD_METADATA]='false'
 }
 
 mbfl_semver_reset_config
@@ -68,15 +68,29 @@ function mbfl_semver_parse () {
     # For debugging purposes.
     #echo ${FUNCNAME}: INPUT_STRING="${mbfl_INPUT_STRING:$mbfl_START_INDEX}" START_INDEX=$mbfl_START_INDEX >&2
 
-    if ${mbfl_semver_CONFIG[PARSE_LEADING_V]}
-    then
-	if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
-	then let ++mbfl_START_INDEX
-	else
-	    mbfl_RV[PARSING_ERROR_MESSAGE]='missing leading "v" character'
-	    return 1
-	fi
-    fi
+    case ${mbfl_semver_CONFIG[PARSE_LEADING_V]}
+    in
+	'mandatory')
+	    if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
+	    then let ++mbfl_START_INDEX
+	    else
+		mbfl_RV[PARSING_ERROR_MESSAGE]='missing leading "v" character'
+		return 1
+	    fi
+	    ;;
+	'missing')
+	    if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
+	    then
+		mbfl_RV[PARSING_ERROR_MESSAGE]='unexpected leading "v" character'
+		return 1
+	    fi
+	    ;;
+	*)
+	    if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
+	    then let ++mbfl_START_INDEX
+	    fi
+	    ;;
+    esac
 
     if ! mbfl_p_semver_parse_version_numbers
     then

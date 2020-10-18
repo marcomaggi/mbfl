@@ -181,7 +181,7 @@ function semver-parse-1.4.01 () {
 function semver-parse-1.4.02 () {
     mbfl_location_enter
     {
-	mbfl_semver_CONFIG[PARSE_LEADING_V]=true
+	mbfl_semver_CONFIG[PARSE_LEADING_V]='mandatory'
 	mbfl_location_handler 'mbfl_semver_reset_config'
 
 	p_semver_CONFIG[PARSE_LEADING_V]=true
@@ -225,7 +225,7 @@ function semver-parse-error-1.0 () {
     mbfl_local_varref(RV,,-A)
 
     mbfl_semver_reset_config
-    mbfl_semver_CONFIG[PARSE_LEADING_V]=true
+    mbfl_semver_CONFIG[PARSE_LEADING_V]='mandatory'
     mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
 
     dotest-equal 1 $? 'return status' && \

@@ -6853,8 +6853,23 @@ parser.  It has the following keys:
 
 @table @code
 @item PARSE_LEADING_V
-When @code{true}: parse a leading character @samp{v} in the @var{INPUT_STRING}; the default is
-@code{false}.
+Establish whether the semantic version specification must begin with a @samp{v} character.  Accepted
+values:
+
+@table @code
+@item mandatory
+The leading @samp{v} is mandatory; if it is missing: an error is returned.
+
+@item missing
+The leading @samp{v} is invalid; if it is present: an error is returned.
+
+@item optional
+The leading @samp{v} is optional: if it is present, it is parsed; otherwise nothing happens.  This
+is the defult.
+@end table
+
+@noindent
+Any other value is equivalent to @code{optional}.
 
 @item ACCEPT_UNDERSCORE_IN_BUILD_METADATA
 When @code{true}: accept underscore characters @samp{_} in the identifiers of the build metadata;
