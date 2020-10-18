@@ -123,6 +123,7 @@ function mbfl_semver_parse () {
     mbfl_RV[PATCH_LEVEL]=$mbfl_PATCH_LEVEL
     mbfl_RV[PRERELEASE_VERSION]=$mbfl_PRERELEASE_VERSION
     mbfl_RV[BUILD_METADATA]=$mbfl_BUILD_METADATA
+    mbfl_RV[START_INDEX]=$mbfl_THE_START_INDEX
     mbfl_RV[END_INDEX]=$mbfl_START_INDEX
     let mbfl_THE_START_INDEX=mbfl_START_INDEX
     # For debugging purposes.

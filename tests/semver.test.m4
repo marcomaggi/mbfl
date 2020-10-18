@@ -86,6 +86,7 @@ function p-semver-parse-correct-specification () {
 		dotest-equal	"$PATCH_LEVEL"		"${RV[PATCH_LEVEL]}"		'patch level'		      && \
 		dotest-equal	"$PRERELEASE_VERSION"	"${RV[PRERELEASE_VERSION]}"	'prerelease version'	      && \
 		dotest-equal	"$BUILD_METADATA"	"${RV[BUILD_METADATA]}"		'build metadata'	      && \
+		dotest-equal	0			"${RV[START_INDEX]}"		'start index'		      && \
 		dotest-equal	${#SPEC}		"${RV[END_INDEX]}"		'end index'		      && \
 		dotest-equal	${#SPEC}		"$START_INDEX"			'start index'
 	fi

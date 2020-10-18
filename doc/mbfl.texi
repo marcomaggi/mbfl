@@ -6810,6 +6810,11 @@ The prerelease version specification; it @strong{does not} contain the leading h
 @item BUILD_METADATA
 The build metadata specification; it @strong{does not} contain the leading plus character @samp{+}.
 
+@item START_INDEX
+An integer representing the index of the first character in @var{INPUT_STRING} containing the
+semantic version specification.  It is the same value in the data variable whose name is
+@var{START_INDEX_VAR}.
+
 @item END_INDEX
 An integer representing the index of the first character in @var{INPUT_STRING} @strong{after} the
 last parsed character.  If the string holds further text after the semantic version specification:
@@ -6836,6 +6841,7 @@ $?                                      @result{} 0
 "$@{RV[PATCH_LEVEL]@}"                    @result{} 3
 "$@{RV[PRERELEASE_VERSION]@}"             @result{} alpha.1
 "$@{RV[BUILD_METADATA]@}"                 @result{} x86-64
+"$@{RV[START_INDEX]@}"                    @result{} 0
 "$@{RV[END_INDEX]@}"                      @result{} $@{#INPUT_STRING@}
 "$START_INDEX"                          @result{} $@{#INPUT_STRING@}
 @end example
