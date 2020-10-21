@@ -65,6 +65,7 @@ EXTRA_DIST	+= \
 	src/modules/atexit.sh.m4		\
 	src/modules/locations.sh.m4		\
 	src/modules/semver.sh.m4		\
+	src/modules/shell.sh.m4			\
 	\
 	src/lib/libmbfl.sh.m4			\
 	src/lib/libmbfltest.sh			\
@@ -84,7 +85,7 @@ MBFL_MODULES		= \
 	src/modules/dialog.sh	src/modules/main.sh		src/modules/variable.sh	      \
 	src/modules/system.sh	src/modules/arrays.sh		src/modules/interfaces.sh     \
 	src/modules/atexit.sh	src/modules/locations.sh	src/modules/times-and-dates.sh \
-	src/modules/fd.sh	src/modules/semver.sh
+	src/modules/fd.sh	src/modules/semver.sh		src/modules/shell.sh
 
 MBFL_PREPRO		= src/lib/preprocessor.m4
 

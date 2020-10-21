@@ -123,6 +123,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * preprocessor::                Using the script preprocessor.
 * service variables::           Required user defined variables.
 * base::                        Some base functions.
+* shell::                       Shell facilities.
 * encoding::                    Encoding and decoding strings.
 * file::                        Manipulating files and pathnames.
 * fd::                          Handling file descriptors.
@@ -1404,6 +1405,25 @@ character is used as terminator, as in:
 @example
 IFS= read -d $'\x00'
 @end example
+@end defun
+
+@c page
+@node shell
+@chapter Shell facilities
+
+
+@menu
+* shell introspection::         Introspection facilities.
+@end menu
+
+@c page
+@node shell introspection
+@section Introspection facilities
+
+
+@defun mbfl_shell_is_function @var{NAME}
+Return successfully if @var{NAME} is an identifier representing a defined function name; otherwise
+return unsuccessfully.
 @end defun
 
 @c page

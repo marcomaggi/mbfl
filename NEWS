@@ -149,6 +149,8 @@ changes!
 * Added new script  variable "script_REQUIRED_MBFL_VERSION".  Introduced
   validation of required MBFL semantic version.
 
+* Started the shell module, mainly for introspection facilities.
+
 
 Notes for revision 2.2.0
 ------------------------

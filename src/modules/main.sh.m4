@@ -510,12 +510,6 @@ function mbfl_main_check_mbfl_semantic_version_variable () {
 	exit_because_invalid_mbfl_version
     fi
 }
-function mbfl_shell_is_function () {
-    mbfl_mandatory_parameter(FUNC, 1, function name)
-    local -r WORD=$(type -t "$FUNC")
-    test 'function' '=' "$WORD"
-}
-
 # Called with a  function name argument: if such  function exists invoke
 # it, else return with success.
 #
