@@ -32,12 +32,16 @@
 #page
 #### MBFL's related options and variables
 
-script_REQUIRED_MBFL_VERSION=v3.0.0-devel.4
-script_PROGNAME=template-actions.sh
-script_VERSION=1.0
-script_COPYRIGHT_YEARS='2013, 2014, 2018, 2020'
-script_AUTHOR='Marco Maggi'
-script_LICENSE=liberal
+declare -r script_PROGNAME=template-actions.sh
+declare -r script_VERSION=1.0
+declare -r script_COPYRIGHT_YEARS='2013, 2014, 2018, 2020'
+declare -r script_AUTHOR='Marco Maggi'
+declare -r script_LICENSE=liberal
+
+# This  variable   declaration  is   just  a   comment,  because  below   we  define   the  function
+# "script_check_mbfl_semantic_version()", which  is actually  used to  validate the  MBFL's required
+# version.
+declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.4
 
 declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
 
@@ -975,6 +979,39 @@ function script_before_parsing_options_THREE_RED_GAS () {
 }
 function script_action_THREE_RED_GAS () {
     printf "action ${FUNCNAME}\n"
+}
+
+#page
+#### required MBFL's version
+
+function script_check_mbfl_semantic_version () {
+    local -r REQUIRED_MBFL_VERSION=v3.0.0-devel.4
+    mbfl_local_varref(RV)
+
+    mbfl_message_debug_printf 'library version "%s", version required by the script "%s"' \
+			      "$mbfl_SEMANTIC_VERSION" "$REQUIRED_MBFL_VERSION"
+    if {
+	mbfl_location_enter
+	{
+	    mbfl_location_handler 'mbfl_semver_reset_config'
+	    mbfl_semver_config[PARSE_LEADING_V]='optional'
+	    mbfl_semver_compare_var mbfl_datavar(RV) "$mbfl_SEMANTIC_VERSION" "$REQUIRED_MBFL_VERSION"
+	}
+	mbfl_location_leave
+    }
+    then
+	if (( RV >= 0 ))
+	then return 0
+	else
+	    mbfl_message_error_printf \
+		'hard-coded MBFL library version "%s" is lesser than the minimum version required by the script "%s"' \
+		"$mbfl_SEMANTIC_VERSION" "$REQUIRED_MBFL_VERSION"
+	    exit_because_invalid_mbfl_version
+	fi
+    else
+	mbfl_message_error_printf 'invalid required semantic version for MBFL: "%s"' "$REQUIRED_MBFL_VERSION"
+	exit_because_invalid_mbfl_version
+    fi
 }
 
 #page

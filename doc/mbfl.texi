@@ -140,7 +140,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * system::                      Interfacing with the system.
 * atexit::                      Running scripts at exit-time.
 * locations::                   Running location handlers.
-* semver::                      Semantic versioning parser.
+* semver::                      Semantic version specifications
 * main::                        Main function.
 * testing::                     Building test suites.
 
@@ -1257,11 +1257,12 @@ own variables.
 
 @anchor{script_REQUIRED_MBFL_VERSION}
 @defvar script_REQUIRED_MBFL_VERSION
-The full semantic version of the @mbfl{} library needed by this script, prefixed with a @code{v}
-character.  @ref{semver} for details on semantic version specifications.  The main module will
-compare the version of the library with the one required by the script: if the hard--coded library's
-version is lesser than the required script's version, @func{mbfl_main} will terminate the script by
-calling @func{exit_because_invalid_mbfl_version}.
+The minimum, full, semantic version specification of the @mbfl{} library needed by this script,
+optionally prefixed with a @code{v} character; @ref{semver, Semantic version specifications}.  We
+can use this variable both to validate the required version at runtime or merely as a comment on the
+requirements of the script.  We can request the main module to compare the version hard--coded in
+the @mbfl{} with the one required by the script, as specified by this variable; @ref{main, Main
+function}.
 @end defvar
 
 
@@ -6469,7 +6470,7 @@ func
 
 @c page
 @node semver
-@chapter Semantic versioning parser
+@chapter Semantic version specifications
 
 
 This module implements a parser for semantic version strings.
@@ -7068,10 +7069,30 @@ Register the value of the variable @code{script_PROGNAME} in the message module 
 Invoke @func{mbfl_main_create_exit_functions}.  @ref{main exit, Declaring exit codes}.
 
 @item
-Compare the semantic version of the library with the one required by the script through the script
-variable @env{script_REQUIRED_MBFL_VERSION}: if the hard--coded library's version is lesser than the
-required script's version, @func{mbfl_main} will terminate the script by calling
+Validate the semantic version specification hard--coded in the @mbfl{} with the requirements of the
+script.  If an error occurs in this step: terminate the script by calling
+@func{exit_because_invalid_mbfl_version}, @ref{exit_because_invalid_mbfl_version}.
+
+@enumerate a
+@item
+Check if a function named @func{script_check_mbfl_semantic_version} exists.  If it does not exist:
+move on to the next step.  If it does exist: call it with @mbfl{}'s semantic version specification
+string as single argument; if the function returns successfully: the version requirements are
+considered satisfied; otherwise exit the script by calling @func{exit_because_invalid_mbfl_version}.
+
+@item
+Check if the service variable @env{script_REQUIRED_MBFL_VERSION} is defined to a non--empty value,
+the value is expected to be a valid semantic version specification representing the minimum version
+required by the script; @ref{script_REQUIRED_MBFL_VERSION, Service variables}.
+
+If an error occurs while parsing the semantic version specification in
+@env{script_REQUIRED_MBFL_VERSION}: terminate the script by calling
 @func{exit_because_invalid_mbfl_version}.
+
+If @mbfl{}'s version is lesser than the one required by the script: terminate the script itself by
+calling @func{exit_because_invalid_mbfl_version}; otherwise the version requirements are considered
+satisfied.
+@end enumerate
 
 @item
 Parse the command line arguments according to the command actions configuration; this step may
@@ -7230,6 +7251,7 @@ Return with code @code{100}.
 @end defun
 
 
+@anchor{exit_because_invalid_mbfl_version}
 @defun exit_because_invalid_mbfl_version
 Exit the script with code @code{88}.
 @end defun

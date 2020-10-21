@@ -466,34 +466,62 @@ function mbfl_main () {
     exit $?
 }
 function mbfl_main_check_mbfl_semantic_version () {
-    if test -n "$script_REQUIRED_MBFL_VERSION"
+    # First check for a validating function defined by the script.
+    if mbfl_shell_is_function 'script_check_mbfl_semantic_version'
     then
-	mbfl_local_varref(RV)
-
-	mbfl_message_debug_printf 'library version "%s", version required by the script "%s"' \
-				  "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
-
-	if mbfl_semver_compare_var mbfl_datavar(RV) "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
+	if ! script_check_mbfl_semantic_version "$mbfl_SEMANTIC_VERSION"
 	then
-	    if (( $RV >= 0 ))
-	    then return 0
-	    else
-		mbfl_message_error_printf 'library version "%s" is higher than version required by the script "%s"' \
-					  "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
-		exit_because_invalid_mbfl_version
-	    fi
-	else
-	    mbfl_message_error_printf 'invalid required semantic version for MBFL: %s' "$script_REQUIRED_MBFL_VERSION"
+	    mbfl_message_error_printf 'hard-coded MBFL library version "%s" does not satisfy the requirements of the script' \
+				      "$mbfl_SEMANTIC_VERSION"
 	    exit_because_invalid_mbfl_version
+	fi
+    elif mbfl_string_is_not_empty "$script_REQUIRED_MBFL_VERSION"
+    then
+	if ! mbfl_main_check_mbfl_semantic_version_variable
+	then exit_because_invalid_mbfl_version
 	fi
     fi
 }
+function mbfl_main_check_mbfl_semantic_version_variable () {
+    mbfl_local_varref(RV)
+
+    mbfl_message_debug_printf 'library version "%s", version required by the script "%s"' \
+			      "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
+    if {
+	mbfl_location_enter
+	{
+	    mbfl_location_handler 'mbfl_semver_reset_config'
+	    mbfl_semver_config[PARSE_LEADING_V]='optional'
+	    mbfl_semver_compare_var mbfl_datavar(RV) "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
+	}
+	mbfl_location_leave
+    }
+    then
+	if (( RV >= 0 ))
+	then return 0
+	else
+	    mbfl_message_error_printf \
+		'hard-coded MBFL library version "%s" is lesser than the minimum version required by the script "%s"' \
+		"$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
+	    exit_because_invalid_mbfl_version
+	fi
+    else
+	mbfl_message_error_printf 'invalid required semantic version for MBFL: "%s"' "$script_REQUIRED_MBFL_VERSION"
+	exit_because_invalid_mbfl_version
+    fi
+}
+function mbfl_shell_is_function () {
+    mbfl_mandatory_parameter(FUNC, 1, function name)
+    local -r WORD=$(type -t "$FUNC")
+    test 'function' '=' "$WORD"
+}
+
 # Called with a  function name argument: if such  function exists invoke
 # it, else return with success.
 #
 function mbfl_invoke_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if mbfl_string_equal 'function' "$(type -t $FUNC)"
+    if mbfl_shell_is_function "$FUNC"
     then $FUNC
     else return 0
     fi
@@ -503,7 +531,7 @@ function mbfl_invoke_script_function () {
 #
 function mbfl_invoke_existent_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if mbfl_string_equal 'function' "$(type -t $FUNC)"
+    if mbfl_shell_is_function "$FUNC"
     then $FUNC
     else
 	mbfl_message_error_printf 'internal error: request to call non-existent function \"%s\"' "$FUNC"
