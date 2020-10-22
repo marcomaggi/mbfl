@@ -131,7 +131,7 @@ m4_define([[[mbfl_local_varref]]],[[[m4_dnl
   mbfl_variable_alloc mbfl_a_variable_$1
   local $3 $[[[mbfl_a_variable_$1]]]
   local -n $1=$[[[]]]mbfl_a_variable_$1
-  m4_ifelse($2,,,$1=$2)m4_dnl
+  m4_ifelse($2,,,$1=$2)
 ]]])
 
 m4_dnl Synopsis:
@@ -159,7 +159,7 @@ m4_define([[[mbfl_global_varref]]],[[[m4_dnl
   mbfl_variable_alloc mbfl_a_variable_$1
   declare -g $3 $[[[mbfl_a_variable_$1]]]
   local   -n $1=$[[[]]]mbfl_a_variable_$1
-  m4_ifelse($2,,,$1=$2)m4_dnl
+  m4_ifelse($2,,,$1=$2)
 ]]])
 
 m4_define([[[mbfl_local_index_array_varref]]],[[[mbfl_local_varref($1,$2,-a $3)]]])
