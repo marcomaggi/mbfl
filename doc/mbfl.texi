@@ -4177,7 +4177,7 @@ selected output channel, but only if the evaluation of the function @func{mbfl_o
 returns true.
 
 Echo a string composed of: the selected program name, a colon, a space, the string @code{debug}, a
-colon, a space, the formatting result.  No newline character is appended to the message.
+colon, a space, the formatting result, a newline character.
 @end defun
 
 @c page
