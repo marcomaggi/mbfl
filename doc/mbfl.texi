@@ -3841,13 +3841,14 @@ anything; for an option with no argument: it must be @code{yes} or
 @code{no}.
 
 @item brief
-The brief option selector: a single character.  It is safer to choose a
-single letter (lower or upper case) in the @acronym{ASCII} standard.
+The brief option selector: a single character.  It is safer to choose a single letter (lower or
+upper case) in the @acronym{ASCII} standard.  This argument can be the empty string if this option
+has no brief selector.
 
 @item long
-The long option selector: a string.  It is safer to choose a sequence of
-letters in the @acronym{ASCII} standard, separated by underscores or
-dashes.
+The long option selector: a string.  It is safer to choose a sequence of letters in the
+@acronym{ASCII} standard, separated by underscores or dashes.  This argument can be the empty string
+if this option has no long selector.
 
 @item hasarg
 Either @code{witharg} or @code{noarg}: declares if the option requires
