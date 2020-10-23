@@ -95,7 +95,8 @@ then
     # stored  here.   This variable  is  used  when composing  the  help
     # screen.
     #
-    declare mbfl_action_sets_SELECTED_SET=MAIN
+    # The default value "NONE" indicates that there is currently no action selected.
+    declare mbfl_action_sets_SELECTED_SET=NONE
 fi
 
 #page
