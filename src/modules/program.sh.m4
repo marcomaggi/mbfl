@@ -611,6 +611,27 @@ function mbfl_program_bash () {
     mbfl_program_exec "$mbfl_program_BASH" "$@"
 }
 
+#page
+#### miscellaneous program interfaces
+
+function mbfl_program_whoami_var () {
+    mbfl_mandatory_nameref_parameter(USERNAME, 1, username result variable)
+
+    if test -x "$mbfl_program_WHOAMI"
+    then
+	if ! USERNAME=$(mbfl_program_whoami)
+	then return_failure
+	fi
+    fi
+}
+
+function mbfl_program_whoami () {
+    if test -x "$mbfl_program_WHOAMI"
+    then "$mbfl_program_WHOAMI"
+    else return_failure
+    fi
+}
+
 ### end of file
 # Local Variables:
 # mode: sh

@@ -231,6 +231,7 @@ EXTRA_DIST	+=			\
 	tests/strings.test.m4		\
 	tests/system.test.m4		\
 	tests/semver.test.m4		\
+	tests/program.test.m4		\
 	\
 	tests/arrays.test		\
 	tests/atexit.test		\
@@ -241,7 +242,6 @@ EXTRA_DIST	+=			\
 	tests/getopts.test		\
 	tests/locations.test		\
 	tests/message.test		\
-	tests/program.test		\
 	tests/script.test		\
 	tests/signal.test		\
 	tests/times-and-dates.test	\
@@ -259,6 +259,7 @@ CHECK_BUILT_TESTS	=		\
 	tests/strings.test		\
 	tests/system.test		\
 	tests/variables.test		\
+	tests/program.test		\
 	tests/semver.test
 
 check_SCRIPTS		= $(CHECK_BUILT_EXAMPLES) $(CHECK_BUILT_TESTS)

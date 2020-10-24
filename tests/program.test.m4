@@ -272,6 +272,33 @@ function program-5.2.2 () {
     dotest-clean-files
 }
 
+#page
+#### miscellaneous program interfaces
+
+function program-whoami-1.0 () {
+    mbfl_local_varref(USERNAME)
+    local RV1 RV2
+
+    mbfl_program_whoami_var mbfl_datavar(USERNAME)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'whoami result' && dotest-equal 0 $RV2 'not empty result'
+}
+
+function program-whoami-1.1 () {
+    local USERNAME
+    local RV1 RV2
+
+    USERNAME=$(mbfl_program_whoami)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'whoami result' && dotest-equal 0 $RV2 'not empty result'
+}
+
 #PAGE
 #### let's go
 

@@ -151,6 +151,11 @@ changes!
 
 * Started the shell module, mainly for introspection facilities.
 
+* Added functions:
+
+    mbfl_program_whoami
+    mbfl_program_whoami_var
+
 
 Notes for revision 2.2.0
 ------------------------

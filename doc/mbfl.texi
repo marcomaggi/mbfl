@@ -4689,8 +4689,32 @@ Exit or return with code @code{99}.
 
 
 @menu
+* interfaces whoami::           Determining the effective user name.
 * interfaces at::               Scheduling jobs for later execution.
 @end menu
+
+@c page
+@node interfaces whoami
+@section Determining the effective user name
+
+
+@defun mbfl_program_whoami
+@defunx mbfl_program_whoami_var @var{_RV}
+Run the program @command{whoami} to determine the effective user name; print it on the standard
+output channel.  If @command{whoami} is not executable or an error occurs executing it: return by
+calling @func{return_failure}.
+
+We need to remember that a pathname to @command{whoami} is determined at package configuration time
+and hard--coded in the @mbfl{} file; @ref{program executing, Executing a program}.
+
+@example
+mbfl_program_whoami     @print{} marco
+
+mbfl_local_varref(USERNAME)
+mbfl_program_whoami mbfl_datavar(USERNAME)
+"$USERNAME"             @print{} marco
+@end example
+@end defun
 
 
 @c page
