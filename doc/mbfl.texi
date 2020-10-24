@@ -2280,9 +2280,9 @@ Print the access permissions for @var{pathname}, in octal format.
 @example
 mbfl_file_get_permissions /bin/ls       @print{} 0755
 
-local PERMS
-mbfl_file_get_permissions_var PERMS /bin/ls
-"$_RV" @result{} 0755
+mbfl_local_varref(PERMS)
+mbfl_file_get_permissions_var mbfl_datavar(PERMS) /bin/ls
+"$PERMS" @result{} 0755
 @end example
 @end defun
 
