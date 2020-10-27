@@ -3808,13 +3808,23 @@ The following are special option functions.
 
 
 @defun mbfl_option_test_save
-Save the current state of the test option then invokes
-@func{mbfl_unset_option_test}.
+Save the current state of the @samp{test} option then invokes @func{mbfl_unset_option_test}.
 @end defun
 
 @defun mbfl_option_test_restore
-Restore the state of the test option to the one before the invocation to
+Restore the state of the @samp{test} option to the one before the invocation to
 @func{mbfl_option_test_save}.
+@end defun
+
+
+@defun mbfl_option_show_program_save
+Save the current state of the @samp{show_program} option then invokes
+@func{mbfl_unset_option_show_program}.
+@end defun
+
+@defun mbfl_option_show_program_restore
+Restore the state of the @samp{show_program} option to the one before the invocation to
+@func{mbfl_option_show_program_save}.
 @end defun
 
 @c page

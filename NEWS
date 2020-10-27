@@ -156,6 +156,11 @@ changes!
     mbfl_program_whoami
     mbfl_program_whoami_var
 
+* Added functions:
+
+    mbfl_option_show_program_save
+    mbfl_option_show_program_restore
+
 
 Notes for revision 2.2.0
 ------------------------

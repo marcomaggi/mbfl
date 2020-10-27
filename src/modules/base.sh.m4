@@ -42,6 +42,9 @@ declare -r mbfl_SEMANTIC_VERSION='__SEMANTIC_VERSION__'
 : ${script_DESCRIPTION:='<unknown>'}
 : ${script_EXAMPLES:=}
 
+declare mbfl_saved_option_TEST
+declare mbfl_saved_option_SHOW_PROGRAM
+
 #page
 #### miscellaneous functions
 
@@ -79,13 +82,25 @@ mbfl_create_option_procedure([[[encoded_args]]])
 
 function mbfl_option_test_save () {
     if mbfl_option_test
-    then mbfl_save_option_TEST=yes
+    then mbfl_saved_option_TEST=true
     fi
     mbfl_unset_option_test
 }
 function mbfl_option_test_restore () {
-    if mbfl_string_equal "$mbfl_save_option_TEST" 'yes'
+    if mbfl_string_equal "$mbfl_saved_option_TEST" 'true'
     then mbfl_set_option_test
+    fi
+}
+
+function mbfl_option_show_program_save () {
+    if mbfl_option_show_program
+    then mbfl_saved_option_SHOW_PROGRAM=true
+    fi
+    mbfl_unset_option_show_program
+}
+function mbfl_option_show_program_restore () {
+    if mbfl_string_equal "$mbfl_saved_option_SHOW_PROGRAM" 'true'
+    then mbfl_set_option_show_program
     fi
 }
 
