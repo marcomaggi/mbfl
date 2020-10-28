@@ -62,7 +62,7 @@ function dotest-p-printf () {
     local TEMPLATE=${2:?"missing template argument to '${FUNCNAME}'"}
     shift 2
     {
-	printf '%s:' "$name"
+	printf '%s: ' "$name"
 	printf "$TEMPLATE"  "$@"
 	echo
     } >&2
