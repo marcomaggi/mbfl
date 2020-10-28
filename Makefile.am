@@ -227,11 +227,12 @@ endif
 #### interface to "make check"
 
 EXTRA_DIST	+=			\
-	tests/variables.test.m4		\
+	tests/getopts.test.m4		\
+	tests/program.test.m4		\
+	tests/semver.test.m4		\
 	tests/strings.test.m4		\
 	tests/system.test.m4		\
-	tests/semver.test.m4		\
-	tests/program.test.m4		\
+	tests/variables.test.m4		\
 	\
 	tests/arrays.test		\
 	tests/atexit.test		\
@@ -239,7 +240,6 @@ EXTRA_DIST	+=			\
 	tests/encode.test		\
 	tests/fd.test			\
 	tests/file.test			\
-	tests/getopts.test		\
 	tests/locations.test		\
 	tests/message.test		\
 	tests/script.test		\
@@ -256,11 +256,12 @@ CHECK_BUILT_EXAMPLES	=		\
 	examples/template-actions.sh
 
 CHECK_BUILT_TESTS	=		\
+	tests/getopts.test		\
+	tests/program.test		\
+	tests/semver.test		\
 	tests/strings.test		\
 	tests/system.test		\
-	tests/variables.test		\
-	tests/program.test		\
-	tests/semver.test
+	tests/variables.test
 
 check_SCRIPTS		= $(CHECK_BUILT_EXAMPLES) $(CHECK_BUILT_TESTS)
 
@@ -322,14 +323,6 @@ TESTS			= \
 $(builddir)/tests/$(am__dirstamp):
 	@$(MKDIR_P) tests
 	@: > tests/$(am__dirstamp)
-
-## --------------------------------------------------------------------
-
-# tests/variables.test: tests/variables.test.m4 $(MBFL_TESTS_PREREQ)
-# 	$(MBFL_TESTS_RUNPP) <$< >$@
-
-# tests/strings.test: tests/strings.test.m4 $(MBFL_TESTS_PREREQ)
-# 	$(MBFL_TESTS_RUNPP) <$< >$@
 
 tests/%.test: tests/%.test.m4 $(MBFL_TESTS_PREREQ)
 	$(MBFL_TESTS_RUNPP) <$< >$@

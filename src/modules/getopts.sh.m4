@@ -12,7 +12,7 @@
 #         Support for encoded argument values is provided and requires
 #       the "encode.sh" file to be included in the script.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -44,6 +44,23 @@ then
     declare -a mbfl_getopts_HASARG
     declare -a mbfl_getopts_DESCRIPTION
 fi
+
+function mbfl_getopts_reset () {
+    unset mbfl_getopts_KEYWORDS
+    unset mbfl_getopts_DEFAULTS
+    unset mbfl_getopts_BRIEFS
+    unset mbfl_getopts_LONGS
+    unset mbfl_getopts_HASARG
+    unset mbfl_getopts_DESCRIPTION
+
+    mbfl_getopts_INDEX=0
+    declare -a mbfl_getopts_KEYWORDS
+    declare -a mbfl_getopts_DEFAULTS
+    declare -a mbfl_getopts_BRIEFS
+    declare -a mbfl_getopts_LONGS
+    declare -a mbfl_getopts_HASARG
+    declare -a mbfl_getopts_DESCRIPTION
+}
 
 #page
 #### default options description
@@ -599,6 +616,29 @@ function mbfl_getopts_print_long_switches () {
 #     echo
 #     return 0
 # }
+
+#page
+#### miscellaneous functions
+
+function mbfl_getopts_gather_mbfl_options_var () {
+    mbfl_mandatory_nameref_parameter(FLAGS, 1, variable name)
+
+    if mbfl_option_verbose
+    then FLAGS+=' --verbose'
+    fi
+    if mbfl_option_verbose_program
+    then FLAGS+=' --verbose-program'
+    fi
+    if mbfl_option_debug
+    then FLAGS+=' --debug'
+    fi
+    if mbfl_option_show_program
+    then FLAGS+=' --show-program'
+    fi
+    if mbfl_option_test
+    then FLAGS+=' --test'
+    fi
+}
 
 ### end of file
 # Local Variables:

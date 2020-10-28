@@ -99,16 +99,20 @@ function getopts-4.4 () {
 #page
 
 function getopts-5.1 () {
+    mbfl_getopts_parse
     mbfl_declare_option A yes o option noarg 'an option' | dotest-output
 }
 function getopts-5.2 () {
+    mbfl_getopts_parse
     mbfl_declare_option A no o option noarg 'an option' | dotest-output
 }
 function getopts-5.3 () {
+    mbfl_getopts_parse
     mbfl_declare_option A a o option witharg 'an option' | dotest-output
 }
 
 function getopts-5.4 () {
+    mbfl_getopts_parse
     mbfl_main_set_main wao
     dotest-equal wao ${mbfl_main_SCRIPT_FUNCTION}
     mbfl_declare_option ACTION_ALPHA yes a alpha noarg 'an option'
@@ -119,14 +123,17 @@ function getopts-5.4 () {
 #page
 
 function getopts-6.1 () {
+    mbfl_getopts_parse
     mbfl_declare_option A a o option wappa 'an option' 2>&1 | \
 	dotest-output '<unknown>: error: wrong value "wappa" to hasarg field in option declaration number 1'
 }
 function getopts-6.2 () {
+    mbfl_getopts_parse
     mbfl_declare_option A a o option noarg 'an option' 2>&1 | \
 	dotest-output '<unknown>: error: wrong value "a" as default for option with no argument number 1'
 }
 function getopts-6.3 () {
+    mbfl_getopts_parse
     mbfl_declare_option ACTION_DELTA no o option witharg 'an option' 2>&1 | \
 	dotest-output '<unknown>: error: action option must be with no argument "ACTION_DELTA"'
 }
@@ -134,6 +141,7 @@ function getopts-6.3 () {
 #page
 
 function getopts-7.1 () {
+    mbfl_getopts_parse
     mbfl_declare_option A yes o option noarg 'an option'
     mbfl_declare_option B yes a another noarg 'an option'
     mbfl_getopts_print_long_switches | dotest-output \
@@ -146,6 +154,7 @@ function getopts-7.1 () {
 # brief options with no argument
 
 function getopts-8.1.1 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	no		a		alpha		noarg	      'an option'
     mbfl_declare_option B	no		b		beta		noarg	      'an option'
@@ -160,6 +169,7 @@ function getopts-8.1.1 () {
 	&& dotest-equal 0  ${ARGC}
 }
 function getopts-8.1.2 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	no		a		alpha		noarg	      'an option'
     mbfl_declare_option B	no		b		beta		noarg	      'an option'
@@ -178,6 +188,7 @@ function getopts-8.1.2 () {
 ## brief options with argument
 
 function getopts-8.2.1 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	_		a		alpha		witharg	      'an option'
     mbfl_declare_option B	_		b		beta		witharg	      'an option'
@@ -192,6 +203,7 @@ function getopts-8.2.1 () {
 	&& dotest-equal 0 ${ARGC} 0
 }
 function getopts-8.2.2 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	_		a		alpha		witharg	      'an option'
     mbfl_declare_option B	_		b		beta		witharg	      'an option'
@@ -206,6 +218,7 @@ function getopts-8.2.2 () {
 	&& dotest-equal 0 ${ARGC}
 }
 function getopts-8.2.3 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	_		a		alpha		witharg	      'an option'
     mbfl_declare_option B	_		b		beta		witharg	      'an option'
@@ -220,6 +233,7 @@ function getopts-8.2.3 () {
 	&& dotest-equal 0   ${ARGC}
 }
 function getopts-8.2.4 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	_		a		alpha		witharg	      'an option'
     mbfl_declare_option B	_		b		beta		witharg	      'an option'
@@ -236,6 +250,7 @@ function getopts-8.2.4 () {
 ## long options with no argument
 
 function getopts-9.1.1 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	no		a		alpha		noarg	      'an option'
     mbfl_declare_option B	no		b		beta		noarg	      'an option'
@@ -250,6 +265,7 @@ function getopts-9.1.1 () {
 	&& dotest-equal 0  ${ARGC}
 }
 function getopts-9.1.2 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	no		a		alpha		noarg	      'an option'
     mbfl_declare_option B	no		b		beta		noarg	      'an option'
@@ -269,6 +285,7 @@ function getopts-9.1.2 () {
 # long options with argument
 
 function getopts-9.2.1 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	_		a		alpha		witharg	      'an option'
     mbfl_declare_option B	_		b		beta		witharg	      'an option'
@@ -283,6 +300,7 @@ function getopts-9.2.1 () {
 	&& dotest-equal 0 ${ARGC} 0
 }
 function getopts-9.2.2 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	_		a		alpha		witharg	      'an option'
     mbfl_declare_option B	_		b		beta		witharg	      'an option'
@@ -297,6 +315,7 @@ function getopts-9.2.2 () {
 	&& dotest-equal 0 ${ARGC}
 }
 function getopts-9.2.3 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	_		a		alpha		witharg	      'an option'
     mbfl_declare_option B	_		b		beta		witharg	      'an option'
@@ -311,6 +330,7 @@ function getopts-9.2.3 () {
 	&& dotest-equal 0   ${ARGC}
 }
 function getopts-9.2.4 () {
+    mbfl_getopts_parse
     #                   keyword	default-value	brief-option	long-option	has-argument  description
     mbfl_declare_option A	_		a		alpha		witharg	      'an option'
     mbfl_declare_option B	_		b		beta		witharg	      'an option'
@@ -322,6 +342,82 @@ function getopts-9.2.4 () {
 }
 
 #page
+#### miscellaneous functions
+
+# Gather MBFL options: empty FLAGS, no options.
+#
+function getopts-10.0 () {
+    mbfl_local_varref(FLAGS)
+
+    mbfl_getopts_reset
+    local -a ARGV1=()
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
+    dotest-equal '' "$FLAGS"
+}
+
+# Gather MBFL options: non-empty FLAGS, no options.
+#
+function getopts-10.1 () {
+    mbfl_local_varref(FLAGS)
+
+    mbfl_getopts_reset
+    local -a ARGV1=()
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    FLAGS='-a -b -c'
+    mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
+    dotest-equal '-a -b -c' "$FLAGS"
+}
+
+# Gather MBFL options: non-empty FLAGS, some options.
+#
+function getopts-10.2 () {
+    mbfl_local_varref(FLAGS)
+
+    mbfl_getopts_reset
+    mbfl_unset_option_verbose
+    mbfl_unset_option_verbose_program
+    mbfl_unset_option_debug
+    mbfl_unset_option_show_program
+    mbfl_unset_option_test
+
+    local -a ARGV1=('--show-program' '--verbose-program')
+    local -i ARGC1=${#ARGV1[@]}
+    local -i ARG1ST=0
+    local -a ARGV
+    local -i ARGC=0
+    mbfl_getopts_parse
+
+    FLAGS='-a -b -c'
+    mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
+    dotest-equal '-a -b -c --verbose-program --show-program' "$FLAGS"
+}
+
+# Gather MBFL options: non-empty FLAGS, some options.
+#
+function getopts-10.3 () {
+    mbfl_local_varref(FLAGS)
+
+    mbfl_getopts_reset
+    mbfl_unset_option_verbose
+    mbfl_unset_option_verbose_program
+    mbfl_unset_option_debug
+    mbfl_unset_option_show_program
+    mbfl_unset_option_test
+
+    FLAGS='-a -b -c'
+    mbfl_set_option_verbose
+    mbfl_set_option_test
+    mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
+    dotest-equal '-a -b -c --verbose --test' "$FLAGS"
+}
+
+#page
+#### let's go
 
 dotest getopts-
 dotest-final-report

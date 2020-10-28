@@ -4058,6 +4058,30 @@ Exit or return with code @code{93}.
 Exit or return with code @code{92}.
 @end defun
 
+
+@defun mbfl_getopts_reset
+Reset to empty the internal state representing the declared options.
+@end defun
+
+
+@defun mbfl_getopts_gather_mbfl_options_var @var{_RV}
+Append to the data variable whose name is @var{_RV} a list of @mbfl{} command line options
+reflecting the current @mbfl{} options state.  Assuming no predefined options were given on the
+command line:
+
+@example
+mbfl_local_varref(FLAGS)
+
+mbfl_set_option_verbose
+mbfl_set_option_test
+mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
+"$FLAGS"        @result{} '--verbose --test'
+@end example
+
+This is useful when executing an @mbfl{} script as subprocess for an @mbfl{} script: we can hand the
+subprocess the same options that were given to the process, or maybe change them.
+@end defun
+
 @c page
 @node message
 @chapter Printing messages to the console

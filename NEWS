@@ -161,6 +161,11 @@ changes!
     mbfl_option_show_program_save
     mbfl_option_show_program_restore
 
+* Added functions:
+
+    mbfl_getopts_reset
+    mbfl_getopts_gather_mbfl_options_var
+
 
 Notes for revision 2.2.0
 ------------------------
