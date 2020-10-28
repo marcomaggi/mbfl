@@ -595,50 +595,58 @@ function mbfl_system_id_var () {
 
 ### ------------------------------------------------------------------------
 
-function mbfl_system_effective_user_id    () { mbfl_system_id '--user'; }
-function mbfl_system_effective_user_name  () { mbfl_system_id '--user' '--name'; }
-function mbfl_system_effective_group_id   () { mbfl_system_id '--group'; }
-function mbfl_system_effective_group_name () { mbfl_system_id '--group' '--name'; }
+function mbfl_system_effective_user_id    () { mbfl_system_id '--user'           "$@"; }
+function mbfl_system_effective_user_name  () { mbfl_system_id '--user' '--name'  "$@"; }
+function mbfl_system_effective_group_id   () { mbfl_system_id '--group'          "$@"; }
+function mbfl_system_effective_group_name () { mbfl_system_id '--group' '--name' "$@"; }
 
 function mbfl_system_effective_user_id_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
-    mbfl_system_id_var mbfl_datavar(RESULT) '--user'
+    shift
+    mbfl_system_id_var mbfl_datavar(RESULT) '--user' "$@"
 }
 function mbfl_system_effective_user_name_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
-    mbfl_system_id_var mbfl_datavar(RESULT) '--user' '--name'
+    shift
+    mbfl_system_id_var mbfl_datavar(RESULT) '--user' '--name' "$@"
 }
 function mbfl_system_effective_group_id_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
-    mbfl_system_id_var mbfl_datavar(RESULT) '--group'
+    shift
+    mbfl_system_id_var mbfl_datavar(RESULT) '--group' "$@"
 }
 function mbfl_system_effective_group_name_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
-    mbfl_system_id_var mbfl_datavar(RESULT) '--group' '--name'
+    shift
+    mbfl_system_id_var mbfl_datavar(RESULT) '--group' '--name' "$@"
 }
 
 ### ------------------------------------------------------------------------
 
-function mbfl_system_real_user_id    () { mbfl_system_id '--real' '--user'; }
-function mbfl_system_real_user_name  () { mbfl_system_id '--real' '--user' '--name'; }
-function mbfl_system_real_group_id   () { mbfl_system_id '--real' '--group'; }
-function mbfl_system_real_group_name () { mbfl_system_id '--real' '--group' '--name'; }
+function mbfl_system_real_user_id    () { mbfl_system_id '--real' '--user'           "$@"; }
+function mbfl_system_real_user_name  () { mbfl_system_id '--real' '--user'  '--name' "$@"; }
+function mbfl_system_real_group_id   () { mbfl_system_id '--real' '--group'          "$@"; }
+function mbfl_system_real_group_name () { mbfl_system_id '--real' '--group' '--name' "$@"; }
 
 function mbfl_system_real_user_id_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
-    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--user'
+    shift
+    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--user' "$@"
 }
 function mbfl_system_real_user_name_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
-    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--user' '--name'
+    shift
+    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--user' '--name' "$@"
 }
 function mbfl_system_real_group_id_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
-    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--group'
+    shift
+    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--group' "$@"
 }
 function mbfl_system_real_group_name_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
-    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--group' '--name'
+    shift
+    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--group' '--name' "$@"
 }
 
 ### end of file

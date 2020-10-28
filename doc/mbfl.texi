@@ -6392,56 +6392,56 @@ mbfl_system_id '--user' '--name'
 @end defun
 
 
-@defun mbfl_system_effective_user_id
-@defunx mbfl_system_effective_user_id_var @var{_RV}
+@defun mbfl_system_effective_user_id @var{ARG} @dots{}
+@defunx mbfl_system_effective_user_id_var @var{_RV} @var{ARG} @dots{}
 Use the functions @func{mbfl_system_id} and @func{mbfl_system_id_var} to determine the effective
 user id.
 @end defun
 
 
-@defun mbfl_system_effective_group_id
-@defunx mbfl_system_effective_group_id_var @var{_RV}
+@defun mbfl_system_effective_group_id @var{ARG} @dots{}
+@defunx mbfl_system_effective_group_id_var @var{_RV} @var{ARG} @dots{}
 Use the functions @func{mbfl_system_id} and @func{mbfl_system_id_var} to determine the effective
 group id.
 @end defun
 
 
-@defun mbfl_system_real_user_id
-@defunx mbfl_system_real_user_id_var @var{_RV}
+@defun mbfl_system_real_user_id @var{ARG} @dots{}
+@defunx mbfl_system_real_user_id_var @var{_RV} @var{ARG} @dots{}
 Use the functions @func{mbfl_system_id} and @func{mbfl_system_id_var} to determine the real user id.
 @end defun
 
 
-@defun mbfl_system_real_group_id
-@defunx mbfl_system_real_group_id_var @var{_RV}
+@defun mbfl_system_real_group_id @var{ARG} @dots{}
+@defunx mbfl_system_real_group_id_var @var{_RV} @var{ARG} @dots{}
 Use the functions @func{mbfl_system_id} and @func{mbfl_system_id_var} to determine the real group
 id.
 @end defun
 
 
-@defun mbfl_system_effective_user_name
-@defunx mbfl_system_effective_user_name_var @var{_RV}
+@defun mbfl_system_effective_user_name @var{ARG} @dots{}
+@defunx mbfl_system_effective_user_name_var @var{_RV} @var{ARG} @dots{}
 Use the functions @func{mbfl_system_name} and @func{mbfl_system_name_var} to determine the effective
 user name.
 @end defun
 
 
-@defun mbfl_system_effective_group_name
-@defunx mbfl_system_effective_group_name_var @var{_RV}
+@defun mbfl_system_effective_group_name @var{ARG} @dots{}
+@defunx mbfl_system_effective_group_name_var @var{_RV} @var{ARG} @dots{}
 Use the functions @func{mbfl_system_name} and @func{mbfl_system_name_var} to determine the effective
 group name.
 @end defun
 
 
-@defun mbfl_system_real_user_name
-@defunx mbfl_system_real_user_name_var @var{_RV}
+@defun mbfl_system_real_user_name @var{ARG} @dots{}
+@defunx mbfl_system_real_user_name_var @var{_RV} @var{ARG} @dots{}
 Use the functions @func{mbfl_system_name} and @func{mbfl_system_name_var} to determine the real user
 name.
 @end defun
 
 
-@defun mbfl_system_real_group_name
-@defunx mbfl_system_real_group_name_var @var{_RV}
+@defun mbfl_system_real_group_name @var{ARG} @dots{}
+@defunx mbfl_system_real_group_name_var @var{_RV} @var{ARG} @dots{}
 Use the functions @func{mbfl_system_name} and @func{mbfl_system_name_var} to determine the real
 group name.
 @end defun
