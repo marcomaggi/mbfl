@@ -4080,6 +4080,16 @@ mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
 
 This is useful when executing an @mbfl{} script as subprocess for an @mbfl{} script: we can hand the
 subprocess the same options that were given to the process, or maybe change them.
+
+This function uses the following functions to gather the required options:
+
+@example
+mbfl_option_verbose
+mbfl_option_verbose_program
+mbfl_option_debug
+mbfl_option_show_program
+mbfl_option_test
+@end example
 @end defun
 
 @c page
