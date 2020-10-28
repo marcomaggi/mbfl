@@ -60,8 +60,14 @@ $ ../configure --help
   defaults to: `/usr/bin/sudo`.
 
 * `--with-whoami=/path/to/whoami` allows  the selection of  the pathname
-  to  the  executable  `whoami`;  this pathname  is  hard-coded  in  the
-  library.  It defaults to: /usr/bin/whoami.
+  to the executable `whoami`, which is  meant to be the program from the
+  package GNU Coreutils; this pathname is hard-coded in the library.  It
+  defaults to: /bin/whoami.
+
+* `--with-id=/path/to/id` allows  the selection  of the pathname  to the
+  executable `id`, which is meant to be the program from the package GNU
+  Coreutils; this  pathname is hard-coded  in the library.   It defaults
+  to: /bin/id.
 
 The Makefile is designed to allow parallel builds, so we can do:
 

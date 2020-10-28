@@ -45,27 +45,27 @@ EXTRA_DIST	+= \
 	src/scripts/mbflpp.sh.m4		\
 	src/scripts/mbfltest.sh.m4		\
 	\
-	src/modules/base.sh.m4			\
-	src/modules/encode.sh.m4		\
-	src/modules/file.sh.m4			\
-	src/modules/fd.sh.m4			\
-	src/modules/getopts.sh.m4		\
 	src/modules/actions.sh.m4		\
+	src/modules/arrays.sh.m4		\
+	src/modules/atexit.sh.m4		\
+	src/modules/base.sh.m4			\
+	src/modules/dialog.sh.m4		\
+	src/modules/encode.sh.m4		\
+	src/modules/fd.sh.m4			\
+	src/modules/file.sh.m4			\
+	src/modules/getopts.sh.m4		\
+	src/modules/interfaces.sh.m4		\
+	src/modules/locations.sh.m4		\
+	src/modules/main.sh.m4			\
 	src/modules/message.sh.m4		\
 	src/modules/program.sh.m4		\
-	src/modules/signal.sh.m4		\
-	src/modules/string.sh.m4		\
-	src/modules/dialog.sh.m4		\
-	src/modules/times-and-dates.sh.m4	\
-	src/modules/main.sh.m4			\
-	src/modules/variable.sh.m4		\
-	src/modules/arrays.sh.m4		\
-	src/modules/system.sh.m4		\
-	src/modules/interfaces.sh.m4		\
-	src/modules/atexit.sh.m4		\
-	src/modules/locations.sh.m4		\
 	src/modules/semver.sh.m4		\
 	src/modules/shell.sh.m4			\
+	src/modules/signal.sh.m4		\
+	src/modules/string.sh.m4		\
+	src/modules/system.sh.m4		\
+	src/modules/times-and-dates.sh.m4	\
+	src/modules/variable.sh.m4		\
 	\
 	src/lib/libmbfl.sh.m4			\
 	src/lib/libmbfltest.sh			\
@@ -78,14 +78,30 @@ EXTRA_DIST	+= \
 	src/backup/mbfltest.sh			\
 	src/backup/preprocessor.m4
 
-MBFL_MODULES		= \
-	src/modules/base.sh	src/modules/encode.sh		src/modules/file.sh	      \
-	src/modules/getopts.sh	src/modules/actions.sh		src/modules/message.sh	      \
-	src/modules/program.sh	src/modules/signal.sh		src/modules/string.sh	      \
-	src/modules/dialog.sh	src/modules/main.sh		src/modules/variable.sh	      \
-	src/modules/system.sh	src/modules/arrays.sh		src/modules/interfaces.sh     \
-	src/modules/atexit.sh	src/modules/locations.sh	src/modules/times-and-dates.sh \
-	src/modules/fd.sh	src/modules/semver.sh		src/modules/shell.sh
+# This  is *not*  the  order  in which  modules  are  included in  the
+# library; that order is established in the file "libmbl.sh.m4"!
+MBFL_MODULES		=			\
+	src/modules/actions.sh			\
+	src/modules/arrays.sh			\
+	src/modules/atexit.sh			\
+	src/modules/base.sh			\
+	src/modules/dialog.sh			\
+	src/modules/encode.sh			\
+	src/modules/fd.sh			\
+	src/modules/file.sh			\
+	src/modules/getopts.sh			\
+	src/modules/interfaces.sh		\
+	src/modules/locations.sh		\
+	src/modules/main.sh			\
+	src/modules/message.sh			\
+	src/modules/program.sh			\
+	src/modules/semver.sh			\
+	src/modules/shell.sh			\
+	src/modules/signal.sh			\
+	src/modules/string.sh			\
+	src/modules/system.sh			\
+	src/modules/times-and-dates.sh		\
+	src/modules/variable.sh
 
 MBFL_PREPRO		= src/lib/preprocessor.m4
 
@@ -126,6 +142,7 @@ MBFLPP_MODULES_FLAGS	= --no-prepro 						\
 			  --define=__PACKAGE_VERSION__=$(MBFL_CORE_VERSION)	\
 			  --define=__PATHNAME_SUDO__=$(PATHNAME_SUDO)		\
 			  --define=__PATHNAME_WHOAMI__=$(PATHNAME_WHOAMI)	\
+			  --define=__PATHNAME_ID__=$(PATHNAME_ID)		\
 			  --define=__SEMANTIC_VERSION__=$(MBFL_SEMANTIC_VERSION)\
 			  $(MBFLPPFLAGS)
 MBFLPP_LIBS_FLAGS	= --no-prepro 						\

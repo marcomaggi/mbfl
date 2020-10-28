@@ -389,6 +389,300 @@ function system-symbolic-to-octal-1.4 () {
 }
 
 #page
+#### tests for "whoami" from GNU Coreutils
+
+function system-users-whoami-1.0 () {
+    mbfl_local_varref(USERNAME)
+    local RV1 RV2
+
+    mbfl_system_whoami_var mbfl_datavar(USERNAME)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'whoami exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the username is: %s' "$USERNAME"
+}
+
+function system-users-whoami-1.1 () {
+    local USERNAME
+    local RV1 RV2
+
+    USERNAME=$(mbfl_system_whoami)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'whoami exit status' && \
+	dotest-equal 0 $RV2 'not empty result'&& \
+	dotest-printf 'the username is: %s' "$USERNAME"
+}
+
+#page
+#### tests for "id" from GNU Coreutils
+
+function system-users-id-1.0 () {
+    mbfl_local_varref(OUTPUT)
+    local RV1 RV2
+
+    mbfl_system_id_var mbfl_datavar(OUTPUT)
+    RV1=$?
+    mbfl_string_is_not_empty "$OUTPUT"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the output is: %s' "$OUTPUT"
+}
+
+function system-users-id-1.1 () {
+    local USERNAME
+    local RV1 RV2
+
+    USERNAME=$(mbfl_system_id '--user')
+    RV1=$?
+    mbfl_string_is_not_empty "$USERNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the username is: %s' "$USERNAME"
+}
+
+### ------------------------------------------------------------------------
+
+function system-users-id-2.0.1 () {
+    mbfl_local_varref(USERID)
+    local RV1 RV2
+
+    mbfl_system_effective_user_id_var mbfl_datavar(USERID)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERID"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the effective user id is: %s' "$USERID"
+}
+function system-users-id-2.0.2 () {
+    local USERID
+    local RV1 RV2
+
+    USERID=$(mbfl_system_effective_user_id)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERID"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the effective user id is: %s' "$USERID"
+}
+
+### ------------------------------------------------------------------------
+
+function system-users-id-2.1.1 () {
+    mbfl_local_varref(GROUPID)
+    local RV1 RV2
+
+    mbfl_system_effective_group_id_var mbfl_datavar(GROUPID)
+    RV1=$?
+    mbfl_string_is_not_empty "$GROUPID"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the effective group id is: %s' "$GROUPID"
+}
+function system-users-id-2.1.2 () {
+    local GROUPID
+    local RV1 RV2
+
+    GROUPID=$(mbfl_system_effective_group_id)
+    RV1=$?
+    mbfl_string_is_not_empty "$GROUPID"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the effective group id is: %s' "$GROUPID"
+}
+
+### ------------------------------------------------------------------------
+
+function system-users-id-2.2.1 () {
+    mbfl_local_varref(USERNAME)
+    local RV1 RV2
+
+    mbfl_system_effective_user_name_var mbfl_datavar(USERNAME)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the effective user name is: %s' "$USERNAME"
+}
+function system-users-id-2.2.2 () {
+    local USERNAME
+    local RV1 RV2
+
+    USERNAME=$(mbfl_system_effective_user_name)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the effective user name is: %s' "$USERNAME"
+}
+
+### ------------------------------------------------------------------------
+
+function system-users-id-2.3.1 () {
+    mbfl_local_varref(GROUPNAME)
+    local RV1 RV2
+
+    mbfl_system_effective_group_name_var mbfl_datavar(GROUPNAME)
+    RV1=$?
+    mbfl_string_is_not_empty "$GROUPNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the effective group name is: %s' "$GROUPNAME"
+}
+function system-users-id-2.3.2 () {
+    local GROUPNAME
+    local RV1 RV2
+
+    GROUPNAME=$(mbfl_system_effective_group_name)
+    RV1=$?
+    mbfl_string_is_not_empty "$GROUPNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the effective group name is: %s' "$GROUPNAME"
+}
+
+### ------------------------------------------------------------------------
+
+function system-users-id-2.4.1 () {
+    mbfl_local_varref(USERID)
+    local RV1 RV2
+
+    mbfl_system_real_user_id_var mbfl_datavar(USERID)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERID"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the real user id is: %s' "$USERID"
+}
+function system-users-id-2.4.2 () {
+    local USERID
+    local RV1 RV2
+
+    USERID=$(mbfl_system_real_user_id)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERID"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the real user id is: %s' "$USERID"
+}
+
+### ------------------------------------------------------------------------
+
+function system-users-id-2.5.1 () {
+    mbfl_local_varref(GROUPID)
+    local RV1 RV2
+
+    mbfl_system_real_group_id_var mbfl_datavar(GROUPID)
+    RV1=$?
+    mbfl_string_is_not_empty "$GROUPID"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the real group id is: %s' "$GROUPID"
+}
+function system-users-id-2.5.2 () {
+    local GROUPID
+    local RV1 RV2
+
+    GROUPID=$(mbfl_system_real_group_id)
+    RV1=$?
+    mbfl_string_is_not_empty "$GROUPID"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the real group id is: %s' "$GROUPID"
+}
+
+### ------------------------------------------------------------------------
+
+function system-users-id-2.6.1 () {
+    mbfl_local_varref(USERNAME)
+    local RV1 RV2
+
+    mbfl_system_real_user_name_var mbfl_datavar(USERNAME)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the real user name is: %s' "$USERNAME"
+}
+function system-users-id-2.6.2 () {
+    local USERNAME
+    local RV1 RV2
+
+    USERNAME=$(mbfl_system_real_user_name)
+    RV1=$?
+    mbfl_string_is_not_empty "$USERNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the real user name is: %s' "$USERNAME"
+}
+
+### ------------------------------------------------------------------------
+
+function system-users-id-2.7.1 () {
+    mbfl_local_varref(GROUPNAME)
+    local RV1 RV2
+
+    mbfl_system_real_group_name_var mbfl_datavar(GROUPNAME)
+    RV1=$?
+    mbfl_string_is_not_empty "$GROUPNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the real group name is: %s' "$GROUPNAME"
+}
+function system-users-id-2.7.2 () {
+    local GROUPNAME
+    local RV1 RV2
+
+    GROUPNAME=$(mbfl_system_real_group_name)
+    RV1=$?
+    mbfl_string_is_not_empty "$GROUPNAME"
+    RV2=$?
+
+    dotest-equal 0 $RV1 'id exit status' && \
+	dotest-equal 0 $RV2 'not empty result' && \
+	dotest-printf 'the real group name is: %s' "$GROUPNAME"
+}
+
+#page
 #### end of tests
 
 dotest system-

@@ -33,6 +33,7 @@ shopt -s expand_aliases
 
 m4_include(base.sh)
 m4_include(shell.sh)
+m4_include(main.sh)
 m4_include(string.sh)
 m4_include(atexit.sh)
 m4_include(locations.sh)
@@ -51,7 +52,6 @@ m4_include(system.sh)
 m4_include(arrays.sh)
 m4_include(semver.sh)
 m4_include(interfaces.sh)
-m4_include(main.sh)
 
 ### end of file
 # Local Variables:

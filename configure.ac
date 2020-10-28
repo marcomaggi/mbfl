@@ -54,10 +54,20 @@ dnl --------------------------------------------------------------------
 AC_ARG_WITH([whoami],
   AS_HELP_STRING([--with-whoami],[select a pathname for the executable whoami]),
   [PATHNAME_WHOAMI=$withval],
-  [PATHNAME_WHOAMI=/usr/bin/whoami])
+  [PATHNAME_WHOAMI=/bin/whoami])
 
 AC_CHECK_PROG(PATHNAME_WHOAMI,$PATHNAME_WHOAMI,$PATHNAME_WHOAMI)
 AC_SUBST([PATHNAME_WHOAMI])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([id],
+  AS_HELP_STRING([--with-id],[select a pathname for the executable id]),
+  [PATHNAME_ID=$withval],
+  [PATHNAME_ID=/bin/id])
+
+AC_CHECK_PROG(PATHNAME_ID,$PATHNAME_ID,$PATHNAME_ID)
+AC_SUBST([PATHNAME_ID])
 
 dnl --------------------------------------------------------------------
 

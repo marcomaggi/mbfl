@@ -16,6 +16,14 @@ changes!
   installed under directories *without* the version part.  No pkg-config
   module is installed.
 
+* The package configuration allows us to select a hard-coded path to the
+  GNU Coreutils program "id", in  addition to "whoami" and "sudo".  Some
+  of the default selections have been changed:
+
+    /bin/id
+    /bin/whoami
+    /usr/bin/sudo
+
 * The  way  the library  is  reliably  loaded  has been  reviewed.   The
   preprocessor can include the needed code with a macro.
 
@@ -153,8 +161,26 @@ changes!
 
 * Added functions:
 
-    mbfl_program_whoami
-    mbfl_program_whoami_var
+    mbfl_system_whoami
+    mbfl_system_whoami_var
+    mbfl_system_id
+    mbfl_system_id_var
+    mbfl_system_effective_user_id
+    mbfl_system_effective_user_name
+    mbfl_system_effective_group_id
+    mbfl_system_effective_group_name
+    mbfl_system_effective_user_id_var
+    mbfl_system_effective_user_name_var
+    mbfl_system_effective_group_id_var
+    mbfl_system_effective_group_name_var
+    mbfl_system_real_user_id
+    mbfl_system_real_user_name
+    mbfl_system_real_group_id
+    mbfl_system_real_group_name
+    mbfl_system_real_user_id_var
+    mbfl_system_real_user_name_var
+    mbfl_system_real_group_id_var
+    mbfl_system_real_group_name_var
 
 * Added functions:
 

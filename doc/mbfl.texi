@@ -4368,9 +4368,14 @@ this pathname is hard--coded in the library.  It defaults to:
 @file{/usr/bin/sudo}.
 
 @item --with-whoami=/path/to/whoami
-Allows the selection of the pathname to the executable @command{whoami};
-this pathname is hard--coded in the library.  It defaults to:
-@file{/usr/bin/whoami}.
+Allows the selection of the pathname to the executable @command{whoami}, which is meant to be the
+program from the package @gnu{} Coreutils; this pathname is hard--coded in the library.  It defaults
+to: @file{/bin/whoami}.
+
+@item --with-id=/path/to/id
+Allows the selection of the pathname to the executable @command{id}, which is meant to be the
+program from the package @gnu{} Coreutils; this pathname is hard--coded in the library.  It defaults
+to: @file{/bin/id}.
 @end table
 
 The functions described here must be used in the following way:
@@ -4733,33 +4738,8 @@ Exit or return with code @code{99}.
 
 
 @menu
-* interfaces whoami::           Determining the effective user name.
 * interfaces at::               Scheduling jobs for later execution.
 @end menu
-
-@c page
-@node interfaces whoami
-@section Determining the effective user name
-
-
-@defun mbfl_program_whoami
-@defunx mbfl_program_whoami_var @var{_RV}
-Run the program @command{whoami} to determine the effective user name; print it on the standard
-output channel.  If @command{whoami} is not executable or an error occurs executing it: return by
-calling @func{return_failure}.
-
-We need to remember that a pathname to @command{whoami} is determined at package configuration time
-and hard--coded in the @mbfl{} file; @ref{program executing, Executing a program}.
-
-@example
-mbfl_program_whoami     @print{} marco
-
-mbfl_local_varref(USERNAME)
-mbfl_program_whoami mbfl_datavar(USERNAME)
-"$USERNAME"             @print{} marco
-@end example
-@end defun
-
 
 @c page
 @node interfaces at
@@ -5806,6 +5786,7 @@ compatibility.
 * system group::                Reading and searching the file
                                 @file{/etc/group}.
 * system file perms::           Converting file permissions.
+* system users::                Gathering users data.
 @end menu
 
 @c page
@@ -6332,6 +6313,137 @@ digit.
 @defun mbfl_system_octal_to_symbolic_permissions @var{mode}
 Convert a single octal digit representing file permissions into three
 chars.
+@end defun
+
+@c page
+@node system users
+@section Gathering users data
+
+
+At package configuration time we can specify which @command{id} and @command{whoami} executables to
+use through the following option for the configuration script @command{configure}:
+
+@table @code
+@item --with-whoami=/path/to/whoami
+Allows the selection of the pathname to the executable @command{whoami}, which is meant to be the
+program from the package @gnu{} Coreutils; this pathname is hard--coded in the library.  It defaults
+to: @file{/bin/whoami}.
+
+@item --with-id=/path/to/id
+Allows the selection of the pathname to the executable @command{id}, which is meant to be the
+program from the package @gnu{} Coreutils; this pathname is hard--coded in the library.  It defaults
+to: @file{/bin/id}.
+@end table
+
+@menu
+* system users whoami::         Determining the effective user name.
+* system users id::             Determining user's IDs.
+@end menu
+
+@c page
+@node system users whoami
+@subsection Determining the effective user name
+
+
+@defun mbfl_system_whoami
+@defunx mbfl_system_whoami_var @var{_RV}
+Run the program @command{whoami} to determine the effective user name; print it on the standard
+output channel.  If @command{whoami} is not executable or an error occurs executing it: return by
+calling @func{return_failure}.
+
+We need to remember that a pathname to @command{whoami} is determined at package configuration time
+and hard--coded in the @mbfl{} file; @ref{system users, Gathering users data}.
+
+@example
+mbfl_system_whoami      @print{} marco
+
+@{
+  mbfl_local_varref(USERNAME)
+  mbfl_system_whoami_var mbfl_datavar(USERNAME)
+  "$USERNAME"
+@} @result{} marco
+@end example
+@end defun
+
+@c page
+@node system users id
+@subsection Determining user's IDs
+
+
+@defun mbfl_system_id @var{ARG} @dots{}
+@defunx mbfl_system_id_var @var{_RV} @var{ARG} @dots{}
+Run the program @command{id} handing to it the given optional arguments; the program is run through
+the @func{mbfl_program_exec} interface.  If @command{id} is not executable or an error occurs
+executing it: return by calling @func{return_failure}.
+
+We need to remember that a pathname to @command{id} is determined at package configuration time and
+hard--coded in the @mbfl{} file; @ref{system users, Gathering users data}.
+
+@example
+mbfl_system_id '--user' '--name'
+@print{} marco
+
+@{
+  mbfl_local_varref(USERNAME)
+  mbfl_system_id_var mbfl_datavar(USERNAME) '--user' '--name'
+  "$USERNAME"
+@} @result{} marco
+@end example
+@end defun
+
+
+@defun mbfl_system_effective_user_id
+@defunx mbfl_system_effective_user_id_var @var{_RV}
+Use the functions @func{mbfl_system_id} and @func{mbfl_system_id_var} to determine the effective
+user id.
+@end defun
+
+
+@defun mbfl_system_effective_group_id
+@defunx mbfl_system_effective_group_id_var @var{_RV}
+Use the functions @func{mbfl_system_id} and @func{mbfl_system_id_var} to determine the effective
+group id.
+@end defun
+
+
+@defun mbfl_system_real_user_id
+@defunx mbfl_system_real_user_id_var @var{_RV}
+Use the functions @func{mbfl_system_id} and @func{mbfl_system_id_var} to determine the real user id.
+@end defun
+
+
+@defun mbfl_system_real_group_id
+@defunx mbfl_system_real_group_id_var @var{_RV}
+Use the functions @func{mbfl_system_id} and @func{mbfl_system_id_var} to determine the real group
+id.
+@end defun
+
+
+@defun mbfl_system_effective_user_name
+@defunx mbfl_system_effective_user_name_var @var{_RV}
+Use the functions @func{mbfl_system_name} and @func{mbfl_system_name_var} to determine the effective
+user name.
+@end defun
+
+
+@defun mbfl_system_effective_group_name
+@defunx mbfl_system_effective_group_name_var @var{_RV}
+Use the functions @func{mbfl_system_name} and @func{mbfl_system_name_var} to determine the effective
+group name.
+@end defun
+
+
+@defun mbfl_system_real_user_name
+@defunx mbfl_system_real_user_name_var @var{_RV}
+Use the functions @func{mbfl_system_name} and @func{mbfl_system_name_var} to determine the real user
+name.
+@end defun
+
+
+@defun mbfl_system_real_group_name
+@defunx mbfl_system_real_group_name_var @var{_RV}
+Use the functions @func{mbfl_system_name} and @func{mbfl_system_name_var} to determine the real
+group name.
 @end defun
 
 @c page

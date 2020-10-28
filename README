@@ -75,9 +75,14 @@ then do it:
    /usr/bin/sudo.
 
 --with-whoami=/path/to/whoami
-   Allows the selection of the pathname to the executable "whoami"; this
-   pathname   is   hard-coded  in   the   library.    It  defaults   to:
-   /usr/bin/whoami.
+   Allows  the selection  of the  pathname to  the executable  "whoami",
+   which is meant to be the program from the package GNU Coreutils; this
+   pathname is hard-coded in the library.  It defaults to: /bin/whoami.
+
+--with-id=/path/to/id
+   Allows the selection of the pathname to the executable "id", which is
+   meant to be the program from the package GNU Coreutils; this pathname
+   is hard-coded in the library.  It defaults to: /bin/id.
 
   From  a repository  checkout or  snapshot  (the ones  from the  Github
 site): we must  install the GNU Autotools (GNU  Automake, GNU Autoconf),

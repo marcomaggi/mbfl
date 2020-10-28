@@ -175,6 +175,7 @@ declare mbfl_program_SUDO_USER=nosudo
 declare mbfl_program_SUDO_OPTIONS
 declare -r mbfl_program_SUDO=__PATHNAME_SUDO__
 declare -r mbfl_program_WHOAMI=__PATHNAME_WHOAMI__
+declare -r mbfl_program_ID=__PATHNAME_ID__
 declare mbfl_program_STDERR_TO_STDOUT=false
 declare mbfl_program_BASH=$BASH
 declare mbfl_program_BGPID
@@ -609,27 +610,6 @@ function mbfl_program_bash_command () {
 }
 function mbfl_program_bash () {
     mbfl_program_exec "$mbfl_program_BASH" "$@"
-}
-
-#page
-#### miscellaneous program interfaces
-
-function mbfl_program_whoami_var () {
-    mbfl_mandatory_nameref_parameter(USERNAME, 1, username result variable)
-
-    if test -x "$mbfl_program_WHOAMI"
-    then
-	if ! USERNAME=$(mbfl_program_whoami)
-	then return_failure
-	fi
-    fi
-}
-
-function mbfl_program_whoami () {
-    if test -x "$mbfl_program_WHOAMI"
-    then "$mbfl_program_WHOAMI"
-    else return_failure
-    fi
 }
 
 ### end of file

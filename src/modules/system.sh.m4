@@ -559,6 +559,88 @@ function mbfl_system_octal_to_symbolic_permissions () {
     printf '%s\n' "${mbfl_symbolic_permissions[${MODE}]}"
 }
 
+#page
+#### users informations
+
+function mbfl_system_whoami () {
+    if test -x "$mbfl_program_WHOAMI"
+    then mbfl_program_exec "$mbfl_program_WHOAMI"
+    else return_failure
+    fi
+}
+function mbfl_system_whoami_var () {
+    mbfl_mandatory_nameref_parameter(USERNAME, 1, username result variable)
+
+    if ! USERNAME=$(mbfl_system_whoami)
+    then return_failure
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_id () {
+    if test -x "$mbfl_program_ID"
+    then mbfl_program_exec "$mbfl_program_ID" "$@"
+    else return_failure
+    fi
+}
+function mbfl_system_id_var () {
+    mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
+    shift
+
+    if ! RESULT=$(mbfl_system_id "$@")
+    then return_failure
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_effective_user_id    () { mbfl_system_id '--user'; }
+function mbfl_system_effective_user_name  () { mbfl_system_id '--user' '--name'; }
+function mbfl_system_effective_group_id   () { mbfl_system_id '--group'; }
+function mbfl_system_effective_group_name () { mbfl_system_id '--group' '--name'; }
+
+function mbfl_system_effective_user_id_var () {
+    mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
+    mbfl_system_id_var mbfl_datavar(RESULT) '--user'
+}
+function mbfl_system_effective_user_name_var () {
+    mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
+    mbfl_system_id_var mbfl_datavar(RESULT) '--user' '--name'
+}
+function mbfl_system_effective_group_id_var () {
+    mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
+    mbfl_system_id_var mbfl_datavar(RESULT) '--group'
+}
+function mbfl_system_effective_group_name_var () {
+    mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
+    mbfl_system_id_var mbfl_datavar(RESULT) '--group' '--name'
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_system_real_user_id    () { mbfl_system_id '--real' '--user'; }
+function mbfl_system_real_user_name  () { mbfl_system_id '--real' '--user' '--name'; }
+function mbfl_system_real_group_id   () { mbfl_system_id '--real' '--group'; }
+function mbfl_system_real_group_name () { mbfl_system_id '--real' '--group' '--name'; }
+
+function mbfl_system_real_user_id_var () {
+    mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
+    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--user'
+}
+function mbfl_system_real_user_name_var () {
+    mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
+    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--user' '--name'
+}
+function mbfl_system_real_group_id_var () {
+    mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
+    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--group'
+}
+function mbfl_system_real_group_name_var () {
+    mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
+    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--group' '--name'
+}
+
 ### end of file
 # Local Variables:
 # mode: sh
