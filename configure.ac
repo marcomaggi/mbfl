@@ -38,7 +38,8 @@ AM_PATH_LISPDIR
 AC_SUBST([MBFL_CORE_VERSION],MMUX_PACKAGE_MAJOR_VERSION[.]MMUX_PACKAGE_MINOR_VERSION[.]MMUX_PACKAGE_PATCH_LEVEL)
 AC_SUBST([MBFL_SEMANTIC_VERSION],MMUX_PACKAGE_SEMANTIC_VERSION)
 
-dnl --------------------------------------------------------------------
+
+#### external programs
 
 AC_ARG_WITH([bash],
   AS_HELP_STRING([--with-bash],[select a pathname for the executable bash]),
@@ -161,6 +162,73 @@ AC_PATH_PROG([MBFL_PROGRAM_LS],[$MBFL_PROGRAM_LS],[/bin/false])
 
 dnl --------------------------------------------------------------------
 
+AC_ARG_WITH([rm],
+  AS_HELP_STRING([--with-rm],[select a pathname for the executable rm]),
+  [MBFL_PROGRAM_RM=$withval],
+  [MBFL_PROGRAM_RM=/bin/rm])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_RM],[$MBFL_PROGRAM_RM],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([rmdir],
+  AS_HELP_STRING([--with-rmdir],[select a pathname for the executable rmdir]),
+  [MBFL_PROGRAM_RMDIR=$withval],
+  [MBFL_PROGRAM_RMDIR=/bin/rmdir])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_RMDIR],[$MBFL_PROGRAM_RMDIR],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([mv],
+  AS_HELP_STRING([--with-mv],[select a pathname for the executable mv]),
+  [MBFL_PROGRAM_MV=$withval],
+  [MBFL_PROGRAM_MV=/bin/mv])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_MV],[$MBFL_PROGRAM_MV],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([cp],
+  AS_HELP_STRING([--with-cp],[select a pathname for the executable cp]),
+  [MBFL_PROGRAM_CP=$withval],
+  [MBFL_PROGRAM_CP=/bin/cp])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_CP],[$MBFL_PROGRAM_CP],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([mkdir],
+  AS_HELP_STRING([--with-mkdir],[select a pathname for the executable mkdir]),
+  [MBFL_PROGRAM_MKDIR=$withval],
+  [MBFL_PROGRAM_MKDIR=/bin/mkdir])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_MKDIR],[$MBFL_PROGRAM_MKDIR],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([ln],
+  AS_HELP_STRING([--with-ln],[select a pathname for the executable ln]),
+  [MBFL_PROGRAM_LN=$withval],
+  [MBFL_PROGRAM_LN=/bin/ln])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_LN],[$MBFL_PROGRAM_LN],[/bin/false])
+
+
+#### sendmail interface
+
 AC_ARG_WITH([sendmail],
   AS_HELP_STRING([--with-sendmail],[enable installation of sendmail example script and emacs interface]),
   [true],[with_sendmail=no])
@@ -169,6 +237,9 @@ AS_VAR_IF(with_sendmail,'yes',
   [AC_MSG_RESULT([yes])],
   [AC_MSG_RESULT([no])])
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
+
+
+#### let's go
 
 AC_CONFIG_FILES([Makefile]
   [meta/scripts/mbfl-config]

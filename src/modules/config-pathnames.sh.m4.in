@@ -2,13 +2,19 @@
 
 declare -r mbfl_PROGRAM_CHMOD='@MBFL_PROGRAM_CHMOD@'
 declare -r mbfl_PROGRAM_CHOWN='@MBFL_PROGRAM_CHOWN@'
+declare -r mbfl_PROGRAM_CP='@MBFL_PROGRAM_CP@'
 declare -r mbfl_PROGRAM_ID='@MBFL_PROGRAM_ID@'
-declare -r mbfl_PROGRAM_REALPATH='@MBFL_PROGRAM_REALPATH@'
-declare -r mbfl_PROGRAM_SUDO='@MBFL_PROGRAM_SUDO@'
-declare -r mbfl_PROGRAM_STAT='@MBFL_PROGRAM_STAT@'
-declare -r mbfl_PROGRAM_WHOAMI='@MBFL_PROGRAM_WHOAMI@'
-declare -r mbfl_PROGRAM_READLINK='@MBFL_PROGRAM_READLINK@'
+declare -r mbfl_PROGRAM_LN='@MBFL_PROGRAM_LN@'
 declare -r mbfl_PROGRAM_LS='@MBFL_PROGRAM_LS@'
+declare -r mbfl_PROGRAM_MKDIR='@MBFL_PROGRAM_MKDIR@'
+declare -r mbfl_PROGRAM_MV='@MBFL_PROGRAM_MV@'
+declare -r mbfl_PROGRAM_READLINK='@MBFL_PROGRAM_READLINK@'
+declare -r mbfl_PROGRAM_REALPATH='@MBFL_PROGRAM_REALPATH@'
+declare -r mbfl_PROGRAM_RM='@MBFL_PROGRAM_RM@'
+declare -r mbfl_PROGRAM_RMDIR='@MBFL_PROGRAM_RMDIR@'
+declare -r mbfl_PROGRAM_STAT='@MBFL_PROGRAM_STAT@'
+declare -r mbfl_PROGRAM_SUDO='@MBFL_PROGRAM_SUDO@'
+declare -r mbfl_PROGRAM_WHOAMI='@MBFL_PROGRAM_WHOAMI@'
 
 ### end of file
 # Local Variables:
