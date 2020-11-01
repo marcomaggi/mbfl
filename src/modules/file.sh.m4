@@ -13,7 +13,7 @@
 #	understood  parameter expansion:  there are  cases that  are not
 #	correctly handled.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2017, 2018 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2017, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -491,15 +491,18 @@ function mbfl_p_file_normalise2_var () {
 #### pathname normalisation: realpath
 
 function mbfl_file_enable_realpath () {
-    mbfl_declare_program realpath
+    :
 }
 
 function mbfl_file_realpath () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    mbfl_local_varref(REALPATH)
-    mbfl_program_found_var mbfl_datavar(REALPATH) realpath || exit $?
-    mbfl_program_exec "$REALPATH" "$@" -- "$PATHNAME"
+    if mbfl_file_is_executable "$PATHNAME_REALPATH"
+    then mbfl_program_exec "$PATHNAME_REALPATH" "$@" -- "$PATHNAME"
+    else
+	mbfl_message_error_printf 'program not executable: "%s"' "$PATHNAME_REALPATH"
+	return_because_failure
+    fi
 }
 
 function mbfl_file_realpath_var () {

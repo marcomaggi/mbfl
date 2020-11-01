@@ -1,0 +1,16 @@
+# config-pathnames.sh.m4 --
+
+declare -r mbfl_PROGRAM_CHMOD='@MBFL_PROGRAM_CHMOD@'
+declare -r mbfl_PROGRAM_CHOWN='@MBFL_PROGRAM_CHOWN@'
+declare -r mbfl_PROGRAM_ID='@MBFL_PROGRAM_ID@'
+declare -r mbfl_PROGRAM_REALPATH='@MBFL_PROGRAM_REALPATH@'
+declare -r mbfl_PROGRAM_SUDO='@MBFL_PROGRAM_SUDO@'
+declare -r mbfl_PROGRAM_STAT='@MBFL_PROGRAM_STAT@'
+declare -r mbfl_PROGRAM_WHOAMI='@MBFL_PROGRAM_WHOAMI@'
+declare -r mbfl_PROGRAM_READLINK='@MBFL_PROGRAM_READLINK@'
+declare -r mbfl_PROGRAM_LS='@MBFL_PROGRAM_LS@'
+
+### end of file
+# Local Variables:
+# mode: sh
+# End:

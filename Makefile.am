@@ -85,6 +85,7 @@ MBFL_MODULES		=			\
 	src/modules/arrays.sh			\
 	src/modules/atexit.sh			\
 	src/modules/base.sh			\
+	src/modules/config-pathnames.sh		\
 	src/modules/dialog.sh			\
 	src/modules/encode.sh			\
 	src/modules/fd.sh			\

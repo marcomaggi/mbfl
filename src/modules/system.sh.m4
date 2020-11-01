@@ -563,8 +563,8 @@ function mbfl_system_octal_to_symbolic_permissions () {
 #### users informations
 
 function mbfl_system_whoami () {
-    if test -x "$mbfl_program_WHOAMI"
-    then mbfl_program_exec "$mbfl_program_WHOAMI"
+    if test -x "$mbfl_PROGRAM_WHOAMI"
+    then mbfl_program_exec "$mbfl_PROGRAM_WHOAMI"
     else return_failure
     fi
 }
@@ -579,8 +579,8 @@ function mbfl_system_whoami_var () {
 ### ------------------------------------------------------------------------
 
 function mbfl_system_id () {
-    if test -x "$mbfl_program_ID"
-    then mbfl_program_exec "$mbfl_program_ID" "$@"
+    if test -x "$mbfl_PROGRAM_ID"
+    then mbfl_program_exec "$mbfl_PROGRAM_ID" "$@"
     else return_failure
     fi
 }

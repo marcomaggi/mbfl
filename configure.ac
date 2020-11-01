@@ -33,7 +33,7 @@ AM_MAINTAINER_MODE
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_CHECK_PROG([BASH_PROGRAM],[bash],[bash],[:])
+AC_PATH_PROG([BASH_PROGRAM],[bash],[/bin/false])
 AM_PATH_LISPDIR
 
 AC_SUBST([MBFL_CORE_VERSION],MMUX_PACKAGE_MAJOR_VERSION[.]MMUX_PACKAGE_MINOR_VERSION[.]MMUX_PACKAGE_PATCH_LEVEL)
@@ -43,39 +43,111 @@ dnl --------------------------------------------------------------------
 
 AC_ARG_WITH([sudo],
   AS_HELP_STRING([--with-sudo],[select a pathname for the executable sudo]),
-  [PATHNAME_SUDO=$withval],
-  [PATHNAME_SUDO=/usr/bin/sudo])
+  [MBFL_PROGRAM_SUDO=$withval],
+  [MBFL_PROGRAM_SUDO=/usr/bin/sudo])
 
-AC_CHECK_PROG(PATHNAME_SUDO,$PATHNAME_SUDO,$PATHNAME_SUDO)
-AC_SUBST([PATHNAME_SUDO])
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_SUDO],[$MBFL_PROGRAM_SUDO],[/bin/false])
 
 dnl --------------------------------------------------------------------
 
 AC_ARG_WITH([whoami],
   AS_HELP_STRING([--with-whoami],[select a pathname for the executable whoami]),
-  [PATHNAME_WHOAMI=$withval],
-  [PATHNAME_WHOAMI=/bin/whoami])
+  [MBFL_PROGRAM_WHOAMI=$withval],
+  [MBFL_PROGRAM_WHOAMI=/bin/whoami])
 
-AC_CHECK_PROG(PATHNAME_WHOAMI,$PATHNAME_WHOAMI,$PATHNAME_WHOAMI)
-AC_SUBST([PATHNAME_WHOAMI])
+dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_WHOAMI],[$MBFL_PROGRAM_WHOAMI],[/bin/false])
 
 dnl --------------------------------------------------------------------
 
 AC_ARG_WITH([id],
   AS_HELP_STRING([--with-id],[select a pathname for the executable id]),
-  [PATHNAME_ID=$withval],
-  [PATHNAME_ID=/bin/id])
+  [MBFL_PROGRAM_ID=$withval],
+  [MBFL_PROGRAM_ID=/bin/id])
 
-AC_CHECK_PROG(PATHNAME_ID,$PATHNAME_ID,$PATHNAME_ID)
-AC_SUBST([PATHNAME_ID])
+dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_ID],[$MBFL_PROGRAM_ID],[/bin/false])
 
 dnl --------------------------------------------------------------------
 
-# If we  find an executable  "realpath" in  the current "PATH":  set the
-# variable     "REALPATH_PATHNAME"    to     it.     Otherwise     leave
-# "REALPATH_PATHNAME" set to the empty string.
-AS_VAR_SET([REALPATH_PATHNAME])
-AC_CHECK_PROGS([REALPATH_PATHNAME],[realpath])
+AC_ARG_WITH([stat],
+  AS_HELP_STRING([--with-stat],[select a pathname for the executable stat]),
+  [MBFL_PROGRAM_STAT=$withval],
+  [MBFL_PROGRAM_STAT=/bin/stat])
+
+dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_STAT],[$MBFL_PROGRAM_STAT],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([chown],
+  AS_HELP_STRING([--with-chown],[select a pathname for the executable chown]),
+  [MBFL_PROGRAM_CHOWN=$withval],
+  [MBFL_PROGRAM_CHOWN=/bin/chown])
+
+dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_CHOWN],[$MBFL_PROGRAM_CHOWN],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([chgrp],
+  AS_HELP_STRING([--with-chgrp],[select a pathname for the executable chgrp]),
+  [MBFL_PROGRAM_CHGRP=$withval],
+  [MBFL_PROGRAM_CHGRP=/bin/chgrp])
+
+dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_CHGRP],[$MBFL_PROGRAM_CHGRP],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([chmod],
+  AS_HELP_STRING([--with-chmod],[select a pathname for the executable chmod]),
+  [MBFL_PROGRAM_CHMOD=$withval],
+  [MBFL_PROGRAM_CHMOD=/bin/chmod])
+
+dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_CHMOD],[$MBFL_PROGRAM_CHMOD],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([realpath],
+  AS_HELP_STRING([--with-realpath],[select a pathname for the executable realpath]),
+  [MBFL_PROGRAM_REALPATH=$withval],
+  [MBFL_PROGRAM_REALPATH=/bin/realpath])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_REALPATH],[$MBFL_PROGRAM_REALPATH],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([readlink],
+  AS_HELP_STRING([--with-readlink],[select a pathname for the executable readlink]),
+  [MBFL_PROGRAM_READLINK=$withval],
+  [MBFL_PROGRAM_READLINK=/bin/readlink])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_READLINK],[$MBFL_PROGRAM_READLINK],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([ls],
+  AS_HELP_STRING([--with-ls],[select a pathname for the executable ls]),
+  [MBFL_PROGRAM_LS=$withval],
+  [MBFL_PROGRAM_LS=/bin/ls])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_LS],[$MBFL_PROGRAM_LS],[/bin/false])
 
 dnl --------------------------------------------------------------------
 
@@ -90,7 +162,8 @@ AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 
 AC_CONFIG_FILES([Makefile]
   [meta/scripts/mbfl-config]
-  [tests/setup.sh])
+  [tests/setup.sh]
+  [src/modules/config-pathnames.sh.m4])
 MMUX_OUTPUT
 AC_OUTPUT
 
