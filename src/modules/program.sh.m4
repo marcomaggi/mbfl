@@ -173,9 +173,6 @@ function mbfl_program_main_validate_programs () {
 
 declare mbfl_program_SUDO_USER=nosudo
 declare mbfl_program_SUDO_OPTIONS
-declare -r mbfl_program_SUDO=$mbfl_PROGRAM_SUDO
-declare -r mbfl_program_WHOAMI=$mbfl_PROGRAM_WHOAMI
-declare -r mbfl_program_ID=$mbfl_PROGRAM_ID
 declare mbfl_program_STDERR_TO_STDOUT=false
 declare mbfl_program_BASH=$BASH
 declare mbfl_program_BGPID

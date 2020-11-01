@@ -33,11 +33,21 @@ AM_MAINTAINER_MODE
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PATH_PROG([BASH_PROGRAM],[bash],[/bin/false])
 AM_PATH_LISPDIR
 
 AC_SUBST([MBFL_CORE_VERSION],MMUX_PACKAGE_MAJOR_VERSION[.]MMUX_PACKAGE_MINOR_VERSION[.]MMUX_PACKAGE_PATCH_LEVEL)
 AC_SUBST([MBFL_SEMANTIC_VERSION],MMUX_PACKAGE_SEMANTIC_VERSION)
+
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([bash],
+  AS_HELP_STRING([--with-bash],[select a pathname for the executable bash]),
+  [MBFL_PROGRAM_BASH=$withval],
+  [MBFL_PROGRAM_BASH=/bin/bash])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_BASH],[$MBFL_PROGRAM_BASH],[/bin/false])
 
 dnl --------------------------------------------------------------------
 
