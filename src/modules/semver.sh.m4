@@ -71,7 +71,7 @@ function mbfl_semver_parse () {
     case ${mbfl_semver_CONFIG[PARSE_LEADING_V]}
     in
 	'mandatory')
-	    if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
+	    if test "mbfl_string_idx(mbfl_INPUT_STRING, $mbfl_START_INDEX)" = 'v'
 	    then let ++mbfl_START_INDEX
 	    else
 		mbfl_RV[PARSING_ERROR_MESSAGE]='missing leading "v" character'
@@ -79,14 +79,14 @@ function mbfl_semver_parse () {
 	    fi
 	    ;;
 	'missing')
-	    if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
+	    if test "mbfl_string_idx(mbfl_INPUT_STRING, $mbfl_START_INDEX)" = 'v'
 	    then
 		mbfl_RV[PARSING_ERROR_MESSAGE]='unexpected leading "v" character'
 		return 1
 	    fi
 	    ;;
 	*)
-	    if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = 'v'
+	    if test "mbfl_string_idx(mbfl_INPUT_STRING, $mbfl_START_INDEX)" = 'v'
 	    then let ++mbfl_START_INDEX
 	    fi
 	    ;;
@@ -98,7 +98,7 @@ function mbfl_semver_parse () {
 	return 1
     fi
 
-    if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = '-'
+    if test "mbfl_string_idx(mbfl_INPUT_STRING, $mbfl_START_INDEX)" = '-'
     then
 	# There is a prerelease version component.
 	if ! mbfl_p_semver_parse_prerelease_version
@@ -108,7 +108,7 @@ function mbfl_semver_parse () {
 	fi
     fi
 
-    if test "${mbfl_INPUT_STRING:$mbfl_START_INDEX:1}" = '+'
+    if test "mbfl_string_idx(mbfl_INPUT_STRING, $mbfl_START_INDEX)" = '+'
     then
 	# There is a build metadata component.
 	if ! mbfl_p_semver_parse_build_metadata

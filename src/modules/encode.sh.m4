@@ -12,7 +12,7 @@
 #	handle  null bytes  in  a  Bash variable:  the  string will  get
 #	truncated at the null byte.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -42,7 +42,7 @@ function mbfl_encode_hex_var () {
 
     for ((mbfl_I=0; mbfl_I < ${#mbfl_INPUT}; ++mbfl_I))
     do
-	printf -v mbfl_OCTET         '%d' "'${mbfl_INPUT:${mbfl_I}:1}"
+	printf -v mbfl_OCTET         '%d' "'mbfl_string_idx(mbfl_INPUT, ${mbfl_I})"
 	printf -v mbfl_ENCODED_OCTET '%02X' "$mbfl_OCTET"
 	mbfl_RESULT_VARREF+=$mbfl_ENCODED_OCTET
     done
@@ -67,7 +67,7 @@ function mbfl_encode_oct_var () {
 
     for ((mbfl_I=0; mbfl_I < ${#mbfl_INPUT}; ++mbfl_I))
     do
-	printf -v mbfl_OCTET         '%d' "'${mbfl_INPUT:${mbfl_I}:1}"
+	printf -v mbfl_OCTET         '%d' "'mbfl_string_idx(mbfl_INPUT, ${mbfl_I})"
 	printf -v mbfl_ENCODED_OCTET '%03o' "$mbfl_OCTET"
 	mbfl_RESULT_VARREF+=$mbfl_ENCODED_OCTET
     done

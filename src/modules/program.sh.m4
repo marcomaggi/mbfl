@@ -173,9 +173,9 @@ function mbfl_program_main_validate_programs () {
 
 declare mbfl_program_SUDO_USER=nosudo
 declare mbfl_program_SUDO_OPTIONS
-declare -r mbfl_program_SUDO=__PATHNAME_SUDO__
-declare -r mbfl_program_WHOAMI=__PATHNAME_WHOAMI__
-declare -r mbfl_program_ID=__PATHNAME_ID__
+declare -r mbfl_program_SUDO=$mbfl_PROGRAM_SUDO
+declare -r mbfl_program_WHOAMI=$mbfl_PROGRAM_WHOAMI
+declare -r mbfl_program_ID=$mbfl_PROGRAM_ID
 declare mbfl_program_STDERR_TO_STDOUT=false
 declare mbfl_program_BASH=$BASH
 declare mbfl_program_BGPID
@@ -187,11 +187,11 @@ declare mbfl_program_BGPID
 declare mbfl_program_FORCE_USE_SUDO=false
 
 function mbfl_program_enable_sudo () {
-    local SUDO=__PATHNAME_SUDO__
+    local SUDO="$mbfl_PROGRAM_SUDO"
     if ! test -x "$SUDO"
     then mbfl_message_warning_printf 'executable sudo not found: "%s"\n' "$SUDO"
     fi
-    local WHOAMI=__PATHNAME_WHOAMI__
+    local WHOAMI="$mbfl_PROGRAM_WHOAMI"
     if ! test -x "$WHOAMI"
     then mbfl_message_warning_printf 'executable whoami not found: "%s"\n' "$WHOAMI"
     fi
@@ -281,8 +281,8 @@ function mbfl_p_program_exec () {
     shift 5
     local -r PERSONA=$mbfl_program_SUDO_USER
     local USE_SUDO=false
-    local SUDO=__PATHNAME_SUDO__
-    local WHOAMI=__PATHNAME_WHOAMI__
+    local SUDO="$mbfl_PROGRAM_SUDO"
+    local WHOAMI="$mbfl_PROGRAM_WHOAMI"
     local USERNAME
     local -r SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
     local -r STDERR_TO_STDOUT=$mbfl_program_STDERR_TO_STDOUT

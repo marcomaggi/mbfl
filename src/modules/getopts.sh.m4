@@ -226,7 +226,7 @@ function mbfl_getopts_parse () {
 		mbfl_message_error_printf 'invalid command line argument: "%s"' "$argument"
 		return 1
 	    fi
-	elif mbfl_string_equal '-' "${argument:0:1}"
+	elif mbfl_string_equal '-' "mbfl_string_idx(argument, 0)"
 	then
             if mbfl_getopts_isbrief "$argument" p_OPT
             then

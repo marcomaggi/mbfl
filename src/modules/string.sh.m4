@@ -12,7 +12,7 @@
 #       (like ${name:num:num})  so, maybe, other Bourne  shells will not
 #       work at all.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or modify it under
@@ -41,7 +41,7 @@ function mbfl_string_is_quoted_char () {
     let --POS
     for ((COUNT=0; POS >= 0; --POS))
     do
-	if test "${STRING:${POS}:1}" = \\
+	if test "mbfl_string_idx(STRING, ${POS})" = \\
         then let ++COUNT
         else break
 	fi
@@ -52,7 +52,7 @@ function mbfl_string_is_equal_unquoted_char () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_integer_parameter(POS, 2, position)
     mbfl_mandatory_parameter(CHAR, 3, known char)
-    if test "${STRING:${POS}:1}" != "$CHAR"
+    if test "mbfl_string_idx(STRING, ${POS})" != "$CHAR"
     then mbfl_string_is_quoted_char "$STRING" "$POS"
     fi
 }
@@ -65,7 +65,7 @@ function mbfl_string_quote_var () {
     mbfl_RESULT_VARREF=
     for ((mbfl_I=0; mbfl_I < ${#mbfl_STRING}; ++mbfl_I))
     do
-        mbfl_ch=${mbfl_STRING:$mbfl_I:1}
+        mbfl_ch=mbfl_string_idx(mbfl_STRING, $mbfl_I)
         if test "$mbfl_ch" = \\
 	then mbfl_ch=\\\\
 	fi
@@ -118,7 +118,7 @@ function mbfl_string_first_var () {
     local -i mbfl_I
     for ((mbfl_I=mbfl_BEGIN; mbfl_I < ${#mbfl_STRING}; ++mbfl_I))
     do
-	if test "${mbfl_STRING:$mbfl_I:1}" = "$mbfl_CHAR"
+	if test "mbfl_string_idx(mbfl_STRING, $mbfl_I)" = "$mbfl_CHAR"
 	then
             mbfl_RESULT_VARREF=$mbfl_I
 	    # Found!  Return with exit status 0.
@@ -149,7 +149,7 @@ function mbfl_string_last_var () {
     local -i mbfl_I
     for ((mbfl_I=${mbfl_BEGIN:-((${#mbfl_STRING}-1))}; mbfl_I >= 0; --mbfl_I))
     do
-	if test "${mbfl_STRING:$mbfl_I:1}" = "$mbfl_CHAR"
+	if test "mbfl_string_idx(mbfl_STRING, $mbfl_I)" = "$mbfl_CHAR"
 	then
 	    # Found!  Return with exit status 0.
             mbfl_RESULT_VARREF=$mbfl_I
@@ -176,12 +176,12 @@ function mbfl_string_index_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
     mbfl_mandatory_parameter(mbfl_STRING, 2, string)
     mbfl_mandatory_parameter(mbfl_INDEX, 3, index)
-    mbfl_RESULT_VARREF=${mbfl_STRING:${mbfl_INDEX}:1}
+    mbfl_RESULT_VARREF=mbfl_string_idx(mbfl_STRING, ${mbfl_INDEX})
 }
 function mbfl_string_index () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(INDEX, 2, index)
-    printf "${STRING:$INDEX:1}\n"
+    printf "mbfl_string_idx(STRING, $INDEX)\n"
 }
 
 function mbfl_string_range_var () {
@@ -214,13 +214,13 @@ function mbfl_string_chars () {
     local ch
     for ((i=0, j=0; i < ${#STRING}; ++i, ++j))
     do
-        ch=${STRING:$i:1}
+        ch=mbfl_string_idx(STRING, $i)
         if test "$ch" != $'\\'
         then SPLITFIELD[$j]=$ch
         else
             let ++i
             if test $i != ${#STRING}
-            then SPLITFIELD[$j]=${ch}${STRING:$i:1}
+            then SPLITFIELD[$j]=${ch}mbfl_string_idx(STRING, $i)
             else SPLITFIELD[$j]=$ch
             fi
         fi
@@ -264,7 +264,7 @@ function mbfl_string_split_blanks () {
     SPLITCOUNT=0
     for ((i=0; i < ${#STRING}; ++i))
     do
-	CH=${STRING:$i:1}
+	CH=mbfl_string_idx(STRING, $i)
 	if test ' ' = "$CH" -o $'\t' = "$CH"
 	then
 	    # Store the field.
@@ -273,7 +273,7 @@ function mbfl_string_split_blanks () {
 	    # Consume all the adjacent blanks, if any.
 	    for ((i=$i; i < ${#STRING}; ++i))
 	    do
-		CH=${STRING:$((i+1)):1}
+		CH=mbfl_string_idx(STRING, $((i+1)))
 		if test ' ' != "$CH" -a $'\t' != "$CH"
 		then break
 		fi
@@ -347,7 +347,7 @@ function mbfl_string_equal_substring () {
     fi
     for ((i=0; i < "${#PATTERN}"; ++i))
     do
-	if test "${PATTERN:$i:1}" != "${STRING:$(($POSITION+$i)):1}"
+	if test "mbfl_string_idx(PATTERN, $i)" != "mbfl_string_idx(STRING, $(($POSITION+$i)))"
 	then return 1
 	fi
     done
@@ -398,7 +398,7 @@ function mbfl_p_string_is () {
     then
 	for ((i=0; i < ${#STRING}; ++i))
 	do
-	    if ! "mbfl_string_is_${CLASS}_char" "${STRING:$i:1}"
+	    if ! "mbfl_string_is_${CLASS}_char" "mbfl_string_idx(STRING, $i)"
 	    then return 1
 	    fi
 	done
@@ -410,25 +410,25 @@ function mbfl_string_is_name () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
-    mbfl_string_is_not_empty "$STRING" && mbfl_p_string_is name "$STRING" && { ! mbfl_string_is_digit "${STRING:0:1}"; }
+    mbfl_string_is_not_empty "$STRING" && mbfl_p_string_is name "$STRING" && { ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"; }
 }
 function mbfl_string_is_identifier () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
-    mbfl_string_is_not_empty "$STRING" \
-	&&   mbfl_p_string_is identifier "$STRING"	\
-	&& ! mbfl_string_is_digit "${STRING:0:1}"	\
-	&& mbfl_string_not_equal "${STRING:0:1}" '-'
+    mbfl_string_is_not_empty "$STRING"					\
+	&&   mbfl_p_string_is identifier "$STRING"			\
+	&& ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"		\
+	&& mbfl_string_not_equal "mbfl_string_idx(STRING, 0)" '-'
 }
 function mbfl_string_is_extended_identifier () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
     mbfl_string_is_not_empty "$STRING" \
-	&&   mbfl_p_string_is extended_identifier "$STRING"	\
-	&& ! mbfl_string_is_digit "${STRING:0:1}"		\
-	&& mbfl_string_not_equal "${STRING:0:1}" '-'
+	&&   mbfl_p_string_is extended_identifier "$STRING"		\
+	&& ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"		\
+	&& mbfl_string_not_equal "mbfl_string_idx(STRING, 0)" '-'
 }
 function mbfl_string_is_username () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
@@ -533,7 +533,7 @@ function mbfl_string_skip () {
     mbfl_mandatory_parameter(mbfl_STRING, 1, string)
     mbfl_mandatory_nameref_parameter(mbfl_POSNAME, 2, position)
     mbfl_mandatory_parameter(mbfl_CHAR, 3, char)
-    while test "${mbfl_STRING:$mbfl_POSNAME:1}" = "$mbfl_CHAR"
+    while test "mbfl_string_idx(mbfl_STRING, $mbfl_POSNAME)" = "$mbfl_CHAR"
     do let ++mbfl_POSNAME
     done
 }
