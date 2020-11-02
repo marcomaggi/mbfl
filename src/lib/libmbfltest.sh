@@ -97,6 +97,8 @@ function dotest () {
     dotest-p-report-start-from-environment
     dotest-p-report-success-from-environment
 
+    mbfl_main_create_exit_functions
+
     for item in `compgen -A function "$PATTERN"`
     do
 	if [[ $item =~ $TESTMATCH ]]

@@ -164,8 +164,12 @@ function exit_success () {
 function exit_failure () {
     exit_because_failure
 }
-alias return_success='return 0'
-alias return_failure='return 1'
+function return_success () {
+    return 0
+}
+function return_failure () {
+    return 1
+}
 function mbfl_main_declare_exit_code () {
     mbfl_mandatory_parameter(CODE, 1, exit code)
     mbfl_mandatory_parameter(DESCRIPTION, 2, exit code name)
@@ -179,9 +183,9 @@ function mbfl_main_create_exit_functions () {
     for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
     do
         name=exit_because_${mbfl_main_EXIT_NAMES[${i}]}
-        eval function "$name" "()" "{ mbfl_exit ${mbfl_main_EXIT_CODES[${i}]}; }"
+        eval function "$name" '()' "{ mbfl_exit ${mbfl_main_EXIT_CODES[${i}]}; }"
 	name=return_because_${mbfl_main_EXIT_NAMES[${i}]}
-	alias $name="return ${mbfl_main_EXIT_CODES[${i}]}"
+	eval function "$name" '()' "{ return ${mbfl_main_EXIT_CODES[${i}]}; }"
     done
 }
 function mbfl_main_list_exit_codes () {
