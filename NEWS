@@ -200,6 +200,7 @@ changes!
    mbfl_exec_realpath
    mbfl_exec_rm
    mbfl_exec_rmdir
+   mbfl_exec_stat
    mbfl_exec_tar
 
   The old function "mbfl_tar_exec" is still there but is deprecated.

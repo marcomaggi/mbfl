@@ -1920,7 +1920,8 @@ Declare the intention to use the program @command{stat}.
 
 @defun mbfl_file_stat @var{PATHNAME} @var{OPT} @dots{}
 @defunx mbfl_file_stat_var @var{_RV} @var{PATHNAME} @var{OPT} @dots{}
-Execute @command{stat} with @var{PATHNAME} as first argument and @var{ARG} as other arguments.
+Execute the program @command{stat} with @var{PATHNAME} as first argument and the optional arguments
+@var{OPT} inserted in the command line as options.
 
 @example
 mbfl_file_enable_stat
@@ -1943,6 +1944,11 @@ mbfl_file_stat /bin --format='%F'
 Print the size of the file in bytes.
 
 @DocVarVariant{}
+@end defun
+
+
+@defun mbfl_exec_stat @var{ARG} @dots{}
+Execute the program @command{stat} using the given optional command line arguments.
 @end defun
 
 @c page

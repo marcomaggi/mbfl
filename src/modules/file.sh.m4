@@ -1544,21 +1544,23 @@ function mbfl_p_file_compress_xz () {
 function mbfl_file_enable_stat () {
     : mbfl_declare_program stat
 }
-# This function is the executor for the "stat" program.
-#
-function mbfl_file_stat () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    shift
+function mbfl_exec_stat () {
     if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_STAT"
-    then mbfl_program_exec "$mbfl_PROGRAM_STAT" "$@" -- "$PATHNAME"
+    then mbfl_program_exec "$mbfl_PROGRAM_STAT" "$@"
     else
 	mbfl_message_error_printf 'program not "stat" executable, tested pathname is: "%s"' "$mbfl_PROGRAM_STAT"
 	return_because_program_not_found
     fi
+
+}
+function mbfl_file_stat () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    shift
+    mbfl_exec_stat "$@" -- "$PATHNAME"
 }
 function mbfl_file_stat_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
+    mbfl_mandatory_parameter(mbfl_PATHNAME,              2, pathname)
     shift 2
     mbfl_RESULT_VARREF=$(mbfl_file_stat "$mbfl_PATHNAME" "$@")
 }
