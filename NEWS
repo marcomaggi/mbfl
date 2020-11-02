@@ -210,6 +210,24 @@ changes!
     mbfl_exec_ln
     mbfl_exec_readlink
 
+* Exposed the following global variables as part of the public API:
+
+    mbfl_PROGRAM_CHMOD
+    mbfl_PROGRAM_CHOWN
+    mbfl_PROGRAM_CP
+    mbfl_PROGRAM_ID
+    mbfl_PROGRAM_LN
+    mbfl_PROGRAM_LS
+    mbfl_PROGRAM_MKDIR
+    mbfl_PROGRAM_MV
+    mbfl_PROGRAM_READLINK
+    mbfl_PROGRAM_REALPATH
+    mbfl_PROGRAM_RM
+    mbfl_PROGRAM_RMDIR
+    mbfl_PROGRAM_STAT
+    mbfl_PROGRAM_SUDO
+    mbfl_PROGRAM_WHOAMI
+
 
 Notes for revision 2.2.0
 ------------------------

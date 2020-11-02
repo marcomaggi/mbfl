@@ -4280,6 +4280,7 @@ colon, a space, the formatting result, a newline character.
 * program executing::           Executing a program.
 * program declaring::           Declaring the intention to use a
                                 program.
+* program preselected::         Preselected program pathnames.
 @end menu
 
 @c page
@@ -4395,32 +4396,10 @@ it.
 @section Executing a program
 
 
-This module provides an @api{} to execute a program under the privileges
-of the current user or under a more or less privileged user;
-@command{sudo} is used run a program as a different user: refer to its
-documentation for the required configuration; @command{whoami} is used
-to determine to which user the process belongs.
-
-At package configuration time we can specify which @command{sudo} and
-@command{whoami} executables to use through the following options for
-the configuration script @command{configure}:
-
-@table @code
-@item --with-sudo=/path/to/sudo
-Allows the selection of the pathname to the executable @command{sudo};
-this pathname is hard--coded in the library.  It defaults to:
-@file{/usr/bin/sudo}.
-
-@item --with-whoami=/path/to/whoami
-Allows the selection of the pathname to the executable @command{whoami}, which is meant to be the
-program from the package @gnu{} Coreutils; this pathname is hard--coded in the library.  It defaults
-to: @file{/bin/whoami}.
-
-@item --with-id=/path/to/id
-Allows the selection of the pathname to the executable @command{id}, which is meant to be the
-program from the package @gnu{} Coreutils; this pathname is hard--coded in the library.  It defaults
-to: @file{/bin/id}.
-@end table
+This module provides an @api{} to execute a program under the privileges of the current user or
+under a more or less privileged user; @command{sudo} is used run a program as a different user:
+refer to its documentation for the required configuration; @command{whoami} is used to determine to
+which user the process belongs.  @ref{program preselected, Preselected program pathnames}.
 
 The functions described here must be used in the following way:
 
@@ -4775,6 +4754,219 @@ will not be reported.
 @defunx return_because_program_not_found
 Exit or return with code @code{99}.
 @end defun
+
+@c page
+@node program preselected
+@section Preselected program pathnames
+
+
+@mbfl{} uses some external programs for its inner workings, especially from the @gnu{} Coreutils
+package; the file system pathnames of these programs is selected at package--configuration time and
+hard--coded in library's source code.
+
+We may want to use these program pathnames, either directly or as argument to other programs, for
+example @command{find}, as in:
+
+@example
+find -type f -exec "$mbfl_PROGRAM_CHOWN" marco:users '@{@}' ';'
+@end example
+
+The following global variables are available to access those file system pathnames.
+
+
+@cindex Configuration option @option{--with-chmod}
+@cindex Option @option{--with-chmod}
+@cindex @option{--with-chmod}, configuration option
+@cindex Command @command{chmod}
+@cindex External command @command{chmod}
+@cindex @command{chmod}, external command
+@defvar mbfl_PROGRAM_CHMOD
+The preselected file system pathname of the program @command{chmod}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-chmod}; it
+defaults to @file{/bin/chmod}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-chown}
+@cindex Option @option{--with-chown}
+@cindex @option{--with-chown}, configuration option
+@cindex Command @command{chown}
+@cindex External command @command{chown}
+@cindex @command{chown}, external command
+@defvar mbfl_PROGRAM_CHOWN
+The preselected file system pathname of the program @command{chown}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-chown}; it
+defaults to @file{/bin/chown}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-cp}
+@cindex Option @option{--with-cp}
+@cindex @option{--with-cp}, configuration option
+@cindex Command @command{cp}
+@cindex External command @command{cp}
+@cindex @command{cp}, external command
+@defvar mbfl_PROGRAM_CP
+The preselected file system pathname of the program @command{cp}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-cp}; it
+defaults to @file{/bin/cp}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-id}
+@cindex Option @option{--with-id}
+@cindex @option{--with-id}, configuration option
+@cindex Command @command{id}
+@cindex External command @command{id}
+@cindex @command{id}, external command
+@defvar mbfl_PROGRAM_ID
+The preselected file system pathname of the program @command{id}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-id}; it
+defaults to @file{/bin/id}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-ln}
+@cindex Option @option{--with-ln}
+@cindex @option{--with-ln}, configuration option
+@cindex Command @command{ln}
+@cindex External command @command{ln}
+@cindex @command{ln}, external command
+@defvar mbfl_PROGRAM_LN
+The preselected file system pathname of the program @command{ln}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-ln}; it
+defaults to @file{/bin/ln}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-ls}
+@cindex Option @option{--with-ls}
+@cindex @option{--with-ls}, configuration option
+@cindex Command @command{ls}
+@cindex External command @command{ls}
+@cindex @command{ls}, external command
+@defvar mbfl_PROGRAM_LS
+The preselected file system pathname of the program @command{ls}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-ls}; it
+defaults to @file{/bin/ls}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-mkdir}
+@cindex Option @option{--with-mkdir}
+@cindex @option{--with-mkdir}, configuration option
+@cindex Command @command{mkdir}
+@cindex External command @command{mkdir}
+@cindex @command{mkdir}, external command
+@defvar mbfl_PROGRAM_MKDIR
+The preselected file system pathname of the program @command{mkdir}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-mkdir}; it
+defaults to @file{/bin/mkdir}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-mv}
+@cindex Option @option{--with-mv}
+@cindex @option{--with-mv}, configuration option
+@cindex Command @command{mv}
+@cindex External command @command{mv}
+@cindex @command{mv}, external command
+@defvar mbfl_PROGRAM_MV
+The preselected file system pathname of the program @command{mv}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-mv}; it
+defaults to @file{/bin/mv}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-readlink}
+@cindex Option @option{--with-readlink}
+@cindex @option{--with-readlink}, configuration option
+@cindex Command @command{readlink}
+@cindex External command @command{readlink}
+@cindex @command{readlink}, external command
+@defvar mbfl_PROGRAM_READLINK
+The preselected file system pathname of the program @command{readlink}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-readlink};
+it defaults to @file{/bin/readlink}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-realpath}
+@cindex Option @option{--with-realpath}
+@cindex @option{--with-realpath}, configuration option
+@cindex Command @command{realpath}
+@cindex External command @command{realpath}
+@cindex @command{realpath}, external command
+@defvar mbfl_PROGRAM_REALPATH
+The preselected file system pathname of the program @command{realpath}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-realpath};
+it defaults to @file{/bin/realpath}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-rm}
+@cindex Option @option{--with-rm}
+@cindex @option{--with-rm}, configuration option
+@cindex Command @command{rm}
+@cindex External command @command{rm}
+@cindex @command{rm}, external command
+@defvar mbfl_PROGRAM_RM
+The preselected file system pathname of the program @command{rm}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-rm}; it
+defaults to @file{/bin/rm}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-rmdir}
+@cindex Option @option{--with-rmdir}
+@cindex @option{--with-rmdir}, configuration option
+@cindex Command @command{rmdir}
+@cindex External command @command{rmdir}
+@cindex @command{rmdir}, external command
+@defvar mbfl_PROGRAM_RMDIR
+The preselected file system pathname of the program @command{rmdir}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-rmdir}; it
+defaults to @file{/bin/rmdir}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-stat}
+@cindex Option @option{--with-stat}
+@cindex @option{--with-stat}, configuration option
+@cindex Command @command{stat}
+@cindex External command @command{stat}
+@cindex @command{stat}, external command
+@defvar mbfl_PROGRAM_STAT
+The preselected file system pathname of the program @command{stat}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-stat}; it
+defaults to @file{/bin/stat}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-sudo}
+@cindex Option @option{--with-sudo}
+@cindex @option{--with-sudo}, configuration option
+@cindex Command @command{sudo}
+@cindex External command @command{sudo}
+@cindex @command{sudo}, external command
+@defvar mbfl_PROGRAM_SUDO
+The preselected file system pathname of the program @command{sudo}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-sudo}; it
+defaults to @file{/usr/bin/sudo}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-whoami}
+@cindex Option @option{--with-whoami}
+@cindex @option{--with-whoami}, configuration option
+@cindex Command @command{whoami}
+@cindex External command @command{whoami}
+@cindex @command{whoami}, external command
+@defvar mbfl_PROGRAM_WHOAMI
+The preselected file system pathname of the program @command{whoami}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-whoami}; it
+defaults to @file{/bin/whoami}.
+@end defvar
 
 @c page
 @node interfaces
