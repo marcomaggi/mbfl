@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (C) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -70,6 +70,9 @@ function mbfl_fd_open_input () {
     #
     # 2.2. The command "exec" is executed.
     #
+    if mbfl_option_test || mbfl_option_verbose_program
+    then printf 'exec %s<"%s"' "$FD" "$FILE" >&2
+    fi
     eval "exec ${FD}<\"\${FILE}\""
 }
 
@@ -78,6 +81,9 @@ function mbfl_fd_open_output () {
     mbfl_mandatory_parameter(FILE, 2, file pathname)
 
     MBFL_CHECK_FD($FD, 1)
+    if mbfl_option_test || mbfl_option_verbose_program
+    then printf 'exec %s>"%s"' "$FILE" >&2
+    fi
     eval "exec ${FD}>\"\${FILE}\""
 }
 
@@ -86,6 +92,9 @@ function mbfl_fd_open_input_output () {
     mbfl_mandatory_parameter(FILE, 2, file pathname)
 
     MBFL_CHECK_FD($FD, 1)
+    if mbfl_option_test || mbfl_option_verbose_program
+    then printf 'exec %s<>"%s"' "$FILE" >&2
+    fi
     eval "exec ${FD}<>\"\${FILE}\""
 }
 
@@ -96,6 +105,9 @@ function mbfl_fd_close () {
     mbfl_mandatory_parameter(FD, 1, file descriptor)
 
     MBFL_CHECK_FD($FD, 1)
+    if mbfl_option_test || mbfl_option_verbose_program
+    then printf 'exec %s<&-' "$FD" >&2
+    fi
     eval "exec ${FD}<&-"
 }
 
@@ -108,6 +120,9 @@ function mbfl_fd_dup_input () {
 
     MBFL_CHECK_FD($SRCFD, 1)
     MBFL_CHECK_FD($DSTFD, 2)
+    if mbfl_option_test || mbfl_option_verbose_program
+    then printf 'exec %s<&%s' "$DSTFD" "$SRCFD" >&2
+    fi
     eval "exec ${DSTFD}<&${SRCFD}"
 }
 
@@ -117,6 +132,9 @@ function mbfl_fd_dup_output () {
 
     MBFL_CHECK_FD($SRCFD, 1)
     MBFL_CHECK_FD($DSTFD, 2)
+    if mbfl_option_test || mbfl_option_verbose_program
+    then printf 'exec %s>&%s' "$SRCFD" "$DSTFD" >&2
+    fi
     eval "exec ${DSTFD}>&${SRCFD}"
 }
 
@@ -129,6 +147,9 @@ function mbfl_fd_move () {
 
     MBFL_CHECK_FD($SRCFD, 1)
     MBFL_CHECK_FD($DSTFD, 2)
+    if mbfl_option_test || mbfl_option_verbose_program
+    then printf 'exec %s<&%s-' "$DSTFD" "$SRCFD" >&2
+    fi
     eval "exec ${DSTFD}<&${SRCFD}-"
 }
 
