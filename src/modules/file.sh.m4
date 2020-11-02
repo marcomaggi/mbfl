@@ -1193,20 +1193,24 @@ function mbfl_file_enable_permissions () {
     mbfl_file_enable_stat
     : mbfl_declare_program chmod
 }
-function mbfl_file_chmod () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    shift
+function mbfl_exec_chmod () {
     if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CHMOD"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
 	then FLAGS+=' --changes'
 	fi
-	mbfl_program_exec "$mbfl_PROGRAM_CHMOD" ${FLAGS} "$@" -- "$PATHNAME"
+	mbfl_program_exec "$mbfl_PROGRAM_CHMOD" $FLAGS "$@"
     else
 	mbfl_message_error_printf 'program not "chmod" executable, tested pathname is: "%s"' "$mbfl_PROGRAM_CHMOD"
 	return_because_program_not_found
     fi
+}
+function mbfl_file_chmod () {
+    mbfl_mandatory_parameter(PERMISSIONS, 1, permissions)
+    mbfl_mandatory_parameter(PATHNAME, 2, pathname)
+    shift
+    mbfl_exec_chmod "$PERMISSIONS" "$@" -- "$PATHNAME"
 }
 
 function mbfl_file_get_permissions () {
@@ -1216,7 +1220,7 @@ function mbfl_file_get_permissions () {
 function mbfl_file_set_permissions () {
     mbfl_mandatory_parameter(PERMISSIONS, 1, permissions)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    mbfl_file_chmod "$PATHNAME" "$PERMISSIONS"
+    mbfl_file_chmod "$PERMISSIONS" "$PATHNAME"
 }
 
 function mbfl_file_get_permissions_var () {

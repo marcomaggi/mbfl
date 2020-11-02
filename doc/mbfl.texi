@@ -2340,6 +2340,18 @@ Set the access permissions for @var{PATHNAME}; @var{MODE} must be in a form acce
 @command{chmod}.
 @end defun
 
+
+@defun mbfl_file_chmod @var{PERMISSIONS} @var{PATHNAME} @var{OPT} @dots{}
+Execute the program @command{chmod} with @var{PERMISSIONS} as permissions arguments and
+@var{PATHNAME} as file system pathname argument.  If the optional arguments @var{OPT} are present:
+they are inserted as command line options.
+@end defun
+
+
+@defun mbfl_exec_chmod @var{ARG} @dots{}
+Execute the program @command{chmod} using the given optional arguments.
+@end defun
+
 @c page
 @node file commands owner
 @subsection Setting file owner and group

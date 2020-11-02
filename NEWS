@@ -192,6 +192,7 @@ changes!
 
 * Added functions:
 
+   mbfl_exec_chmod
    mbfl_exec_cp
    mbfl_exec_ln
    mbfl_exec_ls
