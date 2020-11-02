@@ -31,7 +31,7 @@
 #page
 #### helpers
 
-function mbfl_p_validate_executable_hard_coded_pathname () {
+function mbfl_file_p_validate_executable_hard_coded_pathname () {
     mbfl_mandatory_parameter(PROGRAM_PATHNAME, 1, executable program pathname)
 
     ! mbfl_string_equal '/bin/false' "$PROGRAM_PATHNAME" && mbfl_file_is_executable "$PROGRAM_PATHNAME"
@@ -64,13 +64,13 @@ function mbfl_p_file_backwards_looking_at_double_dot () {
 
 	# For the case of standalone double-dot "..":
 	if   ((1 == INDEX)) && test "$ch" = '.'
-	then return 0
+	then return_success
 	     # For the case of double-dot as last component "/path/to/..":
 	elif ((1 < INDEX))  && test \( "$ch" = '.' \) -a \( "mbfl_string_idx(PATHNAME, $((INDEX - 2)))" = '/' \)
-	then return 0
-	else return 1
+	then return_success
+	else return_because_failure
 	fi
-    else return 1
+    else return_because_failure
     fi
 }
 
@@ -153,7 +153,7 @@ function mbfl_file_extension_var () {
 	fi
     done
     mbfl_RESULT_VARREF=$mbfl_result
-    return 0
+    return_success
 }
 function mbfl_file_extension () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
@@ -189,7 +189,7 @@ function mbfl_file_dirname_var () {
         fi
     done
     mbfl_RESULT_VARREF=$mbfl_result
-    return 0
+    return_success
 }
 function mbfl_file_dirname () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
@@ -256,7 +256,7 @@ function mbfl_file_rootname_var () {
 	fi
     fi
     mbfl_RESULT_VARREF=$mbfl_result
-    return 0
+    return_success
 }
 
 function mbfl_file_rootname () {
@@ -287,7 +287,7 @@ function mbfl_file_tail_var () {
 	fi
     done
     mbfl_RESULT_VARREF=$result
-    return 0
+    return_success
 }
 
 function mbfl_file_tail () {
@@ -321,7 +321,7 @@ function mbfl_file_split () {
     done
     SPLITPATH[$SPLITCOUNT]=${PATHNAME:$last_found}
     let ++SPLITCOUNT
-    return 0
+    return_success
 }
 
 #page
@@ -415,7 +415,7 @@ function mbfl_file_normalise_var () {
 	mbfl_RESULT_VARREF=$mbfl_result
     fi
     cd "$mbfl_ORGPWD" >/dev/null
-    return 0
+    return_success
 }
 
 function mbfl_file_normalise () {
@@ -499,17 +499,19 @@ function mbfl_file_enable_realpath () {
     : mbfl_declare_program realpath
 }
 
-function mbfl_file_realpath () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    shift
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_REALPATH"
-    then mbfl_program_exec "$mbfl_PROGRAM_REALPATH" "$@" -- "$PATHNAME"
+function mbfl_exec_realpath () {
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_REALPATH"
+    then mbfl_program_exec "$mbfl_PROGRAM_REALPATH" "$@"
     else
 	mbfl_message_error_printf 'program "realpath" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_REALPATH"
 	return_because_program_not_found
     fi
 }
-
+function mbfl_file_realpath () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    shift
+    mbfl_exec_realpath "$@" -- "$PATHNAME"
+}
 function mbfl_file_realpath_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
@@ -536,12 +538,12 @@ function mbfl_file_subpathname_var () {
     if test "$mbfl_PATHNAME" = "$mbfl_BASEDIR"
     then
         mbfl_RESULT_VARREF='./'
-        return 0
+        return_success
     elif test "${mbfl_PATHNAME:0:${#mbfl_BASEDIR}}" = "$mbfl_BASEDIR"
     then
         printf -v mbfl_RESULT_VARREF './%s' "${mbfl_PATHNAME:$((${#mbfl_BASEDIR}+1))}"
-        return 0
-    else return 1
+        return_success
+    else return_because_failure
     fi
 }
 
@@ -596,25 +598,25 @@ function mbfl_file_find_tmpdir_var () {
     if mbfl_file_directory_is_writable "$mbfl_TMPDIR"
     then
         mbfl_RESULT_VARREF=$mbfl_TMPDIR
-        return 0
+        return_success
     elif mbfl_string_is_not_empty "$USER"
     then
         mbfl_TMPDIR=/tmp/${USER}
         if mbfl_file_directory_is_writable "$mbfl_TMPDIR"
 	then
             mbfl_RESULT_VARREF=$mbfl_TMPDIR
-            return 0
-	else return 1
+            return_success
+	else return_because_failure
 	fi
     else
 	mbfl_TMPDIR=/tmp
 	if mbfl_file_directory_is_writable "$mbfl_TMPDIR"
 	then
             mbfl_RESULT_VARREF=$mbfl_TMPDIR
-            return 0
+            return_success
 	else
 	    mbfl_message_error 'cannot find usable value for "mbfl_TMPDIR"'
-	    return 1
+	    return_because_failure
 	fi
     fi
 }
@@ -636,18 +638,14 @@ function mbfl_file_enable_remove () {
     : mbfl_declare_program rmdir
 }
 
-# This is the executor for the "rm" program.
-#
 function mbfl_exec_rm () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    shift
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_RM"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_RM"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
 	then FLAGS+=' --verbose'
 	fi
-	mbfl_program_exec "$mbfl_PROGRAM_RM" $FLAGS "$@" -- "$PATHNAME"
+	mbfl_program_exec "$mbfl_PROGRAM_RM" $FLAGS "$@"
     else
 	mbfl_message_error_printf 'program "rm" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_RM"
 	return_because_program_not_found
@@ -661,10 +659,10 @@ function mbfl_file_remove () {
         if ! mbfl_file_exists "$PATHNAME"
 	then
             mbfl_message_error_printf 'pathname does not exist: "%s"' "$PATHNAME"
-            return 1
+            return_because_failure
 	fi
     fi
-    mbfl_exec_rm "$PATHNAME" ${FLAGS}
+    mbfl_exec_rm $FLAGS -- "$PATHNAME"
 }
 function mbfl_file_remove_file () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
@@ -674,10 +672,10 @@ function mbfl_file_remove_file () {
         if ! mbfl_file_is_file "$PATHNAME"
 	then
             mbfl_message_error_printf 'pathname is not a file: "%s"' "$PATHNAME"
-            return 1
+            return_because_failure
         fi
     fi
-    mbfl_exec_rm "$PATHNAME" ${FLAGS}
+    mbfl_exec_rm $FLAGS -- "$PATHNAME"
 }
 function mbfl_file_remove_symlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
@@ -687,10 +685,10 @@ function mbfl_file_remove_symlink () {
         if ! mbfl_file_is_symlink "$PATHNAME"
 	then
             mbfl_message_error_printf 'pathname is not a symbolic link: "%s"' "$PATHNAME"
-            return 1
+            return_because_failure
         fi
     fi
-    mbfl_exec_rm "$PATHNAME" ${FLAGS}
+    mbfl_exec_rm $FLAGS -- "$PATHNAME"
 }
 function mbfl_file_remove_file_or_symlink () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
@@ -701,27 +699,24 @@ function mbfl_file_remove_file_or_symlink () {
 		! mbfl_file_is_symlink "$PATHNAME"
 	then
             mbfl_message_error_printf 'pathname is neither a file nor a symbolic link: "%s"' "$PATHNAME"
-            return 1
+            return_because_failure
         fi
     fi
-    mbfl_exec_rm "$PATHNAME" ${FLAGS}
+    mbfl_exec_rm $FLAGS -- "$PATHNAME"
 }
 
-#page
-#### removal functions: removing directories
+### ------------------------------------------------------------------------
 
 # This is the executor for the "rmdir" program.
 #
 function mbfl_exec_rmdir () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    shift
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_RMDIR"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_RMDIR"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
 	then FLAGS+=' --verbose'
 	fi
-	mbfl_program_exec "$mbfl_PROGRAM_RMDIR" $FLAGS "$@" -- "$PATHNAME"
+	mbfl_program_exec "$mbfl_PROGRAM_RMDIR" $FLAGS "$@"
     else
 	mbfl_message_error_printf 'program "rmdir" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_RMDIR"
 	return_because_program_not_found
@@ -737,7 +732,7 @@ function mbfl_file_remove_directory () {
 	if mbfl_string_equal "$REMOVE_SILENTLY" 'yes'
 	then FLAGS+=' --ignore-fail-on-non-empty'
 	fi
-	mbfl_exec_rmdir "$PATHNAME" ${FLAGS}
+	mbfl_exec_rmdir $FLAGS -- "$PATHNAME"
     else
         mbfl_message_error "pathname is not a directory '${PATHNAME}'"
         return_because_failure
@@ -756,19 +751,14 @@ function mbfl_file_enable_copy () {
     : mbfl_declare_program cp
 }
 
-# This is the executor for the "rm" program.
-#
 function mbfl_exec_cp () {
-    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
-    mbfl_mandatory_parameter(TARGET, 2, target pathname)
-    shift 2
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CP"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CP"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
 	then FLAGS+=' --verbose'
 	fi
-	mbfl_program_exec "$mbfl_PROGRAM_CP" $FLAGS "$@" -- "$SOURCE" "$TARGET"
+	mbfl_program_exec "$mbfl_PROGRAM_CP" $FLAGS "$@"
     else
 	mbfl_message_error_printf 'program "cp" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_CP"
 	return_because_program_not_found
@@ -782,7 +772,7 @@ function mbfl_exec_cp_to_dir () {
     mbfl_mandatory_parameter(SOURCE,           1, source pathname)
     mbfl_mandatory_parameter(TARGET_DIRECTORY, 2, target directory pathname)
     shift 2
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CP"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CP"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
@@ -804,7 +794,7 @@ function mbfl_file_copy () {
 	if ! mbfl_file_is_readable "$SOURCE"
 	then
             mbfl_message_error_printf 'copying file "%s"' "$SOURCE"
-            return 1
+            return_because_failure
 	fi
     fi
     if mbfl_file_exists "$TARGET"
@@ -813,13 +803,13 @@ function mbfl_file_copy () {
         then mbfl_message_error_printf 'target of copy exists and it is a directory "%s"' "$TARGET"
         else mbfl_message_error_printf 'target file of copy already exists "%s"' "$TARGET"
         fi
-        return 1
-    else mbfl_exec_cp "$SOURCE" "$TARGET" "$@"
+        return_because_failure
+    else mbfl_exec_cp "$@" -- "$SOURCE" "$TARGET"
     fi
 }
 function mbfl_file_copy_to_directory () {
-    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
-    mbfl_mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE,           1, source pathname)
+    mbfl_mandatory_parameter(TARGET_DIRECTORY, 2, target directory pathname)
     shift 2
     if ! mbfl_option_test
     then
@@ -828,10 +818,10 @@ function mbfl_file_copy_to_directory () {
 		! mbfl_file_is_directory "$TARGET" print_error
 	then
             mbfl_message_error_printf 'copying file "%s"' "$SOURCE"
-            return 1
+            return_because_failure
 	fi
     fi
-    mbfl_exec_cp_to_dir "$SOURCE" "$TARGET" "$@"
+    mbfl_exec_cp "$@" --target-directory="${TARGET_DIRECTORY}/" -- "$SOURCE"
 }
 
 #page
@@ -840,45 +830,19 @@ function mbfl_file_copy_to_directory () {
 function mbfl_file_enable_move () {
     : mbfl_declare_program mv
 }
-
-# This is the executor for the "mv" program.
-#
 function mbfl_exec_mv () {
-    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
-    mbfl_mandatory_parameter(TARGET, 2, target pathname)
-    shift 2
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_MV"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_MV"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
 	then FLAGS+=' --verbose'
 	fi
-	mbfl_program_exec "$mbfl_PROGRAM_MV" $FLAGS "$@" -- "$SOURCE" "$TARGET"
+	mbfl_program_exec "$mbfl_PROGRAM_MV" $FLAGS "$@"
     else
 	mbfl_message_error_printf 'program "mv" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_MV"
 	return_because_program_not_found
     fi
 }
-# This is the  executor for the "mv" program when  moving to a directory
-# target.
-#
-function mbfl_exec_mv_to_dir () {
-    mbfl_mandatory_parameter(SOURCE,           1, source pathname)
-    mbfl_mandatory_parameter(TARGET_DIRECTORY, 2, target directory pathname)
-    shift 2
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_MV"
-    then
-	local FLAGS
-	if mbfl_option_verbose_program
-	then FLAGS+=' --verbose'
-	fi
-	mbfl_program_exec "$mbfl_PROGRAM_MV" $FLAGS "$@" --target-directory="${TARGET_DIRECTORY}/" -- "$SOURCE"
-    else
-	mbfl_message_error_printf 'program "mv" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_MV"
-	return_because_program_not_found
-    fi
-}
-
 function mbfl_file_move () {
     mbfl_mandatory_parameter(SOURCE, 1, source pathname)
     mbfl_mandatory_parameter(TARGET, 2, target pathname)
@@ -888,14 +852,14 @@ function mbfl_file_move () {
         if ! mbfl_file_pathname_is_readable "$SOURCE" print_error
 	then
             mbfl_message_error_printf 'moving "%s"' "$SOURCE"
-            return 1
+            return_because_failure
         fi
     fi
-    mbfl_exec_mv "$SOURCE" "$TARGET" "$@"
+    mbfl_exec_mv "$@" -- "$SOURCE" "$TARGET"
 }
 function mbfl_file_move_to_directory () {
-    mbfl_mandatory_parameter(SOURCE, 1, source pathname)
-    mbfl_mandatory_parameter(TARGET, 2, target pathname)
+    mbfl_mandatory_parameter(SOURCE,           1, source pathname)
+    mbfl_mandatory_parameter(TARGET_DIRECTORY, 2, target directory pathname)
     shift 2
     if ! mbfl_option_test
     then
@@ -904,10 +868,10 @@ function mbfl_file_move_to_directory () {
 		! mbfl_file_is_directory         "$TARGET" print_error
         then
             mbfl_message_error_printf 'moving file "%s"' "$SOURCE"
-            return 1
+            return_because_failure
         fi
     fi
-    mbfl_exec_mv_to_dir "$SOURCE" "$TARGET" "$@"
+    mbfl_exec_mv "$@" --target-directory="${TARGET_DIRECTORY}/" -- "$SOURCE"
 }
 
 #page
@@ -915,6 +879,19 @@ function mbfl_file_move_to_directory () {
 
 function mbfl_file_enable_make_directory () {
     : mbfl_declare_program mkdir
+}
+function mbfl_exec_mkdir () {
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_MKDIR"
+    then
+	local FLAGS
+	if mbfl_option_verbose_program
+	then FLAGS+=' --verbose'
+	fi
+	mbfl_program_exec "$mbfl_PROGRAM_MKDIR" $FLAGS "$@"
+    else
+	mbfl_message_error_printf 'program "mkdir" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_MKDIR"
+	return_because_program_not_found
+    fi
 }
 function mbfl_file_make_directory () {
     mbfl_mandatory_parameter(PATHNAME,   1, pathname)
@@ -925,24 +902,21 @@ function mbfl_file_make_directory () {
 	PERMISSIONS=0775
     else shift 2
     fi
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_MKDIR"
-    then
-	local FLAGS="--parents --mode=${PERMISSIONS}"
-	if mbfl_option_verbose_program
-	then FLAGS+=' --verbose'
-	fi
-	mbfl_program_exec "$mbfl_PROGRAM_MKDIR" $FLAGS "$@" -- "$PATHNAME"
-    else
-	mbfl_message_error_printf 'program "mkdir" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_MKDIR"
-	return_because_program_not_found
-    fi
+    local FLAGS="--parents --mode=${PERMISSIONS}"
+    mbfl_exec_mkdir $FLAGS "$@" -- "$PATHNAME"
 }
 function mbfl_file_make_if_not_directory () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    mbfl_optional_parameter(PERMISSIONS, 2, 0775)
+    mbfl_optional_parameter(PERMISSIONS, 2)
+    if mbfl_string_is_empty "$PERMISSIONS"
+    then
+	shift
+	PERMISSIONS=0775
+    else shift 2
+    fi
     # Make sure the directory exists.  If it already exists: clean up the sudo request!
     if mbfl_file_is_directory "$PATHNAME"
-    then mbfl_file_make_directory "$PATHNAME" "$PERMISSIONS"
+    then mbfl_file_make_directory "$PATHNAME" "$PERMISSIONS" "$@"
     else mbfl_program_reset_sudo_user
     fi
 }
@@ -953,30 +927,30 @@ function mbfl_file_make_if_not_directory () {
 function mbfl_file_enable_symlink () {
     : mbfl_declare_program ln
 }
-
-# This is the executor for the "ls" program.
-#
 function mbfl_exec_ln () {
-    mbfl_mandatory_parameter(ORIGINAL_NAME, 1, original name)
-    mbfl_mandatory_parameter(LINK_NAME,     2, link name)
-    shift 2
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_LN"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_LN"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
 	then FLAGS+=' --verbose'
 	fi
-	mbfl_program_exec "$mbfl_PROGRAM_LN" $FLAGS "$@" -- "$ORIGINAL_NAME" "$LINK_NAME"
+	mbfl_program_exec "$mbfl_PROGRAM_LN" $FLAGS "$@"
     else
 	mbfl_message_error_printf 'program "ln" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_LN"
 	return_because_program_not_found
     fi
 }
-
+function mbfl_file_link () {
+    mbfl_mandatory_parameter(ORIGINAL_NAME, 1, original name)
+    mbfl_mandatory_parameter(LINK_NAME,     2, link name)
+    shift 2
+    mbfl_exec_ln "$@" -- "$ORIGINAL_NAME" "$LINK_NAME"
+}
 function mbfl_file_symlink () {
     mbfl_mandatory_parameter(ORIGINAL_NAME, 1, original name)
     mbfl_mandatory_parameter(SYMLINK_NAME,  2, symbolic link name)
-    mbfl_exec_ln "$ORIGINAL_NAME" "$SYMLINK_NAME" --symbolic
+    shift 2
+    mbfl_exec_ln --symbolic "$@" -- "$ORIGINAL_NAME" "$SYMLINK_NAME"
 }
 
 #page
@@ -987,37 +961,35 @@ function mbfl_file_enable_listing () {
     : mbfl_declare_program readlink
 }
 
-# This is the executor for the "ls" program.
-#
-function mbfl_file_listing () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    shift
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_LS"
-    then mbfl_program_exec "$mbfl_PROGRAM_LS" "$@" -- "$PATHNAME"
+function mbfl_exec_ls () {
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_LS"
+    then mbfl_program_exec "$mbfl_PROGRAM_LS" "$@"
     else
 	mbfl_message_error_printf 'program not "ls" executable, tested pathname is: "%s"' "$mbfl_PROGRAM_LS"
 	return_because_program_not_found
     fi
 }
+function mbfl_file_listing () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    shift
+    mbfl_exec_ls "$@" -- "$PATHNAME"
+}
 function mbfl_file_long_listing () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    mbfl_file_listing "$PATHNAME" '-l'
+    shift
+    mbfl_file_listing "$PATHNAME" '-l' "$@"
 }
 
 ### --------------------------------------------------------------------
 
-# This is the executor for the "readlink" program.
-#
 function mbfl_exec_readlink () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    shift
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_READLINK"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_READLINK"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
 	then FLAGS+=' --verbose'
 	fi
-	mbfl_program_exec "$mbfl_PROGRAM_READLINK" $FLAGS "$@" -- "$PATHNAME"
+	mbfl_program_exec "$mbfl_PROGRAM_READLINK" $FLAGS "$@"
     else
 	mbfl_message_error_printf 'program not "readlink" executable, tested pathname is: "%s"' "$mbfl_PROGRAM_READLINK"
 	return_because_program_not_found
@@ -1026,26 +998,45 @@ function mbfl_exec_readlink () {
 
 function mbfl_file_read_link () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    mbfl_exec_readlink "$PATHNAME"
+    shift
+    mbfl_exec_readlink "$@" -- "$PATHNAME"
+}
+function mbfl_file_readlink () {
+    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
+    shift
+    mbfl_exec_readlink "$@" -- "$PATHNAME"
 }
 
 function mbfl_file_normalise_link () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    mbfl_exec_readlink "$PATHNAME" --canonicalize --no-newline
+    mbfl_exec_readlink --canonicalize --no-newline -- "$PATHNAME"
 }
 
 #page
 #### file permissions inspection functions
 
-# This  function uses  the variable  ERROR_MESSAGE in  the scope  of the
-# caller.
-#
-function mbfl_p_file_print_error_return_result () {
-    mbfl_mandatory_parameter(RESULT, 1, result)
-    if test ${RESULT} != 0 -a "$PRINT_ERROR" = 'print_error'
-    then mbfl_message_error "$ERROR_MESSAGE"
+function mbfl_file_pathname_p_is () {
+    mbfl_mandatory_parameter(PRINT_ERROR, 1, print error argument)
+    mbfl_mandatory_parameter(TEST_FLAG,   2, test flag)
+    mbfl_mandatory_parameter(DESCRIPTION, 3, test condition description)
+    mbfl_optional_parameter(PATHNAME,     4)
+
+    if mbfl_string_is_not_empty "$PATHNAME"
+    then
+	if test $TEST_FLAG "$PATHNAME"
+	then return_success
+	else
+	    if mbfl_string_equal 'print_error' "$PRINT_ERROR"
+	    then mbfl_message_error_printf 'the pathname is not %s: "%s"' "$DESCRIPTION" "$PATHNAME"
+	    fi
+	    return_failure
+	fi
+    else
+	if mbfl_string_equal 'print_error' "$PRINT_ERROR"
+	then mbfl_message_error_printf 'invalid empty pathname argument'
+	fi
+	return_failure
     fi
-    return $RESULT
 }
 
 # ------------------------------------------------------------
@@ -1057,23 +1048,17 @@ function mbfl_file_exists () {
 function mbfl_file_pathname_is_readable () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
-    local ERROR_MESSAGE="not readable pathname '${PATHNAME}'"
-    test -n "$PATHNAME" -a -r "$PATHNAME"
-    mbfl_p_file_print_error_return_result $?
+    mbfl_file_pathname_p_is "$PRINT_ERROR" '-r' 'readable' "$PATHNAME"
 }
 function mbfl_file_pathname_is_writable () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
-    local ERROR_MESSAGE="not writable pathname '${PATHNAME}'"
-    test -n "$PATHNAME" -a -w "$PATHNAME"
-    mbfl_p_file_print_error_return_result $?
+    mbfl_file_pathname_p_is "$PRINT_ERROR" '-w' 'writable' "$PATHNAME"
 }
 function mbfl_file_pathname_is_executable () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
-    local ERROR_MESSAGE="not executable pathname '${PATHNAME}'"
-    test -n "$PATHNAME" -a -x "$PATHNAME"
-    mbfl_p_file_print_error_return_result $?
+    mbfl_file_pathname_p_is "$PRINT_ERROR" '-x' 'executable' "$PATHNAME"
 }
 
 # ------------------------------------------------------------
@@ -1081,9 +1066,7 @@ function mbfl_file_pathname_is_executable () {
 function mbfl_file_is_file () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
-    local ERROR_MESSAGE="unexistent file '${PATHNAME}'"
-    test -n "$PATHNAME" -a -f "$PATHNAME"
-    mbfl_p_file_print_error_return_result $?
+    mbfl_file_pathname_p_is "$PRINT_ERROR" '-f' 'a file' "$PATHNAME"
 }
 function mbfl_file_is_readable () {
     mbfl_optional_parameter(PATHNAME, 1)
@@ -1109,9 +1092,7 @@ function mbfl_file_is_executable () {
 function mbfl_file_is_directory () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
-    local ERROR_MESSAGE="unexistent directory '${PATHNAME}'"
-    test -n "$PATHNAME" -a -d "$PATHNAME"
-    mbfl_p_file_print_error_return_result $?
+    mbfl_file_pathname_p_is "$PRINT_ERROR" '-d' 'a directory' "$PATHNAME"
 }
 function mbfl_file_directory_is_readable () {
     mbfl_optional_parameter(PATHNAME, 1)
@@ -1136,8 +1117,8 @@ function mbfl_file_directory_validate_writability () {
     mbfl_mandatory_parameter(DESCRIPTION, 2, directory description)
     mbfl_message_verbose "validating ${DESCRIPTION} directory '${DIRECTORY}'\n"
     mbfl_file_is_directory "$DIRECTORY" print_error && mbfl_file_directory_is_writable "$DIRECTORY" print_error
-    local CODE=$?
-    if test $CODE != 0
+    local -i CODE=$?
+    if ((0 != CODE))
     then mbfl_message_error_printf 'unwritable %s directory: "%s"' "$DESCRIPTION" "$DIRECTORY"
     fi
     return $CODE
@@ -1148,9 +1129,7 @@ function mbfl_file_directory_validate_writability () {
 function mbfl_file_is_symlink () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
-    local ERROR_MESSAGE="not a symbolic link pathname '${PATHNAME}'"
-    test -n "$PATHNAME" -a -L "$PATHNAME"
-    mbfl_p_file_print_error_return_result $?
+    mbfl_file_pathname_p_is "$PRINT_ERROR" '-L' 'readable' "$PATHNAME"
 }
 
 #page
@@ -1217,7 +1196,7 @@ function mbfl_file_enable_permissions () {
 function mbfl_file_chmod () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CHMOD"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CHMOD"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
@@ -1258,7 +1237,7 @@ function mbfl_file_enable_owner_and_group () {
 function mbfl_file_chown () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CHOWN"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CHOWN"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
@@ -1273,7 +1252,7 @@ function mbfl_file_chown () {
 function mbfl_file_chgrp () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CHGRP"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CHGRP"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
@@ -1374,7 +1353,7 @@ function mbfl_p_file_compress () {
     then ${mbfl_p_file_compress_FUNCTION} ${MODE} "$FILE" "$@"
     else
         mbfl_message_error_printf 'compression target is not a file "%s"' "$FILE"
-        return 1
+        return_because_failure
     fi
 }
 
@@ -1570,7 +1549,7 @@ function mbfl_file_enable_stat () {
 function mbfl_file_stat () {
     mbfl_mandatory_parameter(PATHNAME, 1, pathname)
     shift
-    if mbfl_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_STAT"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_STAT"
     then mbfl_program_exec "$mbfl_PROGRAM_STAT" "$@" -- "$PATHNAME"
     else
 	mbfl_message_error_printf 'program not "stat" executable, tested pathname is: "%s"' "$mbfl_PROGRAM_STAT"

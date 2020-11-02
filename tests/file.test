@@ -656,7 +656,7 @@ function file-normalise-2.6 () {
 # "realpath".  (Marco Maggi; Sep 23, 2020)
 #
 
-if test -n "$REALPATH_PATHNAME"
+if mbfl_file_is_executable "$mbfl_PROGRAM_REALPATH"
 then
 
     function file-realpath-1.1 () {
@@ -741,6 +741,7 @@ function file-subpathname-var-3.1 () {
 }
 
 #page
+#### removing files and directories
 
 function file-remove-1.1 () {
     dotest-mktmpdir
@@ -783,12 +784,40 @@ function file-remove-1.4 () {
 }
 
 #page
+#### creating directories
 
 function file-mkdir-1.1 () {
     local name="$(dotest-echo-tmpdir)/dir.d"
 
     mbfl_file_enable_make_directory
     mbfl_file_make_directory "$name"
+    dotest-clean-files
+}
+
+#page
+#### creating links
+
+function file-link-1.1 () {
+    dotest-mktmpdir
+    local ORIGINAL_NAME LINK_NAME
+    ORIGINAL_NAME=$(dotest-mkfile file.ext) || exit $?
+    LINK_NAME=$(dotest-mkpathname link.ext) || exit $?
+
+    mbfl_file_enable_symlink
+    mbfl_file_link "$ORIGINAL_NAME" "$LINK_NAME"
+    mbfl_file_is_file "$ORIGINAL_NAME" && mbfl_file_is_file "$LINK_NAME"
+    dotest-clean-files
+}
+
+function file-symlink-1.1 () {
+    dotest-mktmpdir
+    local ORIGINAL_NAME LINK_NAME
+    ORIGINAL_NAME=$(dotest-mkfile file.ext)    || exit $?
+    LINK_NAME=$(dotest-mkpathname symlink.ext) || exit $?
+
+    mbfl_file_enable_symlink
+    mbfl_file_symlink "$ORIGINAL_NAME" "$LINK_NAME"
+    mbfl_file_is_file "$ORIGINAL_NAME" && mbfl_file_is_symlink "$LINK_NAME"
     dotest-clean-files
 }
 
@@ -904,7 +933,7 @@ file-is-file-1.1 () {
 }
 file-is-file-1.2 () {
     mbfl_file_is_file a print_error 2>&1 | \
-        dotest-output "<unknown>: error: unexistent file 'a'"
+        dotest-output "<unknown>: error: the pathname is not a file: \"a\""
 }
 
 # ------------------------------------------------------------
@@ -918,7 +947,7 @@ file-is-readable-1.1 () {
 }
 file-is-readable-1.2 () {
     mbfl_file_is_readable a print_error 2>&1 | \
-        dotest-output "<unknown>: error: unexistent file 'a'"
+        dotest-output "<unknown>: error: the pathname is not a file: \"a\""
 }
 file-is-readable-1.3 () {
     local PATHNAME result
@@ -926,7 +955,7 @@ file-is-readable-1.3 () {
 
     chmod u-r "${PATHNAME}"
     mbfl_file_is_readable "${PATHNAME}" print_error 2>&1 | \
-        dotest-output "<unknown>: error: not readable pathname '${PATHNAME}'"
+        dotest-output "<unknown>: error: the pathname is not readable: \"${PATHNAME}\""
     result=$?; dotest-clean-files; return $result
 }
 
@@ -941,7 +970,7 @@ file-is-writable-1.1 () {
 }
 file-is-writable-1.2 () {
     mbfl_file_is_writable a print_error 2>&1 | \
-        dotest-output "<unknown>: error: unexistent file 'a'"
+        dotest-output "<unknown>: error: the pathname is not a file: \"a\""
 }
 file-is-writable-1.3 () {
     local PATHNAME result
@@ -949,7 +978,7 @@ file-is-writable-1.3 () {
 
     chmod u-w "${PATHNAME}"
     mbfl_file_is_writable "${PATHNAME}" print_error 2>&1 | \
-        dotest-output "<unknown>: error: not writable pathname '${PATHNAME}'"
+        dotest-output "<unknown>: error: the pathname is not writable: \"${PATHNAME}\""
     result=$?; dotest-clean-files; return $result
 }
 
@@ -965,7 +994,7 @@ file-is-executable-1.1 () {
 }
 file-is-executable-1.2 () {
     mbfl_file_is_executable a print_error 2>&1 | \
-        dotest-output "<unknown>: error: unexistent file 'a'"
+        dotest-output "<unknown>: error: the pathname is not a file: \"a\""
 }
 file-is-executable-1.3 () {
     local PATHNAME result
@@ -973,7 +1002,7 @@ file-is-executable-1.3 () {
 
     chmod u-x "${PATHNAME}"
     mbfl_file_is_executable "${PATHNAME}" print_error 2>&1 | \
-        dotest-output "<unknown>: error: not executable pathname '${PATHNAME}'"
+        dotest-output "<unknown>: error: the pathname is not executable: \"${PATHNAME}\""
     result=$?; dotest-clean-files; return $result
 }
 
@@ -987,7 +1016,7 @@ file-is-directory-1.1 () {
 }
 file-is-directory-1.2 () {
     mbfl_file_is_directory a print_error 2>&1 | \
-        dotest-output "<unknown>: error: unexistent directory 'a'"
+        dotest-output "<unknown>: error: the pathname is not a directory: \"a\""
 }
 
 # ------------------------------------------------------------
@@ -1000,14 +1029,14 @@ file-directory-is-readable-1.1 () {
 }
 file-directory-is-readable-1.2 () {
     mbfl_file_directory_is_readable a print_error 2>&1 | \
-        dotest-output "<unknown>: error: unexistent directory 'a'"
+        dotest-output "<unknown>: error: the pathname is not a directory: \"a\""
 }
 file-directory-is-readable-1.3 () {
     local PATHNAME=$(dotest-mkdir pathname) result
 
     chmod u-r "${PATHNAME}"
     mbfl_file_directory_is_readable "${PATHNAME}" print_error 2>&1 | \
-        dotest-output "<unknown>: error: not readable pathname '${PATHNAME}'"
+        dotest-output "<unknown>: error: the pathname is not readable: \"${PATHNAME}\""
     chmod u+r "${PATHNAME}"
     result=$?; dotest-clean-files; return $result
 }
@@ -1022,14 +1051,14 @@ file-directory-is-writable-1.1 () {
 }
 file-directory-is-writable-1.2 () {
     mbfl_file_directory_is_writable a print_error 2>&1 | \
-        dotest-output "<unknown>: error: unexistent directory 'a'"
+        dotest-output "<unknown>: error: the pathname is not a directory: \"a\""
 }
 file-directory-is-writable-1.3 () {
     local PATHNAME=$(dotest-mkdir pathname) result
 
     chmod u-w "${PATHNAME}"
     mbfl_file_directory_is_writable "${PATHNAME}" print_error 2>&1 | \
-        dotest-output "<unknown>: error: not writable pathname '${PATHNAME}'"
+        dotest-output "<unknown>: error: the pathname is not writable: \"${PATHNAME}\""
     result=$?; dotest-clean-files; return $result
 }
 
@@ -1044,7 +1073,7 @@ file-directory-is-executable-1.1 () {
 }
 file-directory-is-executable-1.2 () {
     mbfl_file_directory_is_executable a print_error 2>&1 | \
-        dotest-output "<unknown>: error: unexistent directory 'a'"
+        dotest-output "<unknown>: error: the pathname is not a directory: \"a\""
 }
 file-directory-is-executable-1.3 () {
     local PATHNAME=$(dotest-mkdir pathname) result

@@ -730,9 +730,9 @@ the library at runtime; let's say it is ``statically linked''.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_library_loader (@var{hardcoded_pathname})
+@deffn {Preprocessor Macro} mbfl_library_loader (@var{HARDCODED_PATHNAME})
 Expand to a block of code that reliably loads the @value{PACKAGE} library.  The optional argument
-@var{hardcoded_pathname} must be the absolute pathname to a file containing the library itself.
+@var{HARDCODED_PATHNAME} must be the absolute pathname to a file containing the library itself.
 @ref{overview reliable} for details.
 @end deffn
 
@@ -741,9 +741,9 @@ Expand to a block of code that reliably loads the @value{PACKAGE} library.  The 
 @section Function parameters handling
 
 
-@deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{varname} @var{number} @var{description}
-Define a variable local to a shell function holding an argument to the function.  @var{varname} is
-the name of the variable; @var{number} is the positional parameter number; @var{description} is a
+@deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{VARNAME} @var{NUMBER} @var{DESCRIPTION}
+Define a variable local to a shell function holding an argument to the function.  @var{VARNAME} is
+the name of the variable; @var{NUMBER} is the positional parameter number; @var{DESCRIPTION} is a
 description of the argument.
 
 Example, the following:
@@ -788,7 +788,7 @@ and so it is a function with two mandatory parameters.
 
 
 @anchor{mbfl_mandatory_nameref_parameter}
-@deffn {Preprocessor Macro} mbfl_mandatory_nameref_parameter @var{name} @var{number} @var{description}
+@deffn {Preprocessor Macro} mbfl_mandatory_nameref_parameter @var{NAME} @var{NUMBER} @var{DESCRIPTION}
 Similar to @func{mbfl_mandatory_parameter} but use the @code{-n} attribute when declaring the
 variable.  This makes the new variable a NAMEREF for the given variable name; @bashref{Shell
 Parameters, Shell Parameters}.
@@ -808,20 +808,20 @@ name is stored in the numeric parameter; the additional @emph{name variable}
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_mandatory_integer_parameter @var{varname} @var{number} @var{description}
+@deffn {Preprocessor Macro} mbfl_mandatory_integer_parameter @var{VARNAME} @var{NUMBER} @var{DESCRIPTION}
 Like @func{mbfl_mandatory_parameter} but use the @code{-i} attribute when declaring the variable.
 This assigns the integer attribute to the variable; @bashref{Bash Builtins, Bash Builtins}.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_optional_parameter @var{varname} @var{number}
-@deffnx {Preprocessor Macro} mbfl_optional_parameter @var{varname} @var{number} @var{default_value}
+@deffn {Preprocessor Macro} mbfl_optional_parameter @var{VARNAME} @var{NUMBER}
+@deffnx {Preprocessor Macro} mbfl_optional_parameter @var{VARNAME} @var{NUMBER} @var{DEFAULT_VALUE}
 Define a variable local to a shell function holding an argument to the
 function.
 
-The argument @var{varname} is the name of the variable.  The argument @var{number} is the positional
-parameter number.  The argument @var{default_value} is the initialisation value for the variable if
-the argument is not used; when @var{default_value} is not present: the variable is left empty.
+The argument @var{VARNAME} is the name of the variable.  The argument @var{NUMBER} is the positional
+parameter number.  The argument @var{DEFAULT_VALUE} is the initialisation value for the variable if
+the argument is not used; when @var{DEFAULT_VALUE} is not present: the variable is left empty.
 
 Example, the following:
 
@@ -852,8 +852,8 @@ local COUNT=$@{2:-@}"
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_optional_integer_parameter @var{varname} @var{number}
-@deffnx {Preprocessor Macro} mbfl_optional_integer_parameter @var{varname} @var{number} @var{default_value}
+@deffn {Preprocessor Macro} mbfl_optional_integer_parameter @var{VARNAME} @var{NUMBER}
+@deffnx {Preprocessor Macro} mbfl_optional_integer_parameter @var{VARNAME} @var{NUMBER} @var{DEFAULT_VALUE}
 Like @func{mbfl_optional_parameter} but use the @code{-i} attribute when declaring the variable;
 this assigns the integer attribute to the variable; @bashref{Bash Builtins, Bash Builtins}.
 
@@ -865,9 +865,9 @@ this assigns the integer attribute to the variable; @bashref{Bash Builtins, Bash
 @section Script arguments handling
 
 
-@deffn {Preprocessor Macro} mbfl_command_line_argument @var{varname} @var{argindex}
-Define a variable local to a shell function holding an argument to the script.  @var{varname} is the
-variable name, @var{argindex} is the argument index in the @code{ARGV} array.
+@deffn {Preprocessor Macro} mbfl_command_line_argument @var{VARNAME} @var{ARGINDEX}
+Define a variable local to a shell function holding an argument to the script.  @var{VARNAME} is the
+variable name, @var{ARGINDEX} is the argument index in the @code{ARGV} array.
 
 Example, the following:
 
@@ -884,12 +884,12 @@ local PATHNAME=$@{ARGV[3]@}
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_extract_command_line_argument @var{varname} @var{argindex}
+@deffn {Preprocessor Macro} mbfl_extract_command_line_argument @var{VARNAME} @var{ARGINDEX}
 Expand into an equivalent of:
 
 @example
-mbfl_command_line_argument(@var{varname}, @var{argindex})
-mbfl_variable_unset(@var{varname}[@var{argindex}])
+mbfl_command_line_argument(@var{VARNAME}, @var{ARGINDEX})
+mbfl_variable_unset(@var{VARNAME}[@var{ARGINDEX}])
 @end example
 
 We use this macro to access a non--option command line argument and to remove it from the array
@@ -1390,16 +1390,16 @@ Notice that @code{script_DESCRIPTION} and @code{script_EXAMPLES}
 
 
 
-@defun mbfl_set_maybe @var{name} @var{value}
-Set a variable named @var{name} to @var{value}, but only if @var{name}
-is not the empty string; if @var{value} is the empty string: the old
-value of @var{name} is left untouched.
+@defun mbfl_set_maybe @var{NAME} @var{VALUE}
+Set a variable named @var{NAME} to @var{VALUE}, but only if @var{NAME}
+is not the empty string; if @var{VALUE} is the empty string: the old
+value of @var{NAME} is left untouched.
 @end defun
 
 
-@defun mbfl_read_maybe_null @var{varname}
+@defun mbfl_read_maybe_null @var{VARNAME}
 Read a line from its stdin and store it in a variable named
-@var{varname}.  If @func{mbfl_option_null} returns true: the null
+@var{VARNAME}.  If @func{mbfl_option_null} returns true: the null
 character is used as terminator, as in:
 
 @example
@@ -1445,24 +1445,24 @@ null byte.
 @end quotation
 
 
-@defun mbfl_encode_hex @var{ascii_string}
-@defunx mbfl_encode_hex_var @var{_RV} @var{ascii_string}
+@defun mbfl_encode_hex @var{ASCII_STRING}
+@defunx mbfl_encode_hex_var @var{_RV} @var{ASCII_STRING}
 Encode a hex string and outputs it on @stdout{}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_decode_hex @var{hex_string}
-@defunx mbfl_decode_hex_var @var{_RV} @var{hex_string}
+@defun mbfl_decode_hex @var{HEX_STRING}
+@defunx mbfl_decode_hex_var @var{_RV} @var{HEX_STRING}
 Decode a hex string and outputs it on @stdout{}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_decode_oct @var{oct_string}
-@defunx mbfl_decode_oct_var @var{_RV} @var{oct_string}
+@defun mbfl_decode_oct @var{OCT_STRING}
+@defunx mbfl_decode_oct_var @var{_RV} @var{OCT_STRING}
 Decode a oct string and outputs it on @stdout{}.
 
 @DocVarVariant{}
@@ -1509,9 +1509,9 @@ mbfl_decode_hex 414243
 @subsection Splitting a file name into its components
 
 
-@defun mbfl_file_extension @var{pathname}
-@defunx mbfl_file_extension_var @var{_RV} @var{pathname}
-Extract the extension from a file name.  Starting from the end of the string @var{pathname}: search
+@defun mbfl_file_extension @var{PATHNAME}
+@defunx mbfl_file_extension_var @var{_RV} @var{PATHNAME}
+Extract the extension from a file name.  Starting from the end of the string @var{PATHNAME}: search
 the last dot character in the argument string and echo to stdout the range of characters from the
 dot to the end, not including the dot.  If a slash character or the beginning of the string is found
 first: echoes to stdout the empty string.
@@ -1533,8 +1533,8 @@ mbfl_file_extension_var _RV /path/to/file.ext
 @end defun
 
 
-@defun mbfl_file_dirname @var{pathname}
-@defunx mbfl_file_dirname_var @var{_RV} @var{pathname}
+@defun mbfl_file_dirname @var{PATHNAME}
+@defunx mbfl_file_dirname_var @var{_RV} @var{PATHNAME}
 Extract the directory part from a fully qualified file name.  Search the last slash character in the
 input string and echo to stdout the range of characters from the first to the slash, not including
 the slash.
@@ -1569,13 +1569,13 @@ mbfl_file_dirname_var _RV /path/to/file.ext
 @end defun
 
 
-@defun mbfl_file_rootname @var{pathname}
-@defunx mbfl_file_rootname_var @var{_RV} @var{pathname}
+@defun mbfl_file_rootname @var{PATHNAME}
+@defunx mbfl_file_rootname_var @var{_RV} @var{PATHNAME}
 Extract the root portion of a file pathname: everything excluding the last component's extension and
 the extension's dot separator.  Search the last dot character in the argument string and echo to
 stdout the range of characters from the beginning to the dot, not including the dot.  If a slash is
 the last character: skip it; then if a slash character is found first, or no dot is found, or the
-dot is the first character: echo the full @var{pathname}.
+dot is the first character: echo the full @var{PATHNAME}.
 
 @DocVarVariant{}
 
@@ -1601,8 +1601,8 @@ mbfl_file_rootname_var /path/to/file.ext
 @end defun
 
 
-@defun mbfl_file_tail @var{pathname}
-@defunx mbfl_file_tail_var @var{_RV} @var{pathname}
+@defun mbfl_file_tail @var{PATHNAME}
+@defunx mbfl_file_tail_var @var{_RV} @var{PATHNAME}
 Extract the file portion from a fully qualified pathname.  Search the last slash character in the
 input string and echo to stdout the range of characters from the slash to the end, not including the
 slash.  If no slash is found: echo the whole string.
@@ -1621,7 +1621,7 @@ mbfl_file_tail_var _RV /path/to/file.ext
 @end defun
 
 
-@defun mbfl_file_split @var{pathname}
+@defun mbfl_file_split @var{PATHNAME}
 Separate a file name into its components.  One or more contiguous occurrences of the slash character
 is used as separator.  The components are stored in an array named @code{SPLITPATH}, that may be
 declared @code{local} in the scope of the caller; the base index is zero.  The number of elements in
@@ -1640,10 +1640,10 @@ $SPLITCOUNT             @result{} 3
 @end defun
 
 
-@defun mbfl_file_strip_trailing_slash @var{pathname}
-@defunx mbfl_file_strip_trailing_slash_var @var{_RV} @var{pathname}
-Remove all the trailing slashes from @var{pathname} and print the result on stdout.  If
-@var{pathname} consists only of slashes: print a single dot.
+@defun mbfl_file_strip_trailing_slash @var{PATHNAME}
+@defunx mbfl_file_strip_trailing_slash_var @var{_RV} @var{PATHNAME}
+Remove all the trailing slashes from @var{PATHNAME} and print the result on stdout.  If
+@var{PATHNAME} consists only of slashes: print a single dot.
 
 @DocVarVariant{}
 
@@ -1668,10 +1668,10 @@ mbfl_file_strip_trailing_slash_var _RV '/path/to/dir.ext/'
 @end defun
 
 
-@defun mbfl_file_strip_leading_slash @var{pathname}
-@defunx mbfl_file_strip_leading_slash_var @var{_RV} @var{pathname}
-Remove all the leading slashes from @var{pathname} and print the result on stdout.  If
-@var{pathname} consists only of slashes: print a single dot.
+@defun mbfl_file_strip_leading_slash @var{PATHNAME}
+@defunx mbfl_file_strip_leading_slash_var @var{_RV} @var{PATHNAME}
+Remove all the leading slashes from @var{PATHNAME} and print the result on stdout.  If
+@var{PATHNAME} consists only of slashes: print a single dot.
 
 @DocVarVariant{}
 
@@ -1692,18 +1692,18 @@ mbfl_file_strip_leading_slash 'file'    @print{} file
 @end defun
 
 
-@defun mbfl_file_normalise @var{pathname}
-@defunx mbfl_file_normalise @var{pathname} @var{prefix}
-@defunx mbfl_file_normalise_var @var{_RV} @var{pathname}
-@defunx mbfl_file_normalise_var @var{_RV} @var{pathname} @var{prefix}
+@defun mbfl_file_normalise @var{PATHNAME}
+@defunx mbfl_file_normalise @var{PATHNAME} @var{PREFIX}
+@defunx mbfl_file_normalise_var @var{_RV} @var{PATHNAME}
+@defunx mbfl_file_normalise_var @var{_RV} @var{PATHNAME} @var{PREFIX}
 Normalise a file name: remove all the occurrences of @code{.} and @code{..}.
 
-If @var{pathname} is relative (according to @func{mbfl_file_is_absolute}) and @var{prefix} is not
+If @var{PATHNAME} is relative (according to @func{mbfl_file_is_absolute}) and @var{PREFIX} is not
 present or it is the empty string: the current process working directory is prepended to
-@var{pathname}.
+@var{PATHNAME}.
 
-If @var{prefix} is present and non empty, and @var{pathname} is relative (according to
-@func{mbfl_file_is_absolute}): @var{prefix} is prepended to @var{pathname} and normalised, too.
+If @var{PREFIX} is present and non empty, and @var{PATHNAME} is relative (according to
+@func{mbfl_file_is_absolute}): @var{PREFIX} is prepended to @var{PATHNAME} and normalised, too.
 
 Echo to stdout the normalised file name.  Return true.
 
@@ -1715,9 +1715,9 @@ Echo to stdout the normalised file name.  Return true.
 @subsection Absolute and relative pathnames
 
 
-@defun mbfl_file_subpathname @var{pathname} @var{basedir}
-@defunx mbfl_file_subpathname_var @var{_RV} @var{pathname} @var{basedir}
-If @var{pathname} is a subdirectory or file under @var{basedir}: print to stdout the subpathname
+@defun mbfl_file_subpathname @var{PATHNAME} @var{BASEDIR}
+@defunx mbfl_file_subpathname_var @var{_RV} @var{PATHNAME} @var{BASEDIR}
+If @var{PATHNAME} is a subdirectory or file under @var{BASEDIR}: print to stdout the subpathname
 portion.  Example:
 
 @example
@@ -1725,8 +1725,8 @@ mbfl_file_subpathname /a/b/c /a
 -> ./b/c
 @end example
 
-Both @var{pathname} and @var{basedir} must be full (normalised) pathnames for this function to work.
-If @var{pathname} is recognised as subpathname of @var{basedir}: the return code is zero; else the
+Both @var{PATHNAME} and @var{BASEDIR} must be full (normalised) pathnames for this function to work.
+If @var{PATHNAME} is recognised as subpathname of @var{BASEDIR}: the return code is zero; else the
 return code is one.
 
 @DocVarVariant{}
@@ -1746,38 +1746,38 @@ mbfl_file_subpathname_var _RV /a/b/c /a
 
 @c ------------------------------------------------------------------------
 
-@defun mbfl_file_is_absolute @var{pathname}
-Return true if the first character in @var{pathname} is a slash (@code{/}); else return false.
+@defun mbfl_file_is_absolute @var{PATHNAME}
+Return true if the first character in @var{PATHNAME} is a slash (@code{/}); else return false.
 @end defun
 
 
-@defun mbfl_file_is_absolute_dirname @var{pathname}
-Return true if @var{pathname} is a directory according to @func{mbfl_file_is_directory} and an
+@defun mbfl_file_is_absolute_dirname @var{PATHNAME}
+Return true if @var{PATHNAME} is a directory according to @func{mbfl_file_is_directory} and an
 absolute pathname according to @func{mbfl_file_is_absolute}.
 @end defun
 
 
-@defun mbfl_file_is_absolute_filename @var{pathname}
-Return true if @var{pathname} is a file according to @func{mbfl_file_is_file} and an absolute
+@defun mbfl_file_is_absolute_filename @var{PATHNAME}
+Return true if @var{PATHNAME} is a file according to @func{mbfl_file_is_file} and an absolute
 pathname according to @func{mbfl_file_is_absolute}.
 @end defun
 
 @c ------------------------------------------------------------------------
 
-@defun mbfl_file_is_relative @var{pathname}
-Return true if the first character in @var{pathname} is @strong{not} a slash (@code{/}); else return
+@defun mbfl_file_is_relative @var{PATHNAME}
+Return true if the first character in @var{PATHNAME} is @strong{not} a slash (@code{/}); else return
 false.
 @end defun
 
 
-@defun mbfl_file_is_relative_dirname @var{pathname}
-Return true if @var{pathname} is a directory according to @func{mbfl_file_is_directory} and an
+@defun mbfl_file_is_relative_dirname @var{PATHNAME}
+Return true if @var{PATHNAME} is a directory according to @func{mbfl_file_is_directory} and an
 relative pathname according to @func{mbfl_file_is_relative}.
 @end defun
 
 
-@defun mbfl_file_is_relative_filename @var{pathname}
-Return true if @var{pathname} is a file according to @func{mbfl_file_is_file} and an relative
+@defun mbfl_file_is_relative_filename @var{PATHNAME}
+Return true if @var{PATHNAME} is a file according to @func{mbfl_file_is_file} and an relative
 pathname according to @func{mbfl_file_is_relative}.
 @end defun
 
@@ -1824,7 +1824,7 @@ Echo the accepted value to stdout.  Return true if a value is found, false other
 * file commands copy::          Copying files.
 * file commands move::          Moving files.
 * file commands removing::      Removing files and directories.
-* file commands symlink::       Creating symbolic links.
+* file commands symlink::       Creating links and symbolic links.
 * file commands realpath::      Normalising pathnames.
 * file commands tar::           Manipulating tar archives.
 * file commands perms::         Set/get file permissions.
@@ -1855,49 +1855,52 @@ Echo the accepted value to stdout.  Return true if a value is found, false other
 
 
 @defun mbfl_file_enable_listing
-Declare the commands required to retrieve informations about files and
-directories.  @ref{program declaring, Declaring the intention to use a
-program}
+Declare the commands required to retrieve informations about files and directories.  @ref{program
+declaring, Declaring the intention to use a program}
 
 The programs are: @command{ls}, @command{readlink}.
 @end defun
 
 
-@defun mbfl_file_listing @var{pathname} @dots{}
-Execute @command{ls} with @var{pathname} as argument.  If other arguments are present: they are
-places, as they are, on the command line of @command{ls}.
+@defun mbfl_file_listing @var{PATHNAME} @var{OPT} @dots{}
+Execute the program @command{ls} with @var{PATHNAME} as argument.  If other arguments are present:
+they are inserted as options in the command line of @command{ls}.
 @end defun
 
 
-@defun mbfl_file_long_listing @var{pathname}
-Execute @command{ls} with @var{pathname} as argument and the flag
-@code{-l}.
+@defun mbfl_file_long_listing @var{PATHNAME} @var{OPT} @dots{}
+Execute the program @command{ls} with @var{PATHNAME} as argument and the flag @code{-l}.  If other
+arguments are present: they are inserted as options in the command line of @command{ls}.
 @end defun
 
 
-@defun mbfl_file_normalise_link @var{pathname}
-Make use of the @command{readlink} to normalise the pathname of a
-symbolic link (remember that a symbolic link references a file, never a
-directory).  Echo to stdout the normalised pathname.
+@defun mbfl_file_normalise_link @var{PATHNAME}
+Execute the program @command{readlink} to normalise the pathname of a symbolic link (remember that a
+symbolic link references a file, never a directory).  Echo to stdout the normalised pathname.
 
 The command line of @command{readlink} is:
 
 @example
-readlink -fn "$@var{pathname}"
+readlink  --canonicalize --no-newline "$@var{PATHNAME}"
 @end example
 @end defun
 
 
-@defun mbfl_file_read_link @var{pathname}
-Make use of @command{readlink} to acquire the original pathname
-referenced by @var{pathname}, then print it.
+@defun mbfl_file_read_link @var{PATHNAME} @var{OPT} @dots{}
+@defunx mbfl_file_readlink @var{PATHNAME} @var{OPT} @dots{}
+Execute the program @command{readlink} to acquire the original pathname referenced by
+@var{PATHNAME}, then print it.  If other arguments are present: they are inserted as options in the
+command line of @command{readlink}.
 @end defun
 
 
-@defun mbfl_exec_readlink @var{PATHNAME} [@var{opt} @dots{}]
-Raw executor for @command{readlink}.  The mandatory argument @var{PATHNAME} must be the pathname of
-a directory entry.  The optional arguments are added, as options, to the command line of
-@command{readlink}.
+@defun mbfl_exec_ls @var{ARG} @dots{}
+Execute the program @command{ls} with the given optional command line arguments.
+@end defun
+
+
+@defun mbfl_exec_readlink @var{ARG} @dots{}
+Execute the program @command{readlink} with the given optional command line arguments.
 @end defun
 
 @c page
@@ -1915,9 +1918,9 @@ Declare the intention to use the program @command{stat}.
 @end defun
 
 
-@defun mbfl_file_stat @var{pathname} [@var{opt} @dots{}]
-@defunx mbfl_file_stat_var @var{_RV} @var{pathname} [@var{opt} @dots{}]
-Execute @command{stat} with @var{pathname} as first argument and @var{arg} as other arguments.
+@defun mbfl_file_stat @var{PATHNAME} @var{OPT} @dots{}
+@defunx mbfl_file_stat_var @var{_RV} @var{PATHNAME} @var{OPT} @dots{}
+Execute @command{stat} with @var{PATHNAME} as first argument and @var{ARG} as other arguments.
 
 @example
 mbfl_file_enable_stat
@@ -1935,8 +1938,8 @@ mbfl_file_stat /bin --format='%F'
 @end defun
 
 
-@defun mbfl_file_get_size @var{pathname}
-@defunx mbfl_file_get_size_var @var{_RV} @var{pathname}
+@defun mbfl_file_get_size @var{PATHNAME}
+@defunx mbfl_file_get_size_var @var{_RV} @var{PATHNAME}
 Print the size of the file in bytes.
 
 @DocVarVariant{}
@@ -1960,10 +1963,10 @@ The programs are: @command{mkdir}.
 @end defun
 
 
-@defun mbfl_file_make_directory @var{pathname}
-@defunx mbfl_file_make_directory @var{pathname} @var{permissions}
-Create a directory named @var{pathname}; all the non--existent parents are
-created, too.  If @var{permissions} is present: it is the specification
+@defun mbfl_file_make_directory @var{PATHNAME}
+@defunx mbfl_file_make_directory @var{PATHNAME} @var{PERMISSIONS}
+Create a directory named @var{PATHNAME}; all the non--existent parents are
+created, too.  If @var{PERMISSIONS} is present: it is the specification
 of directory permissions in octal mode.
 
 This function does not test if the directory already exists: the command
@@ -1971,13 +1974,18 @@ is always executed.
 @end defun
 
 
-@defun mbfl_file_make_if_not_directory @var{pathname}
-@defunx mbfl_file_make_if_not_directory @var{pathname} @var{permissions}
+@defun mbfl_file_make_if_not_directory @var{PATHNAME}
+@defunx mbfl_file_make_if_not_directory @var{PATHNAME} @var{PERMISSIONS}
 Wrapper for @func{mbfl_file_make_directory} that creates the
 directory if it does not exist.
 
 If a @command{sudo} user was requested: this function resets the request
 even if no command has been executed.
+@end defun
+
+
+@defun mbfl_exec_mkdir @var{ARG} @dots{}
+Execute the program @command{mkdir} using the given optional command line arguments.
 @end defun
 
 @c page
@@ -1990,36 +1998,39 @@ even if no command has been executed.
 @CindexCommand{cp}
 
 
-At present, copying of directories is not supported; we have to create
-the directory and then copy files into it.
+At present, copying of directories is not supported; we have to create the directory and then copy
+files into it.
 
 
 @defun mbfl_file_enable_copy
-Declare the commands required to copy files and directories.
-@ref{program declaring, Declaring the intention to use a program}
+Declare the commands required to copy files and directories.  @ref{program declaring, Declaring the
+intention to use a program}
 
 The programs are: @command{cp}.
 @end defun
 
 
-@defun mbfl_file_copy @var{source} @var{target} ?@dots{}?
-Copy the @var{source}, a file pathname, to @var{target}, a file
-pathname.  Additional arguments are handed to the command unchanged.
+@defun mbfl_file_copy @var{SOURCE} @var{TARGET} ?@dots{}?
+Copy the @var{SOURCE}, a file pathname, to @var{TARGET}, a file pathname.  Additional arguments are
+handed to the command unchanged.
 
-If @var{source} does not exist, or if it is not a file, an error is
-generated and the return value is 1.  If @var{target} exists an error is
-generated and the return value is 1.
+If @var{SOURCE} does not exist, or if it is not a file, an error is generated and the return value
+is 1.  If @var{TARGET} exists an error is generated and the return value is 1.
 @end defun
 
 
-@defun mbfl_file_copy_to_directory @var{source} @var{target} ?@dots{}?
-Copy the @var{source}, a file pathname, into the directory @var{target}.
-Additional arguments are handed to the command unchanged.
+@defun mbfl_file_copy_to_directory @var{SOURCE} @var{TARGET} ?@dots{}?
+Copy the @var{SOURCE}, a file pathname, into the directory @var{TARGET}.  Additional arguments are
+handed to the command unchanged.
 
-If @var{source} does not exist, or if it is not a file, an error is
-generated and the return value is 1.  If @var{target} does not exist or
-it is not a directory: an error message is generated and the return
-value is 1.
+If @var{SOURCE} does not exist, or if it is not a file, an error is generated and the return value
+is 1.  If @var{TARGET} does not exist or it is not a directory: an error message is generated and
+the return value is 1.
+@end defun
+
+
+@defun mbfl_exec_cp @var{ARG} @dots{}
+Execute the program @command{cp} using the given optional command line arguments.
 @end defun
 
 @c page
@@ -2033,31 +2044,34 @@ value is 1.
 
 
 @defun mbfl_file_enable_move
-Declare the commands required to move files and directories.
-@ref{program declaring, Declaring the intention to use a program}
+Declare the commands required to move files and directories.  @ref{program declaring, Declaring the
+intention to use a program}
 
 The programs are: @command{mv}.
 @end defun
 
 
-@defun mbfl_file_move @var{source} @var{target} ?@dots{}?
-Move the @var{source}, a file or directory, to @var{target}, a pathname.
-Additional arguments are handed to the command unchanged.
+@defun mbfl_file_move @var{SOURCE} @var{TARGET} ?@dots{}?
+Move the @var{SOURCE}, a file or directory, to @var{TARGET}, a pathname.  Additional arguments are
+handed to the command unchanged.
 
-If @var{source} does not exist, or if it is not readable, an error is
-generated and the return value is 1.  If @var{target} exists an error is
-generated and the return value is 1.
+If @var{SOURCE} does not exist, or if it is not readable, an error is generated and the return value
+is 1.  If @var{TARGET} exists an error is generated and the return value is 1.
 @end defun
 
 
-@defun mbfl_file_move_to_directory @var{source} @var{target} ?@dots{}?
-Move the @var{source}, a file or directory, into the directory
-@var{target}.  Additional arguments are handed to the command unchanged.
+@defun mbfl_file_move_to_directory @var{SOURCE} @var{TARGET} ?@dots{}?
+Move the @var{SOURCE}, a file or directory, into the directory @var{TARGET}.  Additional arguments
+are handed to the command unchanged.
 
-If @var{source} does not exist, or if it is not readable, an error
-message is generated and the return value is 1.  If @var{target} does
-not exist or it is not a directory: an error is generated and the return
-value is 1.
+If @var{SOURCE} does not exist, or if it is not readable, an error message is generated and the
+return value is 1.  If @var{TARGET} does not exist or it is not a directory: an error is generated
+and the return value is 1.
+@end defun
+
+
+@defun mbfl_exec_mv @var{ARG} @dots{}
+Execute the program @command{mv} using the given optional command line arguments.
 @end defun
 
 @c page
@@ -2089,70 +2103,89 @@ The programs are: @command{rm}, @command{rmdir}.
 @end defun
 
 
-@defun mbfl_file_remove @var{pathname}
-Remove @var{pathname}, no matter if it is a file or directory.  If it is
+@defun mbfl_file_remove @var{PATHNAME}
+Remove @var{PATHNAME}, no matter if it is a file or directory.  If it is
 a directory: descend the sub-levels removing all of them.  If an error
 occurs return 1.
 @end defun
 
 
-@defun mbfl_file_remove_file @var{pathname}
-Remove the file or symbolic link selected by @var{pathname}.  If the
+@defun mbfl_file_remove_file @var{PATHNAME}
+Remove the file or symbolic link selected by @var{PATHNAME}.  If the
 file does not exist or it is not a file or an error occurs: return 1.
 @end defun
 
 
-@defun mbfl_file_remove_symlink @var{pathname}
-Remove the symbolic link selected by @var{pathname}.  If the link does
+@defun mbfl_file_remove_symlink @var{PATHNAME}
+Remove the symbolic link selected by @var{PATHNAME}.  If the link does
 not exist or it is not a symbolic link or an error occurs: return 1.
 @end defun
 
 
-@defun mbfl_file_remove_file_or_symlink @var{pathname}
-Remove the file or symbolic link selected by @var{pathname}.  If the
+@defun mbfl_file_remove_file_or_symlink @var{PATHNAME}
+Remove the file or symbolic link selected by @var{PATHNAME}.  If the
 file does not exist or it is not a file or an error occurs: return 1.
 @end defun
 
 
-@defun mbfl_file_remove_directory @var{pathname}
-Remove the directory selected by @var{pathname}.  If the directory does
+@defun mbfl_file_remove_directory @var{PATHNAME}
+Remove the directory selected by @var{PATHNAME}.  If the directory does
 not exist or an error occurs: return 1.
 @end defun
 
 
-@defun mbfl_file_remove_directory_silently @var{pathname}
+@defun mbfl_file_remove_directory_silently @var{PATHNAME}
 Like @func{mbfl_file_remove_directory}, but do not print messages if
 the directory is not empty.
 @end defun
 
+
+@defun mbfl_exec_rm @var{ARG} @dots{}
+Execute the program @command{rm} with the given optional command line arguments.
+@end defun
+
+
+@defun mbfl_exec_rmdir @var{ARG} @dots{}
+Execute the program @command{rmdir} with the given optional command line arguments.
+@end defun
+
 @c page
 @node file commands symlink
-@subsection Creating symbolic links
+@subsection Creating links and symbolic links
 
 
+@cindex Files, links
 @cindex Files, symbolic links
-@cindex Symbolic links
-@cindex Creating symbolic links
+@cindex Links between files
+@cindex Symbolic links between files
+@cindex Creating links between files
+@cindex Creating symbolic links between files
 @CindexCommand{ln}
 
 
-@defun mbfl_file_enable_symlink
-Declare the commands required to create symbolic links.  @ref{program
+@defun mbfl_file_enable_link
+@defunx mbfl_file_enable_symlink
+Declare the commands required to create links and symbolic links between files.  @ref{program
 declaring, Declaring the intention to use a program}
 
 The programs are: @command{ln}.
 @end defun
 
 
-@defun mbfl_file_symlink @var{original_name} @var{symlink_name}
-Create a symbolic link.
+@defun mbfl_file_symlink @var{ORIGINAL_NAME} @var{SYMLINK_NAME} @var{OPT} @dots{}
+Create a symbolic link from @var{ORIGINAL_NAME} @var{LINK_NAME}.  Insert in the command line of
+@command{ln} the given optional arguments.
 @end defun
 
 
-@defun mbfl_exec_ln @var{original_name} @var{link_name} [@var{opt} @dots{}]
-Raw executor for @command{ln}.  The mandatory arguments @var{original_name} and @var{link_name} are
-put on the command line of @command{ln} as arguments.  The optional arguments @var{opt} are added,
-as options, to the command line of @command{ln}.
+@defun mbfl_file_link @var{ORIGINAL_NAME} @var{LINK_NAME} @var{OPT} @dots{}
+Create a link from @var{ORIGINAL_NAME} @var{LINK_NAME}.  Insert in the command line of @command{ln}
+the given optional arguments.
+@end defun
+
+
+@defun mbfl_exec_ln @var{ARG} @dots{}
+Execute the program @command{ln} using the given optional command line arguments.
 @end defun
 
 @c page
@@ -2172,12 +2205,17 @@ The programs are: @command{realpath}.
 @end defun
 
 
-@defun mbfl_file_realpath @var{pathname} [@var{opt} @dots{}]
-@defunx mbfl_file_realpath_var @var{_RV} @var{pathname} [@var{opt} @dots{}]
-Normalise the given @var{pathname} using @command{realpath} and print the result to stdout.  The
-optional arguments @var{opt} are added, as options, to the command line of @command{realpath}.
+@defun mbfl_file_realpath @var{PATHNAME} @var{OPT} @dots{}
+@defunx mbfl_file_realpath_var @var{_RV} @var{PATHNAME} @var{OPT} @dots{}
+Normalise the given @var{PATHNAME} using @command{realpath} and print the result to stdout.  The
+optional arguments @var{OPT} are added, as options, to the command line of @command{realpath}.
 
 @DocVarVariant{}
+@end defun
+
+
+@defun mbfl_exec_realpath @var{ARG} @dots{}
+Execute the program @command{realpath} using the given optional command line arguments.
 @end defun
 
 @c page
@@ -2203,51 +2241,51 @@ the intention to use a program}
 @end defun
 
 
-@defun mbfl_exec_tar [@var{opt} @dots{}]
-@defunx mbfl_tar_exec @var{arg}  @dots{}
+@defun mbfl_exec_tar @var{OPT} @dots{}
+@defunx mbfl_tar_exec @var{ARG}  @dots{}
 Execute @command{tar} with whatever arguments are used.  Return the return code of @command{tar}.
 @end defun
 
 
-@defun mbfl_tar_create_to_stdout @var{directory} ?...?
+@defun mbfl_tar_create_to_stdout @var{DIRECTORY} ?...?
 Create an archive and send it to stdout.  The root of the archive is the
-@var{directory}.  Files are selected with the @code{.}  pattern.
+@var{DIRECTORY}.  Files are selected with the @code{.}  pattern.
 @command{tar} flags may be appended to the invocation to this function.
 In case of error return 1.
 @end defun
 
 
-@defun mbfl_tar_extract_from_stdin @var{directory} ?...?
-Read an archive from stdin and extract it under @var{directory}.
+@defun mbfl_tar_extract_from_stdin @var{DIRECTORY} ?...?
+Read an archive from stdin and extract it under @var{DIRECTORY}.
 @command{tar} flags may be appended to the invocation to this function.
 In case of error return 1.
 @end defun
 
 
-@defun mbfl_tar_extract_from_file @var{directory} @var{archive} ?...?
-Read an archive from a file and extract it under @var{directory}.
+@defun mbfl_tar_extract_from_file @var{DIRECTORY} @var{ARCHIVE} ?...?
+Read an archive from a file and extract it under @var{DIRECTORY}.
 @command{tar} flags may be appended to the invocation to this function.
 In case of error return 1.
 @end defun
 
 
-@defun mbfl_tar_create_to_file @var{directory} @var{archive} ?...?
-Create an archive named @var{archive} holding the contents of
-@var{directory}.  Before creating the archive, the process changes the
-current directory to @var{directory} and selects the files with the
+@defun mbfl_tar_create_to_file @var{DIRECTORY} @var{ARCHIVE} ?...?
+Create an archive named @var{ARCHIVE} holding the contents of
+@var{DIRECTORY}.  Before creating the archive, the process changes the
+current directory to @var{DIRECTORY} and selects the files with the
 pattern @code{.}.  @command{tar} flags may be appended to the invocation
 to this function.  In case of error return 1.
 @end defun
 
 
-@defun mbfl_tar_archive_directory_to_file @var{directory} @var{archive} ?...?
+@defun mbfl_tar_archive_directory_to_file @var{DIRECTORY} @var{ARCHIVE} ?...?
 Like @func{mbfl_tar_create_to_file} but archive all the contents of
-@var{directory}, including the directory itself (not its parents).
+@var{DIRECTORY}, including the directory itself (not its parents).
 @end defun
 
 
-@defun mbfl_tar_list @var{archive} ?...?
-Print to stdout the list of files in @var{archive}.  @command{tar} flags
+@defun mbfl_tar_list @var{ARCHIVE} ?...?
+Print to stdout the list of files in @var{ARCHIVE}.  @command{tar} flags
 may be appended to the invocation to this function.  In case of error
 return 1.
 @end defun
@@ -2271,9 +2309,9 @@ The programs are: @command{stat}, @command{chmod}.
 @end defun
 
 
-@defun mbfl_file_get_permissions @var{pathname}
-@defunx mbfl_file_get_permissions_var @var{_RV} @var{pathname}
-Print the access permissions for @var{pathname}, in octal format.
+@defun mbfl_file_get_permissions @var{PATHNAME}
+@defunx mbfl_file_get_permissions_var @var{_RV} @var{PATHNAME}
+Print the access permissions for @var{PATHNAME}, in octal format.
 
 @DocVarVariant{}
 
@@ -2291,8 +2329,8 @@ To set permissions one may request the use of @command{sudo}: just request a use
 the following function.  @ref{program executing, Executing a program}
 
 
-@defun mbfl_file_set_permissions @var{mode} @var{pathname}
-Set the access permissions for @var{pathname}; @var{mode} must be in a form accepted by
+@defun mbfl_file_set_permissions @var{MODE} @var{PATHNAME}
+Set the access permissions for @var{PATHNAME}; @var{MODE} must be in a form accepted by
 @command{chmod}.
 @end defun
 
@@ -2320,44 +2358,44 @@ To change the file owner and group one may request the use of @command{sudo}: ju
 before invoking the following function.  @ref{program executing, Executing a program}
 
 
-@defun mbfl_file_set_owner @var{owner} @var{pathname} [@var{opt} @dots{}]
-Change the file owner for @var{pathname}; @var{owner} must be in a form accepted by @command{chown}.
-The optional arguments @var{opt} are handed to @command{chown} as options.
+@defun mbfl_file_set_owner @var{OWNER} @var{PATHNAME} @var{OPT} @dots{}
+Change the file owner for @var{PATHNAME}; @var{OWNER} must be in a form accepted by @command{chown}.
+The optional arguments @var{OPT} are handed to @command{chown} as options.
 @end defun
 
 
-@defun mbfl_file_set_group @var{group} @var{pathname} [@var{opt} @dots{}]
-Change the file group for @var{pathname}; @var{group} must be in a form accepted by @command{chgrp}.
-The optional arguments @var{opt} are handed to @command{chgrp} as options.
+@defun mbfl_file_set_group @var{GROUP} @var{PATHNAME} @var{OPT} @dots{}
+Change the file group for @var{PATHNAME}; @var{GROUP} must be in a form accepted by @command{chgrp}.
+The optional arguments @var{OPT} are handed to @command{chgrp} as options.
 @end defun
 
 
-@defun mbfl_file_get_owner @var{pathname}
-@defunx mbfl_file_get_owner_var @var{_RV} @var{pathname}
+@defun mbfl_file_get_owner @var{PATHNAME}
+@defunx mbfl_file_get_owner_var @var{_RV} @var{PATHNAME}
 Print the owner of the file as symbolic name.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_file_get_group @var{pathname}
-@defunx mbfl_file_get_group_var @var{_RV} @var{pathname}
+@defun mbfl_file_get_group @var{PATHNAME}
+@defunx mbfl_file_get_group_var @var{_RV} @var{PATHNAME}
 Print the group of the file as symbolic name.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_exec_chown @var{pathname} [@var{opt} @dots{}]
-Raw interface to @command{chown}.  The mandatory argument @var{pathname} is handed to
-@command{chown} as argument.  The optional arguments @var{opt} are handed to @command{chown} as
+@defun mbfl_exec_chown @var{PATHNAME} @var{OPT} @dots{}
+Raw interface to @command{chown}.  The mandatory argument @var{PATHNAME} is handed to
+@command{chown} as argument.  The optional arguments @var{OPT} are handed to @command{chown} as
 options.
 @end defun
 
 
-@defun mbfl_exec_chgrp @var{pathname} [@var{opt} @dots{}]
-Raw interface to @command{chgrp}.  The mandatory argument @var{pathname} is handed to
-@command{chgrp} as argument.  The optional arguments @var{opt} are handed to @command{chgrp} as
+@defun mbfl_exec_chgrp @var{PATHNAME} @var{OPT} @dots{}
+Raw interface to @command{chgrp}.  The mandatory argument @var{PATHNAME} is handed to
+@command{chgrp} as argument.  The optional arguments @var{OPT} are handed to @command{chgrp} as
 options.
 @end defun
 
@@ -2433,12 +2471,12 @@ Additional arguments to the selected compressor may be appended to the invocatio
 functions and are handed to the compressor unchanged.
 
 
-@defun mbfl_file_compress @var{PATHNAME} [@var{opt} @dots{}]
+@defun mbfl_file_compress @var{PATHNAME} @var{OPT} @dots{}
 Compress @var{PATHNAME}, a file pathname, with the currently selected compressor program.
 @end defun
 
 
-@defun mbfl_file_decompress @var{PATHNAME} [@var{opt} @dots{}]
+@defun mbfl_file_decompress @var{PATHNAME} @var{OPT} @dots{}
 Decompress @var{PATHNAME}, a file pathname, with the currently selected compressor program.
 @end defun
 
@@ -2460,30 +2498,30 @@ When using the following functions: the optional argument
 
 @subsubheading File functions
 
-@defun mbfl_file_exists @var{pathname}
-Return true if @var{pathname} exists.
+@defun mbfl_file_exists @var{PATHNAME}
+Return true if @var{PATHNAME} exists.
 @end defun
 
-@defun mbfl_file_is_file @var{filename}
-@defunx mbfl_file_is_file @var{filename} @var{PRINT_ERROR}
-Return true if @var{filename} is not the empty string and is a file.
+@defun mbfl_file_is_file @var{FILENAME}
+@defunx mbfl_file_is_file @var{FILENAME} @var{PRINT_ERROR}
+Return true if @var{FILENAME} is not the empty string and is a file.
 @end defun
 
-@defun mbfl_file_is_readable @var{filename}
-@defunx mbfl_file_is_readable @var{filename} @var{PRINT_ERROR}
-Return true if @var{filename} is not the empty string, is a file and is
+@defun mbfl_file_is_readable @var{FILENAME}
+@defunx mbfl_file_is_readable @var{FILENAME} @var{PRINT_ERROR}
+Return true if @var{FILENAME} is not the empty string, is a file and is
 readable.
 @end defun
 
-@defun mbfl_file_is_writable @var{filename}
-@defunx mbfl_file_is_writable @var{filename} @var{PRINT_ERROR}
-Return true if @var{filename} is not the empty string, is a file and is
+@defun mbfl_file_is_writable @var{FILENAME}
+@defunx mbfl_file_is_writable @var{FILENAME} @var{PRINT_ERROR}
+Return true if @var{FILENAME} is not the empty string, is a file and is
 writable.
 @end defun
 
-@defun mbfl_file_is_executable @var{filename}
-@defunx mbfl_file_is_executable @var{filename} @var{PRINT_ERROR}
-Return true if @var{filename} is not the empty string, is a file and is
+@defun mbfl_file_is_executable @var{FILENAME}
+@defunx mbfl_file_is_executable @var{FILENAME} @var{PRINT_ERROR}
+Return true if @var{FILENAME} is not the empty string, is a file and is
 executable.
 @end defun
 
@@ -2491,43 +2529,43 @@ executable.
 
 @subsubheading Directory functions
 
-@defun mbfl_file_is_directory @var{directory}
-@defunx mbfl_file_is_directory @var{directory} @var{PRINT_ERROR}
-Return true if @var{directory} is not the empty string and is a
+@defun mbfl_file_is_directory @var{DIRECTORY}
+@defunx mbfl_file_is_directory @var{DIRECTORY} @var{PRINT_ERROR}
+Return true if @var{DIRECTORY} is not the empty string and is a
 directory.
 @end defun
 
-@defun mbfl_file_directory_is_readable @var{directory}
-@defunx mbfl_file_directory_is_readable @var{directory} @var{PRINT_ERROR}
-Return true if @var{directory} is not the empty string, is a directory
+@defun mbfl_file_directory_is_readable @var{DIRECTORY}
+@defunx mbfl_file_directory_is_readable @var{DIRECTORY} @var{PRINT_ERROR}
+Return true if @var{DIRECTORY} is not the empty string, is a directory
 and is readable.
 @end defun
 
-@defun mbfl_file_directory_is_writable @var{directory}
-@defunx mbfl_file_directory_is_writable @var{directory} @var{PRINT_ERROR}
-Return true if @var{directory} is not the empty string, is a directory
+@defun mbfl_file_directory_is_writable @var{DIRECTORY}
+@defunx mbfl_file_directory_is_writable @var{DIRECTORY} @var{PRINT_ERROR}
+Return true if @var{DIRECTORY} is not the empty string, is a directory
 and is writable.
 @end defun
 
-@defun mbfl_file_directory_is_executable @var{directory}
-@defunx mbfl_file_directory_is_executable @var{directory} @var{PRINT_ERROR}
-Return true if @var{directory} is not the empty string, is a directory
+@defun mbfl_file_directory_is_executable @var{DIRECTORY}
+@defunx mbfl_file_directory_is_executable @var{DIRECTORY} @var{PRINT_ERROR}
+Return true if @var{DIRECTORY} is not the empty string, is a directory
 and is executable.
 @end defun
 
-@defun mbfl_file_directory_validate_writability @var{directory} @var{description}
+@defun mbfl_file_directory_validate_writability @var{DIRECTORY} @var{DESCRIPTION}
 Test directory existence and writability; return true if the directory
 exists and is writable.  If the condition is not met: Print informative
-messages using @var{description} to refer to the directory.
+messages using @var{DESCRIPTION} to refer to the directory.
 @end defun
 
 @c ------------------------------------------------------------
 
 @subsubheading Symbolic link functions
 
-@defun mbfl_file_is_symlink @var{pathname}
-@defunx mbfl_file_is_symlink @var{pathname} @var{PRINT_ERROR}
-Return true if @var{pathname} is not the empty string and is a symbolic
+@defun mbfl_file_is_symlink @var{PATHNAME}
+@defunx mbfl_file_is_symlink @var{PATHNAME} @var{PRINT_ERROR}
+Return true if @var{PATHNAME} is not the empty string and is a symbolic
 link.
 @end defun
 
@@ -2535,19 +2573,19 @@ link.
 
 @subsubheading Generic pathname functions
 
-@defun mbfl_file_pathname_is_readable @var{pathname}
-@defunx mbfl_file_pathname_is_readable @var{pathname} @var{PRINT_ERROR}
-Return true if @var{pathname} is not the empty string and is readable.
+@defun mbfl_file_pathname_is_readable @var{PATHNAME}
+@defunx mbfl_file_pathname_is_readable @var{PATHNAME} @var{PRINT_ERROR}
+Return true if @var{PATHNAME} is not the empty string and is readable.
 @end defun
 
-@defun mbfl_file_pathname_is_writable @var{pathname}
-@defunx mbfl_file_pathname_is_writable @var{pathname} @var{PRINT_ERROR}
-Return true if @var{pathname} is not the empty string and is writable.
+@defun mbfl_file_pathname_is_writable @var{PATHNAME}
+@defunx mbfl_file_pathname_is_writable @var{PATHNAME} @var{PRINT_ERROR}
+Return true if @var{PATHNAME} is not the empty string and is writable.
 @end defun
 
-@defun mbfl_file_pathname_is_executable @var{pathname}
-@defunx mbfl_file_pathname_is_executable @var{pathname} @var{PRINT_ERROR}
-Return true if @var{pathname} is not the empty string and is
+@defun mbfl_file_pathname_is_executable @var{PATHNAME}
+@defunx mbfl_file_pathname_is_executable @var{PATHNAME} @var{PRINT_ERROR}
+Return true if @var{PATHNAME} is not the empty string and is
 executable.
 @end defun
 
@@ -2582,19 +2620,19 @@ to read and write files with modified privileges, but only for the time
 needed to do the operation, not for the whole script.
 
 
-@defun mbfl_file_write @var{string} @var{filename}
-Write @var{string} to @var{filename}, eventually creating it or
+@defun mbfl_file_write @var{STRING} @var{FILENAME}
+Write @var{STRING} to @var{FILENAME}, eventually creating it or
 overwriting old contents.
 @end defun
 
 
-@defun mbfl_file_append @var{string} @var{filename}
-Append @var{string} to @var{filename}, eventually creating it.
+@defun mbfl_file_append @var{STRING} @var{FILENAME}
+Append @var{STRING} to @var{FILENAME}, eventually creating it.
 @end defun
 
 
-@defun mbfl_file_read @var{filename}
-Read and print @strong{all} the contents of @var{filename}.
+@defun mbfl_file_read @var{FILENAME}
+Read and print @strong{all} the contents of @var{FILENAME}.
 @end defun
 
 @c page
@@ -2607,13 +2645,13 @@ Read and print @strong{all} the contents of @var{filename}.
 @cindex Files, changing directory
 
 
-@defun mbfl_change_directory @var{dirname} ?...?
-Change directory to @var{dirname}.  Optional flags to @command{cd} may
+@defun mbfl_change_directory @var{DIRNAME} ?...?
+Change directory to @var{DIRNAME}.  Optional flags to @command{cd} may
 be appended.
 @end defun
 
 
-@defun mbfl_cd @var{dirname} ?...?
+@defun mbfl_cd @var{DIRNAME} ?...?
 Wrapper for @func{mbfl_change_directory}.  If verbose mode is on:
 print a message.
 @end defun
@@ -2998,14 +3036,14 @@ The structure of the action sets tree is stored in global variables defined by d
 never try to access such variables directly.
 
 
-@defun mbfl_declare_action_set @var{action-set}
-Declare a new action set.  @var{action-set} must be a string satisfying @func{mbfl_string_is_name}
+@defun mbfl_declare_action_set @var{ACTION-SET}
+Declare a new action set.  @var{ACTION-SET} must be a string satisfying @func{mbfl_string_is_name}
 and representing the identifier of the action set.  It is an error to declare the same action set
 twice.
 @end defun
 
 
-@defun mbfl_declare_action @var{action-set} @var{keyword} @var{subset} @var{identifier} @var{description}
+@defun mbfl_declare_action @var{ACTION-SET} @var{KEYWORD} @var{SUBSET} @var{IDENTIFIER} @var{DESCRIPTION}
 Declare a new action belonging to an action set.  The arguments are:
 
 @table @var
@@ -3019,20 +3057,20 @@ The ``main'', ``before parsing options'' and ``after parsing options'' function 
 this action are built as:
 
 @example
-script_action_$@var{keyword}
-script_before_parsing_options_$@var{keyword}
-script_after_parsing_options_$@var{keyword}
+script_action_$@var{KEYWORD}
+script_before_parsing_options_$@var{KEYWORD}
+script_after_parsing_options_$@var{KEYWORD}
 @end example
 
 @item subset
-If @var{subset} is the string @code{NONE} it means that this action is a leaf and it implements a
-script action; else @var{subset} must be the identifier of an action set subordinate to
-@var{action-set}: this function is recursively called to process it.  The subordinate action set
+If @var{SUBSET} is the string @code{NONE} it means that this action is a leaf and it implements a
+script action; else @var{SUBSET} must be the identifier of an action set subordinate to
+@var{ACTION-SET}: this function is recursively called to process it.  The subordinate action set
 must have been previously declared with a call to @func{mbfl_declare_action_set}.
 
 @item identifier
 A string satisfying @func{mbfl_string_is_identifier} and representing the argument on the command
-line used to select this action.  This string must be unique for this @var{action-set}.
+line used to select this action.  This string must be unique for this @var{ACTION-SET}.
 
 @item description
 A string describing this action, to be used to compose the help screen.
@@ -3044,7 +3082,7 @@ A string describing this action, to be used to compose the help screen.
 @section Dispatching action arguments
 
 
-@defun mbfl_actions_dispatch @var{action-set}
+@defun mbfl_actions_dispatch @var{ACTION-SET}
 Parse the next command line argument and select accordingly the functions for the main module making
 use of the functions:
 
@@ -3059,8 +3097,8 @@ If successful return true, else return false and print an error message to @stde
 function recursively calls itself, parsing command line arguments and traversing the tree of
 declared actions.
 
-@var{action-set} must be the name of an action set previously declared with
-@func{mbfl_declare_action_set}.  It is an error if this function is called with an @var{action-set}
+@var{ACTION-SET} must be the name of an action set previously declared with
+@func{mbfl_declare_action_set}.  It is an error if this function is called with an @var{ACTION-SET}
 name specifying a non--existent action set.  If there are no command line arguments left upon
 entering this function: the values previously selected with the functions @code{mbfl_main_set_*} are
 silently accepted.
@@ -3093,13 +3131,13 @@ Command line arguments variables}.
 @section Inspecting action trees
 
 
-@defun mbfl_actions_set_exists @var{action-set}
-Return true if @var{action-set} is the identifier of an existent action set; else return false.
+@defun mbfl_actions_set_exists @var{ACTION-SET}
+Return true if @var{ACTION-SET} is the identifier of an existent action set; else return false.
 @end defun
 
 
-@defun mbfl_actions_set_exists_or_none @var{action-set}
-Return true if @var{action-set} is the identifier of an existent action set or it is the string
+@defun mbfl_actions_set_exists_or_none @var{ACTION-SET}
+Return true if @var{ACTION-SET} is the identifier of an existent action set or it is the string
 @code{NONE}; else return false.
 @end defun
 
@@ -3262,8 +3300,8 @@ eval "$(my-script help print-completions-script)"
 @section Other functions
 
 
-@defun mbfl_actions_fake_action_set @var{action-set}
-Mutate @mbfl{}'s state to mimic the selection of an action set.  It is an error if @var{action-set}
+@defun mbfl_actions_fake_action_set @var{ACTION-SET}
+Mutate @mbfl{}'s state to mimic the selection of an action set.  It is an error if @var{ACTION-SET}
 is not the name of an existent action set.  This function should be used with care.
 @end defun
 
@@ -3836,7 +3874,7 @@ Every declared option should have a long switch, the brief switch can be
 omitted.
 
 
-@defun mbfl_declare_option @var{keyword} @var{default} @var{brief} @var{long} @var{hasarg} @var{description}
+@defun mbfl_declare_option @var{KEYWORD} @var{DEFAULT} @var{BRIEF} @var{LONG} @var{HASARG} @var{DESCRIPTION}
 Declare a new option.  Arguments description follows.
 
 @table @var
@@ -3883,12 +3921,12 @@ If successful return @code{0}, else return @code{1}.
 @end defun
 
 
-@defun mbfl_getopts_islong @var{string}
-@defunx mbfl_getopts_islong @var{string} @var{varname}
+@defun mbfl_getopts_islong @var{STRING}
+@defunx mbfl_getopts_islong @var{STRING} @var{VARNAME}
 Verify if a string has the format of a long option without argument.
-@var{string} is the string to validate.  The optional @var{varname} is
+@var{STRING} is the string to validate.  The optional @var{VARNAME} is
 the name of a variable that this function will set to the option name
-from @var{string}, without the leading dashes.
+from @var{STRING}, without the leading dashes.
 
 Return with code zero if the string is a long option without argument,
 else returns with code one.
@@ -3907,8 +3945,8 @@ mbfl_getopts_islong gasp                @result{} 1
 @end defun
 
 
-@defun mbfl_getopts_islong_with @var{string}
-@defunx mbfl_getopts_islong_with @var{string} @var{optname} @var{varname}
+@defun mbfl_getopts_islong_with @var{STRING}
+@defunx mbfl_getopts_islong_with @var{STRING} @var{OPTNAME} @var{VARNAME}
 Verify if a string has the format of a long option with argument.  Arguments:
 
 @table @var
@@ -3916,11 +3954,11 @@ Verify if a string has the format of a long option with argument.  Arguments:
 The string to validate.
 
 @item optname
-Optional name of a variable that this function will set to the option name from @var{string},
+Optional name of a variable that this function will set to the option name from @var{STRING},
 without the leading dashes.
 
 @item varname
-Optional name of a variable that this function will set to the option value from @var{string}.
+Optional name of a variable that this function will set to the option value from @var{STRING}.
 @end table
 
 Return with code @code{0} if the string is a long option with argument.  Return with code @code{1}
@@ -3943,12 +3981,12 @@ mbfl_getopts_islong_with --=            @result{} 1
 @end defun
 
 
-@defun mbfl_getopts_isbrief @var{string}
-@defunx mbfl_getopts_isbrief @var{string} @var{varname}
+@defun mbfl_getopts_isbrief @var{STRING}
+@defunx mbfl_getopts_isbrief @var{STRING} @var{VARNAME}
 Verify if a string has the format of a brief option without argument.
-@var{string} is the string to validate.  The optional @var{varname} is
+@var{STRING} is the string to validate.  The optional @var{VARNAME} is
 the name of a variable that this function will set to the option name
-from @var{string}, without the leading dash.
+from @var{STRING}, without the leading dash.
 
 Return with code zero if the argument is a brief option without
 argument, else return with code one.
@@ -3966,8 +4004,8 @@ mbfl_getopts_isbrief gasp       @result{} 1
 @end defun
 
 
-@defun mbfl_getopts_isbrief_with @var{string}
-@defunx mbfl_getopts_isbrief_with @var{string} @var{optname} @var{valname}
+@defun mbfl_getopts_isbrief_with @var{STRING}
+@defunx mbfl_getopts_isbrief_with @var{STRING} @var{OPTNAME} @var{VALNAME}
 Verify if a string has the format of a brief option with argument.
 Arguments:
 
@@ -3977,7 +4015,7 @@ The string to validate.
 
 @item optname
 Optional name of a variable that this function will set to the option
-name from @var{string}, without the leading dashes.
+name from @var{STRING}, without the leading dashes.
 
 @item valname
 Optional name of a variable that this function will set to the option
@@ -4002,18 +4040,18 @@ mbfl_getopts_isbrief_with wappa         @result{} 1
 @end defun
 
 
-@defun mbfl_wrong_num_args @var{required} @var{present}
-Validate the number of arguments.  @var{required} is the required number
-of arguments, @var{present} is the given number of arguments on the
+@defun mbfl_wrong_num_args @var{REQUIRED} @var{PRESENT}
+Validate the number of arguments.  @var{REQUIRED} is the required number
+of arguments, @var{PRESENT} is the given number of arguments on the
 command line.  If the number of arguments is different from the required
 one: print an error message and return with code one; else return with
 code zero.
 @end defun
 
 
-@defun mbfl_wrong_num_args_range @var{min_required} @var{max_required} @var{argc}
-Validate the number of arguments.  @var{argc} must be between
-@var{min_required} and @var{max_required}, inclusive.
+@defun mbfl_wrong_num_args_range @var{MIN_REQUIRED} @var{MAX_REQUIRED} @var{ARGC}
+Validate the number of arguments.  @var{ARGC} must be between
+@var{MIN_REQUIRED} and @var{MAX_REQUIRED}, inclusive.
 @end defun
 
 
@@ -4125,8 +4163,8 @@ Set the script's official name to put at the beginning of messages.  This value 
 @end defun
 
 
-@defun mbfl_message_set_channel @var{channel}
-Select the channel to be used to output messages.  @var{channel} must be a numeric string,
+@defun mbfl_message_set_channel @var{CHANNEL}
+Select the channel to be used to output messages.  @var{CHANNEL} must be a numeric string,
 otherwise: an error is printed on the old channel and the function returns false.  This value is
 initialised to @code{2}, which is @stderr{}.
 @end defun
@@ -4136,51 +4174,51 @@ initialised to @code{2}, which is @stderr{}.
 @section Printing plain messages
 
 
-@defun mbfl_message_string @var{string}
+@defun mbfl_message_string @var{STRING}
 Output a message to the selected output channel.  Echo a string composed of: the selected program
-name, a colon, a space, @var{string}.  No newline character is appended to the message.  Escape
-characters supported by @code{printf} are allowed in @var{string}.
+name, a colon, a space, @var{STRING}.  No newline character is appended to the message.  Escape
+characters supported by @code{printf} are allowed in @var{STRING}.
 @end defun
 
 
-@defun mbfl_message_verbose @var{string}
+@defun mbfl_message_verbose @var{STRING}
 Output a message to the selected output channel, but only if the evaluation of the function
 @func{mbfl_option_verbose} returns true.
 
-Echo a string composed of: the selected program name, a colon, a space, @var{string}.  No newline
+Echo a string composed of: the selected program name, a colon, a space, @var{STRING}.  No newline
 character is appended to the message.  Escape characters supported by @code{printf} are allowed in
-@var{string}.
+@var{STRING}.
 @end defun
 
 
-@defun mbfl_message_verbose_end @var{string}
+@defun mbfl_message_verbose_end @var{STRING}
 Output a message to the selected output channel, but only if the evaluation of the function
 @func{mbfl_option_verbose} returns true.  Echo the string.  No newline character is appended to the
-message.  Escape characters supported by @code{printf} are allowed in @var{string}.
+message.  Escape characters supported by @code{printf} are allowed in @var{STRING}.
 
-If @var{string} is empty: this function just prints a newline when verbose execution is enabled.
+If @var{STRING} is empty: this function just prints a newline when verbose execution is enabled.
 @end defun
 
 
-@defun mbfl_message_error @var{string}
+@defun mbfl_message_error @var{STRING}
 Output an error message to the selected output channel.  Echo a string composed of: the selected
-program name, a colon, a space, the string @code{error}, a colon, a space, @var{string}, a newline
-character.  Escape characters supported by @code{printf} are allowed in @var{string}.
+program name, a colon, a space, the string @code{error}, a colon, a space, @var{STRING}, a newline
+character.  Escape characters supported by @code{printf} are allowed in @var{STRING}.
 @end defun
 
 
-@defun mbfl_message_warning @var{string}
+@defun mbfl_message_warning @var{STRING}
 Output a warning message to the selected output channel.  Echo a string composed of: the selected
-program name, a colon, a space, the string @code{warning}, a colon, a space, @var{string}, a newline
-character.  Escape characters supported by @code{printf} are allowed in @var{string}.
+program name, a colon, a space, the string @code{warning}, a colon, a space, @var{STRING}, a newline
+character.  Escape characters supported by @code{printf} are allowed in @var{STRING}.
 @end defun
 
 
-@defun mbfl_message_debug @var{string}
+@defun mbfl_message_debug @var{STRING}
 Output a message to the selected output channel, but only if the evaluation of the function
 @func{mbfl_option_debug} returns true.  Echo a string composed of: the selected program name, a
-colon, a space, @var{string}, a newline character.  Escape characters supported by @code{printf} are
-allowed in @var{string}.
+colon, a space, @var{STRING}, a newline character.  Escape characters supported by @code{printf} are
+allowed in @var{STRING}.
 @end defun
 
 @c page
@@ -4188,7 +4226,7 @@ allowed in @var{string}.
 @section Printing formatted messages
 
 
-@defun mbfl_message_verbose_printf @var{template} [@var{arg} @dots{}]
+@defun mbfl_message_verbose_printf @var{TEMPLATE} [@var{ARG} @dots{}]
 Format the arguments in the same way @code{printf} would do; output the resulting string to the
 selected output channel, but only if the evaluation of the function @func{mbfl_option_verbose}
 returns true.
@@ -4198,7 +4236,7 @@ newline character is appended to the message.
 @end defun
 
 
-@defun mbfl_message_error_printf @var{template} [@var{arg} @dots{}]
+@defun mbfl_message_error_printf @var{TEMPLATE} [@var{ARG} @dots{}]
 Format the arguments in the same way @code{printf} would do; output the resulting string to the
 selected output channel.
 
@@ -4207,7 +4245,7 @@ colon, a space, the formatting result, a newline character.
 @end defun
 
 
-@defun mbfl_message_warning_printf @var{template} [@var{arg} @dots{}]
+@defun mbfl_message_warning_printf @var{TEMPLATE} [@var{ARG} @dots{}]
 Format the arguments in the same way @code{printf} would do; output the resulting string to the
 selected output channel.
 
@@ -4216,7 +4254,7 @@ colon, a space, the formatting result, a newline character.
 @end defun
 
 
-@defun mbfl_message_debug_printf @var{template} [@var{arg} @dots{}]
+@defun mbfl_message_debug_printf @var{TEMPLATE} [@var{ARG} @dots{}]
 Format the arguments in the same way @code{printf} would do; output the resulting string to the
 selected output channel, but only if the evaluation of the function @func{mbfl_option_debug}
 returns true.
@@ -4318,8 +4356,8 @@ mbfl_split_PATH=()
 @end defun
 
 
-@defun mbfl_program_find @var{program}
-@defunx mbfl_program_find_var @var{_RV} @var{program}
+@defun mbfl_program_find @var{PROGRAM}
+@defunx mbfl_program_find_var @var{_RV} @var{PROGRAM}
 Search for a program in the standard search path.  Print the full pathname of the program found, or
 an empty string if nothing is found.  If an executable file is found: return true; otherwise return
 false.
@@ -4330,15 +4368,15 @@ appear in @env{PATH}.  There are rules:
 
 @itemize
 @item
-If @var{program} is an absolute pathname (according to @func{mbfl_file_is_absolute}): only that
+If @var{PROGRAM} is an absolute pathname (according to @func{mbfl_file_is_absolute}): only that
 absolute pathname is verified as executable file.  @var{PATH} is ignored.
 
 @item
-If @var{program} is a relative pathname with at least one slash character in it: only that relative
+If @var{PROGRAM} is a relative pathname with at least one slash character in it: only that relative
 pathname is verified as executable file.  @var{PATH} is ignored.
 
 @item
-If @var{program} is a relative pathname without slash characters in it: the standard search path is
+If @var{PROGRAM} is a relative pathname without slash characters in it: the standard search path is
 used.
 @end itemize
 
@@ -4424,11 +4462,11 @@ mbfl_program_exec ls /bin
 @end example
 
 
-@defun mbfl_program_exec @var{program}
-@defunx mbfl_program_exec @var{program} @var{arg} ...
-Evaluate a command line.  @var{program} identifies an executable file:
+@defun mbfl_program_exec @var{PROGRAM}
+@defunx mbfl_program_exec @var{PROGRAM} @var{ARG} ...
+Evaluate a command line.  @var{PROGRAM} identifies an executable file:
 it can be the program name, or a relative or absolute pathname.  The
-optional @var{arg} values are command line arguments that are handed to
+optional @var{ARG} values are command line arguments that are handed to
 the program unchanged.
 
 If usage of @command{sudo} was requested, the command is executed with
@@ -4445,13 +4483,13 @@ command line is sent to stderr, then it is executed.
 @end defun
 
 
-@defun mbfl_program_execbg @var{inchan} @var{ouchan} @var{program}
-@defunx mbfl_program_execbg @var{inchan} @var{ouchan} @var{program} @var{arg} ...
+@defun mbfl_program_execbg @var{INCHAN} @var{OUCHAN} @var{PROGRAM}
+@defunx mbfl_program_execbg @var{INCHAN} @var{OUCHAN} @var{PROGRAM} @var{ARG} ...
 Does all the same things of @func{mbfl_program_exec}, running the given
 command line as:
 
 @example
-@var{program} @var{arg} ... <&@var{inchan} >&@var{ouchan} &
+@var{PROGRAM} @var{ARG} ... <&@var{INCHAN} >&@var{OUCHAN} &
 @end example
 
 @noindent
@@ -4462,14 +4500,14 @@ is the value of @code{$!} right after the process execution.
 Using this function is different from calling:
 
 @example
-mbfl_program_exec ls <&@var{inchan} >&@var{ouchan} &
+mbfl_program_exec ls <&@var{INCHAN} >&@var{OUCHAN} &
 @end example
 
 @noindent
 because doing so puts in the background the function call (in a subshell)
 and then runs the program.
 
-Notice that we @strong{must} always use numeric file descriptors as @var{inchan} and @var{ouchan}
+Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN} and @var{OUCHAN}
 arguments.  Also we can always use the default file descriptors, for example:
 
 @example
@@ -4477,23 +4515,23 @@ mbfl_program_execbg 0 1 /bin/ls
 @end example
 
 The readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0}, @file{/dev/fd/1} are
-@strong{not} usable as @var{inchan} and @var{ouchan} arguments (remember that the aliases are
+@strong{not} usable as @var{INCHAN} and @var{OUCHAN} arguments (remember that the aliases are
 @strong{not} available, for example, when the script is run from a cron job).
 @end defun
 
 
-@defun mbfl_program_execbg2 @var{inchan} @var{ouchan} @var{erchan} @var{program}
-@defunx mbfl_program_execbg2 @var{inchan} @var{ouchan} @var{erchan} @var{program} @var{arg} ...
+@defun mbfl_program_execbg2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM}
+@defunx mbfl_program_execbg2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM} @var{ARG} ...
 Like @func{mbfl_program_execbg}, but redirects also the standard error of the executed process to
-@var{erchan}, which must be a numeric file descriptor.
+@var{ERCHAN}, which must be a numeric file descriptor.
 
 If the redirection of @stderr{} to @stdout{} is requested with
 @func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.
 @end defun
 
 
-@defun mbfl_program_replace @var{program}
-@defunx mbfl_program_replace @var{program} [@var{opt} @dots{}]
+@defun mbfl_program_replace @var{PROGRAM}
+@defunx mbfl_program_replace @var{PROGRAM} @var{OPT} @dots{}
 Like @func{mbfl_program_exec}, but execute the program through the Bash
 command @code{exec}, so replacing the current process without creating a
 new one.
@@ -4514,12 +4552,12 @@ This function does @strong{not} use @func{mbfl_declare_program}.
 @end defun
 
 
-@defun mbfl_program_declare_sudo_user @var{user}
-Register @var{user} as the user under which to execute the next program through @command{sudo}; the
+@defun mbfl_program_declare_sudo_user @var{USER}
+Register @var{USER} as the user under which to execute the next program through @command{sudo}; the
 user will be selected using the @code{-u} option of @command{sudo}.  The value @code{nosudo} means:
 do not use @command{sudo}.
 
-The string @var{user} must satisfy the function @func{mbfl_string_is_username}, else the function
+The string @var{USER} must satisfy the function @func{mbfl_string_is_username}, else the function
 will print an error message to @stderr{} and exit with @func{exit_because_invalid_sudo_username}.
 
 When the time comes: if the selected user name equals the value printed by @command{whoami},
@@ -4551,7 +4589,7 @@ next command execution.
 @end defun
 
 
-@defun mbfl_program_declare_sudo_options [@var{opt} @dots{}]
+@defun mbfl_program_declare_sudo_options @var{OPT} @dots{}
 Select additional command line options to use on the next invocation of
 @command{sudo}.  These values are consumed by the first use of
 @func{mbfl_program_exec}.
@@ -4568,15 +4606,15 @@ Clean the options previously set by
 @subsubheading Executing a subshell
 
 
-@defun mbfl_program_bash [@var{opt} @dots{}]
-Execute @command{bash} with the @var{arg} arguments appended.  The
+@defun mbfl_program_bash @var{OPT} @dots{}
+Execute @command{bash} with the @var{ARG} arguments appended.  The
 @command{bash} pathname is registered in the library at start up, from
 the built in variable @code{BASH}.
 @end defun
 
 
-@defun mbfl_program_bash_command @var{command}
-Execute @var{command} in a @command{bash} subprocess, using the
+@defun mbfl_program_bash_command @var{COMMAND}
+Execute @var{COMMAND} in a @command{bash} subprocess, using the
 @code{-c} switch.  The @command{bash} pathname is registered in the
 library at start up, from the built in variable @code{BASH}.
 @end defun
@@ -4652,16 +4690,16 @@ availability of all the declared programs before invoking the script.
 @ref{getopts options, Predefined options}.
 
 
-@defun mbfl_declare_program @var{program}
-Register @var{program} as the name of a program required by the script;
+@defun mbfl_declare_program @var{PROGRAM}
+Register @var{PROGRAM} as the name of a program required by the script;
 @func{mbfl_program_find} is used to locate the program on the system.
 @ref{program checking, Checking programs existence}.
 
-If @var{program} is a file name with no directory part (examples:
+If @var{PROGRAM} is a file name with no directory part (examples:
 @command{sed}, @command{grep}) the selected program is the full pathname
 of the file in one of the directories of @env{PATH}.
 
-If @var{program} is a relative pathname (examples: @file{../bin/sed},
+If @var{PROGRAM} is a relative pathname (examples: @file{../bin/sed},
 @file{./grep}): the selected program is the full pathname of the file
 normalised by this function with respect to the current working
 directory (with a call to @func{mbfl_file_normalise}).
@@ -4691,9 +4729,9 @@ from the command line the option @option{--verbose} must be used before
 @end defun
 
 
-@defun mbfl_program_found @var{program}
-@defunx mbfl_program_found_var @var{_RV} @var{program}
-Print the pathname of the previously declared @var{program}.  Return zero if the program was found,
+@defun mbfl_program_found @var{PROGRAM}
+@defunx mbfl_program_found_var @var{_RV} @var{PROGRAM}
+Print the pathname of the previously declared @var{PROGRAM}.  Return zero if the program was found,
 otherwise print an error message and exit the current (sub)shell by invoking
 @func{exit_because_program_not_found}.
 
@@ -4774,8 +4812,8 @@ The declared programs are: @command{at}, @command{atq}, @command{atrm}.
 @subsubheading Arguments validation
 
 
-@defun mbfl_at_validate_queue_letter @var{letter}
-Return true if @var{letter} is a valid queue identifier, else return false.
+@defun mbfl_at_validate_queue_letter @var{LETTER}
+Return true if @var{LETTER} is a valid queue identifier, else return false.
 @end defun
 
 
@@ -4789,14 +4827,14 @@ return false.  A false return code means that an internal error has corrupted th
 @subsubheading Commands scheduling
 
 
-@defun mbfl_at_select_queue @var{letter}
+@defun mbfl_at_select_queue @var{LETTER}
 Select and register in an internal state a queue identifier; invoke
 @func{mbfl_at_validate_queue_letter} to validate the selection.
 @end defun
 
 
-@defun mbfl_at_schedule @var{command} @var{time}
-Schedule @var{command} in the currently selected queue; the script will be executed at @var{time}.
+@defun mbfl_at_schedule @var{COMMAND} @var{TIME}
+Schedule @var{COMMAND} in the currently selected queue; the script will be executed at @var{TIME}.
 
 If no error occurs: print to stdout the identifier of the scheduled job; the identifier can be used
 as argument to @func{mbfl_at_drop}.
@@ -4807,13 +4845,13 @@ channel, so this function redirects @stderr{} to @stdout{} to return the value; 
 operation conflicts with the use of the ``show program'' feature of @func{mbfl_program_exec}.
 @end quotation
 
-@var{command} must be a string representing the invocation of an external executable program: it is
-sent unchanged to the @command{at} command.  @var{time} is the argument to the @command{at} command,
+@var{COMMAND} must be a string representing the invocation of an external executable program: it is
+sent unchanged to the @command{at} command.  @var{TIME} is the argument to the @command{at} command,
 see the manual page for its description.
 @end defun
 
 
-@defun mbfl_at_drop @var{identifier}
+@defun mbfl_at_drop @var{IDENTIFIER}
 Remove a job; the identifier of a job is unique in all the queues, so this function is not affected
 by the currently selected queue.
 @end defun
@@ -4857,20 +4895,20 @@ execution of more than one function when a signal is received; this may
 sound useless, but that is it.
 
 
-@defun mbfl_signal_map_signame_to_signum @var{sigspec}
-Convert @var{sigspec} to the corresponding signal number, then print
+@defun mbfl_signal_map_signame_to_signum @var{SIGSPEC}
+Convert @var{SIGSPEC} to the corresponding signal number, then print
 the number.
 @end defun
 
 
-@defun mbfl_signal_attach @var{sigspec} @var{handler}
-Append @var{handler} to the list of functions that are executed whenever
-@var{sigspec} is received.
+@defun mbfl_signal_attach @var{SIGSPEC} @var{HANDLER}
+Append @var{HANDLER} to the list of functions that are executed whenever
+@var{SIGSPEC} is received.
 @end defun
 
 
-@defun mbfl_signal_invoke_handlers @var{signum}
-Invoke all the handlers registered for @var{signum}.  This function is
+@defun mbfl_signal_invoke_handlers @var{SIGNUM}
+Invoke all the handlers registered for @var{SIGNUM}.  This function is
 not meant to be used during normal scripts execution, but it may be
 useful to debug a script.
 @end defun
@@ -4895,10 +4933,10 @@ useful to debug a script.
 @section Quoted characters
 
 
-@defun mbfl_string_is_quoted_char @var{string} @var{position}
-Return true if the character at @var{position} in @var{string} is quoted; else return false.  A
+@defun mbfl_string_is_quoted_char @var{STRING} @var{POSITION}
+Return true if the character at @var{POSITION} in @var{STRING} is quoted; else return false.  A
 character is considered quoted if it is preceded by an odd number of backslashes (@code{\}).
-@var{position} is a zero--based index.
+@var{POSITION} is a zero--based index.
 
 @example
 mbfl_string_is_quoted_char 'abcdefg'  3 @ExitCode{} 1
@@ -4908,9 +4946,9 @@ mbfl_string_is_quoted_char 'ab\ndefg' 3 @ExitCode{} 0
 @end defun
 
 
-@defun mbfl_string_is_equal_unquoted_char @var{string} @var{position} @var{char}
-Return true if the character at @var{position} in @var{string} is equal to @var{char} and is not
-quoted (according to @func{mbfl_string_is_quoted_char}); else return false.  @var{position} is a
+@defun mbfl_string_is_equal_unquoted_char @var{STRING} @var{POSITION} @var{CHAR}
+Return true if the character at @var{POSITION} in @var{STRING} is equal to @var{CHAR} and is not
+quoted (according to @func{mbfl_string_is_quoted_char}); else return false.  @var{POSITION} is a
 zero--based index.
 
 @example
@@ -4923,9 +4961,9 @@ mbfl_string_is_equal_unquoted_char 'abc\defg' 3 d
 @end defun
 
 
-@defun mbfl_string_quote @var{string}
-@defunx mbfl_string_quote_var @var{_RV} @var{string}
-Print @var{string} with quoted characters.  All the occurrences of the backslash character,
+@defun mbfl_string_quote @var{STRING}
+@defunx mbfl_string_quote_var @var{_RV} @var{STRING}
+Print @var{STRING} with quoted characters.  All the occurrences of the backslash character,
 @code{\}, are substituted with a quoted backslash, @code{\\}.  Return true.
 
 @DocVarVariant{}
@@ -4946,30 +4984,30 @@ mbfl_string_quote_var _RV \\a\\b\\c
 @section Inspecting a string
 
 
-@defun mbfl_string_length @var{string}
-Print an integer representing the length of @var{string}.  The argument @var{string} can be an empty
+@defun mbfl_string_length @var{STRING}
+Print an integer representing the length of @var{STRING}.  The argument @var{STRING} can be an empty
 string.
 @end defun
 
 
-@defun mbfl_string_length_equal_to @var{length} @var{string}
-Return successfully if @var{string} has length equal to @var{length}.  The argument @var{length}
-must be a non-negative integer; the argument @var{string} can be an empty string.
+@defun mbfl_string_length_equal_to @var{LENGTH} @var{STRING}
+Return successfully if @var{STRING} has length equal to @var{LENGTH}.  The argument @var{LENGTH}
+must be a non-negative integer; the argument @var{STRING} can be an empty string.
 @end defun
 
 
-@defun mbfl_string_is_empty @var{string}
-Return successfully if @var{string} is empty.
+@defun mbfl_string_is_empty @var{STRING}
+Return successfully if @var{STRING} is empty.
 @end defun
 
 
-@defun mbfl_string_is_not_empty @var{string}
-Return successfully if @var{string} is not empty.
+@defun mbfl_string_is_not_empty @var{STRING}
+Return successfully if @var{STRING} is not empty.
 @end defun
 
 
-@defun mbfl_string_index @var{string} @var{index}
-@defunx mbfl_string_index_var @var{_RV} @var{string} @var{index}
+@defun mbfl_string_index @var{STRING} @var{INDEX}
+@defunx mbfl_string_index_var @var{_RV} @var{STRING} @var{INDEX}
 Select a character from a string.  Echo to stdout the selected character.  If the index is out of
 range: the empty string is echoed to stdout, that is: a newline is echoed to stdout.
 
@@ -4988,16 +5026,16 @@ mbfl_string_index_var _RV abcdefghilm 0
 @end defun
 
 
-@defun mbfl_string_first @var{string} @var{char}
-@defunx mbfl_string_first @var{string} @var{char} @var{begin}
-@defunx mbfl_string_first_var @var{_RV} @var{string} @var{char}
-@defunx mbfl_string_first_var @var{_RV} @var{string} @var{char} @var{begin}
-Search characters in a string.  Arguments: @var{string}, the target string; @var{char}, the
-character to look for; @var{begin}, optional, the index of the character in the target string from
+@defun mbfl_string_first @var{STRING} @var{CHAR}
+@defunx mbfl_string_first @var{STRING} @var{CHAR} @var{BEGIN}
+@defunx mbfl_string_first_var @var{_RV} @var{STRING} @var{CHAR}
+@defunx mbfl_string_first_var @var{_RV} @var{STRING} @var{CHAR} @var{BEGIN}
+Search characters in a string.  Arguments: @var{STRING}, the target string; @var{CHAR}, the
+character to look for; @var{BEGIN}, optional, the index of the character in the target string from
 which the search begins (defaults to zero).
 
 If the character is found: print an integer representing the index of the last occurrence of
-@var{char} in @var{string}, then return with status zero.  If the character is not found: print
+@var{CHAR} in @var{STRING}, then return with status zero.  If the character is not found: print
 nothing and return with status one.
 
 @DocVarVariant{}
@@ -5019,16 +5057,16 @@ mbfl_string_first_var _RV abcdefghilm d
 @end defun
 
 
-@defun mbfl_string_last @var{string} @var{char}
-@defunx mbfl_string_last @var{string} @var{char} @var{begin}
-@defunx mbfl_string_last_var @var{_RV} @var{string} @var{char}
-@defunx mbfl_string_last_var @var{_RV} @var{string} @var{char} @var{begin}
-Search characters in a string starting from the end.  Arguments: @var{string}, the target string;
-@var{char}, the character to look for; @var{begin}, optional, the index of the character in the
+@defun mbfl_string_last @var{STRING} @var{CHAR}
+@defunx mbfl_string_last @var{STRING} @var{CHAR} @var{BEGIN}
+@defunx mbfl_string_last_var @var{_RV} @var{STRING} @var{CHAR}
+@defunx mbfl_string_last_var @var{_RV} @var{STRING} @var{CHAR} @var{BEGIN}
+Search characters in a string starting from the end.  Arguments: @var{STRING}, the target string;
+@var{CHAR}, the character to look for; @var{BEGIN}, optional, the index of the character in the
 target string from which the search begins (defaults to zero).
 
 If the character is found: print an integer representing the index of the last occurrence of
-@var{char} in @var{string}, then return with status zero.  If the character is not found: print
+@var{CHAR} in @var{STRING}, then return with status zero.  If the character is not found: print
 nothing and return with status one.
 
 @DocVarVariant{}
@@ -5051,15 +5089,15 @@ mbfl_string_last_var _RV abcdefghilm d
 @end defun
 
 
-@defun mbfl_string_range @var{string} @var{begin}
-@defunx mbfl_string_range @var{string} @var{begin} @var{end}
-@defunx mbfl_string_range_var @var{_RV} @var{string} @var{begin}
-@defunx mbfl_string_range_var @var{_RV} @var{string} @var{begin} @var{end}
-Extract a range of characters from a string.  Arguments: @var{string}, the source string;
-@var{begin}, the index of the first character in the range; @var{end}, optional, the index of the
+@defun mbfl_string_range @var{STRING} @var{BEGIN}
+@defunx mbfl_string_range @var{STRING} @var{BEGIN} @var{END}
+@defunx mbfl_string_range_var @var{_RV} @var{STRING} @var{BEGIN}
+@defunx mbfl_string_range_var @var{_RV} @var{STRING} @var{BEGIN} @var{END}
+Extract a range of characters from a string.  Arguments: @var{STRING}, the source string;
+@var{BEGIN}, the index of the first character in the range; @var{END}, optional, the index of the
 character past the last in the range, this character is not extracted.
 
-@var{end} defaults to the string length; if the parameter @var{end} is set to the lowercase string
+@var{END} defaults to the string length; if the parameter @var{END} is set to the lowercase string
 @code{end} or the uppercase string @code{END}: the end index is set to the string length.
 
 Echo to stdout the selected range of characters, which may be the empty string.
@@ -5093,7 +5131,7 @@ Array used by @func{mbfl_string_chars} to store the number of values in @code{SP
 @end defvar
 
 
-@defun mbfl_string_chars @var{string}
+@defun mbfl_string_chars @var{STRING}
 Split a string into characters.  Fill an array named @code{SPLITFIELD} with the characters from the
 string; the number of elements in the array is stored in a variable named @code{SPLITCOUNT}.  Both
 @code{SPLITFIELD} and @code{SPLITCOUNT} can be declared @code{local} in the scope of the caller.
@@ -5129,16 +5167,16 @@ $SPLITCOUNT             @result{} 12
 @end example
 
 
-@defun mbfl_string_split @var{string} @var{separator}
-Split @var{string} into fields using @var{separator}.  Fill an array named @code{SPLITFIELD} with
+@defun mbfl_string_split @var{STRING} @var{SEPARATOR}
+Split @var{STRING} into fields using @var{SEPARATOR}.  Fill an array named @code{SPLITFIELD} with
 the characters from the string; the number of elements in the array is stored in a variable named
 @code{SPLITCOUNT}.  We can declare both @code{SPLITFIELD} and @code{SPLITCOUNT} as @code{local} in
 the scope of the caller.
 @end defun
 
 
-@defun mbfl_string_split_blanks @var{string}
-Split @var{string} into fields using adjacent blank characters as separators.  Fill an array named
+@defun mbfl_string_split_blanks @var{STRING}
+Split @var{STRING} into fields using adjacent blank characters as separators.  Fill an array named
 @code{SPLITFIELD} with the characters from the string; the number of elements in the array is stored
 in a variable named @code{SPLITCOUNT}.  We can declare both @code{SPLITFIELD} and @code{SPLITCOUNT}
 as @code{local} in the scope of the caller.
@@ -5167,18 +5205,18 @@ $SPLITCOUNT             @result{} 6
 @section Converting between upper and lower case
 
 
-@defun mbfl_string_toupper @var{string}
-@defunx mbfl_string_toupper_var @var{_RV} @var{string}
-Output @var{string} with all the occurrences of lower case @ascii{} characters (no accents) turned
+@defun mbfl_string_toupper @var{STRING}
+@defunx mbfl_string_toupper_var @var{_RV} @var{STRING}
+Output @var{STRING} with all the occurrences of lower case @ascii{} characters (no accents) turned
 into upper case.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_string_tolower @var{string}
-@defunx mbfl_string_tolower_var @var{_RV} @var{string}
-Output @var{string} with all the occurrences of upper case @ascii{} characters (no accents) turned
+@defun mbfl_string_tolower @var{STRING}
+@defunx mbfl_string_tolower_var @var{_RV} @var{STRING}
+Output @var{STRING} with all the occurrences of upper case @ascii{} characters (no accents) turned
 into lower case.
 
 @DocVarVariant{}
@@ -5189,30 +5227,30 @@ into lower case.
 @section Matching a string with a class
 
 
-@defun mbfl_string_is_alpha_char @var{char}
-Return true if @var{char} is in one of the ranges: @samp{[a-z]},
+@defun mbfl_string_is_alpha_char @var{CHAR}
+Return true if @var{CHAR} is in one of the ranges: @samp{[a-z]},
 @samp{[A-Z]}.
 @end defun
 
 
-@defun mbfl_string_is_digit_char @var{char}
-Return true if @var{char} is in the range: @code{0-9}.
+@defun mbfl_string_is_digit_char @var{CHAR}
+Return true if @var{CHAR} is in the range: @code{0-9}.
 @end defun
 
 
-@defun mbfl_string_is_alnum_char @var{char}
+@defun mbfl_string_is_alnum_char @var{CHAR}
 Return true if:
 
 @example
-mbfl_string_is_alpha_char @var{char} || \
-   mbfl_string_is_digit_char @var{char}
+mbfl_string_is_alpha_char @var{CHAR} || \
+   mbfl_string_is_digit_char @var{CHAR}
 @end example
 @end defun
 
 
-@defun mbfl_string_is_noblank_char @var{char}
-Return true if @var{char} is none of the characters: @samp{ },
-@samp{\n}, @samp{\r}, @samp{\f}, @samp{\t}.  @var{char} is meant to be
+@defun mbfl_string_is_noblank_char @var{CHAR}
+Return true if @var{CHAR} is none of the characters: @samp{ },
+@samp{\n}, @samp{\r}, @samp{\f}, @samp{\t}.  @var{CHAR} is meant to be
 the unquoted version of the non--blank characters, the one obtained
 with:
 
@@ -5222,77 +5260,77 @@ $'char'
 @end defun
 
 
-@defun mbfl_string_is_name_char @var{char}
+@defun mbfl_string_is_name_char @var{CHAR}
 Return true if @func{mbfl_string_is_alnum_char} returns true when
-applied to @var{char} or @var{char} is an underscore, @samp{_}.
+applied to @var{CHAR} or @var{CHAR} is an underscore, @samp{_}.
 @end defun
 
 
-@defun mbfl_string_is_identifier_char @var{char}
+@defun mbfl_string_is_identifier_char @var{CHAR}
 Return true if @func{mbfl_string_is_alnum_char} returns true when
-applied to @var{char} or @var{char} is an underscore, @samp{_}, or dash,
+applied to @var{CHAR} or @var{CHAR} is an underscore, @samp{_}, or dash,
 @samp{-}.
 @end defun
 
 
-@defun mbfl_string_is_extended_identifier_char @var{char}
+@defun mbfl_string_is_extended_identifier_char @var{CHAR}
 Like @func{mbfl_string_is_identifier_char}, but also accept dots
 @samp{.}.
 @end defun
 
 
-@defun mbfl_string_is_alpha @var{string}
-@defunx mbfl_string_is_digit @var{string}
-@defunx mbfl_string_is_alnum @var{string}
-@defunx mbfl_string_is_noblank @var{string}
-@defunx mbfl_string_is_name @var{string}
-@defunx mbfl_string_is_identifier @var{string}
-@defunx mbfl_string_is_extended_identifier @var{string}
-Return true if @var{string} is non--empty and the associated char
-function returns true for each character in @var{string}.  As additional
+@defun mbfl_string_is_alpha @var{STRING}
+@defunx mbfl_string_is_digit @var{STRING}
+@defunx mbfl_string_is_alnum @var{STRING}
+@defunx mbfl_string_is_noblank @var{STRING}
+@defunx mbfl_string_is_name @var{STRING}
+@defunx mbfl_string_is_identifier @var{STRING}
+@defunx mbfl_string_is_extended_identifier @var{STRING}
+Return true if @var{STRING} is non--empty and the associated char
+function returns true for each character in @var{STRING}.  As additional
 constraint:
 
 @itemize
 @item
 @func{mbfl_string_is_name} returns false if @func{mbfl_string_is_digit}
-returns true when applied to the first character of @var{string}.
+returns true when applied to the first character of @var{STRING}.
 
 @item
 @func{mbfl_string_is_identifier} and
 @func{mbfl_string_is_extended_identifier} return false if
 @func{mbfl_string_is_digit} returns true when applied to the first
-character of @var{string} or the first char of @var{string} is a dash.
+character of @var{STRING} or the first char of @var{STRING} is a dash.
 @end itemize
 @end defun
 
 
-@defun mbfl_string_is_username @var{string}
-Return true if @var{string} is non--empty, all its characters are in the
+@defun mbfl_string_is_username @var{STRING}
+Return true if @var{STRING} is non--empty, all its characters are in the
 ranges @code{[a-zA-Z0-9_-]}, the first character is in the range
 @code{[a-zA-Z_]}; else return false.
 @end defun
 
 
-@defun mbfl_string_is_email_address @var{string}
-Return true if @var{string} is non--empty and it matches the general shape of an email address;
+@defun mbfl_string_is_email_address @var{STRING}
+Return true if @var{STRING} is non--empty and it matches the general shape of an email address;
 otherwise return false.
 @end defun
 
 
-@defun mbfl_string_is_network_hostname @var{string}
-Return true if @var{string} is non--empty and it matches the format of a network hostname; otherwise
+@defun mbfl_string_is_network_hostname @var{STRING}
+Return true if @var{STRING} is non--empty and it matches the format of a network hostname; otherwise
 return false.
 @end defun
 
 
-@defun mbfl_string_is_network_port @var{string}
-Return true if @var{string} is non--empty and it matches the format of a network port number;
+@defun mbfl_string_is_network_port @var{STRING}
+Return true if @var{STRING} is non--empty and it matches the format of a network port number;
 otherwise return false.
 @end defun
 
 
-@defun mbfl_string_is_network_ip_address @var{string}
-Return true if @var{string} is non--empty and it matches the format of an @acronym{IP} address;
+@defun mbfl_string_is_network_ip_address @var{STRING}
+Return true if @var{STRING} is non--empty and it matches the format of an @acronym{IP} address;
 otherwise return false.
 @end defun
 
@@ -5321,9 +5359,9 @@ strings; otherwise return unsuccessfully.
 @end defun
 
 
-@defun mbfl_string_is_yes @var{str}
-@defunx mbfl_string_is_no @var{str}
-Return true if the string @var{str} is equal to, respectively, @samp{yes} or @samp{no}; otherwise
+@defun mbfl_string_is_yes @var{STR}
+@defunx mbfl_string_is_no @var{STR}
+Return true if the string @var{STR} is equal to, respectively, @samp{yes} or @samp{no}; otherwise
 return false.
 @end defun
 
@@ -5388,10 +5426,10 @@ mbfl_string_greater_or_equal 'hello' 'ciao'     @result{} 0
 @end defun
 
 
-@defun mbfl_string_equal_substring @var{string} @var{position} @var{pattern}
-Return true if the substring starting at @var{position} in @var{string}
-is equal to @var{pattern}; else return false.  If @var{position} plus
-the length of @var{pattern} is greater than the length of @var{string}:
+@defun mbfl_string_equal_substring @var{STRING} @var{POSITION} @var{PATTERN}
+Return true if the substring starting at @var{POSITION} in @var{STRING}
+is equal to @var{PATTERN}; else return false.  If @var{POSITION} plus
+the length of @var{PATTERN} is greater than the length of @var{STRING}:
 the return value is false, always.
 @end defun
 
@@ -5400,12 +5438,12 @@ the return value is false, always.
 @section Miscellaneous functions
 
 
-@defun mbfl_string_replace @var{string} @var{pattern}
-@defunx mbfl_string_replace @var{string} @var{pattern} @var{subst}
-@defunx mbfl_string_replace_var @var{_RV} @var{string} @var{pattern}
-@defunx mbfl_string_replace_var @var{_RV} @var{string} @var{pattern} @var{subst}
-Replace all the occurrences of @var{pattern} in @var{string} with @var{subst}, then print the
-result.  If not used, @var{subst} defaults to the empty string.
+@defun mbfl_string_replace @var{STRING} @var{PATTERN}
+@defunx mbfl_string_replace @var{STRING} @var{PATTERN} @var{SUBST}
+@defunx mbfl_string_replace_var @var{_RV} @var{STRING} @var{PATTERN}
+@defunx mbfl_string_replace_var @var{_RV} @var{STRING} @var{PATTERN} @var{SUBST}
+Replace all the occurrences of @var{PATTERN} in @var{STRING} with @var{SUBST}, then print the
+result.  If not used, @var{SUBST} defaults to the empty string.
 
 @DocVarVariant{}
 
@@ -5420,22 +5458,22 @@ mbfl_string_replace_var _RV 'abcdefg' 'cde' '123'
 @end defun
 
 
-@defun mbfl_sprintf @var{varname} @var{format} ...
-Make use of @code{printf} to format the string @var{format} with the additional arguments, then
-store the result in @var{varname}: If this name is local in the scope of the caller, this has the
+@defun mbfl_sprintf @var{VARNAME} @var{FORMAT} ...
+Make use of @code{printf} to format the string @var{FORMAT} with the additional arguments, then
+store the result in @var{VARNAME}: If this name is local in the scope of the caller, this has the
 effect of filling the variable in that scope.
 
-@strong{NOTE} We should use the built--in @code{printf -v @var{varname}} construct, rather than this
+@strong{NOTE} We should use the built--in @code{printf -v @var{VARNAME}} construct, rather than this
 function.
 @end defun
 
 
-@defun mbfl_string_skip @var{string} @var{varname} @var{char}
-Skip all the characters in a string equal to @var{char}.  @var{varname} is the name of a variable in
-the scope of the caller: Its value is the offset of the first character to test in @var{string}.
-The offset is incremented until a char different from @var{char} is found, then the value of
-@var{varname} is updated to the position of the different char.  If the initial value of the offset
-corresponds to a char equal to @var{char}, the variable is left untouched.  Return true.
+@defun mbfl_string_skip @var{STRING} @var{VARNAME} @var{CHAR}
+Skip all the characters in a string equal to @var{CHAR}.  @var{VARNAME} is the name of a variable in
+the scope of the caller: Its value is the offset of the first character to test in @var{STRING}.
+The offset is incremented until a char different from @var{CHAR} is found, then the value of
+@var{VARNAME} is updated to the position of the different char.  If the initial value of the offset
+corresponds to a char equal to @var{CHAR}, the variable is left untouched.  Return true.
 
 @example
 local -i i
@@ -5477,13 +5515,13 @@ the result variable @var{_RV}.  It is fine if @var{LINE} is the empty string.
 @chapter Interacting with the user
 
 
-@defun mbfl_dialog_yes_or_no @var{string}
-@defunx mbfl_dialog_yes_or_no @var{string} @var{progname}
-Print the question @var{string} on the standard output and wait for the user to type @code{yes} or
+@defun mbfl_dialog_yes_or_no @var{STRING}
+@defunx mbfl_dialog_yes_or_no @var{STRING} @var{PROGNAME}
+Print the question @var{STRING} on the standard output and wait for the user to type @code{yes} or
 @code{no} in the standard input.  Return true if the user has typed @code{yes}, false if the user
 has typed @code{no}.
 
-The optional parameter @var{progname} is used as prefix for the prompt; if not given: It defaults to
+The optional parameter @var{PROGNAME} is used as prefix for the prompt; if not given: It defaults to
 the value of @code{script_PROGNAME}.  @ref{service variables, Required user defined variables}.
 @end defun
 
@@ -5494,9 +5532,9 @@ Declare the usage of the external program @command{stty}, which is used by
 @end defun
 
 
-@defun mbfl_dialog_ask_password @var{prompt}
-@defunx mbfl_dialog_ask_password_var @var{_RV} @var{prompt}
-Print @var{prompt} followed by a colon and a space, then reads a password from the terminal.  Print
+@defun mbfl_dialog_ask_password @var{PROMPT}
+@defunx mbfl_dialog_ask_password_var @var{_RV} @var{PROMPT}
+Print @var{PROMPT} followed by a colon and a space, then reads a password from the terminal.  Print
 the password.
 
 @DocVarVariant{}
@@ -5526,13 +5564,13 @@ The programs are: @command{date}.
 @section Raw call to @command{date}
 
 
-@defun mbfl_exec_date [@var{opt} @dots{}]
+@defun mbfl_exec_date @var{OPT} @dots{}
 Execute @command{date} with the optional arguments appended to the command line.
 @end defun
 
 
-@defun mbfl_exec_date_format @var{format} [@var{opt} @dots{}]
-Execute @command{date} with the mandatory @var{format} as first argument.  Additional, optional,
+@defun mbfl_exec_date_format @var{FORMAT} @var{OPT} @dots{}
+Execute @command{date} with the mandatory @var{FORMAT} as first argument.  Additional, optional,
 arguments are appended to the command line.
 @end defun
 
@@ -5636,8 +5674,8 @@ mbfl_date_iso_timestamp
 following functions.
 
 
-@defun mbfl_variable_find_in_array @var{element}
-Search the array @code{mbfl_FIELDS} for a value equal to @var{element}.
+@defun mbfl_variable_find_in_array @var{ELEMENT}
+Search the array @code{mbfl_FIELDS} for a value equal to @var{ELEMENT}.
 If it is found: Print the index and return true; else print nothing and
 return false.
 
@@ -5646,7 +5684,7 @@ indexes starting at zero.
 @end defun
 
 
-@defun mbfl_variable_element_is_in_array @var{element}
+@defun mbfl_variable_element_is_in_array @var{ELEMENT}
 A wrapper for @func{mbfl_variable_find_in_array} that does not print
 anything.
 @end defun
@@ -5656,8 +5694,8 @@ anything.
 @section Manipulating colon variables
 
 
-@defun mbfl_variable_colon_variable_to_array @var{varname}
-Take @var{varname}'s value, a colon separated list of string, and store
+@defun mbfl_variable_colon_variable_to_array @var{VARNAME}
+Take @var{VARNAME}'s value, a colon separated list of string, and store
 each string in the array @code{mbfl_FIELDS}, starting with a base index
 of zero.
 
@@ -5679,9 +5717,9 @@ echo "$@{mbfl_FIELDS[4]@}"      @print{} e
 @end defun
 
 
-@defun mbfl_variable_array_to_colon_variable @var{varname}
+@defun mbfl_variable_array_to_colon_variable @var{VARNAME}
 Store each value from the array @code{mbfl_FIELDS} (with base index
-zero) in @var{varname} as a colon separated list of strings.
+zero) in @var{VARNAME} as a colon separated list of strings.
 
 Example:
 
@@ -5694,9 +5732,9 @@ echo $VAR                       @print{} a:b:c:d:e
 @end defun
 
 
-@defun mbfl_variable_colon_variable_drop_duplicate @var{varname}
-Take @var{varname}'s value, a colon separated list of string, and
-remove duplicates.  Reset @var{varname} to the result.
+@defun mbfl_variable_colon_variable_drop_duplicate @var{VARNAME}
+Take @var{VARNAME}'s value, a colon separated list of string, and
+remove duplicates.  Reset @var{VARNAME} to the result.
 @end defun
 
 @c page
@@ -5868,9 +5906,9 @@ functions inspect entries from @file{/etc/passwd} and locate them using numeric 
 indexes are valid only until the next call to @func{mbfl_system_passwd_reset}.
 
 
-@defun mbfl_system_passwd_find_entry_by_name @var{name}
-@defunx mbfl_system_passwd_find_entry_by_name_var @var{_RV} @var{name}
-Search the entries of @file{passwd} for one whose user name is @var{name}.  When successful: print
+@defun mbfl_system_passwd_find_entry_by_name @var{NAME}
+@defunx mbfl_system_passwd_find_entry_by_name_var @var{_RV} @var{NAME}
+Search the entries of @file{passwd} for one whose user name is @var{NAME}.  When successful: print
 to @stdout{} the index of the entry and return true; otherwise return false.  We can use the
 index with the functions described in @ref{system passwd inspect, Inspecting entries from
 @file{passwd}}.
@@ -5879,9 +5917,9 @@ index with the functions described in @ref{system passwd inspect, Inspecting ent
 @end defun
 
 
-@defun mbfl_system_passwd_find_entry_by_uid @var{uid}
-@defunx mbfl_system_passwd_find_entry_by_uid_var @var{_RV} @var{uid}
-Search the entries of @file{passwd} for one whose user id is @var{uid}.  When successful: print to
+@defun mbfl_system_passwd_find_entry_by_uid @var{UID}
+@defunx mbfl_system_passwd_find_entry_by_uid_var @var{_RV} @var{UID}
+Search the entries of @file{passwd} for one whose user id is @var{UID}.  When successful: print to
 @stdout{} the index of the entry and return true; otherwise return false.  We can use the index
 with the functions described in @ref{system passwd inspect, Inspecting entries from @file{passwd}}.
 
@@ -5898,9 +5936,9 @@ obtain indexes with the functions described in @ref{system passwd searching, Sea
 @file{passwd}}.
 
 
-@defun mbfl_system_passwd_get_name @var{idx}
-@defunx mbfl_system_passwd_get_name_var @var{_RV} @var{idx}
-Print to @stdout{} the field name of the @file{passwd} entry at index @var{idx}.
+@defun mbfl_system_passwd_get_name @var{IDX}
+@defunx mbfl_system_passwd_get_name_var @var{_RV} @var{IDX}
+Print to @stdout{} the field name of the @file{passwd} entry at index @var{IDX}.
 
 @DocVarVariant{}
 
@@ -5918,49 +5956,49 @@ fi
 @end defun
 
 
-@defun mbfl_system_passwd_get_passwd @var{idx}
-@defunx mbfl_system_passwd_get_passwd_var @var{_RV} @var{idx}
-Print to @stdout{} the field passwd of the @file{passwd} entry at index @var{idx}.
+@defun mbfl_system_passwd_get_passwd @var{IDX}
+@defunx mbfl_system_passwd_get_passwd_var @var{_RV} @var{IDX}
+Print to @stdout{} the field passwd of the @file{passwd} entry at index @var{IDX}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_passwd_get_uid @var{idx}
-@defunx mbfl_system_passwd_get_uid_var @var{_RV} @var{idx}
-Print to @stdout{} the field uid of the @file{passwd} entry at index @var{idx}.
+@defun mbfl_system_passwd_get_uid @var{IDX}
+@defunx mbfl_system_passwd_get_uid_var @var{_RV} @var{IDX}
+Print to @stdout{} the field uid of the @file{passwd} entry at index @var{IDX}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_passwd_get_gid @var{idx}
-@defunx mbfl_system_passwd_get_gid_var @var{_RV} @var{idx}
-Print to @stdout{} the field gid of the @file{passwd} entry at index @var{idx}.
+@defun mbfl_system_passwd_get_gid @var{IDX}
+@defunx mbfl_system_passwd_get_gid_var @var{_RV} @var{IDX}
+Print to @stdout{} the field gid of the @file{passwd} entry at index @var{IDX}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_passwd_get_gecos @var{idx}
-@defunx mbfl_system_passwd_get_gecos_var @var{_RV} @var{idx}
-Print to @stdout{} the field gecos of the @file{passwd} entry at index @var{idx}.
+@defun mbfl_system_passwd_get_gecos @var{IDX}
+@defunx mbfl_system_passwd_get_gecos_var @var{_RV} @var{IDX}
+Print to @stdout{} the field gecos of the @file{passwd} entry at index @var{IDX}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_passwd_get_dir @var{idx}
-@defunx mbfl_system_passwd_get_dir_var @var{_RV} @var{idx}
-Print to @stdout{} the field dir of the @file{passwd} entry at index @var{idx}.
+@defun mbfl_system_passwd_get_dir @var{IDX}
+@defunx mbfl_system_passwd_get_dir_var @var{_RV} @var{IDX}
+Print to @stdout{} the field dir of the @file{passwd} entry at index @var{IDX}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_passwd_get_shell @var{idx}
-@defunx mbfl_system_passwd_get_shell_var @var{_RV} @var{idx}
-Print to @stdout{} the field shell of the @file{passwd} entry at index @var{idx}.
+@defun mbfl_system_passwd_get_shell @var{IDX}
+@defunx mbfl_system_passwd_get_shell_var @var{_RV} @var{IDX}
+Print to @stdout{} the field shell of the @file{passwd} entry at index @var{IDX}.
 
 @DocVarVariant{}
 @end defun
@@ -5974,9 +6012,9 @@ We are meant to call these function after a call to @func{mbfl_system_passwd_rea
 passwd reading, Reading the file @file{passwd}}.
 
 
-@defun mbfl_system_passwd_uid_to_name @var{uid}
-@defunx mbfl_system_passwd_uid_to_name_var @var{_RV} @var{uid}
-Print to @stdout{} the name of the user whose uid is @var{uid}.  When successful return true;
+@defun mbfl_system_passwd_uid_to_name @var{UID}
+@defunx mbfl_system_passwd_uid_to_name_var @var{_RV} @var{UID}
+Print to @stdout{} the name of the user whose uid is @var{UID}.  When successful return true;
 otherwise return false.
 
 @DocVarVariant{}
@@ -5998,9 +6036,9 @@ fi
 @end defun
 
 
-@defun mbfl_system_passwd_name_to_uid @var{name}
-@defunx mbfl_system_passwd_name_to_uid_var @var{_RV} @var{name}
-Print to @stdout{} the id of the user whose uid is @var{uid}.  When successful return true;
+@defun mbfl_system_passwd_name_to_uid @var{NAME}
+@defunx mbfl_system_passwd_name_to_uid_var @var{_RV} @var{NAME}
+Print to @stdout{} the id of the user whose uid is @var{UID}.  When successful return true;
 otherwise return false.
 
 @DocVarVariant{}
@@ -6023,14 +6061,14 @@ fi
 @end defun
 
 
-@defun mbfl_system_numerical_user_id_to_name @var{id}
-Convert the numerical user @var{id} to the user name found in the @file{/etc/passwd} file; print the
+@defun mbfl_system_numerical_user_id_to_name @var{ID}
+Convert the numerical user @var{ID} to the user name found in the @file{/etc/passwd} file; print the
 result to @stdout{}.  When successful return true; otherwise return false.
 @end defun
 
 
-@defun mbfl_system_numerical_user_id_to_name @var{name}
-Convert the symbolic user @var{name} to the numerical identifier found in the @file{/etc/passwd}
+@defun mbfl_system_numerical_user_id_to_name @var{NAME}
+Convert the symbolic user @var{NAME} to the numerical identifier found in the @file{/etc/passwd}
 file; print the result to @stdout{}.  When successful return true; otherwise return false.
 @end defun
 
@@ -6110,9 +6148,9 @@ functions inspect entries from @file{/etc/group} and locate them using numeric i
 are valid only until the next call to @func{mbfl_system_group_reset}.
 
 
-@defun mbfl_system_group_find_entry_by_name @var{name}
-@defunx mbfl_system_group_find_entry_by_name_var @var{_RV} @var{name}
-Search the entries of @file{/etc/group} for one whose group name is @var{name}.  When successful:
+@defun mbfl_system_group_find_entry_by_name @var{NAME}
+@defunx mbfl_system_group_find_entry_by_name_var @var{_RV} @var{NAME}
+Search the entries of @file{/etc/group} for one whose group name is @var{NAME}.  When successful:
 print to @stdout{} the index of the entry and return true; otherwise return false.  We can use
 the index with the functions described in @ref{system group inspect, Inspecting entries from
 @file{/etc/group}}.
@@ -6121,9 +6159,9 @@ the index with the functions described in @ref{system group inspect, Inspecting 
 @end defun
 
 
-@defun mbfl_system_group_find_entry_by_gid @var{gid}
-@defunx mbfl_system_group_find_entry_by_gid_var @var{_RV} @var{gid}
-Search the entries of @file{/etc/group} for one whose group id is @var{gid}.  When successful: print
+@defun mbfl_system_group_find_entry_by_gid @var{GID}
+@defunx mbfl_system_group_find_entry_by_gid_var @var{_RV} @var{GID}
+Search the entries of @file{/etc/group} for one whose group id is @var{GID}.  When successful: print
 to @stdout{} the index of the entry and return true; otherwise return false.  We can use the
 index with the functions described in @ref{system group inspect, Inspecting entries from
 @file{/etc/group}}.
@@ -6141,9 +6179,9 @@ obtain indexes with the functions described in @ref{system group searching, Sear
 @file{/etc/group}}.
 
 
-@defun mbfl_system_group_get_name @var{group_idx}
-@defunx mbfl_system_group_get_name_var @var{_RV} @var{group_idx}
-Print to @stdout{} the field name of the @file{/etc/group} entry at index @var{group_idx}.
+@defun mbfl_system_group_get_name @var{GROUP_IDX}
+@defunx mbfl_system_group_get_name_var @var{_RV} @var{GROUP_IDX}
+Print to @stdout{} the field name of the @file{/etc/group} entry at index @var{GROUP_IDX}.
 
 @DocVarVariant{}
 
@@ -6161,43 +6199,43 @@ fi
 @end defun
 
 
-@defun mbfl_system_group_get_passwd @var{group_idx}
-@defunx mbfl_system_group_get_passwd_var @var{_RV} @var{group_idx}
-Print to @stdout{} the field passwd of the @file{/etc/group} entry at index @var{group_idx}.
+@defun mbfl_system_group_get_passwd @var{GROUP_IDX}
+@defunx mbfl_system_group_get_passwd_var @var{_RV} @var{GROUP_IDX}
+Print to @stdout{} the field passwd of the @file{/etc/group} entry at index @var{GROUP_IDX}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_group_get_gid @var{group_idx}
-@defunx mbfl_system_group_get_gid_var @var{_RV} @var{group_idx}
-Print to @stdout{} the field gid of the @file{/etc/group} entry at index @var{group_idx}.
+@defun mbfl_system_group_get_gid @var{GROUP_IDX}
+@defunx mbfl_system_group_get_gid_var @var{_RV} @var{GROUP_IDX}
+Print to @stdout{} the field gid of the @file{/etc/group} entry at index @var{GROUP_IDX}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_group_get_users @var{group_idx}
-@defunx mbfl_system_group_get_users_var @var{_RV} @var{group_idx}
-Print to @stdout{} the field users of the @file{/etc/group} entry at index @var{group_idx}.
+@defun mbfl_system_group_get_users @var{GROUP_IDX}
+@defunx mbfl_system_group_get_users_var @var{_RV} @var{GROUP_IDX}
+Print to @stdout{} the field users of the @file{/etc/group} entry at index @var{GROUP_IDX}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_group_get_users_count @var{group_idx}
-@defunx mbfl_system_group_get_users_count_var @var{_RV} @var{group_idx}
+@defun mbfl_system_group_get_users_count @var{GROUP_IDX}
+@defunx mbfl_system_group_get_users_count_var @var{_RV} @var{GROUP_IDX}
 Print to @stdout{} the number of user names in the list of users for the entry at index
-@var{group_idx}.
+@var{GROUP_IDX}.
 
 @DocVarVariant{}
 @end defun
 
 
-@defun mbfl_system_group_get_user_name @var{group_idx} @var{user_idx}
-@defunx mbfl_system_group_get_user_name_var @var{_RV} @var{group_idx} @var{user_idx}
-Print to @stdout{} the name of the user at index @var{user_idx} in the list of users for the
-entry at index @var{group_idx}.
+@defun mbfl_system_group_get_user_name @var{GROUP_IDX} @var{USER_IDX}
+@defunx mbfl_system_group_get_user_name_var @var{_RV} @var{GROUP_IDX} @var{USER_IDX}
+Print to @stdout{} the name of the user at index @var{USER_IDX} in the list of users for the
+entry at index @var{GROUP_IDX}.
 
 @DocVarVariant{}
 
@@ -6239,9 +6277,9 @@ We are meant to call these function after a call to @func{mbfl_system_group_read
 group reading, Reading the file @file{/etc/group}}.
 
 
-@defun mbfl_system_group_gid_to_name @var{gid}
-@defunx mbfl_system_group_gid_to_name_var @var{_RV} @var{gid}
-Print to @stdout{} the name of the group whose gid is @var{gid}.  When successful return true;
+@defun mbfl_system_group_gid_to_name @var{GID}
+@defunx mbfl_system_group_gid_to_name_var @var{_RV} @var{GID}
+Print to @stdout{} the name of the group whose gid is @var{GID}.  When successful return true;
 otherwise return false.
 
 @DocVarVariant{}
@@ -6263,9 +6301,9 @@ fi
 @end defun
 
 
-@defun mbfl_system_group_name_to_gid @var{name}
-@defunx mbfl_system_group_name_to_gid_var @var{_RV} @var{name}
-Print to @stdout{} the id of the group whose gid is @var{gid}.  When successful return true;
+@defun mbfl_system_group_name_to_gid @var{NAME}
+@defunx mbfl_system_group_name_to_gid_var @var{_RV} @var{NAME}
+Print to @stdout{} the id of the group whose gid is @var{GID}.  When successful return true;
 otherwise return false.
 
 @DocVarVariant{}
@@ -6288,14 +6326,14 @@ fi
 @end defun
 
 
-@defun mbfl_system_numerical_group_id_to_name @var{id}
-Convert the numerical group @var{id} to the group name found in the @file{/etc/group} file; print the
+@defun mbfl_system_numerical_group_id_to_name @var{ID}
+Convert the numerical group @var{ID} to the group name found in the @file{/etc/group} file; print the
 result to @stdout{}.  When successful return true; otherwise return false.
 @end defun
 
 
-@defun mbfl_system_numerical_group_id_to_name @var{name}
-Convert the symbolic group @var{name} to the numerical identifier found in the @file{/etc/group}
+@defun mbfl_system_numerical_group_id_to_name @var{NAME}
+Convert the symbolic group @var{NAME} to the numerical identifier found in the @file{/etc/group}
 file; print the result to @stdout{}.  When successful return true; otherwise return false.
 @end defun
 
@@ -6304,13 +6342,13 @@ file; print the result to @stdout{}.  When successful return true; otherwise ret
 @section Converting file permissions
 
 
-@defun mbfl_system_symbolic_to_octal_permissions @var{mode}
+@defun mbfl_system_symbolic_to_octal_permissions @var{MODE}
 Convert three chars representing file permissions in a single octal
 digit.
 @end defun
 
 
-@defun mbfl_system_octal_to_symbolic_permissions @var{mode}
+@defun mbfl_system_octal_to_symbolic_permissions @var{MODE}
 Convert a single octal digit representing file permissions into three
 chars.
 @end defun
@@ -6468,16 +6506,16 @@ function first if we want to use this module.
 @end defun
 
 
-@defun mbfl_atexit_register @var{handler}
-@defunx mbfl_atexit_register @var{handler} @var{idvar}
-Register a new @var{handler} command.  If the optional argument @var{idvar} is present, it must be
+@defun mbfl_atexit_register @var{HANDLER}
+@defunx mbfl_atexit_register @var{HANDLER} @var{IDVAR}
+Register a new @var{HANDLER} command.  If the optional argument @var{IDVAR} is present, it must be
 the name of a variable in the scope of the caller: store into such variable a unique identifier
 associated to the handler.
 @end defun
 
 
-@defun mbfl_atexit_forget @var{id}
-Remove the, previously registered, handler command associated to @var{id}.  If no handler is
+@defun mbfl_atexit_forget @var{ID}
+Remove the, previously registered, handler command associated to @var{ID}.  If no handler is
 associated to it: nothing happens.
 @end defun
 
@@ -6525,7 +6563,7 @@ status of the last command executed before the call to this function (@code{$?})
 @end defun
 
 
-@defun mbfl_location_handler @var{handler_script}
+@defun mbfl_location_handler @var{HANDLER_SCRIPT}
 Register a new handler in the current location.  It is an error if this function is called outside a
 location.
 @end defun
@@ -7325,8 +7363,8 @@ Exit the script with the return code of the action function or zero.
 @end defun
 
 
-@defun mbfl_main_set_main @var{funcname}
-Select the main function storing @var{funcname} into @code{mbfl_main_SCRIPT_FUNCTION}.
+@defun mbfl_main_set_main @var{FUNCNAME}
+Select the main function storing @var{FUNCNAME} into @code{mbfl_main_SCRIPT_FUNCTION}.
 @end defun
 
 
@@ -7336,7 +7374,7 @@ Global variable that holds the name of the custom main script function.  The def
 @end defvar
 
 
-@defun mbfl_main_set_before_parsing_options @var{funcname}
+@defun mbfl_main_set_before_parsing_options @var{FUNCNAME}
 The name of the function to be called right before parsing command line options.  This value can be
 customised by both the @mbfl{} and the user script.
 
@@ -7344,7 +7382,7 @@ The default function name is: @code{script_before_parsing_options}.
 @end defun
 
 
-@defun mbfl_main_set_after_parsing_options @var{funcname}
+@defun mbfl_main_set_after_parsing_options @var{FUNCNAME}
 The name of the function to be called right after parsing command line options.  This value can be
 customised by both the @mbfl{} and the user script.
 
@@ -7379,8 +7417,8 @@ by an atexit command.
 @end defun
 
 
-@defun mbfl_main_declare_exit_code @var{code} @var{name}
-Declare an exit code with value @var{code} and identifier @var{name}.
+@defun mbfl_main_declare_exit_code @var{CODE} @var{NAME}
+Declare an exit code with value @var{CODE} and identifier @var{NAME}.
 @end defun
 
 
@@ -7458,8 +7496,8 @@ Exit the script with code @code{88}.
 @end defun
 
 
-@defun mbfl_main_print_exit_code @var{name}
-Print the code associated to @var{name}.
+@defun mbfl_main_print_exit_code @var{NAME}
+Print the code associated to @var{NAME}.
 @end defun
 
 @c page
@@ -7467,8 +7505,8 @@ Print the code associated to @var{name}.
 @section Other functions
 
 
-@defun mbfl_invoke_script_function @var{funcname}
-If @var{funcname} is the name of an existing function: it is invoked with no arguments; the return
+@defun mbfl_invoke_script_function @var{FUNCNAME}
+If @var{FUNCNAME} is the name of an existing function: it is invoked with no arguments; the return
 value is the one of the called function.  The existence test is performed with:
 
 @example
@@ -7479,7 +7517,7 @@ If the function does not exist: return by calling @code{return_because_invalid_f
 @end defun
 
 
-@defun mbfl_invoke_existent_script_function @var{funcname}
+@defun mbfl_invoke_existent_script_function @var{FUNCNAME}
 Like @func{mbfl_invoke_script_function}, but if the function does not exist: print an error message
 to @stderr{} and exit by calling @func{exit_because_invalid_function_name}.
 @end defun
@@ -7764,13 +7802,13 @@ requirements of @gnu{} Automake).
 @end defun
 
 
-@defun dotest @var{pattern}
-Run all the functions matching @var{pattern}.  Usually @var{pattern} is
+@defun dotest @var{PATTERN}
+Run all the functions matching @var{PATTERN}.  Usually @var{PATTERN} is
 the first part of the name of the functions to be executed; the function
 names are selected with the following code:
 
 @example
-compgen -A function @var{pattern}
+compgen -A function @var{PATTERN}
 @end example
 
 There's no constraint on function names, but they must be one--word
@@ -7798,8 +7836,8 @@ The following environment variables will influence the behaviour of
 
 
 @defvar TESTMATCH
-Restrict the @var{pattern} argument to @func{dotest}.  First function names are matched against
-@var{pattern}, then, the ones that match, are matched against @env{TESTMATCH}.
+Restrict the @var{PATTERN} argument to @func{dotest}.  First function names are matched against
+@var{PATTERN}, then, the ones that match, are matched against @env{TESTMATCH}.
 @end defvar
 
 
@@ -7821,13 +7859,13 @@ invoking @func{dotest-unset-report-success}.
 @section Validating results by comparing
 
 
-@defun dotest-equal @var{expected} @var{got}
-@defunx dotest-equal @var{expected} @var{got} @var{description}
+@defun dotest-equal @var{EXPECTED} @var{GOT}
+@defunx dotest-equal @var{EXPECTED} @var{GOT} @var{DESCRIPTION}
 Compare the two parameters and return true if they are equal; return false otherwise.  In the latter
 case print a message showing the expected value and the wrong one.  Must be used as last command in
 a function, so that its return value is equal to that of the function.
 
-The optional argument @var{description} should be a short, one--line, string describing the expected
+The optional argument @var{DESCRIPTION} should be a short, one--line, string describing the expected
 value; it is used in the output text describing the failed comparison.
 @end defun
 
@@ -7865,13 +7903,13 @@ dotest mytest-
 
 
 @defun dotest-output
-@defunx dotest-output @var{string}
-@defunx dotest-output @var{string} @var{description}
+@defunx dotest-output @var{STRING}
+@defunx dotest-output @var{STRING} @var{DESCRIPTION}
 Read all the available lines from stdin accumulating them into a local variable, separated by
-@code{\n}; then compare the input with @var{string}, or the empty string if @var{string} is not
+@code{\n}; then compare the input with @var{STRING}, or the empty string if @var{STRING} is not
 present, and return true if they are equal, false otherwise.
 
-The optional argument @var{description} should be a short, one--line, string describing the expected
+The optional argument @var{DESCRIPTION} should be a short, one--line, string describing the expected
 value; it is used in the output text describing the failed comparison.
 @end defun
 
@@ -7905,15 +7943,15 @@ dotest mytest
 @section Printing messages from test functions
 
 
-@deffn Alias dotest-echo @var{string} [@var{arg} @dots{}]
-@deffnx Alias dotest-debug @var{string} [@var{arg} @dots{}]
+@deffn Alias dotest-echo @var{STRING} [@var{ARG} @dots{}]
+@deffnx Alias dotest-debug @var{STRING} [@var{ARG} @dots{}]
 Print the parameters on @stderr{}.  @code{dotest-debug} prints some @code{*} to make the message
 more visible.
 @end deffn
 
 
-@deffn Alias dotest-printf @var{template} [@var{arg} @dots{}]
-Format the @var{template} with the optional @var{arg} values, then print the result on @stderr{}.
+@deffn Alias dotest-printf @var{TEMPLATE} [@var{ARG} @dots{}]
+Format the @var{TEMPLATE} with the optional @var{ARG} values, then print the result on @stderr{}.
 @end deffn
 
 @c page
@@ -7941,19 +7979,19 @@ function that creates files.
 @subsection Directories
 
 
-@defun dotest-cd @var{directory}
+@defun dotest-cd @var{DIRECTORY}
 Change the working directory.  This is just a wrapper for @command{cd};
 if verbose mode is on: print a message.
 @end defun
 
 
-@defun dotest-mkdir @var{directory}
-@defunx dotest-mkdir @var{directory} @var{prefix}
-Create @var{directory} under the temporary directory; @var{directory}
+@defun dotest-mkdir @var{DIRECTORY}
+@defunx dotest-mkdir @var{DIRECTORY} @var{PREFIX}
+Create @var{DIRECTORY} under the temporary directory; @var{DIRECTORY}
 must be a relative pathname (that is: it must not begin with a slash).
 
-The optional @var{prefix} is a relative pathname that is prepended to
-@var{directory}: it is useful to prepend the name of a parent directory.
+The optional @var{PREFIX} is a relative pathname that is prepended to
+@var{DIRECTORY}: it is useful to prepend the name of a parent directory.
 
 Print to stdout the full pathname of the directory.
 @end defun
@@ -7984,10 +8022,10 @@ by @func{dotest-mkfile} and @func{dotest-mkpathname}.
 @subsection Files
 
 
-@defun dotest-mkfile @var{pathname}
-@defunx dotest-mkfile @var{pathname} @var{prefix}
-Create an empty file.  The optional @var{prefix} is a relative pathname
-that is prepended to @var{pathname}: It is useful to prepend the name of
+@defun dotest-mkfile @var{PATHNAME}
+@defunx dotest-mkfile @var{PATHNAME} @var{PREFIX}
+Create an empty file.  The optional @var{PREFIX} is a relative pathname
+that is prepended to @var{PATHNAME}: It is useful to prepend the name of
 a parent directory.  Print to stdout the full pathname of the file.
 @end defun
 
@@ -8002,10 +8040,10 @@ that way it can be used right after @func{dotest-output} and
 @end defun
 
 
-@defun dotest-mkpathname @var{pathname}
-@defunx dotest-mkpathname @var{pathname} @var{prefix}
-Compose a pathname under the temporary testing directory.  The optional @var{prefix} is a relative
-pathname that is prepended to @var{pathname}: It is useful to prepend the name of a parent
+@defun dotest-mkpathname @var{PATHNAME}
+@defunx dotest-mkpathname @var{PATHNAME} @var{PREFIX}
+Compose a pathname under the temporary testing directory.  The optional @var{PREFIX} is a relative
+pathname that is prepended to @var{PATHNAME}: It is useful to prepend the name of a parent
 directory.  Print to stdout the full pathname of the file.
 
 This function invokes @func{dotest-mktmpdir}.
@@ -8015,16 +8053,16 @@ This function invokes @func{dotest-mktmpdir}.
 @subsubheading Testing conditions
 
 
-@defun dotest-assert-file-exists @var{file} @var{error_message}
-Test that @var{file} exists: If true returns with code zero; else print
-@var{error_message}, invoke @func{dotest-clean-files} and return with
+@defun dotest-assert-file-exists @var{FILE} @var{ERROR_MESSAGE}
+Test that @var{FILE} exists: If true returns with code zero; else print
+@var{ERROR_MESSAGE}, invoke @func{dotest-clean-files} and return with
 code one.
 @end defun
 
 
-@defun dotest-assert-file-unexists @var{file} @var{error_message}
-Test that @var{file} does not exist: If true return with code zero; else
-print @var{error_message}, invoke @func{dotest-clean-files} and return
+@defun dotest-assert-file-unexists @var{FILE} @var{ERROR_MESSAGE}
+Test that @var{FILE} does not exist: If true return with code zero; else
+print @var{ERROR_MESSAGE}, invoke @func{dotest-clean-files} and return
 with code one.
 @end defun
 
@@ -8242,7 +8280,7 @@ understand the following functions.
 @end defun
 
 
-@defun open_session @var{hostname}
+@defun open_session @var{HOSTNAME}
 Open a connection to the @smtp{} server using a fake device that Bash gives us as interface to the
 network.  For the @code{localhost}, it ends up being:
 
@@ -8275,9 +8313,9 @@ script, it is there for completeness.
 @end defun
 
 
-@defun send @var{string}
-@defunx send @var{template} [@var{opt} @dots{}]
-Send a string to the @smtp{} server.  Use @func{printf} to format the string @var{template} with
+@defun send @var{STRING}
+@defunx send @var{TEMPLATE} @var{OPT} @dots{}
+Send a string to the @smtp{} server.  Use @func{printf} to format the string @var{TEMPLATE} with
 the optional arguments, then write the resulting string to file descriptor 3.  The string written
 out is terminated with the sequence @code{\r\n} as mandated by the @smtp{} protocol.
 @end defun
@@ -8290,10 +8328,10 @@ of the terminating sequence, the lines are left unchanged.
 @end defun
 
 
-@defun recv @var{expected_code}
+@defun recv @var{EXPECTED_CODE}
 Read a line (a sequence of characters up until the first @code{\n}) from file descriptor 3.  The
 line is interpreted as a message from the @smtp{} server: the first three characters are a numeric
-code.  If the code is different from @var{expected_code}, raise an error.
+code.  If the code is different from @var{EXPECTED_CODE}, raise an error.
 @end defun
 
 @smallexample
@@ -8325,7 +8363,7 @@ program that can establish sophisticated connections to remote hosts, for exampl
 @tls{}/@ssl{} protocols.
 
 
-@defun open_session @var{hostname}
+@defun open_session @var{HOSTNAME}
 Open a connection to the @smtp{} server spawning a background process represented by the
 @func{connector} function.  It makes use of two @fifo{}s (First In, First Out).
 
@@ -8400,8 +8438,8 @@ trap 'exec 3<&- 4>&-' EXIT
 @end defun
 
 
-@defun connector @var{hostname}
-Establish a connection to the @smtp{} server at @var{hostname}.  It is not important here to fully
+@defun connector @var{HOSTNAME}
+Establish a connection to the @smtp{} server at @var{HOSTNAME}.  It is not important here to fully
 understand how this function works; suffice it to say that it reads lines from stdin, and echoes
 them to the server; it reads lines from the server, and echoes them to stdout.
 @end defun
@@ -8904,33 +8942,33 @@ the script sends an email address, and it can do a plain session or use a connec
 description follows.
 
 @table @code
-@item -F@var{address}
-@itemx --envelope-from=@var{address}
+@item -F@var{ADDRESS}
+@itemx --envelope-from=@var{ADDRESS}
 Select the @code{MAIL FROM} envelope address.  If this option is used multiple times: the last one
 wins.
 
-@item -T@var{address}
-@itemx --envelope-to=@var{address}
+@item -T@var{ADDRESS}
+@itemx --envelope-to=@var{ADDRESS}
 Select the @code{RCPT TO} envelope address.  This option can be used multiple times: each
-@var{address} is appended to a list of recipients.
+@var{ADDRESS} is appended to a list of recipients.
 
-@item -M@var{source}
-@itemx --message=@var{source}
-Select the source of the whole email message.  If @var{source} is a file pathname, that file is read
-and used as data; if @var{source} is @code{-}, the message is read from the standard input channel.
+@item -M@var{SOURCE}
+@itemx --message=@var{SOURCE}
+Select the source of the whole email message.  If @var{SOURCE} is a file pathname, that file is read
+and used as data; if @var{SOURCE} is @code{-}, the message is read from the standard input channel.
 It defaults to @code{-}.
 
 @item --test-message
 Send a test message with a hard--coded body part.  This option supersedes @option{--message}.
 
-@item --host=@var{host}
+@item --host=@var{HOST}
 Select the @smtp{} server host name.  It defaults to @code{localhost}.
 
-@item --host-info=@var{file}
+@item --host-info=@var{FILE}
 Select a file from which to read host and port informations.
 
-@item -p@var{port}
-@itemx --port=@var{port}
+@item -p@var{PORT}
+@itemx --port=@var{PORT}
 Select the @smtp{} server @tcp{} port; this option supersedes @option{--host-info}.  It defaults to
 @code{25}.
 
@@ -8947,12 +8985,12 @@ Use @command{gnutls-cli} as connector for encrypted sessions.  This is the defau
 @item --openssl
 Use @command{gnutls-cli} as connector for encrypted sessions.
 
-@item --auth-info=@var{file}
+@item --auth-info=@var{FILE}
 Select the file, in @code{netrc} format, from which to read the authorisation credentials.  Defaults
 to @file{~/.mbfl-authinfo}.
 
-@item --username=@var{user}
-Specify a string used to select an account in the authorisation file.  @var{user} must be a
+@item --username=@var{USER}
+Specify a string used to select an account in the authorisation file.  @var{USER} must be a
 substring of the username present in the file, the first matching line from the file is selected.
 So, if the authinfo file is:
 
@@ -9450,8 +9488,8 @@ the headers/body separator line is removed.  It is to be called
 @end defun
 
 
-@defun sendmail-mbfl-copy-message-buffer @var{dst-buffer} @var{src-buffer}
-Copy an email message from @var{src-buffer} to @var{dst-buffer}.  Set
+@defun sendmail-mbfl-copy-message-buffer @var{DST-BUFFER} @var{SRC-BUFFER}
+Copy an email message from @var{SRC-BUFFER} to @var{DST-BUFFER}.  Set
 encoding and text representation properties of the destination buffer to
 be equal to the ones of the source buffer.
 @end defun

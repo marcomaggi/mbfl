@@ -99,6 +99,7 @@ changes!
 
     mbfl_file_realpath
     mbfl_file_realpath_var
+    mbfl_file_link
 
 * BACKWARDS INCOMPATIBILITY The following  functions now use the program
   "stat":
@@ -106,9 +107,6 @@ changes!
     mbfl_file_get_owner
     mbfl_file_get_group
     mbfl_file_get_size
-
-* Added  function "mbfl_exec_tar".   The  old  "mbfl_tar_exec" is  still
-  there but is deprecated.
 
 * BACKWARDS  INCOMPATIBILITY  The  functions  "mbfl_file_set_owner"  and
   "mbfl_file_set_group" do  not honour  the "--verbose"  option anymore.
@@ -191,6 +189,25 @@ changes!
 
     mbfl_getopts_reset
     mbfl_getopts_gather_mbfl_options_var
+
+* Added functions:
+
+   mbfl_exec_cp
+   mbfl_exec_ln
+   mbfl_exec_ls
+   mbfl_exec_mkdir
+   mbfl_exec_mv
+   mbfl_exec_realpath
+   mbfl_exec_rm
+   mbfl_exec_rmdir
+   mbfl_exec_tar
+
+  The old function "mbfl_tar_exec" is still there but is deprecated.
+
+* BACKWARDS INCOMPATIBILITY Changed API for functions:
+
+    mbfl_exec_ln
+    mbfl_exec_readlink
 
 
 Notes for revision 2.2.0
