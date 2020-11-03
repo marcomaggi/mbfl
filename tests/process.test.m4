@@ -48,46 +48,33 @@ function process-sleep () {
 #### disowning a process
 
 function process-disown-1.1 () {
-    local THE_PID DISOWN_RV KILL_RV
+    local THE_PID DISOWN_RV KILL_RV WAIT_RV
 
     #mbfl_set_option_test
+    mbfl_set_option_debug
     mbfl_set_option_show_program
 
     # We need  to use "mbfl_program_execbg()" directly  if we want to  access "$mbfl_program_BGPID";
     # using "mbfl_program_bash_command()"  and putting it  in the background  with "&" will  not set
     # "mbfl_program_BGPID" correctly.
-    mbfl_program_execbg 0 1 "$mbfl_PROGRAM_BASH" '-c' 'read'
+    mbfl_program_execbg 0 1 "$mbfl_PROGRAM_BASH" '--norc' '--noprofile' '-i' '-c' 'echo "subshell pid: $$" >&2; suspend; exit 0 &>/dev/null;'
     THE_PID=$mbfl_program_BGPID
 
     process-sleep
+    mbfl_process_jobs
 
     mbfl_process_disown $THE_PID
     DISOWN_RV=$?
 
-    mbfl_process_kill -SIGKILL $THE_PID
+    mbfl_process_kill -SIGCONT $THE_PID
     KILL_RV=$?
 
-    dotest-equal 0 $DISOWN_RV 'disown return status' && dotest-equal 0 $KILL_RV 'kill return status'
-}
+    mbfl_process_wait $THE_PID
+    WAIT_RV=$?
 
-function process-disown-1.2 () {
-    local THE_PID DISOWN_RV KILL_RV
-
-    #mbfl_set_option_test
-    mbfl_set_option_show_program
-
-    mbfl_program_bash_command 'read' &
-    THE_PID=$!
-
-    process-sleep
-
-    mbfl_process_disown $THE_PID
-    DISOWN_RV=$?
-
-    mbfl_process_kill -SIGKILL $THE_PID
-    KILL_RV=$?
-
-    dotest-equal 0 $DISOWN_RV 'disown return status' && dotest-equal 0 $KILL_RV 'kill return status'
+    dotest-equal 0 $DISOWN_RV 'disown return status' &&
+	dotest-equal 0 $KILL_RV 'kill return status' &&
+	dotest-equal 0 $WAIT_RV 'wait return status'
 }
 
 #page

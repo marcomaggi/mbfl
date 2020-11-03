@@ -369,6 +369,7 @@ function mbfl_p_program_exec () {
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
+			mbfl_message_debug_printf 'executed background process with PID: %s' "$mbfl_program_BGPID"
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stdout, digit ouchan, digit inchan, foreground.
@@ -389,6 +390,7 @@ function mbfl_p_program_exec () {
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
+			mbfl_message_debug_printf 'executed background process with PID: %s' "$mbfl_program_BGPID"
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stdout, digit ouchan, string inchan, foreground.
@@ -413,6 +415,7 @@ function mbfl_p_program_exec () {
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
+			mbfl_message_debug_printf 'executed background process with PID: %s' "$mbfl_program_BGPID"
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stdout, string ouchan, digit inchan, foreground.
@@ -433,6 +436,7 @@ function mbfl_p_program_exec () {
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
+			mbfl_message_debug_printf 'executed background process with PID: %s' "$mbfl_program_BGPID"
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stdout, string ouchan, string inchan, foreground.
@@ -461,6 +465,7 @@ function mbfl_p_program_exec () {
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
+			mbfl_message_debug_printf 'executed background process with PID: %s' "$mbfl_program_BGPID"
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stderr, digit ouchan, digit inchan, foreground.
@@ -482,6 +487,7 @@ function mbfl_p_program_exec () {
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
+			mbfl_message_debug_printf 'executed background process with PID: %s' "$mbfl_program_BGPID"
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stderr, digit ouchan, string inchan, foreground.
@@ -506,6 +512,7 @@ function mbfl_p_program_exec () {
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
+			mbfl_message_debug_printf 'executed background process with PID: %s' "$mbfl_program_BGPID"
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stderr, string ouchan, digit inchan, foreground.
@@ -526,6 +533,7 @@ function mbfl_p_program_exec () {
 			fi
 			EXIT_CODE=$?
 			mbfl_program_BGPID=$!
+			mbfl_message_debug_printf 'executed background process with PID: %s' "$mbfl_program_BGPID"
 			return $EXIT_CODE
 		    else
 			# Stderr-to-stderr, string ouchan, string inchan, foreground.
@@ -600,12 +608,13 @@ function mbfl_p_program_log_5 () {
 #page
 #### executing bash commands
 
-function mbfl_program_bash_command () {
-    mbfl_mandatory_parameter(COMMAND, 1, command)
-    mbfl_program_exec "$mbfl_PROGRAM_BASH" -c "$COMMAND"
-}
 function mbfl_program_bash () {
     mbfl_program_exec "$mbfl_PROGRAM_BASH" "$@"
+}
+function mbfl_program_bash_command () {
+    mbfl_mandatory_parameter(COMMAND, 1, command)
+    shift
+    mbfl_program_bash "$@" -c "$COMMAND"
 }
 
 ### end of file

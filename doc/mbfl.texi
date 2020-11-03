@@ -4409,6 +4409,21 @@ it.
 @section Executing a program
 
 
+@menu
+* program executing intro::     Introduction to program execution.
+* program executing core::      Core @api{} for program execution.
+* program executing bg::        Executing programs in background.
+* program executing sudo::      Executing programs with another
+                                profile's privileges.
+* program executing bash::      Executing a @command{bash} process.
+* program executing stderr::    Redirecting the standard error channel.
+@end menu
+
+@c page
+@node program executing intro
+@subsection Introduction to program execution
+
+
 This module provides an @api{} to execute a program under the privileges of the current user or
 under a more or less privileged user; @command{sudo} is used run a program as a different user:
 refer to its documentation for the required configuration; @command{whoami} is used to determine to
@@ -4437,11 +4452,9 @@ mbfl_program_exec ls /root
 @end example
 @end itemize
 
-Every time we execute a program with @command{sudo}: we have to select
-the user under which to execute it; if we do not do it: the internally
-registered user defaults to @code{nosudo}, which tells the function
-@strong{not} to use @command{sudo}.  So the following script works as
-commented:
+Every time we execute a program with @command{sudo}: we have to select the user under which to
+execute it; if we do not do it: the internally registered user defaults to @code{nosudo}, which
+tells the function @strong{not} to use @command{sudo}.  So the following script works as commented:
 
 @example
 mbfl_program_enable_sudo
@@ -4459,41 +4472,53 @@ mbfl_program_exec ls /root
 mbfl_program_exec ls /bin
 @end example
 
+@c page
+@node program executing core
+@subsection Core @api{} for program execution
+
 
 @defun mbfl_program_exec @var{PROGRAM}
 @defunx mbfl_program_exec @var{PROGRAM} @var{ARG} ...
-Evaluate a command line.  @var{PROGRAM} identifies an executable file:
-it can be the program name, or a relative or absolute pathname.  The
-optional @var{ARG} values are command line arguments that are handed to
-the program unchanged.
+Evaluate a command line.  @var{PROGRAM} identifies an executable file: it can be the program name,
+or a relative or absolute pathname.  The optional @var{ARG} values are command line arguments that
+are handed to the program unchanged.
 
-If usage of @command{sudo} was requested, the command is executed with
-it; then the @command{sudo} request is reset.  This means that this
-function ``consumes'' a @command{sudo} request.
+If usage of @command{sudo} was requested, the command is executed with it; then the @command{sudo}
+request is reset.  This means that this function ``consumes'' a @command{sudo} request.
 
 See below for the redirection of the standard error channel.
 
-If the function @func{mbfl_option_test} returns true: instead of
-evaluation, the command line is sent to stderr.
+If the function @func{mbfl_option_test} returns true: instead of evaluation, the command line is
+sent to stderr.
 
-If the function @func{mbfl_option_show_program} returns true: the
-command line is sent to stderr, then it is executed.
+If the function @func{mbfl_option_show_program} returns true: the command line is sent to stderr,
+then it is executed.
 @end defun
+
+
+@defun mbfl_program_replace @var{PROGRAM}
+@defunx mbfl_program_replace @var{PROGRAM} @var{OPT} @dots{}
+Like @func{mbfl_program_exec}, but execute the program through the Bash command @code{exec}, so
+replacing the current process without creating a new one.
+@end defun
+
+@c page
+@node program executing bg
+@subsection Executing programs in background
 
 
 @defun mbfl_program_execbg @var{INCHAN} @var{OUCHAN} @var{PROGRAM}
 @defunx mbfl_program_execbg @var{INCHAN} @var{OUCHAN} @var{PROGRAM} @var{ARG} ...
-Does all the same things of @func{mbfl_program_exec}, running the given
-command line as:
+Does all the same things of @func{mbfl_program_exec}, running the given command line as:
 
 @example
 @var{PROGRAM} @var{ARG} ... <&@var{INCHAN} >&@var{OUCHAN} &
 @end example
 
 @noindent
-additionally: set the global variable @code{mbfl_program_BGPID} to the
-process ID of the background process; that is: @code{mbfl_program_BGPID}
-is the value of @code{$!} right after the process execution.
+additionally: set the global variable @code{mbfl_program_BGPID} to the process ID of the background
+process; that is: @code{mbfl_program_BGPID} is the value of @code{$!} right after the process
+execution.
 
 Using this function is different from calling:
 
@@ -4502,8 +4527,7 @@ mbfl_program_exec ls <&@var{INCHAN} >&@var{OUCHAN} &
 @end example
 
 @noindent
-because doing so puts in the background the function call (in a subshell)
-and then runs the program.
+because doing so puts in the background the function call (in a subshell) and then runs the program.
 
 Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN} and @var{OUCHAN}
 arguments.  Also we can always use the default file descriptors, for example:
@@ -4528,23 +4552,18 @@ If the redirection of @stderr{} to @stdout{} is requested with
 @end defun
 
 
-@defun mbfl_program_replace @var{PROGRAM}
-@defunx mbfl_program_replace @var{PROGRAM} @var{OPT} @dots{}
-Like @func{mbfl_program_exec}, but execute the program through the Bash
-command @code{exec}, so replacing the current process without creating a
-new one.
-@end defun
-
-
 @defvar mbfl_program_BGPID
-Used by @func{mbfl_program_execbg} to store the process id of the
-program executed in background.
+Used by @func{mbfl_program_execbg} to store the process id of the program executed in background.
 @end defvar
+
+@c page
+@node program executing sudo
+@subsection Executing programs with another's profile privileges
 
 
 @defun mbfl_program_enable_sudo
-Declare the intention to use @command{sudo} and other commands required
-to use it.  The declared programs are: @command{sudo}, @command{whoami}.
+Declare the intention to use @command{sudo} and other commands required to use it.  The declared
+programs are: @command{sudo}, @command{whoami}.
 
 This function does @strong{not} use @func{mbfl_declare_program}.
 @end defun
@@ -4599,36 +4618,61 @@ Clean the options previously set by
 @func{mbfl_program_declare_sudo_options}.
 @end defun
 
-@c ------------------------------------------------------------
+@c page
+@node program executing bash
+@subsection Executing a @command{bash} process
 
-@subsubheading Executing a subshell
+
+In the following functions: the file system pathname of @command{bash} is preselected and
+hard--coded in the library at package--configuration time; @ref{mbfl_PROGRAM_BASH} for details.
 
 
-@defun mbfl_program_bash @var{OPT} @dots{}
-Execute @command{bash} with the @var{ARG} arguments appended.  The
-@command{bash} pathname is registered in the library at start up, from
-the built in variable @code{BASH}.
+@defun mbfl_program_bash @var{ARG} @dots{}
+Execute the program @command{bash} with the @var{ARG} arguments appended.
 @end defun
 
 
-@defun mbfl_program_bash_command @var{COMMAND}
-Execute @var{COMMAND} in a @command{bash} subprocess, using the
-@code{-c} switch.  The @command{bash} pathname is registered in the
-library at start up, from the built in variable @code{BASH}.
+@defun mbfl_program_bash_command @var{COMMAND} @var{OPT} @dots{}
+Execute @var{COMMAND} in a @command{bash} subprocess, using the @code{-c} switch.  If given, the
+optional @var{OPT} arguments are placed on the command line of @command{bash} in options position
+(before the @code{-c} option).
 @end defun
 
-@c ------------------------------------------------------------
+@c ------------------------------------------------------------------------
 
-@subsubheading Redirecting the standard error channel
+@subsubheading Background execution
 
-There are programs that output useful informations on their stderr
-channel (example: the @command{at} command).
+
+Notice that if we want to execute @command{bash} in background and access its PID with
+@code{mbfl_program_BGPID} we have to use a command like the following (we need the option
+@option{-i} to activate job control):
+
+@example
+local THE_PID
+
+mbfl_program_execbg 0 1 "$mbfl_PROGRAM_BASH" '--norc' '--noprofile' '-i' '-c' 'suspend'
+THE_PID=$mbfl_program_BGPID
+
+mbfl_process_kill -SIGCONT $THE_PID
+mbfl_process_wait $THE_PID
+@end example
+
+Attempting to use @func{mbfl_program_bash} or @func{mbfl_program_bash_command}, by putting them in
+the background with @code{&}, will not work: it is impossible to determine the executed
+@command{bash} process' PID from the parent shell process.
+
+@c page
+@node program executing stderr
+@subsection Redirecting the standard error channel
+
+
+There are programs that output useful informations on their stderr channel (example: the
+@command{at} command).
 
 
 @defun mbfl_program_redirect_stderr_to_stdout
-Just for the next invocation to @func{mbfl_program_exec} redirect
-stderr to stdout, that is: use the @code{2>&1} redirection for the
-executed program.
+Just for the next invocation to @func{mbfl_program_exec} redirect stderr to stdout, that is: use the
+@code{2>&1} redirection for the executed program.
 @end defun
 
 
@@ -4642,9 +4686,8 @@ echo ls | \
 @end example
 
 @noindent
-redirects also the ``show program'' output (@ref{getopts options} for
-the @option{--show-program} option explanation and see the above
-description of @func{mbfl_program_exec}).  Instead By using:
+redirects also the ``show program'' output (@ref{getopts options} for the @option{--show-program}
+option explanation and see the above description of @func{mbfl_program_exec}).  Instead By using:
 
 @example
 mbfl_program_redirect_stderr_to_stdout
@@ -4654,9 +4697,8 @@ echo ls | \
 @end example
 
 @noindent
-the ``show program'' output goes to stderr and the stderr output of the
-@command{at} command is, internally, redirected to the stdout of
-@func{mbfl_program_exec}.
+the ``show program'' output goes to stderr and the stderr output of the @command{at} command is,
+internally, redirected to the stdout of @func{mbfl_program_exec}.
 
 @c page
 @node program declaring
@@ -4793,6 +4835,7 @@ The following global variables are available to access those file system pathnam
 @cindex Command @command{bash}
 @cindex External command @command{bash}
 @cindex @command{bash}, external command
+@anchor{mbfl_PROGRAM_BASH}
 @defvar mbfl_PROGRAM_BASH
 The preselected file system pathname of the program @command{bash}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-bash}; it
@@ -4806,6 +4849,7 @@ defaults to @file{/bin/bash}.
 @cindex Command @command{chmod}
 @cindex External command @command{chmod}
 @cindex @command{chmod}, external command
+@anchor{mbfl_PROGRAM_CHMOD}
 @defvar mbfl_PROGRAM_CHMOD
 The preselected file system pathname of the program @command{chmod}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-chmod}; it
@@ -4819,6 +4863,7 @@ defaults to @file{/bin/chmod}.
 @cindex Command @command{chown}
 @cindex External command @command{chown}
 @cindex @command{chown}, external command
+@anchor{mbfl_PROGRAM_CHOWN}
 @defvar mbfl_PROGRAM_CHOWN
 The preselected file system pathname of the program @command{chown}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-chown}; it
@@ -4832,6 +4877,7 @@ defaults to @file{/bin/chown}.
 @cindex Command @command{cp}
 @cindex External command @command{cp}
 @cindex @command{cp}, external command
+@anchor{mbfl_PROGRAM_CP}
 @defvar mbfl_PROGRAM_CP
 The preselected file system pathname of the program @command{cp}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-cp}; it
@@ -4845,6 +4891,7 @@ defaults to @file{/bin/cp}.
 @cindex Command @command{id}
 @cindex External command @command{id}
 @cindex @command{id}, external command
+@anchor{mbfl_PROGRAM_ID}
 @defvar mbfl_PROGRAM_ID
 The preselected file system pathname of the program @command{id}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-id}; it
@@ -4858,6 +4905,7 @@ defaults to @file{/bin/id}.
 @cindex Command @command{ln}
 @cindex External command @command{ln}
 @cindex @command{ln}, external command
+@anchor{mbfl_PROGRAM_LN}
 @defvar mbfl_PROGRAM_LN
 The preselected file system pathname of the program @command{ln}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-ln}; it
@@ -4871,6 +4919,7 @@ defaults to @file{/bin/ln}.
 @cindex Command @command{ls}
 @cindex External command @command{ls}
 @cindex @command{ls}, external command
+@anchor{mbfl_PROGRAM_LS}
 @defvar mbfl_PROGRAM_LS
 The preselected file system pathname of the program @command{ls}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-ls}; it
@@ -4884,6 +4933,7 @@ defaults to @file{/bin/ls}.
 @cindex Command @command{mkdir}
 @cindex External command @command{mkdir}
 @cindex @command{mkdir}, external command
+@anchor{mbfl_PROGRAM_MKDIR}
 @defvar mbfl_PROGRAM_MKDIR
 The preselected file system pathname of the program @command{mkdir}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-mkdir}; it
@@ -4897,6 +4947,7 @@ defaults to @file{/bin/mkdir}.
 @cindex Command @command{mv}
 @cindex External command @command{mv}
 @cindex @command{mv}, external command
+@anchor{mbfl_PROGRAM_MV}
 @defvar mbfl_PROGRAM_MV
 The preselected file system pathname of the program @command{mv}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-mv}; it
@@ -4910,6 +4961,7 @@ defaults to @file{/bin/mv}.
 @cindex Command @command{readlink}
 @cindex External command @command{readlink}
 @cindex @command{readlink}, external command
+@anchor{mbfl_PROGRAM_READLINK}
 @defvar mbfl_PROGRAM_READLINK
 The preselected file system pathname of the program @command{readlink}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-readlink};
@@ -4923,6 +4975,7 @@ it defaults to @file{/bin/readlink}.
 @cindex Command @command{realpath}
 @cindex External command @command{realpath}
 @cindex @command{realpath}, external command
+@anchor{mbfl_PROGRAM_REALPATH}
 @defvar mbfl_PROGRAM_REALPATH
 The preselected file system pathname of the program @command{realpath}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-realpath};
@@ -4936,6 +4989,7 @@ it defaults to @file{/bin/realpath}.
 @cindex Command @command{rm}
 @cindex External command @command{rm}
 @cindex @command{rm}, external command
+@anchor{mbfl_PROGRAM_RM}
 @defvar mbfl_PROGRAM_RM
 The preselected file system pathname of the program @command{rm}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-rm}; it
@@ -4949,6 +5003,7 @@ defaults to @file{/bin/rm}.
 @cindex Command @command{rmdir}
 @cindex External command @command{rmdir}
 @cindex @command{rmdir}, external command
+@anchor{mbfl_PROGRAM_RMDIR}
 @defvar mbfl_PROGRAM_RMDIR
 The preselected file system pathname of the program @command{rmdir}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-rmdir}; it
@@ -4962,6 +5017,7 @@ defaults to @file{/bin/rmdir}.
 @cindex Command @command{stat}
 @cindex External command @command{stat}
 @cindex @command{stat}, external command
+@anchor{mbfl_PROGRAM_STAT}
 @defvar mbfl_PROGRAM_STAT
 The preselected file system pathname of the program @command{stat}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-stat}; it
@@ -4975,6 +5031,7 @@ defaults to @file{/bin/stat}.
 @cindex Command @command{sudo}
 @cindex External command @command{sudo}
 @cindex @command{sudo}, external command
+@anchor{mbfl_PROGRAM_SUDO}
 @defvar mbfl_PROGRAM_SUDO
 The preselected file system pathname of the program @command{sudo}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-sudo}; it
@@ -4988,6 +5045,7 @@ defaults to @file{/usr/bin/sudo}.
 @cindex Command @command{whoami}
 @cindex External command @command{whoami}
 @cindex @command{whoami}, external command
+@anchor{mbfl_PROGRAM_WHOAMI}
 @defvar mbfl_PROGRAM_WHOAMI
 The preselected file system pathname of the program @command{whoami}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-whoami}; it
