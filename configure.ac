@@ -226,6 +226,17 @@ dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
 dnl variable argument.
 AC_PATH_PROG([MBFL_PROGRAM_LN],[$MBFL_PROGRAM_LN],[/bin/false])
 
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([sleep],
+  AS_HELP_STRING([--with-sleep],[select a pathname for the executable sleep]),
+  [MBFL_PROGRAM_SLEEP=$withval],
+  [MBFL_PROGRAM_SLEEP=/bin/sleep])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_SLEEP],[$MBFL_PROGRAM_SLEEP],[/bin/false])
+
 
 #### sendmail interface
 

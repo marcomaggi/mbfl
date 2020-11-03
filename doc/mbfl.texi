@@ -5076,6 +5076,20 @@ The preselected file system pathname of the program @command{whoami}; it is sele
 defaults to @file{/bin/whoami}.
 @end defvar
 
+
+@cindex Configuration option @option{--with-sleep}
+@cindex Option @option{--with-sleep}
+@cindex @option{--with-sleep}, configuration option
+@cindex Command @command{sleep}
+@cindex External command @command{sleep}
+@cindex @command{sleep}, external command
+@anchor{mbfl_PROGRAM_SLEEP}
+@defvar mbfl_PROGRAM_SLEEP
+The preselected file system pathname of the program @command{sleep}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-sleep}; it
+defaults to @file{/bin/sleep}.
+@end defvar
+
 @c page
 @node process
 @chapter Job control
@@ -5132,6 +5146,12 @@ Execute the builtin @code{fg} using the given optional arguments.
 If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
 the standard error channel describing the operation.  If the predefined option @option{--test} is
 enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
+@end defun
+
+
+@defun mbfl_process_sleep @var{ARG} @dots{}
+Execute the command @command{sleep} using the given optional arguments.  @ref{mbfl_PROGRAM_SLEEP}
+for details on the file system pathname of the program @command{sleep}.
 @end defun
 
 @c page

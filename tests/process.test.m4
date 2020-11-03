@@ -35,16 +35,6 @@
 source setup.sh
 
 #page
-#### helpers
-
-function process-sleep () {
-    local -i i
-    for ((i=0; i < 1000; ++i))
-    do :
-    done
-}
-
-#page
 #### disowning a process
 
 function process-disown-1.1 () {
@@ -60,7 +50,7 @@ function process-disown-1.1 () {
     mbfl_program_execbg 0 1 "$mbfl_PROGRAM_BASH" '--norc' '--noprofile' '-i' '-c' 'echo "subshell pid: $$" >&2; suspend; exit 0 &>/dev/null;'
     THE_PID=$mbfl_program_BGPID
 
-    process-sleep
+    mbfl_process_sleep 1
     mbfl_process_jobs
 
     mbfl_process_disown $THE_PID
