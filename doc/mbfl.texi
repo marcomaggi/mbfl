@@ -2698,18 +2698,30 @@ return false.
 
 @strong{NOTE} When @var{FILE} is a FIFO: we need to call @func{mbfl_fd_open_input_output}, not this
 function.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: the file descriptor @strong{is still opened}.  @ref{getopts, Predefined options}.
 @end defun
 
 
 @defun mbfl_fd_open_output @var{FD} @var{FILE}
 Open the file descriptor @var{FD} to write to @var{FILE}.  When successful: return true; otherwise
 return false.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: the file descriptor @strong{is still opened}.  @ref{getopts, Predefined options}.
 @end defun
 
 
 @defun mbfl_fd_open_input_output @var{FD} @var{FILE}
 Open the file descriptor @var{FD} to read from and write to @var{FILE}.  When successful: return
 true; otherwise return false.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: the file descriptor @strong{is still opened}.  @ref{getopts, Predefined options}.
 @end defun
 
 
@@ -2799,6 +2811,10 @@ mbfl_location_leave
 
 @defun mbfl_fd_close @var{FD}
 Close the file descriptor @var{FD}.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: the file descriptor @strong{is still closed}.  @ref{getopts, Predefined options}.
 @end defun
 
 @c page
@@ -2809,6 +2825,10 @@ Close the file descriptor @var{FD}.
 @defun mbfl_fd_dup_input @var{SRCFD} @var{DSTFD}
 @defunx mbfl_fd_dup_output @var{SRCFD} @var{DSTFD}
 Duplicate the source file descriptor @var{SRCFD} to the destination file descriptor @var{DSTFD}.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: the file descriptor @strong{is still duplicated}.  @ref{getopts, Predefined options}.
 @end defun
 
 
@@ -2874,6 +2894,10 @@ echo $LINE1 $LINE2 $LINE3
 @defun mbfl_fd_move @var{SRCFD} @var{DSTFD}
 Move the source file descriptor @var{SRCFD} to the destination file descriptor @var{DSTFD}.  The
 source file descriptor is closed.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: the file descriptor @strong{is still moved}.  @ref{getopts, Predefined options}.
 @end defun
 
 
