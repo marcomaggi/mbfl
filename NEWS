@@ -229,6 +229,8 @@ changes!
     mbfl_PROGRAM_SUDO
     mbfl_PROGRAM_WHOAMI
 
+* Started module "process" to handle job control.
+
 
 Notes for revision 2.2.0
 ------------------------

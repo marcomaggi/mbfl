@@ -58,6 +58,7 @@ EXTRA_DIST	+= \
 	src/modules/locations.sh.m4		\
 	src/modules/main.sh.m4			\
 	src/modules/message.sh.m4		\
+	src/modules/process.sh.m4		\
 	src/modules/program.sh.m4		\
 	src/modules/semver.sh.m4		\
 	src/modules/shell.sh.m4			\
@@ -95,6 +96,7 @@ MBFL_MODULES		=			\
 	src/modules/locations.sh		\
 	src/modules/main.sh			\
 	src/modules/message.sh			\
+	src/modules/process.sh			\
 	src/modules/program.sh			\
 	src/modules/semver.sh			\
 	src/modules/shell.sh			\
@@ -246,6 +248,7 @@ endif
 
 EXTRA_DIST	+=			\
 	tests/getopts.test.m4		\
+	tests/process.test.m4		\
 	tests/program.test.m4		\
 	tests/semver.test.m4		\
 	tests/strings.test.m4		\
@@ -275,6 +278,7 @@ CHECK_BUILT_EXAMPLES	=		\
 
 CHECK_BUILT_TESTS	=		\
 	tests/getopts.test		\
+	tests/process.test		\
 	tests/program.test		\
 	tests/semver.test		\
 	tests/strings.test		\
@@ -325,6 +329,7 @@ TESTS			= \
 	tests/getopts.test		\
 	tests/locations.test		\
 	tests/message.test		\
+	tests/process.test		\
 	tests/program.test		\
 	tests/script.test		\
 	tests/signal.test		\

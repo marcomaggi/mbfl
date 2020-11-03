@@ -131,6 +131,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * getopts::                     Parsing command line options.
 * message::                     Printing messages to the console.
 * program::                     Using external programs.
+* process::                     Job control.
 * interfaces::                  Interfaces to external programs.
 * signal::                      Catching signals.
 * strings::                     Manipulating strings.
@@ -4979,6 +4980,64 @@ The preselected file system pathname of the program @command{whoami}; it is sele
 @command{configure} script and customisable with its command line option @option{--with-whoami}; it
 defaults to @file{/bin/whoami}.
 @end defvar
+
+@c page
+@node process
+@chapter Job control
+
+
+@defun mbfl_program_disown @var{ARG} @dots{}
+Execute the builtin @code{disown} using the given optional arguments.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
+@end defun
+
+
+@defun mbfl_program_wait @var{ARG} @dots{}
+Execute the builtin @code{wait} using the given optional arguments.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
+@end defun
+
+
+@defun mbfl_program_kill @var{ARG} @dots{}
+Execute the builtin @code{kill} using the given optional arguments.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
+@end defun
+
+
+@defun mbfl_program_suspend @var{ARG} @dots{}
+Execute the builtin @code{suspend} using the given optional arguments.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
+@end defun
+
+
+@defun mbfl_program_bg @var{ARG} @dots{}
+Execute the builtin @code{bg} using the given optional arguments.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
+@end defun
+
+
+@defun mbfl_program_fg @var{ARG} @dots{}
+Execute the builtin @code{fg} using the given optional arguments.
+
+If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
+the standard error channel describing the operation.  If the predefined option @option{--test} is
+enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
+@end defun
 
 @c page
 @node interfaces
