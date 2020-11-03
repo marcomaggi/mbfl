@@ -4999,7 +4999,7 @@ defaults to @file{/bin/whoami}.
 @chapter Job control
 
 
-@defun mbfl_program_disown @var{ARG} @dots{}
+@defun mbfl_process_disown @var{ARG} @dots{}
 Execute the builtin @code{disown} using the given optional arguments.
 
 If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
@@ -5008,7 +5008,7 @@ enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
 @end defun
 
 
-@defun mbfl_program_wait @var{ARG} @dots{}
+@defun mbfl_process_wait @var{ARG} @dots{}
 Execute the builtin @code{wait} using the given optional arguments.
 
 If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
@@ -5017,7 +5017,7 @@ enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
 @end defun
 
 
-@defun mbfl_program_kill @var{ARG} @dots{}
+@defun mbfl_process_kill @var{ARG} @dots{}
 Execute the builtin @code{kill} using the given optional arguments.
 
 If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
@@ -5026,7 +5026,7 @@ enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
 @end defun
 
 
-@defun mbfl_program_suspend @var{ARG} @dots{}
+@defun mbfl_process_suspend @var{ARG} @dots{}
 Execute the builtin @code{suspend} using the given optional arguments.
 
 If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
@@ -5035,7 +5035,7 @@ enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
 @end defun
 
 
-@defun mbfl_program_bg @var{ARG} @dots{}
+@defun mbfl_process_bg @var{ARG} @dots{}
 Execute the builtin @code{bg} using the given optional arguments.
 
 If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
@@ -5044,7 +5044,7 @@ enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
 @end defun
 
 
-@defun mbfl_program_fg @var{ARG} @dots{}
+@defun mbfl_process_fg @var{ARG} @dots{}
 Execute the builtin @code{fg} using the given optional arguments.
 
 If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on

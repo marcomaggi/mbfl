@@ -35,18 +35,56 @@
 source setup.sh
 
 #page
+#### helpers
+
+function process-sleep () {
+    local -i i
+    for ((i=0; i < 1000; ++i))
+    do :
+    done
+}
+
+#page
 #### disowning a process
 
 function process-disown-1.1 () {
-    local DISOWN_RV KILL_RV
+    local THE_PID DISOWN_RV KILL_RV
 
+    #mbfl_set_option_test
+    mbfl_set_option_show_program
+
+    # We need  to use "mbfl_program_execbg()" directly  if we want to  access "$mbfl_program_BGPID";
+    # using "mbfl_program_bash_command()"  and putting it  in the background  with "&" will  not set
+    # "mbfl_program_BGPID" correctly.
+    mbfl_program_execbg 0 1 "$mbfl_PROGRAM_BASH" '-c' 'read'
+    THE_PID=$mbfl_program_BGPID
+
+    process-sleep
+
+    mbfl_process_disown $THE_PID
+    DISOWN_RV=$?
+
+    mbfl_process_kill -SIGKILL $THE_PID
+    KILL_RV=$?
+
+    dotest-equal 0 $DISOWN_RV 'disown return status' && dotest-equal 0 $KILL_RV 'kill return status'
+}
+
+function process-disown-1.2 () {
+    local THE_PID DISOWN_RV KILL_RV
+
+    #mbfl_set_option_test
     mbfl_set_option_show_program
 
     mbfl_program_bash_command 'read' &
-    mbfl_process_disown $mbfl_program_BGPID
+    THE_PID=$!
+
+    process-sleep
+
+    mbfl_process_disown $THE_PID
     DISOWN_RV=$?
 
-    mbfl_process_kill -SIGKILL $mbfl_program_BGPID
+    mbfl_process_kill -SIGKILL $THE_PID
     KILL_RV=$?
 
     dotest-equal 0 $DISOWN_RV 'disown return status' && dotest-equal 0 $KILL_RV 'kill return status'
