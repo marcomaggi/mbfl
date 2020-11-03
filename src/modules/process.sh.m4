@@ -116,7 +116,7 @@ function mbfl_process_jobs () {
 
 function mbfl_process_sleep () {
     if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_SLEEP"
-    then mbfl_program_exec "$mbfl_PROGRAM_SLEEP"
+    then mbfl_program_exec "$mbfl_PROGRAM_SLEEP" "$@"
     else return_failure
     fi
 }
