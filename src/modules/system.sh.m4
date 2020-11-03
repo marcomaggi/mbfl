@@ -563,7 +563,7 @@ function mbfl_system_octal_to_symbolic_permissions () {
 #### users informations
 
 function mbfl_system_whoami () {
-    if test -x "$mbfl_PROGRAM_WHOAMI"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_WHOAMI"
     then mbfl_program_exec "$mbfl_PROGRAM_WHOAMI"
     else return_failure
     fi
@@ -579,7 +579,7 @@ function mbfl_system_whoami_var () {
 ### ------------------------------------------------------------------------
 
 function mbfl_system_id () {
-    if test -x "$mbfl_PROGRAM_ID"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_ID"
     then mbfl_program_exec "$mbfl_PROGRAM_ID" "$@"
     else return_failure
     fi
