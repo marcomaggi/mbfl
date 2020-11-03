@@ -4787,6 +4787,19 @@ find -type f -exec "$mbfl_PROGRAM_CHOWN" marco:users '@{@}' ';'
 The following global variables are available to access those file system pathnames.
 
 
+@cindex Configuration option @option{--with-bash}
+@cindex Option @option{--with-bash}
+@cindex @option{--with-bash}, configuration option
+@cindex Command @command{bash}
+@cindex External command @command{bash}
+@cindex @command{bash}, external command
+@defvar mbfl_PROGRAM_BASH
+The preselected file system pathname of the program @command{bash}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-bash}; it
+defaults to @file{/bin/bash}.
+@end defvar
+
+
 @cindex Configuration option @option{--with-chmod}
 @cindex Option @option{--with-chmod}
 @cindex @option{--with-chmod}, configuration option

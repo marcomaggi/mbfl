@@ -174,7 +174,6 @@ function mbfl_program_main_validate_programs () {
 declare mbfl_program_SUDO_USER=nosudo
 declare mbfl_program_SUDO_OPTIONS
 declare mbfl_program_STDERR_TO_STDOUT=false
-declare mbfl_program_BASH=$BASH
 declare mbfl_program_BGPID
 
 # This is an undocumented variable; it is used only for testing.  Setting its value to 'true' causes
@@ -603,10 +602,10 @@ function mbfl_p_program_log_5 () {
 
 function mbfl_program_bash_command () {
     mbfl_mandatory_parameter(COMMAND, 1, command)
-    mbfl_program_exec "$mbfl_program_BASH" -c "$COMMAND"
+    mbfl_program_exec "$mbfl_PROGRAM_BASH" -c "$COMMAND"
 }
 function mbfl_program_bash () {
-    mbfl_program_exec "$mbfl_program_BASH" "$@"
+    mbfl_program_exec "$mbfl_PROGRAM_BASH" "$@"
 }
 
 ### end of file
