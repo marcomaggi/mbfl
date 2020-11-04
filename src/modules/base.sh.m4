@@ -2,7 +2,7 @@
 #
 # Part of: Marco's BASH Functions Library
 # Contents: base functions
-# Date: Wed Oct  6, 2004
+# Date: Oct  6, 2004
 #
 # Abstract
 #
@@ -11,20 +11,17 @@
 # Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
-# This is free software; you  can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  3.0 of the License,  or (at
-# your option) any later version.
+# This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
+# General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
+# License, or (at your option) any later version.
 #
-# This library  is distributed in the  hope that it will  be useful, but
-# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# This library is distributed in the hope that  it will be useful, but WITHOUT ANY WARRANTY; without
+# even the  implied warranty of MERCHANTABILITY  or FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU
 # Lesser General Public License for more details.
 #
-# You  should have  received a  copy of  the GNU  Lesser  General Public
-# License along  with this library; if  not, write to  the Free Software
-# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA.
+# You should have received a copy of the  GNU Lesser General Public License along with this library;
+# if not,  write to  the Free  Software Foundation,  Inc., 59  Temple Place,  Suite 330,  Boston, MA
+# 02111-1307 USA.
 #
 
 #page
@@ -41,9 +38,6 @@ declare -r mbfl_SEMANTIC_VERSION='__SEMANTIC_VERSION__'
 : ${script_USAGE:='<unknown>'}
 : ${script_DESCRIPTION:='<unknown>'}
 : ${script_EXAMPLES:=}
-
-declare mbfl_saved_option_TEST
-declare mbfl_saved_option_SHOW_PROGRAM
 
 #page
 #### miscellaneous functions
@@ -65,44 +59,43 @@ function mbfl_read_maybe_null () {
 #page
 #### global option creation functions
 
-m4_define([[[mbfl_create_option_procedure]]],[[[
-    function mbfl_set_option_$1 ()   { function mbfl_option_$1 () { true;  }; }
-    function mbfl_unset_option_$1 () { function mbfl_option_$1 () { false; }; }
-    mbfl_unset_option_$1
+m4_define([[[MBFL_CREATE_OPTION_PROCEDURES]]],[[[
+function mbfl_set_option_$1 ()   { function mbfl_option_$1 () { true;  }; }
+function mbfl_unset_option_$1 () { function mbfl_option_$1 () { false; }; }
+mbfl_unset_option_$1
+MBFL_CREATE_OPTION_SAVE_AND_RESTORE_PROCEDURES([[[$1]]],m4_translit([[[$1]]],[[[a-z]]],[[[A-Z]]]))
 ]]])
 
-mbfl_create_option_procedure([[[test]]])
-mbfl_create_option_procedure([[[verbose_program]]])
-mbfl_create_option_procedure([[[show_program]]])
-mbfl_create_option_procedure([[[verbose]]])
-mbfl_create_option_procedure([[[debug]]])
-mbfl_create_option_procedure([[[null]]])
-mbfl_create_option_procedure([[[interactive]]])
-mbfl_create_option_procedure([[[encoded_args]]])
+m4_define([[[MBFL_CREATE_OPTION_SAVE_AND_RESTORE_PROCEDURES]]],[[[
+declare mbfl_saved_option_$2
+declare mbfl_saved_option_$2
 
-function mbfl_option_test_save () {
-    if mbfl_option_test
-    then mbfl_saved_option_TEST=true
+function mbfl_option_$1_save () {
+    local LAST_EXIT_STATUS=$?
+    if mbfl_option_$1
+    then mbfl_saved_option_$2=true
     fi
-    mbfl_unset_option_test
+    mbfl_unset_option_$1
+    return $LAST_EXIT_STATUS
 }
-function mbfl_option_test_restore () {
-    if mbfl_string_equal "$mbfl_saved_option_TEST" 'true'
-    then mbfl_set_option_test
+function mbfl_option_$1_restore () {
+    local LAST_EXIT_STATUS=$?
+    if mbfl_string_equal "$mbfl_saved_option_$2" 'true'
+    then mbfl_set_option_$1
     fi
+    return $LAST_EXIT_STATUS
 }
+]]])
 
-function mbfl_option_show_program_save () {
-    if mbfl_option_show_program
-    then mbfl_saved_option_SHOW_PROGRAM=true
-    fi
-    mbfl_unset_option_show_program
-}
-function mbfl_option_show_program_restore () {
-    if mbfl_string_equal "$mbfl_saved_option_SHOW_PROGRAM" 'true'
-    then mbfl_set_option_show_program
-    fi
-}
+MBFL_CREATE_OPTION_PROCEDURES([[[debug]]])
+MBFL_CREATE_OPTION_PROCEDURES([[[encoded_args]]])
+MBFL_CREATE_OPTION_PROCEDURES([[[force]]])
+MBFL_CREATE_OPTION_PROCEDURES([[[interactive]]])
+MBFL_CREATE_OPTION_PROCEDURES([[[null]]])
+MBFL_CREATE_OPTION_PROCEDURES([[[show_program]]])
+MBFL_CREATE_OPTION_PROCEDURES([[[test]]])
+MBFL_CREATE_OPTION_PROCEDURES([[[verbose]]])
+MBFL_CREATE_OPTION_PROCEDURES([[[verbose_program]]])
 
 ### end of file
 # Local Variables:

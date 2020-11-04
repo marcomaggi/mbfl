@@ -3620,28 +3620,26 @@ option with argument (@code{witharg} as argument to
 @section Predefined options
 
 
-A set of predefined options is recognised by the library and not handed
-to the user defined functions.
+A set of predefined options is recognised by the library and not handed to the user defined
+functions.
 
 @table @option
 @item --tmpdir=DIR
 @cindex @option{--tmpdir}, predefined option
 @cindex Predefined option @option{--tmpdir}
-Selects a directory for temporary files.  The default value is the one in
-the environment variable @env{TMPDIR}, or @file{/tmp/$USER} if that
-variable is not set.  The value is stored in the variable
+Selects a directory for temporary files.  The default value is the one in the environment variable
+@env{TMPDIR}, or @file{/tmp/$USER} if that variable is not set.  The value is stored in the variable
 @code{mbfl_option_TMPDIR}.
 
 @item --encoded-args
 @cindex @option{--encoded-args}, predefined option
 @cindex Predefined option @option{--encoded-args}
-Signals to the library that the non--option arguments and the option
-values are encoded in hexadecimal strings.  Encoding is useful to avoid
-quoting problems when invoking a script from another one.
+Signals to the library that the non--option arguments and the option values are encoded in
+hexadecimal strings.  Encoding is useful to avoid quoting problems when invoking a script from
+another one.
 
-If this option is used: the values are decoded by
-@func{mbfl_getopts_parse} before storing them in the @code{ARGV}
-array and before being stored in the option's specific global variables.
+If this option is used: the values are decoded by @func{mbfl_getopts_parse} before storing them in
+the @code{ARGV} array and before being stored in the option's specific global variables.
 
 @item -v
 @itemx --verbose
@@ -3649,23 +3647,21 @@ array and before being stored in the option's specific global variables.
 @cindex Predefined option @option{-v}
 @cindex @option{--verbose}, predefined option
 @cindex Predefined option @option{--verbose}
-Turns on verbose messages.  If this option is used: The function
-@func{mbfl_option_verbose} returns true.  @ref{message, Printing
-messages to the console}.
+Turns on verbose messages.  If this option is used: The function @func{mbfl_option_verbose} returns
+true.  @ref{message, Printing messages to the console}.
 
 @item --silent
 @cindex @option{--silent}, predefined option
 @cindex Predefined option @option{--silent}
-Turns off verbose messages.  If this option is used: The function
-@func{mbfl_option_verbose} returns false.
+Turns off verbose messages.  If this option is used: The function @func{mbfl_option_verbose} returns
+false.
 
 @item --verbose-program
 @cindex @option{--verbose-program}, predefined option
 @cindex Predefined option @option{--verbose-program}
-If used: The @option{--verbose} option is added to the command line of
-external programs that support it.  The function
-@func{mbfl_option_verbose_program} returns true or false depending on
-the state of this option.
+If used: The @option{--verbose} option is added to the command line of external programs that
+support it.  The function @func{mbfl_option_verbose_program} returns true or false depending on the
+state of this option.
 
 @item --show-program
 @itemx --show-programs
@@ -3678,21 +3674,19 @@ Prints the command line of executed external programs.
 @item --debug
 @cindex @option{--debug}, predefined option
 @cindex Predefined option @option{--debug}
-Turns on debugging messages.  Automatically turns on verbose messages
-and program showing.  @ref{message, Printing messages to the console}.
+Turns on debugging messages.  Automatically turns on verbose messages and program showing.
+@ref{message, Printing messages to the console}.
 
 @item --test
 @cindex @option{--test}, predefined option
 @cindex Predefined option @option{--test}
-Turns on test execution.  @ref{program testing, Testing a script and
-external programs}.
+Turns on test execution.  @ref{program testing, Testing a script and external programs}.
 
 @item --null
 @cindex @option{--null}, predefined option
 @cindex Predefined option @option{--null}
-Signals to the script that it has to use the null character to separate
-values, instead of the common newline.  The global variable
-@code{mbfl_option_NULL} is set to @code{yes}.
+Signals to the script that it has to use the null character to separate values, instead of the
+common newline.  The global variable @code{mbfl_option_NULL} is set to @code{yes}.
 
 @item -f
 @itemx --force
@@ -3700,9 +3694,12 @@ values, instead of the common newline.  The global variable
 @cindex Predefined option @option{-f}
 @cindex @option{--force}, predefined option
 @cindex Predefined option @option{--force}
-Signals to the script that it does @strong{not} have to query the user
-before doing dangerous operations, like overwriting files.  The global
-variable @code{mbfl_option_INTERACTIVE} is set to @code{no}.
+Signals to the script that it does @strong{not} have to query the user before doing dangerous
+operations, like overwriting files.  The global variable @code{mbfl_option_INTERACTIVE} is set to
+@code{no}.
+
+An use of the option @option{--force} on the command line overrides all the previous uses of the
+option @option{--interactive}.
 
 @item -i
 @itemx --interactive
@@ -3710,22 +3707,24 @@ variable @code{mbfl_option_INTERACTIVE} is set to @code{no}.
 @cindex Predefined option @option{-i}
 @cindex @option{--interactive}, predefined option
 @cindex Predefined option @option{--interactive}
-Signals to the script that it @strong{does} have to query the user
-before doing dangerous operations, like overwriting files.  The global
-variable @code{mbfl_option_INTERACTIVE} is set to @code{yes}.
+Signals to the script that it @strong{does} have to query the user before doing dangerous
+operations, like overwriting files.  The global variable @code{mbfl_option_INTERACTIVE} is set to
+@code{yes}.
+
+An use of the option @option{--interactive} on the command line overrides all the previous uses of
+the option @option{--force}.
 
 @item --validate-programs
 @cindex @option{--validate-programs}, predefined option
 @cindex Predefined option @option{--validate-programs}
-Validates the existence of all the programs needed by the script; then
-exits.  The exit code is zero if all the programs were found, one
-otherwise.
+Validates the existence of all the programs needed by the script; then exits.  The exit code is zero
+if all the programs were found, one otherwise.
 
 @item --list-exit-codes
 @cindex @option{--list-exit-codes}, predefined option
 @cindex Predefined option @option{--list-exit-codes}
-Prints a list of numerical exit codes and their associated names, as
-declared in the script.  @ref{main exit, Declaring exit codes}.
+Prints a list of numerical exit codes and their associated names, as declared in the script.
+@ref{main exit, Declaring exit codes}.
 
 @item --print-exit-code=NAME
 @cindex @option{--print-exit-code}, predefined option
@@ -3740,25 +3739,23 @@ Prints the list of names associated to the numerical exit @code{CODE}.
 @item --version
 @cindex @option{--version}, predefined option
 @cindex Predefined option @option{--version}
-Prints to the standard output of the script the contents of the global
-variable @code{mbfl_message_VERSION}, then exits with code zero.  The
-variable makes use of the service variables.  @ref{service variables,
-Required user defined variables}.
+Prints to the standard output of the script the contents of the global variable
+@code{mbfl_message_VERSION}, then exits with code zero.  The variable makes use of the service
+variables.  @ref{service variables, Required user defined variables}.
 
 @item --version-only
 @cindex @option{--version-only}, predefined option
 @cindex Predefined option @option{--version-only}
-Prints to the standard output of the script the contents of the global
-variable @code{script_VERSION}, then exits with code zero.  @ref{service
-variables, Required user defined variables}.
+Prints to the standard output of the script the contents of the global variable
+@code{script_VERSION}, then exits with code zero.  @ref{service variables, Required user defined
+variables}.
 
 @item --license
 @cindex @option{--license}, predefined option
 @cindex Predefined option @option{--license}
-Prints to the standard output of the script the contents of one of the
-global variables @code{mbfl_message_LICENSE_*}, then exits with code
-zero.  The variable makes use of the service variables.  @ref{service
-variables, Required user defined variables}.
+Prints to the standard output of the script the contents of one of the global variables
+@code{mbfl_message_LICENSE_*}, then exits with code zero.  The variable makes use of the service
+variables.  @ref{service variables, Required user defined variables}.
 
 @item -h
 @itemx --help
@@ -3769,13 +3766,11 @@ variables, Required user defined variables}.
 @cindex Predefined option @option{--help}
 @cindex @option{--usage}, predefined option
 @cindex Predefined option @option{--usage}
-Prints to the standard output of the script: the contents of the global
-variable @code{script_USAGE}; a newline; the string @code{options:}; a
-newline; an automatically generated string describing the options
-declared with @func{mbfl_declare_option}; a string describing the
-@mbfl{} default options; the contents of the global variable
-@code{script_EXAMPLES}.  Then exits with code zero.  @ref{service
-variables, Required user defined variables}.
+Prints to the standard output of the script: the contents of the global variable
+@code{script_USAGE}; a newline; the string @code{options:}; a newline; an automatically generated
+string describing the options declared with @func{mbfl_declare_option}; a string describing the
+@mbfl{} default options; the contents of the global variable @code{script_EXAMPLES}.  Then exits
+with code zero.  @ref{service variables, Required user defined variables}.
 
 @item -H
 @itemx --brief-help
@@ -3786,127 +3781,82 @@ variables, Required user defined variables}.
 @cindex Predefined option @option{--brief-help}
 @cindex @option{--brief-usage}, predefined option
 @cindex Predefined option @option{--brief-usage}
-Prints to the standard output of the script: the contents of the global
-variable @code{script_USAGE}; a newline; the string @code{options:}; a
-newline; an automatically generated string describing the options
-declared with @func{mbfl_declare_option}.  Then exits with code zero.
+Prints to the standard output of the script: the contents of the global variable
+@code{script_USAGE}; a newline; the string @code{options:}; a newline; an automatically generated
+string describing the options declared with @func{mbfl_declare_option}.  Then exits with code zero.
 
-The difference with @option{--help} is that predefined options and usage
-examples are not displayed.
+The difference with @option{--help} is that predefined options and usage examples are not displayed.
 
 @item --print-options
 @cindex @option{--print-options}, predefined option
 @cindex Predefined option @option{--print-options}
-Print all the long options with
-@func{mbfl_getopts_print_long_switches}, then exit the script with code
-zero.
+Print all the long options with @func{mbfl_getopts_print_long_switches}, then exit the script with
+code zero.
 @end table
 
 
-The following functions may be used to set, unset and query the state of
-the predefined options.
+The following functions may be used to set, unset and query the state of the predefined options.
 
+@c ------------------------------------------------------------------------
 
-@defun mbfl_option_encoded_args
-@defunx mbfl_set_option_encoded_args
-@defunx mbfl_unset_option_encoded_args
+@macro MbflSetUnsetOptionFunctions{OPTNAME, OPTARG, TAILDOC}
+@anchor{mbfl_option_\OPTNAME\}
+@anchor{mbfl_set_option_\OPTNAME\}
+@anchor{mbfl_unset_option_\OPTNAME\}
+@defun mbfl_option_\OPTNAME\
+@defunx mbfl_set_option_\OPTNAME\
+@defunx mbfl_unset_option_\OPTNAME\
 Query/set/unset the encoded arguments option.
 
-@func{mbfl_option_encoded_args} returns true if the option
-@option{--encoded-args} was used on the command line.
+@func{mbfl_option_\OPTNAME\} returns true if the option @option{--\OPTARG\} was used on the command
+line.\TAILDOC\
 @end defun
 
+@end macro
 
-@defun mbfl_option_verbose
-@defunx mbfl_set_option_verbose
-@defunx mbfl_unset_option_verbose
-Query/set/unset the verbose messages option.
+@MbflSetUnsetOptionFunctions{debug, debug}
+@MbflSetUnsetOptionFunctions{encoded_args, encoded-args}
+@MbflSetUnsetOptionFunctions{force, force}
+@MbflSetUnsetOptionFunctions{interactive, interactive}
+@MbflSetUnsetOptionFunctions{null, null}
+@MbflSetUnsetOptionFunctions{show_program, show-program,
 
-@func{mbfl_option_verbose} returns true if the option
-@option{--verbose} was used on the command line after all the
-occurrences of @option{--silent}; it returns false if the option
-@option{--silent} was used on the command line after all the occurrences
-of @option{--verbose}.
-@end defun
+Print the command line of executed external program.  This does not disable program
+execution@comma{} it just prints the command line before executing it.}
+@MbflSetUnsetOptionFunctions{test, test}
+@MbflSetUnsetOptionFunctions{verbose, verbose}
+@MbflSetUnsetOptionFunctions{verbose_program, verbose-program,
 
+This option@comma{} of course@comma{} is supported only for programs that are known by @mbfl{} (like
+@command{rm}): if a program is executed with @func{mbfl_program_exec}@comma{} it is responsibility
+of the caller to use the option.}
 
-@defun mbfl_option_verbose_program
-@defunx mbfl_set_option_verbose_program
-@defunx mbfl_unset_option_verbose_program
-Query/set/unset verbose execution for external programs.
-
-This option, of course, is supported only for programs that are known by
-@mbfl{} (like @command{rm}): if a program is executed with
-@func{mbfl_program_exec}, it is responsibility of the caller to use
-the option.
-@end defun
-
-
-@defun mbfl_option_show_program
-@defunx mbfl_set_option_show_program
-@defunx mbfl_unset_option_show_program
-Print the command line of executed external program.  This does not
-disable program execution, it just prints the command line before
-executing it.
-@end defun
-
-
-@defun mbfl_option_test
-@defunx mbfl_set_option_test
-@defunx mbfl_unset_option_test
-Query/set/unset the test execution option.
-@end defun
-
-
-@defun mbfl_option_debug
-@defunx mbfl_set_option_debug
-@defunx mbfl_unset_option_debug
-Query/set/unset the debug messages option.
-@end defun
-
-
-@defun mbfl_option_null
-@defunx mbfl_set_option_null
-@defunx mbfl_unset_option_null
-Query/set/unset the null list separator option.
-@end defun
-
-
-@defun mbfl_option_interactive
-@defunx mbfl_set_option_interactive
-@defunx mbfl_unset_option_interactive
-Query/set/unset the interactive execution option.
-
-@func{mbfl_option_interactive} returns true if the option
-@option{--interactive} was used on the command line after all the
-occurrences of @option{--force}; it returns false if the option
-@option{--force} was used on the command line after all the occurrences
-of @option{--interactive}.
-@end defun
-
+@c ------------------------------------------------------------------------
 
 The following are special option functions.
 
-
-@defun mbfl_option_test_save
-Save the current state of the @samp{test} option then invokes @func{mbfl_unset_option_test}.
+@macro MbflSaveRestoreOptionFunctions{OPTNAME, OPTARG, TAILDOC}
+@anchor{mbfl_option_\OPTNAME\_save}
+@anchor{mbfl_option_\OPTNAME\_restore}
+@defun mbfl_option_\OPTNAME\_save
+@defunx mbfl_option_\OPTNAME\_restore
+Save/restore the current state of the @option{--\OPTARG\} option then invoke
+@func{mbfl_unset_option_\OPTNAME\}.  Upon entering these functions: the value of @code{$?} is saved,
+the options states are processed, then the saved @code{$?} value is used as return value for the
+function call.
 @end defun
 
-@defun mbfl_option_test_restore
-Restore the state of the @samp{test} option to the one before the invocation to
-@func{mbfl_option_test_save}.
-@end defun
+@end macro
 
-
-@defun mbfl_option_show_program_save
-Save the current state of the @samp{show_program} option then invokes
-@func{mbfl_unset_option_show_program}.
-@end defun
-
-@defun mbfl_option_show_program_restore
-Restore the state of the @samp{show_program} option to the one before the invocation to
-@func{mbfl_option_show_program_save}.
-@end defun
+@MbflSaveRestoreOptionFunctions{debug, debug}
+@MbflSaveRestoreOptionFunctions{encoded_args, encoded-args}
+@MbflSaveRestoreOptionFunctions{force, force}
+@MbflSaveRestoreOptionFunctions{interactive, interactive}
+@MbflSaveRestoreOptionFunctions{null, null}
+@MbflSaveRestoreOptionFunctions{show_program, show-program}
+@MbflSaveRestoreOptionFunctions{test, test}
+@MbflSaveRestoreOptionFunctions{verbose, verbose}
+@MbflSaveRestoreOptionFunctions{verbose_program, verbose-program}
 
 @c page
 @node getopts interface

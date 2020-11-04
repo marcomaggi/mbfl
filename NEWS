@@ -231,6 +231,9 @@ changes!
 
 * Started module "process" to handle job control.
 
+* More functions to query/set/unset/save/restore the value of predefined
+  command line options.
+
 
 Notes for revision 2.2.0
 ------------------------
