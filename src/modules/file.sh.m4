@@ -1237,32 +1237,27 @@ function mbfl_file_enable_owner_and_group () {
     : mbfl_declare_program chown
     : mbfl_declare_program chgrp
 }
-
-function mbfl_file_chown () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    shift
+function mbfl_exec_chown () {
     if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CHOWN"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
 	then FLAGS+=' --verbose'
 	fi
-	mbfl_program_exec "$CHOWN" ${FLAGS} "$@" -- "$PATHNAME"
+	mbfl_program_exec "$mbfl_PROGRAM_CHOWN" $FLAGS "$@"
     else
 	mbfl_message_error_printf 'program not "chown" executable, tested pathname is: "%s"' "$mbfl_PROGRAM_CHOWN"
 	return_because_program_not_found
     fi
 }
-function mbfl_file_chgrp () {
-    mbfl_mandatory_parameter(PATHNAME, 1, pathname)
-    shift
+function mbfl_exec_chgrp () {
     if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_CHGRP"
     then
 	local FLAGS
 	if mbfl_option_verbose_program
 	then FLAGS+=' --verbose'
 	fi
-	mbfl_program_exec "$CHGRP" ${FLAGS} "$@" -- "$PATHNAME"
+	mbfl_program_exec "$mbfl_PROGRAM_CHGRP" $FLAGS "$@"
     else
 	mbfl_message_error_printf 'program not "chgrp" executable, tested pathname is: "%s"' "$mbfl_PROGRAM_CHGRP"
 	return_because_program_not_found
@@ -1273,13 +1268,13 @@ function mbfl_file_set_owner () {
     mbfl_mandatory_parameter(OWNER, 1, owner)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     shift 2
-    mbfl_file_chown "$PATHNAME" "$OWNER" "$@"
+    mbfl_exec_chown "$@" "$OWNER" -- "$PATHNAME"
 }
 function mbfl_file_set_group () {
     mbfl_mandatory_parameter(GROUP, 1, group)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
     shift 2
-    mbfl_file_chgrp "$PATHNAME" "$GROUP" "$@"
+    mbfl_exec_chgrp "$@" "$GROUP" -- "$PATHNAME"
 }
 
 #page

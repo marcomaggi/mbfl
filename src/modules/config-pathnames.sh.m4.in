@@ -2,6 +2,7 @@
 
 declare -r mbfl_PROGRAM_BASH='@MBFL_PROGRAM_BASH@'
 declare -r mbfl_PROGRAM_CHMOD='@MBFL_PROGRAM_CHMOD@'
+declare -r mbfl_PROGRAM_CHGRP='@MBFL_PROGRAM_CHGRP@'
 declare -r mbfl_PROGRAM_CHOWN='@MBFL_PROGRAM_CHOWN@'
 declare -r mbfl_PROGRAM_CP='@MBFL_PROGRAM_CP@'
 declare -r mbfl_PROGRAM_ID='@MBFL_PROGRAM_ID@'

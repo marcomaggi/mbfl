@@ -2405,17 +2405,13 @@ Print the group of the file as symbolic name.
 @end defun
 
 
-@defun mbfl_exec_chown @var{PATHNAME} @var{OPT} @dots{}
-Raw interface to @command{chown}.  The mandatory argument @var{PATHNAME} is handed to
-@command{chown} as argument.  The optional arguments @var{OPT} are handed to @command{chown} as
-options.
+@defun mbfl_exec_chown @var{ARG} @dots{}
+Execute the program @command{chown} using the given optional arguments.
 @end defun
 
 
 @defun mbfl_exec_chgrp @var{PATHNAME} @var{OPT} @dots{}
-Raw interface to @command{chgrp}.  The mandatory argument @var{PATHNAME} is handed to
-@command{chgrp} as argument.  The optional arguments @var{OPT} are handed to @command{chgrp} as
-options.
+Execute the program @command{chgrp} using the given optional arguments.
 @end defun
 
 @c page
@@ -4828,6 +4824,20 @@ defaults to @file{/bin/bash}.
 The preselected file system pathname of the program @command{chmod}; it is selected by the
 @command{configure} script and customisable with its command line option @option{--with-chmod}; it
 defaults to @file{/bin/chmod}.
+@end defvar
+
+
+@cindex Configuration option @option{--with-chgrp}
+@cindex Option @option{--with-chgrp}
+@cindex @option{--with-chgrp}, configuration option
+@cindex Command @command{chgrp}
+@cindex External command @command{chgrp}
+@cindex @command{chgrp}, external command
+@anchor{mbfl_PROGRAM_CHGRP}
+@defvar mbfl_PROGRAM_CHGRP
+The preselected file system pathname of the program @command{chgrp}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-chgrp}; it
+defaults to @file{/bin/chgrp}.
 @end defvar
 
 
