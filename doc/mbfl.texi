@@ -3810,28 +3810,21 @@ line.\TAILDOC\
 
 @end macro
 
-@MbflSetUnsetOptionFunctions{debug, debug}
-@MbflSetUnsetOptionFunctions{encoded_args, encoded-args}
-@MbflSetUnsetOptionFunctions{force, force}
-@MbflSetUnsetOptionFunctions{interactive, interactive}
-@MbflSetUnsetOptionFunctions{null, null}
-@MbflSetUnsetOptionFunctions{show_program, show-program,
-
-Print the command line of executed external program.  This does not disable program
-execution@comma{} it just prints the command line before executing it.}
-@MbflSetUnsetOptionFunctions{test, test}
-@MbflSetUnsetOptionFunctions{verbose, verbose}
-@MbflSetUnsetOptionFunctions{verbose_program, verbose-program,
-
-This option@comma{} of course@comma{} is supported only for programs that are known by @mbfl{} (like
-@command{rm}): if a program is executed with @func{mbfl_program_exec}@comma{} it is responsibility
-of the caller to use the option.}
+@MbflSetUnsetOptionFunctions{debug, debug,}
+@MbflSetUnsetOptionFunctions{encoded_args, encoded-args,}
+@MbflSetUnsetOptionFunctions{force, force,}
+@MbflSetUnsetOptionFunctions{interactive, interactive,}
+@MbflSetUnsetOptionFunctions{null, null,}
+@MbflSetUnsetOptionFunctions{show_program, show-program, Print the command line of executed external program.  This does not disable program execution@comma{} it just prints the command line before executing it.}
+@MbflSetUnsetOptionFunctions{test, test,}
+@MbflSetUnsetOptionFunctions{verbose, verbose,}
+@MbflSetUnsetOptionFunctions{verbose_program, verbose-program, This option@comma{} of course@comma{} is supported only for programs that are known by @mbfl{} (like @command{rm}): if a program is executed with @func{mbfl_program_exec}@comma{} it is responsibility of the caller to use the option.}
 
 @c ------------------------------------------------------------------------
 
 The following are special option functions.
 
-@macro MbflSaveRestoreOptionFunctions{OPTNAME, OPTARG, TAILDOC}
+@macro MbflSaveRestoreOptionFunctions{OPTNAME, OPTARG}
 @anchor{mbfl_option_\OPTNAME\_save}
 @anchor{mbfl_option_\OPTNAME\_restore}
 @defun mbfl_option_\OPTNAME\_save
