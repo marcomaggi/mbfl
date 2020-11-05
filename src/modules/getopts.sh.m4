@@ -201,11 +201,11 @@ function mbfl_getopts_parse () {
 
 	if mbfl_string_equal "$argument" '--'
         then
-	    # Found  end-of-options  delimiter.   Everything else  is  a
-	    # non-option argument.
-	    for ((i=$i; i < ARGC1; ++i))
+	    # Found end-of-options delimiter.  Everything else is a non-option argument.
+	    local -i j
+	    for ((j=1+i; j < ARGC1; ++j))
 	    do
-		ARGV[$ARGC]=${argument}
+		ARGV[$ARGC]=${ARGV1[$j]}
 		let ++ARGC
 	    done
 	    break
