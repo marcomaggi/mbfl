@@ -441,7 +441,10 @@ function mbfl_getopts_print_usage_screen () {
 	    then description='undocumented option'
 	    fi
 
-            printf '\t\t%s\n' "$description"
+	    # NOTE  We print  the description  using  the format  directive "%b",  which causes  the
+	    # expansion of some  backslash escape sequences in "$description".  For  example: we can
+	    # use '\x27' in the description string to print a single quote character.
+            printf '\t\t%b\n' "$description"
 
             if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
             then

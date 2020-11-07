@@ -3882,7 +3882,9 @@ if this option has no long selector.
 Either @code{witharg} or @code{noarg}: declares if the option requires an argument or not.
 
 @item DESCRIPTION
-A one--line string briefly describing the option.
+A one--line string briefly describing the option.  This string will be printed with @func{printf}
+using the @code{%b} format directive, which will cause the expansion of some backslash escpe
+sequences in @var{DESCRIPTION}.
 @end table
 @end defun
 
