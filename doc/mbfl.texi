@@ -4432,8 +4432,10 @@ are handed to the program unchanged.
 
 If usage of @command{sudo} was requested, the command is executed with it; then the @command{sudo}
 request is reset.  This means that this function ``consumes'' a @command{sudo} request.
+@ref{program executing sudo, Executing programs with another's profile privileges}.
 
-See below for the redirection of the standard error channel.
+For the redirection of the standard error channel @ref{program executing stderr, Redirecting the
+standard error channel}.
 
 If the function @func{mbfl_option_test} returns true: instead of evaluation, the command line is
 sent to stderr.
