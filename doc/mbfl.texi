@@ -3852,52 +3852,47 @@ function call.
 @section Interface functions
 
 
-Every declared option should have a long switch, the brief switch can be
-omitted.
+Every declared option should have a long switch, the brief switch can be omitted.
 
 
 @defun mbfl_declare_option @var{KEYWORD} @var{DEFAULT} @var{BRIEF} @var{LONG} @var{HASARG} @var{DESCRIPTION}
 Declare a new option.  Arguments description follows.
 
 @table @var
-@item keyword
-A string identifying the option; internally it is used to build a
-function name and a variable name.  It is safer to limit this string to
-the letters in the ranges @code{a-z}, @code{A-Z} and underscores.
+@item KEYWORD
+A string identifying the option; internally it is used to build a function name and a variable name.
+It is safer to limit this string to the letters in the ranges @code{a-z}, @code{A-Z} and
+underscores.
 
-@item default
-The default value for the option.  For an option with argument it can be
-anything; for an option with no argument: it must be @code{yes} or
-@code{no}.
+@item DEFAULT
+The default value for the option.  For an option with argument it can be anything; for an option
+with no argument: it must be @code{yes} or @code{no}.
 
-@item brief
+@item BRIEF
 The brief option selector: a single character.  It is safer to choose a single letter (lower or
 upper case) in the @acronym{ASCII} standard.  This argument can be the empty string if this option
 has no brief selector.
 
-@item long
+@item LONG
 The long option selector: a string.  It is safer to choose a sequence of letters in the
 @acronym{ASCII} standard, separated by underscores or dashes.  This argument can be the empty string
 if this option has no long selector.
 
-@item hasarg
-Either @code{witharg} or @code{noarg}: declares if the option requires
-an argument or not.
+@item HASARG
+Either @code{witharg} or @code{noarg}: declares if the option requires an argument or not.
 
-@item description
+@item DESCRIPTION
 A one--line string briefly describing the option.
 @end table
 @end defun
 
 
 @defun mbfl_getopts_parse
-Parse a set of command line options.  The options are handed to user
-defined functions.  The global array @code{ARGV1} and the global
-variable @code{ARGC1} must hold the command line arguments and the
-number of command line arguments, the global variable @code{ARG1ST} must
-hold the index of the first element in @code{ARGV1} that must be parsed.
-Non--option arguments are left in the global array @code{ARGV}, the
-global variable @code{ARGC} holds the number of elements in @code{ARGV}.
+Parse a set of command line options.  The options are handed to user defined functions.  The global
+array @code{ARGV1} and the global variable @code{ARGC1} must hold the command line arguments and the
+number of command line arguments, the global variable @code{ARG1ST} must hold the index of the first
+element in @code{ARGV1} that must be parsed.  Non--option arguments are left in the global array
+@code{ARGV}, the global variable @code{ARGC} holds the number of elements in @code{ARGV}.
 
 If successful return @code{0}, else return @code{1}.
 @end defun
@@ -3905,17 +3900,14 @@ If successful return @code{0}, else return @code{1}.
 
 @defun mbfl_getopts_islong @var{STRING}
 @defunx mbfl_getopts_islong @var{STRING} @var{VARNAME}
-Verify if a string has the format of a long option without argument.
-@var{STRING} is the string to validate.  The optional @var{VARNAME} is
-the name of a variable that this function will set to the option name
-from @var{STRING}, without the leading dashes.
+Verify if a string has the format of a long option without argument.  @var{STRING} is the string to
+validate.  The optional @var{VARNAME} is the name of a variable that this function will set to the
+option name from @var{STRING}, without the leading dashes.
 
-Return with code zero if the string is a long option without argument,
-else returns with code one.
+Return with code zero if the string is a long option without argument, else returns with code one.
 
-An option must be of the form @code{--option}, only characters in the
-ranges @code{A-Z}, @code{a-z}, @code{0-9} and the characters @code{-}
-and @code{_} are allowed in the option name.
+An option must be of the form @code{--option}, only characters in the ranges @code{A-Z}, @code{a-z},
+@code{0-9} and the characters @code{-} and @code{_} are allowed in the option name.
 
 Usage examples:
 
@@ -3932,14 +3924,14 @@ mbfl_getopts_islong gasp                @result{} 1
 Verify if a string has the format of a long option with argument.  Arguments:
 
 @table @var
-@item string
+@item STRING
 The string to validate.
 
-@item optname
+@item OPTNAME
 Optional name of a variable that this function will set to the option name from @var{STRING},
 without the leading dashes.
 
-@item varname
+@item VARNAME
 Optional name of a variable that this function will set to the option value from @var{STRING}.
 @end table
 
@@ -3965,16 +3957,14 @@ mbfl_getopts_islong_with --=            @result{} 1
 
 @defun mbfl_getopts_isbrief @var{STRING}
 @defunx mbfl_getopts_isbrief @var{STRING} @var{VARNAME}
-Verify if a string has the format of a brief option without argument.
-@var{STRING} is the string to validate.  The optional @var{VARNAME} is
-the name of a variable that this function will set to the option name
-from @var{STRING}, without the leading dash.
+Verify if a string has the format of a brief option without argument.  @var{STRING} is the string to
+validate.  The optional @var{VARNAME} is the name of a variable that this function will set to the
+option name from @var{STRING}, without the leading dash.
 
-Return with code zero if the argument is a brief option without
-argument, else return with code one.
+Return with code zero if the argument is a brief option without argument, else return with code one.
 
-A brief option must be of the form @code{-a}, only characters in the
-ranges @code{A-Z}, @code{a-z}, @code{0-9} are allowed as option letters.
+A brief option must be of the form @code{-a}, only characters in the ranges @code{A-Z}, @code{a-z},
+@code{0-9} are allowed as option letters.
 
 Usage examples:
 
@@ -3988,28 +3978,24 @@ mbfl_getopts_isbrief gasp       @result{} 1
 
 @defun mbfl_getopts_isbrief_with @var{STRING}
 @defunx mbfl_getopts_isbrief_with @var{STRING} @var{OPTNAME} @var{VALNAME}
-Verify if a string has the format of a brief option with argument.
-Arguments:
+Verify if a string has the format of a brief option with argument.  Arguments:
 
 @table @var
-@item string
+@item STRING
 The string to validate.
 
-@item optname
-Optional name of a variable that this function will set to the option
-name from @var{STRING}, without the leading dashes.
+@item OPTNAME
+Optional name of a variable that this function will set to the option name from @var{STRING},
+without the leading dashes.
 
-@item valname
-Optional name of a variable that this function will set to the option
-value.
+@item VALNAME
+Optional name of a variable that this function will set to the option value.
 @end table
 
-Return with code zero if the argument is a brief option without
-argument, else return with code one.
+Return with code zero if the argument is a brief option without argument, else return with code one.
 
-A brief option must be of the form @code{-aV} (@code{a} is the option,
-@code{V} is the value), only characters in the ranges @code{A-Z},
-@code{a-z}, @code{0-9} are allowed as option letters.
+A brief option must be of the form @code{-aV} (@code{a} is the option, @code{V} is the value), only
+characters in the ranges @code{A-Z}, @code{a-z}, @code{0-9} are allowed as option letters.
 
 Usage examples:
 
@@ -4023,17 +4009,15 @@ mbfl_getopts_isbrief_with wappa         @result{} 1
 
 
 @defun mbfl_wrong_num_args @var{REQUIRED} @var{PRESENT}
-Validate the number of arguments.  @var{REQUIRED} is the required number
-of arguments, @var{PRESENT} is the given number of arguments on the
-command line.  If the number of arguments is different from the required
-one: print an error message and return with code one; else return with
-code zero.
+Validate the number of arguments.  @var{REQUIRED} is the required number of arguments, @var{PRESENT}
+is the given number of arguments on the command line.  If the number of arguments is different from
+the required one: print an error message and return with code one; else return with code zero.
 @end defun
 
 
 @defun mbfl_wrong_num_args_range @var{MIN_REQUIRED} @var{MAX_REQUIRED} @var{ARGC}
-Validate the number of arguments.  @var{ARGC} must be between
-@var{MIN_REQUIRED} and @var{MAX_REQUIRED}, inclusive.
+Validate the number of arguments.  @var{ARGC} must be between @var{MIN_REQUIRED} and
+@var{MAX_REQUIRED}, inclusive.
 @end defun
 
 
@@ -4044,26 +4028,24 @@ Exit or return with code @code{98}.
 
 
 @defun mbfl_argv_from_stdin
-If the @code{ARGC} global variable is set to zero: fills the global
-variable @code{ARGV} with lines read from stdin.  If the global variable
-@code{mbfl_option_NULL} is set to @code{yes}: lines are read using the
-null character as terminator, else they are read using the standard
-newline as terminator.
+If the @code{ARGC} global variable is set to zero: fills the global variable @code{ARGV} with lines
+read from stdin.  If the global variable @code{mbfl_option_NULL} is set to @code{yes}: lines are
+read using the null character as terminator, else they are read using the standard newline as
+terminator.
 
 This function may block waiting for input.
 @end defun
 
 
 @defun mbfl_argv_all_files
-Check that all the arguments in @code{ARGV} are file names of existent
-files.  Return with code zero if no errors, else print an error message
-and return with code 1.
+Check that all the arguments in @code{ARGV} are file names of existent files.  Return with code zero
+if no errors, else print an error message and return with code 1.
 @end defun
 
 
 @defun mbfl_getopts_print_long_switches
-Print all the long switches in a row, separated by spaces.  This is
-useful to retrieve the option for Bash programmable completion.
+Print all the long switches in a row, separated by spaces.  This is useful to retrieve the option
+for Bash programmable completion.
 @end defun
 
 
