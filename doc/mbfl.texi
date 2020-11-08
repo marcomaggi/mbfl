@@ -4363,7 +4363,7 @@ it.
 * program executing sudo::      Executing programs with another
                                 profile's privileges.
 * program executing bash::      Executing a @command{bash} process.
-* program executing stderr::    Redirecting the standard error channel.
+* program executing channels::  Redirecting channels when executing a program.
 @end menu
 
 @c page
@@ -4424,8 +4424,7 @@ mbfl_program_exec ls /bin
 @subsection Core @api{} for program execution
 
 
-@defun mbfl_program_exec @var{PROGRAM}
-@defunx mbfl_program_exec @var{PROGRAM} @var{ARG} ...
+@defun mbfl_program_exec @var{PROGRAM} @var{ARG} @dots{}
 Evaluate a command line.  @var{PROGRAM} identifies an executable file: it can be the program name,
 or a relative or absolute pathname.  The optional @var{ARG} values are command line arguments that
 are handed to the program unchanged.
@@ -4434,8 +4433,8 @@ If usage of @command{sudo} was requested, the command is executed with it; then 
 request is reset.  This means that this function ``consumes'' a @command{sudo} request.
 @ref{program executing sudo, Executing programs with another's profile privileges}.
 
-For the redirection of the standard error channel @ref{program executing stderr, Redirecting the
-standard error channel}.
+For the redirection of the standard error channel @ref{program executing channels, Redirecting
+channels when executing a program}.
 
 If the function @func{mbfl_option_test} returns true: instead of evaluation, the command line is
 sent to stderr.
@@ -4445,10 +4444,31 @@ then it is executed.
 @end defun
 
 
-@defun mbfl_program_replace @var{PROGRAM}
-@defunx mbfl_program_replace @var{PROGRAM} @var{OPT} @dots{}
+@defun mbfl_program_exec2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM} @var{ARG} @dots{}
+Like @func{mbfl_program_exec}, but redirect the standard input, output and error channels using the
+given channels.
+
+Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN}, @var{OUCHAN} and
+@var{ERCHAN} arguments.  If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.  @ref{program
+executing channels, Redirecting channels when executing a program}.
+@end defun
+
+
+@defun mbfl_program_replace @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_exec}, but execute the program through the Bash command @code{exec}, so
 replacing the current process without creating a new one.
+@end defun
+
+
+@defun mbfl_program_replace2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM} @var{ARG} @dots{}
+Like @func{mbfl_program_replace}, but redirect the standard input, output and error channels using
+the given channels.
+
+Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN}, @var{OUCHAN} and
+@var{ERCHAN} arguments.  If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.  @ref{program
+executing channels, Redirecting channels when executing a program}.
 @end defun
 
 @c page
@@ -4457,7 +4477,7 @@ replacing the current process without creating a new one.
 
 
 @defun mbfl_program_execbg @var{INCHAN} @var{OUCHAN} @var{PROGRAM}
-@defunx mbfl_program_execbg @var{INCHAN} @var{OUCHAN} @var{PROGRAM} @var{ARG} ...
+@defunx mbfl_program_execbg @var{INCHAN} @var{OUCHAN} @var{PROGRAM} @var{ARG} @dots{}
 Does all the same things of @func{mbfl_program_exec}, running the given command line as:
 
 @example
@@ -4479,20 +4499,12 @@ mbfl_program_exec ls <&@var{INCHAN} >&@var{OUCHAN} &
 because doing so puts in the background the function call (in a subshell) and then runs the program.
 
 Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN} and @var{OUCHAN}
-arguments.  Also we can always use the default file descriptors, for example:
-
-@example
-mbfl_program_execbg 0 1 /bin/ls
-@end example
-
-The readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0}, @file{/dev/fd/1} are
-@strong{not} usable as @var{INCHAN} and @var{OUCHAN} arguments (remember that the aliases are
-@strong{not} available, for example, when the script is run from a cron job).
+arguments.  @ref{program executing channels, Redirecting channels when executing a program}.
 @end defun
 
 
 @defun mbfl_program_execbg2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM}
-@defunx mbfl_program_execbg2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM} @var{ARG} ...
+@defunx mbfl_program_execbg2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_execbg}, but redirects also the standard error of the executed process to
 @var{ERCHAN}, which must be a numeric file descriptor.
 
@@ -4611,12 +4623,24 @@ the background with @code{&}, will not work: it is impossible to determine the e
 @command{bash} process' PID from the parent shell process.
 
 @c page
-@node program executing stderr
-@subsection Redirecting the standard error channel
+@node program executing channels
+@subsection Redirecting channels when executing a program
 
 
 There are programs that output useful informations on their stderr channel (example: the
 @command{at} command).
+
+Also we can always use the default file descriptors, for example:
+Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN} and @var{OUCHAN}
+arguments.  Also we can always use the default file descriptors, for example:
+
+@example
+mbfl_program_execbg 0 1 /bin/ls
+@end example
+
+The human--readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0},
+@file{/dev/fd/1} are @strong{not} usable as @var{INCHAN} and @var{OUCHAN} arguments (remember that
+the aliases are @strong{not} available, for example, when the script is run from a cron job).
 
 
 @defun mbfl_program_redirect_stderr_to_stdout

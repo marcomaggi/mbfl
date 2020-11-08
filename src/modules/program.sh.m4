@@ -232,7 +232,16 @@ function mbfl_program_exec () {
     # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
     # /dev/fd/1 do not exist when the script is run from a cron job.
     local -ir INCHAN=0 OUCHAN=1 ERCHAN=2
-    local REPLACE=false BACKGROUND=false
+    local -r REPLACE=false BACKGROUND=false
+    mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
+}
+function mbfl_program_exec2 () {
+    mbfl_mandatory_parameter(INCHAN, 1, numeric input channel)
+    mbfl_mandatory_parameter(OUCHAN, 2, numeric output channel)
+    mbfl_mandatory_parameter(ERCHAN, 3, numeric error channel)
+    shift 3
+    local -r REPLACE=false BACKGROUND=false
+    mbfl_program_p_reset_stderr_to_stdout_redirection
     mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
 }
 function mbfl_program_execbg () {
@@ -240,7 +249,7 @@ function mbfl_program_execbg () {
     mbfl_mandatory_parameter(OUCHAN, 2, numeric output channel)
     local -ir ERCHAN=2
     shift 2
-    local REPLACE=false BACKGROUND=true
+    local -r REPLACE=false BACKGROUND=true
     mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
 }
 function mbfl_program_execbg2 () {
@@ -248,21 +257,30 @@ function mbfl_program_execbg2 () {
     mbfl_mandatory_parameter(OUCHAN, 2, numeric output channel)
     mbfl_mandatory_parameter(ERCHAN, 3, numeric error channel)
     shift 3
-    local REPLACE=false BACKGROUND=true
-
-    # Reset this redirection.
-    if $mbfl_program_STDERR_TO_STDOUT
-    then mbfl_program_STDERR_TO_STDOUT=false
-    fi
-
+    local -r REPLACE=false BACKGROUND=true
+    mbfl_program_p_reset_stderr_to_stdout_redirection
     mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
 }
 function mbfl_program_replace () {
     # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
     # /dev/fd/1 do not exist when the script is run from a cron job.
     local -ir INCHAN=0 OUCHAN=1 ERCHAN=2
-    local REPLACE=true BACKGROUND=false
+    local -r REPLACE=true BACKGROUND=false
     mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
+}
+function mbfl_program_replace2 () {
+    mbfl_mandatory_parameter(INCHAN, 1, numeric input channel)
+    mbfl_mandatory_parameter(OUCHAN, 2, numeric output channel)
+    mbfl_mandatory_parameter(ERCHAN, 3, numeric error channel)
+    shift 3
+    local -r REPLACE=true BACKGROUND=false
+    mbfl_program_p_reset_stderr_to_stdout_redirection
+    mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
+}
+function mbfl_program_p_reset_stderr_to_stdout_redirection () {
+    if $mbfl_program_STDERR_TO_STDOUT
+    then mbfl_program_STDERR_TO_STDOUT=false
+    fi
 }
 
 #page

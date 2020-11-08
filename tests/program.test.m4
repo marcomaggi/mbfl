@@ -49,18 +49,34 @@ function program-split-path-1.1 () {
 #PAGE
 #### run simple programs
 
-function program-1.1 () {
+function program-1.1.1 () {
     mbfl_program_exec echo 123 | dotest-output 123
 }
-function program-1.2 () {
+function program-1.1.2 () {
     mbfl_set_option_test
     mbfl_program_exec echo 123 2>&1 | dotest-output "command echo '123' <&0 >&1 2>&2"
 }
-function program-1.3 () {
+function program-1.1.3 () {
     mbfl_program_exec true
 }
-function program-1.4 () {
+function program-1.1.4 () {
     ! mbfl_program_exec false
+}
+
+### ------------------------------------------------------------------------
+
+function program-1.2.1 () {
+    mbfl_program_exec2 0 1 2 echo 123 | dotest-output 123
+}
+function program-1.2.2 () {
+    mbfl_set_option_test
+    mbfl_program_exec2 0 1 2 echo 123 2>&1 | dotest-output "command echo '123' <&0 >&1 2>&2"
+}
+function program-1.2.3 () {
+    mbfl_program_exec2 0 1 2 true
+}
+function program-1.2.4 () {
+    ! mbfl_program_exec2 0 1 2 false
 }
 
 #page
@@ -146,9 +162,89 @@ function program-4.2 () {
 #page
 #### tests for background execution
 
+# Background execution with "mbfl_program_execbg()".
+#
+function program-5.1.1 () {
+    local -r DIR=$(dotest-echo-tmpdir)
+
+    dotest-mkfile test-input.txt
+    dotest-mkfile test-output.txt
+    {
+	echo inp >"$DIR"/test-input.txt
+
+	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
+	then
+	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
+	    then
+		mbfl_set_option_show_program
+		mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; read -n 0 ; echo -n "$REPLY" >&1'
+		if wait $mbfl_program_BGPID
+		then
+		    if false
+		    then
+			echo  input="$(<"$DIR"/test-input.txt)"  >&2
+			echo output="$(<"$DIR"/test-output.txt)" >&2
+		    fi
+		    dotest-equal     'inp'    "$(<"$DIR"/test-input.txt)"  && \
+			dotest-equal 'outinp' "$(<"$DIR"/test-output.txt)"
+		else dotest-printf 'error in the background process'
+		fi
+	    else dotest-printf 'error opening output file'
+	    fi
+	else dotest-printf 'error opening input file'
+	fi
+
+	mbfl_fd_close 10
+	mbfl_fd_close 11
+    }
+    dotest-clean-files
+}
+
+# Background execution with "mbfl_program_execbg()" with stderr-to-stdout redirection.
+#
+function program-5.1.2 () {
+    local -r DIR=$(dotest-echo-tmpdir)
+
+    dotest-mkfile test-input.txt
+    dotest-mkfile test-output.txt
+    {
+	echo inp >"$DIR"/test-input.txt
+
+	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
+	then
+	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
+	    then
+		mbfl_program_redirect_stderr_to_stdout
+		mbfl_set_option_show_program
+		mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; echo -n err >&2 ; read -n 0 ; echo -n "$REPLY" >&1'
+		if wait $mbfl_program_BGPID
+		then
+		    if false
+		    then
+			echo  input="$(<"$DIR"/test-input.txt)"  >&2
+			echo output="$(<"$DIR"/test-output.txt)" >&2
+		    fi
+		    dotest-equal     'inp'       "$(<"$DIR"/test-input.txt)"  && \
+			dotest-equal 'outerrinp' "$(<"$DIR"/test-output.txt)"
+		else dotest-printf 'error in the background process'
+		fi
+	    else dotest-printf 'error opening output file'
+	    fi
+	else dotest-printf 'error opening input file'
+	fi
+
+	mbfl_fd_close 10
+	mbfl_fd_close 11
+    }
+    dotest-clean-files
+}
+
+#page
+#### tests for background execution with more channels redirection
+
 # Background execution with "mbfl_program_execbg2()".
 #
-function program-5.1 () {
+function program-5.2 () {
     local -r DIR=$(dotest-echo-tmpdir)
 
     dotest-mkfile test-input.txt
@@ -188,86 +284,6 @@ function program-5.1 () {
 	mbfl_fd_close 10
 	mbfl_fd_close 11
 	mbfl_fd_close 12
-    }
-    dotest-clean-files
-}
-
-#page
-#### tests for background execution
-
-# Background execution with "mbfl_program_execbg()".
-#
-function program-5.2.1 () {
-    local -r DIR=$(dotest-echo-tmpdir)
-
-    dotest-mkfile test-input.txt
-    dotest-mkfile test-output.txt
-    {
-	echo inp >"$DIR"/test-input.txt
-
-	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
-	then
-	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
-	    then
-		mbfl_set_option_show_program
-		mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; read -n 0 ; echo -n "$REPLY" >&1'
-		if wait $mbfl_program_BGPID
-		then
-		    if false
-		    then
-			echo  input="$(<"$DIR"/test-input.txt)"  >&2
-			echo output="$(<"$DIR"/test-output.txt)" >&2
-		    fi
-		    dotest-equal     'inp'    "$(<"$DIR"/test-input.txt)"  && \
-			dotest-equal 'outinp' "$(<"$DIR"/test-output.txt)"
-		else dotest-printf 'error in the background process'
-		fi
-	    else dotest-printf 'error opening output file'
-	    fi
-	else dotest-printf 'error opening input file'
-	fi
-
-	mbfl_fd_close 10
-	mbfl_fd_close 11
-    }
-    dotest-clean-files
-}
-
-# Background execution with "mbfl_program_execbg()" with stderr-to-stdout redirection.
-#
-function program-5.2.2 () {
-    local -r DIR=$(dotest-echo-tmpdir)
-
-    dotest-mkfile test-input.txt
-    dotest-mkfile test-output.txt
-    {
-	echo inp >"$DIR"/test-input.txt
-
-	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
-	then
-	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
-	    then
-		mbfl_program_redirect_stderr_to_stdout
-		mbfl_set_option_show_program
-		mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; echo -n err >&2 ; read -n 0 ; echo -n "$REPLY" >&1'
-		if wait $mbfl_program_BGPID
-		then
-		    if false
-		    then
-			echo  input="$(<"$DIR"/test-input.txt)"  >&2
-			echo output="$(<"$DIR"/test-output.txt)" >&2
-		    fi
-		    dotest-equal     'inp'       "$(<"$DIR"/test-input.txt)"  && \
-			dotest-equal 'outerrinp' "$(<"$DIR"/test-output.txt)"
-		else dotest-printf 'error in the background process'
-		fi
-	    else dotest-printf 'error opening output file'
-	    fi
-	else dotest-printf 'error opening input file'
-	fi
-
-	mbfl_fd_close 10
-	mbfl_fd_close 11
     }
     dotest-clean-files
 }
