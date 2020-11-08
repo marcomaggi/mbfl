@@ -9,6 +9,9 @@ The MBFL  is a  collection of  shell functions for  the GNU  Bash shell.
 This package  is an attempt  to make Bash  a viable solution  for medium
 sized scripts; it needs at least Bash version 4.3.
 
+This package  relies on the  facilities of the packages:  GNU Coreutils,
+sudo.
+
 The package uses the GNU Autotools and it is tested, using Travis CI, on
 both Ubuntu GNU+Linux systems and OS X systems.
 
