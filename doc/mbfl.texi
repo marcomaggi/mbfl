@@ -4364,6 +4364,7 @@ used.
 @menu
 * program executing intro::     Introduction to program execution.
 * program executing core::      Core @api{} for program execution.
+* program executing exec::      Core @api{} for program execution with replacement.
 * program executing bg::        Executing programs in background.
 * program executing sudo::      Executing programs with another
                                 profile's privileges.
@@ -4406,7 +4407,7 @@ mbfl_program_exec ls /root
 @end itemize
 
 Every time we execute a program with @command{sudo}: we have to select the user under which to
-execute it; if we do not do it: the internally registered user defaults to @code{nosudo}, which
+execute it; if we do not do it: the internally registered user defaults to @code{:nosudo:}, which
 tells the function @strong{not} to use @command{sudo}.  So the following script works as commented:
 
 @example
@@ -4439,42 +4440,109 @@ If usage of @command{sudo} was requested, the command is executed with it; then 
 request is reset.  This means that this function ``consumes'' a @command{sudo} request.
 @ref{program executing sudo, Executing programs with another's profile privileges}.
 
-For the redirection of the standard error channel @ref{program executing channels, Redirecting
+We can redirect the standard input and standard output channels using the usual @code{<} and
+@code{>} operators:
+
+@example
+mbfl_program_exec doit --some-option SOME_ARG </some/file >/another/file
+@end example
+
+@noindent
+for the redirection of the standard error channel @ref{program executing channels, Redirecting
 channels when executing a program}.
 
+If the function @func{mbfl_program_set_exec_flags} was used to select arguments for the Bash
+built--in @code{exec}: that request is ignored and reset.
+
 If the function @func{mbfl_option_test} returns true: instead of evaluation, the command line is
-sent to stderr.
+sent to @code{stderr}.
 
-If the function @func{mbfl_option_show_program} returns true: the command line is sent to stderr,
-then it is executed.
+If the function @func{mbfl_option_show_program} returns true: the command line is sent to
+@code{stderr}, then it is executed.
 @end defun
 
 
-@defun mbfl_program_exec2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM} @var{ARG} @dots{}
+@defun mbfl_program_exec2 @var{INFD} @var{OUFD} @var{ERFD} @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_exec}, but redirect the standard input, output and error channels using the
-given channels.
+given file descriptors.
 
-Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN}, @var{OUCHAN} and
-@var{ERCHAN} arguments.  If the redirection of @stderr{} to @stdout{} is requested with
-@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.  @ref{program
-executing channels, Redirecting channels when executing a program}.
+@example
+local -ir INFD=10 OUFD=11 ERFD=12
+
+mbfl_fd_open_input  $INFD /some/file
+mbfl_fd_open_output $OUFD /another/file
+mbfl_fd_open_output $ERFD /yet/another/file
+mbfl_program_exec2 $INFD $OUFD $ERFD doit --some-option SOME_ARG
+@end example
+
+Notice that we @strong{must} always use numeric file descriptors as @var{INFD}, @var{OUFD} and
+@var{ERFD} arguments; @ref{program executing channels, Redirecting channels when executing a
+program}.  If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.
 @end defun
+
+@c page
+@node program executing exec
+@subsection Core @api{} for program execution with replacement
 
 
 @defun mbfl_program_replace @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_exec}, but execute the program through the Bash command @code{exec}, so
 replacing the current process without creating a new one.
+
+If the function @func{mbfl_program_set_exec_flags} was used to select arguments for the Bash
+built--in @code{exec}: that request is honoured by putting the selected arguments on the command
+line of @code{exec}.  The request is considered ``consumed'' and reset.
+
+Inside a script, we can easily test program execution with replacement as follows:
+
+@example
+@{
+  (mbfl_program_replace "$mbfl_PROGRAM_BASH" '-c' 'exit 123';)
+  $?      @result{} 123
+@}
+
+@{
+  local RESULT
+
+  RESULT=$(mbfl_program_replace "$mbfl_PROGRAM_BASH" '-c' 'echo password';)
+  "$RESULT"       @result{} password
+@}
+@end example
+
+@noindent
+and we can select flags for @code{exec} as follows:
+
+@example
+local RESULT
+
+RESULT=$(mbfl_program_set_exec_flags '-a secret'
+         mbfl_program_replace "$mbfl_PROGRAM_BASH" '-c' 'echo $0';)
+"$RESULT"       @result{} secret
+@end example
 @end defun
 
 
-@defun mbfl_program_replace2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM} @var{ARG} @dots{}
+@defun mbfl_program_replace2 @var{INFD} @var{OUFD} @var{ERFD} @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_replace}, but redirect the standard input, output and error channels using
 the given channels.
 
-Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN}, @var{OUCHAN} and
-@var{ERCHAN} arguments.  If the redirection of @stderr{} to @stdout{} is requested with
-@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.  @ref{program
-executing channels, Redirecting channels when executing a program}.
+Notice that we @strong{must} always use numeric file descriptors as @var{INFD}, @var{OUFD} and
+@var{ERFD} arguments; @ref{program executing channels, Redirecting channels when executing a
+program}.  If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.
+@end defun
+
+
+@defun mbfl_program_set_exec_flags @var{EXEC_FLAGS}
+Store the string @var{EXEC_FLAGS} as internal state.  At the next program execution with one of the
+functions @cfunc{mbfl_program_replace*}: the string is consumed as flags for the Bash built--in
+@code{exec}.
+@end defun
+
+
+@defun mbfl_program_reset_exec_flags
+Reset to empty the internal state representing flags for the Bash built--in @code{exec}.
 @end defun
 
 @c page
@@ -4482,12 +4550,12 @@ executing channels, Redirecting channels when executing a program}.
 @subsection Executing programs in background
 
 
-@defun mbfl_program_execbg @var{INCHAN} @var{OUCHAN} @var{PROGRAM}
-@defunx mbfl_program_execbg @var{INCHAN} @var{OUCHAN} @var{PROGRAM} @var{ARG} @dots{}
+@defun mbfl_program_execbg @var{INFD} @var{OUFD} @var{PROGRAM}
+@defunx mbfl_program_execbg @var{INFD} @var{OUFD} @var{PROGRAM} @var{ARG} @dots{}
 Does all the same things of @func{mbfl_program_exec}, running the given command line as:
 
 @example
-@var{PROGRAM} @var{ARG} ... <&@var{INCHAN} >&@var{OUCHAN} &
+@var{PROGRAM} @var{ARG} ... <&@var{INFD} >&@var{OUFD} &
 @end example
 
 @noindent
@@ -4498,21 +4566,21 @@ execution.
 Using this function is different from calling:
 
 @example
-mbfl_program_exec ls <&@var{INCHAN} >&@var{OUCHAN} &
+mbfl_program_exec ls <&@var{INFD} >&@var{OUFD} &
 @end example
 
 @noindent
 because doing so puts in the background the function call (in a subshell) and then runs the program.
 
-Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN} and @var{OUCHAN}
+Notice that we @strong{must} always use numeric file descriptors as @var{INFD} and @var{OUFD}
 arguments.  @ref{program executing channels, Redirecting channels when executing a program}.
 @end defun
 
 
-@defun mbfl_program_execbg2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM}
-@defunx mbfl_program_execbg2 @var{INCHAN} @var{OUCHAN} @var{ERCHAN} @var{PROGRAM} @var{ARG} @dots{}
+@defun mbfl_program_execbg2 @var{INFD} @var{OUFD} @var{ERFD} @var{PROGRAM}
+@defunx mbfl_program_execbg2 @var{INFD} @var{OUFD} @var{ERFD} @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_execbg}, but redirects also the standard error of the executed process to
-@var{ERCHAN}, which must be a numeric file descriptor.
+@var{ERFD}, which must be a numeric file descriptor.
 
 If the redirection of @stderr{} to @stdout{} is requested with
 @func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.

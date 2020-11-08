@@ -121,6 +121,8 @@ changes!
     mbfl_program_execbg2
     mbfl_program_exec2
     mbfl_program_replace2
+    mbfl_program_set_exec_flags
+    mbfl_program_reset_exec_flags
 
 * Started arrays module.
 
