@@ -4274,9 +4274,6 @@ The module @code{program} implements the infrastructure needed to run external p
 @section Checking programs existence
 
 
-The simpler way to test the availability of a program is to look for it just before it is used.
-
-
 @defvr Array mbfl_split_PATH
 After a call to @func{mbfl_program_split_path}: this array is filled with the components of the
 @env{PATH} variable.
@@ -4311,30 +4308,52 @@ mbfl_split_PATH=()
 
 @defun mbfl_program_find @var{PROGRAM}
 @defunx mbfl_program_find_var @var{_RV} @var{PROGRAM}
-Search for a program in the standard search path.  Print the full pathname of the program found, or
-an empty string if nothing is found.  If an executable file is found: return true; otherwise return
-false.
+Search for a file in the standard search path.  Print the full pathname of the file found, or an
+empty string if nothing is found.  When a file is found: return true; otherwise return false.
 
-The search path is the one in the environment variable @var{ENV} as found by
+@example
+PATH=/bin
+local RESULT=$(mbfl_program_find ls)
+"$RESULT"       @result{} /bin/ls
+@end example
+
+The @code{_var} function variant will store the result in the variable @var{_RV} rather than print
+it.
+
+@example
+PATH=/bin
+mbfl_local_varref(RESULT)
+mbfl_program_find_var mbfl_datavar(RESULT) ls
+"$RESULT"       @result{} /bin/ls
+@end example
+
+These functions assume that: if a file is in the standard search path, it is meant to be an
+executable program.  These functions @strong{do not} actually test if the file is executable, they
+only test if the file exists; this is because we want to find files that are executable by another
+user, not just the effective user running the script.
+
+The simpler way to test the availability of a program is to look for it just before it is used; the
+@mbfl{} allows external programs to be run under a user different from the effective user running
+the script, so we delay the test for an executable file until the last moment, when the program will
+be actually run.
+
+The search path is the one in the environment variable @var{PATH} as parsed by
 @func{mbfl_program_split_path}.  The contained directories are searched in the order in which they
 appear in @env{PATH}.  There are rules:
 
 @itemize
 @item
 If @var{PROGRAM} is an absolute pathname (according to @func{mbfl_file_is_absolute}): only that
-absolute pathname is verified as executable file.  @var{PATH} is ignored.
+absolute pathname is verified as existent file.  @var{PATH} is ignored.
 
 @item
-If @var{PROGRAM} is a relative pathname with at least one slash character in it: only that relative
-pathname is verified as executable file.  @var{PATH} is ignored.
+If @var{PROGRAM} is a relative pathname (a string with at least one slash character in it): only
+that relative pathname is verified as existent file.  @var{PATH} is ignored.
 
 @item
 If @var{PROGRAM} is a relative pathname without slash characters in it: the standard search path is
 used.
 @end itemize
-
-The @code{_var} function variant will store the result in the variable @var{_RV} rather than print
-it.
 @end defun
 
 @c page

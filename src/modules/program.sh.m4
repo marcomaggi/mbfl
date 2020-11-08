@@ -51,21 +51,26 @@ function mbfl_program_find_var () {
     mbfl_mandatory_parameter(mbfl_PROGRAM, 2, program)
     local mbfl_DUMMY
 
-    # NOTE We do *not* want to test for the executability of the program
-    # here!  This  is because  we also  want to find  a program  that is
-    # executable only  by some other user,  for example "/sbin/ifconfig"
-    # is executable only by root (or it should be).
+    # NOTE We do *not* want  to test for the executability of the program  here!  This is because we
+    # also  want to  find  a  program that  is  executable  only by  some  other  user, for  example
+    # "/sbin/ifconfig" is executable only by root (or it should be).
 
     if mbfl_file_is_absolute "$mbfl_PROGRAM"
     then
-	mbfl_RESULT_VARREF="$mbfl_PROGRAM"
-	return 0
+	if mbfl_file_is_file "$mbfl_PROGRAM"
+	then
+	    mbfl_RESULT_VARREF="$mbfl_PROGRAM"
+	    return 0
+	fi
     elif mbfl_string_first_var mbfl_DUMMY "$mbfl_PROGRAM" '/'
     then
-	# The $mbfl_PROGRAM it not an absolute pathname, but it is a relative
-	# pathname with at least one slash in it.
-	mbfl_RESULT_VARREF="$mbfl_PROGRAM"
-	return 0
+	# The $mbfl_PROGRAM is not an absolute pathname, but it is a relative pathname with at least
+	# one slash in it.
+	if mbfl_file_is_file "$mbfl_PROGRAM"
+	then
+	    mbfl_RESULT_VARREF="$mbfl_PROGRAM"
+	    return 0
+	fi
     else
 	mbfl_program_split_path
 	local mbfl_PATHNAME
@@ -86,8 +91,8 @@ function mbfl_program_find_var () {
 
 function mbfl_program_find () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
-    local RESULT_VARNAME
-    if mbfl_program_find_var RESULT_VARNAME "$PROGRAM"
+    mbfl_local_varref(RESULT_VARNAME)
+    if mbfl_program_find_var mbfl_datavar(RESULT_VARNAME) "$PROGRAM"
     then echo "$RESULT_VARNAME"
     else return $?
     fi

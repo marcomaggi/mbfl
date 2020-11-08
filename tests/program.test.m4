@@ -288,6 +288,22 @@ function program-5.2 () {
     dotest-clean-files
 }
 
+#page
+#### finding programs
+
+function program-find-1.1 () {
+    (PATH=/bin
+     local RESULT=$(mbfl_program_find ls)
+     dotest-equal /bin/ls "$RESULT")
+}
+
+function program-find-2.1 () {
+    (PATH=/bin
+     mbfl_local_varref(RESULT)
+     mbfl_program_find_var mbfl_datavar(RESULT) ls
+     dotest-equal /bin/ls "$RESULT")
+}
+
 #PAGE
 #### let's go
 
