@@ -3621,6 +3621,7 @@ functions.
 
 @table @option
 @item --tmpdir=DIR
+@anchor{--tmpdir}
 @cindex @option{--tmpdir}, predefined option
 @cindex Predefined option @option{--tmpdir}
 Selects a directory for temporary files.  The default value is the one in the environment variable
@@ -3628,6 +3629,7 @@ Selects a directory for temporary files.  The default value is the one in the en
 @code{mbfl_option_TMPDIR}.
 
 @item --encoded-args
+@anchor{--encoded-args}
 @cindex @option{--encoded-args}, predefined option
 @cindex Predefined option @option{--encoded-args}
 Signals to the library that the non--option arguments and the option values are encoded in
@@ -3639,6 +3641,8 @@ the @code{ARGV} array and before being stored in the option's specific global va
 
 @item -v
 @itemx --verbose
+@anchor{-v}
+@anchor{--verbose}
 @cindex @option{-v}, predefined option
 @cindex Predefined option @option{-v}
 @cindex @option{--verbose}, predefined option
@@ -3647,6 +3651,7 @@ Turns on verbose messages.  If this option is used: The function @func{mbfl_opti
 true.  @ref{message, Printing messages to the console}.
 
 @item --silent
+@anchor{--silent}
 @cindex @option{--silent}, predefined option
 @cindex Predefined option @option{--silent}
 Turns off verbose messages.  If this option is used: The function @func{mbfl_option_verbose} returns
@@ -3661,6 +3666,8 @@ state of this option.
 
 @item --show-program
 @itemx --show-programs
+@anchor{--show-program}
+@anchor{--show-programs}
 @cindex @option{--show-program}, predefined option
 @cindex Predefined option @option{--show-program}
 @cindex @option{--show-programs}, predefined option
@@ -3668,17 +3675,20 @@ state of this option.
 Prints the command line of executed external programs.
 
 @item --debug
+@anchor{--debug}
 @cindex @option{--debug}, predefined option
 @cindex Predefined option @option{--debug}
 Turns on debugging messages.  Automatically turns on verbose messages and program showing.
 @ref{message, Printing messages to the console}.
 
 @item --test
+@anchor{--test}
 @cindex @option{--test}, predefined option
 @cindex Predefined option @option{--test}
-Turns on test execution.  @ref{program testing, Testing a script and external programs}.
+Turns on test execution.  @ref{program executing testing, Testing a script and external programs}.
 
 @item --null
+@anchor{--null}
 @cindex @option{--null}, predefined option
 @cindex Predefined option @option{--null}
 Signals to the script that it has to use the null character to separate values, instead of the
@@ -3686,6 +3696,8 @@ common newline.  The global variable @code{mbfl_option_NULL} is set to @code{yes
 
 @item -f
 @itemx --force
+@anchor{-f}
+@anchor{--force}
 @cindex @option{-f}, predefined option
 @cindex Predefined option @option{-f}
 @cindex @option{--force}, predefined option
@@ -3699,6 +3711,8 @@ option @option{--interactive}.
 
 @item -i
 @itemx --interactive
+@anchor{-i}
+@anchor{--interactive}
 @cindex @option{-i}, predefined option
 @cindex Predefined option @option{-i}
 @cindex @option{--interactive}, predefined option
@@ -3711,18 +3725,21 @@ An use of the option @option{--interactive} on the command line overrides all th
 the option @option{--force}.
 
 @item --validate-programs
+@anchor{--validate-programs}
 @cindex @option{--validate-programs}, predefined option
 @cindex Predefined option @option{--validate-programs}
 Validates the existence of all the programs needed by the script; then exits.  The exit code is zero
 if all the programs were found, one otherwise.
 
 @item --list-exit-codes
+@anchor{--list-exit-codes}
 @cindex @option{--list-exit-codes}, predefined option
 @cindex Predefined option @option{--list-exit-codes}
 Prints a list of numerical exit codes and their associated names, as declared in the script.
 @ref{main exit, Declaring exit codes}.
 
 @item --print-exit-code=NAME
+@anchor{--print-exit-code}
 @cindex @option{--print-exit-code}, predefined option
 @cindex Predefined option @option{--print-exit-code}
 Prints the numerical exit code associated to @code{NAME}.
@@ -3733,6 +3750,7 @@ Prints the numerical exit code associated to @code{NAME}.
 Prints the list of names associated to the numerical exit @code{CODE}.
 
 @item --version
+@anchor{--version}
 @cindex @option{--version}, predefined option
 @cindex Predefined option @option{--version}
 Prints to the standard output of the script the contents of the global variable
@@ -3747,6 +3765,7 @@ Prints to the standard output of the script the contents of the global variable
 variables}.
 
 @item --license
+@anchor{--license}
 @cindex @option{--license}, predefined option
 @cindex Predefined option @option{--license}
 Prints to the standard output of the script the contents of one of the global variables
@@ -3756,6 +3775,9 @@ variables.  @ref{service variables, Required user defined variables}.
 @item -h
 @itemx --help
 @itemx --usage
+@anchor{-h}
+@anchor{--help}
+@anchor{--usage}
 @cindex @option{-h}, predefined option
 @cindex Predefined option @option{-h}
 @cindex @option{--help}, predefined option
@@ -3771,6 +3793,9 @@ with code zero.  @ref{service variables, Required user defined variables}.
 @item -H
 @itemx --brief-help
 @itemx --brief-usage
+@anchor{-H}
+@anchor{--brief-help}
+@anchor{--brief-usage}
 @cindex @option{-H}, predefined option
 @cindex Predefined option @option{-H}
 @cindex @option{--brief-help}, predefined option
@@ -3784,6 +3809,7 @@ string describing the options declared with @func{mbfl_declare_option}.  Then ex
 The difference with @option{--help} is that predefined options and usage examples are not displayed.
 
 @item --print-options
+@anchor{--print-options}
 @cindex @option{--print-options}, predefined option
 @cindex Predefined option @option{--print-options}
 Print all the long options with @func{mbfl_getopts_print_long_switches}, then exit the script with
@@ -4234,54 +4260,14 @@ colon, a space, the formatting result, a newline character.
 @chapter Using external programs
 
 
+The module @code{program} implements the infrastructure needed to run external programs.
+
 @menu
-* program testing::             Testing a script and running programs.
 * program checking::            Checking programs existence.
 * program executing::           Executing a program.
-* program declaring::           Declaring the intention to use a
-                                program.
+* program declaring::           Declaring the intention to use a program.
 * program preselected::         Preselected program pathnames.
 @end menu
-
-@c page
-@node program testing
-@section Testing a script and running programs
-
-
-@mbfl{} allows a script to execute a ``dry run'', that is: do not
-perform any operation on the system, just print messages describing what
-will happen if the script is executed with the selected options.  This
-implies, in the @mbfl{} model, that no external program is executed.
-
-When this feature is turned on: @func{mbfl_program_exec} does not
-execute the program, instead it prints the command line on standard
-error and it returns true.
-
-
-@defun mbfl_set_option_test
-Enable the script test option.  After this: a script must not mutate the
-system in any way, it should just print messages describing the
-operations.
-
-However, the script is allowed to acquire informations from the system;
-for example it can acquire the list of files in a directory or load the
-contents of a file.
-
-This function is invoked when the predefined option @option{--test} is
-used on the command line.
-@end defun
-
-
-@defun mbfl_unset_option_test
-Disable the script test option.  After this a script must perform normal
-operations.
-@end defun
-
-
-@defun mbfl_option_test
-Return true if test execution is enabled, else return false.
-@end defun
-
 
 @c page
 @node program checking
@@ -4364,6 +4350,7 @@ it.
                                 profile's privileges.
 * program executing bash::      Executing a @command{bash} process.
 * program executing channels::  Redirecting channels when executing a program.
+* program executing testing::   Testing a script and running programs.
 @end menu
 
 @c page
@@ -4672,6 +4659,39 @@ echo ls | \
 @noindent
 the ``show program'' output goes to stderr and the stderr output of the @command{at} command is,
 internally, redirected to the stdout of @func{mbfl_program_exec}.
+
+@c page
+@node program executing testing
+@subsection Testing a script and running programs
+
+
+@mbfl{} allows a script to execute a ``dry run'', that is: do not perform any operation on the
+system, just print messages describing what will happen if the script is executed with the selected
+options.  This implies, in the @mbfl{} model, that no external program is executed.
+
+When this feature is turned on: @func{mbfl_program_exec} does not execute the program, instead it
+prints the command line on standard error and it returns true.
+
+
+@defun mbfl_set_option_test
+Enable the script test option.  After this: a script must not mutate the system in any way, it
+should just print messages describing the operations.
+
+However, the script is allowed to acquire informations from the system; for example it can acquire
+the list of files in a directory or load the contents of a file.
+
+This function is invoked when the predefined option @option{--test} is used on the command line.
+@end defun
+
+
+@defun mbfl_unset_option_test
+Disable the script test option.  After this a script must perform normal operations.
+@end defun
+
+
+@defun mbfl_option_test
+Return true if test execution is enabled, else return false.
+@end defun
 
 @c page
 @node program declaring
