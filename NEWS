@@ -91,6 +91,8 @@ changes!
     mbfl_string_is_network_ip_address
     mbfl_string_is_yes
     mbfl_string_is_no
+    mbfl_string_is_true
+    mbfl_string_is_false
     mbfl_string_strip_carriage_return_var
 
 * Added times and dates module.

@@ -5842,6 +5842,13 @@ return false.
 @end defun
 
 
+@defun mbfl_string_is_true @var{STR}
+@defunx mbfl_string_is_false @var{STR}
+Return true if the string @var{STR} is equal to, respectively, @samp{true} or @samp{false};
+otherwise return false.
+@end defun
+
+
 @defun mbfl_string_less @vari{str} @varii{str}
 Return successfully if @vari{str} is less than @varii{str} when lexicographically compared as
 strings; otherwise return unsuccessfully.  Examples:

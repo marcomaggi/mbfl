@@ -1214,6 +1214,22 @@ function string-strip-carriage-return-var-1.3 () {
 }
 
 #page
+#### specific strings
+
+function string-bool-1.1 () {
+    mbfl_string_is_true 'true'
+}
+function string-bool-1.2 () {
+    ! mbfl_string_is_true 'false'
+}
+function string-bool-2.1 () {
+    ! mbfl_string_is_false 'true'
+}
+function string-bool-2.2 () {
+    mbfl_string_is_false 'false'
+}
+
+#page
 
 dotest string-
 dotest-final-report

@@ -205,6 +205,15 @@ function mbfl_string_range () {
     fi
 }
 
+function mbfl_string_is_true () {
+    mbfl_mandatory_parameter(STRING, 1, the string argument)
+    test 'true' = "$STRING"
+}
+function mbfl_string_is_false () {
+    mbfl_mandatory_parameter(STRING, 1, the string argument)
+    test 'false' = "$STRING"
+}
+
 #page
 #### splitting
 
