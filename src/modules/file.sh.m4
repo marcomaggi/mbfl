@@ -1209,7 +1209,7 @@ function mbfl_exec_chmod () {
 function mbfl_file_chmod () {
     mbfl_mandatory_parameter(PERMISSIONS, 1, permissions)
     mbfl_mandatory_parameter(PATHNAME, 2, pathname)
-    shift
+    shift 2
     mbfl_exec_chmod "$PERMISSIONS" "$@" -- "$PATHNAME"
 }
 
