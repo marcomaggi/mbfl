@@ -322,14 +322,14 @@ function program-replace-1.2 () {
 function program-replace-2.1 () {
     local RESULT
 
-    RESULT=$(mbfl_program_set_exec_flags '-a secret'
+    RESULT=$(mbfl_program_set_exec_flags '-a' 'secret'
 	     mbfl_program_replace "$mbfl_PROGRAM_BASH" '-c' 'echo $0';)
     dotest-equal "$RESULT" secret
 }
 function program-replace-2.2 () {
     local RESULT
 
-    RESULT=$(mbfl_program_set_exec_flags '-a secret'
+    RESULT=$(mbfl_program_set_exec_flags '-a' 'secret'
 	     mbfl_program_reset_exec_flags
 	     mbfl_program_replace "$mbfl_PROGRAM_BASH" '-c' 'echo $0';)
     dotest-equal "$RESULT" "$mbfl_PROGRAM_BASH"

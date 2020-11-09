@@ -4516,7 +4516,7 @@ and we can select flags for @code{exec} as follows:
 @example
 local RESULT
 
-RESULT=$(mbfl_program_set_exec_flags '-a secret'
+RESULT=$(mbfl_program_set_exec_flags '-a' 'secret'
          mbfl_program_replace "$mbfl_PROGRAM_BASH" '-c' 'echo $0';)
 "$RESULT"       @result{} secret
 @end example
@@ -4534,8 +4534,8 @@ program}.  If the redirection of @stderr{} to @stdout{} is requested with
 @end defun
 
 
-@defun mbfl_program_set_exec_flags @var{EXEC_FLAGS}
-Store the string @var{EXEC_FLAGS} as internal state.  At the next program execution with one of the
+@defun mbfl_program_set_exec_flags @var{FLAG} @dots{}
+Store the strings @var{FLAG} as internal state.  At the next program execution with one of the
 functions @cfunc{mbfl_program_replace*}: the string is consumed as flags for the Bash built--in
 @code{exec}.
 @end defun
@@ -4552,7 +4552,7 @@ Reset to empty the internal state representing flags for the Bash built--in @cod
 
 @defun mbfl_program_execbg @var{INFD} @var{OUFD} @var{PROGRAM}
 @defunx mbfl_program_execbg @var{INFD} @var{OUFD} @var{PROGRAM} @var{ARG} @dots{}
-Does all the same things of @func{mbfl_program_exec}, running the given command line as:
+Like @func{mbfl_program_exec}, but runs the given command line as:
 
 @example
 @var{PROGRAM} @var{ARG} ... <&@var{INFD} >&@var{OUFD} &
@@ -4604,53 +4604,69 @@ This function does @strong{not} use @func{mbfl_declare_program}.
 @end defun
 
 
-@defun mbfl_program_declare_sudo_user @var{USER}
-Register @var{USER} as the user under which to execute the next program through @command{sudo}; the
-user will be selected using the @code{-u} option of @command{sudo}.  The value @code{nosudo} means:
-do not use @command{sudo}.
+@defun mbfl_program_declare_sudo_user @var{PERSONA}
+Register @var{PERSONA} as the user under which to execute the next program through @command{sudo};
+the user will be selected using the @code{-u} option of @command{sudo}.  This function will:
 
-The string @var{USER} must satisfy the function @func{mbfl_string_is_username}, else the function
-will print an error message to @stderr{} and exit with @func{exit_because_invalid_sudo_username}.
+@enumerate
+@item
+Check that the string @var{PERSONA} satisfies the function @func{mbfl_string_is_username}, else the
+function will print an error message to @stderr{} and exit with
+@func{exit_because_invalid_sudo_username}.
 
-When the time comes: if the selected user name equals the value printed by @command{whoami},
-@command{sudo} is not used.
+@item
+Check that the built--in file system pathname for @command{sudo} references an existent and
+executable file; otherwise call @func{exit_because_program_not_found}.  @ref{mbfl_PROGRAM_SUDO,
+Preselected program pathnames}.
+
+@item
+Check that the built--in file system pathname for @command{whoami} references an existent and
+executable file; otherwise call @func{exit_because_program_not_found}.  @ref{mbfl_PROGRAM_WHOAMI,
+Preselected program pathnames}.
+
+@item
+Execute @command{whoami} to determine the current effective user name.  If an error occurs call
+@func{exit_because_failure}.
+
+@item
+If the string @var{PERSONA} is different from the current effective user name: select @var{PERSONA}
+as the user for the next @command{sudo} execution and call @func{return_success}; otherwise call
+@func{return_because_failure}.
+@end enumerate
+@end defun
+
+
+@defun mbfl_program_reset_sudo_user
+Reset the previously requested @command{sudo} user to a value that will cause @command{sudo} not to
+be used in the next program invocation.  This is useful to abort a user request.
+@end defun
+
+
+@defun mbfl_program_sudo_user
+Print the current @command{sudo} user.  This function is for debugging purposes.
+@end defun
+
+
+@defun mbfl_program_requested_sudo
+Return true if the usage of @command{sudo} has been requested for the next command execution.
+@end defun
+
+
+@defun mbfl_program_set_sudo_options @var{OPT} @dots{}
+@defunx mbfl_program_declare_sudo_options @var{OPT} @dots{}
+Select additional command line options to use on the next invocation of @command{sudo}.  These
+values are consumed by the first use of @func{mbfl_program_exec}.
+@end defun
+
+
+@defun mbfl_program_reset_sudo_options
+Clean the options previously set by @func{mbfl_program_declare_sudo_options}.
 @end defun
 
 
 @defun exit_because_invalid_sudo_username
 @defunx return_because_invalid_sudo_username
 Exit or return with code @code{90}.
-@end defun
-
-
-@defun mbfl_program_reset_sudo_user
-Reset the previously requested @command{sudo} user to a value that will
-cause @command{sudo} not to be used in the next program invocation.
-This is useful to abort a user request.
-@end defun
-
-
-@defun mbfl_program_sudo_user
-Print the current @command{sudo} user.
-@end defun
-
-
-@defun mbfl_program_requested_sudo
-Return true if the usage of @command{sudo} has been requested for the
-next command execution.
-@end defun
-
-
-@defun mbfl_program_declare_sudo_options @var{OPT} @dots{}
-Select additional command line options to use on the next invocation of
-@command{sudo}.  These values are consumed by the first use of
-@func{mbfl_program_exec}.
-@end defun
-
-
-@defun mbfl_program_reset_sudo_options
-Clean the options previously set by
-@func{mbfl_program_declare_sudo_options}.
 @end defun
 
 @c page
@@ -4717,9 +4733,15 @@ The human--readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd
 the aliases are @strong{not} available, for example, when the script is run from a cron job).
 
 
-@defun mbfl_program_redirect_stderr_to_stdout
+@defun mbfl_program_set_stderr_to_stdout
+@defunx mbfl_program_redirect_stderr_to_stdout
 Just for the next invocation to @func{mbfl_program_exec} redirect stderr to stdout, that is: use the
 @code{2>&1} redirection for the executed program.
+@end defun
+
+
+@defun mbfl_program_reset_stderr_to_stdout
+Reset the @stderr{} to @stdout{} redirection, disabling it.
 @end defun
 
 

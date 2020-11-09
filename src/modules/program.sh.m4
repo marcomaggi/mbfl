@@ -174,13 +174,47 @@ function mbfl_program_main_validate_programs () {
 }
 
 #page
-#### program execution API functions
+#### additional flags for the Bash built-in "exec"
 
-declare mbfl_program_SUDO_USER=':nosudo:'
-declare mbfl_program_SUDO_OPTIONS
+declare mbfl_program_EXEC_FLAGS
+
+function mbfl_program_set_exec_flags () {
+    mbfl_program_EXEC_FLAGS="$*"
+}
+function mbfl_program_reset_exec_flags () {
+    mbfl_program_EXEC_FLAGS=
+}
+
+#page
+#### redirection of stderr to stdout
+
 declare mbfl_program_STDERR_TO_STDOUT=false
-declare mbfl_program_BGPID
-declare mbfl_EXEC_FLAGS
+
+# NOTE This  function is  deprecated, but  still here  for backwards  compatibility.  We  should use
+# "mbfl_program_set_stderr_to_stdout()".  (Marco Maggi; Nov 8, 2020)
+#
+function mbfl_program_redirect_stderr_to_stdout () {
+    mbfl_program_STDERR_TO_STDOUT=true
+}
+
+function mbfl_program_set_stderr_to_stdout () {
+    mbfl_program_STDERR_TO_STDOUT=true
+}
+function mbfl_program_reset_stderr_to_stdout () {
+    mbfl_program_STDERR_TO_STDOUT=false
+}
+
+#page
+#### "sudo" requests
+
+# This variable holds the  name of the user "sudo" should switch to.   When the value is ":nosudo:":
+# "sudo" is not used.
+#
+declare mbfl_program_SUDO_USER=':nosudo:'
+
+# This variable holds additional flags to place on the commnd line of the next "sudo" invocation.
+#
+declare mbfl_program_SUDO_OPTIONS
 
 # This is an undocumented variable; it is used only for testing.  Setting its value to 'true' causes
 # "mbfl_p_program_exec()" to use sudo even when  the "$mbfl_program_SUDO_USER" is equal to the value
@@ -200,14 +234,46 @@ function mbfl_program_enable_sudo () {
 }
 function mbfl_program_declare_sudo_user () {
     mbfl_mandatory_parameter(PERSONA, 1, sudo user name)
-    if mbfl_string_is_username "$PERSONA"
-    then mbfl_program_SUDO_USER=$PERSONA
-    else
+    local USERNAME
+
+    if ! mbfl_string_is_username "$PERSONA"
+    then
 	mbfl_message_error_printf 'attempt to select invalid "sudo" user: "%s"' "$PERSONA"
 	exit_because_invalid_sudo_username
     fi
+
+    if ! mbfl_file_is_executable "$mbfl_PROGRAM_SUDO"
+    then
+	mbfl_message_error_printf 'executable sudo not found: "%s"' "$mbfl_PROGRAM_SUDO"
+	exit_because_program_not_found
+    fi
+    if ! mbfl_file_is_executable "$mbfl_PROGRAM_WHOAMI"
+    then
+	mbfl_message_error_printf 'executable whoami not found: "%s"' "$mbfl_PROGRAM_WHOAMI"
+	exit_because_program_not_found
+    fi
+    # NOTE   Do    not   use    "mbfl_system_whoami()"   here,    because   that    function   calls
+    # "mbfl_program_exec()".  Instead just execute the program directly!!!
+    if ! USERNAME=$("$mbfl_PROGRAM_WHOAMI")
+    then
+	mbfl_message_error 'unable to determine current effective user name'
+	exit_because_failure
+    fi
+    if mbfl_string_not_equal "$PERSONA" "$USERNAME" || mbfl_string_equal 'true' "$mbfl_program_FORCE_USE_SUDO"
+    then
+	mbfl_program_SUDO_USER=$PERSONA
+	mbfl_program_FORCE_USE_SUDO=false
+	mbfl_message_debug_printf '%s: the next program execution will use "sudo" with user: "%s"' "$FUNCNAME" "$mbfl_program_SUDO_USER"
+	return_success
+    else
+	mbfl_message_debug_printf '%s: skipped "sudo" request for user: "%s"' "$FUNCNAME" "$PERSONA"
+	mbfl_program_reset_sudo_user
+	mbfl_program_FORCE_USE_SUDO=false
+	return_because_failure
+    fi
 }
 function mbfl_program_reset_sudo_user () {
+    mbfl_message_debug_printf '%s: reset sudo user request' "$FUNCNAME"
     mbfl_program_SUDO_USER=':nosudo:'
 }
 function mbfl_program_sudo_user () {
@@ -219,34 +285,27 @@ function mbfl_program_requested_sudo () {
 function mbfl_program_declare_sudo_options () {
     mbfl_program_SUDO_OPTIONS="$*"
 }
+function mbfl_program_set_sudo_options () {
+    mbfl_program_SUDO_OPTIONS="$*"
+}
 function mbfl_program_reset_sudo_options () {
     mbfl_program_SUDO_OPTIONS=
 }
 
-## --------------------------------------------------------------------
+#page
+#### public API for program execution
 
-function mbfl_program_redirect_stderr_to_stdout () {
-    mbfl_program_STDERR_TO_STDOUT=true
-}
+# When we use one of the "mbfl_program_execbg()" functions:  the PID of the process in background is
+# stored in this variable.
+#
+declare mbfl_program_BGPID
 
-### ------------------------------------------------------------------------
-
-function mbfl_program_set_exec_flags () {
-    mbfl_mandatory_parameter(EXEC_FLAGS, 1, flags for the Bash builtin exec)
-    mbfl_EXEC_FLAGS="$EXEC_FLAGS"
-}
-function mbfl_program_reset_exec_flags () {
-    mbfl_EXEC_FLAGS=
-}
-
-### --------------------------------------------------------------------
-
-# The    functions   'mbfl_program_exec',    'mbfl_program_execbg'   and
-# 'mbfl_program_replace' have  to be kept  equal, with the  exception of
-# the stuff required to execute the program as needed!!!
+# The  functions 'mbfl_program_exec',  'mbfl_program_execbg' and  'mbfl_program_replace' have  to be
+# kept equal, with the exception of the stuff required to execute the program as needed!!!
+#
 function mbfl_program_exec () {
-    # We  use  0  and  1  because  /dev/stdin,  /dev/stdout,  /dev/fd/0,
-    # /dev/fd/1 do not exist when the script is run from a cron job.
+    # We use  0 and 1 because  /dev/stdin, /dev/stdout, /dev/fd/0,  /dev/fd/1 do not exist  when the
+    # script is run from a cron job.
     local -ir INCHAN=0 OUCHAN=1 ERCHAN=2
     local -r REPLACE=false BACKGROUND=false
     mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
@@ -257,7 +316,7 @@ function mbfl_program_exec2 () {
     mbfl_mandatory_parameter(ERCHAN, 3, numeric error channel)
     shift 3
     local -r REPLACE=false BACKGROUND=false
-    mbfl_program_p_reset_stderr_to_stdout_redirection
+    mbfl_program_reset_stderr_to_stdout
     mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
 }
 function mbfl_program_execbg () {
@@ -274,7 +333,7 @@ function mbfl_program_execbg2 () {
     mbfl_mandatory_parameter(ERCHAN, 3, numeric error channel)
     shift 3
     local -r REPLACE=false BACKGROUND=true
-    mbfl_program_p_reset_stderr_to_stdout_redirection
+    mbfl_program_reset_stderr_to_stdout
     mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
 }
 function mbfl_program_replace () {
@@ -290,13 +349,8 @@ function mbfl_program_replace2 () {
     mbfl_mandatory_parameter(ERCHAN, 3, numeric error channel)
     shift 3
     local -r REPLACE=true BACKGROUND=false
-    mbfl_program_p_reset_stderr_to_stdout_redirection
+    mbfl_program_reset_stderr_to_stdout
     mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
-}
-function mbfl_program_p_reset_stderr_to_stdout_redirection () {
-    if $mbfl_program_STDERR_TO_STDOUT
-    then mbfl_program_STDERR_TO_STDOUT=false
-    fi
 }
 
 #page
@@ -309,46 +363,32 @@ function mbfl_p_program_exec () {
     mbfl_mandatory_parameter(REPLACE,	4, replace argument)
     mbfl_mandatory_parameter(BACKGROUND,5, background argument)
     shift 5
-    local -r PERSONA=$mbfl_program_SUDO_USER
-    local USE_SUDO=false
-    local SUDO="$mbfl_PROGRAM_SUDO"
-    local WHOAMI="$mbfl_PROGRAM_WHOAMI"
-    local USERNAME
-    local -r SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
-    local -r STDERR_TO_STDOUT=$mbfl_program_STDERR_TO_STDOUT
-
-    # Reset request for sudo.
-    mbfl_program_SUDO_USER=':nosudo:'
-    mbfl_program_SUDO_OPTIONS=
-
-    # Reset stderr to stdout redirection
-    mbfl_program_STDERR_TO_STDOUT=false
 
     # Set the variable USE_SUDO to 'true' if we must use sudo to run the program, otherwise leave it
     # set to 'false'.
-    if test "$PERSONA" != ':nosudo:'
+    local USE_SUDO=false
+    if mbfl_program_requested_sudo
+    then USE_SUDO=true
+    fi
+
+    if true
     then
-        if ! test -x "$SUDO"
-	then
-	    mbfl_message_error_printf 'executable sudo not found: "%s"' "$SUDO"
-	    exit_because_program_not_found
-	fi
-        if ! test -x "$WHOAMI"
-	then
-	    mbfl_message_error_printf 'executable whoami not found: "%s"' "$WHOAMI"
-	    exit_because_program_not_found
-	fi
-	if ! USERNAME=$("$WHOAMI")
-	then
-	    mbfl_message_error 'unable to determine current user name'
-	    exit_because_failure
-	fi
-	if test "$PERSONA" != "$USERNAME" -o "$mbfl_program_FORCE_USE_SUDO" = true
-	then
-	    USE_SUDO=true
-	    mbfl_program_FORCE_USE_SUDO=false
+	if mbfl_string_equal 'true' "$USE_SUDO"
+	then mbfl_message_debug_printf '%s: the next program execution will use sudo (PERSONA=%s)'     "$FUNCNAME" "$mbfl_program_SUDO_USER"
+	else mbfl_message_debug_printf '%s: the next program execution will not use sudo (PERSONA=%s)' "$FUNCNAME" "$mbfl_program_SUDO_USER"
 	fi
     fi
+
+    # Acquire the values then reset the request for sudo.
+    local -r SUDO="$mbfl_PROGRAM_SUDO"
+    local -r PERSONA=$mbfl_program_SUDO_USER
+    local -r SUDO_OPTIONS=$mbfl_program_SUDO_OPTIONS
+    mbfl_program_reset_sudo_user
+    mbfl_program_reset_sudo_options
+
+    # Acquire the value the reset the request for stderr-to-stdout redirection.
+    local -r STDERR_TO_STDOUT=$mbfl_program_STDERR_TO_STDOUT
+    mbfl_program_reset_stderr_to_stdout
 
     # Print to stderr the command line that will be executed.
     if { mbfl_option_test || mbfl_option_show_program; }
@@ -379,7 +419,7 @@ function mbfl_p_program_exec () {
 	if $REPLACE
 	then
 	    local EXEC=exec
-	    local EXEC_FLAGS=$mbfl_EXEC_FLAGS
+	    local EXEC_FLAGS=$mbfl_program_EXEC_FLAGS
 	    mbfl_program_reset_exec_flags
 	else
 	    local EXEC=
@@ -624,7 +664,7 @@ function mbfl_p_program_log_5 () {
     if $REPLACE
     then
 	EXEC=exec
-	EXEC_FLAGS=$mbfl_EXEC_FLAGS
+	EXEC_FLAGS=$mbfl_program_EXEC_FLAGS
     else EXEC=command
     fi
 
