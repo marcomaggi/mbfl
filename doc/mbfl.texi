@@ -4630,7 +4630,8 @@ Execute @command{whoami} to determine the current effective user name.  If an er
 
 @item
 If the string @var{PERSONA} is different from the current effective user name: select @var{PERSONA}
-as the user for the next @command{sudo} execution and call @func{return_success}; otherwise call
+as the user for the next @command{sudo} execution and call @func{return_success}; otherwise set the
+internal state so that the next program execution will @strong{not} use @command{sudo}, then call
 @func{return_because_failure}.
 @end enumerate
 @end defun
@@ -4679,14 +4680,18 @@ hard--coded in the library at package--configuration time; @ref{mbfl_PROGRAM_BAS
 
 
 @defun mbfl_program_bash @var{ARG} @dots{}
-Execute the program @command{bash} with the @var{ARG} arguments appended.
+Execute the program @command{bash} with the @var{ARG} arguments on the command line.
 @end defun
 
 
-@defun mbfl_program_bash_command @var{COMMAND} @var{OPT} @dots{}
+@defun mbfl_program_bash_command @var{COMMAND} @var{ARG} @dots{}
 Execute @var{COMMAND} in a @command{bash} subprocess, using the @code{-c} switch.  If given, the
-optional @var{OPT} arguments are placed on the command line of @command{bash} in options position
+optional @var{ARG} arguments are placed on the command line of @command{bash} in options position
 (before the @code{-c} option).
+
+@example
+mbfl_program_bash_command 'read ; echo "$REPLY"'
+@end example
 @end defun
 
 @c ------------------------------------------------------------------------

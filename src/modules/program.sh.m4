@@ -208,13 +208,17 @@ function mbfl_program_reset_stderr_to_stdout () {
 #### "sudo" requests
 
 # This variable holds the  name of the user "sudo" should switch to.   When the value is ":nosudo:":
-# "sudo" is not used.
+# "sudo" is not used.  Notice that ":nosudo:" is not a valid user name.
 #
 declare mbfl_program_SUDO_USER=':nosudo:'
 
 # This variable holds additional flags to place on the commnd line of the next "sudo" invocation.
 #
 declare mbfl_program_SUDO_OPTIONS
+
+# Cache the value resulting from running "whoami".
+#
+declare mbfl_program_EFFECTIVE_USER
 
 # This is an undocumented variable; it is used only for testing.  Setting its value to 'true' causes
 # "mbfl_p_program_exec()" to use sudo even when  the "$mbfl_program_SUDO_USER" is equal to the value
@@ -223,18 +227,16 @@ declare mbfl_program_SUDO_OPTIONS
 declare mbfl_program_FORCE_USE_SUDO=false
 
 function mbfl_program_enable_sudo () {
-    local SUDO="$mbfl_PROGRAM_SUDO"
-    if ! test -x "$SUDO"
-    then mbfl_message_warning_printf 'executable sudo not found: "%s"\n' "$SUDO"
+    if ! mbfl_file_is_executable "$mbfl_PROGRAM_SUDO"
+    then mbfl_message_warning_printf 'executable sudo not found: "%s"\n' "$mbfl_PROGRAM_SUDO"
     fi
-    local WHOAMI="$mbfl_PROGRAM_WHOAMI"
-    if ! test -x "$WHOAMI"
-    then mbfl_message_warning_printf 'executable whoami not found: "%s"\n' "$WHOAMI"
+    if ! mbfl_file_is_executable "$mbfl_PROGRAM_WHOAMI"
+    then mbfl_message_warning_printf 'executable whoami not found: "%s"\n' "$mbfl_PROGRAM_WHOAMI"
     fi
 }
 function mbfl_program_declare_sudo_user () {
     mbfl_mandatory_parameter(PERSONA, 1, sudo user name)
-    local USERNAME
+    local EFFECTIVE_USER_NAME
 
     if ! mbfl_string_is_username "$PERSONA"
     then
@@ -252,14 +254,19 @@ function mbfl_program_declare_sudo_user () {
 	mbfl_message_error_printf 'executable whoami not found: "%s"' "$mbfl_PROGRAM_WHOAMI"
 	exit_because_program_not_found
     fi
-    # NOTE   Do    not   use    "mbfl_system_whoami()"   here,    because   that    function   calls
-    # "mbfl_program_exec()".  Instead just execute the program directly!!!
-    if ! USERNAME=$("$mbfl_PROGRAM_WHOAMI")
+    if mbfl_string_is_empty "$mbfl_program_EFFECTIVE_USER"
     then
-	mbfl_message_error 'unable to determine current effective user name'
-	exit_because_failure
+	# NOTE   Do    not   use    "mbfl_system_whoami()"   here,    because   that    function   calls
+	# "mbfl_program_exec()".  Instead just execute the program directly!!!
+	if mbfl_program_EFFECTIVE_USER=$("$mbfl_PROGRAM_WHOAMI")
+	then EFFECTIVE_USER_NAME=$mbfl_program_EFFECTIVE_USER
+	else
+	    mbfl_message_error 'unable to determine current effective user name'
+	    exit_because_failure
+	fi
+    else EFFECTIVE_USER_NAME=$mbfl_program_EFFECTIVE_USER
     fi
-    if mbfl_string_not_equal "$PERSONA" "$USERNAME" || mbfl_string_equal 'true' "$mbfl_program_FORCE_USE_SUDO"
+    if mbfl_string_not_equal "$PERSONA" "$EFFECTIVE_USER_NAME" || mbfl_string_is_true "$mbfl_program_FORCE_USE_SUDO"
     then
 	mbfl_program_SUDO_USER=$PERSONA
 	mbfl_program_FORCE_USE_SUDO=false
@@ -371,13 +378,13 @@ function mbfl_p_program_exec () {
     then USE_SUDO=true
     fi
 
-    if true
-    then
-	if mbfl_string_equal 'true' "$USE_SUDO"
-	then mbfl_message_debug_printf '%s: the next program execution will use sudo (PERSONA=%s)'     "$FUNCNAME" "$mbfl_program_SUDO_USER"
-	else mbfl_message_debug_printf '%s: the next program execution will not use sudo (PERSONA=%s)' "$FUNCNAME" "$mbfl_program_SUDO_USER"
-	fi
-    fi
+    # if true
+    # then
+    # 	if mbfl_string_is_true "$USE_SUDO"
+    # 	then mbfl_message_debug_printf '%s: the next program execution will use sudo (PERSONA=%s)'     "$FUNCNAME" "$mbfl_program_SUDO_USER"
+    # 	else mbfl_message_debug_printf '%s: the next program execution will not use sudo (PERSONA=%s)' "$FUNCNAME" "$mbfl_program_SUDO_USER"
+    # 	fi
+    # fi
 
     # Acquire the values then reset the request for sudo.
     local -r SUDO="$mbfl_PROGRAM_SUDO"
