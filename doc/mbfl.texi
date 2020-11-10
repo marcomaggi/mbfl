@@ -4440,16 +4440,10 @@ If usage of @command{sudo} was requested, the command is executed with it; then 
 request is reset.  This means that this function ``consumes'' a @command{sudo} request.
 @ref{program executing sudo, Executing programs with another's profile privileges}.
 
-We can redirect the standard input and standard output channels using the usual @code{<} and
-@code{>} operators:
-
-@example
-mbfl_program_exec doit --some-option SOME_ARG </some/file >/another/file
-@end example
-
-@noindent
-for the redirection of the standard error channel @ref{program executing channels, Redirecting
-channels when executing a program}.
+If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is honoured and consumed.  For a
+discussion of channels redirection when calling this function, see @ref{program executing channels,
+Redirecting channels when executing a program}.
 
 If the function @func{mbfl_program_set_exec_flags} was used to select arguments for the Bash
 built--in @code{exec}: that request is ignored and reset.
@@ -4472,13 +4466,13 @@ local -ir INFD=10 OUFD=11 ERFD=12
 mbfl_fd_open_input  $INFD /some/file
 mbfl_fd_open_output $OUFD /another/file
 mbfl_fd_open_output $ERFD /yet/another/file
-mbfl_program_exec2 $INFD $OUFD $ERFD doit --some-option SOME_ARG
+mbfl_program_exec2 $INFD $OUFD $ERFD /some/program.exe --some-option SOME_ARG
 @end example
 
-Notice that we @strong{must} always use numeric file descriptors as @var{INFD}, @var{OUFD} and
-@var{ERFD} arguments; @ref{program executing channels, Redirecting channels when executing a
-program}.  If the redirection of @stderr{} to @stdout{} is requested with
-@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.
+If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and consumed.  For a
+discussion of channels redirection when calling this function, see @ref{program executing channels,
+Redirecting channels when executing a program}.
 @end defun
 
 @c page
@@ -4520,6 +4514,11 @@ RESULT=$(mbfl_program_set_exec_flags '-a' 'secret'
          mbfl_program_replace "$mbfl_PROGRAM_BASH" '-c' 'echo $0';)
 "$RESULT"       @result{} secret
 @end example
+
+If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is honoured and consumed.  For a
+discussion of channels redirection when calling this function, see @ref{program executing channels,
+Redirecting channels when executing a program}.
 @end defun
 
 
@@ -4527,10 +4526,10 @@ RESULT=$(mbfl_program_set_exec_flags '-a' 'secret'
 Like @func{mbfl_program_replace}, but redirect the standard input, output and error channels using
 the given channels.
 
-Notice that we @strong{must} always use numeric file descriptors as @var{INFD}, @var{OUFD} and
-@var{ERFD} arguments; @ref{program executing channels, Redirecting channels when executing a
-program}.  If the redirection of @stderr{} to @stdout{} is requested with
-@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.
+If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and consumed.  For a
+discussion of channels redirection when calling this function, see @ref{program executing channels,
+Redirecting channels when executing a program}.
 @end defun
 
 
@@ -4563,17 +4562,10 @@ additionally: set the global variable @code{mbfl_program_BGPID} to the process I
 process; that is: @code{mbfl_program_BGPID} is the value of @code{$!} right after the process
 execution.
 
-Using this function is different from calling:
-
-@example
-mbfl_program_exec ls <&@var{INFD} >&@var{OUFD} &
-@end example
-
-@noindent
-because doing so puts in the background the function call (in a subshell) and then runs the program.
-
-Notice that we @strong{must} always use numeric file descriptors as @var{INFD} and @var{OUFD}
-arguments.  @ref{program executing channels, Redirecting channels when executing a program}.
+If the redirection of @stderr{} to @stdout{} is requested with
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is honoured and consumed.  For a
+discussion of channels redirection when calling this function, see @ref{program executing channels,
+Redirecting channels when executing a program}.
 @end defun
 
 
@@ -4583,7 +4575,9 @@ Like @func{mbfl_program_execbg}, but redirects also the standard error of the ex
 @var{ERFD}, which must be a numeric file descriptor.
 
 If the redirection of @stderr{} to @stdout{} is requested with
-@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and unset.
+@func{mbfl_program_redirect_stderr_to_stdout}: such request is ignored and consumed.  For a
+discussion of channels redirection when calling this function, see @ref{program executing channels,
+Redirecting channels when executing a program}.
 @end defun
 
 
@@ -4722,57 +4716,82 @@ the background with @code{&}, will not work: it is impossible to determine the e
 @subsection Redirecting channels when executing a program
 
 
-There are programs that output useful informations on their stderr channel (example: the
-@command{at} command).
-
-Also we can always use the default file descriptors, for example:
-Notice that we @strong{must} always use numeric file descriptors as @var{INCHAN} and @var{OUCHAN}
-arguments.  Also we can always use the default file descriptors, for example:
+When we execute programs with the functions @func{mbfl_program_exec}, @func{mbfl_program_execbg},
+@func{mbfl_program_replace}, and other functions that @strong{do not} accept channels as arguments,
+we could perform channels redirection by composing expressions like:
 
 @example
-mbfl_program_execbg 0 1 /bin/ls
+mbfl_program_exec /the/program.exe </some/input >/some/output 2>/some/error
 @end example
 
-The human--readable aliases @file{/dev/stdin}, @file{/dev/stdout}, @file{/dev/fd/0},
-@file{/dev/fd/1} are @strong{not} usable as @var{INCHAN} and @var{OUCHAN} arguments (remember that
-the aliases are @strong{not} available, for example, when the script is run from a cron job).
+@noindent
+but this way @strong{we redirect the channels of the function call}, not the channels of the
+executed subprocess; this may be a problem, for example, when we use the predefined options
+@option{--verbose}, @option{--debug}, @option{--show-program} that output text on the @stderr{}
+channel, @ref{getopts options, Predefined options}.  For this reason there exist the functions
+@func{mbfl_program_exec2}, @func{mbfl_program_execbg2}, @func{mbfl_program_replace2}, and other
+functions that @strong{do} accept channels as arguments.
+
+The functions @func{mbfl_program_exec}, @func{mbfl_program_execbg}, @func{mbfl_program_replace}, and
+similar should be used only when it is fine, for the executed subprocess, to use the same channels
+of the invoking parent process (the Bash script itself).
+
+We can always use the default channels when calling @func{mbfl_program_exec2},
+@func{mbfl_program_execbg2}, @func{mbfl_program_replace2}, and similar; for example:
+
+@example
+mbfl_program_exec2 0 1 2 /bin/ls --long
+@end example
+
+@noindent
+is equivalent to:
+
+@example
+mbfl_program_exec /bin/ls --long
+@end example
+
+@noindent
+In general we could use both numeric channels and symbolic channels; on a system where symbolic
+channels are created under @file{/dev}, we can compose expressions like:
+
+@example
+mbfl_program_exec2 /dev/stdin /dev/stdout /dev/stderr /bin/ls --long
+mbfl_program_exec2 /dev/fd/0  /dev/fd/1   /dev/fd/2   /bin/ls --long
+@end example
+
+@noindent
+but we must remember that the human--readable aliases @file{/dev/stdin}, @file{/dev/stdout},
+@file{/dev/stderr}, @file{/dev/fd/0}, @file{/dev/fd/1}, @dots{} are @strong{not} always available;
+for example, when a script is run from a @command{cron} job: these aliases may not exist.
+
+The solution that always works is to use numeric channels @samp{0}, @samp{1}, @samp{2}, @dots{}; but
+we must beware that using numeric channels above @samp{9} may collide with the channels used
+internally by Bash itself (as it is stated in the documentation of @gnu{} Bash version 4).  So we
+should consider using the @code{fd} module to open channels as we see fit, @ref{fd, Handling file
+descriptors}.
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Redirecting @stderr{} to @stdout{}
+
+
+There are programs that output useful informations on their stderr channel (example: the
+@command{at} command).  When we execute programs with the functions @func{mbfl_program_exec},
+@func{mbfl_program_execbg} or @func{mbfl_program_replace}, there is a simple, special case that is
+sometimes useful: using the standard channels for input and output; redirecting the standard error
+channel to the standard output channel.
 
 
 @defun mbfl_program_set_stderr_to_stdout
 @defunx mbfl_program_redirect_stderr_to_stdout
-Just for the next invocation to @func{mbfl_program_exec} redirect stderr to stdout, that is: use the
-@code{2>&1} redirection for the executed program.
+Just for the next invocation to @func{mbfl_program_exec} and similar functions: redirect @stderr{}
+to @stdout{}, that is: use the @code{2>&1} redirection for the executed program.
 @end defun
 
 
 @defun mbfl_program_reset_stderr_to_stdout
 Reset the @stderr{} to @stdout{} redirection, disabling it.
 @end defun
-
-
-This is useful because redirecting the output of
-@func{mbfl_program_exec}:
-
-@example
-echo ls | \
-    mbfl_program_exec at 'now +25 minutes' 2>&1 | \
-    while read
-@end example
-
-@noindent
-redirects also the ``show program'' output (@ref{getopts options} for the @option{--show-program}
-option explanation and see the above description of @func{mbfl_program_exec}).  Instead By using:
-
-@example
-mbfl_program_redirect_stderr_to_stdout
-echo ls | \
-    mbfl_program_exec at 'now +25 minutes' | \
-    while read
-@end example
-
-@noindent
-the ``show program'' output goes to stderr and the stderr output of the @command{at} command is,
-internally, redirected to the stdout of @func{mbfl_program_exec}.
 
 @c page
 @node program executing testing
@@ -4781,31 +4800,34 @@ internally, redirected to the stdout of @func{mbfl_program_exec}.
 
 @mbfl{} allows a script to execute a ``dry run'', that is: do not perform any operation on the
 system, just print messages describing what will happen if the script is executed with the selected
-options.  This implies, in the @mbfl{} model, that no external program is executed.
+options.  This implies, in the @mbfl{} model, that no external program is executed.  In many
+scenarios we have to actively code the logic of testing execution.
 
-When this feature is turned on: @func{mbfl_program_exec} does not execute the program, instead it
-prints the command line on standard error and it returns true.
+We can turn on this feature by using the predefined command line option @option{--test},
+@ref{--test, Predefined options}.  We can programmatically enable this feature by calling the
+function @func{mbfl_set_option_test} and disable it by calling the function
+@func{mbfl_unset_option_test}, @ref{mbfl_unset_option_test, Predefined options}.  We can also save
+and restore this process state with the functions @func{mbfl_option_test_save} and
+@func{mbfl_option_test_restore}, @ref{mbfl_option_test_save, Predefined options}.
 
+When this feature is turned on: @func{mbfl_program_exec} and the other functions do not execute the
+program, instead they print the command line on the standard error channel and return successfully.
 
-@defun mbfl_set_option_test
-Enable the script test option.  After this: a script must not mutate the system in any way, it
-should just print messages describing the operations.
+We can temporarily disable testing mode if we actually need to run a program anyway; we can use a
+statement like:
 
-However, the script is allowed to acquire informations from the system; for example it can acquire
-the list of files in a directory or load the contents of a file.
-
-This function is invoked when the predefined option @option{--test} is used on the command line.
-@end defun
-
-
-@defun mbfl_unset_option_test
-Disable the script test option.  After this a script must perform normal operations.
-@end defun
-
-
-@defun mbfl_option_test
-Return true if test execution is enabled, else return false.
-@end defun
+@example
+if @{
+     mbfl_location_enter
+     @{
+       mbfl_location_handler_suspend_testing
+       mbfl_program_exec /some/program.exe --some-option SOME_ARG
+     @}
+     mbfl_location_leave
+@}
+then handle_the_error
+fi
+@end example
 
 @c page
 @node program declaring
@@ -7039,6 +7061,16 @@ inside a location we can register a ``handler command'' that is automatically ex
 location is left by calling @func{mbfl_location_leave}.  We can nest locations at will.  We can run
 all the handlers registered so far in a stack of locations.
 
+@menu
+* locations core::              Locations programming interface.
+* locations handlers::          Special location handlers.
+* locations examples::          Locations usage examples.
+@end menu
+
+@c page
+@node locations core
+@section Locations programming interface
+
 
 @defun mbfl_location_enter
 Enter into a new location.  Initialise the internal state.
@@ -7065,20 +7097,49 @@ Running scripts at exit--time}.
 
 @defun mbfl_location_enable_cleanup_atexit
 @defunx mbfl_location_disable_cleanup_atexit
-Enable or disable running the location handlers through an atexit handler.  The enable operation
-registers an atexit handler that cleans up the current stack of locations.
+Enable or disable running the location handlers through an atexit handler, @ref{atexit, Running
+scripts at exit--time}.  The enable operation registers an atexit handler that cleans up the current
+stack of locations.
+
+It is suggested to always add the following code to the preamble of a script:
+
+@example
+mbfl_atexit_enable
+mbfl_location_enable_cleanup_atexit
+@end example
 @end defun
+
+@c page
+@node locations handlers
+@section Special location handlers
+
+
+@defun mbfl_location_handler_suspend_testing
+Suspend the test mode inside a location block, by executing the following code:
+
+@example
+mbfl_option_test_save
+mbfl_location_handler mbfl_option_test_restore
+@end example
+
+For a discussion of its usage see @ref{program executing testing, Testing a script and running
+programs}.
+@end defun
+
+@c page
+@node locations examples
+@section Locations usage examples
 
 
 @menu
-* locations example1::          Single location, syntactic scoping.
-* locations example2::          Nested locations.
-* locations example3::          Nested function calls.
+* locations examples 1::        Single location, syntactic scoping.
+* locations examples 2::        Nested locations.
+* locations examples 3::        Nested function calls.
 @end menu
 
 @c page
-@node locations example1
-@section Single location, syntactic scoping
+@node locations examples 1
+@subsection Single location, syntactic scoping
 
 
 The handler functions can access the variables in the uplevel function frames.
@@ -7107,8 +7168,8 @@ function three () @{ R_three=$Z; @}
 @end example
 
 @c page
-@node locations example2
-@section Nested locations
+@node locations examples 2
+@subsection Nested locations
 
 
 Remember that the handlers are called when a location is left:
@@ -7147,8 +7208,8 @@ function handler_append () @{
 @end example
 
 @c page
-@node locations example3
-@section Nested function calls
+@node locations examples 3
+@subsection Nested function calls
 
 
 Remember that the handlers are called when a location is left:

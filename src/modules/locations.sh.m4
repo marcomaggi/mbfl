@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -138,6 +138,11 @@ function mbfl_location_handler () {
 	mbfl_message_error 'attempt to register a location handler outside any location'
 	exit_because_no_location
     fi
+}
+
+function mbfl_location_handler_suspend_testing () {
+    mbfl_option_test_save
+    mbfl_location_handler mbfl_option_test_restore
 }
 
 ### end of file

@@ -240,6 +240,10 @@ changes!
 * More functions to query/set/unset/save/restore the value of predefined
   command line options.
 
+* Added functions to the location module:
+
+    mbfl_location_handler_suspend_testing
+
 
 Notes for revision 2.2.0
 ------------------------

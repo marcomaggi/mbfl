@@ -301,6 +301,73 @@ function worker-locations-06.1 () {
 }
 
 #page
+#### special handlers: test mode suspension
+
+function locations-test-suspension-1.0 () {
+    local RESULT_INNER RESULT_OUTER RESULT_BRANCH
+
+    mbfl_option_test_save
+    {
+	mbfl_set_option_test
+	if {
+	    mbfl_location_enter
+	    {
+		# Suspend testing.
+		mbfl_location_handler_suspend_testing
+		# This returns 0 if testing is enabled; it returns 1 otherwise.  So it should return
+		# 1.
+		mbfl_option_test
+		RESULT_INNER=$?
+		mbfl_option_test
+	    }
+	    mbfl_location_leave
+	}
+	then true
+	else false
+	fi
+	RESULT_BRANCH=$?
+	mbfl_option_test
+	RESULT_OUTER=$?
+    }
+    mbfl_option_test_restore
+    dotest-equal 1 $RESULT_INNER 'result of suspending inner' &&
+	dotest-equal 0 $RESULT_OUTER 'result of suspending outer' &&
+	dotest-equal 1 $RESULT_BRANCH 'result of suspending branch'
+}
+
+function locations-test-suspension-1.1 () {
+    local RESULT_INNER RESULT_OUTER RESULT_BRANCH
+
+    mbfl_option_test_save
+    {
+	mbfl_unset_option_test
+	if {
+	    mbfl_location_enter
+	    {
+		# Suspend testing.
+		mbfl_location_handler_suspend_testing
+		# This returns 0 if testing is enabled; it returns 1 otherwise.  So it should return
+		# 1.
+		mbfl_option_test
+		RESULT_INNER=$?
+		mbfl_option_test
+	    }
+	    mbfl_location_leave
+	}
+	then true
+	else false
+	fi
+	RESULT_BRANCH=$?
+	mbfl_option_test
+	RESULT_OUTER=$?
+    }
+    mbfl_option_test_restore
+    dotest-equal 1 $RESULT_INNER 'result of suspending inner' &&
+	dotest-equal 1 $RESULT_OUTER 'result of suspending outer' &&
+	dotest-equal 1 $RESULT_BRANCH 'result of suspending branch'
+}
+
+#page
 #### internals inspection
 
 # After all the tests we have run: the counter must be back to zero.
