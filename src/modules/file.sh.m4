@@ -813,9 +813,9 @@ function mbfl_file_copy_to_directory () {
     shift 2
     if ! mbfl_option_test
     then
-        if      ! mbfl_file_is_readable  "$SOURCE" print_error || \
-		! mbfl_file_exists       "$TARGET" print_error || \
-		! mbfl_file_is_directory "$TARGET" print_error
+        if      ! mbfl_file_is_readable  "$SOURCE"           print_error || \
+		! mbfl_file_exists       "$TARGET_DIRECTORY" print_error || \
+		! mbfl_file_is_directory "$TARGET_DIRECTORY" print_error
 	then
             mbfl_message_error_printf 'copying file "%s"' "$SOURCE"
             return_because_failure
