@@ -173,7 +173,7 @@ function mbfl_declare_option () {
             fi
         else
             mbfl_message_error_printf 'action option must be with no argument "%s"' $keyword
-            return 1
+            return_failure
         fi
     fi
     return_success
@@ -214,34 +214,34 @@ function mbfl_getopts_parse () {
 	    if mbfl_getopts_islong  "$argument" p_OPT
 	    then
 		if ! mbfl_getopts_p_process_predefined_option_no_arg "$p_OPT"
-		then return 1
+		then return_failure
 		fi
 	    elif mbfl_getopts_islong_with "$argument" p_OPT p_OPTARG
 	    then
 		if ! mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
-		then return 1
+		then return_failure
 		fi
 	    else
 		# Invalid command line argument starting with "--".
 		mbfl_message_error_printf 'invalid command line argument: "%s"' "$argument"
-		return 1
+		return_failure
 	    fi
 	elif mbfl_string_equal '-' "mbfl_string_idx(argument, 0)"
 	then
             if mbfl_getopts_isbrief "$argument" p_OPT
             then
 		if ! mbfl_getopts_p_process_predefined_option_no_arg "$p_OPT"
-		then return 1
+		then return_failure
 		fi
             elif mbfl_getopts_isbrief_with "$argument" p_OPT p_OPTARG
             then
 		if ! mbfl_getopts_p_process_predefined_option_with_arg "$p_OPT" "$p_OPTARG"
-		then return 1
+		then return_failure
 		fi
 	    else
 		# Invalid command line argument starting with "-".
 		mbfl_message_error_printf 'invalid command line argument: "%s"' "$argument"
-		return 1
+		return_failure
 	    fi
 	else
 	    # If it is not an option: it is a non-option argument.
@@ -279,7 +279,7 @@ function mbfl_getopts_p_process_script_option () {
 		if mbfl_string_is_empty "$OPTARG"
 		then
                     mbfl_message_error "expected non-empty argument for option: \"$OPT\""
-                    return 1
+                    return_failure
 		fi
 		if mbfl_option_encoded_args
 		then value=$(mbfl_decode_hex "$OPTARG")
@@ -295,11 +295,11 @@ function mbfl_getopts_p_process_script_option () {
             state_variable=script_option_${keyword}
             eval ${state_variable}=\'"$value"\'
             mbfl_invoke_script_function ${update_procedure}
-            return 0
+            return_success
         fi
     done
     mbfl_message_error_printf 'unknown option "%s"' "$OPT"
-    return 1
+    return_failure
 }
 #PAGE
 function mbfl_getopts_p_process_predefined_option_no_arg () {
@@ -368,7 +368,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
             return $?
 	    ;;
     esac
-    return 0
+    return_success
 }
 #PAGE
 function mbfl_getopts_p_process_predefined_option_with_arg () {
@@ -400,7 +400,7 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
             return $?
             ;;
     esac
-    return 0
+    return_success
 }
 #page
 function mbfl_getopts_print_usage_screen () {
@@ -484,8 +484,8 @@ function mbfl_getopts_islong () {
     if [[ $ARGUMENT =~ $REX ]]
     then
 	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "mbfl_slot_ref(BASH_REMATCH, 1)"
-	return 0
-    else return 1
+	return_success
+    else return_failure
     fi
 }
 function mbfl_getopts_islong_with () {
@@ -498,8 +498,8 @@ function mbfl_getopts_islong_with () {
     then
 	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "mbfl_slot_ref(BASH_REMATCH, 1)"
 	mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "mbfl_slot_ref(BASH_REMATCH, 2)"
-	return 0
-    else return 1
+	return_success
+    else return_failure
     fi
 }
 
@@ -512,8 +512,8 @@ function mbfl_getopts_isbrief () {
     if [[ $ARGUMENT =~ $REX ]]
     then
 	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "mbfl_slot_ref(BASH_REMATCH, 1)"
-	return 0
-    else return 1
+	return_success
+    else return_failure
     fi
 }
 function mbfl_getopts_isbrief_with () {
@@ -526,8 +526,8 @@ function mbfl_getopts_isbrief_with () {
     then
 	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "mbfl_slot_ref(BASH_REMATCH, 1)"
 	mbfl_set_maybe "$VALUE_VARIABLE_NAME"  $(mbfl_string_quote "mbfl_slot_ref(BASH_REMATCH, 2)")
-	return 0
-    else return 1
+	return_success
+    else return_failure
     fi
 }
 
@@ -537,10 +537,10 @@ function mbfl_wrong_num_args () {
     mbfl_mandatory_integer_parameter(argc, 2, given number of args)
 
     if ((required == argc))
-    then return 0
+    then return_success
     else
         mbfl_message_error "number of arguments required: $required"
-        return 1
+        return_failure
     fi
 }
 function mbfl_wrong_num_args_range () {
@@ -551,15 +551,15 @@ function mbfl_wrong_num_args_range () {
     if test $min_required -gt $argc -o $max_required -lt $argc
     then
         mbfl_message_error "number of required arguments between $min_required and $max_required but given $argc"
-        return 1
-    else return 0
+        return_failure
+    else return_success
     fi
 }
 function mbfl_argv_from_stdin () {
     local item=
 
     if ((0 == ARGC))
-    then return 0
+    then return_success
     else
         while mbfl_read_maybe_null item
         do
@@ -578,10 +578,10 @@ function mbfl_argv_all_files () {
 	then mbfl_slot_set(ARGV, $i, $item)
 	else
 	    mbfl_message_error_printf 'unexistent file "%s"' "$item"
-	    return 1
+	    return_failure
         fi
     done
-    return 0
+    return_success
 }
 
 #page
@@ -602,7 +602,7 @@ function mbfl_getopts_print_long_switches () {
 	fi
     done
     echo
-    return 0
+    return_success
 }
 # function mbfl_getopts_print_action_arguments () {
 #     local i=0 argument
@@ -617,7 +617,7 @@ function mbfl_getopts_print_long_switches () {
 #         test $(($i+1)) -lt ${mbfl_getopts_actargs_INDEX} && echo -n ' '
 #     done
 #     echo
-#     return 0
+#     return_success
 # }
 
 #page
