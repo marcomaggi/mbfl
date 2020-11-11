@@ -41,7 +41,7 @@ function process-disown-1.1 () {
     local THE_PID DISOWN_RV KILL_RV WAIT_RV
 
     #mbfl_set_option_test
-    mbfl_set_option_debug
+    #mbfl_set_option_debug
     mbfl_set_option_show_program
 
     # We need  to use "mbfl_program_execbg()" directly  if we want to  access "$mbfl_program_BGPID";

@@ -127,6 +127,7 @@ function program-3.6 () {
 function program-4.1 () {
     local USERNAME
 
+
     if USERNAME=$("$mbfl_PROGRAM_WHOAMI")
     then
 	local CODE
