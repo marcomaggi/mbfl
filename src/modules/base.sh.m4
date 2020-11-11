@@ -98,6 +98,27 @@ MBFL_CREATE_OPTION_PROCEDURES([[[verbose]]])
 MBFL_CREATE_OPTION_PROCEDURES([[[verbose_program]]])
 
 #page
+#### script termination facilities
+
+if test "$mbfl_INTERACTIVE" != yes
+then declare -i mbfl_PENDING_EXIT_CODE=0
+fi
+
+function mbfl_script_is_exiting () { return_failure; }
+
+function mbfl_exit () {
+    mbfl_optional_parameter(CODE, 1, 0)
+
+    # NOTE Use of this variable is deprecated; it is still here for backwards compatibility.  (Marco
+    # Maggi; Nov 11, 2020)
+    mbfl_main_pending_EXIT_CODE=$CODE
+
+    mbfl_PENDING_EXIT_CODE=$CODE
+    function mbfl_script_is_exiting () { return_success; }
+    exit $CODE
+}
+
+#page
 #### exit codes and return codes
 
 if test "$mbfl_INTERACTIVE" != yes
@@ -219,6 +240,36 @@ function mbfl_declare_exit_code () {
     eval function "$name" '()' "{ mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, i); }"
     printf -v name 'return_because_%s' mbfl_slot_ref(mbfl_EXIT_NAMES, i)
     eval function "$name" '()' "{ return mbfl_slot_ref(mbfl_EXIT_CODES, i); }"
+}
+
+#page
+#### exit codes inspection
+
+function mbfl_list_exit_codes () {
+    local -i i
+    for ((i=0; i < mbfl_slots_number(mbfl_EXIT_CODES); ++i))
+    do printf '%d %s\n' mbfl_slot_ref(mbfl_EXIT_CODES, $i) mbfl_slot_ref(mbfl_EXIT_NAMES, $i)
+    done
+}
+function mbfl_print_exit_code () {
+    mbfl_mandatory_parameter(NAME, 1, exit code name)
+    local -i i
+    for ((i=0; i < mbfl_slots_number(mbfl_EXIT_CODES); ++i))
+    do
+	if mbfl_string_equal "mbfl_slot_ref(mbfl_EXIT_NAMES, $i)" "$NAME"
+	then printf '%d\n' mbfl_slot_ref(mbfl_EXIT_CODES, $i)
+	fi
+    done
+}
+function mbfl_print_exit_code_names () {
+    mbfl_mandatory_parameter(CODE, 1, exit code)
+    local -i i
+    for ((i=0; i < mbfl_slots_number(mbfl_EXIT_CODES); ++i))
+    do
+	if mbfl_string_equal "mbfl_slot_ref(mbfl_EXIT_CODES, $i)" "$CODE"
+	then printf '%s\n' mbfl_slot_ref(mbfl_EXIT_NAMES, $i)
+	fi
+    done
 }
 
 ### end of file

@@ -6,7 +6,7 @@
 #
 #	This example script shows how to use the 'at' interface.
 #
-# Copyright (c) 2005, 2009, 2018 Marco Maggi
+# Copyright (c) 2005, 2009, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby grants  permission to use, copy, modify, distribute,
@@ -70,8 +70,8 @@ mbfl_declare_option IDENTIFIER  ''               '' identifier witharg 'selects 
 mbfl_at_enable
 
 # Exit code declarations.
-mbfl_main_declare_exit_code 3 wrong_queue_identifier
-mbfl_main_declare_exit_code 4 wrong_command_line_arguments
+mbfl_declare_exit_code 3 wrong_queue_identifier
+mbfl_declare_exit_code 4 wrong_command_line_arguments
 
 #page
 #### options update functions

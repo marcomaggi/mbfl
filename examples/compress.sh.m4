@@ -7,7 +7,7 @@
 #	This script shows how to use the interface to the
 #	compression programs.
 #
-# Copyright (c) 2005, 2009, 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2005, 2009, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This program is  free software: you can redistribute  it and/or modify
 # it under the  terms of the GNU General Public  License as published by
@@ -58,9 +58,9 @@ mbfl_file_enable_compress
 mbfl_file_enable_listing
 mbfl_file_enable_stat
 
-mbfl_main_declare_exit_code 2 error_compressing
-mbfl_main_declare_exit_code 3 error_decompressing
-mbfl_main_declare_exit_code 4 wrong_command_line_arguments
+mbfl_declare_exit_code 2 error_compressing
+mbfl_declare_exit_code 3 error_decompressing
+mbfl_declare_exit_code 4 wrong_command_line_arguments
 
 #page
 #### options update functions

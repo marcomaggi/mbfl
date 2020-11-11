@@ -124,6 +124,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * service variables::           Required user defined variables.
 * base::                        Some base functions.
 * shell::                       Shell facilities.
+* exit::                        Exit codes and return codes.
 * encoding::                    Encoding and decoding strings.
 * file::                        Manipulating files and pathnames.
 * fd::                          Handling file descriptors.
@@ -140,7 +141,6 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * variables::                   Manipulating variables.
 * arrays::                      Manipulating arrays.
 * system::                      Interfacing with the system.
-* atexit::                      Running scripts at exit-time.
 * locations::                   Running location handlers.
 * semver::                      Semantic version specifications
 * main::                        Main function.
@@ -1437,6 +1437,171 @@ IFS= read -d $'\x00'
 @defun mbfl_shell_is_function @var{NAME}
 Return successfully if @var{NAME} is an identifier representing a defined function name; otherwise
 return unsuccessfully.
+@end defun
+
+@c page
+@node exit
+@chapter Script termination facilities
+
+
+@menu
+* exit facilities::             Facilities to exit a script.
+* exit codes::                  Exit codes and return codes
+* exit atexit::                 Running scripts at exit-time.
+@end menu
+
+@c page
+@node exit facilities
+@section Facilities to exit a script
+
+
+@defun mbfl_exit @var{CODE}
+Wrapper for the @command{exit} command that updates the internal state.
+@end defun
+
+
+@defvar mbfl_PENDING_EXIT_CODE
+Set by @func{mbfl_exit} to the exit code this script is using.  This variable might be accessed by
+atexit commands to appropriately react to an error condition; @ref{exit atexit, Running scripts at
+exit-time}.
+@end defvar
+
+
+@defun mbfl_script_is_exiting
+Return true if the script is exiting.  This function might be called by a location command being run
+by an atexit command, @ref{exit atexit, Running scripts at exit--time}.
+@end defun
+
+@c page
+@node exit codes
+@section Exit codes and return codes
+
+
+Some functions and global variables are provided to declare script's exit codes.  The @mbfl{}
+declares its own exit codes starting from @code{100} and decreasing; we should declare our exit
+codes starting from @code{3} and increasing.  The exit codes @code{0} and @code{1} are reserved for
+the functions @func{exit_because_success} and @func{exit_because_failure}.
+
+
+@defun mbfl_declare_exit_code @var{CODE} @var{NAME}
+Declare an exit code and a return code with value @var{CODE} and identifier @var{NAME}.  This
+function creates two functions equivalent to the following:
+
+@example
+function exit_because_@var{NAME}   () @{ mbfl_exit @var{CODE}; @}
+function return_because_@var{NAME} () @{ return    @var{CODE}; @}
+@end example
+
+@noindent
+the names of the functions are: the string @code{exit_because_} followed by the exit code name; the
+string @code{return_because_} followed by the exit code name.
+@end defun
+
+
+By default the exit code @code{0} is associated to the name @code{success} and the exit code
+@code{1} is associated to the name @code{failure}; so the following functions exist.
+
+
+@defun exit_because_success
+@defunx exit_success
+Exit the script with code @code{0}.
+@end defun
+
+
+@defun return_because_success
+@defunx return_success
+Return with code @code{0}.
+@end defun
+
+
+@defun exit_because_failure
+@defunx exit_failure
+Exit the script with code @code{1}.
+@end defun
+
+
+@defun return_because_failure
+@defunx return_failure
+Return with code @code{1}.
+@end defun
+
+
+@defun exit_because_error_loading_library
+Exit the script with code @code{100}.
+@end defun
+
+
+@defun return_because_error_loading_library
+Return with code @code{100}.
+@end defun
+
+
+@anchor{exit_because_invalid_mbfl_version}
+@defun exit_because_invalid_mbfl_version
+Exit the script with code @code{88}.
+@end defun
+
+
+@defun return_because_invalid_mbfl_version
+Return with code @code{88}.
+@end defun
+
+
+@defun exit_because_invalid_function_name
+@defunx return_because_invalid_function_name
+Exit or return with code @code{91}.
+@end defun
+
+
+@defun mbfl_print_exit_code @var{NAME}
+Print the code associated to @var{NAME}.
+@end defun
+
+@c page
+@node exit atexit
+@section Running scripts at exit--time
+
+
+Bash allows us to execute a command whenever it exit by issuing the command:
+
+@example
+trap @meta{script} EXIT
+@end example
+
+@noindent
+the atexit @mbfl{} module uses this mechanism to register, forget and run multiple commands.
+
+
+@defun mbfl_atexit_enable
+@defunx mbfl_atexit_disable
+Register or delete @func{mbfl_atexit_run} as command for the @code{EXIT} event.  We must call this
+function first if we want to use this module.
+@end defun
+
+
+@defun mbfl_atexit_register @var{HANDLER}
+@defunx mbfl_atexit_register @var{HANDLER} @var{IDVAR}
+Register a new @var{HANDLER} command.  If the optional argument @var{IDVAR} is present, it must be
+the name of a variable in the scope of the caller: store into such variable a unique identifier
+associated to the handler.
+@end defun
+
+
+@defun mbfl_atexit_forget @var{ID}
+Remove the, previously registered, handler command associated to @var{ID}.  If no handler is
+associated to it: nothing happens.
+@end defun
+
+
+@defun mbfl_atexit_run
+Run all the registered handlers, from the last registered to the first.  Whenever a handler is run:
+it is removed from the internal registry.
+@end defun
+
+
+@defun mbfl_atexit_clear
+Remove all the registered handlers from the internal registry.  This renders invalid all the handler
+identifiers that were created.
 @end defun
 
 @c page
@@ -7017,53 +7182,6 @@ group name.
 @end defun
 
 @c page
-@node atexit
-@chapter Running scripts at exit--time
-
-
-Bash allows us to execute a command whenever it exit by issuing the command:
-
-@example
-trap @meta{script} EXIT
-@end example
-
-@noindent
-the atexit @mbfl{} module uses this mechanism to register, forget and run multiple commands.
-
-
-@defun mbfl_atexit_enable
-@defunx mbfl_atexit_disable
-Register or delete @func{mbfl_atexit_run} as command for the @code{EXIT} event.  We must call this
-function first if we want to use this module.
-@end defun
-
-
-@defun mbfl_atexit_register @var{HANDLER}
-@defunx mbfl_atexit_register @var{HANDLER} @var{IDVAR}
-Register a new @var{HANDLER} command.  If the optional argument @var{IDVAR} is present, it must be
-the name of a variable in the scope of the caller: store into such variable a unique identifier
-associated to the handler.
-@end defun
-
-
-@defun mbfl_atexit_forget @var{ID}
-Remove the, previously registered, handler command associated to @var{ID}.  If no handler is
-associated to it: nothing happens.
-@end defun
-
-
-@defun mbfl_atexit_run
-Run all the registered handlers, from the last registered to the first.  Whenever a handler is run:
-it is removed from the internal registry.
-@end defun
-
-
-@defun mbfl_atexit_clear
-Remove all the registered handlers from the internal registry.  This renders invalid all the handler
-identifiers that were created.
-@end defun
-
-@c page
 @node locations
 @chapter Running location handlers
 
@@ -7112,14 +7230,14 @@ location.
 
 
 @defun mbfl_location_run_all
-Run all the handlers unwinding all the locations.  This is useful as atexit handler, @ref{atexit,
-Running scripts at exit--time}.
+Run all the handlers unwinding all the locations.  This is useful as atexit handler, @ref{exit
+atexit, Running scripts at exit--time}.
 @end defun
 
 
 @defun mbfl_location_enable_cleanup_atexit
 @defunx mbfl_location_disable_cleanup_atexit
-Enable or disable running the location handlers through an atexit handler, @ref{atexit, Running
+Enable or disable running the location handlers through an atexit handler, @ref{exit atexit, Running
 scripts at exit--time}.  The enable operation registers an atexit handler that cleans up the current
 stack of locations.
 
@@ -7876,9 +7994,6 @@ Register the value of the variable @code{script_PROGNAME} in the message module 
 @func{mbfl_message_set_progname}.
 
 @item
-Invoke @func{mbfl_main_create_exit_functions}.  @ref{main exit, Declaring exit codes}.
-
-@item
 Validate the semantic version specification hard--coded in the @mbfl{} with the requirements of the
 script.  If an error occurs in this step: terminate the script by calling
 @func{exit_because_invalid_mbfl_version}, @ref{exit_because_invalid_mbfl_version}.
@@ -7965,116 +8080,41 @@ The default function name is: @code{script_after_parsing_options}.
 @section Declaring exit codes
 
 
-Some functions and global variables are provided to declare script's exit codes.  The @mbfl{}
-declares its own exit codes starting from @code{100} and decreasing; we should declare our exit
-codes starting from @code{3} and increasing.  The exit codes @code{0} and @code{1} are reserved for
-the functions @func{exit_because_success} and @func{exit_because_failure}.
-
-
-@defun mbfl_exit @var{CODE}
-Wrapper for the @command{exit} command that updates the internal state.
-@end defun
-
-
 @defvar mbfl_main_pending_EXIT_CODE
-Set by @func{mbfl_exit} to the exit code this script is using.  This variable might be accessed by
-atexit commands to appropriately react to an error condition; @ref{atexit, Running scripts at
-exit-time}.
+Set by @func{mbfl_exit} to the exit code this script is using.
+
+@strong{NOTE} Use of this variable is deprecated; it still exists for backwards compatibility.  We
+should use @env{mbfl_PENDING_EXIT_CODE}, @ref{exit codes, Exit codes and return codes}.
 @end defvar
 
 
 @defun mbfl_main_is_exiting
-Return true if the script is exiting.  This function might be called by a location command being run
-by an atexit command.
+Return true if the script is exiting.
+
+@strong{NOTE} Use of this function is deprecated; it still exists for backwards compatibility.  We
+should use @func{mbfl_script_is_exiting}, @ref{exit facilities, Facilities to exit a script}.
 @end defun
 
 
 @defun mbfl_main_declare_exit_code @var{CODE} @var{NAME}
 Declare an exit code with value @var{CODE} and identifier @var{NAME}.
+
+@strong{NOTE} Use of this function is deprecated; it still exists for backwards compatibility.  We
+should use @func{mbfl_declare_exit_code}, @ref{exit codes, Exit codes and return codes}.
 @end defun
 
 
 @defun mbfl_main_create_exit_functions
-For each of the codes declared with @func{mbfl_main_declare_exit_code}: create a function for the
-@code{exit} command using the numerical code; create an alias for the @code{return} command using
-the numerical code.  For example, if a code is declared as:
-
-@example
-mbfl_main_declare_exit_code 4 unexistent_file
-@end example
-
-@noindent
-a function is created with:
-
-@example
-function exit_because_unexistent_file () @{ mbfl_exit 4; @}
-@end example
-
-@noindent
-and an alias is created with:
-
-@example
-alias return_because_unexistent_file='return 4'
-@end example
-
-@noindent
-the name of the function is the string @code{exit_because_} followed by the exit code name; the name
-of the alias is the string @code{return_because_} followed by the exit code name.  The function may
-be used in the script to exit the process.
-@end defun
-
-
-By default the exit code @code{0} is associated to the name @code{success} and the exit code
-@code{1} is associated to the name @code{failure}; so the following functions exist.
-
-
-@defun exit_because_success
-@defunx exit_success
-Exit the script with code @code{0}.
-@end defun
-
-
-@defun return_because_success
-@defunx return_success
-Return with code @code{0}.
-@end defun
-
-
-@defun exit_because_failure
-@defunx exit_failure
-Exit the script with code @code{1}.
-@end defun
-
-
-@defun return_because_failure
-@defunx return_failure
-Return with code @code{1}.
-@end defun
-
-
-@defun exit_because_error_loading_library
-Exit the script with code @code{100}.
-@end defun
-
-
-@defun return_because_error_loading_library
-Return with code @code{100}.
-@end defun
-
-
-@anchor{exit_because_invalid_mbfl_version}
-@defun exit_because_invalid_mbfl_version
-Exit the script with code @code{88}.
-@end defun
-
-
-@defun return_because_invalid_mbfl_version
-Return with code @code{88}.
+@strong{NOTE} This function does nothing; it still exists for backwards compatibility.  See the
+facilities described at @ref{exit codes, Exit codes and return codes}.
 @end defun
 
 
 @defun mbfl_main_print_exit_code @var{NAME}
 Print the code associated to @var{NAME}.
+
+@strong{NOTE} Use of this function is deprecated; it still exists for backwards compatibility.  We
+should use @func{mbfl_print_exit_code}, @ref{exit codes, Exit codes and return codes}.
 @end defun
 
 @c page
@@ -8097,12 +8137,6 @@ If the function does not exist: return by calling @code{return_because_invalid_f
 @defun mbfl_invoke_existent_script_function @var{FUNCNAME}
 Like @func{mbfl_invoke_script_function}, but if the function does not exist: print an error message
 to @stderr{} and exit by calling @func{exit_because_invalid_function_name}.
-@end defun
-
-
-@defun exit_because_invalid_function_name
-@defunx return_because_invalid_function_name
-Exit or return with code @code{91}.
 @end defun
 
 

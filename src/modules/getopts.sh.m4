@@ -388,11 +388,11 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
             mbfl_option_TMPDIR=${OPTARG}
             ;;
         print-exit-code)
-            mbfl_main_print_exit_code "$OPTARG"
+            mbfl_print_exit_code "$OPTARG"
             exit 0
             ;;
         print-exit-code-names|print-exit-code-name)
-            mbfl_main_print_exit_code_names "$OPTARG"
+            mbfl_print_exit_code_names "$OPTARG"
             exit 0
             ;;
 	*)

@@ -8,7 +8,7 @@
 #
 #	Execute a Bash subprocess running test files in it.
 #
-# Copyright (c) 2005, 2009, 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2005, 2009, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This program is  free software: you can redistribute  it and/or modify
 # it under the  terms of the GNU General Public  License as published by
@@ -49,7 +49,7 @@ mbfl_declare_option DIRECTORY "${PWD}" \
     '' directory witharg 'change directory before executing tests'
 mbfl_declare_option LIBRARY '' '' library witharg 'select the MBFL library'
 
-mbfl_main_declare_exit_code 2 file_not_found
+mbfl_declare_exit_code 2 file_not_found
 
 #page
 #### option update functions

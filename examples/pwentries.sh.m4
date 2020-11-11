@@ -6,7 +6,7 @@
 #
 #	This script reads entries from "/etc/passwd".
 #
-# Copyright (c) 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby grants  permission to use, copy, modify, distribute,
 # and  license this  software  and its  documentation  for any  purpose,
@@ -56,8 +56,8 @@ mbfl_library_loader
 #page
 #### declare exit codes
 
-mbfl_main_declare_exit_code 2 cannot_read_file
-mbfl_main_declare_exit_code 3 cannot_print_results
+mbfl_declare_exit_code 2 cannot_read_file
+mbfl_declare_exit_code 3 cannot_print_results
 
 #page
 #### script options

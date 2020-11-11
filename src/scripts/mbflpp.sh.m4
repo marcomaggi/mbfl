@@ -8,7 +8,7 @@
 #
 #	Preprocessor for BASH scripts using MBFL.
 #
-# Copyright (c) 2005, 2009, 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2005, 2009, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This program is  free software: you can redistribute  it and/or modify
 # it under the  terms of the GNU General Public  License as published by
@@ -105,7 +105,7 @@ mbfl_declare_program cat
 #page
 #### exit code declarations
 
-mbfl_main_declare_exit_code 2 wrong_command_line_arguments
+mbfl_declare_exit_code 2 wrong_command_line_arguments
 
 #page
 #### option update functions

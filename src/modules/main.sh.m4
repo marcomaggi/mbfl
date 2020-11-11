@@ -96,68 +96,49 @@ function mbfl_main_set_after_parsing_options () {
 #### exit codes management
 
 if test "$mbfl_INTERACTIVE" != yes
-then
-    declare mbfl_EXITING=false
-    declare -i mbfl_main_pending_EXIT_CODE=0
+then declare -i mbfl_main_pending_EXIT_CODE=0
 fi
 
+# NOTE Use of this function is deprecated; it is still here for backwards compatibility.  (Marco
+# Maggi; Nov 11, 2020)
+#
 function mbfl_main_is_exiting () {
-    $mbfl_EXITING
-}
-function mbfl_exit () {
-    mbfl_optional_parameter(CODE, 1, 0)
-
-    mbfl_main_pending_EXIT_CODE=$CODE
-    mbfl_EXITING=true
-    exit $CODE
+    mbfl_script_is_exiting
 }
 
+# NOTE Use of this function is deprecated; it is still here for backwards compatibility.  (Marco
+# Maggi; Nov 11, 2020)
+#
 function mbfl_main_declare_exit_code () {
     mbfl_declare_exit_code "$@"
-
-    # mbfl_mandatory_parameter(CODE, 1, exit code)
-    # mbfl_mandatory_parameter(DESCRIPTION, 2, exit code name)
-    # local -i i=${#mbfl_EXIT_CODES[@]}
-    # mbfl_EXIT_NAMES[$i]=$DESCRIPTION
-    # mbfl_EXIT_CODES[$i]=$CODE
 }
+
+# NOTE Use of this function is deprecated; it is still here for backwards compatibility.  (Marco
+# Maggi; Nov 11, 2020)
+#
 function mbfl_main_create_exit_functions () {
     :
-    # local -i i
-    # local name
-    # for ((i=0; i < ${#mbfl_EXIT_CODES[@]}; ++i))
-    # do
-    #     name=exit_because_${mbfl_EXIT_NAMES[${i}]}
-    #     eval function "$name" '()' "{ mbfl_exit ${mbfl_EXIT_CODES[${i}]}; }"
-    # 	name=return_because_${mbfl_EXIT_NAMES[${i}]}
-    # 	eval function "$name" '()' "{ return ${mbfl_EXIT_CODES[${i}]}; }"
-    # done
 }
+
+# NOTE Use of this function is deprecated; it is still here for backwards compatibility.  (Marco
+# Maggi; Nov 11, 2020)
+#
 function mbfl_main_list_exit_codes () {
-    local -i i
-    for ((i=0; i < mbfl_slots_number(mbfl_EXIT_CODES); ++i))
-    do printf '%d %s\n' mbfl_slot_ref(mbfl_EXIT_CODES, $i) mbfl_slot_ref(mbfl_EXIT_NAMES, $i)
-    done
+    mbfl_list_exit_codes
 }
+
+# NOTE Use of this function is deprecated; it is still here for backwards compatibility.  (Marco
+# Maggi; Nov 11, 2020)
+#
 function mbfl_main_print_exit_code () {
-    mbfl_mandatory_parameter(NAME, 1, exit code name)
-    local -i i
-    for ((i=0; i < mbfl_slots_number(mbfl_EXIT_CODES); ++i))
-    do
-	if mbfl_string_equal "mbfl_slot_ref(mbfl_EXIT_NAMES, $i)" "$NAME"
-	then printf '%d\n' mbfl_slot_ref(mbfl_EXIT_CODES, $i)
-	fi
-    done
+    mbfl_main_print_exit_code "$@"
 }
+
+# NOTE Use of this function is deprecated; it is still here for backwards compatibility.  (Marco
+# Maggi; Nov 11, 2020)
+#
 function mbfl_main_print_exit_code_names () {
-    mbfl_mandatory_parameter(CODE, 1, exit code)
-    local -i i
-    for ((i=0; i < mbfl_slots_number(mbfl_EXIT_CODES); ++i))
-    do
-	if mbfl_string_equal "mbfl_slot_ref(mbfl_EXIT_CODES, $i)" "$CODE"
-	then printf '%s\n' mbfl_slot_ref(mbfl_EXIT_NAMES, $i)
-	fi
-    done
+    mbfl_main_print_exit_code_names "$@"
 }
 
 #PAGE

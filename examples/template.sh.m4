@@ -69,10 +69,10 @@ mbfl_embed_library
 #page
 #### declare exit codes
 
-mbfl_main_declare_exit_code 2 second_error
-mbfl_main_declare_exit_code 3 third_error
-mbfl_main_declare_exit_code 3 fourth_error
-mbfl_main_declare_exit_code 8 eighth_error
+mbfl_declare_exit_code 2 second_error
+mbfl_declare_exit_code 3 third_error
+mbfl_declare_exit_code 3 fourth_error
+mbfl_declare_exit_code 8 eighth_error
 
 #page
 #### configure global behaviour

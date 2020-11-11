@@ -8,7 +8,7 @@
 #	plain  connections  and  encrypted  connections  using  external
 #	programs.
 #
-# Copyright (c) 2009, 2010, 2015, 2018 Marco Maggi
+# Copyright (c) 2009, 2010, 2015, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby grants  permission to use, copy, modify, distribute,
@@ -201,23 +201,23 @@ mbfl_declare_program openssl
 #page
 #### declare exit codes
 
-mbfl_main_declare_exit_code 2 invalid_option
-mbfl_main_declare_exit_code 3 invalid_message_source
+mbfl_declare_exit_code 2 invalid_option
+mbfl_declare_exit_code 3 invalid_message_source
 
-mbfl_main_declare_exit_code 4 unreadable_host_file
-mbfl_main_declare_exit_code 5 invalid_host_file
-mbfl_main_declare_exit_code 6 unknown_host
+mbfl_declare_exit_code 4 unreadable_host_file
+mbfl_declare_exit_code 5 invalid_host_file
+mbfl_declare_exit_code 6 unknown_host
 
-mbfl_main_declare_exit_code 7 unreadable_auth_file
-mbfl_main_declare_exit_code 8 invalid_auth_file
-mbfl_main_declare_exit_code 9 unknown_auth_user
+mbfl_declare_exit_code 7 unreadable_auth_file
+mbfl_declare_exit_code 8 invalid_auth_file
+mbfl_declare_exit_code 9 unknown_auth_user
 
-mbfl_main_declare_exit_code 10 failed_connection
-mbfl_main_declare_exit_code 11 wrong_server_answer
-mbfl_main_declare_exit_code 12 read_timeout_expired
-mbfl_main_declare_exit_code 13 error_reading_from_server
+mbfl_declare_exit_code 10 failed_connection
+mbfl_declare_exit_code 11 wrong_server_answer
+mbfl_declare_exit_code 12 read_timeout_expired
+mbfl_declare_exit_code 13 error_reading_from_server
 
-mbfl_main_declare_exit_code 14 error_writing_to_server
+mbfl_declare_exit_code 14 error_writing_to_server
 
 #page
 #### option update functions

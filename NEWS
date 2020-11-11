@@ -248,13 +248,21 @@ changes!
 
     mbfl_slots_number
 
+* Total  reorganisation  of  script   termination  facilities,  see  the
+  documentation node "exit".  Added the functions:
 
+    mbfl_script_is_exiting
+    mbfl_declare_exit_code
+    mbfl_print_exit_code
+
+
 Notes for revision 2.2.0
 ------------------------
 
 * Added file functions to change owner and group.
 
 
+
 Notes for revision 2.1b0
 ------------------------
 
@@ -265,6 +273,7 @@ Notes for revision 2.1b0
   /dev/stdin, /dev/fd/0, et cetera).
 
 
+
 Notes for revision 2.1d0
 ------------------------
 
@@ -279,6 +288,7 @@ Notes for revision 2.1d0
   ".mbfl-hostinfo" and ".mbfl-authinfo".
 
 
+
 Notes for revision 2.0b0
 ------------------------
 
@@ -288,6 +298,7 @@ Notes for revision 2.0b0
 * Added function "mbfl_program_replace".
 
 
+
 Notes for revision 2.0d1
 ------------------------
 
