@@ -1498,6 +1498,18 @@ string @code{return_because_} followed by the exit code name.
 @end defun
 
 
+@defun mbfl_print_exit_code @var{NAME}
+Print the code associated to @var{NAME}.
+@end defun
+
+
+@defvar mbfl_EXIT_CODES_BY_NAME
+A global associative array whose keys are the code names used as @var{NAME} argument to
+@func{mbfl_declare_exit_code} and whose values are the code values used as @var{CODE} argument to
+@func{mbfl_declare_exit_code}.
+@end defvar
+
+
 By default the exit code @code{0} is associated to the name @code{success} and the exit code
 @code{1} is associated to the name @code{failure}; so the following functions exist.
 
@@ -1526,24 +1538,13 @@ Return with code @code{1}.
 @end defun
 
 
+In addition, the following functions are predefined.  @mbfl{} modules define other exit and return
+functions.
+
+
 @defun exit_because_error_loading_library
-Exit the script with code @code{100}.
-@end defun
-
-
-@defun return_because_error_loading_library
-Return with code @code{100}.
-@end defun
-
-
-@anchor{exit_because_invalid_mbfl_version}
-@defun exit_because_invalid_mbfl_version
-Exit the script with code @code{88}.
-@end defun
-
-
-@defun return_because_invalid_mbfl_version
-Return with code @code{88}.
+@defunx return_because_error_loading_library
+Exit or return with code @code{100}.
 @end defun
 
 
@@ -1553,8 +1554,10 @@ Exit or return with code @code{91}.
 @end defun
 
 
-@defun mbfl_print_exit_code @var{NAME}
-Print the code associated to @var{NAME}.
+@anchor{exit_because_invalid_mbfl_version}
+@defun exit_because_invalid_mbfl_version
+@defunx return_because_invalid_mbfl_version
+Exit or return with code @code{88}.
 @end defun
 
 @c page
@@ -4596,8 +4599,7 @@ If verbose messages are enabled: a brief summary is echoed to @stderr{}.
 @defun mbfl_program_found @var{PROGRAM}
 @defunx mbfl_program_found_var @var{_RV} @var{PROGRAM}
 Print the pathname of the previously declared @var{PROGRAM}.  Return zero if the program was found,
-otherwise print an error message and exit the current (sub)shell by invoking
-@func{exit_because_program_not_found}.
+otherwise print an error message and return by invoking @func{return_because_program_not_found}.
 
 @example
 function program_wrapper () @{
@@ -4605,7 +4607,7 @@ function program_wrapper () @{
     shift
     local PROGNAME FLAGS
 
-    PROGNAME=$(mbfl_program_found_var myprog) || exit $?
+    PROGNAME=$(mbfl_program_found myprog) || exit_because_program_not_found
 
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$PROGNAME" $FLAGS "$@@" '--' "$PATHNAME"
@@ -4615,7 +4617,7 @@ function program_wrapper () @{
 Remember that we cannot use:
 
 @example
-local PROGNAME=$(mbfl_program_found 'myprog') || exit $?
+local PROGNAME=$(mbfl_program_found 'myprog') || exit_because_program_not_found
 @end example
 
 @noindent
@@ -4631,7 +4633,7 @@ function program_wrapper () @{
     mbfl_local_varref(PROGNAME)
     local FLAGS
 
-    mbfl_program_found_var mbfl_datavar(PROGNAME) myprog
+    mbfl_program_found_var mbfl_datavar(PROGNAME) myprog || exit_because_program_not_found
 
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$PROGNAME" $FLAGS "$@@" '--' "$PATHNAME"

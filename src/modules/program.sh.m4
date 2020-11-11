@@ -156,7 +156,7 @@ function mbfl_program_found_var () {
         return_success
     else
 	mbfl_message_error_printf 'invalid pathname for program "%s": "%s"' "$mbfl_PROGRAM" "$mbfl_PROGRAM_PATHNAME"
-	exit_because_program_not_found
+	return_because_program_not_found
     fi
 }
 function mbfl_program_found () {

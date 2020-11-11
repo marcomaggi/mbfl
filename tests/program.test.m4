@@ -121,7 +121,6 @@ function program-3.6 () {
     dotest-equal 99 $?
 }
 
-
 #page
 #### tests for sudo invocation
 

@@ -255,6 +255,14 @@ changes!
     mbfl_declare_exit_code
     mbfl_print_exit_code
 
+* *BACKWARDS INCOMPATIBILITY* The functions:
+
+    mbfl_program_found
+    mbfl_program_found_var
+
+  do  not call  "exit_because_program_not_found()" anymore,  rather they
+  call "return_because_program_not_found()".
+
 
 Notes for revision 2.2.0
 ------------------------
