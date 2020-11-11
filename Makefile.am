@@ -16,7 +16,7 @@ dist_autoconf_DATA	= meta/autoconf/mbfl.m4
 
 #### documentation
 
-EXTRA_DIST		+= \
+EXTRA_DIST		+=			\
 	doc/one-level-actions.sh		\
 	doc/two-levels-actions.sh
 
@@ -29,19 +29,19 @@ AM_MAKEINFOHTMLFLAGS	= --split=node  -I $(srcdir)/examples -c WORDS_IN_PAGE=0 \
 # the selection of include directories.  (Marco Maggi; Nov 26, 2018)
 #
 info_TEXINFOS		= doc/mbfl.texi
-doc_mbfl_TEXINFOS	= \
-	doc/fdl-1.3.texi				\
-	doc/lgpl-3.0.texi				\
-	doc/macros.texi					\
-	doc/one-level-actions.sh			\
-	doc/loader.sh					\
-	doc/sendmail-plain.sh				\
+doc_mbfl_TEXINFOS	=			\
+	doc/fdl-1.3.texi			\
+	doc/lgpl-3.0.texi			\
+	doc/macros.texi				\
+	doc/one-level-actions.sh		\
+	doc/loader.sh				\
+	doc/sendmail-plain.sh			\
 	doc/sendmail-connector.sh
 
 
 #### source modules
 
-EXTRA_DIST	+= \
+EXTRA_DIST	+=				\
 	src/scripts/mbflpp.sh.m4		\
 	src/scripts/mbfltest.sh.m4		\
 	\
@@ -109,21 +109,21 @@ MBFL_MODULES		=			\
 MBFL_PREPRO		= src/lib/preprocessor.m4
 
 mbfldatadir		= $(datadir)/$(PACKAGE)
-dist_mbfldata_DATA	= \
+dist_mbfldata_DATA	=			\
 	$(MBFL_PREPRO)				\
 	src/lib/libmbfltest.sh			\
 	src/lib/libmbfl.sh
 
 bin_SCRIPTS		= src/scripts/mbflpp.sh src/scripts/mbfltest.sh
 
-CLEANFILES		+= \
-	src/lib/libmbfltest.sh		\
-	src/lib/libmbfl.sh		\
-	src/scripts/mbflpp.sh		\
-	src/scripts/mbfltest.sh		\
-	$(MBFL_MODULES)			\
-	src/modules/$(am__dirstamp)	\
-	src/scripts/$(am__dirstamp)	\
+CLEANFILES		+=			\
+	src/lib/libmbfltest.sh			\
+	src/lib/libmbfl.sh			\
+	src/scripts/mbflpp.sh			\
+	src/scripts/mbfltest.sh			\
+	$(MBFL_MODULES)				\
+	src/modules/$(am__dirstamp)		\
+	src/scripts/$(am__dirstamp)		\
 	src/lib/$(am__dirstamp)
 
 ## --------------------------------------------------------------------
@@ -181,7 +181,7 @@ src/scripts/mbfltest.sh: src/scripts/mbfltest.sh.m4 src/scripts/$(am__dirstamp)
 
 #### examples
 
-EXTRA_DIST		+= \
+EXTRA_DIST		+=			\
 	examples/at.sh.m4			\
 	examples/compress.sh.m4			\
 	examples/pwentries.sh.m4		\
@@ -195,7 +195,7 @@ EXTRA_DIST		+= \
 	examples/test-sendmail-localhost.sh	\
 	examples/test-sendmail-poste.sh
 
-EXAMPLES_BUILT_FILES	= \
+EXAMPLES_BUILT_FILES	=			\
 	examples/at.sh				\
 	examples/compress.sh			\
 	examples/pwentries.sh			\
