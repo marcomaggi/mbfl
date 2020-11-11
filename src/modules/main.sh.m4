@@ -97,120 +97,65 @@ function mbfl_main_set_after_parsing_options () {
 
 if test "$mbfl_INTERACTIVE" != yes
 then
-    declare -a mbfl_main_EXIT_CODES mbfl_main_EXIT_NAMES
-    mbfl_main_EXIT_CODES[0]=0
-    mbfl_main_EXIT_NAMES[0]=success
-
-    mbfl_main_EXIT_CODES[1]=1
-    mbfl_main_EXIT_NAMES[1]=failure
-
-    mbfl_main_EXIT_CODES[2]=100
-    mbfl_main_EXIT_NAMES[2]=error_loading_library
-
-    mbfl_main_EXIT_CODES[3]=99
-    mbfl_main_EXIT_NAMES[3]=program_not_found
-
-    mbfl_main_EXIT_CODES[4]=98
-    mbfl_main_EXIT_NAMES[4]=wrong_num_args
-
-    mbfl_main_EXIT_CODES[5]=97
-    mbfl_main_EXIT_NAMES[5]=invalid_action_set
-
-    mbfl_main_EXIT_CODES[6]=96
-    mbfl_main_EXIT_NAMES[6]=invalid_action_declaration
-
-    mbfl_main_EXIT_CODES[7]=95
-    mbfl_main_EXIT_NAMES[7]=invalid_action_argument
-
-    mbfl_main_EXIT_CODES[8]=94
-    mbfl_main_EXIT_NAMES[8]=missing_action_function
-
-    mbfl_main_EXIT_CODES[9]=93
-    mbfl_main_EXIT_NAMES[9]=invalid_option_declaration
-
-    mbfl_main_EXIT_CODES[10]=92
-    mbfl_main_EXIT_NAMES[10]=invalid_option_argument
-
-    mbfl_main_EXIT_CODES[11]=91
-    mbfl_main_EXIT_NAMES[11]=invalid_function_name
-
-    mbfl_main_EXIT_CODES[12]=90
-    mbfl_main_EXIT_NAMES[12]=invalid_sudo_username
-
-    mbfl_main_EXIT_CODES[13]=89
-    mbfl_main_EXIT_NAMES[13]=no_location
-
-    mbfl_main_EXIT_CODES[14]=88
-    mbfl_main_EXIT_NAMES[14]=invalid_mbfl_version
-
-    declare mbfl_main_EXITING=false
+    declare mbfl_EXITING=false
     declare -i mbfl_main_pending_EXIT_CODE=0
 fi
 
 function mbfl_main_is_exiting () {
-    $mbfl_main_EXITING
+    $mbfl_EXITING
 }
 function mbfl_exit () {
     mbfl_optional_parameter(CODE, 1, 0)
 
     mbfl_main_pending_EXIT_CODE=$CODE
-    mbfl_main_EXITING=true
+    mbfl_EXITING=true
     exit $CODE
 }
 
-function exit_success () {
-    exit_because_success
-}
-function exit_failure () {
-    exit_because_failure
-}
-function return_success () {
-    return 0
-}
-function return_failure () {
-    return 1
-}
 function mbfl_main_declare_exit_code () {
-    mbfl_mandatory_parameter(CODE, 1, exit code)
-    mbfl_mandatory_parameter(DESCRIPTION, 2, exit code name)
-    local -i i=${#mbfl_main_EXIT_CODES[@]}
-    mbfl_main_EXIT_NAMES[$i]=$DESCRIPTION
-    mbfl_main_EXIT_CODES[$i]=$CODE
+    mbfl_declare_exit_code "$@"
+
+    # mbfl_mandatory_parameter(CODE, 1, exit code)
+    # mbfl_mandatory_parameter(DESCRIPTION, 2, exit code name)
+    # local -i i=${#mbfl_EXIT_CODES[@]}
+    # mbfl_EXIT_NAMES[$i]=$DESCRIPTION
+    # mbfl_EXIT_CODES[$i]=$CODE
 }
 function mbfl_main_create_exit_functions () {
-    local -i i
-    local name
-    for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
-    do
-        name=exit_because_${mbfl_main_EXIT_NAMES[${i}]}
-        eval function "$name" '()' "{ mbfl_exit ${mbfl_main_EXIT_CODES[${i}]}; }"
-	name=return_because_${mbfl_main_EXIT_NAMES[${i}]}
-	eval function "$name" '()' "{ return ${mbfl_main_EXIT_CODES[${i}]}; }"
-    done
+    :
+    # local -i i
+    # local name
+    # for ((i=0; i < ${#mbfl_EXIT_CODES[@]}; ++i))
+    # do
+    #     name=exit_because_${mbfl_EXIT_NAMES[${i}]}
+    #     eval function "$name" '()' "{ mbfl_exit ${mbfl_EXIT_CODES[${i}]}; }"
+    # 	name=return_because_${mbfl_EXIT_NAMES[${i}]}
+    # 	eval function "$name" '()' "{ return ${mbfl_EXIT_CODES[${i}]}; }"
+    # done
 }
 function mbfl_main_list_exit_codes () {
     local -i i
-    for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
-    do printf '%d %s\n' ${mbfl_main_EXIT_CODES[${i}]} ${mbfl_main_EXIT_NAMES[${i}]}
+    for ((i=0; i < mbfl_slots_number(mbfl_EXIT_CODES); ++i))
+    do printf '%d %s\n' mbfl_slot_ref(mbfl_EXIT_CODES, $i) mbfl_slot_ref(mbfl_EXIT_NAMES, $i)
     done
 }
 function mbfl_main_print_exit_code () {
     mbfl_mandatory_parameter(NAME, 1, exit code name)
     local -i i
-    for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    for ((i=0; i < mbfl_slots_number(mbfl_EXIT_CODES); ++i))
     do
-	if test "${mbfl_main_EXIT_NAMES[${i}]}" = "$NAME"
-	then printf '%d\n' ${mbfl_main_EXIT_CODES[${i}]}
+	if mbfl_string_equal "mbfl_slot_ref(mbfl_EXIT_NAMES, $i)" "$NAME"
+	then printf '%d\n' mbfl_slot_ref(mbfl_EXIT_CODES, $i)
 	fi
     done
 }
 function mbfl_main_print_exit_code_names () {
     mbfl_mandatory_parameter(CODE, 1, exit code)
     local -i i
-    for ((i=0; i < ${#mbfl_main_EXIT_CODES[@]}; ++i))
+    for ((i=0; i < mbfl_slots_number(mbfl_EXIT_CODES); ++i))
     do
-	if test "${mbfl_main_EXIT_CODES[${i}]}" = "$CODE"
-	then printf '%s\n' ${mbfl_main_EXIT_NAMES[${i}]}
+	if mbfl_string_equal "mbfl_slot_ref(mbfl_EXIT_CODES, $i)" "$CODE"
+	then printf '%s\n' mbfl_slot_ref(mbfl_EXIT_NAMES, $i)
 	fi
     done
 }

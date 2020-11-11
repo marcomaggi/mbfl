@@ -7958,14 +7958,15 @@ codes starting from @code{3} and increasing.  The exit codes @code{0} and @code{
 the functions @func{exit_because_success} and @func{exit_because_failure}.
 
 
-@defun mbfl_exit
+@defun mbfl_exit @var{CODE}
 Wrapper for the @command{exit} command that updates the internal state.
 @end defun
 
 
 @defvar mbfl_main_pending_EXIT_CODE
 Set by @func{mbfl_exit} to the exit code this script is using.  This variable might be accessed by
-atexit commands to appropriately react to an error condition.
+atexit commands to appropriately react to an error condition; @ref{atexit, Running scripts at
+exit-time}.
 @end defvar
 
 
@@ -8051,6 +8052,11 @@ Return with code @code{100}.
 @anchor{exit_because_invalid_mbfl_version}
 @defun exit_because_invalid_mbfl_version
 Exit the script with code @code{88}.
+@end defun
+
+
+@defun return_because_invalid_mbfl_version
+Return with code @code{88}.
 @end defun
 
 
