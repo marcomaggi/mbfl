@@ -394,9 +394,10 @@ function mbfl_string_is_noblank_char () {
 	\( "$CHAR" != $'\n' \) -a \( "$CHAR" != $'\r' \) -a \
 	\( "$CHAR" != $'\t' \) -a \( "$CHAR" != $'\f' \)
 }
-for class in alpha digit alnum noblank ; do
-    alias "mbfl_string_is_${class}"="mbfl_p_string_is $class"
-done
+function mbfl_string_is_alpha ()   { mbfl_p_string_is 'alpha'   "$@"; }
+function mbfl_string_is_digit ()   { mbfl_p_string_is 'digit'   "$@"; }
+function mbfl_string_is_alnum ()   { mbfl_p_string_is 'alnum'   "$@"; }
+function mbfl_string_is_noblank () { mbfl_p_string_is 'noblank' "$@"; }
 function mbfl_p_string_is () {
     mbfl_mandatory_parameter(CLASS, 1, class)
     # Accept $2  even if  it is  empty; for  this reason  we do  not use
