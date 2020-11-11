@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -65,7 +65,7 @@ function mbfl_at_schedule () {
     mbfl_mandatory_parameter(TIME, 2, time)
     local AT QUEUE=${mbfl_p_at_queue_letter}
 
-    mbfl_program_found_var AT at || exit $?
+    mbfl_program_found_var AT at || exit_because_program_not_found
     # The  return code  of  this  function is  the  return  code of  the
     # following pipe.
     printf '%s' "$SCRIPT" | {
@@ -98,8 +98,8 @@ function mbfl_at_queue_print_identifiers () {
 }
 function mbfl_at_queue_print_queues () {
     local ATQ SORT line
-    ATQ=$(mbfl_program_found atq)   || exit $?
-    SORT=$(mbfl_program_found sort) || exit $?
+    ATQ=$(mbfl_program_found atq)   || exit_because_program_not_found
+    SORT=$(mbfl_program_found sort) || exit_because_program_not_found
     { mbfl_program_exec "$ATQ" | while IFS= read -r line
         do
             set -- $line
@@ -117,7 +117,7 @@ function mbfl_at_print_queue () {
 function mbfl_at_drop () {
     local ATRM
     mbfl_mandatory_parameter(ID, 1, script identifier)
-    ATRM=$(mbfl_program_found atrm) || exit $?
+    ATRM=$(mbfl_program_found atrm) || exit_because_program_not_found
     mbfl_program_exec "$ATRM" "$ID"
 }
 function mbfl_at_queue_clean () {
@@ -129,7 +129,7 @@ function mbfl_at_queue_clean () {
 function mbfl_p_at_program_atq () {
     local ATQ
     mbfl_mandatory_parameter(QUEUE, 1, job queue)
-    ATQ=$(mbfl_program_found atq) || exit $?
+    ATQ=$(mbfl_program_found atq) || exit_because_program_not_found
     mbfl_program_exec "$ATQ" -q "$QUEUE"
 }
 

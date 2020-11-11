@@ -9,7 +9,7 @@
 #       This file is a collection of functions used to interact to the
 #       user at the console.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -49,9 +49,10 @@ function mbfl_dialog_yes_or_no () {
 function mbfl_dialog_ask_password_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(mbfl_PROMPT, 2, prompt)
-    local mbfl_PASSWORD mbfl_STTY
+    local mbfl_PASSWORD
+    mbfl_local_varref(mbfl_STTY)
 
-    mbfl_program_found_var mbfl_STTY stty || exit $?
+    mbfl_program_found_var mbfl_datavar(mbfl_STTY) stty || exit_because_program_not_found
     printf '%s: ' "mbfl_PROMPT" >&2
     "$mbfl_STTY" cbreak -echo </dev/tty >/dev/tty 2>&1
     IFS= read -rs mbfl_PASSWORD

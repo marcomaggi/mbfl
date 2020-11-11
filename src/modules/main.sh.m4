@@ -393,7 +393,7 @@ function mbfl_main () {
     then mbfl_invoke_existent_script_function $mbfl_main_PRIVATE_SCRIPT_FUNCTION
     else mbfl_invoke_existent_script_function $mbfl_main_SCRIPT_FUNCTION
     fi
-    exit $?
+    mbfl_exit $?
 }
 function mbfl_main_check_mbfl_semantic_version () {
     # First check for a validating function defined by the script.

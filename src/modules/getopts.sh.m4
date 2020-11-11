@@ -389,11 +389,11 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
             ;;
         print-exit-code)
             mbfl_print_exit_code "$OPTARG"
-            exit 0
+            exit_success
             ;;
         print-exit-code-names|print-exit-code-name)
             mbfl_print_exit_code_names "$OPTARG"
-            exit 0
+            exit_success
             ;;
 	*)
 	    mbfl_getopts_p_process_script_option "$OPT" "$OPTARG"
@@ -483,7 +483,7 @@ function mbfl_getopts_islong () {
 
     if [[ $ARGUMENT =~ $REX ]]
     then
-	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${BASH_REMATCH[1]}"
+	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "mbfl_slot_ref(BASH_REMATCH, 1)"
 	return 0
     else return 1
     fi
@@ -496,8 +496,8 @@ function mbfl_getopts_islong_with () {
 
     if [[ $ARGUMENT =~ $REX ]]
     then
-	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${BASH_REMATCH[1]}"
-	mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "${BASH_REMATCH[2]}"
+	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "mbfl_slot_ref(BASH_REMATCH, 1)"
+	mbfl_set_maybe "$VALUE_VARIABLE_NAME"  "mbfl_slot_ref(BASH_REMATCH, 2)"
 	return 0
     else return 1
     fi
@@ -511,7 +511,7 @@ function mbfl_getopts_isbrief () {
 
     if [[ $ARGUMENT =~ $REX ]]
     then
-	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${BASH_REMATCH[1]}"
+	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "mbfl_slot_ref(BASH_REMATCH, 1)"
 	return 0
     else return 1
     fi
@@ -524,8 +524,8 @@ function mbfl_getopts_isbrief_with () {
 
     if [[ $ARGUMENT =~ $REX ]]
     then
-	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "${BASH_REMATCH[1]}"
-	mbfl_set_maybe "$VALUE_VARIABLE_NAME"  $(mbfl_string_quote "${BASH_REMATCH[2]}")
+	mbfl_set_maybe "$OPTION_VARIABLE_NAME" "mbfl_slot_ref(BASH_REMATCH, 1)"
+	mbfl_set_maybe "$VALUE_VARIABLE_NAME"  $(mbfl_string_quote "mbfl_slot_ref(BASH_REMATCH, 2)")
 	return 0
     else return 1
     fi
@@ -563,7 +563,7 @@ function mbfl_argv_from_stdin () {
     else
         while mbfl_read_maybe_null item
         do
-            ARGV[${ARGC}]=${item}
+            mbfl_slot_set(ARGV, $ARGC, $item)
             let ++ARGC
         done
     fi
@@ -573,9 +573,9 @@ function mbfl_argv_all_files () {
 
     for ((i=0; i < ARGC; ++i))
     do
-	mbfl_file_normalise_var item "${ARGV[$i]}"
+	mbfl_file_normalise_var item "mbfl_slot_ref(ARGV, $i)"
 	if mbfl_file_is_file "$item"
-	then ARGV[$i]=${item}
+	then mbfl_slot_set(ARGV, $i, $item)
 	else
 	    mbfl_message_error_printf 'unexistent file "%s"' "$item"
 	    return 1

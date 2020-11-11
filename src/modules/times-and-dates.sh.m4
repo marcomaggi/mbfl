@@ -9,7 +9,7 @@
 #       This is  a collection of times  and dates functions for  the GNU
 #       BASH shell.
 #
-# Copyright (c) 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -35,8 +35,8 @@ function mbfl_times_and_dates_enable () {
 }
 
 function mbfl_exec_date () {
-    local DATE
-    mbfl_program_found_var DATE date || exit $?
+    mbfl_local_varref(DATE)
+    mbfl_program_found_var mbfl_datavar(DATE) date || exit_because_program_not_found
     mbfl_program_exec "$DATE" "$@"
 }
 

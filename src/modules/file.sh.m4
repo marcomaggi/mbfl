@@ -1141,7 +1141,7 @@ function mbfl_file_enable_tar () {
 function mbfl_exec_tar () {
     mbfl_local_varref(TAR)
     local FLAGS
-    mbfl_program_found_var mbfl_datavar(TAR) tar || exit $?
+    mbfl_program_found_var mbfl_datavar(TAR) tar || exit_because_program_not_found
     mbfl_option_verbose_program && FLAGS+=' --verbose'
     mbfl_program_exec "$TAR" ${FLAGS} "$@"
 }
@@ -1366,7 +1366,7 @@ function mbfl_p_file_compress_gzip () {
     mbfl_local_varref(COMPRESSOR)
     local FLAGS='--force' DEST
 
-    mbfl_program_found_var mbfl_datavar(COMPRESSOR) gzip || exit $?
+    mbfl_program_found_var mbfl_datavar(COMPRESSOR) gzip || exit_because_program_not_found
     case $COMPRESS in
         compress)
             printf -v DEST '%s.gz' "$SOURCE"
@@ -1411,7 +1411,7 @@ function mbfl_p_file_compress_bzip2 () {
     mbfl_local_varref(COMPRESSOR)
     local FLAGS='--force' DEST
 
-    mbfl_program_found_var mbfl_datavar(COMPRESSOR) bzip2 || exit $?
+    mbfl_program_found_var mbfl_datavar(COMPRESSOR) bzip2 || exit_because_program_not_found
     case $COMPRESS in
         compress)
             printf -v DEST '%s.bz2' "$SOURCE"
@@ -1457,7 +1457,7 @@ function mbfl_p_file_compress_lzip () {
     mbfl_local_varref(COMPRESSOR)
     local FLAGS='--force' DEST
 
-    mbfl_program_found_var mbfl_datavar(COMPRESSOR) lzip || exit $?
+    mbfl_program_found_var mbfl_datavar(COMPRESSOR) lzip || exit_because_program_not_found
     case $COMPRESS in
         compress)
             printf -v DEST '%s.lz' "$SOURCE"
@@ -1502,7 +1502,7 @@ function mbfl_p_file_compress_xz () {
     mbfl_local_varref(COMPRESSOR)
     local FLAGS='--force' DEST
 
-    mbfl_program_found_var mbfl_datavar(COMPRESSOR) xz || exit $?
+    mbfl_program_found_var mbfl_datavar(COMPRESSOR) xz || exit_because_program_not_found
     case $COMPRESS in
         compress)
             printf -v DEST '%s.xz' "$SOURCE"
