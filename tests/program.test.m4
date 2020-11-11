@@ -182,28 +182,35 @@ function program-5.1.1 () {
 
 	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
 	then
-	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
-	    then
-		mbfl_set_option_show_program
-		mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; read -n 0 ; echo -n "$REPLY" >&1'
-		if wait $mbfl_program_BGPID
+	    mbfl_location_enter
+	    {
+		mbfl_location_handler 'mbfl_fd_close 10'
+		if mbfl_fd_open_output 11 "$DIR"/test-output.txt
 		then
-		    if false
-		    then
-			echo  input="$(<"$DIR"/test-input.txt)"  >&2
-			echo output="$(<"$DIR"/test-output.txt)" >&2
-		    fi
-		    dotest-equal     'inp'    "$(<"$DIR"/test-input.txt)"  && \
-			dotest-equal 'outinp' "$(<"$DIR"/test-output.txt)"
-		else dotest-printf 'error in the background process'
+		    mbfl_location_enter
+		    {
+			mbfl_location_handler 'mbfl_fd_close 11'
+			mbfl_set_option_show_program
+			mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; read -n 0 ; echo -n "$REPLY" >&1'
+			if wait $mbfl_program_BGPID
+			then
+			    if false
+			    then
+				echo  input="$(<"$DIR"/test-input.txt)"  >&2
+				echo output="$(<"$DIR"/test-output.txt)" >&2
+			    fi
+			    dotest-equal     'inp'    "$(<"$DIR"/test-input.txt)"  && \
+				dotest-equal 'outinp' "$(<"$DIR"/test-output.txt)"
+			else dotest-printf 'error in the background process'
+			fi
+		    }
+		    mbfl_location_leave
+		else dotest-printf 'error opening output file'
 		fi
-	    else dotest-printf 'error opening output file'
-	    fi
+	    }
+	    mbfl_location_leave
 	else dotest-printf 'error opening input file'
 	fi
-
-	mbfl_fd_close 10
-	mbfl_fd_close 11
     }
     dotest-clean-files
 }
@@ -220,29 +227,36 @@ function program-5.1.2 () {
 
 	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
 	then
-	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
-	    then
-		mbfl_program_redirect_stderr_to_stdout
-		mbfl_set_option_show_program
-		mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; echo -n err >&2 ; read -n 0 ; echo -n "$REPLY" >&1'
-		if wait $mbfl_program_BGPID
+	    mbfl_location_enter
+	    {
+		mbfl_location_handler 'mbfl_fd_close 10'
+		if mbfl_fd_open_output 11 "$DIR"/test-output.txt
 		then
-		    if false
-		    then
-			echo  input="$(<"$DIR"/test-input.txt)"  >&2
-			echo output="$(<"$DIR"/test-output.txt)" >&2
-		    fi
-		    dotest-equal     'inp'       "$(<"$DIR"/test-input.txt)"  && \
-			dotest-equal 'outerrinp' "$(<"$DIR"/test-output.txt)"
-		else dotest-printf 'error in the background process'
+		    mbfl_location_enter
+		    {
+			mbfl_location_handler 'mbfl_fd_close 11'
+			mbfl_program_redirect_stderr_to_stdout
+			mbfl_set_option_show_program
+			mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; echo -n err >&2 ; read -n 0 ; echo -n "$REPLY" >&1'
+			if wait $mbfl_program_BGPID
+			then
+			    if false
+			    then
+				echo  input="$(<"$DIR"/test-input.txt)"  >&2
+				echo output="$(<"$DIR"/test-output.txt)" >&2
+			    fi
+			    dotest-equal     'inp'       "$(<"$DIR"/test-input.txt)"  && \
+				dotest-equal 'outerrinp' "$(<"$DIR"/test-output.txt)"
+			else dotest-printf 'error in the background process'
+			fi
+		    }
+		    mbfl_location_leave
+		else dotest-printf 'error opening output file'
 		fi
-	    else dotest-printf 'error opening output file'
-	    fi
+	    }
+	    mbfl_location_leave
 	else dotest-printf 'error opening input file'
 	fi
-
-	mbfl_fd_close 10
-	mbfl_fd_close 11
     }
     dotest-clean-files
 }
@@ -254,46 +268,73 @@ function program-5.1.2 () {
 #
 function program-5.2 () {
     local -r DIR=$(dotest-echo-tmpdir)
+    local -i RV=0
 
-    dotest-mkfile test-input.txt
-    dotest-mkfile test-output.txt
-    dotest-mkfile test-error.txt
+    mbfl_location_enter
     {
-	echo inp >"$DIR"/test-input.txt
+	mbfl_location_handler dotest-clean-files
 
-	if mbfl_fd_open_input 10 "$DIR"/test-input.txt
-	then
-	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
+	while true
+	do
+	    dotest-mkfile test-input.txt
+	    dotest-mkfile test-output.txt
+	    dotest-mkfile test-error.txt
+
+	    if ! echo inp >"$DIR"/test-input.txt
 	    then
-		if mbfl_fd_open_output 12 "$DIR"/test-error.txt
-		then
-		    mbfl_set_option_show_program
-		    mbfl_program_execbg2 10 11 12 "$BASH" -c 'echo -n out >&1; echo -n err >&2; read -n 0 ; echo -n "$REPLY" >&1'
-		    if wait $mbfl_program_BGPID
-		    then
-			if false
-			then
-			    echo  input="$(<"$DIR"/test-input.txt)"  >&2
-			    echo output="$(<"$DIR"/test-output.txt)" >&2
-			    echo  error="$(<"$DIR"/test-error.txt)"  >&2
-			fi
-			dotest-equal     'inp'    "$(<"$DIR"/test-input.txt)"  && \
-			    dotest-equal 'outinp' "$(<"$DIR"/test-output.txt)" && \
-			    dotest-equal 'err'    "$(<"$DIR"/test-error.txt)"
-		    else dotest-printf 'error in the background process'
-		    fi
-		else dotest-printf 'error opening error file'
-		fi
-	    else dotest-printf 'error opening output file'
+		dotest-printf 'error creating input file'
+		RV=1
+		break
 	    fi
-	else dotest-printf 'error opening input file'
-	fi
 
-	mbfl_fd_close 10
-	mbfl_fd_close 11
-	mbfl_fd_close 12
+	    if mbfl_fd_open_input 10 "$DIR"/test-input.txt
+	    then mbfl_location_handler 'mbfl_fd_close 10'
+	    else
+		dotest-printf 'error opening input file'
+		RV=1
+		break
+	    fi
+
+	    if mbfl_fd_open_output 11 "$DIR"/test-output.txt
+	    then mbfl_location_handler 'mbfl_fd_close 11'
+	    else
+		dotest-printf 'error opening output file'
+		RV=1
+		break
+	    fi
+
+	    if mbfl_fd_open_output 12 "$DIR"/test-error.txt
+	    then mbfl_location_handler 'mbfl_fd_close 12'
+	    else
+		dotest-printf 'error opening error file'
+		RV=1
+		break
+	    fi
+
+	    mbfl_set_option_show_program
+	    mbfl_program_execbg2 10 11 12 "$BASH" -c 'echo -n out >&1; echo -n err >&2; read -n 0 ; echo -n "$REPLY" >&1'
+	    if wait $mbfl_program_BGPID
+	    then
+		if false
+		then
+		    echo  input="$(<"$DIR"/test-input.txt)"  >&2
+		    echo output="$(<"$DIR"/test-output.txt)" >&2
+		    echo  error="$(<"$DIR"/test-error.txt)"  >&2
+		fi
+		dotest-equal     'inp'    "$(<"$DIR"/test-input.txt)"  && \
+		    dotest-equal 'outinp' "$(<"$DIR"/test-output.txt)" && \
+		    dotest-equal 'err'    "$(<"$DIR"/test-error.txt)"
+		RV=$?
+		break
+	    else
+		dotest-printf 'error in the background process'
+		RV=1
+		break
+	    fi
+	done
     }
-    dotest-clean-files
+    mbfl_location_leave
+    return $RV
 }
 
 #page
