@@ -16,12 +16,17 @@ dist_autoconf_DATA	= meta/autoconf/mbfl.m4
 
 #### documentation
 
-EXTRA_DIST		+=			\
-	doc/one-level-actions.sh		\
-	doc/two-levels-actions.sh
+EXTRA_DIST		+=						\
+	doc/one-level-actions.sh					\
+	doc/two-levels-actions.sh					\
+	doc/mbfl.style.css
+CLEANFILES		+=						\
+	doc/mbfl.css							\
+	doc/mbfl.html/$(am__dirstamp)
 
 AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
-AM_MAKEINFOHTMLFLAGS	= --split=node  -I $(srcdir)/examples -c WORDS_IN_PAGE=0 \
+AM_MAKEINFOHTMLFLAGS	= --split=node  -I $(srcdir)/examples		\
+	-c WORDS_IN_PAGE=0 --css-ref=mbfl.css				\
 	-c PRE_BODY_CLOSE="<p>This document describes version <tt>$(PACKAGE_VERSION)</tt> of <em>$(PACKAGE_NAME)</em>.</p>"
 
 # Notice that  we need the  *.sh files in  the doc directory  to allow
@@ -37,6 +42,25 @@ doc_mbfl_TEXINFOS	=			\
 	doc/loader.sh				\
 	doc/sendmail-plain.sh			\
 	doc/sendmail-connector.sh
+
+## --------------------------------------------------------------------
+
+doc/mbfl.html/$(am__dirstamp): doc/$(am__dirstamp)
+	@$(MKDIR_P) doc/mbfl.html/
+	@: > doc/mbfl.html/$(am__dirstamp)
+
+doc/mbfl.html/mbfl.css: doc/mbfl.style.css doc/mbfl.html/$(am__dirstamp)
+	$(INSTALL) -m 0444 \
+		"$(top_srcdir)/doc/mbfl.style.css" \
+		"$(builddir)/doc/mbfl.html/mbfl.css"
+
+## --------------------------------------------------------------------
+
+html-local: doc/mbfl.html/mbfl.css
+
+install-html-local:
+	$(MKDIR_P) "$(DESTDIR)$(htmldir)/mbfl.html/"
+	$(INSTALL) -m 0444 $(builddir)/doc/mbfl.html/mbfl.css "$(DESTDIR)$(htmldir)/mbfl.html/"
 
 
 #### source modules
