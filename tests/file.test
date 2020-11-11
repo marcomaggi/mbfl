@@ -581,7 +581,7 @@ function file-strip-leading-slash-var-1.6 () {
 
 function file-normalise-1.1 () {
     local testdir
-    testdir=$(dotest-mkdir a/b) || exit $?
+    testdir=$(dotest-mkdir a/b) || exit_because_failure
 
     {
 	dotest-cd-tmpdir
@@ -594,7 +594,7 @@ function file-normalise-1.2 () {
 }
 function file-normalise-1.4 () {
     local testdir
-    testdir=$(dotest-mkdir a/b) || exit $?
+    testdir=$(dotest-mkdir a/b) || exit_because_failure
 
     {
 	dotest-cd-tmpdir
@@ -661,7 +661,7 @@ then
 
     function file-realpath-1.1 () {
 	local testpath
-	testpath=$(dotest-mkdir a/b) || exit $?
+	testpath=$(dotest-mkdir a/b) || exit_because_failure
 
 	mbfl_file_enable_realpath
 
@@ -683,7 +683,7 @@ then
 
     function file-realpath-var-1.1 () {
 	local testpath
-	testpath=$(dotest-mkdir a/b) || exit $?
+	testpath=$(dotest-mkdir a/b) || exit_because_failure
 	local RV
 
 	mbfl_file_enable_realpath
@@ -746,7 +746,7 @@ function file-subpathname-var-3.1 () {
 function file-remove-1.1 () {
     dotest-mktmpdir
     local name result
-    name=$(dotest-mkfile file.ext) || exit $?
+    name=$(dotest-mkfile file.ext) || exit_because_failure
 
     mbfl_file_enable_remove
     mbfl_file_remove_file "$name"
@@ -755,7 +755,7 @@ function file-remove-1.1 () {
 }
 function file-remove-1.2 () {
     local name result
-    name=$(dotest-mkdir dir.d) || exit $?
+    name=$(dotest-mkdir dir.d) || exit_because_failure
 
     mbfl_file_enable_remove
     mbfl_file_remove_directory "$name"
@@ -765,7 +765,7 @@ function file-remove-1.2 () {
 function file-remove-1.3 () {
     dotest-mktmpdir
     local name
-    name=$(dotest-mkfile file.ext) || exit $?
+    name=$(dotest-mkfile file.ext) || exit_because_failure
 
     mbfl_file_enable_remove
     mbfl_file_remove "$name"
@@ -775,7 +775,7 @@ function file-remove-1.3 () {
 function file-remove-1.4 () {
     dotest-mktmpdir
     local name
-    name=$(dotest-mkfile file.ext) || exit $?
+    name=$(dotest-mkfile file.ext) || exit_because_failure
 
     mbfl_file_enable_remove
     mbfl_file_remove "$name"
@@ -800,8 +800,8 @@ function file-mkdir-1.1 () {
 function file-link-1.1 () {
     dotest-mktmpdir
     local ORIGINAL_NAME LINK_NAME
-    ORIGINAL_NAME=$(dotest-mkfile file.ext) || exit $?
-    LINK_NAME=$(dotest-mkpathname link.ext) || exit $?
+    ORIGINAL_NAME=$(dotest-mkfile file.ext) || exit_because_failure
+    LINK_NAME=$(dotest-mkpathname link.ext) || exit_because_failure
 
     mbfl_file_enable_symlink
     mbfl_file_link "$ORIGINAL_NAME" "$LINK_NAME"
@@ -812,8 +812,8 @@ function file-link-1.1 () {
 function file-symlink-1.1 () {
     dotest-mktmpdir
     local ORIGINAL_NAME LINK_NAME
-    ORIGINAL_NAME=$(dotest-mkfile file.ext)    || exit $?
-    LINK_NAME=$(dotest-mkpathname symlink.ext) || exit $?
+    ORIGINAL_NAME=$(dotest-mkfile file.ext)    || exit_because_failure
+    LINK_NAME=$(dotest-mkpathname symlink.ext) || exit_because_failure
 
     mbfl_file_enable_symlink
     mbfl_file_symlink "$ORIGINAL_NAME" "$LINK_NAME"
@@ -826,7 +826,7 @@ function file-symlink-1.1 () {
 
 function file-owner-1.1 () {
     local name
-    name=$(dotest-mkfile file.ext) || exit $?
+    name=$(dotest-mkfile file.ext) || exit_because_failure
 
     mbfl_file_enable_owner_and_group
     {
@@ -839,7 +839,7 @@ function file-owner-1.1 () {
 
 function file-owner-var-1.1 () {
     local name RV
-    name=$(dotest-mkfile file.ext) || exit $?
+    name=$(dotest-mkfile file.ext) || exit_because_failure
 
     mbfl_file_enable_owner_and_group
     mbfl_file_get_owner_var RV "$name"
@@ -852,7 +852,7 @@ function file-owner-var-1.1 () {
 
 function file-size-1.1 () {
     local PATHNAME
-    PATHNAME=$(dotest-mkfile file.ext) || exit $?
+    PATHNAME=$(dotest-mkfile file.ext) || exit_because_failure
 
     echo -n 0123456789 >"${PATHNAME}"
     mbfl_file_enable_stat
@@ -866,7 +866,7 @@ function file-size-1.1 () {
 
 function file-size-var-1.1 () {
     local PATHNAME RV
-    PATHNAME=$(dotest-mkfile file.ext) || exit $?
+    PATHNAME=$(dotest-mkfile file.ext) || exit_because_failure
 
     echo -n 0123456789 >"${PATHNAME}"
     mbfl_file_enable_stat
@@ -880,16 +880,16 @@ function file-size-var-1.1 () {
 
 function file-tar-1.1 () {
     local rootdir arootdir brootdir tarfile
-    rootdir=$(dotest-mkdir top) || exit $?
-    arootdir=$(dotest-mkdir top/a) || exit $?
-    brootdir=$(dotest-mkdir top/b) || exit $?
-    tarfile=$(dotest-mkfile a.tar) || exit $?
+    rootdir=$(dotest-mkdir top) || exit_because_failure
+    arootdir=$(dotest-mkdir top/a) || exit_because_failure
+    brootdir=$(dotest-mkdir top/b) || exit_because_failure
+    tarfile=$(dotest-mkfile a.tar) || exit_because_failure
 
     {
-	dotest-mkdir "top/a/alpha" || exit $?
-	dotest-mkdir "top/a/beta" || exit $?
-	dotest-mkfile "top/a/alpha/file.ext" || exit $?
-	dotest-mkfile "top/a/beta/file.ext" || exit $?
+	dotest-mkdir "top/a/alpha" || exit_because_failure
+	dotest-mkdir "top/a/beta" || exit_because_failure
+	dotest-mkfile "top/a/alpha/file.ext" || exit_because_failure
+	dotest-mkfile "top/a/beta/file.ext" || exit_because_failure
     } >/dev/null
 
     mbfl_file_enable_tar
@@ -900,16 +900,16 @@ function file-tar-1.1 () {
 }
 function file-tar-2.1 () {
     local rootdir arootdir brootdir tarfile
-    rootdir=$(dotest-mkdir top) || exit $?
-    arootdir=$(dotest-mkdir top/a) || exit $?
-    brootdir=$(dotest-mkdir top/b) || exit $?
-    tarfile=$(dotest-mkfile a.tar) || exit $?
+    rootdir=$(dotest-mkdir top) || exit_because_failure
+    arootdir=$(dotest-mkdir top/a) || exit_because_failure
+    brootdir=$(dotest-mkdir top/b) || exit_because_failure
+    tarfile=$(dotest-mkfile a.tar) || exit_because_failure
 
     {
-	dotest-mkdir "top/a/alpha" || exit $?
-	dotest-mkdir "top/a/beta" || exit $?
-	dotest-mkfile "top/a/alpha/file.ext" || exit $?
-	dotest-mkfile "top/a/beta/file.ext" || exit $?
+	dotest-mkdir "top/a/alpha" || exit_because_failure
+	dotest-mkdir "top/a/beta" || exit_because_failure
+	dotest-mkfile "top/a/alpha/file.ext" || exit_because_failure
+	dotest-mkfile "top/a/beta/file.ext" || exit_because_failure
     } >/dev/null
 
     mbfl_file_enable_tar

@@ -2952,7 +2952,7 @@ function program_mkfifo () @{
     local PATHNAME=$@{1:?@}
     shift 1
     local MKFIFO
-    mbfl_program_found_var MKFIFO mkfifo || exit $?
+    mbfl_program_found_var MKFIFO mkfifo || exit_because_program_not_found
 
     "$MKFIFO" --mode=0600 "$@@" "$PATHNAME"
 @}
@@ -3018,7 +3018,7 @@ function program_mkfifo () @{
     local PATHNAME=$@{1:?@}
     shift 1
     local MKFIFO
-    mbfl_program_found_var MKFIFO mkfifo || exit $?
+    mbfl_program_found_var MKFIFO mkfifo || exit_because_program_not_found
 
     "$MKFIFO" --mode=0600 "$@@" "$PATHNAME"
 @}

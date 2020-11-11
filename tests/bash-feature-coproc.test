@@ -71,7 +71,7 @@ function worker-coproc-1.1 () {
     else exit 1
     fi
     dotest-equal 'hello slave' "$LINE1" && dotest-equal 'bye slave' "$LINE2"
-    exit $?
+    mbfl_exit $?
 }
 
 #page
