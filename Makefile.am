@@ -343,25 +343,25 @@ TEST_EXTENSIONS		= .test
 TEST_LOG_COMPILER	= $(MBFL_PROGRAM_BASH)
 AM_TEST_LOG_FLAGS	= $(MBFLFLAGS)
 
-TESTS			= \
-	tests/arrays.test		\
-	tests/atexit.test		\
-	tests/compress.test		\
-	tests/encode.test		\
-	tests/fd.test			\
-	tests/file.test			\
-	tests/getopts.test		\
-	tests/locations.test		\
-	tests/message.test		\
-	tests/process.test		\
-	tests/program.test		\
-	tests/script.test		\
-	tests/signal.test		\
-	tests/strings.test		\
-	tests/system.test		\
-	tests/times-and-dates.test	\
-	tests/variables.test		\
-	tests/semver.test		\
+TESTS			=			\
+	tests/arrays.test			\
+	tests/atexit.test			\
+	tests/compress.test			\
+	tests/encode.test			\
+	tests/fd.test				\
+	tests/file.test				\
+	tests/getopts.test			\
+	tests/locations.test			\
+	tests/message.test			\
+	tests/process.test			\
+	tests/program.test			\
+	tests/script.test			\
+	tests/semver.test			\
+	tests/signal.test			\
+	tests/strings.test			\
+	tests/system.test			\
+	tests/times-and-dates.test		\
+	tests/variables.test			\
 	\
 	tests/bash-feature-coproc.test
 
@@ -409,7 +409,7 @@ test-sendmail-localhost:
 MBFL_INSTCHECK_FLAGS	= $(user_flags)
 # This thing with the PATH environment variable is needed to run
 # distcheck successfully.
-MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:$(DESTDIR)$(bindir):$$PATH; export PATH;
+MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:$(builddir)/tests:$(DESTDIR)$(bindir):$$PATH; export PATH;
 MBFL_INSTCHECK_ENV	+= PATH="`mbfl-config --libpath`":$$PATH; export PATH;
 MBFL_INSTCHECK_ENV	+= MBFL_LIBRARY="`mbfl-config --library`"; export MBFL_LIBRARY;
 MBFL_INSTCHECK_ENV	+= MBFLTEST_LIBRARY="`mbfl-config --testlib`"; export MBFLTEST_LIBRARY;
@@ -417,6 +417,13 @@ MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR; examplesdir=$(srcdir)/ex
 MBFL_INSTCHECK_RUN	= $(MBFL_INSTCHECK_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_INSTCHECK_FLAGS)
 
 installcheck-local:
-	@for f in $(TESTS); do $(MBFL_INSTCHECK_RUN) $(srcdir)/$$f; done
+	@for f in $(TESTS);					\
+	do							\
+		if   test -f $(srcdir)/$$f ;			\
+		then $(MBFL_INSTCHECK_RUN) $(srcdir)/$$f ;	\
+		elif test -f $(builddir)/$$f ;			\
+		then $(MBFL_INSTCHECK_RUN) $(builddir)/$$f ;	\
+		fi;						\
+	done
 
 ### end of file
