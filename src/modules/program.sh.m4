@@ -41,15 +41,14 @@ function mbfl_program_split_path () {
 	for ((i=0; i < SPLITCOUNT; ++i))
 	do mbfl_split_PATH[$i]=${SPLITFIELD[$i]}
 	done
-	return 0
-    else return 1
+	return_success
+    else return_failure
     fi
 }
 
 function mbfl_program_find_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(mbfl_PROGRAM, 2, program)
-    local mbfl_DUMMY
+    mbfl_mandatory_parameter(mbfl_PROGRAM,               2, program)
 
     # NOTE We do *not* want  to test for the executability of the program  here!  This is because we
     # also  want to  find  a  program that  is  executable  only by  some  other  user, for  example
@@ -60,33 +59,41 @@ function mbfl_program_find_var () {
 	if mbfl_file_is_file "$mbfl_PROGRAM"
 	then
 	    mbfl_RESULT_VARREF="$mbfl_PROGRAM"
-	    return 0
+	    return_success
+	else return_because_program_not_found
 	fi
-    elif mbfl_string_first_var mbfl_DUMMY "$mbfl_PROGRAM" '/'
+    elif {
+	mbfl_local_varref(DUMMY)
+	mbfl_string_first_var mbfl_datavar(DUMMY) "$mbfl_PROGRAM" '/'
+    }
     then
 	# The $mbfl_PROGRAM is not an absolute pathname, but it is a relative pathname with at least
 	# one slash in it.
 	if mbfl_file_is_file "$mbfl_PROGRAM"
 	then
 	    mbfl_RESULT_VARREF="$mbfl_PROGRAM"
-	    return 0
+	    return_success
+	else return_because_program_not_found
 	fi
     else
 	mbfl_program_split_path
 	local mbfl_PATHNAME
-	local -i mbfl_I mbfl_NUMBER_OF_COMPONENTS=${#mbfl_split_PATH[@]}
+	local -i mbfl_I mbfl_NUMBER_OF_COMPONENTS=mbfl_slots_number(mbfl_split_PATH)
 
 	for ((mbfl_I=0; mbfl_I < mbfl_NUMBER_OF_COMPONENTS; ++mbfl_I))
 	do
-	    printf -v mbfl_PATHNAME '%s/%s' "${mbfl_split_PATH[${mbfl_I}]}" "$mbfl_PROGRAM"
+	    printf -v mbfl_PATHNAME '%s/%s' "mbfl_slot_ref(mbfl_split_PATH, $mbfl_I)" "$mbfl_PROGRAM"
 	    if mbfl_file_is_file "$mbfl_PATHNAME"
 	    then
 		mbfl_RESULT_VARREF="$mbfl_PATHNAME"
-		return 0
+		break
 	    fi
 	done
+	if mbfl_string_is_not_empty "$mbfl_RESULT_VARREF"
+	then return_success
+	else return_because_program_not_found
+	fi
     fi
-    return 1
 }
 
 function mbfl_program_find () {

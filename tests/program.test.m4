@@ -304,6 +304,13 @@ function program-find-1.1 () {
      local RESULT=$(mbfl_program_find ls)
      dotest-equal /bin/ls "$RESULT")
 }
+function program-find-1.2 () {
+    (PATH=/bin
+     local RESULT
+     RESULT=$(mbfl_program_find woppa-wippa-duppa-unexistent)
+     dotest-equal mbfl_slot_ref(mbfl_EXIT_CODES_BY_NAME, program_not_found) $? &&
+	 dotest-equal '' "$RESULT")
+}
 
 function program-find-2.1 () {
     (PATH=/bin

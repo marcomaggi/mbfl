@@ -4310,7 +4310,8 @@ mbfl_split_PATH=()
 @defun mbfl_program_find @var{PROGRAM}
 @defunx mbfl_program_find_var @var{_RV} @var{PROGRAM}
 Search for a file in the standard search path.  Print the full pathname of the file found, or an
-empty string if nothing is found.  When a file is found: return @code{0}; otherwise return @code{1}.
+empty string if nothing is found.  When a file is found: return successfully; otherwise return by
+calling @func{return_because_program_not_found}.
 
 @example
 PATH=/bin
