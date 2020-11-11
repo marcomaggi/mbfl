@@ -127,7 +127,7 @@ function program-3.6 () {
 function program-4.1 () {
     local USERNAME
 
-    if USERNAME=$("$mbfl_program_WHOAMI")
+    if USERNAME=$("$mbfl_PROGRAM_WHOAMI")
     then
 	local CODE
 	mbfl_program_enable_sudo
@@ -136,7 +136,7 @@ function program-4.1 () {
 	    mbfl_program_FORCE_USE_SUDO=true
 	    mbfl_program_declare_sudo_user "$USERNAME"
 	    echo 123 | mbfl_program_exec cat 2>&1 | \
-		dotest-output "command $mbfl_program_SUDO -u $USERNAME cat <&0 >&1 2>&2"
+		dotest-output "command $mbfl_PROGRAM_SUDO -u $USERNAME cat <&0 >&1 2>&2"
 	    CODE=$?
 	}
 	mbfl_unset_option_test
@@ -147,7 +147,7 @@ function program-4.1 () {
 function program-4.2 () {
     local USERNAME
 
-    if USERNAME=$("$mbfl_program_WHOAMI")
+    if USERNAME=$("$mbfl_PROGRAM_WHOAMI")
     then
 	local CODE
 	mbfl_program_enable_sudo
@@ -157,7 +157,7 @@ function program-4.2 () {
 	    mbfl_program_declare_sudo_user "$USERNAME"
 	    mbfl_program_declare_sudo_options -H VAL=val
 	    echo 123 | mbfl_program_exec cat 2>&1 | \
-		dotest-output "command $mbfl_program_SUDO -H VAL=val -u $USERNAME cat <&0 >&1 2>&2"
+		dotest-output "command $mbfl_PROGRAM_SUDO -H VAL=val -u $USERNAME cat <&0 >&1 2>&2"
 	    CODE=$?
 	}
 	mbfl_unset_option_test
