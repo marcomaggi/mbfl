@@ -244,6 +244,10 @@ changes!
 
     mbfl_location_handler_suspend_testing
 
+* Added preprocessor macros for arrays handling:
+
+    mbfl_slots_number
+
 
 Notes for revision 2.2.0
 ------------------------

@@ -1222,29 +1222,41 @@ unset -v @var{VAR}
 @section Manipulating arrays with macros
 
 
-@deffn {Preprocessor Macros} mbfl_slot_ref (@var{VAR}, @var{KEY})
+@deffn {Preprocessor Macros} mbfl_slot_ref (@var{ARRAYNAME}, @var{KEY})
 Expands into the expression:
 
 @example
-$@{@var{VAR}[@var{KEY}]@}
+$@{@var{ARRAYNAME}[@var{KEY}]@}
 @end example
 
 @noindent
-which evaluates to the value of the slot @var{KEY} in the array variable @var{VAR}.  This macro
-works with both indexed and associative arrays.
+which evaluates to the value of the slot @var{KEY} in the array variable @var{ARRAYNAME}.  This
+macro works with both indexed and associative arrays.
 @end deffn
 
 
-@deffn {Preprocessor Macros} mbfl_slot_set (@var{VAR}, @var{KEY}, @var{EXPR})
+@deffn {Preprocessor Macros} mbfl_slot_set (@var{ARRAYNAME}, @var{KEY}, @var{EXPR})
 Expands into the expression:
 
 @example
-@var{VAR}[@var{KEY}]=@var{EXPR}
+@var{ARRAYNAME}[@var{KEY}]=@var{EXPR}
 @end example
 
 @noindent
-which stores the value of @var{EXPR} in the slot @var{KEY} of the array variable @var{VAR}.  This
-macro works with both indexed and associative arrays.
+which stores the value of @var{EXPR} in the slot @var{KEY} of the array variable @var{ARRAYNAME}.
+This macro works with both indexed and associative arrays.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_slots_number (@var{ARRAYNAME})
+Expands into the expression:
+
+@example
+$@{#@var{ARRAYNAME}[@@]@}
+@end example
+
+@noindent
+evaluating to the number of pairs in the array variable @var{ARRAYNAME}.
 @end deffn
 
 @c page
