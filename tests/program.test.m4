@@ -114,6 +114,14 @@ function program-3.5 () {
     mbfl_program_validate_declared | dotest-output 'test: *** not found "unexistent", path: ""'
 }
 
+function program-3.6 () {
+    mbfl_declare_program /woppa/dippa/puppa/unexistent
+    (mbfl_local_varref(PROG)
+     mbfl_program_found_var mbfl_datavar(PROG) /woppa/dippa/puppa/unexistent)
+    dotest-equal 99 $?
+}
+
+
 #page
 #### tests for sudo invocation
 

@@ -114,40 +114,39 @@ function mbfl_declare_program () {
     then mbfl_file_normalise_var PROGRAM_PATHNAME "$PROGRAM_PATHNAME"
     fi
     mbfl_program_PATHNAMES["$PROGRAM"]=$PROGRAM_PATHNAME
-    return 0
+    return_success
 }
 function mbfl_program_validate_declared () {
-    local retval PROGRAM PROGRAM_PATHNAME
+    local -i RV=0
+    local PROGRAM PROGRAM_PATHNAME
 
     for PROGRAM in "${!mbfl_program_PATHNAMES[@]}"
     do
 	PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
-	# NOTE We  do *not* want  to test  for the executability  of the
-	# program here!  This is because we  also want to find a program
-	# that  is  executable only  by  some  other user,  for  example
+	# NOTE We do *not* want to test for  the executability of the program here!  This is because
+	# we also  want to find a  program that is executable  only by some other  user, for example
 	# "/sbin/ifconfig" is executable only by root (or it should be).
         if mbfl_file_is_file "$PROGRAM_PATHNAME"
         then mbfl_message_verbose_printf 'found "%s": "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
         else
             mbfl_message_verbose_printf '*** not found "%s", path: "%s"\n' "$PROGRAM" "$PROGRAM_PATHNAME"
-            retval=1
+            RV=1
         fi
     done
-    return $retval
+    return $RV
 }
 function mbfl_program_found_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
-    mbfl_mandatory_parameter(mbfl_PROGRAM, 2, program name)
+    mbfl_mandatory_parameter(mbfl_PROGRAM,               2, program name)
     local -r mbfl_PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$mbfl_PROGRAM"]}
 
-    # NOTE We do *not* want to test for the executability of the program
-    # here!  This  is because  we also  want to find  a program  that is
-    # executable only  by some other user,  for example "/sbin/ifconfig"
-    # is executable only by root (or it should be).
+    # NOTE We do *not* want  to test for the executability of the program  here!  This is because we
+    # also  want to  find  a  program that  is  executable  only by  some  other  user, for  example
+    # "/sbin/ifconfig" is executable only by root (or it should be).
     if mbfl_file_is_file "$mbfl_PROGRAM_PATHNAME"
     then
 	mbfl_RESULT_VARREF=$mbfl_PROGRAM_PATHNAME
-        return 0
+        return_success
     else
 	mbfl_message_error_printf 'invalid pathname for program "%s": "%s"' "$mbfl_PROGRAM" "$mbfl_PROGRAM_PATHNAME"
 	exit_because_program_not_found
@@ -161,7 +160,7 @@ function mbfl_program_found () {
     if ((0 == EXIT_STATUS))
     then
 	echo "$RESULT_VARNAME"
-	return 0
+	return_success
     else return $EXIT_STATUS
     fi
 }

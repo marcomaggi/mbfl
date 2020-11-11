@@ -3729,7 +3729,8 @@ the option @option{--force}.
 @cindex @option{--validate-programs}, predefined option
 @cindex Predefined option @option{--validate-programs}
 Validates the existence of all the programs needed by the script; then exits.  The exit code is zero
-if all the programs were found, one otherwise.
+if all the programs were found, one otherwise.  We can pair this option with @option{--verbose} to
+see the list of programs and checks.
 
 @item --list-exit-codes
 @anchor{--list-exit-codes}
@@ -4264,8 +4265,8 @@ The module @code{program} implements the infrastructure needed to run external p
 
 @menu
 * program checking::            Checking programs existence.
-* program executing::           Executing a program.
 * program declaring::           Declaring the intention to use a program.
+* program executing::           Executing a program.
 * program preselected::         Preselected program pathnames.
 @end menu
 
@@ -4309,7 +4310,7 @@ mbfl_split_PATH=()
 @defun mbfl_program_find @var{PROGRAM}
 @defunx mbfl_program_find_var @var{_RV} @var{PROGRAM}
 Search for a file in the standard search path.  Print the full pathname of the file found, or an
-empty string if nothing is found.  When a file is found: return true; otherwise return false.
+empty string if nothing is found.  When a file is found: return @code{0}; otherwise return @code{1}.
 
 @example
 PATH=/bin
@@ -4354,6 +4355,116 @@ that relative pathname is verified as existent file.  @var{PATH} is ignored.
 If @var{PROGRAM} is a relative pathname without slash characters in it: the standard search path is
 used.
 @end itemize
+@end defun
+
+@c page
+@node program declaring
+@section Declaring the intention to use a program
+
+
+To make a script model simpler, we assume that the unavailability of a program at the time of its
+execution is a fatal error.  So if we need to execute a program and the executable is not there, the
+script must be aborted on the spot.
+
+Functions are provided to test the availability of a program, so we can try to locate an alternative
+or terminate the process under the script control.  On a system where executables may vanish from
+one moment to another, no matter how we test a program's existence, there's always the possibility
+that the program is not ``there'' when we invoke it.
+
+The vanishing of a program is a rare event: if it's there when we look for it, probably it will be
+there also a few moments later when we invoke it.  For this reason, @mbfl{} proposes a set of
+functions with which we can declare the intention of a script to use a set of programs.
+
+A command line option is predefined to let the user test the availability of all the declared
+programs before invoking the script;  @ref{--validate-programs, Predefined options}.
+
+
+@defun mbfl_declare_program @var{PROGRAM}
+Register @var{PROGRAM} as the name of a program required by the script; @func{mbfl_program_find} is
+used to locate the program on the system.  @ref{program checking, Checking programs existence}.
+
+If @var{PROGRAM} is a file name with no directory part (examples: @command{sed}, @command{grep}) the
+selected program is the full pathname of the file in one of the directories of @env{PATH}.
+
+If @var{PROGRAM} is a relative pathname (examples: @file{../bin/sed}, @file{./grep}): the selected
+program is the full pathname of the file normalised by this function with respect to the current
+working directory (with a call to @func{mbfl_file_normalise}).
+
+If @var{PROGRAM} is an absolute pathname (examples: @file{/bin/sed}, @file{/bin/grep}): the selected
+program is the full pathname itself.
+
+The return value is always zero.
+@end defun
+
+
+@defun mbfl_program_validate_declared
+Validate the existence of all the declared programs.  The return value is @code{0} if all the
+programs are found, @code{1} otherwise.
+
+This function is invoked by @func{mbfl_getopts_parse} when the @option{--validate-programs} option
+is used on the command line.
+
+It may be a good idea to invoke this function at the beginning of a script, just before starting to
+do stuff, example:
+
+@example
+mbfl_program_validate_declared || exit_because_program_not_found
+@end example
+
+If verbose messages are enabled: a brief summary is echoed to @stderr{}.
+@end defun
+
+
+@defun mbfl_program_found @var{PROGRAM}
+@defunx mbfl_program_found_var @var{_RV} @var{PROGRAM}
+Print the pathname of the previously declared @var{PROGRAM}.  Return zero if the program was found,
+otherwise print an error message and exit the current (sub)shell by invoking
+@func{exit_because_program_not_found}.
+
+@example
+function program_wrapper () @{
+    mbfl_mandatory_parameter(PATHNAME, 1, argument)
+    shift
+    local PROGNAME FLAGS
+
+    PROGNAME=$(mbfl_program_found_var myprog) || exit $?
+
+    mbfl_option_verbose_program && FLAGS+=' --verbose'
+    mbfl_program_exec "$PROGNAME" $FLAGS "$@@" '--' "$PATHNAME"
+@}
+@end example
+
+Remember that we cannot use:
+
+@example
+local PROGNAME=$(mbfl_program_found 'myprog') || exit $?
+@end example
+
+@noindent
+because @code{local} has exit status zero even if @func{mbfl_program_found} fails, so the error will
+not be reported.
+
+The function variant @code{_var} will store the result in @var{_RV} rather than printing it.
+
+@example
+function program_wrapper () @{
+    mbfl_mandatory_parameter(PATHNAME, 1, argument)
+    shift
+    mbfl_local_varref(PROGNAME)
+    local FLAGS
+
+    mbfl_program_found_var mbfl_datavar(PROGNAME) myprog
+
+    mbfl_option_verbose_program && FLAGS+=' --verbose'
+    mbfl_program_exec "$PROGNAME" $FLAGS "$@@" '--' "$PATHNAME"
+@}
+@end example
+@end defun
+
+
+@defun exit_because_program_not_found
+@defunx return_because_program_not_found
+Exit or return with code @code{99}.
 @end defun
 
 @c page
@@ -4431,6 +4542,7 @@ mbfl_program_exec ls /bin
 @subsection Core @api{} for program execution
 
 
+@anchor{mbfl_program_exec}
 @defun mbfl_program_exec @var{PROGRAM} @var{ARG} @dots{}
 Evaluate a command line.  @var{PROGRAM} identifies an executable file: it can be the program name,
 or a relative or absolute pathname.  The optional @var{ARG} values are command line arguments that
@@ -4456,6 +4568,7 @@ If the function @func{mbfl_option_show_program} returns true: the command line i
 @end defun
 
 
+@anchor{mbfl_program_exec2}
 @defun mbfl_program_exec2 @var{INFD} @var{OUFD} @var{ERFD} @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_exec}, but redirect the standard input, output and error channels using the
 given file descriptors.
@@ -4480,6 +4593,7 @@ Redirecting channels when executing a program}.
 @subsection Core @api{} for program execution with replacement
 
 
+@anchor{mbfl_program_replace}
 @defun mbfl_program_replace @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_exec}, but execute the program through the Bash command @code{exec}, so
 replacing the current process without creating a new one.
@@ -4522,6 +4636,7 @@ Redirecting channels when executing a program}.
 @end defun
 
 
+@anchor{mbfl_program_replace2}
 @defun mbfl_program_replace2 @var{INFD} @var{OUFD} @var{ERFD} @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_replace}, but redirect the standard input, output and error channels using
 the given channels.
@@ -4533,6 +4648,7 @@ Redirecting channels when executing a program}.
 @end defun
 
 
+@anchor{mbfl_program_set_exec_flags}
 @defun mbfl_program_set_exec_flags @var{FLAG} @dots{}
 Store the strings @var{FLAG} as internal state.  At the next program execution with one of the
 functions @cfunc{mbfl_program_replace*}: the string is consumed as flags for the Bash built--in
@@ -4540,6 +4656,7 @@ functions @cfunc{mbfl_program_replace*}: the string is consumed as flags for the
 @end defun
 
 
+@anchor{mbfl_program_reset_exec_flags}
 @defun mbfl_program_reset_exec_flags
 Reset to empty the internal state representing flags for the Bash built--in @code{exec}.
 @end defun
@@ -4549,6 +4666,7 @@ Reset to empty the internal state representing flags for the Bash built--in @cod
 @subsection Executing programs in background
 
 
+@anchor{mbfl_program_execbg}
 @defun mbfl_program_execbg @var{INFD} @var{OUFD} @var{PROGRAM}
 @defunx mbfl_program_execbg @var{INFD} @var{OUFD} @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_exec}, but runs the given command line as:
@@ -4569,6 +4687,7 @@ Redirecting channels when executing a program}.
 @end defun
 
 
+@anchor{mbfl_program_execbg2}
 @defun mbfl_program_execbg2 @var{INFD} @var{OUFD} @var{ERFD} @var{PROGRAM}
 @defunx mbfl_program_execbg2 @var{INFD} @var{OUFD} @var{ERFD} @var{PROGRAM} @var{ARG} @dots{}
 Like @func{mbfl_program_execbg}, but redirects also the standard error of the executed process to
@@ -4828,116 +4947,6 @@ if @{
 then handle_the_error
 fi
 @end example
-
-@c page
-@node program declaring
-@section Declaring the intention to use a program
-
-
-To make a script model simpler, we assume that the unavailability of a
-program at the time of its execution is a fatal error.  So if we need to
-execute a program and the executable is not there, the script must be
-aborted on the spot.
-
-Functions are provided to test the availability of a program, so we can
-try to locate an alternative or terminate the process under the script
-control.  On a system where executables may vanish from one moment to
-another, no matter how we test a program's existence, there's always the
-possibility that the program is not ``there'' when we invoke it.
-
-If we just use @func{mbfl_program_exec} to invoke an external
-program, the function will try and fail if the executable is
-unavailable: the return code will be false.
-
-The vanishing of a program is a rare event: if it's there when we look
-for it, probably it will be there also a few moments later when we
-invoke it.  For this reason, @mbfl{} proposes a set of functions with
-which we can declare the intention of a script to use a set of programs.
-
-A command line option is predefined to let the user test the
-availability of all the declared programs before invoking the script.
-@ref{getopts options, Predefined options}.
-
-
-@defun mbfl_declare_program @var{PROGRAM}
-Register @var{PROGRAM} as the name of a program required by the script;
-@func{mbfl_program_find} is used to locate the program on the system.
-@ref{program checking, Checking programs existence}.
-
-If @var{PROGRAM} is a file name with no directory part (examples:
-@command{sed}, @command{grep}) the selected program is the full pathname
-of the file in one of the directories of @env{PATH}.
-
-If @var{PROGRAM} is a relative pathname (examples: @file{../bin/sed},
-@file{./grep}): the selected program is the full pathname of the file
-normalised by this function with respect to the current working
-directory (with a call to @func{mbfl_file_normalise}).
-
-The return value is always zero.
-@end defun
-
-
-@defun mbfl_program_validate_declared
-Validate the existence of all the declared programs.  The return value
-is zero if all the programs are found, one otherwise.
-
-This function is invoked by @func{mbfl_getopts_parse} when the
-@option{--validate-programs} option is used on the command line.
-
-It may be a good idea to invoke this function at the beginning of a
-script, just before starting to do stuff, example:
-
-@example
-mbfl_program_validate_declared || \
-   exit_because_program_not_found
-@end example
-
-If verbose messages are enabled: a brief summary is echoed to stderr;
-from the command line the option @option{--verbose} must be used before
-@option{--validate-programs}.
-@end defun
-
-
-@defun mbfl_program_found @var{PROGRAM}
-@defunx mbfl_program_found_var @var{_RV} @var{PROGRAM}
-Print the pathname of the previously declared @var{PROGRAM}.  Return zero if the program was found,
-otherwise print an error message and exit the current (sub)shell by invoking
-@func{exit_because_program_not_found}.
-
-This function should be used to retrieve the pathname of the program to be used as first argument to
-@func{mbfl_program_exec}:
-
-The function variant @code{_var} will store the result in @var{_RV} rather than printing it.
-
-@example
-function program_wrapper () @{
-    mbfl_mandatory_parameter(ARGUMENT, 1, argument)
-    shift
-    local PROGNAME FLAGS
-
-    mbfl_program_found_var PROGNAME myprog || exit $?
-
-    mbfl_option_verbose_program && FLAGS+=' --verbose'
-    mbfl_program_exec "$PROGNAME" $FLAGS "$ARGUMENT" "$@@"
-@}
-@end example
-
-Remember that we cannot use:
-
-@example
-local PROGNAME=$(mbfl_program_found 'myprog') || exit $?
-@end example
-
-@noindent
-because @code{local} has exit status zero even if @func{mbfl_program_found} fails, so the error
-will not be reported.
-@end defun
-
-
-@defun exit_because_program_not_found
-@defunx return_because_program_not_found
-Exit or return with code @code{99}.
-@end defun
 
 @c page
 @node program preselected
