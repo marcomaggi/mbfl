@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (C) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -48,7 +48,7 @@ function mbfl_atexit_register () {
     else local mbfl_ID_VARREF
     fi
 
-    mbfl_atexit_HANDLERS[$mbfl_atexit_NEXT]=$mbfl_HANDLER
+    mbfl_slot_set(mbfl_atexit_HANDLERS, $mbfl_atexit_NEXT, $mbfl_HANDLER)
     mbfl_ID_VARREF=$mbfl_atexit_NEXT
     let ++mbfl_atexit_NEXT
 }
@@ -63,9 +63,9 @@ function mbfl_atexit_run () {
     local HANDLER
     local -i i
 
-    for ((i=${#mbfl_atexit_HANDLERS[@]}-1; i >= 0; --i))
+    for ((i=mbfl_slots_number(mbfl_atexit_HANDLERS)-1; i >= 0; --i))
     do
-	HANDLER=${mbfl_atexit_HANDLERS[$i]}
+	HANDLER=mbfl_slot_ref(mbfl_atexit_HANDLERS, $i)
 	if mbfl_string_is_not_empty "$HANDLER"
 	then
 	    # Remove the handler.
