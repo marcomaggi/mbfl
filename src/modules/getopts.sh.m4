@@ -176,7 +176,7 @@ function mbfl_declare_option () {
             return 1
         fi
     fi
-    return 0
+    return_success
 }
 function mbfl_p_declare_option_test_length () {
     local value=$1
@@ -256,7 +256,7 @@ function mbfl_getopts_parse () {
         do ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
         done
     fi
-    return 0
+    return_success
 }
 
 #page

@@ -98,27 +98,6 @@ MBFL_CREATE_OPTION_PROCEDURES([[[verbose]]])
 MBFL_CREATE_OPTION_PROCEDURES([[[verbose_program]]])
 
 #page
-#### script termination facilities
-
-if test "$mbfl_INTERACTIVE" != yes
-then declare -i mbfl_PENDING_EXIT_CODE=0
-fi
-
-function mbfl_script_is_exiting () { return_failure; }
-
-function mbfl_exit () {
-    mbfl_optional_parameter(CODE, 1, 0)
-
-    # NOTE Use of this variable is deprecated; it is still here for backwards compatibility.  (Marco
-    # Maggi; Nov 11, 2020)
-    mbfl_main_pending_EXIT_CODE=$CODE
-
-    mbfl_PENDING_EXIT_CODE=$CODE
-    function mbfl_script_is_exiting () { return_success; }
-    exit $CODE
-}
-
-#page
 #### exit codes and return codes
 
 if test "$mbfl_INTERACTIVE" != yes
@@ -128,118 +107,131 @@ then
     mbfl_EXIT_CODES[0]=0
     mbfl_EXIT_NAMES[0]=success
     mbfl_EXIT_CODES_BY_NAME[success]=0
-    function exit_because_success   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 0); }
-    function return_because_success () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 0); }
+    function exit_because_success   () { mbfl_exit 0; }
+    alias return_because_success="return 0"
 
     mbfl_EXIT_CODES[1]=1
     mbfl_EXIT_NAMES[1]=failure
     mbfl_EXIT_CODES_BY_NAME[failure]=1
-    function exit_because_failure   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 1); }
-    function return_because_failure () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 1); }
+    function exit_because_failure   () { mbfl_exit 1; }
+    alias return_because_failure="return 1"
 
     mbfl_EXIT_CODES[2]=100
     mbfl_EXIT_NAMES[2]=error_loading_library
     mbfl_EXIT_CODES_BY_NAME[error_loading_library]=100
-    function exit_because_error_loading_library   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 2); }
-    function return_because_error_loading_library () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 2); }
+    function exit_because_error_loading_library   () { mbfl_exit 100; }
+    alias return_because_error_loading_library="return 100"
 
     mbfl_EXIT_CODES[3]=99
     mbfl_EXIT_NAMES[3]=program_not_found
     mbfl_EXIT_CODES_BY_NAME[program_not_found]=99
-    function exit_because_program_not_found   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 3); }
-    function return_because_program_not_found () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 3); }
+    function exit_because_program_not_found   () { mbfl_exit 99; }
+    alias return_because_program_not_found="return 99"
 
     mbfl_EXIT_CODES[4]=98
     mbfl_EXIT_NAMES[4]=wrong_num_args
     mbfl_EXIT_CODES_BY_NAME[wrong_num_args]=98
-    function exit_because_wrong_num_args   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 4); }
-    function return_because_wrong_num_args () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 4); }
+    function exit_because_wrong_num_args   () { mbfl_exit 98; }
+    alias return_because_wrong_num_args="return 98"
 
     mbfl_EXIT_CODES[5]=97
     mbfl_EXIT_NAMES[5]=invalid_action_set
     mbfl_EXIT_CODES_BY_NAME[invalid_action_set]=97
-    function exit_because_invalid_action_set   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 5); }
-    function return_because_invalid_action_set () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 5); }
+    function exit_because_invalid_action_set   () { mbfl_exit 97; }
+    alias return_because_invalid_action_set="return 97"
 
     mbfl_EXIT_CODES[6]=96
     mbfl_EXIT_NAMES[6]=invalid_action_declaration
     mbfl_EXIT_CODES_BY_NAME[invalid_action_declaration]=96
-    function exit_because_invalid_action_declaration   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 6); }
-    function return_because_invalid_action_declaration () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 6); }
+    function exit_because_invalid_action_declaration   () { mbfl_exit 96; }
+    alias return_because_invalid_action_declaration="return 96"
 
     mbfl_EXIT_CODES[7]=95
     mbfl_EXIT_NAMES[7]=invalid_action_argument
     mbfl_EXIT_CODES_BY_NAME[invalid_action_argument]=95
-    function exit_because_invalid_action_argument   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 7); }
-    function return_because_invalid_action_argument () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 7); }
+    function exit_because_invalid_action_argument   () { mbfl_exit 95; }
+    alias return_because_invalid_action_argument="return 95"
 
     mbfl_EXIT_CODES[8]=94
     mbfl_EXIT_NAMES[8]=missing_action_function
     mbfl_EXIT_CODES_BY_NAME[missing_action_function]=94
-    function exit_because_missing_action_function   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 8); }
-    function return_because_missing_action_function () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 8); }
+    function exit_because_missing_action_function   () { mbfl_exit 94; }
+    alias return_because_missing_action_function="return 94"
 
     mbfl_EXIT_CODES[9]=93
     mbfl_EXIT_NAMES[9]=invalid_option_declaration
     mbfl_EXIT_CODES_BY_NAME[invalid_option_declaration]=93
-    function exit_because_invalid_option_declaration   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 9); }
-    function return_because_invalid_option_declaration () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 9); }
+    function exit_because_invalid_option_declaration   () { mbfl_exit 93; }
+    alias return_because_invalid_option_declaration="return 93"
 
     mbfl_EXIT_CODES[10]=92
     mbfl_EXIT_NAMES[10]=invalid_option_argument
     mbfl_EXIT_CODES_BY_NAME[invalid_option_argument]=92
-    function exit_because_invalid_option_argument   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 10); }
-    function return_because_invalid_option_argument () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 10); }
+    function exit_because_invalid_option_argument   () { mbfl_exit 92; }
+    alias return_because_invalid_option_argument="return 92"
 
     mbfl_EXIT_CODES[11]=91
     mbfl_EXIT_NAMES[11]=invalid_function_name
     mbfl_EXIT_CODES_BY_NAME[invalid_function_name]=91
-    function exit_because_invalid_function_name   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 11); }
-    function return_because_invalid_function_name () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 11); }
+    function exit_because_invalid_function_name   () { mbfl_exit 91; }
+    alias return_because_invalid_function_name="return 91"
 
     mbfl_EXIT_CODES[12]=90
     mbfl_EXIT_NAMES[12]=invalid_sudo_username
     mbfl_EXIT_CODES_BY_NAME[invalid_sudo_username]=90
-    function exit_because_invalid_sudo_username   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 12); }
-    function return_because_invalid_sudo_username () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 12); }
+    function exit_because_invalid_sudo_username   () { mbfl_exit 90; }
+    alias return_because_invalid_sudo_username="return 90"
 
     mbfl_EXIT_CODES[13]=89
     mbfl_EXIT_NAMES[13]=no_location
     mbfl_EXIT_CODES_BY_NAME[no_location]=89
-    function exit_because_no_location   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 13); }
-    function return_because_no_location () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 13); }
+    function exit_because_no_location   () { mbfl_exit 89; }
+    alias return_because_no_location="return 89"
 
     mbfl_EXIT_CODES[14]=88
     mbfl_EXIT_NAMES[14]=invalid_mbfl_version
     mbfl_EXIT_CODES_BY_NAME[invalid_mbfl_version]=88
-    function exit_because_invalid_mbfl_version   () { mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, 14); }
-    function return_because_invalid_mbfl_version () { return    mbfl_slot_ref(mbfl_EXIT_CODES, 14); }
+    function exit_because_invalid_mbfl_version   () { mbfl_exit 88; }
+    alias return_because_invalid_mbfl_version="return 88"
 fi
 
-function exit_success   () { exit_because_success; }
-function exit_failure   () { exit_because_failure; }
-function return_success () { return_because_success; }
-function return_failure () { return_because_failure; }
+alias exit_success='exit_because_success'
+alias exit_failure='exit_because_failure'
+alias return_success='return_because_success'
+alias return_failure='return_because_failure'
 
 function mbfl_declare_exit_code () {
     mbfl_mandatory_parameter(CODE, 1, exit code)
     mbfl_mandatory_parameter(DESCRIPTION, 2, exit code name)
 
+    # if ! mbfl_string_is_digit "$CODE"
+    # then
+    # 	mbfl_message_error_printf 'invalid exit code (not a digit string): "%s"' "$CODE"
+    # 	return_because_failure
+    # fi
+
     if ! mbfl_string_is_identifier "$DESCRIPTION"
     then
-	mbfl_message_error_printf 'invalid exit code specification (not an identifier): "%s"'
+	mbfl_message_error_printf 'invalid exit code name (not an identifier): "%s"' "$DESCRIPTION"
 	return_because_failure
     fi
 
     local -i i=mbfl_slots_number(mbfl_EXIT_CODES)
-    mbfl_EXIT_NAMES[$i]=$DESCRIPTION
-    mbfl_EXIT_CODES[$i]=$CODE
+    mbfl_slot_set(mbfl_EXIT_NAMES, $i, $DESCRIPTION)
+    mbfl_slot_set(mbfl_EXIT_CODES, $i, $CODE)
+    mbfl_slot_set(mbfl_EXIT_CODES_BY_NAME, "$DESCRIPTION", $i)
 
-    local name
-    printf -v name 'exit_because_%s' mbfl_slot_ref(mbfl_EXIT_NAMES, i)
-    eval function "$name" '()' "{ mbfl_exit mbfl_slot_ref(mbfl_EXIT_CODES, i); }"
-    printf -v name 'return_because_%s' mbfl_slot_ref(mbfl_EXIT_NAMES, i)
-    eval function "$name" '()' "{ return mbfl_slot_ref(mbfl_EXIT_CODES, i); }"
+    {
+	local COMMMAND
+	printf -v COMMAND 'function exit_because_%s () { mbfl_exit %d; }' "$DESCRIPTION" $CODE
+	eval "$COMMAND"
+    }
+
+    {
+	local COMMAND
+	printf -v COMMAND 'alias return_because_%s="return %d"' "$DESCRIPTION" $CODE
+	eval "$COMMAND"
+    }
 }
 
 #page
@@ -270,6 +262,27 @@ function mbfl_print_exit_code_names () {
 	then printf '%s\n' mbfl_slot_ref(mbfl_EXIT_NAMES, $i)
 	fi
     done
+}
+
+#page
+#### script termination facilities
+
+if test "$mbfl_INTERACTIVE" != yes
+then declare -i mbfl_PENDING_EXIT_CODE=0
+fi
+
+function mbfl_script_is_exiting () { return_failure; }
+
+function mbfl_exit () {
+    mbfl_optional_parameter(CODE, 1, 0)
+
+    # NOTE Use of this variable is deprecated; it is still here for backwards compatibility.  (Marco
+    # Maggi; Nov 11, 2020)
+    mbfl_main_pending_EXIT_CODE=$CODE
+
+    mbfl_PENDING_EXIT_CODE=$CODE
+    function mbfl_script_is_exiting () { return_success; }
+    exit $CODE
 }
 
 ### end of file
