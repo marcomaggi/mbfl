@@ -3987,11 +3987,20 @@ the password.
 
 @menu
 * file names::                  Manipulating file names.
-* file commands::               Manipulating files with external
-                                commands.
+* file listing::                Listing directory entries.
+* file stat::                   Inspecting files and directories.
+* file mkdir::                  Creating directories.
+* file copy::                   Copying files.
+* file move::                   Moving files.
+* file removing::               Removing files and directories.
+* file symlink::                Creating links and symbolic links.
+* file realpath::               Normalising pathnames.
+* file perms::                  Setting and getting file access permissions.
+* file owner::                  Setting file owner and group.
+* file tar::                    Manipulating tar archives.
+* file compress::               Compressing files.
 * file testing::                Testing file existence and the like.
-* file read and write::         Reading and writing files with
-                                privileges.
+* file read and write::         Reading and writing files with privileges.
 * file misc::                   Miscellaneous commands.
 @end menu
 
@@ -4317,28 +4326,8 @@ Echo the accepted value to stdout.  Return true if a value is found, false other
 @end defun
 
 @c page
-@node file commands
-@section File Commands
-
-
-@menu
-* file commands listing::       Listing directory entries.
-* file commands stat::          Inspecting files and directories.
-* file commands mkdir::         Creating directories.
-* file commands copy::          Copying files.
-* file commands move::          Moving files.
-* file commands removing::      Removing files and directories.
-* file commands symlink::       Creating links and symbolic links.
-* file commands realpath::      Normalising pathnames.
-* file commands tar::           Manipulating tar archives.
-* file commands perms::         Set/get file permissions.
-* file commands owner::         Setting file owner and group.
-* file commands compress::      Compressing files.
-@end menu
-
-@c page
-@node file commands listing
-@subsection Listing directory entries
+@node file listing
+@section Listing directory entries
 
 
 @cindex Files, listing
@@ -4408,8 +4397,8 @@ Execute the program @command{readlink} with the given optional command line argu
 @end defun
 
 @c page
-@node file commands stat
-@subsection Inspecting files and directories
+@node file stat
+@section Inspecting files and directories
 
 
 The @gnu{} Coreutils package comes with a command line program @command{stat} which implements
@@ -4456,8 +4445,8 @@ Execute the program @command{stat} using the given optional command line argumen
 @end defun
 
 @c page
-@node file commands mkdir
-@subsection Creating directories
+@node file mkdir
+@section Creating directories
 
 
 @cindex Creating directories
@@ -4499,8 +4488,8 @@ Execute the program @command{mkdir} using the given optional command line argume
 @end defun
 
 @c page
-@node file commands copy
-@subsection Copying files
+@node file copy
+@section Copying files
 
 
 @cindex Copying files
@@ -4544,8 +4533,8 @@ Execute the program @command{cp} using the given optional command line arguments
 @end defun
 
 @c page
-@node file commands move
-@subsection Moving files
+@node file move
+@section Moving files
 
 
 @cindex Moving files
@@ -4585,8 +4574,8 @@ Execute the program @command{mv} using the given optional command line arguments
 @end defun
 
 @c page
-@node file commands removing
-@subsection Removing files and directories
+@node file removing
+@section Removing files and directories
 
 
 @cindex Removing files
@@ -4660,8 +4649,8 @@ Execute the program @command{rmdir} with the given optional command line argumen
 @end defun
 
 @c page
-@node file commands symlink
-@subsection Creating links and symbolic links
+@node file symlink
+@section Creating links and symbolic links
 
 
 @cindex Files, links
@@ -4699,8 +4688,8 @@ Execute the program @command{ln} using the given optional command line arguments
 @end defun
 
 @c page
-@node file commands realpath
-@subsection Normalising pathnames
+@node file realpath
+@section Normalising pathnames
 
 
 @cindex Files, normalisation
@@ -4729,80 +4718,8 @@ Execute the program @command{realpath} using the given optional command line arg
 @end defun
 
 @c page
-@node file commands tar
-@subsection Manipulating tar archives
-
-
-@cindex @command{tar} archives
-@cindex Creating tar archives
-@cindex Archives, @command{tar}
-@CindexCommand{tar}
-
-
-Remember that when we execute a script with the @option{--test} option:
-the external commands are not executed: a command line is echoed to
-stdout.  It is recommended to use this mode to fine tune the command line
-options required by @command{tar}.
-
-
-@defun mbfl_file_enable_tar
-Declare the @command{tar} command.  @ref{program declaring, Declaring
-the intention to use a program}
-@end defun
-
-
-@defun mbfl_exec_tar @var{OPT} @dots{}
-@defunx mbfl_tar_exec @var{ARG}  @dots{}
-Execute @command{tar} with whatever arguments are used.  Return the return code of @command{tar}.
-@end defun
-
-
-@defun mbfl_tar_create_to_stdout @var{DIRECTORY} ?...?
-Create an archive and send it to stdout.  The root of the archive is the
-@var{DIRECTORY}.  Files are selected with the @code{.}  pattern.
-@command{tar} flags may be appended to the invocation to this function.
-In case of error return 1.
-@end defun
-
-
-@defun mbfl_tar_extract_from_stdin @var{DIRECTORY} ?...?
-Read an archive from stdin and extract it under @var{DIRECTORY}.
-@command{tar} flags may be appended to the invocation to this function.
-In case of error return 1.
-@end defun
-
-
-@defun mbfl_tar_extract_from_file @var{DIRECTORY} @var{ARCHIVE} ?...?
-Read an archive from a file and extract it under @var{DIRECTORY}.
-@command{tar} flags may be appended to the invocation to this function.
-In case of error return 1.
-@end defun
-
-
-@defun mbfl_tar_create_to_file @var{DIRECTORY} @var{ARCHIVE} ?...?
-Create an archive named @var{ARCHIVE} holding the contents of
-@var{DIRECTORY}.  Before creating the archive, the process changes the
-current directory to @var{DIRECTORY} and selects the files with the
-pattern @code{.}.  @command{tar} flags may be appended to the invocation
-to this function.  In case of error return 1.
-@end defun
-
-
-@defun mbfl_tar_archive_directory_to_file @var{DIRECTORY} @var{ARCHIVE} ?...?
-Like @func{mbfl_tar_create_to_file} but archive all the contents of
-@var{DIRECTORY}, including the directory itself (not its parents).
-@end defun
-
-
-@defun mbfl_tar_list @var{ARCHIVE} ?...?
-Print to stdout the list of files in @var{ARCHIVE}.  @command{tar} flags
-may be appended to the invocation to this function.  In case of error
-return 1.
-@end defun
-
-@c page
-@node file commands perms
-@subsection Set/get file permissions
+@node file perms
+@section Set/get file permissions
 
 
 @cindex Files, permissions
@@ -4857,8 +4774,8 @@ Execute the program @command{chmod} using the given optional arguments.
 @end defun
 
 @c page
-@node file commands owner
-@subsection Setting file owner and group
+@node file owner
+@section Setting file owner and group
 
 
 @cindex Files, owner and group
@@ -4918,8 +4835,80 @@ Execute the program @command{chgrp} using the given optional arguments.
 @end defun
 
 @c page
-@node file commands compress
-@subsection Compressing files
+@node file tar
+@section Manipulating tar archives
+
+
+@cindex @command{tar} archives
+@cindex Creating tar archives
+@cindex Archives, @command{tar}
+@CindexCommand{tar}
+
+
+Remember that when we execute a script with the @option{--test} option: the external commands are
+not executed: a command line is echoed to stdout.  It is recommended to use this mode to fine tune
+the command line options required by @command{tar}.
+
+
+@defun mbfl_file_enable_tar
+Declare the @command{tar} command.  @ref{program declaring, Declaring the intention to use a
+program}
+@end defun
+
+
+@defun mbfl_exec_tar @var{ARG} @dots{}
+@defunx mbfl_tar_exec @var{ARG}  @dots{}
+Execute @command{tar} with whatever arguments are used.  Return the exit status of the @command{tar}
+process.
+@end defun
+
+
+@defun mbfl_tar_create_to_stdout @var{DIRECTORY} @var{OPT} @dots{}
+Create an archive and send it to stdout.  The root of the archive is the @var{DIRECTORY}.  Files are
+selected with the @code{.} (dot) pattern.  The optional arguments @var{OPT} are placed on the
+command line of @command{tar} in option position.  Return the exit status of the @command{tar}
+process.
+@end defun
+
+
+@defun mbfl_tar_create_to_file @var{DIRECTORY} @var{ARCHIVE} @var{OPT} @dots{}
+Create an archive named @var{ARCHIVE} holding the contents of @var{DIRECTORY}.  Before creating the
+archive, the process changes the current directory to @var{DIRECTORY} and selects the files with the
+@code{.} (dot) pattern.  The optional arguments @var{OPT} are placed on the command line of
+@command{tar} in option position.  Return the exit status of the @command{tar} process.
+@end defun
+
+
+@defun mbfl_tar_archive_directory_to_file @var{DIRECTORY} @var{ARCHIVE} @var{OPT} @dots{}
+Like @func{mbfl_tar_create_to_file} but archive all the contents of @var{DIRECTORY}, including the
+directory itself (not its parents).  The optional arguments @var{OPT} are placed on the command line
+of @command{tar} in option position.  Return the exit status of the @command{tar} process.
+@end defun
+
+
+@defun mbfl_tar_extract_from_stdin @var{DIRECTORY} @var{OPT} @dots{}
+Read an archive from stdin and extract it under @var{DIRECTORY} (using the @option{--directory}
+option of @command{tar}).  The optional arguments @var{OPT} are placed on the command line of
+@command{tar} in option position.  Return the exit status of the @command{tar} process.
+@end defun
+
+
+@defun mbfl_tar_extract_from_file @var{DIRECTORY} @var{ARCHIVE} @var{OPT} @dots{}
+Read an archive from a file and extract it under @var{DIRECTORY} (using the @option{--directory}
+option of @command{tar}).  The optional arguments @var{OPT} are placed on the command line of
+@command{tar} in option position.  Return the exit status of the @command{tar} process.
+@end defun
+
+
+@defun mbfl_tar_list @var{ARCHIVE} @var{OPT} @dots{}
+Print to stdout the list of files in @var{ARCHIVE}.  The optional arguments @var{OPT} are placed on
+the command line of @command{tar} in option position.  Return the exit status of the @command{tar}
+process.
+@end defun
+
+@c page
+@node file compress
+@section Compressing files
 
 
 @cindex Files, compression
@@ -5003,108 +4992,134 @@ Decompress @var{PATHNAME}, a file pathname, with the currently selected compress
 @section Testing file existence and the like
 
 
-@cindex Files, existence and permissions
+@menu
+* file testing file::           File functions.
+* file testing directory::      Directory functions.
+* file testing symlink::        Symbolic link functions.
+* file testing misc::           Generic pathname functions.
+@end menu
+
+@c page
+@node file testing file
+@subsection File functions
+
+
 @cindex Existence of files
 
 
-When using the following functions: the optional argument
-@var{PRINT_ERROR} will cause an error message to be printed with
-@func{mbfl_message_error} if the test fails; the argument value must be
+When using the following functions: the optional argument @var{PRINT_ERROR} will cause an error
+message to be printed with @func{mbfl_message_error} if the test fails; the argument value must be
 @code{print_error}.
 
-@c ------------------------------------------------------------
-
-@subsubheading File functions
 
 @defun mbfl_file_exists @var{PATHNAME}
 Return true if @var{PATHNAME} exists.
 @end defun
+
 
 @defun mbfl_file_is_file @var{FILENAME}
 @defunx mbfl_file_is_file @var{FILENAME} @var{PRINT_ERROR}
 Return true if @var{FILENAME} is not the empty string and is a file.
 @end defun
 
+
 @defun mbfl_file_is_readable @var{FILENAME}
 @defunx mbfl_file_is_readable @var{FILENAME} @var{PRINT_ERROR}
-Return true if @var{FILENAME} is not the empty string, is a file and is
-readable.
+Return true if @var{FILENAME} is not the empty string, is a file and is readable.
 @end defun
+
 
 @defun mbfl_file_is_writable @var{FILENAME}
 @defunx mbfl_file_is_writable @var{FILENAME} @var{PRINT_ERROR}
-Return true if @var{FILENAME} is not the empty string, is a file and is
-writable.
+Return true if @var{FILENAME} is not the empty string, is a file and is writable.
 @end defun
+
 
 @defun mbfl_file_is_executable @var{FILENAME}
 @defunx mbfl_file_is_executable @var{FILENAME} @var{PRINT_ERROR}
-Return true if @var{FILENAME} is not the empty string, is a file and is
-executable.
+Return true if @var{FILENAME} is not the empty string, is a file and is executable.
 @end defun
 
-@c ------------------------------------------------------------
+@c page
+@node file testing directory
+@subsection Directory functions
 
-@subsubheading Directory functions
+
+When using the following functions: the optional argument @var{PRINT_ERROR} will cause an error
+message to be printed with @func{mbfl_message_error} if the test fails; the argument value must be
+@code{print_error}.
+
 
 @defun mbfl_file_is_directory @var{DIRECTORY}
 @defunx mbfl_file_is_directory @var{DIRECTORY} @var{PRINT_ERROR}
-Return true if @var{DIRECTORY} is not the empty string and is a
-directory.
+Return true if @var{DIRECTORY} is not the empty string and is a directory.
 @end defun
+
 
 @defun mbfl_file_directory_is_readable @var{DIRECTORY}
 @defunx mbfl_file_directory_is_readable @var{DIRECTORY} @var{PRINT_ERROR}
-Return true if @var{DIRECTORY} is not the empty string, is a directory
-and is readable.
+Return true if @var{DIRECTORY} is not the empty string, is a directory and is readable.
 @end defun
+
 
 @defun mbfl_file_directory_is_writable @var{DIRECTORY}
 @defunx mbfl_file_directory_is_writable @var{DIRECTORY} @var{PRINT_ERROR}
-Return true if @var{DIRECTORY} is not the empty string, is a directory
-and is writable.
+Return true if @var{DIRECTORY} is not the empty string, is a directory and is writable.
 @end defun
+
 
 @defun mbfl_file_directory_is_executable @var{DIRECTORY}
 @defunx mbfl_file_directory_is_executable @var{DIRECTORY} @var{PRINT_ERROR}
-Return true if @var{DIRECTORY} is not the empty string, is a directory
-and is executable.
+Return true if @var{DIRECTORY} is not the empty string, is a directory and is executable.
 @end defun
+
 
 @defun mbfl_file_directory_validate_writability @var{DIRECTORY} @var{DESCRIPTION}
-Test directory existence and writability; return true if the directory
-exists and is writable.  If the condition is not met: Print informative
-messages using @var{DESCRIPTION} to refer to the directory.
+Test directory existence and writability; return true if the directory exists and is writable.  If
+the condition is not met: Print informative messages using @var{DESCRIPTION} to refer to the
+directory.
 @end defun
 
-@c ------------------------------------------------------------
+@c page
+@node file testing symlink
+@subsection Symbolic link functions
 
-@subsubheading Symbolic link functions
+
+When using the following functions: the optional argument @var{PRINT_ERROR} will cause an error
+message to be printed with @func{mbfl_message_error} if the test fails; the argument value must be
+@code{print_error}.
+
 
 @defun mbfl_file_is_symlink @var{PATHNAME}
 @defunx mbfl_file_is_symlink @var{PATHNAME} @var{PRINT_ERROR}
-Return true if @var{PATHNAME} is not the empty string and is a symbolic
-link.
+Return true if @var{PATHNAME} is not the empty string and is a symbolic link.
 @end defun
 
-@c ------------------------------------------------------------
+@c page
+@node file testing misc
+@subsection Generic pathname functions
 
-@subsubheading Generic pathname functions
+
+When using the following functions: the optional argument @var{PRINT_ERROR} will cause an error
+message to be printed with @func{mbfl_message_error} if the test fails; the argument value must be
+@code{print_error}.
+
 
 @defun mbfl_file_pathname_is_readable @var{PATHNAME}
 @defunx mbfl_file_pathname_is_readable @var{PATHNAME} @var{PRINT_ERROR}
 Return true if @var{PATHNAME} is not the empty string and is readable.
 @end defun
 
+
 @defun mbfl_file_pathname_is_writable @var{PATHNAME}
 @defunx mbfl_file_pathname_is_writable @var{PATHNAME} @var{PRINT_ERROR}
 Return true if @var{PATHNAME} is not the empty string and is writable.
 @end defun
 
+
 @defun mbfl_file_pathname_is_executable @var{PATHNAME}
 @defunx mbfl_file_pathname_is_executable @var{PATHNAME} @var{PRINT_ERROR}
-Return true if @var{PATHNAME} is not the empty string and is
-executable.
+Return true if @var{PATHNAME} is not the empty string and is executable.
 @end defun
 
 @c page
