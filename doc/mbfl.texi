@@ -129,7 +129,6 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * actions::                     Selecting actions to perform.
 * getopts::                     Parsing command line options.
 * message::                     Printing messages to the console.
-* encoding::                    Encoding and decoding strings.
 * file::                        Manipulating files and pathnames.
 * fd::                          Handling file descriptors.
 * program::                     Using external programs.
@@ -3297,56 +3296,6 @@ colon, a space, the formatting result, a newline character.
 @end defun
 
 @c page
-@node encoding
-@chapter Encoding and decoding strings
-
-
-The purpose of this module is to let an external process invoke a Bash script with @emph{damned}
-command line arguments: strings including blanks or strange characters that may trigger quoting
-rules.  This problem can arise when using scripting languages with some sort of @code{eval} command.
-
-The solution is to encode the argument string in hexadecimal or octal format strings, so that all
-the damned characters are converted to ``good'' ones.  The Bash script can convert them back.
-
-@quotation
-@strong{NOTE} Internally Bash represents strings as C language style @asciiz{} arrays, so it is
-impossible to correctly handle null bytes in a Bash variable: the string will get truncated at the
-null byte.
-@end quotation
-
-
-@defun mbfl_encode_hex @var{ASCII_STRING}
-@defunx mbfl_encode_hex_var @var{_RV} @var{ASCII_STRING}
-Encode a hex string and outputs it on @stdout{}.
-
-@DocVarVariant{}
-@end defun
-
-
-@defun mbfl_decode_hex @var{HEX_STRING}
-@defunx mbfl_decode_hex_var @var{_RV} @var{HEX_STRING}
-Decode a hex string and outputs it on @stdout{}.
-
-@DocVarVariant{}
-@end defun
-
-
-@defun mbfl_decode_oct @var{OCT_STRING}
-@defunx mbfl_decode_oct_var @var{_RV} @var{OCT_STRING}
-Decode a oct string and outputs it on @stdout{}.
-
-@DocVarVariant{}
-@end defun
-
-
-Example:
-
-@example
-mbfl_decode_hex 414243
-@print{} ABC
-@end example
-
-@c page
 @node file
 @chapter Manipulating files and pathnames
 
@@ -5973,6 +5922,7 @@ useful to debug a script.
 * strings case::                Converting between upper and lower case.
 * strings class::               Matching a string with a class.
 * strings comparison::          Comparing strings.
+* strings encoding::            Encoding and decoding strings.
 * strings misc::                Miscellaneous functions.
 @end menu
 
@@ -6487,6 +6437,56 @@ is equal to @var{PATTERN}; else return false.  If @var{POSITION} plus
 the length of @var{PATTERN} is greater than the length of @var{STRING}:
 the return value is false, always.
 @end defun
+
+@c page
+@node strings encoding
+@section Encoding and decoding strings
+
+
+The purpose of this module is to let an external process invoke a Bash script with @emph{damned}
+command line arguments: strings including blanks or strange characters that may trigger quoting
+rules.  This problem can arise when using scripting languages with some sort of @code{eval} command.
+
+The solution is to encode the argument string in hexadecimal or octal format strings, so that all
+the damned characters are converted to ``good'' ones.  The Bash script can convert them back.
+
+@quotation
+@strong{NOTE} Internally Bash represents strings as C language style @asciiz{} arrays, so it is
+impossible to correctly handle null bytes in a Bash variable: the string will get truncated at the
+null byte.
+@end quotation
+
+
+@defun mbfl_encode_hex @var{ASCII_STRING}
+@defunx mbfl_encode_hex_var @var{_RV} @var{ASCII_STRING}
+Encode a hex string and outputs it on @stdout{}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_decode_hex @var{HEX_STRING}
+@defunx mbfl_decode_hex_var @var{_RV} @var{HEX_STRING}
+Decode a hex string and outputs it on @stdout{}.
+
+@DocVarVariant{}
+@end defun
+
+
+@defun mbfl_decode_oct @var{OCT_STRING}
+@defunx mbfl_decode_oct_var @var{_RV} @var{OCT_STRING}
+Decode a oct string and outputs it on @stdout{}.
+
+@DocVarVariant{}
+@end defun
+
+
+Example:
+
+@example
+mbfl_decode_hex 414243
+@print{} ABC
+@end example
 
 @c page
 @node strings misc
