@@ -126,7 +126,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * exit::                        Exit codes and return codes.
 * locations::                   Running location handlers.
 * variables::                   Manipulating variables.
-* strings::                     Manipulating strings.
+* strings::                     Manipulating strings with functions.
 * actions::                     Selecting actions to perform.
 * getopts::                     Parsing command line options.
 * message::                     Printing messages to the console.
@@ -1177,6 +1177,10 @@ Unset all the @emph{proxy variable} @var{NAME} and all the variables associated 
 @section Manipulating strings with macros
 
 
+In addition to the macros documented here, we can manipulate strings with some functions;
+@ref{strings, Manipulating strings with functions}.
+
+
 @deffn {Preprocessor Macros} mbfl_string_len (@var{VAR})
 Expands into the expression:
 
@@ -1217,6 +1221,10 @@ unset -v @var{VAR}
 @c page
 @node preprocessor arrays
 @section Manipulating arrays with macros
+
+
+In addition to the macros documented here, we can manipulate arrays with some functions;
+@ref{variables arrays, Manipulating arrays with functions}.
 
 
 @deffn {Preprocessor Macros} mbfl_slot_ref (@var{ARRAYNAME}, @var{KEY})
@@ -1692,7 +1700,7 @@ func
 
 @menu
 * variables service::           Required user defined variables.
-* variables arrays::            Manipulating arrays.
+* variables arrays::            Manipulating arrays with functions.
 * variables colon::             Manipulating colon variables.
 * variables misc::              Miscellaneous variable functions.
 @end menu
@@ -1837,7 +1845,11 @@ Notice that @code{script_DESCRIPTION} and @code{script_EXAMPLES}
 
 @c page
 @node variables arrays
-@section Manipulating arrays
+@section Manipulating arrays with functions
+
+
+In addition to the functions documented here, we can manipulate arrays with some preprocessor
+macros; @ref{preprocessor arrays, Manipulating arrays with macros}.
 
 
 @defun mbfl_array_is_empty @var{ARRAY_VARNAME}
@@ -1964,8 +1976,11 @@ $NAME   @result{} mbfl_a_variable_2323_7652
 
 @c page
 @node strings
-@chapter Manipulating strings
+@chapter Manipulating strings with functions
 
+
+In addition to the functions documented here, we can manipulate strings with some preprocessor
+macros; @ref{preprocessor strings, Manipulating strings with macros}.
 
 @menu
 * strings quote::               Quoted characters.
