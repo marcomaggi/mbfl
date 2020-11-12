@@ -4793,15 +4793,35 @@ Execute the program @command{chmod} using the given optional arguments.
 @subsubheading File access permissions conversion
 
 
+The following functions implement a very limited conversion between symbolic and octal access
+permissions representations.
+
+
 @defun mbfl_file_symbolic_to_octal_permissions @var{MODE}
 @defunx mbfl_system_symbolic_to_octal_permissions @var{MODE}
 Convert three chars representing file permissions in a single octal digit.
+
+@example
+mbfl_file_symbolic_to_octal_permissions 'rwx'
+@print{} 7
+
+mbfl_file_symbolic_to_octal_permissions 'r-x'
+@print{} 5
+@end example
 @end defun
 
 
 @defun mbfl_file_octal_to_symbolic_permissions @var{MODE}
 @defunx mbfl_system_octal_to_symbolic_permissions @var{MODE}
 Convert a single octal digit representing file permissions into three chars.
+
+@example
+mbfl_file_octal_to_symbolic_permissions '7'
+@print{} rwx
+
+mbfl_file_octal_to_symbolic_permissions '5'
+@print{} r-x
+@end example
 @end defun
 
 @c page
