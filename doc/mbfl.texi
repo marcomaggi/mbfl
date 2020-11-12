@@ -5132,8 +5132,8 @@ Return true if @var{PATHNAME} is not the empty string and is executable.
 @cindex Writing and reading files
 
 
-The following functions perform actions that can normally be done
-directly with the redirection operators of Bash:
+The following functions perform actions that can normally be done directly with the redirection
+operators of Bash:
 
 @example
 # write to a file
@@ -5146,11 +5146,11 @@ printf '%s' "$string" >>"$filename"
 printf '%s' "$(<$filename)"
 @end example
 
-The functions act differently in that they spawn a @command{bash}
-subprocess, by invoking @func{mbfl_program_exec}, and let it do the
-operation; this allows us to request the usage of @command{sudo} and so
-to read and write files with modified privileges, but only for the time
-needed to do the operation, not for the whole script.
+The functions act differently in that they spawn a @command{bash} subprocess, by invoking
+@func{mbfl_program_bash_command}, and let it do the operation; this allows us to request the use of
+@command{sudo} and so to read and write files with modified privileges, but only for the time needed
+to do the operation, not for the whole script.  @ref{program executing bash, Executing a
+@command{bash} process}.
 
 
 @defun mbfl_file_write @var{STRING} @var{FILENAME}
@@ -5178,15 +5178,13 @@ Read and print @strong{all} the contents of @var{FILENAME}.
 @cindex Files, changing directory
 
 
-@defun mbfl_change_directory @var{DIRNAME} ?...?
-Change directory to @var{DIRNAME}.  Optional flags to @command{cd} may
-be appended.
+@defun mbfl_change_directory @var{DIRNAME} @var{OPT} @dots{}
+Change directory to @var{DIRNAME}.  Optional flags to @command{cd} may be appended.
 @end defun
 
 
-@defun mbfl_cd @var{DIRNAME} ?...?
-Wrapper for @func{mbfl_change_directory}.  If verbose mode is on:
-print a message.
+@defun mbfl_cd @var{DIRNAME} @var{OPT} @dots{}
+Wrapper for @func{mbfl_change_directory}.  If verbose mode is on: print a message.
 @end defun
 
 @c page
