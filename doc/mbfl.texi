@@ -121,16 +121,17 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 @menu
 * overview::                    Overview of the package.
 * preprocessor::                Using the script preprocessor.
-* service variables::           Required user defined variables.
 * base::                        Some base functions.
 * shell::                       Shell facilities.
 * exit::                        Exit codes and return codes.
-* encoding::                    Encoding and decoding strings.
-* file::                        Manipulating files and pathnames.
-* fd::                          Handling file descriptors.
+* locations::                   Running location handlers.
+* variables::                   Manipulating variables.
 * actions::                     Selecting actions to perform.
 * getopts::                     Parsing command line options.
 * message::                     Printing messages to the console.
+* encoding::                    Encoding and decoding strings.
+* file::                        Manipulating files and pathnames.
+* fd::                          Handling file descriptors.
 * program::                     Using external programs.
 * process::                     Job control.
 * interfaces::                  Interfaces to external programs.
@@ -138,10 +139,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * strings::                     Manipulating strings.
 * dialog::                      Interacting with the user.
 * times::                       Times and dates.
-* variables::                   Manipulating variables.
-* arrays::                      Manipulating arrays.
 * system::                      Interfacing with the system.
-* locations::                   Running location handlers.
 * semver::                      Semantic version specifications
 * main::                        Main function.
 * testing::                     Building test suites.
@@ -217,7 +215,7 @@ source "$@{MBFL_LIBRARY:=$(type -p mbfl-config &>/dev/null \
 @end example
 
 @noindent
-after the service variables have been declared.  @ref{service variables, Required user defined
+after the service variables have been declared.  @ref{variables service, Required user defined
 variables}.
 
 This code will read the full pathname of the library from the environment variable
@@ -1260,144 +1258,6 @@ evaluating to the number of pairs in the array variable @var{ARRAYNAME}.
 @end deffn
 
 @c page
-@node service variables
-@chapter Required user defined variables
-
-
-The following variables are expected to be defined before the @mbfl{}
-code is evaluated.  They are used by @mbfl{} to compute values for its
-own variables.
-
-
-@anchor{script_REQUIRED_MBFL_VERSION}
-@defvar script_REQUIRED_MBFL_VERSION
-The minimum, full, semantic version specification of the @mbfl{} library needed by this script,
-optionally prefixed with a @code{v} character; @ref{semver, Semantic version specifications}.  We
-can use this variable both to validate the required version at runtime or merely as a comment on the
-requirements of the script.  We can request the main module to compare the version hard--coded in
-the @mbfl{} with the one required by the script, as specified by this variable; @ref{main, Main
-function}.
-@end defvar
-
-
-@anchor{script_PROGNAME}
-@defvar script_PROGNAME
-The name of the script.  It is used, for example, in error and verbose messages.
-@end defvar
-
-
-@anchor{script_AUTHOR}
-@defvar script_AUTHOR
-The name of the script author(s).  It is used in copyright statements.
-@end defvar
-
-
-@anchor{script_COPYRIGHT_YEARS}
-@defvar script_COPYRIGHT_YEARS
-A comma separated list of years of copyright.  It is used in copyright
-statements.
-@end defvar
-
-
-@anchor{script_VERSION}
-@defvar script_VERSION
-The version number of the script.  It is used in copyright statements
-and it can be directly queried using the command line options
-@option{--version} and @option{--version-only}.
-@end defvar
-
-
-@anchor{script_LICENSE}
-@defvar script_LICENSE
-The identifier of the license under which the script is released.  Accepted values are: @code{GPL}
-or @code{GPL2}, @code{GPL3}, @code{LGPL} or @code{LGPL2}, @code{LGPL3}, @code{BSD}, @code{liberal}.
-It is used to select the appropriate value to be displayed when the user of the script selects the
-@code{--license} option.  @ref{getopts options, Predefined options}
-@end defvar
-
-
-@anchor{script_USAGE}
-@defvar script_USAGE
-Must be a string, of one or more lines, describing the synopsis of the
-program.  It is usually something like:
-
-@example
-script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
-@end example
-
-@noindent
-if the script accepts either input from the stdin channel and input from
-a selected file, it is useful to present both cases:
-
-@example
-script_USAGE="usage: $@{script_PROGNAME@} [options] <INPUT-FILE
-usage: $@{script_PROGNAME@} [options] INPUT-FILE"
-@end example
-
-If the script defines multiple actions: it is better to define a
-synopsis description for every supported action, by setting this
-variable in the action--specific ``before parsing options'' function.
-@ref{actions} for details.
-@end defvar
-
-
-@anchor{script_DESCRIPTION}
-@defvar script_DESCRIPTION
-One line string providing a brief description of the program.  It is used
-in the help screen (the one echoed when the @option{--help} option is
-used) right after the content of @code{script_USAGE}.
-
-If the script defines multiple actions: it is better to define a usage
-description for every supported action, by setting this variable in the
-action--specific ``before parsing options'' function.  @ref{actions} for
-details.
-@end defvar
-
-
-@anchor{script_EXAMPLES}
-@defvar script_EXAMPLES
-One or more lines of text to be displayed at the end of the help screen,
-after the options description.  It should contain examples of common
-invocations for the script.
-
-If the script defines multiple actions: it is better to define a set of
-examples description for every supported action, by setting this
-variable in the action--specific ``before parsing options'' function.
-@ref{actions} for details.
-@end defvar
-
-
-All the text in these variables is used as argument to the @code{printf}
-built--in command; in particular: @code{script_DESCRIPTION} and
-@code{script_EXAMPLES} are used as first argument to @code{printf}, so
-the escape sequences (in particular @code{\t} and @code{\n}) are
-expanded.
-
-@c ------------------------------------------------------------
-
-@subsubheading Examples
-
-The following example shows how to declare the variables.
-
-@example
-script_REQUIRED_MBFL_VERSION=v3.0.0-devel.4
-script_PROGNAME=myscript.sh
-script_AUTHOR='Marco Maggi and Marco Maggi'
-script_COPYRIGHT_YEARS='2002, 2003, 2004'
-script_VERSION=1.0
-script_LICENSE=GPL3
-script_USAGE="usage: $script_PROGNAME [options] ..."
-script_DESCRIPTION='Does this and that.'
-script_EXAMPLES='Examples:
-
-\tmyscript.sh --do-something arg arg ...
-\tmyscript.sh --do-other arg arg ...'
-@end example
-
-Notice that @code{script_DESCRIPTION} and @code{script_EXAMPLES}
-@strong{do not} end with a newline character.
-
-@c page
 @node base
 @chapter Some base functions
 
@@ -1444,6 +1304,10 @@ return unsuccessfully.
 @chapter Script termination facilities
 
 
+Exiting a script is no joking matter!  If we do not use the facilities described in this chapter: we
+can still safely exit a script by calling Bash's built--in @code{exit}.  But it is preferable to use
+the function @func{mbfl_exit}.
+
 @menu
 * exit facilities::             Facilities to exit a script.
 * exit codes::                  Exit codes and return codes
@@ -1456,7 +1320,7 @@ return unsuccessfully.
 
 
 @defun mbfl_exit @var{CODE}
-Wrapper for the @command{exit} command that updates the internal state.
+Wrapper for the @command{exit} command that updates the internal script's state.
 @end defun
 
 
@@ -1605,6 +1469,1831 @@ it is removed from the internal registry.
 @defun mbfl_atexit_clear
 Remove all the registered handlers from the internal registry.  This renders invalid all the handler
 identifiers that were created.
+@end defun
+
+@c page
+@node locations
+@chapter Running location handlers
+
+
+A @dfn{location} is a chunk of code between the following enter and leave actions:
+
+@example
+mbfl_location_enter
+@{
+   ...
+@}
+mbfl_location_leave
+@end example
+
+@noindent
+inside a location we can register a ``handler command'' that is automatically executed whenever the
+location is left by calling @func{mbfl_location_leave}.  We can nest locations at will.  We can run
+all the handlers registered so far in a stack of locations.
+
+@menu
+* locations core::              Locations programming interface.
+* locations handlers::          Special location handlers.
+* locations examples::          Locations usage examples.
+@end menu
+
+@c page
+@node locations core
+@section Locations programming interface
+
+
+@defun mbfl_location_enter
+Enter into a new location.  Initialise the internal state.
+@end defun
+
+
+@defun mbfl_location_leave
+Leave the current location.  Run all the registered handlers in reverse order.  Return the return
+status of the last command executed before the call to this function (@code{$?}).
+@end defun
+
+
+@defun mbfl_location_handler @var{HANDLER_SCRIPT}
+Register a new handler in the current location.  It is an error if this function is called outside a
+location.
+@end defun
+
+
+@defun mbfl_location_run_all
+Run all the handlers unwinding all the locations.  This is useful as atexit handler, @ref{exit
+atexit, Running scripts at exit--time}.
+@end defun
+
+
+@defun mbfl_location_enable_cleanup_atexit
+@defunx mbfl_location_disable_cleanup_atexit
+Enable or disable running the location handlers through an atexit handler, @ref{exit atexit, Running
+scripts at exit--time}.  The enable operation registers an atexit handler that cleans up the current
+stack of locations.
+
+It is suggested to always add the following code to the preamble of a script:
+
+@example
+mbfl_atexit_enable
+mbfl_location_enable_cleanup_atexit
+@end example
+@end defun
+
+@c page
+@node locations handlers
+@section Special location handlers
+
+
+@defun mbfl_location_handler_suspend_testing
+Suspend the test mode inside a location block, by executing the following code:
+
+@example
+mbfl_option_test_save
+mbfl_location_handler mbfl_option_test_restore
+@end example
+
+For a discussion of its usage see @ref{program executing testing, Testing a script and running
+programs}.
+@end defun
+
+@c page
+@node locations examples
+@section Locations usage examples
+
+
+@menu
+* locations examples 1::        Single location, syntactic scoping.
+* locations examples 2::        Nested locations.
+* locations examples 3::        Nested function calls.
+@end menu
+
+@c page
+@node locations examples 1
+@subsection Single location, syntactic scoping
+
+
+The handler functions can access the variables in the uplevel function frames.
+
+@example
+function one   () @{ R_one=$X;   @}
+function two   () @{ R_two=$Y;   @}
+function three () @{ R_three=$Z; @}
+
+@{
+  local R_one R_two R_three
+  local X=1 Y=2 Z=3
+
+  mbfl_location_enter
+  @{
+    mbfl_location_handler one
+    mbfl_location_handler two
+    mbfl_location_handler three
+  @}
+  mbfl_location_leave
+
+  $R_one          @result{} 1
+  $R_two          @result{} 2
+  $R_three        @result{} 3
+@}
+@end example
+
+@c page
+@node locations examples 2
+@subsection Nested locations
+
+
+Remember that the handlers are called when a location is left:
+
+@example
+function handler_append () @{
+    local THING=$@{1:?"missing thing parameter"@}
+    RESULT+=$THING
+@}
+
+@{
+    local RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    @{
+        mbfl_location_handler "handler_append 1"
+        mbfl_location_enter
+        @{
+            mbfl_location_handler "handler_append 2"
+            mbfl_location_enter
+            @{
+                mbfl_location_handler "handler_append 3"
+            @}
+            mbfl_location_leave
+            mbfl_location_handler "handler_append 4"
+        @}
+        mbfl_location_leave
+        mbfl_location_handler "handler_append 5"
+    @}
+    mbfl_location_leave
+    handler_append 6
+
+    "$RESULT"   @result{} 0342516
+@}
+@end example
+
+@c page
+@node locations examples 3
+@subsection Nested function calls
+
+
+Remember that the handlers are called when a location is left:
+
+@example
+declare RESULT
+
+function handler_append () @{
+    local THING=$@{1:?"missing thing parameter"@}
+    RESULT+=$THING
+@}
+
+function func () @{
+    handler_append 0
+    mbfl_location_enter
+    @{
+        sub-func
+    @}
+    mbfl_location_leave
+    handler_append 6
+@}
+
+function sub-func () @{
+    mbfl_location_handler "handler_append 1"
+    mbfl_location_enter
+    @{
+        sub-sub-func
+    @}
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 5"
+@}
+
+function sub-sub-func () @{
+    mbfl_location_handler "handler_append 2"
+    mbfl_location_enter
+    @{
+        mbfl_location_handler "handler_append 3"
+    @}
+    mbfl_location_leave
+    mbfl_location_handler "handler_append 4"
+@}
+
+func
+"$RESULT"       @result{} 0342516
+@end example
+
+@c page
+@node variables
+@chapter Manipulating variables
+
+
+@menu
+* variables service::           Required user defined variables.
+* variables arrays::            Manipulating arrays.
+* variables colon::             Manipulating colon variables.
+* variables misc::              Miscellaneous variable functions.
+@end menu
+
+@c page
+@node variables service
+@section Required user defined variables
+
+
+The following variables are expected to be defined before the @mbfl{}
+code is evaluated.  They are used by @mbfl{} to compute values for its
+own variables.
+
+
+@anchor{script_REQUIRED_MBFL_VERSION}
+@defvar script_REQUIRED_MBFL_VERSION
+The minimum, full, semantic version specification of the @mbfl{} library needed by this script,
+optionally prefixed with a @code{v} character; @ref{semver, Semantic version specifications}.  We
+can use this variable both to validate the required version at runtime or merely as a comment on the
+requirements of the script.  We can request the main module to compare the version hard--coded in
+the @mbfl{} with the one required by the script, as specified by this variable; @ref{main, Main
+function}.
+@end defvar
+
+
+@anchor{script_PROGNAME}
+@defvar script_PROGNAME
+The name of the script.  It is used, for example, in error and verbose messages.
+@end defvar
+
+
+@anchor{script_AUTHOR}
+@defvar script_AUTHOR
+The name of the script author(s).  It is used in copyright statements.
+@end defvar
+
+
+@anchor{script_COPYRIGHT_YEARS}
+@defvar script_COPYRIGHT_YEARS
+A comma separated list of years of copyright.  It is used in copyright
+statements.
+@end defvar
+
+
+@anchor{script_VERSION}
+@defvar script_VERSION
+The version number of the script.  It is used in copyright statements
+and it can be directly queried using the command line options
+@option{--version} and @option{--version-only}.
+@end defvar
+
+
+@anchor{script_LICENSE}
+@defvar script_LICENSE
+The identifier of the license under which the script is released.  Accepted values are: @code{GPL}
+or @code{GPL2}, @code{GPL3}, @code{LGPL} or @code{LGPL2}, @code{LGPL3}, @code{BSD}, @code{liberal}.
+It is used to select the appropriate value to be displayed when the user of the script selects the
+@code{--license} option.  @ref{getopts options, Predefined options}
+@end defvar
+
+
+@anchor{script_USAGE}
+@defvar script_USAGE
+Must be a string, of one or more lines, describing the synopsis of the
+program.  It is usually something like:
+
+@example
+script_USAGE="usage: $@{script_PROGNAME@} [options] ..."
+@end example
+
+@noindent
+if the script accepts either input from the stdin channel and input from
+a selected file, it is useful to present both cases:
+
+@example
+script_USAGE="usage: $@{script_PROGNAME@} [options] <INPUT-FILE
+usage: $@{script_PROGNAME@} [options] INPUT-FILE"
+@end example
+
+If the script defines multiple actions: it is better to define a
+synopsis description for every supported action, by setting this
+variable in the action--specific ``before parsing options'' function.
+@ref{actions} for details.
+@end defvar
+
+
+@anchor{script_DESCRIPTION}
+@defvar script_DESCRIPTION
+One line string providing a brief description of the program.  It is used
+in the help screen (the one echoed when the @option{--help} option is
+used) right after the content of @code{script_USAGE}.
+
+If the script defines multiple actions: it is better to define a usage
+description for every supported action, by setting this variable in the
+action--specific ``before parsing options'' function.  @ref{actions} for
+details.
+@end defvar
+
+
+@anchor{script_EXAMPLES}
+@defvar script_EXAMPLES
+One or more lines of text to be displayed at the end of the help screen,
+after the options description.  It should contain examples of common
+invocations for the script.
+
+If the script defines multiple actions: it is better to define a set of
+examples description for every supported action, by setting this
+variable in the action--specific ``before parsing options'' function.
+@ref{actions} for details.
+@end defvar
+
+
+All the text in these variables is used as argument to the @code{printf}
+built--in command; in particular: @code{script_DESCRIPTION} and
+@code{script_EXAMPLES} are used as first argument to @code{printf}, so
+the escape sequences (in particular @code{\t} and @code{\n}) are
+expanded.
+
+@c ------------------------------------------------------------
+
+@subsubheading Examples
+
+The following example shows how to declare the variables.
+
+@example
+script_REQUIRED_MBFL_VERSION=v3.0.0-devel.4
+script_PROGNAME=myscript.sh
+script_AUTHOR='Marco Maggi and Marco Maggi'
+script_COPYRIGHT_YEARS='2002, 2003, 2004'
+script_VERSION=1.0
+script_LICENSE=GPL3
+script_USAGE="usage: $script_PROGNAME [options] ..."
+script_DESCRIPTION='Does this and that.'
+script_EXAMPLES='Examples:
+
+\tmyscript.sh --do-something arg arg ...
+\tmyscript.sh --do-other arg arg ...'
+@end example
+
+Notice that @code{script_DESCRIPTION} and @code{script_EXAMPLES}
+@strong{do not} end with a newline character.
+
+@c page
+@node variables arrays
+@section Manipulating arrays
+
+
+@defun mbfl_array_is_empty @var{ARRAY_VARNAME}
+Return successfully if the array is empty.
+
+@example
+local -a ARRY
+mbfl_array_is_empty ARRY        @result{} 0
+ARRY=(a b c)
+mbfl_array_is_empty ARRY        @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_array_is_not_empty @var{ARRAY_VARNAME}
+Return successfully if the array is not empty.
+
+@example
+local -a ARRY
+mbfl_array_is_not_empty ARRY    @result{} 1
+ARRY=(a b c)
+mbfl_array_is_not_empty ARRY    @result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_array_length @var{ARRAY_VARNAME}
+@defunx mbfl_array_length_var @var{_RV} @var{ARRAY_VARNAME}
+Print the number of pairs in the array.
+
+@DocVarVariant{}
+
+@example
+local -a ARRY
+mbfl_array_length ARRY          @print{} 0
+ARRY=(a b c)
+mbfl_array_length ARRY          @print{} 3
+
+local _RV
+mbfl_array_length_var _RV ARRY
+"$_RV"   @print{} 3
+@end example
+@end defun
+
+
+@defun mbfl_variable_find_in_array @var{ELEMENT}
+Search the array @code{mbfl_FIELDS} for a value equal to @var{ELEMENT}.  If it is found: Print the
+index and return true; else print nothing and return false.
+
+@code{mbfl_FIELDS} must be filled with elements having subsequent indexes starting at zero.
+@end defun
+
+
+@defun mbfl_variable_element_is_in_array @var{ELEMENT}
+A wrapper for @func{mbfl_variable_find_in_array} that does not print anything.
+@end defun
+
+@c page
+@node variables colon
+@section Manipulating colon variables
+
+
+@defun mbfl_variable_colon_variable_to_array @var{VARNAME}
+Take @var{VARNAME}'s value, a colon separated list of string, and store each string in the array
+@code{mbfl_FIELDS}, starting with a base index of zero.
+
+Example:
+
+@example
+VAR=a:b:c:d:e
+declare -a mbfl_FIELDS
+
+mbfl_variable_colon_variable_to_array VAR
+
+echo $@{#mbfl_FIELDS[*]@}       @print{} 5
+echo "$@{mbfl_FIELDS[0]@}"      @print{} a
+echo "$@{mbfl_FIELDS[1]@}"      @print{} b
+echo "$@{mbfl_FIELDS[2]@}"      @print{} c
+echo "$@{mbfl_FIELDS[3]@}"      @print{} d
+echo "$@{mbfl_FIELDS[4]@}"      @print{} e
+@end example
+@end defun
+
+
+@defun mbfl_variable_array_to_colon_variable @var{VARNAME}
+Store each value from the array @code{mbfl_FIELDS} (with base index zero) in @var{VARNAME} as a
+colon separated list of strings.
+
+Example:
+
+@example
+declare -a mbfl_FIELDS=(a b c d e)
+
+mbfl_variable_array_to_colon_variable VAR
+echo $VAR                       @print{} a:b:c:d:e
+@end example
+@end defun
+
+
+@defun mbfl_variable_colon_variable_drop_duplicate @var{VARNAME}
+Take @var{VARNAME}'s value, a colon separated list of string, and remove duplicates.  Reset
+@var{VARNAME} to the result.
+@end defun
+
+@c page
+@node variables misc
+@section Miscellaneous variable functions.
+
+
+@defun mbfl_variable_alloc @var{_RV}
+Generate a unique variable name and store it in the variable @var{_RV}.
+
+To avoid allocating the same name twice: the function examines the new name testing if its value as
+variable is empty; if it is empty, it considers it ``new''.  So, whenever we allocate a name: we
+should locally initialise the variable to some non--empty value.
+
+@example
+local NAME
+
+mbfl_variable_alloc NAME
+$NAME   @result{} mbfl_a_variable_2323_7652
+@end example
+@end defun
+
+@c page
+@node actions
+@chapter Selecting actions to perform
+
+
+The @code{actions} module allows the command line selection of different actions a script can
+perform.
+
+@menu
+* actions intro::               Introduction to action trees.
+* actions declare::             Declaring actions and action sets.
+* actions dispatch::            Dispatching action arguments.
+* actions inspect::             Inspecting action trees.
+* actions completion::          Automatic generation of programmable completion script.
+* actions misc::                Other functions.
+@end menu
+
+@c page
+@node actions intro
+@section Introduction to action trees
+
+
+Traditional Unix--style command--line programs perform a single action, with behaviour variants
+selected by command--line dash and double--dash options.  For example @command{ls} prints a list of
+directory entries and the format of the output can be custommised with options like @option{-1} and
+@option{--color}.  @mbfl{} implements this behaviour by default when the @code{actions} module is
+@strong{not} used.
+
+Other Unix--style command--line programs offer a set of possible actions and allow the executor to
+select one by specifying command--line options.  For example @command{tar} acts on archive files and
+it can pack, unpack, validate them along with other actions selected with by the double--dash
+options @option{--create}, @option{--extract}, @option{--validate} and others.  @mbfl{} implements
+this behaviour through ``action options'' provided by the @code{getopts} module; action options are
+available also when using the @code{actions} module.
+
+Other command--line programs break this Unix--style to offer action selection throuh ``action
+arguments''.  For example @command{git} acts upon revision control repositories offering a big set
+of actions selected with its first argument: @samp{commit}, @samp{log}, @samp{merge} and many
+others; the behaviour of each ``subcommand'' can be customised with a specific set of dash and
+double--dash options.  @mbfl{} implements this behaviour through the @code{actions} module.
+
+@c ------------------------------------------------------------
+
+@subsubheading One--level actions
+
+
+The script below (@file{one-level-actions.sh}, available in the @file{doc/} directory of the source
+distribution) shows how to implement one--level actions.  It implements the following behaviour:
+
+@table @code
+@item one-level-actions.sh
+With no action argument: print a generic help screen and exit.
+
+@item one-level-actions.sh one
+With the action argument @code{one}: perform the action @samp{ONE}, possibly with the options
+@option{-a} and @option{-b}.
+
+@item one-level-actions.sh one -H
+With the action argument @code{one} and the option @option{-H}: print the brief help screen for the
+action @samp{ONE} and exit.
+
+@item one-level-actions.sh two
+With the action argument @code{two}: perform the action @samp{TWO}, possibly with the options
+@option{-d} and @option{-g}.
+
+@item one-level-actions.sh two -H
+With the action argument @code{two} and the option @option{-H}: print the brief help screen for the
+action @samp{TWO} and exit.
+
+@item one-level-actions.sh help
+With the action argument @code{help}: print a generic help screen and exit.  Notice how the
+@samp{HELP} action function makes use of @func{mbfl_actions_fake_action_set} to print the same help
+screen of the main action.
+@end table
+
+@smallexample
+@verbatiminclude one-level-actions.sh
+@end smallexample
+
+@c ------------------------------------------------------------
+
+@subsubheading Two--levels actions
+
+
+The script below (@file{two-levels-actions.sh}, available in the @file{doc/} directory of the source
+distribution) shows how to implement two--levels actions.  It implements the following behaviour:
+
+@table @code
+@item two-levels-actions.sh
+With no action argument: print a generic help screen and exit.
+
+@item two-levels-actions.sh help
+With the action argument @code{help}: print a generic help screen and exit.  Notice how the
+@samp{HELP} action function makes use of @func{mbfl_actions_fake_action_set} to print the same help
+screen of the main action.
+
+@item two-levels-actions.sh one
+With the non--leaf action argument @code{one}: print the help screen of the action @samp{ONE}.
+
+@item two-levels-actions.sh two
+With the non--leaf action argument @code{two}: print the help screen of the action @samp{TWO}.
+
+@item two-levels-actions.sh one red
+With the action arguments @code{one red}: perform the action @samp{RED}, possibly with the options
+@option{-a} and @option{-b}.
+
+@item two-levels-actions.sh one red -H
+With the action argument @code{one red} and the option @option{-H}: print the brief help screen for
+the action @samp{RED} and exit.
+
+@item two-levels-actions.sh one blue
+With the action arguments @code{one blue}: perform the action @samp{BLUE}, possibly with the options
+@option{-a} and @option{-b}.
+
+@item two-levels-actions.sh one blue -H
+With the action argument @code{one blue} and the option @option{-H}: print the brief help screen for
+the action @samp{BLUE} and exit.
+
+@item two-levels-actions.sh two green
+With the action arguments @code{two green}: perform the action @samp{GREEN}, possibly with the
+options @option{-d} and @option{-g}.
+
+@item two-levels-actions.sh two green -H
+With the action argument @code{two green} and the option @option{-H}: print the brief help screen
+for the action @samp{GREEN} exit.
+
+@item two-levels-actions.sh two cyan
+With the action arguments @code{two cyan}: perform the action @samp{CYAN}, possibly with the options
+@option{-d} and @option{-g}.
+
+@item two-levels-actions.sh two cyan -H
+With the action argument @code{two cyan} and the option @option{-H}: print the brief help screen for
+the action @samp{CYAN} exit.
+@end table
+
+@noindent
+notice how the action functions of the non--leaf nodes print the help screen describing the
+subactions.
+
+@smallexample
+@verbatiminclude two-levels-actions.sh
+@end smallexample
+
+@c page
+@node actions declare
+@section Declaring actions and action sets
+
+
+The structure of the action sets tree is stored in global variables defined by default; we should
+never try to access such variables directly.
+
+
+@defun mbfl_declare_action_set @var{ACTION-SET}
+Declare a new action set.  @var{ACTION-SET} must be a string satisfying @func{mbfl_string_is_name}
+and representing the identifier of the action set.  It is an error to declare the same action set
+twice.
+@end defun
+
+
+@defun mbfl_declare_action @var{ACTION-SET} @var{KEYWORD} @var{SUBSET} @var{IDENTIFIER} @var{DESCRIPTION}
+Declare a new action belonging to an action set.  The arguments are:
+
+@table @var
+@item action-set
+A string representing the name of the action set this action belongs to.  The action set must have
+been previously declared with a call to @func{mbfl_declare_action_set}.
+
+@item keyword
+A unique string (in this script) satisfying @func{mbfl_string_is_name} and identifying this action.
+The ``main'', ``before parsing options'' and ``after parsing options'' function names associated to
+this action are built as:
+
+@example
+script_action_$@var{KEYWORD}
+script_before_parsing_options_$@var{KEYWORD}
+script_after_parsing_options_$@var{KEYWORD}
+@end example
+
+@item subset
+If @var{SUBSET} is the string @code{NONE} it means that this action is a leaf and it implements a
+script action; else @var{SUBSET} must be the identifier of an action set subordinate to
+@var{ACTION-SET}: this function is recursively called to process it.  The subordinate action set
+must have been previously declared with a call to @func{mbfl_declare_action_set}.
+
+@item identifier
+A string satisfying @func{mbfl_string_is_identifier} and representing the argument on the command
+line used to select this action.  This string must be unique for this @var{ACTION-SET}.
+
+@item description
+A string describing this action, to be used to compose the help screen.
+@end table
+@end defun
+
+@c page
+@node actions dispatch
+@section Dispatching action arguments
+
+
+@defun mbfl_actions_dispatch @var{ACTION-SET}
+Parse the next command line argument and select accordingly the functions for the main module making
+use of the functions:
+
+@example
+mbfl_main_set_before_parsing_options
+mbfl_main_set_after_parsing_options
+mbfl_main_set_main
+@end example
+
+@noindent
+If successful return true, else return false and print an error message to @stderr{}.  This
+function recursively calls itself, parsing command line arguments and traversing the tree of
+declared actions.
+
+@var{ACTION-SET} must be the name of an action set previously declared with
+@func{mbfl_declare_action_set}.  It is an error if this function is called with an @var{ACTION-SET}
+name specifying a non--existent action set.  If there are no command line arguments left upon
+entering this function: the values previously selected with the functions @code{mbfl_main_set_*} are
+silently accepted.
+
+The function @func{mbfl_main} verifies that the action set @code{MAIN} exists and, if it does, it
+calls this function with argument @code{MAIN}.
+
+Upon entering this function, the following global variables must exist and have the specified
+values:
+
+@table @code
+@item ARGV1
+An array containing all the command line arguments.
+
+@item ARGC1
+A non--negative integer representing the number of values in
+@code{ARGV1}.
+
+@item ARG1ST
+A non--negative integer representing the index in @code{ARGV1} of the next argument to be processed.
+@end table
+
+@noindent
+all these variables are created by default by the @mbfl{} @code{main} module, @ref{main variables,
+Command line arguments variables}.
+@end defun
+
+@c page
+@node actions inspect
+@section Inspecting action trees
+
+
+@defun mbfl_actions_set_exists @var{ACTION-SET}
+Return true if @var{ACTION-SET} is the identifier of an existent action set; else return false.
+@end defun
+
+
+@defun mbfl_actions_set_exists_or_none @var{ACTION-SET}
+Return true if @var{ACTION-SET} is the identifier of an existent action set or it is the string
+@code{NONE}; else return false.
+@end defun
+
+@c page
+@node actions completion
+@section Automatic generation of programmable completion script
+
+
+It is almost certain that we are running @gnu{} Bash in an environment with support for @gnu{}
+Readline completion of the command line; it is quite useful to provide programmable completion for
+the scripts we write.  When a script has a tree hierarchy of actions it is useful to automatically
+generate the completion facilities for the action commands; this is what the functions documented
+here are for.
+
+@menu
+* actions completion api::          Application interface to completion script generation.
+* actions completion declaration::  How to declare automatic script generation.
+* actions completion script::       How to use the generated script.
+@end menu
+
+@c page
+@node actions completion api
+@subsection Application interface to completion script generation
+
+
+@defun mbfl_actions_completion_print_script @var{NAMESPACE} @var{PROGNAME}
+@defunx mbfl_actions_completion_print_script @var{NAMESPACE} @var{PROGNAME} @var{SCRIPT_TYPE}
+Print to the standard output a @gnu{} Bash script, the @dfn{completions--script}, to be evaluated in
+a terminal running Bash, to implement automatic completion of the command line for a
+@dfn{subject--script}.
+
+The argument @var{NAMESPACE} must be a string representing a namespace for function names; functions
+in the completions--script have names starting with this string.
+
+The argument @var{PROGNAME} must be a string representing the name of the subject--script for which
+the completions--script is generated.  It is usually the value of the service variable
+@env{script_PROGNAME}, @ref{script_PROGNAME} for details.
+
+The optional argument @var{SCRIPT_TYPE} selects the type of script to output:
+
+@table @code
+@item main
+Output the full completions--script for a subject--script; this is the default.  When sourced: such
+completions--script will provide full completions for the subject--script.  The completions--script
+is composed by a call to the Bash built--in @command{complete} followed by a number of functions.
+
+@item subscript
+Output only the completion functions for the actions of the subject--script; do @strong{not} output
+a call to the Bash built--in @command{complete}.  This completions--script type is meant to be used
+for subject--scripts that are not directly invoked by the user; rather they are subordinate scripts
+invoked by a main script: the actions of the subordinate script are ``plugged'' in the actions of
+the main script as a subtree.
+@end table
+@end defun
+
+@c page
+@node actions completion declaration
+@subsection How to declare automatic script generation
+
+
+When using the actions module we should add ``standard'' subcommands to access the automatic script
+generation.  We can do it by plugging in the following actions declarations:
+
+@example
+mbfl_declare_action_set HELP
+mbfl_declare_action HELP HELP_USAGE NONE                        \
+    usage                                                       \
+    'Print the help screen and exit.'
+mbfl_declare_action HELP HELP_PRINT_COMPLETIONS_SCRIPT NONE     \
+    print-completions-script                                    \
+    'Print the completions script for this program.'
+
+mbfl_declare_action_set MAIN
+mbfl_declare_action MAIN HELP HELP                              \
+    help                                                        \
+    'Help the user of this script.'
+@end example
+
+@noindent
+and add the following action functions:
+
+@example
+declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
+
+function script_before_parsing_options_HELP () @{
+    script_USAGE="usage: $@{script_PROGNAME@} help [action] [options]"
+    script_DESCRIPTION='Help the user of this program.'
+@}
+function script_action_HELP () @{
+    # By faking the  selection of the MAIN action: we  cause "mbfl_main_print_usage_screen_brief" to
+    # print the main usage screen.
+    mbfl_actions_fake_action_set MAIN
+    mbfl_main_print_usage_screen_brief
+@}
+
+function script_before_parsing_options_HELP_USAGE () @{
+    script_USAGE="usage: $@{script_PROGNAME@} help usage [options]"
+    script_DESCRIPTION='Print the usage screen and exit.'
+@}
+function script_action_HELP_USAGE () @{
+    if mbfl_wrong_num_args 0 $ARGC
+    then
+        # By faking the selection of  the MAIN action: we cause "mbfl_main_print_usage_screen_brief"
+        # to print the main usage screen.
+        mbfl_actions_fake_action_set MAIN
+        mbfl_main_print_usage_screen_brief
+    else
+        mbfl_main_print_usage_screen_brief
+        exit_because_wrong_num_args
+    fi
+@}
+
+function script_before_parsing_options_HELP_PRINT_COMPLETIONS_SCRIPT () @{
+    script_PRINT_COMPLETIONS="usage: $@{script_PROGNAME@} help print-completions-script [options]"
+    script_DESCRIPTION='Print the command-line completions script and exit.'
+@}
+function script_action_HELP_PRINT_COMPLETIONS_SCRIPT () @{
+    if mbfl_wrong_num_args 0 $ARGC
+    then mbfl_actions_completion_print_script "$COMPLETIONS_SCRIPT_NAMESPACE" "$script_PROGNAME"
+    else
+        mbfl_main_print_usage_screen_brief
+        exit_because_wrong_num_args
+    fi
+@}
+@end example
+
+@c page
+@node actions completion script
+@subsection How to use the generated script
+
+
+We can store the generated script in a file to be sourced upon launching the terminal, or we can
+evaluate it with the command:
+
+@example
+eval "$(my-script help print-completions-script)"
+@end example
+
+For a script named @command{my-script}, it is a good idea to install a file with pathname:
+
+@example
+/etc/bash_completions.d/my-script.bash
+@end example
+
+@noindent
+with contents:
+
+@example
+# my-script.bash --
+#
+# Completions for the "my-script" script.
+
+eval "$(my-script help print-completions-script)"
+
+### end of file
+@end example
+
+@c page
+@node actions misc
+@section Other functions
+
+
+@defun mbfl_actions_fake_action_set @var{ACTION-SET}
+Mutate @mbfl{}'s state to mimic the selection of an action set.  It is an error if @var{ACTION-SET}
+is not the name of an existent action set.  This function should be used with care.
+@end defun
+
+
+@defun mbfl_actions_print_usage_screen
+If an action set has been selected and its name is not @samp{NONE}: print the help screen
+documenting the actions available in the set.
+@end defun
+
+
+@deffn {Function} exit_because_invalid_action_declaration
+@deffnx {Alias} return_because_invalid_action_declaration
+Exit or return with code @code{96}.
+@end deffn
+
+
+@deffn {Function} exit_because_invalid_action_set
+@deffnx {Alias} return_because_invalid_action_set
+Exit or return with code @code{97}.
+@end deffn
+
+
+@deffn {Function} exit_because_invalid_action_argument
+@deffnx {Alias} return_because_invalid_action_argument
+Exit or return with code @code{95}
+@end deffn
+
+
+@deffn {Function} exit_because_missing_action_function
+@deffnx {Alias} return_because_missing_action_function
+Exit or return with code @code{94}.
+@end deffn
+
+@c page
+@node getopts
+@chapter Parsing command line options
+
+
+@cindex Parsing command line options
+@cindex Command line options, parsing
+@cindex Program command line options, parsing
+
+
+The @code{getopts} module defines a set of procedures to be used to
+process command line arguments with the following format:
+
+@table @code
+@item -a
+Brief option @code{a} with no value.
+
+@item -a123
+Brief option @code{a} with value @code{123}.
+
+@item --bianco
+Long option @code{bianco} with no value.
+
+@item --color=bianco
+Long option @code{color} with value @code{bianco}.
+@end table
+
+@menu
+* getopts arguments::           Arguments.
+* getopts usage::               Using the module.
+* getopts options::             Predefined options.
+* getopts interface::           Interface functions.
+@end menu
+
+@c page
+@node getopts arguments
+@section Arguments
+
+
+The @code{main} module contains, at the root level, a block of code like
+the following:
+
+@example
+declare -i ARGC=0 ARGC1=0 ARG1ST=0
+declare -a ARGV ARGV1
+
+for ((ARGC1=0; $# > 0; ++ARGC1))
+do
+    ARGV1[$ARGC1]=$1
+    shift
+done
+@end example
+
+@noindent
+this block is executed when @mbfl{} (and the script that loads it) is
+evaluated.  Its purpose is to store command line arguments in the global
+array @code{ARGV1} and the number of command line arguments in the
+global variable @code{ARGC1}; the variable @code{ARG1ST} references the
+next argument in @code{ARGV1} that must be processed.
+
+The global array @code{ARGV} and the global variable @code{ARGC} are
+predefined and should be used by the @code{mbfl_getopts_*} functions to
+store non--option command line arguments.  Processing performed by the
+@code{getopts} module must happen after processing performed by the
+@code{actions} module.
+
+Example:
+
+@example
+$ script --gulp wo --gasp=123 wa
+@end example
+
+@noindent
+if the script makes use of @mbfl{}, the strings @code{wo} and @code{wa}
+will go into @code{ARGV} and @code{ARGC} will be set to 2.  The option
+arguments are processed and some action is performed to register them.
+
+We can access the non--option arguments with the following code:
+
+@example
+for ((i=0; $i < $ARGC; ++i))
+do
+    # do something with $@{ARGV[$i]@}
+done
+@end example
+
+When using the @code{actions} module: the first arguments can be
+interpreted as special values that select an action to be performed by
+the script; in such case the first argument is removed from the
+@code{ARGV} array, so that processing the other arguments is not
+affected.  @ref{actions intro, Introduction to action trees}.
+
+@c page
+@node getopts usage
+@section Using the module
+
+
+To use this module we have to declare a set of script options with the
+function @func{mbfl_declare_option}.  Options declarations should be
+done at the beginning of the script, before doing anything else, or in
+the ``before parsing options'' functions.
+
+In the main block of the script, options are parsed by invoking
+@func{mbfl_getopts_parse}: this function will update global variables
+and invoke a script function for each option on the command line.  It
+can also select a function to be invoked as the main action of the
+script.
+
+@c ------------------------------------------------------------
+
+@subsubheading Option with no argument
+
+Example of option declaration:
+
+@example
+mbfl_declare_option ALPHA no a alpha noarg "enable alpha option"
+@end example
+
+@noindent
+this code declares an option with no argument having properties:
+
+@itemize
+@item
+Global variable @code{script_option_ALPHA}, which will be set to
+@code{no} by default and to @code{yes} if the option is used.
+
+@item
+Brief switch @option{-a}.
+
+@item
+Long switch @option{--alpha}.
+
+@item
+Description @code{enable alpha option}, to be shown in the usage help
+screen.
+@end itemize
+
+If the option is used: the function @code{script_option_update_alpha} is invoked (if it exists) with
+no arguments, after the variable @code{script_option_ALPHA} has been set to @code{yes}; in the
+function name: @code{alpha} is the lower case variant of the keyword @code{ALPHA}.  Valid option
+uses are:
+
+@example
+$ script.sh -a
+$ script.sh --alpha
+@end example
+
+@c ------------------------------------------------------------
+
+@subsubheading Option with argument
+
+Example of option declaration:
+
+@example
+mbfl_declare_option BETA 123 b beta witharg "select beta value"
+@end example
+
+@noindent
+this code declares an option with argument having properties:
+
+@itemize
+@item
+Global variable @code{script_option_BETA}, which will be set to
+@code{123} by default and to the value selected on the command line if
+the option is used.
+
+@item
+Brief switch @option{-b}.
+
+@item
+Long switch @option{--beta}.
+
+@item
+Description @code{select beta value}, to be shown in the usage output.
+@end itemize
+
+If the option is used: the function @code{script_option_update_beta} is invoked (if it exists) with
+no arguments, after the variable @code{script_option_BETA} has been set to the selected value; in
+the function name: @code{beta} is the lower case variant of the keyword @code{BETA}.  Valid option
+uses are:
+
+@example
+$ script.sh -b456
+$ script.sh --beta=456
+@end example
+
+@noindent
+it is an error to use the switch @option{-b} or  @option{--beta} with
+no argument (that is: with an empty string as argument).
+
+@c ------------------------------------------------------------
+
+@subsubheading Action options
+
+A special option example:
+
+@example
+mbfl_declare_option ACTION_GAMMA \
+   no g gamma noarg "do gamma action"
+mbfl_declare_option ACTION_DELTA \
+   yes d delta noarg "do delta action"
+@end example
+
+@noindent
+this code declares two options with no arguments; the difference from
+the other declarations is that the keywords are prefixed with
+@code{ACTION_}: this prefix is recognised by the module and causes, if
+the option is used on the command line, the following code to be
+evaluated at arguments parsing time:
+
+@example
+mbfl_main_set_main script_action_gamma
+@end example
+
+@noindent
+or:
+
+@example
+mbfl_main_set_main script_action_delta
+@end example
+
+@noindent
+where the argument @code{script_action_gamma} is built by prefixing the
+lower case version of the keyword with @code{script_}.  The code selects
+a function as main function for the script.  @ref{main function, Driving
+script execution}.
+
+Additionally, if the default value is @code{yes}: the main function is
+selected at declaration time (that is by @func{mbfl_declare_option});
+this is useful to declare an action option and select automatically the
+action function.  In the example: the function
+@func{script_action_delta} is selected as main action function.
+
+It is an error to declare a keyword prefixed with @code{ACTION_} with an
+option with argument (@code{witharg} as argument to
+@func{mbfl_declare_option}).
+
+@c page
+@node getopts options
+@section Predefined options
+
+
+A set of predefined options is recognised by the library and not handed to the user defined
+functions.
+
+@table @option
+@item --tmpdir=DIR
+@anchor{--tmpdir}
+@cindex @option{--tmpdir}, predefined option
+@cindex Predefined option @option{--tmpdir}
+Selects a directory for temporary files.  The default value is the one in the environment variable
+@env{TMPDIR}, or @file{/tmp/$USER} if that variable is not set.  The value is stored in the variable
+@code{mbfl_option_TMPDIR}.
+
+@item --encoded-args
+@anchor{--encoded-args}
+@cindex @option{--encoded-args}, predefined option
+@cindex Predefined option @option{--encoded-args}
+Signals to the library that the non--option arguments and the option values are encoded in
+hexadecimal strings.  Encoding is useful to avoid quoting problems when invoking a script from
+another one.
+
+If this option is used: the values are decoded by @func{mbfl_getopts_parse} before storing them in
+the @code{ARGV} array and before being stored in the option's specific global variables.
+
+@item -v
+@itemx --verbose
+@anchor{-v}
+@anchor{--verbose}
+@cindex @option{-v}, predefined option
+@cindex Predefined option @option{-v}
+@cindex @option{--verbose}, predefined option
+@cindex Predefined option @option{--verbose}
+Turns on verbose messages.  If this option is used: The function @func{mbfl_option_verbose} returns
+true.  @ref{message, Printing messages to the console}.
+
+@item --silent
+@anchor{--silent}
+@cindex @option{--silent}, predefined option
+@cindex Predefined option @option{--silent}
+Turns off verbose messages.  If this option is used: The function @func{mbfl_option_verbose} returns
+false.
+
+@item --verbose-program
+@cindex @option{--verbose-program}, predefined option
+@cindex Predefined option @option{--verbose-program}
+If used: The @option{--verbose} option is added to the command line of external programs that
+support it.  The function @func{mbfl_option_verbose_program} returns true or false depending on the
+state of this option.
+
+@item --show-program
+@itemx --show-programs
+@anchor{--show-program}
+@anchor{--show-programs}
+@cindex @option{--show-program}, predefined option
+@cindex Predefined option @option{--show-program}
+@cindex @option{--show-programs}, predefined option
+@cindex Predefined option @option{--show-programs}
+Prints the command line of executed external programs.
+
+@item --debug
+@anchor{--debug}
+@cindex @option{--debug}, predefined option
+@cindex Predefined option @option{--debug}
+Turns on debugging messages.  Automatically turns on verbose messages and program showing.
+@ref{message, Printing messages to the console}.
+
+@item --test
+@anchor{--test}
+@cindex @option{--test}, predefined option
+@cindex Predefined option @option{--test}
+Turns on test execution.  @ref{program executing testing, Testing a script and external programs}.
+
+@item --null
+@anchor{--null}
+@cindex @option{--null}, predefined option
+@cindex Predefined option @option{--null}
+Signals to the script that it has to use the null character to separate values, instead of the
+common newline.  The global variable @code{mbfl_option_NULL} is set to @code{yes}.
+
+@item -f
+@itemx --force
+@anchor{-f}
+@anchor{--force}
+@cindex @option{-f}, predefined option
+@cindex Predefined option @option{-f}
+@cindex @option{--force}, predefined option
+@cindex Predefined option @option{--force}
+Signals to the script that it does @strong{not} have to query the user before doing dangerous
+operations, like overwriting files.  The global variable @code{mbfl_option_INTERACTIVE} is set to
+@code{no}.
+
+An use of the option @option{--force} on the command line overrides all the previous uses of the
+option @option{--interactive}.
+
+@item -i
+@itemx --interactive
+@anchor{-i}
+@anchor{--interactive}
+@cindex @option{-i}, predefined option
+@cindex Predefined option @option{-i}
+@cindex @option{--interactive}, predefined option
+@cindex Predefined option @option{--interactive}
+Signals to the script that it @strong{does} have to query the user before doing dangerous
+operations, like overwriting files.  The global variable @code{mbfl_option_INTERACTIVE} is set to
+@code{yes}.
+
+An use of the option @option{--interactive} on the command line overrides all the previous uses of
+the option @option{--force}.
+
+@item --validate-programs
+@anchor{--validate-programs}
+@cindex @option{--validate-programs}, predefined option
+@cindex Predefined option @option{--validate-programs}
+Validates the existence of all the programs needed by the script; then exits.  The exit code is zero
+if all the programs were found, one otherwise.  We can pair this option with @option{--verbose} to
+see the list of programs and checks.
+
+@item --list-exit-codes
+@anchor{--list-exit-codes}
+@cindex @option{--list-exit-codes}, predefined option
+@cindex Predefined option @option{--list-exit-codes}
+Prints a list of numerical exit codes and their associated names, as declared in the script.
+@ref{main exit, Declaring exit codes}.
+
+@item --print-exit-code=NAME
+@anchor{--print-exit-code}
+@cindex @option{--print-exit-code}, predefined option
+@cindex Predefined option @option{--print-exit-code}
+Prints the numerical exit code associated to @code{NAME}.
+
+@item --print-exit-code-names=CODE
+@cindex @option{--print-exit-code-names}, predefined option
+@cindex Predefined option @option{--print-exit-code-names}
+Prints the list of names associated to the numerical exit @code{CODE}.
+
+@item --version
+@anchor{--version}
+@cindex @option{--version}, predefined option
+@cindex Predefined option @option{--version}
+Prints to the standard output of the script the contents of the global variable
+@code{mbfl_message_VERSION}, then exits with code zero.  The variable makes use of the service
+variables.  @ref{variables service, Required user defined variables}.
+
+@item --version-only
+@cindex @option{--version-only}, predefined option
+@cindex Predefined option @option{--version-only}
+Prints to the standard output of the script the contents of the global variable
+@code{script_VERSION}, then exits with code zero.  @ref{variables service, Required user defined
+variables}.
+
+@item --license
+@anchor{--license}
+@cindex @option{--license}, predefined option
+@cindex Predefined option @option{--license}
+Prints to the standard output of the script the contents of one of the global variables
+@code{mbfl_message_LICENSE_*}, then exits with code zero.  The variable makes use of the service
+variables.  @ref{variables service, Required user defined variables}.
+
+@item -h
+@itemx --help
+@itemx --usage
+@anchor{-h}
+@anchor{--help}
+@anchor{--usage}
+@cindex @option{-h}, predefined option
+@cindex Predefined option @option{-h}
+@cindex @option{--help}, predefined option
+@cindex Predefined option @option{--help}
+@cindex @option{--usage}, predefined option
+@cindex Predefined option @option{--usage}
+Prints to the standard output of the script: the contents of the global variable
+@code{script_USAGE}; a newline; the string @code{options:}; a newline; an automatically generated
+string describing the options declared with @func{mbfl_declare_option}; a string describing the
+@mbfl{} default options; the contents of the global variable @code{script_EXAMPLES}.  Then exits
+with code zero.  @ref{variables service, Required user defined variables}.
+
+@item -H
+@itemx --brief-help
+@itemx --brief-usage
+@anchor{-H}
+@anchor{--brief-help}
+@anchor{--brief-usage}
+@cindex @option{-H}, predefined option
+@cindex Predefined option @option{-H}
+@cindex @option{--brief-help}, predefined option
+@cindex Predefined option @option{--brief-help}
+@cindex @option{--brief-usage}, predefined option
+@cindex Predefined option @option{--brief-usage}
+Prints to the standard output of the script: the contents of the global variable
+@code{script_USAGE}; a newline; the string @code{options:}; a newline; an automatically generated
+string describing the options declared with @func{mbfl_declare_option}.  Then exits with code zero.
+
+The difference with @option{--help} is that predefined options and usage examples are not displayed.
+
+@item --print-options
+@anchor{--print-options}
+@cindex @option{--print-options}, predefined option
+@cindex Predefined option @option{--print-options}
+Print all the long options with @func{mbfl_getopts_print_long_switches}, then exit the script with
+code zero.
+@end table
+
+
+The following functions may be used to set, unset and query the state of the predefined options.
+
+@c ------------------------------------------------------------------------
+
+@macro MbflSetUnsetOptionFunctions{OPTNAME, OPTARG, TAILDOC}
+@anchor{mbfl_option_\OPTNAME\}
+@anchor{mbfl_set_option_\OPTNAME\}
+@anchor{mbfl_unset_option_\OPTNAME\}
+@defun mbfl_option_\OPTNAME\
+@defunx mbfl_set_option_\OPTNAME\
+@defunx mbfl_unset_option_\OPTNAME\
+Query/set/unset the encoded arguments option.
+
+@func{mbfl_option_\OPTNAME\} returns true if the option @option{--\OPTARG\} was used on the command
+line.\TAILDOC\
+@end defun
+
+@end macro
+
+@MbflSetUnsetOptionFunctions{debug, debug,}
+@MbflSetUnsetOptionFunctions{encoded_args, encoded-args,}
+@MbflSetUnsetOptionFunctions{force, force,}
+@MbflSetUnsetOptionFunctions{interactive, interactive,}
+@MbflSetUnsetOptionFunctions{null, null,}
+@MbflSetUnsetOptionFunctions{show_program, show-program, Print the command line of executed external program.  This does not disable program execution@comma{} it just prints the command line before executing it.}
+@MbflSetUnsetOptionFunctions{test, test,}
+@MbflSetUnsetOptionFunctions{verbose, verbose,}
+@MbflSetUnsetOptionFunctions{verbose_program, verbose-program, This option@comma{} of course@comma{} is supported only for programs that are known by @mbfl{} (like @command{rm}): if a program is executed with @func{mbfl_program_exec}@comma{} it is responsibility of the caller to use the option.}
+
+@c ------------------------------------------------------------------------
+
+The following are special option functions.
+
+@macro MbflSaveRestoreOptionFunctions{OPTNAME, OPTARG}
+@anchor{mbfl_option_\OPTNAME\_save}
+@anchor{mbfl_option_\OPTNAME\_restore}
+@defun mbfl_option_\OPTNAME\_save
+@defunx mbfl_option_\OPTNAME\_restore
+Save/restore the current state of the @option{--\OPTARG\} option then invoke
+@func{mbfl_unset_option_\OPTNAME\}.  Upon entering these functions: the value of @code{$?} is saved,
+the options states are processed, then the saved @code{$?} value is used as return value for the
+function call.
+@end defun
+
+@end macro
+
+@MbflSaveRestoreOptionFunctions{debug, debug}
+@MbflSaveRestoreOptionFunctions{encoded_args, encoded-args}
+@MbflSaveRestoreOptionFunctions{force, force}
+@MbflSaveRestoreOptionFunctions{interactive, interactive}
+@MbflSaveRestoreOptionFunctions{null, null}
+@MbflSaveRestoreOptionFunctions{show_program, show-program}
+@MbflSaveRestoreOptionFunctions{test, test}
+@MbflSaveRestoreOptionFunctions{verbose, verbose}
+@MbflSaveRestoreOptionFunctions{verbose_program, verbose-program}
+
+@c page
+@node getopts interface
+@section Interface functions
+
+
+Every declared option should have a long switch, the brief switch can be omitted.
+
+
+@defun mbfl_declare_option @var{KEYWORD} @var{DEFAULT} @var{BRIEF} @var{LONG} @var{HASARG} @var{DESCRIPTION}
+Declare a new option.  Arguments description follows.
+
+@table @var
+@item KEYWORD
+A string identifying the option; internally it is used to build a function name and a variable name.
+It is safer to limit this string to the letters in the ranges @code{a-z}, @code{A-Z} and
+underscores.
+
+@item DEFAULT
+The default value for the option.  For an option with argument it can be anything; for an option
+with no argument: it must be @code{yes} or @code{no}.
+
+@item BRIEF
+The brief option selector: a single character.  It is safer to choose a single letter (lower or
+upper case) in the @acronym{ASCII} standard.  This argument can be the empty string if this option
+has no brief selector.
+
+@item LONG
+The long option selector: a string.  It is safer to choose a sequence of letters in the
+@acronym{ASCII} standard, separated by underscores or dashes.  This argument can be the empty string
+if this option has no long selector.
+
+@item HASARG
+Either @code{witharg} or @code{noarg}: declares if the option requires an argument or not.
+
+@item DESCRIPTION
+A one--line string briefly describing the option.  This string will be printed with @func{printf}
+using the @code{%b} format directive, which will cause the expansion of some backslash escpe
+sequences in @var{DESCRIPTION}.
+@end table
+@end defun
+
+
+@defun mbfl_getopts_parse
+Parse a set of command line options.  The options are handed to user defined functions.  The global
+array @code{ARGV1} and the global variable @code{ARGC1} must hold the command line arguments and the
+number of command line arguments, the global variable @code{ARG1ST} must hold the index of the first
+element in @code{ARGV1} that must be parsed.  Non--option arguments are left in the global array
+@code{ARGV}, the global variable @code{ARGC} holds the number of elements in @code{ARGV}.
+
+If successful return @code{0}, else return @code{1}.
+@end defun
+
+
+@defun mbfl_getopts_islong @var{STRING}
+@defunx mbfl_getopts_islong @var{STRING} @var{VARNAME}
+Verify if a string has the format of a long option without argument.  @var{STRING} is the string to
+validate.  The optional @var{VARNAME} is the name of a variable that this function will set to the
+option name from @var{STRING}, without the leading dashes.
+
+Return with code zero if the string is a long option without argument, else returns with code one.
+
+An option must be of the form @code{--option}, only characters in the ranges @code{A-Z}, @code{a-z},
+@code{0-9} and the characters @code{-} and @code{_} are allowed in the option name.
+
+Usage examples:
+
+@example
+mbfl_getopts_islong --option            @result{} 0
+mbfl_getopts_islong --option=123        @result{} 1
+mbfl_getopts_islong gasp                @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_getopts_islong_with @var{STRING}
+@defunx mbfl_getopts_islong_with @var{STRING} @var{OPTNAME} @var{VARNAME}
+Verify if a string has the format of a long option with argument.  Arguments:
+
+@table @var
+@item STRING
+The string to validate.
+
+@item OPTNAME
+Optional name of a variable that this function will set to the option name from @var{STRING},
+without the leading dashes.
+
+@item VARNAME
+Optional name of a variable that this function will set to the option value from @var{STRING}.
+@end table
+
+Return with code @code{0} if the string is a long option with argument.  Return with code @code{1}
+if the string is not an option with argument.
+
+An option must be of the form @code{--option=value}, only characters in the ranges @code{A-Z},
+@code{a-z}, @code{0-9} and the characters @code{-} and @code{_} are allowed in the option name.
+
+If the argument is not an option with value, the variable names are ignored.
+
+Usage examples:
+
+@example
+mbfl_getopts_islong_with --option=one   @result{} 0
+mbfl_getopts_islong_with --option       @result{} 1
+mbfl_getopts_islong_with wappa          @result{} 1
+mbfl_getopts_islong_with --option=      @result{} 1
+mbfl_getopts_islong_with --=            @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_getopts_isbrief @var{STRING}
+@defunx mbfl_getopts_isbrief @var{STRING} @var{VARNAME}
+Verify if a string has the format of a brief option without argument.  @var{STRING} is the string to
+validate.  The optional @var{VARNAME} is the name of a variable that this function will set to the
+option name from @var{STRING}, without the leading dash.
+
+Return with code zero if the argument is a brief option without argument, else return with code one.
+
+A brief option must be of the form @code{-a}, only characters in the ranges @code{A-Z}, @code{a-z},
+@code{0-9} are allowed as option letters.
+
+Usage examples:
+
+@example
+mbfl_getopts_isbrief -o         @result{} 0
+mbfl_getopts_isbrief -o123      @result{} 1
+mbfl_getopts_isbrief gasp       @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_getopts_isbrief_with @var{STRING}
+@defunx mbfl_getopts_isbrief_with @var{STRING} @var{OPTNAME} @var{VALNAME}
+Verify if a string has the format of a brief option with argument.  Arguments:
+
+@table @var
+@item STRING
+The string to validate.
+
+@item OPTNAME
+Optional name of a variable that this function will set to the option name from @var{STRING},
+without the leading dashes.
+
+@item VALNAME
+Optional name of a variable that this function will set to the option value.
+@end table
+
+Return with code zero if the argument is a brief option without argument, else return with code one.
+
+A brief option must be of the form @code{-aV} (@code{a} is the option, @code{V} is the value), only
+characters in the ranges @code{A-Z}, @code{a-z}, @code{0-9} are allowed as option letters.
+
+Usage examples:
+
+@example
+mbfl_getopts_isbrief_with -o123         @result{} 0
+mbfl_getopts_isbrief_with -o            @result{} 1
+mbfl_getopts_isbrief_with --option      @result{} 1
+mbfl_getopts_isbrief_with wappa         @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_wrong_num_args @var{REQUIRED} @var{PRESENT}
+Validate the number of arguments.  @var{REQUIRED} is the required number of arguments, @var{PRESENT}
+is the given number of arguments on the command line.  If the number of arguments is different from
+the required one: print an error message and return with code one; else return with code zero.
+@end defun
+
+
+@defun mbfl_wrong_num_args_range @var{MIN_REQUIRED} @var{MAX_REQUIRED} @var{ARGC}
+Validate the number of arguments.  @var{ARGC} must be between @var{MIN_REQUIRED} and
+@var{MAX_REQUIRED}, inclusive.
+@end defun
+
+
+@deffn {Function} exit_because_wrong_num_args
+@deffnx {Alias} return_because_wrong_num_args
+Exit or return with code @code{98}.
+@end deffn
+
+
+@defun mbfl_argv_from_stdin
+If the @code{ARGC} global variable is set to zero: fills the global variable @code{ARGV} with lines
+read from stdin.  If the global variable @code{mbfl_option_NULL} is set to @code{yes}: lines are
+read using the null character as terminator, else they are read using the standard newline as
+terminator.
+
+This function may block waiting for input.
+@end defun
+
+
+@defun mbfl_argv_all_files
+Check that all the arguments in @code{ARGV} are file names of existent files.  Return with code zero
+if no errors, else print an error message and return with code 1.
+@end defun
+
+
+@defun mbfl_getopts_print_long_switches
+Print all the long switches in a row, separated by spaces.  This is useful to retrieve the option
+for Bash programmable completion.
+@end defun
+
+
+@deffn {Function} exit_because_invalid_option_declaration
+@deffnx {Alias} return_because_invalid_option_declaration
+Exit or return with code @code{93}.
+@end deffn
+
+
+@deffn {Function} exit_because_invalid_option_argument
+@deffnx {Alias} return_because_invalid_option_argument
+Exit or return with code @code{92}.
+@end deffn
+
+
+@defun mbfl_getopts_reset
+Reset to empty the internal state representing the declared options.
+@end defun
+
+
+@defun mbfl_getopts_gather_mbfl_options_var @var{_RV}
+Append to the data variable whose name is @var{_RV} a list of @mbfl{} command line options
+reflecting the current @mbfl{} options state.  Assuming no predefined options were given on the
+command line:
+
+@example
+mbfl_local_varref(FLAGS)
+
+mbfl_set_option_verbose
+mbfl_set_option_test
+mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
+"$FLAGS"        @result{} '--verbose --test'
+@end example
+
+This is useful when executing an @mbfl{} script as subprocess for an @mbfl{} script: we can hand the
+subprocess the same options that were given to the process, or maybe change them.
+
+This function uses the following functions to gather the required options:
+
+@example
+mbfl_option_verbose
+mbfl_option_verbose_program
+mbfl_option_debug
+mbfl_option_show_program
+mbfl_option_test
+@end example
+@end defun
+
+@c page
+@node message
+@chapter Printing messages to the console
+
+
+This module allows us to print messages to an output channel.  Various forms of message are
+supported.  All the function names are prefixed with @code{mbfl_message_}.  Almost all the messages
+will have one of the forms:
+
+@example
+<progname>: <message>
+<progname>: error: <message>
+<progname>: warning: <message>
+<progname>: debug: <message>
+@end example
+
+@menu
+* message config::              Message module configuration.
+* message plain::               Printing plain messages.
+* message format::              Printing formatted messages.
+@end menu
+
+@c page
+@node message config
+@section Message module configuration
+
+
+@defun mbfl_message_set_progname @var{PROGNAME}
+Set the script's official name to put at the beginning of messages.  This value is initialised to
+@code{script_PROGNAME}.
+@end defun
+
+
+@defun mbfl_message_set_channel @var{CHANNEL}
+Select the channel to be used to output messages.  @var{CHANNEL} must be a numeric string,
+otherwise: an error is printed on the old channel and the function returns false.  This value is
+initialised to @code{2}, which is @stderr{}.
+@end defun
+
+@c page
+@node message plain
+@section Printing plain messages
+
+
+@defun mbfl_message_string @var{STRING}
+Output a message to the selected output channel.  Echo a string composed of: the selected program
+name, a colon, a space, @var{STRING}.  No newline character is appended to the message.  Escape
+characters supported by @code{printf} are allowed in @var{STRING}.
+@end defun
+
+
+@defun mbfl_message_verbose @var{STRING}
+Output a message to the selected output channel, but only if the evaluation of the function
+@func{mbfl_option_verbose} returns true.
+
+Echo a string composed of: the selected program name, a colon, a space, @var{STRING}.  No newline
+character is appended to the message.  Escape characters supported by @code{printf} are allowed in
+@var{STRING}.
+@end defun
+
+
+@defun mbfl_message_verbose_end @var{STRING}
+Output a message to the selected output channel, but only if the evaluation of the function
+@func{mbfl_option_verbose} returns true.  Echo the string.  No newline character is appended to the
+message.  Escape characters supported by @code{printf} are allowed in @var{STRING}.
+
+If @var{STRING} is empty: this function just prints a newline when verbose execution is enabled.
+@end defun
+
+
+@defun mbfl_message_error @var{STRING}
+Output an error message to the selected output channel.  Echo a string composed of: the selected
+program name, a colon, a space, the string @code{error}, a colon, a space, @var{STRING}, a newline
+character.  Escape characters supported by @code{printf} are allowed in @var{STRING}.
+@end defun
+
+
+@defun mbfl_message_warning @var{STRING}
+Output a warning message to the selected output channel.  Echo a string composed of: the selected
+program name, a colon, a space, the string @code{warning}, a colon, a space, @var{STRING}, a newline
+character.  Escape characters supported by @code{printf} are allowed in @var{STRING}.
+@end defun
+
+
+@defun mbfl_message_debug @var{STRING}
+Output a message to the selected output channel, but only if the evaluation of the function
+@func{mbfl_option_debug} returns true.  Echo a string composed of: the selected program name, a
+colon, a space, @var{STRING}, a newline character.  Escape characters supported by @code{printf} are
+allowed in @var{STRING}.
+@end defun
+
+@c page
+@node message format
+@section Printing formatted messages
+
+
+@defun mbfl_message_verbose_printf @var{TEMPLATE} [@var{ARG} @dots{}]
+Format the arguments in the same way @code{printf} would do; output the resulting string to the
+selected output channel, but only if the evaluation of the function @func{mbfl_option_verbose}
+returns true.
+
+Echo a string composed of: the selected program name, a colon, a space, the formatting result.  No
+newline character is appended to the message.
+@end defun
+
+
+@defun mbfl_message_error_printf @var{TEMPLATE} [@var{ARG} @dots{}]
+Format the arguments in the same way @code{printf} would do; output the resulting string to the
+selected output channel.
+
+Echo a string composed of: the selected program name, a colon, a space, the string @code{error}, a
+colon, a space, the formatting result, a newline character.
+@end defun
+
+
+@defun mbfl_message_warning_printf @var{TEMPLATE} [@var{ARG} @dots{}]
+Format the arguments in the same way @code{printf} would do; output the resulting string to the
+selected output channel.
+
+Echo a string composed of: the selected program name, a colon, a space, the string @code{warning}, a
+colon, a space, the formatting result, a newline character.
+@end defun
+
+
+@defun mbfl_message_debug_printf @var{TEMPLATE} [@var{ARG} @dots{}]
+Format the arguments in the same way @code{printf} would do; output the resulting string to the
+selected output channel, but only if the evaluation of the function @func{mbfl_option_debug}
+returns true.
+
+Echo a string composed of: the selected program name, a colon, a space, the string @code{debug}, a
+colon, a space, the formatting result, a newline character.
 @end defun
 
 @c page
@@ -3102,1339 +4791,6 @@ mbfl_location_leave
 
 echo LINE="$LINE"
 @end example
-
-@c page
-@node actions
-@chapter Selecting actions to perform
-
-
-The @code{actions} module allows the command line selection of different actions a script can
-perform.
-
-@menu
-* actions intro::               Introduction to action trees.
-* actions declare::             Declaring actions and action sets.
-* actions dispatch::            Dispatching action arguments.
-* actions inspect::             Inspecting action trees.
-* actions completion::          Automatic generation of programmable completion script.
-* actions misc::                Other functions.
-@end menu
-
-@c page
-@node actions intro
-@section Introduction to action trees
-
-
-Traditional Unix--style command--line programs perform a single action, with behaviour variants
-selected by command--line dash and double--dash options.  For example @command{ls} prints a list of
-directory entries and the format of the output can be custommised with options like @option{-1} and
-@option{--color}.  @mbfl{} implements this behaviour by default when the @code{actions} module is
-@strong{not} used.
-
-Other Unix--style command--line programs offer a set of possible actions and allow the executor to
-select one by specifying command--line options.  For example @command{tar} acts on archive files and
-it can pack, unpack, validate them along with other actions selected with by the double--dash
-options @option{--create}, @option{--extract}, @option{--validate} and others.  @mbfl{} implements
-this behaviour through ``action options'' provided by the @code{getopts} module; action options are
-available also when using the @code{actions} module.
-
-Other command--line programs break this Unix--style to offer action selection throuh ``action
-arguments''.  For example @command{git} acts upon revision control repositories offering a big set
-of actions selected with its first argument: @samp{commit}, @samp{log}, @samp{merge} and many
-others; the behaviour of each ``subcommand'' can be customised with a specific set of dash and
-double--dash options.  @mbfl{} implements this behaviour through the @code{actions} module.
-
-@c ------------------------------------------------------------
-
-@subsubheading One--level actions
-
-
-The script below (@file{one-level-actions.sh}, available in the @file{doc/} directory of the source
-distribution) shows how to implement one--level actions.  It implements the following behaviour:
-
-@table @code
-@item one-level-actions.sh
-With no action argument: print a generic help screen and exit.
-
-@item one-level-actions.sh one
-With the action argument @code{one}: perform the action @samp{ONE}, possibly with the options
-@option{-a} and @option{-b}.
-
-@item one-level-actions.sh one -H
-With the action argument @code{one} and the option @option{-H}: print the brief help screen for the
-action @samp{ONE} and exit.
-
-@item one-level-actions.sh two
-With the action argument @code{two}: perform the action @samp{TWO}, possibly with the options
-@option{-d} and @option{-g}.
-
-@item one-level-actions.sh two -H
-With the action argument @code{two} and the option @option{-H}: print the brief help screen for the
-action @samp{TWO} and exit.
-
-@item one-level-actions.sh help
-With the action argument @code{help}: print a generic help screen and exit.  Notice how the
-@samp{HELP} action function makes use of @func{mbfl_actions_fake_action_set} to print the same help
-screen of the main action.
-@end table
-
-@smallexample
-@verbatiminclude one-level-actions.sh
-@end smallexample
-
-@c ------------------------------------------------------------
-
-@subsubheading Two--levels actions
-
-
-The script below (@file{two-levels-actions.sh}, available in the @file{doc/} directory of the source
-distribution) shows how to implement two--levels actions.  It implements the following behaviour:
-
-@table @code
-@item two-levels-actions.sh
-With no action argument: print a generic help screen and exit.
-
-@item two-levels-actions.sh help
-With the action argument @code{help}: print a generic help screen and exit.  Notice how the
-@samp{HELP} action function makes use of @func{mbfl_actions_fake_action_set} to print the same help
-screen of the main action.
-
-@item two-levels-actions.sh one
-With the non--leaf action argument @code{one}: print the help screen of the action @samp{ONE}.
-
-@item two-levels-actions.sh two
-With the non--leaf action argument @code{two}: print the help screen of the action @samp{TWO}.
-
-@item two-levels-actions.sh one red
-With the action arguments @code{one red}: perform the action @samp{RED}, possibly with the options
-@option{-a} and @option{-b}.
-
-@item two-levels-actions.sh one red -H
-With the action argument @code{one red} and the option @option{-H}: print the brief help screen for
-the action @samp{RED} and exit.
-
-@item two-levels-actions.sh one blue
-With the action arguments @code{one blue}: perform the action @samp{BLUE}, possibly with the options
-@option{-a} and @option{-b}.
-
-@item two-levels-actions.sh one blue -H
-With the action argument @code{one blue} and the option @option{-H}: print the brief help screen for
-the action @samp{BLUE} and exit.
-
-@item two-levels-actions.sh two green
-With the action arguments @code{two green}: perform the action @samp{GREEN}, possibly with the
-options @option{-d} and @option{-g}.
-
-@item two-levels-actions.sh two green -H
-With the action argument @code{two green} and the option @option{-H}: print the brief help screen
-for the action @samp{GREEN} exit.
-
-@item two-levels-actions.sh two cyan
-With the action arguments @code{two cyan}: perform the action @samp{CYAN}, possibly with the options
-@option{-d} and @option{-g}.
-
-@item two-levels-actions.sh two cyan -H
-With the action argument @code{two cyan} and the option @option{-H}: print the brief help screen for
-the action @samp{CYAN} exit.
-@end table
-
-@noindent
-notice how the action functions of the non--leaf nodes print the help screen describing the
-subactions.
-
-@smallexample
-@verbatiminclude two-levels-actions.sh
-@end smallexample
-
-@c page
-@node actions declare
-@section Declaring actions and action sets
-
-
-The structure of the action sets tree is stored in global variables defined by default; we should
-never try to access such variables directly.
-
-
-@defun mbfl_declare_action_set @var{ACTION-SET}
-Declare a new action set.  @var{ACTION-SET} must be a string satisfying @func{mbfl_string_is_name}
-and representing the identifier of the action set.  It is an error to declare the same action set
-twice.
-@end defun
-
-
-@defun mbfl_declare_action @var{ACTION-SET} @var{KEYWORD} @var{SUBSET} @var{IDENTIFIER} @var{DESCRIPTION}
-Declare a new action belonging to an action set.  The arguments are:
-
-@table @var
-@item action-set
-A string representing the name of the action set this action belongs to.  The action set must have
-been previously declared with a call to @func{mbfl_declare_action_set}.
-
-@item keyword
-A unique string (in this script) satisfying @func{mbfl_string_is_name} and identifying this action.
-The ``main'', ``before parsing options'' and ``after parsing options'' function names associated to
-this action are built as:
-
-@example
-script_action_$@var{KEYWORD}
-script_before_parsing_options_$@var{KEYWORD}
-script_after_parsing_options_$@var{KEYWORD}
-@end example
-
-@item subset
-If @var{SUBSET} is the string @code{NONE} it means that this action is a leaf and it implements a
-script action; else @var{SUBSET} must be the identifier of an action set subordinate to
-@var{ACTION-SET}: this function is recursively called to process it.  The subordinate action set
-must have been previously declared with a call to @func{mbfl_declare_action_set}.
-
-@item identifier
-A string satisfying @func{mbfl_string_is_identifier} and representing the argument on the command
-line used to select this action.  This string must be unique for this @var{ACTION-SET}.
-
-@item description
-A string describing this action, to be used to compose the help screen.
-@end table
-@end defun
-
-@c page
-@node actions dispatch
-@section Dispatching action arguments
-
-
-@defun mbfl_actions_dispatch @var{ACTION-SET}
-Parse the next command line argument and select accordingly the functions for the main module making
-use of the functions:
-
-@example
-mbfl_main_set_before_parsing_options
-mbfl_main_set_after_parsing_options
-mbfl_main_set_main
-@end example
-
-@noindent
-If successful return true, else return false and print an error message to @stderr{}.  This
-function recursively calls itself, parsing command line arguments and traversing the tree of
-declared actions.
-
-@var{ACTION-SET} must be the name of an action set previously declared with
-@func{mbfl_declare_action_set}.  It is an error if this function is called with an @var{ACTION-SET}
-name specifying a non--existent action set.  If there are no command line arguments left upon
-entering this function: the values previously selected with the functions @code{mbfl_main_set_*} are
-silently accepted.
-
-The function @func{mbfl_main} verifies that the action set @code{MAIN} exists and, if it does, it
-calls this function with argument @code{MAIN}.
-
-Upon entering this function, the following global variables must exist and have the specified
-values:
-
-@table @code
-@item ARGV1
-An array containing all the command line arguments.
-
-@item ARGC1
-A non--negative integer representing the number of values in
-@code{ARGV1}.
-
-@item ARG1ST
-A non--negative integer representing the index in @code{ARGV1} of the next argument to be processed.
-@end table
-
-@noindent
-all these variables are created by default by the @mbfl{} @code{main} module, @ref{main variables,
-Command line arguments variables}.
-@end defun
-
-@c page
-@node actions inspect
-@section Inspecting action trees
-
-
-@defun mbfl_actions_set_exists @var{ACTION-SET}
-Return true if @var{ACTION-SET} is the identifier of an existent action set; else return false.
-@end defun
-
-
-@defun mbfl_actions_set_exists_or_none @var{ACTION-SET}
-Return true if @var{ACTION-SET} is the identifier of an existent action set or it is the string
-@code{NONE}; else return false.
-@end defun
-
-@c page
-@node actions completion
-@section Automatic generation of programmable completion script
-
-
-It is almost certain that we are running @gnu{} Bash in an environment with support for @gnu{}
-Readline completion of the command line; it is quite useful to provide programmable completion for
-the scripts we write.  When a script has a tree hierarchy of actions it is useful to automatically
-generate the completion facilities for the action commands; this is what the functions documented
-here are for.
-
-@menu
-* actions completion api::          Application interface to completion script generation.
-* actions completion declaration::  How to declare automatic script generation.
-* actions completion script::       How to use the generated script.
-@end menu
-
-@c page
-@node actions completion api
-@subsection Application interface to completion script generation
-
-
-@defun mbfl_actions_completion_print_script @var{NAMESPACE} @var{PROGNAME}
-@defunx mbfl_actions_completion_print_script @var{NAMESPACE} @var{PROGNAME} @var{SCRIPT_TYPE}
-Print to the standard output a @gnu{} Bash script, the @dfn{completions--script}, to be evaluated in
-a terminal running Bash, to implement automatic completion of the command line for a
-@dfn{subject--script}.
-
-The argument @var{NAMESPACE} must be a string representing a namespace for function names; functions
-in the completions--script have names starting with this string.
-
-The argument @var{PROGNAME} must be a string representing the name of the subject--script for which
-the completions--script is generated.  It is usually the value of the service variable
-@env{script_PROGNAME}, @ref{script_PROGNAME} for details.
-
-The optional argument @var{SCRIPT_TYPE} selects the type of script to output:
-
-@table @code
-@item main
-Output the full completions--script for a subject--script; this is the default.  When sourced: such
-completions--script will provide full completions for the subject--script.  The completions--script
-is composed by a call to the Bash built--in @command{complete} followed by a number of functions.
-
-@item subscript
-Output only the completion functions for the actions of the subject--script; do @strong{not} output
-a call to the Bash built--in @command{complete}.  This completions--script type is meant to be used
-for subject--scripts that are not directly invoked by the user; rather they are subordinate scripts
-invoked by a main script: the actions of the subordinate script are ``plugged'' in the actions of
-the main script as a subtree.
-@end table
-@end defun
-
-@c page
-@node actions completion declaration
-@subsection How to declare automatic script generation
-
-
-When using the actions module we should add ``standard'' subcommands to access the automatic script
-generation.  We can do it by plugging in the following actions declarations:
-
-@example
-mbfl_declare_action_set HELP
-mbfl_declare_action HELP HELP_USAGE NONE                        \
-    usage                                                       \
-    'Print the help screen and exit.'
-mbfl_declare_action HELP HELP_PRINT_COMPLETIONS_SCRIPT NONE     \
-    print-completions-script                                    \
-    'Print the completions script for this program.'
-
-mbfl_declare_action_set MAIN
-mbfl_declare_action MAIN HELP HELP                              \
-    help                                                        \
-    'Help the user of this script.'
-@end example
-
-@noindent
-and add the following action functions:
-
-@example
-declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
-
-function script_before_parsing_options_HELP () @{
-    script_USAGE="usage: $@{script_PROGNAME@} help [action] [options]"
-    script_DESCRIPTION='Help the user of this program.'
-@}
-function script_action_HELP () @{
-    # By faking the  selection of the MAIN action: we  cause "mbfl_main_print_usage_screen_brief" to
-    # print the main usage screen.
-    mbfl_actions_fake_action_set MAIN
-    mbfl_main_print_usage_screen_brief
-@}
-
-function script_before_parsing_options_HELP_USAGE () @{
-    script_USAGE="usage: $@{script_PROGNAME@} help usage [options]"
-    script_DESCRIPTION='Print the usage screen and exit.'
-@}
-function script_action_HELP_USAGE () @{
-    if mbfl_wrong_num_args 0 $ARGC
-    then
-        # By faking the selection of  the MAIN action: we cause "mbfl_main_print_usage_screen_brief"
-        # to print the main usage screen.
-        mbfl_actions_fake_action_set MAIN
-        mbfl_main_print_usage_screen_brief
-    else
-        mbfl_main_print_usage_screen_brief
-        exit_because_wrong_num_args
-    fi
-@}
-
-function script_before_parsing_options_HELP_PRINT_COMPLETIONS_SCRIPT () @{
-    script_PRINT_COMPLETIONS="usage: $@{script_PROGNAME@} help print-completions-script [options]"
-    script_DESCRIPTION='Print the command-line completions script and exit.'
-@}
-function script_action_HELP_PRINT_COMPLETIONS_SCRIPT () @{
-    if mbfl_wrong_num_args 0 $ARGC
-    then mbfl_actions_completion_print_script "$COMPLETIONS_SCRIPT_NAMESPACE" "$script_PROGNAME"
-    else
-        mbfl_main_print_usage_screen_brief
-        exit_because_wrong_num_args
-    fi
-@}
-@end example
-
-@c page
-@node actions completion script
-@subsection How to use the generated script
-
-
-We can store the generated script in a file to be sourced upon launching the terminal, or we can
-evaluate it with the command:
-
-@example
-eval "$(my-script help print-completions-script)"
-@end example
-
-For a script named @command{my-script}, it is a good idea to install a file with pathname:
-
-@example
-/etc/bash_completions.d/my-script.bash
-@end example
-
-@noindent
-with contents:
-
-@example
-# my-script.bash --
-#
-# Completions for the "my-script" script.
-
-eval "$(my-script help print-completions-script)"
-
-### end of file
-@end example
-
-@c page
-@node actions misc
-@section Other functions
-
-
-@defun mbfl_actions_fake_action_set @var{ACTION-SET}
-Mutate @mbfl{}'s state to mimic the selection of an action set.  It is an error if @var{ACTION-SET}
-is not the name of an existent action set.  This function should be used with care.
-@end defun
-
-
-@defun mbfl_actions_print_usage_screen
-If an action set has been selected and its name is not @samp{NONE}: print the help screen
-documenting the actions available in the set.
-@end defun
-
-
-@deffn {Function} exit_because_invalid_action_declaration
-@deffnx {Alias} return_because_invalid_action_declaration
-Exit or return with code @code{96}.
-@end deffn
-
-
-@deffn {Function} exit_because_invalid_action_set
-@deffnx {Alias} return_because_invalid_action_set
-Exit or return with code @code{97}.
-@end deffn
-
-
-@deffn {Function} exit_because_invalid_action_argument
-@deffnx {Alias} return_because_invalid_action_argument
-Exit or return with code @code{95}
-@end deffn
-
-
-@deffn {Function} exit_because_missing_action_function
-@deffnx {Alias} return_because_missing_action_function
-Exit or return with code @code{94}.
-@end deffn
-
-@c page
-@node getopts
-@chapter Parsing command line options
-
-
-@cindex Parsing command line options
-@cindex Command line options, parsing
-@cindex Program command line options, parsing
-
-
-The @code{getopts} module defines a set of procedures to be used to
-process command line arguments with the following format:
-
-@table @code
-@item -a
-Brief option @code{a} with no value.
-
-@item -a123
-Brief option @code{a} with value @code{123}.
-
-@item --bianco
-Long option @code{bianco} with no value.
-
-@item --color=bianco
-Long option @code{color} with value @code{bianco}.
-@end table
-
-@menu
-* getopts arguments::           Arguments.
-* getopts usage::               Using the module.
-* getopts options::             Predefined options.
-* getopts interface::           Interface functions.
-@end menu
-
-@c page
-@node getopts arguments
-@section Arguments
-
-
-The @code{main} module contains, at the root level, a block of code like
-the following:
-
-@example
-declare -i ARGC=0 ARGC1=0 ARG1ST=0
-declare -a ARGV ARGV1
-
-for ((ARGC1=0; $# > 0; ++ARGC1))
-do
-    ARGV1[$ARGC1]=$1
-    shift
-done
-@end example
-
-@noindent
-this block is executed when @mbfl{} (and the script that loads it) is
-evaluated.  Its purpose is to store command line arguments in the global
-array @code{ARGV1} and the number of command line arguments in the
-global variable @code{ARGC1}; the variable @code{ARG1ST} references the
-next argument in @code{ARGV1} that must be processed.
-
-The global array @code{ARGV} and the global variable @code{ARGC} are
-predefined and should be used by the @code{mbfl_getopts_*} functions to
-store non--option command line arguments.  Processing performed by the
-@code{getopts} module must happen after processing performed by the
-@code{actions} module.
-
-Example:
-
-@example
-$ script --gulp wo --gasp=123 wa
-@end example
-
-@noindent
-if the script makes use of @mbfl{}, the strings @code{wo} and @code{wa}
-will go into @code{ARGV} and @code{ARGC} will be set to 2.  The option
-arguments are processed and some action is performed to register them.
-
-We can access the non--option arguments with the following code:
-
-@example
-for ((i=0; $i < $ARGC; ++i))
-do
-    # do something with $@{ARGV[$i]@}
-done
-@end example
-
-When using the @code{actions} module: the first arguments can be
-interpreted as special values that select an action to be performed by
-the script; in such case the first argument is removed from the
-@code{ARGV} array, so that processing the other arguments is not
-affected.  @ref{actions intro, Introduction to action trees}.
-
-@c page
-@node getopts usage
-@section Using the module
-
-
-To use this module we have to declare a set of script options with the
-function @func{mbfl_declare_option}.  Options declarations should be
-done at the beginning of the script, before doing anything else, or in
-the ``before parsing options'' functions.
-
-In the main block of the script, options are parsed by invoking
-@func{mbfl_getopts_parse}: this function will update global variables
-and invoke a script function for each option on the command line.  It
-can also select a function to be invoked as the main action of the
-script.
-
-@c ------------------------------------------------------------
-
-@subsubheading Option with no argument
-
-Example of option declaration:
-
-@example
-mbfl_declare_option ALPHA no a alpha noarg "enable alpha option"
-@end example
-
-@noindent
-this code declares an option with no argument having properties:
-
-@itemize
-@item
-Global variable @code{script_option_ALPHA}, which will be set to
-@code{no} by default and to @code{yes} if the option is used.
-
-@item
-Brief switch @option{-a}.
-
-@item
-Long switch @option{--alpha}.
-
-@item
-Description @code{enable alpha option}, to be shown in the usage help
-screen.
-@end itemize
-
-If the option is used: the function @code{script_option_update_alpha} is invoked (if it exists) with
-no arguments, after the variable @code{script_option_ALPHA} has been set to @code{yes}; in the
-function name: @code{alpha} is the lower case variant of the keyword @code{ALPHA}.  Valid option
-uses are:
-
-@example
-$ script.sh -a
-$ script.sh --alpha
-@end example
-
-@c ------------------------------------------------------------
-
-@subsubheading Option with argument
-
-Example of option declaration:
-
-@example
-mbfl_declare_option BETA 123 b beta witharg "select beta value"
-@end example
-
-@noindent
-this code declares an option with argument having properties:
-
-@itemize
-@item
-Global variable @code{script_option_BETA}, which will be set to
-@code{123} by default and to the value selected on the command line if
-the option is used.
-
-@item
-Brief switch @option{-b}.
-
-@item
-Long switch @option{--beta}.
-
-@item
-Description @code{select beta value}, to be shown in the usage output.
-@end itemize
-
-If the option is used: the function @code{script_option_update_beta} is invoked (if it exists) with
-no arguments, after the variable @code{script_option_BETA} has been set to the selected value; in
-the function name: @code{beta} is the lower case variant of the keyword @code{BETA}.  Valid option
-uses are:
-
-@example
-$ script.sh -b456
-$ script.sh --beta=456
-@end example
-
-@noindent
-it is an error to use the switch @option{-b} or  @option{--beta} with
-no argument (that is: with an empty string as argument).
-
-@c ------------------------------------------------------------
-
-@subsubheading Action options
-
-A special option example:
-
-@example
-mbfl_declare_option ACTION_GAMMA \
-   no g gamma noarg "do gamma action"
-mbfl_declare_option ACTION_DELTA \
-   yes d delta noarg "do delta action"
-@end example
-
-@noindent
-this code declares two options with no arguments; the difference from
-the other declarations is that the keywords are prefixed with
-@code{ACTION_}: this prefix is recognised by the module and causes, if
-the option is used on the command line, the following code to be
-evaluated at arguments parsing time:
-
-@example
-mbfl_main_set_main script_action_gamma
-@end example
-
-@noindent
-or:
-
-@example
-mbfl_main_set_main script_action_delta
-@end example
-
-@noindent
-where the argument @code{script_action_gamma} is built by prefixing the
-lower case version of the keyword with @code{script_}.  The code selects
-a function as main function for the script.  @ref{main function, Driving
-script execution}.
-
-Additionally, if the default value is @code{yes}: the main function is
-selected at declaration time (that is by @func{mbfl_declare_option});
-this is useful to declare an action option and select automatically the
-action function.  In the example: the function
-@func{script_action_delta} is selected as main action function.
-
-It is an error to declare a keyword prefixed with @code{ACTION_} with an
-option with argument (@code{witharg} as argument to
-@func{mbfl_declare_option}).
-
-@c page
-@node getopts options
-@section Predefined options
-
-
-A set of predefined options is recognised by the library and not handed to the user defined
-functions.
-
-@table @option
-@item --tmpdir=DIR
-@anchor{--tmpdir}
-@cindex @option{--tmpdir}, predefined option
-@cindex Predefined option @option{--tmpdir}
-Selects a directory for temporary files.  The default value is the one in the environment variable
-@env{TMPDIR}, or @file{/tmp/$USER} if that variable is not set.  The value is stored in the variable
-@code{mbfl_option_TMPDIR}.
-
-@item --encoded-args
-@anchor{--encoded-args}
-@cindex @option{--encoded-args}, predefined option
-@cindex Predefined option @option{--encoded-args}
-Signals to the library that the non--option arguments and the option values are encoded in
-hexadecimal strings.  Encoding is useful to avoid quoting problems when invoking a script from
-another one.
-
-If this option is used: the values are decoded by @func{mbfl_getopts_parse} before storing them in
-the @code{ARGV} array and before being stored in the option's specific global variables.
-
-@item -v
-@itemx --verbose
-@anchor{-v}
-@anchor{--verbose}
-@cindex @option{-v}, predefined option
-@cindex Predefined option @option{-v}
-@cindex @option{--verbose}, predefined option
-@cindex Predefined option @option{--verbose}
-Turns on verbose messages.  If this option is used: The function @func{mbfl_option_verbose} returns
-true.  @ref{message, Printing messages to the console}.
-
-@item --silent
-@anchor{--silent}
-@cindex @option{--silent}, predefined option
-@cindex Predefined option @option{--silent}
-Turns off verbose messages.  If this option is used: The function @func{mbfl_option_verbose} returns
-false.
-
-@item --verbose-program
-@cindex @option{--verbose-program}, predefined option
-@cindex Predefined option @option{--verbose-program}
-If used: The @option{--verbose} option is added to the command line of external programs that
-support it.  The function @func{mbfl_option_verbose_program} returns true or false depending on the
-state of this option.
-
-@item --show-program
-@itemx --show-programs
-@anchor{--show-program}
-@anchor{--show-programs}
-@cindex @option{--show-program}, predefined option
-@cindex Predefined option @option{--show-program}
-@cindex @option{--show-programs}, predefined option
-@cindex Predefined option @option{--show-programs}
-Prints the command line of executed external programs.
-
-@item --debug
-@anchor{--debug}
-@cindex @option{--debug}, predefined option
-@cindex Predefined option @option{--debug}
-Turns on debugging messages.  Automatically turns on verbose messages and program showing.
-@ref{message, Printing messages to the console}.
-
-@item --test
-@anchor{--test}
-@cindex @option{--test}, predefined option
-@cindex Predefined option @option{--test}
-Turns on test execution.  @ref{program executing testing, Testing a script and external programs}.
-
-@item --null
-@anchor{--null}
-@cindex @option{--null}, predefined option
-@cindex Predefined option @option{--null}
-Signals to the script that it has to use the null character to separate values, instead of the
-common newline.  The global variable @code{mbfl_option_NULL} is set to @code{yes}.
-
-@item -f
-@itemx --force
-@anchor{-f}
-@anchor{--force}
-@cindex @option{-f}, predefined option
-@cindex Predefined option @option{-f}
-@cindex @option{--force}, predefined option
-@cindex Predefined option @option{--force}
-Signals to the script that it does @strong{not} have to query the user before doing dangerous
-operations, like overwriting files.  The global variable @code{mbfl_option_INTERACTIVE} is set to
-@code{no}.
-
-An use of the option @option{--force} on the command line overrides all the previous uses of the
-option @option{--interactive}.
-
-@item -i
-@itemx --interactive
-@anchor{-i}
-@anchor{--interactive}
-@cindex @option{-i}, predefined option
-@cindex Predefined option @option{-i}
-@cindex @option{--interactive}, predefined option
-@cindex Predefined option @option{--interactive}
-Signals to the script that it @strong{does} have to query the user before doing dangerous
-operations, like overwriting files.  The global variable @code{mbfl_option_INTERACTIVE} is set to
-@code{yes}.
-
-An use of the option @option{--interactive} on the command line overrides all the previous uses of
-the option @option{--force}.
-
-@item --validate-programs
-@anchor{--validate-programs}
-@cindex @option{--validate-programs}, predefined option
-@cindex Predefined option @option{--validate-programs}
-Validates the existence of all the programs needed by the script; then exits.  The exit code is zero
-if all the programs were found, one otherwise.  We can pair this option with @option{--verbose} to
-see the list of programs and checks.
-
-@item --list-exit-codes
-@anchor{--list-exit-codes}
-@cindex @option{--list-exit-codes}, predefined option
-@cindex Predefined option @option{--list-exit-codes}
-Prints a list of numerical exit codes and their associated names, as declared in the script.
-@ref{main exit, Declaring exit codes}.
-
-@item --print-exit-code=NAME
-@anchor{--print-exit-code}
-@cindex @option{--print-exit-code}, predefined option
-@cindex Predefined option @option{--print-exit-code}
-Prints the numerical exit code associated to @code{NAME}.
-
-@item --print-exit-code-names=CODE
-@cindex @option{--print-exit-code-names}, predefined option
-@cindex Predefined option @option{--print-exit-code-names}
-Prints the list of names associated to the numerical exit @code{CODE}.
-
-@item --version
-@anchor{--version}
-@cindex @option{--version}, predefined option
-@cindex Predefined option @option{--version}
-Prints to the standard output of the script the contents of the global variable
-@code{mbfl_message_VERSION}, then exits with code zero.  The variable makes use of the service
-variables.  @ref{service variables, Required user defined variables}.
-
-@item --version-only
-@cindex @option{--version-only}, predefined option
-@cindex Predefined option @option{--version-only}
-Prints to the standard output of the script the contents of the global variable
-@code{script_VERSION}, then exits with code zero.  @ref{service variables, Required user defined
-variables}.
-
-@item --license
-@anchor{--license}
-@cindex @option{--license}, predefined option
-@cindex Predefined option @option{--license}
-Prints to the standard output of the script the contents of one of the global variables
-@code{mbfl_message_LICENSE_*}, then exits with code zero.  The variable makes use of the service
-variables.  @ref{service variables, Required user defined variables}.
-
-@item -h
-@itemx --help
-@itemx --usage
-@anchor{-h}
-@anchor{--help}
-@anchor{--usage}
-@cindex @option{-h}, predefined option
-@cindex Predefined option @option{-h}
-@cindex @option{--help}, predefined option
-@cindex Predefined option @option{--help}
-@cindex @option{--usage}, predefined option
-@cindex Predefined option @option{--usage}
-Prints to the standard output of the script: the contents of the global variable
-@code{script_USAGE}; a newline; the string @code{options:}; a newline; an automatically generated
-string describing the options declared with @func{mbfl_declare_option}; a string describing the
-@mbfl{} default options; the contents of the global variable @code{script_EXAMPLES}.  Then exits
-with code zero.  @ref{service variables, Required user defined variables}.
-
-@item -H
-@itemx --brief-help
-@itemx --brief-usage
-@anchor{-H}
-@anchor{--brief-help}
-@anchor{--brief-usage}
-@cindex @option{-H}, predefined option
-@cindex Predefined option @option{-H}
-@cindex @option{--brief-help}, predefined option
-@cindex Predefined option @option{--brief-help}
-@cindex @option{--brief-usage}, predefined option
-@cindex Predefined option @option{--brief-usage}
-Prints to the standard output of the script: the contents of the global variable
-@code{script_USAGE}; a newline; the string @code{options:}; a newline; an automatically generated
-string describing the options declared with @func{mbfl_declare_option}.  Then exits with code zero.
-
-The difference with @option{--help} is that predefined options and usage examples are not displayed.
-
-@item --print-options
-@anchor{--print-options}
-@cindex @option{--print-options}, predefined option
-@cindex Predefined option @option{--print-options}
-Print all the long options with @func{mbfl_getopts_print_long_switches}, then exit the script with
-code zero.
-@end table
-
-
-The following functions may be used to set, unset and query the state of the predefined options.
-
-@c ------------------------------------------------------------------------
-
-@macro MbflSetUnsetOptionFunctions{OPTNAME, OPTARG, TAILDOC}
-@anchor{mbfl_option_\OPTNAME\}
-@anchor{mbfl_set_option_\OPTNAME\}
-@anchor{mbfl_unset_option_\OPTNAME\}
-@defun mbfl_option_\OPTNAME\
-@defunx mbfl_set_option_\OPTNAME\
-@defunx mbfl_unset_option_\OPTNAME\
-Query/set/unset the encoded arguments option.
-
-@func{mbfl_option_\OPTNAME\} returns true if the option @option{--\OPTARG\} was used on the command
-line.\TAILDOC\
-@end defun
-
-@end macro
-
-@MbflSetUnsetOptionFunctions{debug, debug,}
-@MbflSetUnsetOptionFunctions{encoded_args, encoded-args,}
-@MbflSetUnsetOptionFunctions{force, force,}
-@MbflSetUnsetOptionFunctions{interactive, interactive,}
-@MbflSetUnsetOptionFunctions{null, null,}
-@MbflSetUnsetOptionFunctions{show_program, show-program, Print the command line of executed external program.  This does not disable program execution@comma{} it just prints the command line before executing it.}
-@MbflSetUnsetOptionFunctions{test, test,}
-@MbflSetUnsetOptionFunctions{verbose, verbose,}
-@MbflSetUnsetOptionFunctions{verbose_program, verbose-program, This option@comma{} of course@comma{} is supported only for programs that are known by @mbfl{} (like @command{rm}): if a program is executed with @func{mbfl_program_exec}@comma{} it is responsibility of the caller to use the option.}
-
-@c ------------------------------------------------------------------------
-
-The following are special option functions.
-
-@macro MbflSaveRestoreOptionFunctions{OPTNAME, OPTARG}
-@anchor{mbfl_option_\OPTNAME\_save}
-@anchor{mbfl_option_\OPTNAME\_restore}
-@defun mbfl_option_\OPTNAME\_save
-@defunx mbfl_option_\OPTNAME\_restore
-Save/restore the current state of the @option{--\OPTARG\} option then invoke
-@func{mbfl_unset_option_\OPTNAME\}.  Upon entering these functions: the value of @code{$?} is saved,
-the options states are processed, then the saved @code{$?} value is used as return value for the
-function call.
-@end defun
-
-@end macro
-
-@MbflSaveRestoreOptionFunctions{debug, debug}
-@MbflSaveRestoreOptionFunctions{encoded_args, encoded-args}
-@MbflSaveRestoreOptionFunctions{force, force}
-@MbflSaveRestoreOptionFunctions{interactive, interactive}
-@MbflSaveRestoreOptionFunctions{null, null}
-@MbflSaveRestoreOptionFunctions{show_program, show-program}
-@MbflSaveRestoreOptionFunctions{test, test}
-@MbflSaveRestoreOptionFunctions{verbose, verbose}
-@MbflSaveRestoreOptionFunctions{verbose_program, verbose-program}
-
-@c page
-@node getopts interface
-@section Interface functions
-
-
-Every declared option should have a long switch, the brief switch can be omitted.
-
-
-@defun mbfl_declare_option @var{KEYWORD} @var{DEFAULT} @var{BRIEF} @var{LONG} @var{HASARG} @var{DESCRIPTION}
-Declare a new option.  Arguments description follows.
-
-@table @var
-@item KEYWORD
-A string identifying the option; internally it is used to build a function name and a variable name.
-It is safer to limit this string to the letters in the ranges @code{a-z}, @code{A-Z} and
-underscores.
-
-@item DEFAULT
-The default value for the option.  For an option with argument it can be anything; for an option
-with no argument: it must be @code{yes} or @code{no}.
-
-@item BRIEF
-The brief option selector: a single character.  It is safer to choose a single letter (lower or
-upper case) in the @acronym{ASCII} standard.  This argument can be the empty string if this option
-has no brief selector.
-
-@item LONG
-The long option selector: a string.  It is safer to choose a sequence of letters in the
-@acronym{ASCII} standard, separated by underscores or dashes.  This argument can be the empty string
-if this option has no long selector.
-
-@item HASARG
-Either @code{witharg} or @code{noarg}: declares if the option requires an argument or not.
-
-@item DESCRIPTION
-A one--line string briefly describing the option.  This string will be printed with @func{printf}
-using the @code{%b} format directive, which will cause the expansion of some backslash escpe
-sequences in @var{DESCRIPTION}.
-@end table
-@end defun
-
-
-@defun mbfl_getopts_parse
-Parse a set of command line options.  The options are handed to user defined functions.  The global
-array @code{ARGV1} and the global variable @code{ARGC1} must hold the command line arguments and the
-number of command line arguments, the global variable @code{ARG1ST} must hold the index of the first
-element in @code{ARGV1} that must be parsed.  Non--option arguments are left in the global array
-@code{ARGV}, the global variable @code{ARGC} holds the number of elements in @code{ARGV}.
-
-If successful return @code{0}, else return @code{1}.
-@end defun
-
-
-@defun mbfl_getopts_islong @var{STRING}
-@defunx mbfl_getopts_islong @var{STRING} @var{VARNAME}
-Verify if a string has the format of a long option without argument.  @var{STRING} is the string to
-validate.  The optional @var{VARNAME} is the name of a variable that this function will set to the
-option name from @var{STRING}, without the leading dashes.
-
-Return with code zero if the string is a long option without argument, else returns with code one.
-
-An option must be of the form @code{--option}, only characters in the ranges @code{A-Z}, @code{a-z},
-@code{0-9} and the characters @code{-} and @code{_} are allowed in the option name.
-
-Usage examples:
-
-@example
-mbfl_getopts_islong --option            @result{} 0
-mbfl_getopts_islong --option=123        @result{} 1
-mbfl_getopts_islong gasp                @result{} 1
-@end example
-@end defun
-
-
-@defun mbfl_getopts_islong_with @var{STRING}
-@defunx mbfl_getopts_islong_with @var{STRING} @var{OPTNAME} @var{VARNAME}
-Verify if a string has the format of a long option with argument.  Arguments:
-
-@table @var
-@item STRING
-The string to validate.
-
-@item OPTNAME
-Optional name of a variable that this function will set to the option name from @var{STRING},
-without the leading dashes.
-
-@item VARNAME
-Optional name of a variable that this function will set to the option value from @var{STRING}.
-@end table
-
-Return with code @code{0} if the string is a long option with argument.  Return with code @code{1}
-if the string is not an option with argument.
-
-An option must be of the form @code{--option=value}, only characters in the ranges @code{A-Z},
-@code{a-z}, @code{0-9} and the characters @code{-} and @code{_} are allowed in the option name.
-
-If the argument is not an option with value, the variable names are ignored.
-
-Usage examples:
-
-@example
-mbfl_getopts_islong_with --option=one   @result{} 0
-mbfl_getopts_islong_with --option       @result{} 1
-mbfl_getopts_islong_with wappa          @result{} 1
-mbfl_getopts_islong_with --option=      @result{} 1
-mbfl_getopts_islong_with --=            @result{} 1
-@end example
-@end defun
-
-
-@defun mbfl_getopts_isbrief @var{STRING}
-@defunx mbfl_getopts_isbrief @var{STRING} @var{VARNAME}
-Verify if a string has the format of a brief option without argument.  @var{STRING} is the string to
-validate.  The optional @var{VARNAME} is the name of a variable that this function will set to the
-option name from @var{STRING}, without the leading dash.
-
-Return with code zero if the argument is a brief option without argument, else return with code one.
-
-A brief option must be of the form @code{-a}, only characters in the ranges @code{A-Z}, @code{a-z},
-@code{0-9} are allowed as option letters.
-
-Usage examples:
-
-@example
-mbfl_getopts_isbrief -o         @result{} 0
-mbfl_getopts_isbrief -o123      @result{} 1
-mbfl_getopts_isbrief gasp       @result{} 1
-@end example
-@end defun
-
-
-@defun mbfl_getopts_isbrief_with @var{STRING}
-@defunx mbfl_getopts_isbrief_with @var{STRING} @var{OPTNAME} @var{VALNAME}
-Verify if a string has the format of a brief option with argument.  Arguments:
-
-@table @var
-@item STRING
-The string to validate.
-
-@item OPTNAME
-Optional name of a variable that this function will set to the option name from @var{STRING},
-without the leading dashes.
-
-@item VALNAME
-Optional name of a variable that this function will set to the option value.
-@end table
-
-Return with code zero if the argument is a brief option without argument, else return with code one.
-
-A brief option must be of the form @code{-aV} (@code{a} is the option, @code{V} is the value), only
-characters in the ranges @code{A-Z}, @code{a-z}, @code{0-9} are allowed as option letters.
-
-Usage examples:
-
-@example
-mbfl_getopts_isbrief_with -o123         @result{} 0
-mbfl_getopts_isbrief_with -o            @result{} 1
-mbfl_getopts_isbrief_with --option      @result{} 1
-mbfl_getopts_isbrief_with wappa         @result{} 1
-@end example
-@end defun
-
-
-@defun mbfl_wrong_num_args @var{REQUIRED} @var{PRESENT}
-Validate the number of arguments.  @var{REQUIRED} is the required number of arguments, @var{PRESENT}
-is the given number of arguments on the command line.  If the number of arguments is different from
-the required one: print an error message and return with code one; else return with code zero.
-@end defun
-
-
-@defun mbfl_wrong_num_args_range @var{MIN_REQUIRED} @var{MAX_REQUIRED} @var{ARGC}
-Validate the number of arguments.  @var{ARGC} must be between @var{MIN_REQUIRED} and
-@var{MAX_REQUIRED}, inclusive.
-@end defun
-
-
-@deffn {Function} exit_because_wrong_num_args
-@deffnx {Alias} return_because_wrong_num_args
-Exit or return with code @code{98}.
-@end deffn
-
-
-@defun mbfl_argv_from_stdin
-If the @code{ARGC} global variable is set to zero: fills the global variable @code{ARGV} with lines
-read from stdin.  If the global variable @code{mbfl_option_NULL} is set to @code{yes}: lines are
-read using the null character as terminator, else they are read using the standard newline as
-terminator.
-
-This function may block waiting for input.
-@end defun
-
-
-@defun mbfl_argv_all_files
-Check that all the arguments in @code{ARGV} are file names of existent files.  Return with code zero
-if no errors, else print an error message and return with code 1.
-@end defun
-
-
-@defun mbfl_getopts_print_long_switches
-Print all the long switches in a row, separated by spaces.  This is useful to retrieve the option
-for Bash programmable completion.
-@end defun
-
-
-@deffn {Function} exit_because_invalid_option_declaration
-@deffnx {Alias} return_because_invalid_option_declaration
-Exit or return with code @code{93}.
-@end deffn
-
-
-@deffn {Function} exit_because_invalid_option_argument
-@deffnx {Alias} return_because_invalid_option_argument
-Exit or return with code @code{92}.
-@end deffn
-
-
-@defun mbfl_getopts_reset
-Reset to empty the internal state representing the declared options.
-@end defun
-
-
-@defun mbfl_getopts_gather_mbfl_options_var @var{_RV}
-Append to the data variable whose name is @var{_RV} a list of @mbfl{} command line options
-reflecting the current @mbfl{} options state.  Assuming no predefined options were given on the
-command line:
-
-@example
-mbfl_local_varref(FLAGS)
-
-mbfl_set_option_verbose
-mbfl_set_option_test
-mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
-"$FLAGS"        @result{} '--verbose --test'
-@end example
-
-This is useful when executing an @mbfl{} script as subprocess for an @mbfl{} script: we can hand the
-subprocess the same options that were given to the process, or maybe change them.
-
-This function uses the following functions to gather the required options:
-
-@example
-mbfl_option_verbose
-mbfl_option_verbose_program
-mbfl_option_debug
-mbfl_option_show_program
-mbfl_option_test
-@end example
-@end defun
-
-@c page
-@node message
-@chapter Printing messages to the console
-
-
-This module allows us to print messages to an output channel.  Various forms of message are
-supported.  All the function names are prefixed with @code{mbfl_message_}.  Almost all the messages
-will have one of the forms:
-
-@example
-<progname>: <message>
-<progname>: error: <message>
-<progname>: warning: <message>
-<progname>: debug: <message>
-@end example
-
-@menu
-* message config::              Message module configuration.
-* message plain::               Printing plain messages.
-* message format::              Printing formatted messages.
-@end menu
-
-@c page
-@node message config
-@section Message module configuration
-
-
-@defun mbfl_message_set_progname @var{PROGNAME}
-Set the script's official name to put at the beginning of messages.  This value is initialised to
-@code{script_PROGNAME}.
-@end defun
-
-
-@defun mbfl_message_set_channel @var{CHANNEL}
-Select the channel to be used to output messages.  @var{CHANNEL} must be a numeric string,
-otherwise: an error is printed on the old channel and the function returns false.  This value is
-initialised to @code{2}, which is @stderr{}.
-@end defun
-
-@c page
-@node message plain
-@section Printing plain messages
-
-
-@defun mbfl_message_string @var{STRING}
-Output a message to the selected output channel.  Echo a string composed of: the selected program
-name, a colon, a space, @var{STRING}.  No newline character is appended to the message.  Escape
-characters supported by @code{printf} are allowed in @var{STRING}.
-@end defun
-
-
-@defun mbfl_message_verbose @var{STRING}
-Output a message to the selected output channel, but only if the evaluation of the function
-@func{mbfl_option_verbose} returns true.
-
-Echo a string composed of: the selected program name, a colon, a space, @var{STRING}.  No newline
-character is appended to the message.  Escape characters supported by @code{printf} are allowed in
-@var{STRING}.
-@end defun
-
-
-@defun mbfl_message_verbose_end @var{STRING}
-Output a message to the selected output channel, but only if the evaluation of the function
-@func{mbfl_option_verbose} returns true.  Echo the string.  No newline character is appended to the
-message.  Escape characters supported by @code{printf} are allowed in @var{STRING}.
-
-If @var{STRING} is empty: this function just prints a newline when verbose execution is enabled.
-@end defun
-
-
-@defun mbfl_message_error @var{STRING}
-Output an error message to the selected output channel.  Echo a string composed of: the selected
-program name, a colon, a space, the string @code{error}, a colon, a space, @var{STRING}, a newline
-character.  Escape characters supported by @code{printf} are allowed in @var{STRING}.
-@end defun
-
-
-@defun mbfl_message_warning @var{STRING}
-Output a warning message to the selected output channel.  Echo a string composed of: the selected
-program name, a colon, a space, the string @code{warning}, a colon, a space, @var{STRING}, a newline
-character.  Escape characters supported by @code{printf} are allowed in @var{STRING}.
-@end defun
-
-
-@defun mbfl_message_debug @var{STRING}
-Output a message to the selected output channel, but only if the evaluation of the function
-@func{mbfl_option_debug} returns true.  Echo a string composed of: the selected program name, a
-colon, a space, @var{STRING}, a newline character.  Escape characters supported by @code{printf} are
-allowed in @var{STRING}.
-@end defun
-
-@c page
-@node message format
-@section Printing formatted messages
-
-
-@defun mbfl_message_verbose_printf @var{TEMPLATE} [@var{ARG} @dots{}]
-Format the arguments in the same way @code{printf} would do; output the resulting string to the
-selected output channel, but only if the evaluation of the function @func{mbfl_option_verbose}
-returns true.
-
-Echo a string composed of: the selected program name, a colon, a space, the formatting result.  No
-newline character is appended to the message.
-@end defun
-
-
-@defun mbfl_message_error_printf @var{TEMPLATE} [@var{ARG} @dots{}]
-Format the arguments in the same way @code{printf} would do; output the resulting string to the
-selected output channel.
-
-Echo a string composed of: the selected program name, a colon, a space, the string @code{error}, a
-colon, a space, the formatting result, a newline character.
-@end defun
-
-
-@defun mbfl_message_warning_printf @var{TEMPLATE} [@var{ARG} @dots{}]
-Format the arguments in the same way @code{printf} would do; output the resulting string to the
-selected output channel.
-
-Echo a string composed of: the selected program name, a colon, a space, the string @code{warning}, a
-colon, a space, the formatting result, a newline character.
-@end defun
-
-
-@defun mbfl_message_debug_printf @var{TEMPLATE} [@var{ARG} @dots{}]
-Format the arguments in the same way @code{printf} would do; output the resulting string to the
-selected output channel, but only if the evaluation of the function @func{mbfl_option_debug}
-returns true.
-
-Echo a string composed of: the selected program name, a colon, a space, the string @code{debug}, a
-colon, a space, the formatting result, a newline character.
-@end defun
 
 @c page
 @node program
@@ -6221,7 +6577,7 @@ Print the question @var{STRING} on the standard output and wait for the user to 
 has typed @code{no}.
 
 The optional parameter @var{PROGNAME} is used as prefix for the prompt; if not given: It defaults to
-the value of @code{script_PROGNAME}.  @ref{service variables, Required user defined variables}.
+the value of @code{script_PROGNAME}.  @ref{variables service, Required user defined variables}.
 @end defun
 
 
@@ -6350,156 +6706,6 @@ required by @acronym{ISO} 8601 with nanoseconds precision.  Example:
 @example
 mbfl_date_iso_timestamp
 @print{} 2018-11-03T07:51:27,564646289+01:00
-@end example
-@end defun
-
-@c page
-@node variables
-@chapter Manipulating variables
-
-
-@menu
-* variables arrays::            Manipulating arrays.
-* variables colon::             Manipulating colon variables.
-* variables misc::              Miscellaneous variable functions.
-@end menu
-
-@c page
-@node variables arrays
-@section Manipulating arrays
-
-
-@ref{variables colon, Manipulating colon variables}, for the use of the
-following functions.
-
-
-@defun mbfl_variable_find_in_array @var{ELEMENT}
-Search the array @code{mbfl_FIELDS} for a value equal to @var{ELEMENT}.
-If it is found: Print the index and return true; else print nothing and
-return false.
-
-@code{mbfl_FIELDS} must be filled with elements having subsequent
-indexes starting at zero.
-@end defun
-
-
-@defun mbfl_variable_element_is_in_array @var{ELEMENT}
-A wrapper for @func{mbfl_variable_find_in_array} that does not print
-anything.
-@end defun
-
-@c page
-@node variables colon
-@section Manipulating colon variables
-
-
-@defun mbfl_variable_colon_variable_to_array @var{VARNAME}
-Take @var{VARNAME}'s value, a colon separated list of string, and store
-each string in the array @code{mbfl_FIELDS}, starting with a base index
-of zero.
-
-Example:
-
-@example
-VAR=a:b:c:d:e
-declare -a mbfl_FIELDS
-
-mbfl_variable_colon_variable_to_array VAR
-
-echo $@{#mbfl_FIELDS[*]@}       @print{} 5
-echo "$@{mbfl_FIELDS[0]@}"      @print{} a
-echo "$@{mbfl_FIELDS[1]@}"      @print{} b
-echo "$@{mbfl_FIELDS[2]@}"      @print{} c
-echo "$@{mbfl_FIELDS[3]@}"      @print{} d
-echo "$@{mbfl_FIELDS[4]@}"      @print{} e
-@end example
-@end defun
-
-
-@defun mbfl_variable_array_to_colon_variable @var{VARNAME}
-Store each value from the array @code{mbfl_FIELDS} (with base index
-zero) in @var{VARNAME} as a colon separated list of strings.
-
-Example:
-
-@example
-declare -a mbfl_FIELDS=(a b c d e)
-
-mbfl_variable_array_to_colon_variable VAR
-echo $VAR                       @print{} a:b:c:d:e
-@end example
-@end defun
-
-
-@defun mbfl_variable_colon_variable_drop_duplicate @var{VARNAME}
-Take @var{VARNAME}'s value, a colon separated list of string, and
-remove duplicates.  Reset @var{VARNAME} to the result.
-@end defun
-
-@c page
-@node variables misc
-@section Miscellaneous variable functions.
-
-
-@defun mbfl_variable_alloc @var{_RV}
-Generate a unique variable name and store it in the variable @var{_RV}.
-
-To avoid allocating the same name twice: the function examines the new name testing if its value as
-variable is empty; if it is empty, it considers it ``new''.  So, whenever we allocate a name: we
-should locally initialise the variable to some non--empty value.
-
-@example
-local NAME
-
-mbfl_variable_alloc NAME
-$NAME   @result{} mbfl_a_variable_2323_7652
-@end example
-@end defun
-
-@c page
-@node arrays
-@chapter Manipulating arrays
-
-
-@defun mbfl_array_is_empty @var{ARRAY_VARNAME}
-Return successfully if the array is empty.
-
-@example
-local -a ARRY
-mbfl_array_is_empty ARRY        @result{} 0
-ARRY=(a b c)
-mbfl_array_is_empty ARRY        @result{} 1
-@end example
-@end defun
-
-
-@defun mbfl_array_is_not_empty @var{ARRAY_VARNAME}
-Return successfully if the array is not empty.
-
-@example
-local -a ARRY
-mbfl_array_is_not_empty ARRY    @result{} 1
-ARRY=(a b c)
-mbfl_array_is_not_empty ARRY    @result{} 0
-@end example
-@end defun
-
-
-@defun mbfl_array_length @var{ARRAY_VARNAME}
-@defunx mbfl_array_length_var @var{_RV} @var{ARRAY_VARNAME}
-Print the number of pairs in the array.
-
-@DocVarVariant{}
-
-@example
-local -a ARRY
-mbfl_array_length ARRY          @print{} 0
-ARRY=(a b c)
-mbfl_array_length ARRY          @print{} 3
-
-local _RV
-mbfl_array_length_var _RV ARRY
-"$_RV"   @print{} 3
 @end example
 @end defun
 
@@ -7184,221 +7390,6 @@ group name.
 @end defun
 
 @c page
-@node locations
-@chapter Running location handlers
-
-
-A @dfn{location} is a chunk of code between the following enter and leave actions:
-
-@example
-mbfl_location_enter
-@{
-   ...
-@}
-mbfl_location_leave
-@end example
-
-@noindent
-inside a location we can register a ``handler command'' that is automatically executed whenever the
-location is left by calling @func{mbfl_location_leave}.  We can nest locations at will.  We can run
-all the handlers registered so far in a stack of locations.
-
-@menu
-* locations core::              Locations programming interface.
-* locations handlers::          Special location handlers.
-* locations examples::          Locations usage examples.
-@end menu
-
-@c page
-@node locations core
-@section Locations programming interface
-
-
-@defun mbfl_location_enter
-Enter into a new location.  Initialise the internal state.
-@end defun
-
-
-@defun mbfl_location_leave
-Leave the current location.  Run all the registered handlers in reverse order.  Return the return
-status of the last command executed before the call to this function (@code{$?}).
-@end defun
-
-
-@defun mbfl_location_handler @var{HANDLER_SCRIPT}
-Register a new handler in the current location.  It is an error if this function is called outside a
-location.
-@end defun
-
-
-@defun mbfl_location_run_all
-Run all the handlers unwinding all the locations.  This is useful as atexit handler, @ref{exit
-atexit, Running scripts at exit--time}.
-@end defun
-
-
-@defun mbfl_location_enable_cleanup_atexit
-@defunx mbfl_location_disable_cleanup_atexit
-Enable or disable running the location handlers through an atexit handler, @ref{exit atexit, Running
-scripts at exit--time}.  The enable operation registers an atexit handler that cleans up the current
-stack of locations.
-
-It is suggested to always add the following code to the preamble of a script:
-
-@example
-mbfl_atexit_enable
-mbfl_location_enable_cleanup_atexit
-@end example
-@end defun
-
-@c page
-@node locations handlers
-@section Special location handlers
-
-
-@defun mbfl_location_handler_suspend_testing
-Suspend the test mode inside a location block, by executing the following code:
-
-@example
-mbfl_option_test_save
-mbfl_location_handler mbfl_option_test_restore
-@end example
-
-For a discussion of its usage see @ref{program executing testing, Testing a script and running
-programs}.
-@end defun
-
-@c page
-@node locations examples
-@section Locations usage examples
-
-
-@menu
-* locations examples 1::        Single location, syntactic scoping.
-* locations examples 2::        Nested locations.
-* locations examples 3::        Nested function calls.
-@end menu
-
-@c page
-@node locations examples 1
-@subsection Single location, syntactic scoping
-
-
-The handler functions can access the variables in the uplevel function frames.
-
-@example
-function one   () @{ R_one=$X;   @}
-function two   () @{ R_two=$Y;   @}
-function three () @{ R_three=$Z; @}
-
-@{
-  local R_one R_two R_three
-  local X=1 Y=2 Z=3
-
-  mbfl_location_enter
-  @{
-    mbfl_location_handler one
-    mbfl_location_handler two
-    mbfl_location_handler three
-  @}
-  mbfl_location_leave
-
-  $R_one          @result{} 1
-  $R_two          @result{} 2
-  $R_three        @result{} 3
-@}
-@end example
-
-@c page
-@node locations examples 2
-@subsection Nested locations
-
-
-Remember that the handlers are called when a location is left:
-
-@example
-function handler_append () @{
-    local THING=$@{1:?"missing thing parameter"@}
-    RESULT+=$THING
-@}
-
-@{
-    local RESULT
-
-    handler_append 0
-    mbfl_location_enter
-    @{
-        mbfl_location_handler "handler_append 1"
-        mbfl_location_enter
-        @{
-            mbfl_location_handler "handler_append 2"
-            mbfl_location_enter
-            @{
-                mbfl_location_handler "handler_append 3"
-            @}
-            mbfl_location_leave
-            mbfl_location_handler "handler_append 4"
-        @}
-        mbfl_location_leave
-        mbfl_location_handler "handler_append 5"
-    @}
-    mbfl_location_leave
-    handler_append 6
-
-    "$RESULT"   @result{} 0342516
-@}
-@end example
-
-@c page
-@node locations examples 3
-@subsection Nested function calls
-
-
-Remember that the handlers are called when a location is left:
-
-@example
-declare RESULT
-
-function handler_append () @{
-    local THING=$@{1:?"missing thing parameter"@}
-    RESULT+=$THING
-@}
-
-function func () @{
-    handler_append 0
-    mbfl_location_enter
-    @{
-        sub-func
-    @}
-    mbfl_location_leave
-    handler_append 6
-@}
-
-function sub-func () @{
-    mbfl_location_handler "handler_append 1"
-    mbfl_location_enter
-    @{
-        sub-sub-func
-    @}
-    mbfl_location_leave
-    mbfl_location_handler "handler_append 5"
-@}
-
-function sub-sub-func () @{
-    mbfl_location_handler "handler_append 2"
-    mbfl_location_enter
-    @{
-        mbfl_location_handler "handler_append 3"
-    @}
-    mbfl_location_leave
-    mbfl_location_handler "handler_append 4"
-@}
-
-func
-"$RESULT"       @result{} 0342516
-@end example
-
-@c page
 @node semver
 @chapter Semantic version specifications
 
@@ -8010,7 +8001,7 @@ considered satisfied; otherwise exit the script by calling @func{exit_because_in
 @item
 Check if the service variable @env{script_REQUIRED_MBFL_VERSION} is defined to a non--empty value,
 the value is expected to be a valid semantic version specification representing the minimum version
-required by the script; @ref{script_REQUIRED_MBFL_VERSION, Service variables}.
+required by the script; @ref{script_REQUIRED_MBFL_VERSION, variables service}.
 
 If an error occurs while parsing the semantic version specification in
 @env{script_REQUIRED_MBFL_VERSION}: terminate the script by calling
