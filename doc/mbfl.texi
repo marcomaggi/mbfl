@@ -1348,10 +1348,10 @@ by an atexit command, @ref{exit atexit, Running scripts at exit--time}.
 @section Exit codes and return codes
 
 
-Some functions and global variables are provided to declare script's exit codes.  The @mbfl{}
-declares its own exit codes starting from @code{100} and decreasing; we should declare our exit
-codes starting from @code{3} and increasing.  The exit codes @code{0} and @code{1} are reserved for
-the functions @func{exit_because_success} and @func{exit_because_failure}.
+Some functions and global variables are provided to declare script's exit codes.  @mbfl{} declares
+its own exit codes starting from @code{100} and decreasing; we should declare our exit codes
+starting from @code{3} and increasing.  The exit codes @code{0} and @code{1} are reserved for the
+functions @func{exit_because_success} and @func{exit_because_failure}.
 
 
 @defun mbfl_declare_exit_code @var{CODE} @var{NAME}
@@ -1409,7 +1409,7 @@ Return with code @code{1}.
 @end deffn
 
 
-In addition, the following functions are predefined.  @mbfl{} modules define other exit and return
+In addition, the following functions are predefined; @mbfl{}'s modules define other exit and return
 functions.
 
 
@@ -1436,7 +1436,7 @@ Exit or return with code @code{88}.
 @section Running scripts at exit--time
 
 
-Bash allows us to execute a command whenever it exit by issuing the command:
+Bash allows us to execute a command whenever it exits by issuing the command:
 
 @example
 trap @meta{script} EXIT
