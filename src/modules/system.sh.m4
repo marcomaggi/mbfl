@@ -529,37 +529,6 @@ function mbfl_system_group_name_to_numerical_id () {
 }
 
 #page
-#### file permissions
-
-declare -a mbfl_SYMBOLIC_PERMISSIONS
-mbfl_SYMBOLIC_PERMISSIONS[0]='---'
-mbfl_SYMBOLIC_PERMISSIONS[1]='--x'
-mbfl_SYMBOLIC_PERMISSIONS[2]='-w-'
-mbfl_SYMBOLIC_PERMISSIONS[3]='-wx'
-mbfl_SYMBOLIC_PERMISSIONS[4]='r--'
-mbfl_SYMBOLIC_PERMISSIONS[5]='r-x'
-mbfl_SYMBOLIC_PERMISSIONS[6]='rw-'
-mbfl_SYMBOLIC_PERMISSIONS[7]='rwx'
-
-function mbfl_system_symbolic_to_octal_permissions () {
-    mbfl_mandatory_parameter(MODE, 1, symbolic permissions)
-    local -i i
-    for ((i=0; i < mbfl_slots_number(mbfl_SYMBOLIC_PERMISSIONS); ++i))
-    do
-	if mbfl_string_equal mbfl_slot_ref(mbfl_SYMBOLIC_PERMISSIONS, $i) "$MODE"
-	then
-            printf "%s\n" $i
-            return_success
-        fi
-    done
-    return_failure
-}
-function mbfl_system_octal_to_symbolic_permissions () {
-    mbfl_mandatory_parameter(MODE, 1, symbolic permissions)
-    printf '%s\n' mbfl_slot_ref(mbfl_SYMBOLIC_PERMISSIONS, $MODE)
-}
-
-#page
 #### users informations
 
 function mbfl_system_whoami () {

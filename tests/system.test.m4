@@ -373,22 +373,6 @@ function system-group-numerical-gid-to-name-1.1 () {
 }
 
 #page
-#### file permissions functions
-
-function system-symbolic-to-octal-1.1 () {
-    mbfl_system_symbolic_to_octal_permissions 'rwx' | dotest-output '7'
-}
-function system-symbolic-to-octal-1.2 () {
-    mbfl_system_symbolic_to_octal_permissions 'r-x' | dotest-output '5'
-}
-function system-symbolic-to-octal-1.3 () {
-    mbfl_system_octal_to_symbolic_permissions '7' | dotest-output 'rwx'
-}
-function system-symbolic-to-octal-1.4 () {
-    mbfl_system_octal_to_symbolic_permissions '5' | dotest-output 'r-x'
-}
-
-#page
 #### tests for "whoami" from GNU Coreutils
 
 function system-users-whoami-1.0 () {

@@ -4788,6 +4788,22 @@ they are inserted as command line options.
 Execute the program @command{chmod} using the given optional arguments.
 @end defun
 
+@c ------------------------------------------------------------------------
+
+@subsubheading File access permissions conversion
+
+
+@defun mbfl_file_symbolic_to_octal_permissions @var{MODE}
+@defunx mbfl_system_symbolic_to_octal_permissions @var{MODE}
+Convert three chars representing file permissions in a single octal digit.
+@end defun
+
+
+@defun mbfl_file_octal_to_symbolic_permissions @var{MODE}
+@defunx mbfl_system_octal_to_symbolic_permissions @var{MODE}
+Convert a single octal digit representing file permissions into three chars.
+@end defun
+
 @c page
 @node file owner
 @section Setting file owner and group
@@ -6641,7 +6657,6 @@ compatibility.
                                 @file{/etc/passwd}.
 * system group::                Reading and searching the file
                                 @file{/etc/group}.
-* system file perms::           Converting file permissions.
 * system users::                Gathering users data.
 @end menu
 
@@ -7153,22 +7168,6 @@ result to @stdout{}.  When successful return true; otherwise return false.
 @defun mbfl_system_numerical_group_id_to_name @var{NAME}
 Convert the symbolic group @var{NAME} to the numerical identifier found in the @file{/etc/group}
 file; print the result to @stdout{}.  When successful return true; otherwise return false.
-@end defun
-
-@c page
-@node system file perms
-@section Converting file permissions
-
-
-@defun mbfl_system_symbolic_to_octal_permissions @var{MODE}
-Convert three chars representing file permissions in a single octal
-digit.
-@end defun
-
-
-@defun mbfl_system_octal_to_symbolic_permissions @var{MODE}
-Convert a single octal digit representing file permissions into three
-chars.
 @end defun
 
 @c page
