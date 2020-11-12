@@ -135,7 +135,6 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * fd::                          Handling file descriptors.
 * program::                     Using external programs.
 * process::                     Job control.
-* interfaces::                  Interfaces to external programs.
 * signal::                      Catching signals.
 * times::                       Times and dates.
 * system::                      Interfacing with the system.
@@ -145,6 +144,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 
 Appendices
 
+* interfaces::                  Interfaces to external programs.
 * sendmail::                    Examples for sending email.
 * Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
@@ -6481,121 +6481,6 @@ for details on the file system pathname of the program @command{sleep}.
 @end defun
 
 @c page
-@node interfaces
-@chapter Interfaces to external programs
-
-
-@menu
-* interfaces at::               Scheduling jobs for later execution.
-@end menu
-
-@c page
-@node interfaces at
-@section Scheduling jobs for later execution
-
-
-This section documents the interface to the @command{atd} daemon; we may want to read the
-@command{at}(1) manual page.  The @command{at} service allows a user to schedule commands to be
-executed at a later time.
-
-This interface is suitable for scripts that define a unique simple policy to schedule commands;
-example: at each run they schedule a command in a fixed queue, to be executed at a fixed time in the
-future.
-
-This is good to implement the logic: if a condition does not happen before time @code{T}, then
-execute command @command{C}.
-
-@c ------------------------------------------------------------------------
-
-@subsubheading Commands declaration
-
-
-@defun mbfl_at_enable
-Declare the intention to use the @command{at} interface.  @ref{program declaring, Declaring the
-intention to use a program}.
-
-The declared programs are: @command{at}, @command{atq}, @command{atrm}.
-@end defun
-
-@c ------------------------------------------------------------------------
-
-@subsubheading Arguments validation
-
-
-@defun mbfl_at_validate_queue_letter @var{LETTER}
-Return true if @var{LETTER} is a valid queue identifier, else return false.
-@end defun
-
-
-@defun mbfl_at_validate_selected_queue
-Return true if the currently selected queue identifier is valid, else print an error message and
-return false.  A false return code means that an internal error has corrupted the module's state.
-@end defun
-
-@c ------------------------------------------------------------------------
-
-@subsubheading Commands scheduling
-
-
-@defun mbfl_at_select_queue @var{LETTER}
-Select and register in an internal state a queue identifier; invoke
-@func{mbfl_at_validate_queue_letter} to validate the selection.
-@end defun
-
-
-@defun mbfl_at_schedule @var{COMMAND} @var{TIME}
-Schedule @var{COMMAND} in the currently selected queue; the script will be executed at @var{TIME}.
-
-If no error occurs: print to stdout the identifier of the scheduled job; the identifier can be used
-as argument to @func{mbfl_at_drop}.
-
-@quotation
-The @command{at} command outputs some text (in which the job is embedded) on its @stderr{}
-channel, so this function redirects @stderr{} to @stdout{} to return the value; this
-operation conflicts with the use of the ``show program'' feature of @func{mbfl_program_exec}.
-@end quotation
-
-@var{COMMAND} must be a string representing the invocation of an external executable program: it is
-sent unchanged to the @command{at} command.  @var{TIME} is the argument to the @command{at} command,
-see the manual page for its description.
-@end defun
-
-
-@defun mbfl_at_drop @var{IDENTIFIER}
-Remove a job; the identifier of a job is unique in all the queues, so this function is not affected
-by the currently selected queue.
-@end defun
-
-
-@defun mbfl_at_queue_clean
-Remove all the jobs from the currently selected queue.
-@end defun
-
-@c ------------------------------------------------------------------------
-
-@subsubheading Inspection
-
-
-@defun mbfl_at_queue_print_identifiers
-Print all the job identifiers in the currently selected queue.
-@end defun
-
-
-@defun mbfl_at_queue_print_jobs
-Print all the job descriptions in the currently selected queue.
-@end defun
-
-
-@defun mbfl_at_queue_print_queues
-Print the letters identifying queues with pending jobs.
-@end defun
-
-
-@defun mbfl_at_print_queue
-Print the currently selected queue letter.
-@end defun
-
-@c page
 @node signal
 @chapter Catching signals
 
@@ -8728,6 +8613,121 @@ function mytest-1.2 () @{
 dotest mytest-
 dotest-final-report
 @end example
+
+@c page
+@node interfaces
+@appendix Interfaces to external programs
+
+
+@menu
+* interfaces at::               Scheduling jobs for later execution.
+@end menu
+
+@c page
+@node interfaces at
+@appendixsec Scheduling jobs for later execution
+
+
+This section documents the interface to the @command{atd} daemon; we may want to read the
+@command{at}(1) manual page.  The @command{at} service allows a user to schedule commands to be
+executed at a later time.
+
+This interface is suitable for scripts that define a unique simple policy to schedule commands;
+example: at each run they schedule a command in a fixed queue, to be executed at a fixed time in the
+future.
+
+This is good to implement the logic: if a condition does not happen before time @code{T}, then
+execute command @command{C}.
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Commands declaration
+
+
+@defun mbfl_at_enable
+Declare the intention to use the @command{at} interface.  @ref{program declaring, Declaring the
+intention to use a program}.
+
+The declared programs are: @command{at}, @command{atq}, @command{atrm}.
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Arguments validation
+
+
+@defun mbfl_at_validate_queue_letter @var{LETTER}
+Return true if @var{LETTER} is a valid queue identifier, else return false.
+@end defun
+
+
+@defun mbfl_at_validate_selected_queue
+Return true if the currently selected queue identifier is valid, else print an error message and
+return false.  A false return code means that an internal error has corrupted the module's state.
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Commands scheduling
+
+
+@defun mbfl_at_select_queue @var{LETTER}
+Select and register in an internal state a queue identifier; invoke
+@func{mbfl_at_validate_queue_letter} to validate the selection.
+@end defun
+
+
+@defun mbfl_at_schedule @var{COMMAND} @var{TIME}
+Schedule @var{COMMAND} in the currently selected queue; the script will be executed at @var{TIME}.
+
+If no error occurs: print to stdout the identifier of the scheduled job; the identifier can be used
+as argument to @func{mbfl_at_drop}.
+
+@quotation
+The @command{at} command outputs some text (in which the job is embedded) on its @stderr{}
+channel, so this function redirects @stderr{} to @stdout{} to return the value; this
+operation conflicts with the use of the ``show program'' feature of @func{mbfl_program_exec}.
+@end quotation
+
+@var{COMMAND} must be a string representing the invocation of an external executable program: it is
+sent unchanged to the @command{at} command.  @var{TIME} is the argument to the @command{at} command,
+see the manual page for its description.
+@end defun
+
+
+@defun mbfl_at_drop @var{IDENTIFIER}
+Remove a job; the identifier of a job is unique in all the queues, so this function is not affected
+by the currently selected queue.
+@end defun
+
+
+@defun mbfl_at_queue_clean
+Remove all the jobs from the currently selected queue.
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Inspection
+
+
+@defun mbfl_at_queue_print_identifiers
+Print all the job identifiers in the currently selected queue.
+@end defun
+
+
+@defun mbfl_at_queue_print_jobs
+Print all the job descriptions in the currently selected queue.
+@end defun
+
+
+@defun mbfl_at_queue_print_queues
+Print the letters identifying queues with pending jobs.
+@end defun
+
+
+@defun mbfl_at_print_queue
+Print the currently selected queue letter.
+@end defun
 
 @c page
 @node sendmail
