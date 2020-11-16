@@ -48,7 +48,9 @@ script_EXAMPLES="Usage examples:
 #page
 #### library embedding
 
+# We embed because it makes it easier to use this script in MBFL's own test suite.
 mbfl_embed_library
+# mbfl_library_loader
 
 #page
 #### declare external programs usage

@@ -57,34 +57,11 @@ m4_define([[[mbfl_extract_command_line_argument]]],[[[mbfl_command_line_argument
 
 m4_dnl library loading and embedding
 
-m4_define([[[mbfl_library_loader]]],[[[
-declare mbfl_INTERACTIVE=no
-declare mbfl_LOADED=no
-declare mbfl_HARDCODED=$1
-declare mbfl_INSTALLED=$(type -p mbfl-config &>/dev/null && mbfl-config) &>/dev/null
-
-declare item
-for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
-do
-    if test -n "$item" -a -f "$item" -a -r "$item"
-    then
-        if source "$item" &>/dev/null
-	then break
-	else
-            printf '%s error: loading MBFL file "%s"\n' "$script_PROGNAME" "$item" >&2
-            exit 100
-	fi
-    fi
-done
-unset -v item
-if test "$mbfl_LOADED" != yes
-then
-    printf '%s error: incorrect evaluation of MBFL\n' "$script_PROGNAME" >&2
-    exit 100
-fi
-]]])
-
+m4_define([[[mbfl_library_loader]]],[[[source '__MBFL_LIBRARY__' || exit 100]]])
 m4_define([[[mbfl_embed_library]]],[[[m4_include(__MBFL_LIBRARY__)]]])
+
+m4_define([[[mbfl_utils_library_loader]]],[[[source '__MBFL_UTILS_LIBRARY__' || exit 100]]])
+m4_define([[[mbfl_embed_utils_library]]],[[[m4_include(__MBFL_UTILS_LIBRARY__)]]])
 
 
 m4_dnl handling of variables with NAMEREF attribute

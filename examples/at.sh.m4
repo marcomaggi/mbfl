@@ -51,7 +51,9 @@ script_EXAMPLES="Examples:
 \tat.sh --drop --identifier=1234
 "
 
-mbfl_library_loader
+# We embed because it makes it easier to use this script in MBFL's own test suite.
+mbfl_embed_library
+# mbfl_library_loader
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ACTION_SCHEDULE    no  S   schedule        noarg   'schedules a command'

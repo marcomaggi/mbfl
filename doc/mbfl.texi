@@ -229,10 +229,6 @@ arguments to acquire the pathname.  @command{mbfl-config} is installed by the pa
 
 A more reliable way to load the library is:
 
-@smallexample
-@verbatiminclude loader.sh
-@end smallexample
-
 @noindent
 where the value of @code{mbfl_HARDCODED} can be the pathname of a known location in which to find
 the library.  This code:

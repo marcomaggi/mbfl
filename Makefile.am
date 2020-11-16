@@ -40,7 +40,6 @@ MBFLPP_GENERAL_FLAGS	= --no-prepro 						\
 			  $(MBFLPPFLAGS)
 
 EXTRA_DIST		+=			\
-	src/lib/loader.sh			\
 	src/backup/libmbfl.sh			\
 	src/backup/mbflpp.sh			\
 	src/backup/mbfltest.sh			\
@@ -49,7 +48,7 @@ EXTRA_DIST		+=			\
 
 #### meta infrastructure
 
-dist_bin_SCRIPTS	= meta/scripts/mbfl-config
+bin_SCRIPTS		= meta/scripts/mbfl-config
 
 autoconfdir		= $(datadir)/aclocal
 dist_autoconf_DATA	= meta/autoconf/mbfl.m4
@@ -80,7 +79,6 @@ doc_mbfl_TEXINFOS	=			\
 	doc/lgpl-3.0.texi			\
 	doc/macros.texi				\
 	doc/one-level-actions.sh		\
-	doc/loader.sh				\
 	doc/sendmail-plain.sh			\
 	doc/sendmail-connector.sh
 
@@ -114,7 +112,6 @@ dist_mbflprepro_DATA		= $(MBFL_PREPROCESSOR)
 #### scripts generation
 
 EXTRA_DIST			+=		\
-	src/bin/mbflpp.sh.m4			\
 	src/bin/mbfltest.sh.m4
 
 bin_SCRIPTS			=		\
@@ -126,16 +123,19 @@ CLEANFILES			+=		\
 	src/bin/mbfltest.sh			\
 	src/bin/$(am__dirstamp)
 
-MBFL_SCRIPTS_PREREQUISITES	=		\
-	src/bin/$(am__dirstamp)
-
 ## --------------------------------------------------------------------
 
 MBFL_SCRIPTS_LIBRARY		= $(srcdir)/src/backup/libmbfl.sh
 MBFL_SCRIPTS_MBFLPP		= $(srcdir)/src/backup/mbflpp.sh
 MBFL_SCRIPTS_ENV		= MBFL_LIBRARY=$(MBFL_SCRIPTS_LIBRARY); export MBFL_LIBRARY;
 MBFL_SCRIPTS_RUN		= $(MBFL_SCRIPTS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_SCRIPTS_MBFLPP)
-MBFLPP_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --preserve-comments
+MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --preserve-comments
+
+MBFL_SCRIPTS_PREREQUISITES	=		\
+	$(MBFL_SCRIPTS_LIBRARY)			\
+	$(MBFL_SCRIPTS_MBFLPP)			\
+	$(MBFL_PREPROCESSOR)			\
+	src/bin/$(am__dirstamp)
 
 ## --------------------------------------------------------------------
 
@@ -144,7 +144,7 @@ src/bin/$(am__dirstamp):
 	@: > src/bin/$(am__dirstamp)
 
 src/bin/%.sh: src/bin/%.sh.m4 $(MBFL_SCRIPTS_PREREQUISITES)
-	$(MBFL_SCRIPTS_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
+	$(MBFL_SCRIPTS_RUN) $(MBFL_SCRIPTS_FLAGS) <$< >$@
 
 
 #### libmbfl modules generation
@@ -253,6 +253,40 @@ src/lib/libmbfl.sh: src/lib/libmbfl.sh.m4 $(MBFL_LIB_MODULES) $(MBFL_LIB_PREREQU
 	$(MBFL_LIB_RUN) $(MBFL_LIB_FLAGS) <$< >$@
 
 
+#### libmbflutils modules generation
+
+EXTRA_DIST			+=		\
+	src/utils-modules/utils-file.sh.m4
+
+# This  is *not*  the  order  in which  modules  are  included in  the
+# library; that order is established in the file "libmblutils.sh.m4"!
+MBFL_LIBUTILS_MODULES		=		\
+	src/utils-modules/utils-file.sh
+
+CLEANFILES			+=		\
+	$(MBFL_LIBUTILS_MODULES)		\
+	src/utils-modules/$(am__dirstamp)
+
+MBFL_UTILS_MODULES_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
+MBFL_UTILS_MODULES_MBFLPP	= $(builddir)/src/bin/mbflpp.sh
+MBFL_UTILS_MODULES_ENV		= MBFL_LIBRARY=$(MBFL_UTILS_MODULES_LIBRARY); export MBFL_LIBRARY;
+MBFL_UTILS_MODULES_RUN		= $(MBFL_UTILS_MODULES_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_UTILS_MODULES_MBFLPP)
+MBFL_UTILS_MODULES_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
+
+MBFL_UTILS_MODULES_PREREQUISITES	=		\
+	$(MBFL_UTILS_MODULES_LIBRARY)			\
+	$(MBFL_UTILS_MODULES_MBFLPP)			\
+	src/utils-modules/$(am__dirstamp)		\
+	$(MBFL_PREPROCESSOR)
+
+src/utils-modules/$(am__dirstamp):
+	@$(MKDIR_P) src/utils-modules
+	@: > src/utils-modules/$(am__dirstamp)
+
+src/utils-modules/%.sh: src/utils-modules/%.sh.m4 $(MBFL_UTILS_MODULES_PREREQUISITES)
+	$(MBFL_UTILS_MODULES_RUN) $(MBFL_UTILS_MODULES_FLAGS) <$< >$@
+
+
 #### libmbflutils generation
 
 EXTRA_DIST			+= src/lib/libmbflutils.sh.m4
@@ -266,7 +300,7 @@ MBFL_LIBUTILS_LIBRARY		= $(builddir)/src/lib/libmbfl.sh
 MBFL_LIBUTILS_MBFLPP		= $(builddir)/src/bin/mbflpp.sh
 MBFL_LIBUTILS_ENV		= MBFL_LIBRARY=$(MBFL_LIBUTILS_LIBRARY); export MBFL_LIBRARY;
 MBFL_LIBUTILS_RUN		= $(MBFL_LIBUTILS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_LIBUTILS_MBFLPP)
-MBFL_LIBUTILS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
+MBFL_LIBUTILS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(builddir)/src/utils-modules
 
 MBFL_LIBUTILS_PREREQUISITES	=		\
 	$(MBFL_LIBUTILS_LIBRARY)		\
@@ -274,7 +308,7 @@ MBFL_LIBUTILS_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbflutils.sh: src/lib/libmbflutils.sh.m4 $(MBFL_LIBUTILS_PREREQUISITES)
+src/lib/libmbflutils.sh: src/lib/libmbflutils.sh.m4 $(MBFL_LIBUTILS_MODULES) $(MBFL_LIBUTILS_PREREQUISITES)
 	$(MBFL_LIBUTILS_RUN) $(MBFL_LIBUTILS_FLAGS) <$< >$@
 
 
@@ -337,7 +371,7 @@ MBFL_EXAMPLES_LIBRARY		= $(builddir)/src/lib/libmbfl.sh
 MBFL_EXAMPLES_MBFLPP		= $(builddir)/src/bin/mbflpp.sh
 MBFL_EXAMPLES_ENV		= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBRARY); export MBFL_LIBRARY;
 MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_EXAMPLES_MBFLPP)
-MBFL_EXAMPLES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash
+MBFL_EXAMPLES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --mbfl-library=$(MBFL_EXAMPLES_LIBRARY)
 
 MBFL_EXAMPLES_PREREQUISITES	=		\
 	$(MBFL_EXAMPLES_LIBRARY)		\
@@ -465,7 +499,7 @@ MBFL_TESTS_ENV		+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_TESTS_ENV		+= MBFLTEST_LIBRARY=$(builddir)/src/lib/libmbfltest.sh; export MBFLTEST_LIBRARY;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_TESTS_MBFLPP)
-MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash
+MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash --mbfl-library=$(MBFL_TESTS_LIBRARY)
 
 MBFL_TESTS_PREREQUISITES	=		\
 	$(MBFL_TESTS_LIBRARY)			\
@@ -530,7 +564,8 @@ MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:$(builddir)/tests:$(DESTDIR)$(bindir):
 MBFL_INSTCHECK_ENV	+= PATH="`mbfl-config --libpath`":$$PATH; export PATH;
 MBFL_INSTCHECK_ENV	+= MBFL_LIBRARY="`mbfl-config --library`"; export MBFL_LIBRARY;
 MBFL_INSTCHECK_ENV	+= MBFLTEST_LIBRARY="`mbfl-config --testlib`"; export MBFLTEST_LIBRARY;
-MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR; examplesdir=$(srcdir)/examples; export examplesdir;
+MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;
+MBFL_INSTCHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_INSTCHECK_RUN	= $(MBFL_INSTCHECK_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_INSTCHECK_FLAGS)
 
 installcheck-local:

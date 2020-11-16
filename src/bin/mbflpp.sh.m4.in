@@ -28,7 +28,7 @@
 #### MBFL's related options and variables
 
 script_PROGNAME=mbflpp.sh
-script_VERSION='__PACKAGE_VERSION__'
+script_VERSION='@PACKAGE_VERSION@'
 script_COPYRIGHT_YEARS='2005, 2009, 2018'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL3
@@ -42,19 +42,31 @@ ${script_PROGNAME} --outfile=OUTFILE INFILE1 INFILE2 ..."
 #page
 #### load the library
 
-m4_include(loader.sh)
+# Embedding the library is the safest way.  Does not really matter if this script becomes big.
+mbfl_embed_library
 
 #page
 #### global variables
 
-declare -r PACKAGE_VERSION='__PACKAGE_VERSION__'
-declare -r PACKAGE_DATADIR='__PKGDATADIR__'
+declare -r prefix="@prefix@"
+declare -r exec_prefix="@exec_prefix@"
+declare -r bindirx="@bindir@"
+declare -r datarootdir="@datarootdir@"
+declare -r datadir="@datadir@"
+declare -r pkgdatadir="@datadir@/@PACKAGE@"
+
+declare -r PACKAGE_VERSION='@PACKAGE_VERSION@'
+declare -r PACKAGE_DATADIR=$pkgdatadir
 
 # The absolute pathname of the MBFL  library loaded by this script.  The
 # variable "mbfl_LOADED_LIBRARY" is defined by  the loader code block in
 # "loader.sh".
 #
-declare -r DEFAULT_MBFL_LIBRARY=${mbfl_LOADED_LIBRARY}
+declare -r DEFAULT_MBFL_LIBRARY=${pkgdatadir}/libmbfl.sh
+
+# The absolute pathname of the installed MBFL utilities library.
+#
+declare -r DEFAULT_MBFL_UTILS_LIBRARY=${pkgdatadir}/libmbflutils.sh
 
 # A string  representing command  line options for  GNU m4:  the symbols
 # definitions.   It  is built  by  appending  the definitions  from  the
@@ -92,6 +104,7 @@ mbfl_declare_option EVAL              no  e eval              noarg "if used eva
 mbfl_declare_option NO_PREPROCESSOR   no '' no-prepro         noarg "do not load the m4 preprocessor library"
 
 mbfl_declare_option MBFL_LIBRARY      "$DEFAULT_MBFL_LIBRARY" '' mbfl-library witharg "pathname of the MBFL library"
+mbfl_declare_option MBFL_UTILS_LIBRARY "$DEFAULT_MBFL_UTILS_LIBRARY" '' mbfl-utils-library witharg "pathname of the MBFL utilities library"
 mbfl_declare_option BASH_PROGRAM      "$BASH" '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
 
 #page
@@ -184,10 +197,12 @@ function main () {
     	    then program_m4 \
 		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$PACKAGE_DATADIR" \
 		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
+		     -D__MBFL_UTILS_LIBRARY__="$script_option_MBFL_UTILS_LIBRARY" \
 		     ${M4_FLAGS} -
             else program_m4 \
 		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$PACKAGE_DATADIR" \
 		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
+		     -D__MBFL_UTILS_LIBRARY__="$script_option_MBFL_UTILS_LIBRARY" \
 		     ${M4_FLAGS} - | filter_drop_comments
             fi
     	} | {

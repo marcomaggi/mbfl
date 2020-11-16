@@ -40,7 +40,9 @@ script_EXAMPLES="Usage examples:
 
 \t${script_PROGNAME} --bzip --stdout --compress file.ext >file.ext.bz2"
 
-mbfl_library_loader
+# We embed because it makes it easier to use this script in MBFL's own test suite.
+mbfl_embed_library
+# mbfl_library_loader
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ACTION_COMPRESS yes '' compress noarg "selects compress action"
