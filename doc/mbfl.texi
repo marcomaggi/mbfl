@@ -227,44 +227,8 @@ arguments to acquire the pathname.  @command{mbfl-config} is installed by the pa
 @section Reliable run--time loading
 
 
-A more reliable way to load the library is:
-
-@noindent
-where the value of @code{mbfl_HARDCODED} can be the pathname of a known location in which to find
-the library.  This code:
-
-@enumerate
-@item
-Looks for the pathname in the @env{MBFL_LIBRARY} variable, to allow us to explicitly select the file
-from the command line; example:
-
-@example
-$ MBFL_LIBRARY=/path/to/libmbfl.sh script.sh
-@end example
-
-@item
-Looks in some known directory; for example a subdirectory of a software package that we have
-distributed.
-
-@item
-As a last resort tries to evaluate the @command{mbfl-config} script to pick up a library installed
-on the system.
-@end enumerate
-
-We see that the output of the @command{source} command is discarded: this is because we assume that:
-
-@itemize
-@item
-If an error occurs evaluating the library a lot of error messages may fill the screen, confusing the
-user; we just want a single error message pointing the finger of blame.
-
-@item
-An error in the evaluation of the library code can be replicated because the evaluation does not
-heavily depend on the environment, so we can track down library errors later.
-@end itemize
-
-This code is included in the @mbfl{} distribution in the @file{src/lib/loader.sh} file; we can also
-automatically include it in a script with the preprocessor macro @code{mbfl_library_loader}.
+A more reliable way to load the library is to use the preprocessor macros @func{mbfl_embed_library}
+or @func{mbfl_library_loader}, @ref{preprocessor library, Loading or including the library}.
 
 @c page
 @node overview direct
@@ -661,6 +625,17 @@ Send the result of preprocessing to @bash{}, rather than print it.
 @item --no-prepro
 Do not load the installed preprocessor's macros library.  If we use this option: we are meant to use
 the option @option{--library} to load a replacement macros library from a known location.
+
+@item --mbfl-library=@var{MBFL_FILE_PATHNAME}
+Select the pathname to a @file{libmbfl.sh} file to use in the macros @func{mbfl_library_loader} and
+@func{mbfl_embed_library}, @ref{preprocessor library, Loading or including the library}.  The
+selected pathname overrides the library installed on the system.
+
+@item --mbfl-utils-library=@var{MBFL_UTILS_FILE_PATHNAME}
+Select the pathname to a @file{libmbflutils.sh} file to use in the macros
+@func{mbfl_utils_library_loader} and @func{mbfl_embed_utils_library}, @ref{preprocessor library,
+Loading or including the library}.  The selected pathname overrides the library installed on the
+system.
 @end table
 
 @c page
@@ -718,16 +693,61 @@ itself.
 
 
 @deffn {Preprocessor Macro} mbfl_embed_library
-Expands into the contents of the library file.  The selected library is the one used by the
-preprocessor script @command{mbflpp.sh} itself.  The resulting output script does not need to load
-the library at runtime; let's say it is ``statically linked''.
+@deffnx {Preprocessor Macro} mbfl_embed_library @var{LIBRARY_FILE_PATHNAME}
+Expands into the contents of a library; the resulting output script does not need to load the
+library at runtime, let's say it is ``statically linked''.
+
+@itemize
+@item
+If the optional argument @var{LIBRARY_FILE_PATHNAME} is @strong{not} used:
+
+@itemize -
+@item
+If the option @option{--mbfl-library} @strong{is not} used on the command line of
+@command{mbflpp.sh}: the library @file{libmbfl.sh} installed on the system is embedded, for example
+@file{/usr/share/libmbfl.sh}.
+
+@item
+If the option @option{--mbfl-library} @strong{is} used on the command line of @command{mbflpp.sh}:
+the file pathname selected by the option is used to locate the library @file{libmbfl.sh} to be
+embedded.
+@end itemize
+
+@item
+If the optional argument @var{LIBRARY_FILE_PATHNAME} is used: that argument is interpreted as file
+system pathname of a library to embed in the source file.  Does not matter which library, either a
+@file{libmbfl.sh} implementation or some other library.
+@end itemize
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_library_loader (@var{HARDCODED_PATHNAME})
-Expand to a block of code that reliably loads the @value{PACKAGE} library.  The optional argument
-@var{HARDCODED_PATHNAME} must be the absolute pathname to a file containing the library itself.
-@ref{overview reliable} for details.
+@deffn {Preprocessor Macro} mbfl_library_loader
+@deffnx {Preprocessor Macro} mbfl_library_loader @var{LIBRARY_FILE_PATHNAME}
+Expand to a block of code that ``reliably'' sources a library file; the resulting output script does
+need to source the library at runtime, let's say it is ``dynamically linked''.
+
+@itemize
+@item
+If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is not} used:
+
+@itemize -
+@item
+If the option @option{--mbfl-library} @strong{is not} used on the command line of
+@command{mbflpp.sh}: the macro use expands into shell code that sources the library
+@file{libmbfl.sh} installed on the system, for example @file{/usr/share/libmbfl.sh}.
+
+@item
+If the option @option{--mbfl-library} @strong{is} used on the command line of @command{mbflpp.sh}:
+the macro use expands into shell code that sources the file pathname selected by the option; it is
+meant to be an implementation of @file{libmbfl.sh}.
+@end itemize
+
+@item
+If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is} used: that argument is interpreted
+as file system pathname of a library to source in the code; does not matter which library, either a
+@file{libmbfl.sh} implementation or some other library.  The macro use expands into shell code that
+sources the library.
+@end itemize
 @end deffn
 
 @c page
