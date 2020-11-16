@@ -39,7 +39,7 @@ script_EXAMPLES="Usage examples:
 \t${script_PROGNAME} module1.test module2.test
 \t${script_PROGNAME} --start --end module1.test module2.test"
 
-source "${MBFL_LIBRARY:=$(mbfl-config)}"
+mbfl_embed_library
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option START no '' start noarg 'print start messages for tests'
