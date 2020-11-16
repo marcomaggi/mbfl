@@ -37,7 +37,4 @@ then
     mbfl_main_create_exit_functions
 fi
 
-# This is set to the empty string if no "realpath" executable is found at configuration-time.
-REALPATH_PATHNAME=@REALPATH_PATHNAME@
-
 ### end of file
