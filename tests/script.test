@@ -35,12 +35,14 @@
 source setup.sh
 
 function script () {
-    MBFL_LIBRARY="${MBFL_LIBRARY:=${builddir}/src/lib/libmbfl.sh}" \
-		"${BASH}" examples/template.sh "$@" 2>&1
+    local -r examplesdir=${examplesdir:?'missing examplesdir in the environment'}
+    MBFL_LIBRARY="${MBFL_LIBRARY:?'missing libmbfl.sh pathname'}" \
+		"${BASH}" "${examplesdir}/template.sh" "$@" 2>&1
 }
 function script_with_actions () {
-    MBFL_LIBRARY="${MBFL_LIBRARY:=${builddir}/src/lib/libmbfl.sh}" \
-		"${BASH}" examples/template-actions.sh "$@" 2>&1
+    local -r examplesdir=${examplesdir:?'missing examplesdir in the environment'}
+    MBFL_LIBRARY="${MBFL_LIBRARY:?'missing libmbfl.sh pathname'}" \
+		"${BASH}" "${examplesdir}/template-actions.sh" "$@" 2>&1
 }
 
 #PAGE

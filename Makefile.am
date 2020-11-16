@@ -1,9 +1,50 @@
 ## Process this file with automake to produce Makefile.in
+#
+# This is how it goes:
+#
+# 1.   Generate the  built scripts  using: the  backup libraries;  the
+# backup scripts; the source preprocessor.
+#
+# 2. Generate the built library "libmbfl.sh" using: the built scripts;
+# the source preprocessor.
+#
+# 3.   Generate the  built library  "libmbfltest.sh" using:  the built
+# scripts; the built "libmbfl.sh"; the source preprocessor.
+#
+# 4.  Generate  the built  library "libmbflutils.sh" using:  the built
+# scripts; the built "libmbfl.sh"; the source preprocessor.
+#
+# 5. Generate the  built examples using: the built  scripts; the built
+# "libmbfl.sh"; the source preprocessor.
+#
 
 ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
 EXTRA_DIST		= README COPYING INSTALL NEWS
 CLEANFILES		=
+MBFL_LIB_INSTDIR	= $(datadir)/$(PACKAGE)
+
+## --------------------------------------------------------------------
+
+MBFL_PROGRAM_BASH	= @MBFL_PROGRAM_BASH@
+
+# These flags are always used on  the command line of "mbflpp.sh".  We
+# can set "MBFLPPFLAGS" on the command line of "make".
+#
+MBFLPP_GENERAL_FLAGS	= --no-prepro 						\
+			  --include=$(srcdir)/src/lib				\
+			  --library=$(srcdir)/src/lib/preprocessor.m4	 	\
+			  --define=__PACKAGE_NAME__=$(PACKAGE)			\
+			  --define=__PACKAGE_VERSION__=$(MBFL_CORE_VERSION)	\
+			  --define=__SEMANTIC_VERSION__=$(MBFL_SEMANTIC_VERSION)\
+			  $(MBFLPPFLAGS)
+
+EXTRA_DIST		+=			\
+	src/lib/loader.sh			\
+	src/backup/libmbfl.sh			\
+	src/backup/mbflpp.sh			\
+	src/backup/mbfltest.sh			\
+	src/backup/preprocessor.m4
 
 
 #### meta infrastructure
@@ -63,12 +104,52 @@ install-html-local:
 	$(INSTALL) -m 0444 $(builddir)/doc/mbfl.html/mbfl.css "$(DESTDIR)$(htmldir)/mbfl.html/"
 
 
-#### source modules
+#### preprocessor macros file
 
-EXTRA_DIST	+=				\
-	src/scripts/mbflpp.sh.m4		\
-	src/scripts/mbfltest.sh.m4		\
-	\
+MBFL_PREPROCESSOR		= src/lib/preprocessor.m4
+mbflpreprodir			= $(MBFL_LIB_INSTDIR)
+dist_mbflprepro_DATA		= $(MBFL_PREPROCESSOR)
+
+
+#### scripts generation
+
+EXTRA_DIST			+=		\
+	src/bin/mbflpp.sh.m4			\
+	src/bin/mbfltest.sh.m4
+
+bin_SCRIPTS			=		\
+	src/bin/mbflpp.sh			\
+	src/bin/mbfltest.sh
+
+CLEANFILES			+=		\
+	src/bin/mbflpp.sh			\
+	src/bin/mbfltest.sh			\
+	src/bin/$(am__dirstamp)
+
+MBFL_SCRIPTS_PREREQUISITES	=		\
+	src/bin/$(am__dirstamp)
+
+## --------------------------------------------------------------------
+
+MBFL_SCRIPTS_LIBRARY		= $(srcdir)/src/backup/libmbfl.sh
+MBFL_SCRIPTS_MBFLPP		= $(srcdir)/src/backup/mbflpp.sh
+MBFL_SCRIPTS_ENV		= MBFL_LIBRARY=$(MBFL_SCRIPTS_LIBRARY); export MBFL_LIBRARY;
+MBFL_SCRIPTS_RUN		= $(MBFL_SCRIPTS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_SCRIPTS_MBFLPP)
+MBFLPP_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --preserve-comments
+
+## --------------------------------------------------------------------
+
+src/bin/$(am__dirstamp):
+	@$(MKDIR_P) src/bin
+	@: > src/bin/$(am__dirstamp)
+
+src/bin/%.sh: src/bin/%.sh.m4 $(MBFL_SCRIPTS_PREREQUISITES)
+	$(MBFL_SCRIPTS_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
+
+
+#### libmbfl modules generation
+
+EXTRA_DIST			+=		\
 	src/modules/actions.sh.m4		\
 	src/modules/arrays.sh.m4		\
 	src/modules/atexit.sh.m4		\
@@ -90,22 +171,11 @@ EXTRA_DIST	+=				\
 	src/modules/string.sh.m4		\
 	src/modules/system.sh.m4		\
 	src/modules/times-and-dates.sh.m4	\
-	src/modules/variable.sh.m4		\
-	\
-	src/lib/libmbfl.sh.m4			\
-	src/lib/libmbfltest.sh			\
-	src/lib/loader.sh			\
-	src/lib/preprocessor.m4			\
-	\
-	src/backup/libmbfl.sh			\
-	src/backup/libmbfltest.sh		\
-	src/backup/mbflpp.sh			\
-	src/backup/mbfltest.sh			\
-	src/backup/preprocessor.m4
+	src/modules/variable.sh.m4
 
 # This  is *not*  the  order  in which  modules  are  included in  the
 # library; that order is established in the file "libmbl.sh.m4"!
-MBFL_MODULES		=			\
+MBFL_LIB_MODULES		=		\
 	src/modules/actions.sh			\
 	src/modules/arrays.sh			\
 	src/modules/atexit.sh			\
@@ -130,82 +200,112 @@ MBFL_MODULES		=			\
 	src/modules/times-and-dates.sh		\
 	src/modules/variable.sh
 
-MBFL_PREPRO		= src/lib/preprocessor.m4
+CLEANFILES			+=		\
+	$(MBFL_LIB_MODULES)			\
+	src/modules/$(am__dirstamp)
 
-mbfldatadir		= $(datadir)/$(PACKAGE)
-dist_mbfldata_DATA	=			\
-	$(MBFL_PREPRO)				\
-	src/lib/libmbfltest.sh			\
-	src/lib/libmbfl.sh
+MBFL_MODULES_LIBRARY		= $(srcdir)/src/backup/libmbfl.sh
+MBFL_MODULES_MBFLPP		= $(builddir)/src/bin/mbflpp.sh
+MBFL_MODULES_ENV		= MBFL_LIBRARY=$(MBFL_MODULES_LIBRARY); export MBFL_LIBRARY;
+MBFL_MODULES_RUN		= $(MBFL_MODULES_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_MODULES_MBFLPP)
+MBFL_MODULES_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
 
-bin_SCRIPTS		= src/scripts/mbflpp.sh src/scripts/mbfltest.sh
-
-CLEANFILES		+=			\
-	src/lib/libmbfltest.sh			\
-	src/lib/libmbfl.sh			\
-	src/scripts/mbflpp.sh			\
-	src/scripts/mbfltest.sh			\
-	$(MBFL_MODULES)				\
+MBFL_MODULES_PREREQUISITES	=		\
+	$(MBFL_MODULES_LIBRARY)			\
+	$(MBFL_MODULES_MBFLPP)			\
 	src/modules/$(am__dirstamp)		\
-	src/scripts/$(am__dirstamp)		\
-	src/lib/$(am__dirstamp)
-
-## --------------------------------------------------------------------
-
-MBFL_PROGRAM_BASH	= @MBFL_PROGRAM_BASH@
-
-MBFL_LIBRARY	= $(srcdir)/src/backup/libmbfl.sh
-MBFLPP_ENV	= MBFL_LIBRARY=$(MBFL_LIBRARY)
-MBFLPP_SCRIPT	= $(srcdir)/src/backup/mbflpp.sh
-MBFLPP_RUN	= $(MBFLPP_ENV) $(MBFL_PROGRAM_BASH) $(MBFLPP_SCRIPT)
-
-## --------------------------------------------------------------------
-
-MBFLPP_MODULES_FLAGS	= --no-prepro 						\
-			  --include=$(srcdir)/src/lib				\
-			  --library=$(srcdir)/src/lib/preprocessor.m4	 	\
-			  --define=__PKGDATADIR__=$(mbfldatadir)		\
-			  --define=__PACKAGE_NAME__=$(PACKAGE)			\
-			  --define=__PACKAGE_VERSION__=$(MBFL_CORE_VERSION)	\
-			  --define=__PATHNAME_SUDO__=$(PATHNAME_SUDO)		\
-			  --define=__PATHNAME_WHOAMI__=$(PATHNAME_WHOAMI)	\
-			  --define=__PATHNAME_ID__=$(PATHNAME_ID)		\
-			  --define=__SEMANTIC_VERSION__=$(MBFL_SEMANTIC_VERSION)\
-			  $(MBFLPPFLAGS)
-MBFLPP_LIBS_FLAGS	= --no-prepro 						\
-			  --include=$(srcdir)/src/lib				\
-			  --library=$(srcdir)/src/lib/preprocessor.m4	 	\
-			  --include=$(builddir)/src/modules  --preserve-comments
-MBFLPP_SCRIPTS_FLAGS	= $(MBFLPP_MODULES_FLAGS) --add-bash --preserve-comments
+	$(MBFL_PREPROCESSOR)
 
 src/modules/$(am__dirstamp):
 	@$(MKDIR_P) src/modules
 	@: > src/modules/$(am__dirstamp)
 
-src/scripts/$(am__dirstamp):
-	@$(MKDIR_P) src/scripts
-	@: > src/scripts/$(am__dirstamp)
+src/modules/%.sh: src/modules/%.sh.m4 $(MBFL_MODULES_PREREQUISITES)
+	$(MBFL_MODULES_RUN) $(MBFL_MODULES_FLAGS) <$< >$@
+
+
+#### libmbfl generation
+
+EXTRA_DIST			+= src/lib/libmbfl.sh.m4
+mbfllibdir			= $(MBFL_LIB_INSTDIR)
+mbfllib_DATA			= src/lib/libmbfl.sh
+CLEANFILES			+=		\
+	src/lib/libmbfl.sh			\
+	src/lib/$(am__dirstamp)
+
+MBFL_LIB_LIBRARY		= $(srcdir)/src/backup/libmbfl.sh
+MBFL_LIB_MBFLPP			= $(builddir)/src/bin/mbflpp.sh
+MBFL_LIB_ENV			= MBFL_LIBRARY=$(MBFL_LIB_LIBRARY); export MBFL_LIBRARY;
+MBFL_LIB_RUN			= $(MBFL_LIB_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_LIB_MBFLPP)
+MBFL_LIB_FLAGS			= $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(builddir)/src/modules
+
+MBFL_LIB_PREREQUISITES	=			\
+	$(MBFL_LIB_LIBRARY)			\
+	$(MBFL_LIB_MBFLPP)			\
+	src/lib/$(am__dirstamp)			\
+	$(MBFL_PREPROCESSOR)
 
 src/lib/$(am__dirstamp):
 	@$(MKDIR_P) src/lib
 	@: > src/lib/$(am__dirstamp)
 
-src/modules/%.sh: src/modules/%.sh.m4 $(MBFL_PREPRO) src/modules/$(am__dirstamp)
-	$(MBFLPP_RUN) $(MBFLPP_MODULES_FLAGS) <$< >$@
+src/lib/libmbfl.sh: src/lib/libmbfl.sh.m4 $(MBFL_LIB_MODULES) $(MBFL_LIB_PREREQUISITES)
+	$(MBFL_LIB_RUN) $(MBFL_LIB_FLAGS) <$< >$@
 
-src/lib/libmbfl.sh: src/lib/libmbfl.sh.m4 $(MBFL_PREPRO) $(MBFL_MODULES) src/lib/$(am__dirstamp)
-	$(MBFLPP_RUN) $(MBFLPP_LIBS_FLAGS) <$< >$@
+
+#### libmbflutils generation
 
-src/scripts/mbflpp.sh: src/scripts/mbflpp.sh.m4 src/scripts/$(am__dirstamp)
-	$(MBFLPP_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
+EXTRA_DIST			+= src/lib/libmbflutils.sh.m4
+mbfllibutilsdir			= $(MBFL_LIB_INSTDIR)
+mbfllibutils_DATA		= src/lib/libmbflutils.sh
+CLEANFILES			+=		\
+	src/lib/libmbflutils.sh			\
+	src/lib/$(am__dirstamp)
 
-src/scripts/mbfltest.sh: src/scripts/mbfltest.sh.m4 src/scripts/$(am__dirstamp)
-	$(MBFLPP_RUN) $(MBFLPP_SCRIPTS_FLAGS) <$< >$@
+MBFL_LIBUTILS_LIBRARY		= $(builddir)/src/lib/libmbfl.sh
+MBFL_LIBUTILS_MBFLPP		= $(builddir)/src/bin/mbflpp.sh
+MBFL_LIBUTILS_ENV		= MBFL_LIBRARY=$(MBFL_LIBUTILS_LIBRARY); export MBFL_LIBRARY;
+MBFL_LIBUTILS_RUN		= $(MBFL_LIBUTILS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_LIBUTILS_MBFLPP)
+MBFL_LIBUTILS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
+
+MBFL_LIBUTILS_PREREQUISITES	=		\
+	$(MBFL_LIBUTILS_LIBRARY)		\
+	$(MBFL_LIBUTILS_MBFLPP)			\
+	src/lib/$(am__dirstamp)			\
+	$(MBFL_PREPROCESSOR)
+
+src/lib/libmbflutils.sh: src/lib/libmbflutils.sh.m4 $(MBFL_LIBUTILS_PREREQUISITES)
+	$(MBFL_LIBUTILS_RUN) $(MBFL_LIBUTILS_FLAGS) <$< >$@
+
+
+#### libmbfltest generation
+
+EXTRA_DIST			+= src/lib/libmbfltest.sh.m4
+mbfllibtestdir			= $(MBFL_LIB_INSTDIR)
+mbfllibtest_DATA		= src/lib/libmbfltest.sh
+CLEANFILES			+=		\
+	src/lib/libmbfltest.sh			\
+	src/lib/$(am__dirstamp)
+
+MBFL_LIBTEST_LIBRARY		= $(builddir)/src/lib/libmbfl.sh
+MBFL_LIBTEST_MBFLPP		= $(builddir)/src/bin/mbflpp.sh
+MBFL_LIBTEST_ENV		= MBFL_LIBRARY=$(MBFL_LIBTEST_LIBRARY); export MBFL_LIBRARY;
+MBFL_LIBTEST_RUN		= $(MBFL_LIBTEST_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_LIBTEST_MBFLPP)
+MBFL_LIBTEST_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
+
+MBFL_LIBTEST_PREREQUISITES	=		\
+	$(MBFL_LIBTEST_LIBRARY)			\
+	$(MBFL_LIBTEST_MBFLPP)			\
+	src/lib/$(am__dirstamp)			\
+	$(MBFL_PREPROCESSOR)
+
+src/lib/libmbfltest.sh: src/lib/libmbfltest.sh.m4 $(MBFL_LIBTEST_PREREQUISITES)
+	$(MBFL_LIBTEST_RUN) $(MBFL_LIBTEST_FLAGS) <$< >$@
 
 
 #### examples
 
-EXTRA_DIST		+=			\
+EXTRA_DIST			+=		\
 	examples/at.sh.m4			\
 	examples/compress.sh.m4			\
 	examples/pwentries.sh.m4		\
@@ -219,7 +319,7 @@ EXTRA_DIST		+=			\
 	examples/test-sendmail-localhost.sh	\
 	examples/test-sendmail-poste.sh
 
-EXAMPLES_BUILT_FILES	=			\
+MBFL_EXAMPLES_BUILT_FILES	=		\
 	examples/at.sh				\
 	examples/compress.sh			\
 	examples/pwentries.sh			\
@@ -227,38 +327,45 @@ EXAMPLES_BUILT_FILES	=			\
 	examples/template-actions.sh		\
 	examples/template.sh
 
-noinst_SCRIPTS		= $(EXAMPLES_BUILT_FILES)
+noinst_SCRIPTS			= $(MBFL_EXAMPLES_BUILT_FILES)
 
-CLEANFILES		+= $(EXAMPLES_BUILT_FILES) examples/$(am__dirstamp)
+CLEANFILES			+=		\
+	$(MBFL_EXAMPLES_BUILT_FILES)		\
+	examples/$(am__dirstamp)
 
-MBFL_EXAMPLES_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
-MBFL_EXAMPLES_ENV	= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBRARY); export MBFL_LIBRARY;
-MBFL_EXAMPLES_PREPRO	= $(builddir)/src/scripts/mbflpp.sh
-MBFL_EXAMPLES_PPFLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 --add-bash $(MBFLPPFLAGS)
-MBFL_EXAMPLES_RUNPP	= $(MBFL_EXAMPLES_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_PPFLAGS)
-MBFL_EXAMPLES_PREREQ	= examples/$(am__dirstamp) $(MBFL_EXAMPLES_PREPRO) $(MBFL_EXAMPLES_LIBRARY)
+MBFL_EXAMPLES_LIBRARY		= $(builddir)/src/lib/libmbfl.sh
+MBFL_EXAMPLES_MBFLPP		= $(builddir)/src/bin/mbflpp.sh
+MBFL_EXAMPLES_ENV		= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBRARY); export MBFL_LIBRARY;
+MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_EXAMPLES_MBFLPP)
+MBFL_EXAMPLES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash
+
+MBFL_EXAMPLES_PREREQUISITES	=		\
+	$(MBFL_EXAMPLES_LIBRARY)		\
+	$(MBFL_EXAMPLES_MBFLPP)			\
+	examples/$(am__dirstamp)		\
+	$(MBFL_PREPROCESSOR)
 
 examples/$(am__dirstamp):
 	@$(MKDIR_P) examples
 	@: > examples/$(am__dirstamp)
 
-examples/at.sh: examples/at.sh.m4 $(MBFL_EXAMPLES_PREREQ)
-	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+examples/at.sh: examples/at.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
 
-examples/compress.sh: examples/compress.sh.m4 $(MBFL_EXAMPLES_PREREQ)
-	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+examples/compress.sh: examples/compress.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
 
-examples/pwentries.sh: examples/pwentries.sh.m4 $(MBFL_EXAMPLES_PREREQ)
-	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+examples/pwentries.sh: examples/pwentries.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
 
-examples/sendmail-mbfl.sh: examples/sendmail-mbfl.sh.m4 $(MBFL_EXAMPLES_PREREQ)
-	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+examples/sendmail-mbfl.sh: examples/sendmail-mbfl.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
 
-examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQ)
-	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
 
-examples/template-actions.sh: examples/template-actions.sh.m4 $(MBFL_EXAMPLES_PREREQ)
-	$(MBFL_EXAMPLES_RUNPP) <$< >$@
+examples/template-actions.sh: examples/template-actions.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
 
 if WANT_SENDMAIL
 
@@ -270,80 +377,50 @@ endif
 
 #### interface to "make check"
 
-EXTRA_DIST	+=			\
-	tests/getopts.test.m4		\
-	tests/process.test.m4		\
-	tests/program.test.m4		\
-	tests/semver.test.m4		\
-	tests/strings.test.m4		\
-	tests/system.test.m4		\
-	tests/variables.test.m4		\
+EXTRA_DIST			+=		\
+	tests/getopts.test.m4			\
+	tests/process.test.m4			\
+	tests/program.test.m4			\
+	tests/semver.test.m4			\
+	tests/strings.test.m4			\
+	tests/system.test.m4			\
+	tests/variables.test.m4			\
 	\
-	tests/arrays.test		\
-	tests/atexit.test		\
-	tests/compress.test		\
-	tests/encode.test		\
-	tests/fd.test			\
-	tests/file.test			\
-	tests/locations.test		\
-	tests/message.test		\
-	tests/script.test		\
-	tests/signal.test		\
-	tests/times-and-dates.test	\
-	tests/bash-feature-coproc.test	\
+	tests/arrays.test			\
+	tests/atexit.test			\
+	tests/compress.test			\
+	tests/encode.test			\
+	tests/fd.test				\
+	tests/file.test				\
+	tests/locations.test			\
+	tests/message.test			\
+	tests/script.test			\
+	tests/signal.test			\
+	tests/times-and-dates.test		\
+	tests/bash-feature-coproc.test		\
 	\
-	tests/setup.sh			\
+	tests/setup.sh				\
 	tests/signaltest.sh
 
-CHECK_BUILT_EXAMPLES	=		\
-	examples/compress.sh		\
-	examples/template.sh		\
+CHECK_BUILT_EXAMPLES		=		\
+	examples/compress.sh			\
+	examples/template.sh			\
 	examples/template-actions.sh
 
-CHECK_BUILT_TESTS	=		\
-	tests/getopts.test		\
-	tests/process.test		\
-	tests/program.test		\
-	tests/semver.test		\
-	tests/strings.test		\
-	tests/system.test		\
+CHECK_BUILT_TESTS		=		\
+	tests/getopts.test			\
+	tests/process.test			\
+	tests/program.test			\
+	tests/semver.test			\
+	tests/strings.test			\
+	tests/system.test			\
 	tests/variables.test
 
-check_SCRIPTS		= $(CHECK_BUILT_EXAMPLES) $(CHECK_BUILT_TESTS)
+check_SCRIPTS			=		\
+	$(CHECK_BUILT_EXAMPLES)			\
+	$(CHECK_BUILT_TESTS)
 
-CLEANFILES		+= $(CHECK_BUILT_TESTS) $(builddir)/tests/$(am__dirstamp)
-
-## --------------------------------------------------------------------
-
-# Resetting the PATH allows us to load files with the "source" command.
-MBFL_TESTS_ENV		= PATH=$(srcdir)/tests:$(builddir)/tests:$(srcdir)/src/lib:$(PATH); export PATH;
-MBFL_TESTS_ENV		+= srcdir=$(srcdir)/tests; export srcdir; builddir=$(builddir)/tests; export builddir;
-# This is because  I mount the "/tmp" directory  on a separate partition
-# with "noexec" attribute; this  causes tests for executability of files
-# to fail if the temporary test files are created under "/tmp".
-MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp; export TMPDIR; examplesdir=$(srcdir)/examples; export examplesdir;
-MBFL_TESTS_ENV		+= MBFL_LIBRARY=$(builddir)/src/lib/libmbfl.sh; export MBFL_LIBRARY;
-MBFL_TESTS_ENV		+= MBFLTEST_LIBRARY=$(srcdir)/src/lib/libmbfltest.sh; export MBFLTEST_LIBRARY;
-MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
-MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
-#MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_PROGRAM_BASH)
-
-MBFL_TESTS_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
-MBFL_TESTS_PREPRO	= $(builddir)/src/scripts/mbflpp.sh
-MBFL_TESTS_PPFLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 --add-bash $(MBFLPPFLAGS)
-MBFL_TESTS_RUNPP	= $(MBFL_TESTS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_TESTS_PREPRO) $(MBFL_TESTS_PPFLAGS)
-MBFL_TESTS_PREREQ	= tests/$(am__dirstamp) $(MBFL_TESTS_PREPRO) $(MBFL_TESTS_LIBRARY)
-
-# Read "Parallel Test Harness" in the documentation of GNU Automake to
-# understand how to use this interface for "make check".
-#
-# We must make sure that this ends with a semicolon!!!
-AM_TESTS_ENVIRONMENT	= $(MBFL_TESTS_VERBENV) $(MBFL_TESTS_ENV)
-TEST_EXTENSIONS		= .test
-TEST_LOG_COMPILER	= $(MBFL_PROGRAM_BASH)
-AM_TEST_LOG_FLAGS	= $(MBFLFLAGS)
-
-TESTS			=			\
+TESTS				=		\
 	tests/arrays.test			\
 	tests/atexit.test			\
 	tests/compress.test			\
@@ -365,14 +442,54 @@ TESTS			=			\
 	\
 	tests/bash-feature-coproc.test
 
+CLEANFILES			+=		\
+	$(CHECK_BUILT_TESTS)			\
+	$(builddir)/tests/$(am__dirstamp)
+
+## --------------------------------------------------------------------
+
+MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
+
+MBFL_TESTS_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
+MBFL_TESTS_MBFLPP	= $(builddir)/src/bin/mbflpp.sh
+MBFL_TESTS_ENV		= MBFL_LIBRARY=$(MBFL_TESTS_LIBRARY); export MBFL_LIBRARY;
+# We reset PATH so we can load files with the "source" command.
+MBFL_TESTS_ENV		+= PATH=$(srcdir)/tests:$(builddir)/tests:$(srcdir)/src/lib:$(PATH); export PATH;
+# We  set TMPDIR  because  if the  "/tmp" directory  is  mounted on  a
+# separate partition with "noexec"  attribute: tests for executability
+# of files  will fail if  the temporary  test files are  created under
+# "/tmp".
+MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp; export TMPDIR;
+# We need to access some files in the examples dir.
+MBFL_TESTS_ENV		+= examplesdir=$(builddir)/examples; export examplesdir;
+MBFL_TESTS_ENV		+= MBFLTEST_LIBRARY=$(builddir)/src/lib/libmbfltest.sh; export MBFLTEST_LIBRARY;
+MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
+MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_TESTS_MBFLPP)
+MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash
+
+MBFL_TESTS_PREREQUISITES	=		\
+	$(MBFL_TESTS_LIBRARY)			\
+	$(MBFL_TESTS_MBFLPP)			\
+	tests/$(am__dirstamp)			\
+	$(MBFL_PREPROCESSOR)
+
+# Read "Parallel Test Harness" in the documentation of GNU Automake to
+# understand how to use this interface for "make check".
+#
+# We must make sure that this ends with a semicolon!!!
+AM_TESTS_ENVIRONMENT	= $(MBFL_TESTS_VERBENV) $(MBFL_TESTS_ENV)
+TEST_EXTENSIONS		= .test
+TEST_LOG_COMPILER	= $(MBFL_PROGRAM_BASH)
+AM_TEST_LOG_FLAGS	= $(MBFLFLAGS)
+
 ## --------------------------------------------------------------------
 
 $(builddir)/tests/$(am__dirstamp):
 	@$(MKDIR_P) tests
 	@: > tests/$(am__dirstamp)
 
-tests/%.test: tests/%.test.m4 $(MBFL_TESTS_PREREQ)
-	$(MBFL_TESTS_RUNPP) <$< >$@
+tests/%.test: tests/%.test.m4 $(MBFL_TESTS_PREREQUISITES)
+	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) <$< >$@
 
 
 #### additional test rules

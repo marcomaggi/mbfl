@@ -9,8 +9,8 @@
 #
 #
 #
-# Copyright (c) 2004, 2005, 2009, 2012, 2018 Marco Maggi
-# <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2004, 2005, 2009, 2012, 2018, 2020 Marco Maggi
+# <mrc.mgg@gmail.com>
 #
 # This is free  software you can redistribute it  and/or modify it under
 # the terms of  the GNU General Public License as  published by the Free
@@ -48,6 +48,7 @@ Marco's BASH Functions Library configuration script
 options:
    --library    print the full pathname of the library
    --testlib    print the full pathname of the testing library
+   --utilslib   print the full pathname of the utilities library
    --libpath    print the librarires installation directory
    --version    print the version number
    --help       print the help screen
@@ -62,6 +63,9 @@ case "$OPTION" in
 	;;
     --testlib)
 	printf '%s/libmbfltest.sh\n' "$pkgdatadir"
+	;;
+    --utilslib)
+	printf '%s/libmbflutils.sh\n' "$pkgdatadir"
 	;;
     --libpath)
         printf '%s\n' "$pkgdatadir"
