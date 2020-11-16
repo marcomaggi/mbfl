@@ -10,8 +10,8 @@
 #	test suite. It must be sources  at the beginning of all the test
 #	files.
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi
-# <marco.maggi-ipsu@poste.it>
+# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
+# <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -34,7 +34,7 @@
 
 shopt -s expand_aliases
 
-declare mbfl_LOADED_MBFL_TEST='yes'
+declare -r mbfl_LOADED_MBFL_TEST='yes'
 
 test -z ${dotest_TEST_NUMBER}        && declare -i dotest_TEST_NUMBER=0
 test -z ${dotest_TEST_FAILED_NUMBER} && declare -i dotest_TEST_FAILED_NUMBER=0
@@ -62,7 +62,7 @@ function dotest-p-printf () {
     local TEMPLATE=${2:?"missing template argument to '${FUNCNAME}'"}
     shift 2
     {
-	printf '%s:' "$name"
+	printf '%s: ' "$name"
 	printf "$TEMPLATE"  "$@"
 	echo
     } >&2
@@ -89,51 +89,55 @@ dotest-p-create-option-functions
 #### test execution
 
 function dotest () {
-    local PATTERN=${1:?missing test function pattern parameter to ${FUNCNAME}}
+    local PATTERN=${1:?"missing test function pattern parameter to '${FUNCNAME}'"}
     local -a FUNCTIONS
     local name item result ORGPWD=$PWD
     local -i exit_status
 
-
-    PATTERN=${TESTMATCH:-${PATTERN}}
     dotest-p-report-start-from-environment
     dotest-p-report-success-from-environment
 
+    mbfl_main_create_exit_functions
+
     for item in `compgen -A function "$PATTERN"`
     do
-        # When a single test function name is selected, "$item" is equal
-        # to "$PATTERN", then here "name" is set to the empty string.
-
-	let ++dotest_TEST_NUMBER
-	name=${item##${PATTERN}}
-	if test -n "$name" -o "$item" = "$PATTERN"
+	if [[ $item =~ $TESTMATCH ]]
 	then
-	    item="${PATTERN}${name}"
-	    if dotest-option-report-start
-	    then dotest-echo "${item} -- start"
-            fi
-	    #echo ---$FUNCNAME--$item--- >&2
-	    result=$("$item")
-	    exit_status=$?
-	    #echo ---$FUNCNAME--$exit_status--- >&2
-	    if ((0 == exit_status))
+            # When a single  test function name is  selected, "$item" is
+            # equal to "$PATTERN", then here  "name" is set to the empty
+            # string.
+
+	    let ++dotest_TEST_NUMBER
+	    name=${item##${PATTERN}}
+	    if test -n "$name" -o "$item" = "$PATTERN"
 	    then
-		if dotest-option-report-success
-		then dotest-echo "${item} -- success"
-                else
-                    if dotest-option-report-start
-		    then echo
+		item="${PATTERN}${name}"
+		if dotest-option-report-start
+		then dotest-echo "${item} -- start"
+		fi
+		#echo ---$FUNCNAME--$item--- >&2
+		result=$("$item")
+		exit_status=$?
+		#echo ---$FUNCNAME--$exit_status--- >&2
+		if ((0 == exit_status))
+		then
+		    if dotest-option-report-success
+		    then dotest-echo "${item} -- success"
+                    else
+			if dotest-option-report-start
+			then echo
+			fi
                     fi
-                fi
-	    else
-		dotest-echo "${item} -- *** FAILED ***\n"
-		dotest_TEST_FAILED+=("$item")
-		let ++dotest_TEST_FAILED_NUMBER
+		else
+		    dotest-echo "${item} -- *** FAILED ***\n"
+		    dotest_TEST_FAILED+=("$item")
+		    let ++dotest_TEST_FAILED_NUMBER
+		fi
+		if test -n "$result"
+		then printf '%s\n' "$result" >&2
+		fi
+		dotest-cd "$ORGPWD"
 	    fi
-	    if test -n "$result"
-	    then printf '%s\n' "$result" >&2
-	    fi
-	    dotest-cd "$ORGPWD"
 	fi
     done
 
@@ -165,6 +169,7 @@ function dotest-p-report-success-from-environment () {
 
 function dotest-output () {
     local expected_output="$1"
+    local description="$3"
     local -i globmode=0 expected_output_len
     local output
 
@@ -194,7 +199,7 @@ function dotest-output () {
 	if dotest-string-is-not-empty "$output"
 	then
 	    {
-		echo "${FUNCNAME}:"
+		echo "${FUNCNAME}: output mismatching $description"
 		echo "   expected output of zero length"
 		echo "   got:      '$output'"
 	    } >&2
@@ -206,7 +211,7 @@ function dotest-output () {
 	    \( $globmode -eq 1 -a "$expected_output" != "${output:0:${expected_output_len}}" \)
 	then
 	    {
-		echo "${FUNCNAME}:"
+		echo "${FUNCNAME}: output mismatching $description"
 		echo "   expected: '$expected_output'"
 		echo "   got:      '$output'"
 	    } >&2
@@ -218,12 +223,13 @@ function dotest-output () {
 function dotest-equal () {
     local expected="$1"
     local got="$2"
+    local description="$3"
 
     if test "$expected" = "$got"
     then return 0
     else
 	{
-	    echo "${FUNCNAME}:"
+	    echo "${FUNCNAME}: result mismatching $3"
 	    echo "   expected: '$expected'"
 	    echo "   got:      '$got'"
 	} >&2
@@ -290,6 +296,20 @@ function dotest-clean-files () {
     local result=$?
     dotest-program-rm "$(dotest-echo-tmpdir)"
     return $result
+}
+
+function dotest-mkpathname () {
+    local NAME="${1:?missing file name parameter to ${FUNCNAME}}"
+    local PREFIX="$2"
+
+    if test -n "$PREFIX"
+    then PREFIX="$(dotest-echo-tmpdir)/${PREFIX}"
+    else PREFIX="$(dotest-echo-tmpdir)"
+    fi
+    NAME=${PREFIX}/${NAME}
+
+    dotest-mktmpdir
+    echo "$NAME"
 }
 
 function dotest-assert-file-exists () {

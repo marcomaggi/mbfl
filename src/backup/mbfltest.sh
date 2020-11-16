@@ -1,3 +1,4 @@
+#!/bin/bash
 # mbfltest.sh --
 #
 # Part of: Marco's BASH Functions Library
@@ -6,35 +7,30 @@
 #
 # Abstract
 #
-#	Executes a bash subprocess with running test files in it.
+#	Execute a Bash subprocess running test files in it.
 #
-# Copyright (c) 2005, 2009 Marco Maggi <marcomaggi@gna.org>
+# Copyright (c) 2005, 2009, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
-# This  program  is free  software:  you  can redistribute  it
-# and/or modify it  under the terms of the  GNU General Public
-# License as published by the Free Software Foundation, either
-# version  3 of  the License,  or (at  your option)  any later
-# version.
+# This program is  free software: you can redistribute  it and/or modify
+# it under the  terms of the GNU General Public  License as published by
+# the Free Software Foundation, either version  3 of the License, or (at
+# your option) any later version.
 #
-# This  program is  distributed in  the hope  that it  will be
-# useful, but  WITHOUT ANY WARRANTY; without  even the implied
-# warranty  of  MERCHANTABILITY or  FITNESS  FOR A  PARTICULAR
-# PURPOSE.   See  the  GNU  General Public  License  for  more
-# details.
+# This program  is distributed in the  hope that it will  be useful, but
+# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See the  GNU
+# General Public License for more details.
 #
-# You should  have received a  copy of the GNU  General Public
-# License   along   with    this   program.    If   not,   see
-# <http://www.gnu.org/licenses/>.
+# You should  have received  a copy  of the  GNU General  Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 #page
-## ------------------------------------------------------------
-## MBFL's related options and variables.
-## ------------------------------------------------------------
+#### MBFL's related options and variables
 
 script_PROGNAME=mbfltest.sh
 script_VERSION=1.0
-script_COPYRIGHT_YEARS='2005'
+script_COPYRIGHT_YEARS='2005, 2009, 2018'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL3
 script_USAGE="usage: ${script_PROGNAME} [options] FILE ..."
@@ -54,12 +50,10 @@ mbfl_declare_option DIRECTORY "${PWD}" \
     '' directory witharg 'change directory before executing tests'
 mbfl_declare_option LIBRARY '' '' library witharg 'select the MBFL library'
 
-mbfl_main_declare_exit_code 2 file_not_found
+mbfl_declare_exit_code 2 file_not_found
 
 #page
-## ------------------------------------------------------------
-## Option update functions.
-## ------------------------------------------------------------
+#### option update functions
 
 function script_option_update_start () {
     export TESTSTART='yes'
@@ -70,49 +64,49 @@ function script_option_update_end () {
 function script_option_update_match () {
     local OPTNAME=$1
     local OPTARG=$2
-    export TESTMATCH="${OPTARG}"
+    export TESTMATCH="$OPTARG"
 }
 
 #page
-## ------------------------------------------------------------
-## Main functions.
-## ------------------------------------------------------------
+#### main functions
 
 function main () {
-    local item FILES i=0 lib testlib=$(mbfl-config --testlib)
+    local item FILES lib testlib=$(mbfl-config --testlib)
+    local -i i=0
 
-
-    if test $ARGC -eq 0 ; then
+    if test $ARGC -eq 0
+    then
         mbfl_message_error "no files on the command line"
         exit_because_file_not_found
     fi
     mbfl_argv_all_files || exit_because_file_not_found
-    for item in "${ARGV[@]}" ; do
-        if mbfl_file_is_file "${item}" ; then
-            FILES[$i]=$(mbfl_file_normalise "${item}")
+    for item in "${ARGV[@]}"
+    do
+        if mbfl_file_is_file "${item}"
+	then FILES[$i]=$(mbfl_file_normalise "$item")
         else
-            mbfl_message_error "file not found '${item}'"
+            mbfl_message_error_printf 'file not found "%s"' "$item"
             exit_because_file_not_found
         fi
         let ++i
     done
 
-    if test -n "${script_option_LIBRARY}" ; then
-        lib=$(mbfl_file_normalise "${script_option_LIBRARY}")
-    else
-        lib=$(mbfl-config)
+    if test -n "$script_option_LIBRARY"
+    then lib=$(mbfl_file_normalise "$script_option_LIBRARY")
+    else lib=$(mbfl-config)
     fi
 
-    mbfl_cd "${script_option_DIRECTORY}"
-    for item in "${FILES[@]}" ; do
-        mbfl_message_debug "executing subprocess for test '${item}'"
+    mbfl_cd "$script_option_DIRECTORY"
+    for item in "${FILES[@]}"
+    do
+        mbfl_message_debug_printf 'executing subprocess for test "%s"\n' "$item"
         {
-            printf 'source %s || exit 2\n' "${lib}"
-            printf 'source %s || exit 2\n' "${testlib}"
-            mbfl_option_debug && printf 'mbfl_set_option_debug\n'
-            printf 'export MBFL_LIBRARY=%s\n' "${lib}"
-            printf 'mbfl_TEST_FILE=%s\n' "${item}"
-            printf 'source %s\n' "${item}"
+            printf 'source %s || exit 2\n' "$lib"
+            printf 'source %s || exit 2\n' "$testlib"
+            mbfl_option_debug && echo 'mbfl_set_option_debug'
+            printf 'export MBFL_LIBRARY=%s\n' "$lib"
+            printf 'mbfl_TEST_FILE=%s\n' "$item"
+            printf 'source %s\n' "$item"
         } | mbfl_program_bash
     done
 
@@ -120,9 +114,7 @@ function main () {
 }
 
 #page
-## ------------------------------------------------------------
-## Start.
-## ------------------------------------------------------------
+#### let's go
 
 mbfl_main
 
