@@ -73,7 +73,7 @@ function main () {
     local item FILES lib testlib=$(mbfl-config --testlib)
     local -i i=0
 
-    if test $ARGC -eq 0
+    if ((0 == ARGC))
     then
         mbfl_message_error "no files on the command line"
         exit_because_file_not_found
