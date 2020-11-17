@@ -561,15 +561,16 @@ without the preprocessor.
 @section Invoking the preprocessor
 
 
-The basic synopsis is:
+Synopsis:
 
 @smallexample
-mbflpp.sh [options] <INFILE >OUTFILE
-mbflpp.sh [options] --outfile=OUTFILE [--] INFILE1 INFILE2 ...
+mbflpp.sh [@var{OPTIONS}] <@var{INFILE} >@var{OUTFILE}
+mbflpp.sh [@var{OPTIONS}] --outfile=@var{OUTFILE} [--] @vari{INFILE} @varii{INFILE} ...
 @end smallexample
 
 @noindent
-all the @code{INFILE} pathnames are interpreted as files to concatenate in the specified order.
+all the @var{INFILE} arguments are interpreted as file system pathnames selecting input files to
+concatenate in the specified order.
 
 All the @mbfl{} built in command line options are available, additionally the following options are
 supported.
@@ -579,49 +580,47 @@ supported.
 Do not filter out comments.
 
 @item --add-bash
-Add @code{#!$BASH} at the beginning of the output, where @code{BASH} is the built--in variable of
-Bash, @bashref{Bash Variables, BASH}.
+Add @code{#!BASH_PROGRAM} at the beginning of the output, where @code{BASH_PROGRAM} is selected with
+the command line option @option{--bash-program}.
 
-@item --bash-program=BASH
-Select the absolute file pathname of the Bash executable to use when the @option{--add-bash} is
-used.  It defaults to the Bash used to run the preprocessor script itself.
+@item --bash-program=BASH_PROGRAM
+Select the absolute file pathname of the Bash executable to use when the option @option{--add-bash}
+is used.  It defaults to the preselected @command{bash} program, @ref{mbfl_PROGRAM_BASH, Preselected
+programs}.
 
-@item -DNAME[=VALUE]
-@itemx --define=NAME[=VALUE]
+@item -D@var{NAME}[=@var{VALUE}]
+@itemx --define=@var{NAME}[=@var{VALUE}]
 Define a new symbol (@mfour{} syntax).  This is equivalent to the @option{--define} option of
 @mfour{}.
 
-@item -IVALUE
-@itemx --include=VALUE
-Add a search path for files.  @code{VALUE} must be a directory pathname and it is handed to @mfour{}
-to search for macro files.  We can use this option multiple times.
+@item -I@var{VALUE}
+@itemx --include=@var{VALUE}
+Add a search path for files.  @var{VALUE} must be a directory pathname and it is handed to @mfour{}
+to search for macro files.  We can use this option multiple times.  @mfour{} can include files using
+the built--in @func{m4_include}.
 
-@item --library=VALUE
-Include an @mfour{} library.  @code{VALUE} must be the name of an @mfour{} macro file which is
-evaluated before the input files.
+@item --library=@var{LIBRARY_FILE_PATHNAME}
+Include an @mfour{} library.  @var{LIBRARY_FILE_PATHNAME} must be the name of an @mfour{} macro file
+which is evaluated before the input files.
 
-@item -oVALUE
-@itemx --output=VALUE
+@item -o@var{OUTPUT_FILE_PATHNAME}
+@itemx --output=@var{OUTPUT_FILE_PATHNAME}
 Select an output file, @code{-} for stdout.
 
 @item -e
 @itemx --eval
-Send the result of preprocessing to @bash{}, rather than print it.
+Send the result of preprocessing to @bash{}, rather than print it.  The evaluation is performed by
+the preselected @command{bash} program, @ref{mbfl_PROGRAM_BASH, Preselected programs}.
 
 @item --no-prepro
-Do not load the installed preprocessor's macros library.  If we use this option: we are meant to use
-the option @option{--library} to load a replacement macros library from a known location.
+Do not load the installed preprocessor's macros library @file{preprocessor.m4}.  If we use this
+option: we are meant to use the option @option{--library} to load a replacement macros library from
+a known location.
 
-@item --mbfl-library=@var{MBFL_FILE_PATHNAME}
+@item --mbfl-library=@var{LIBMBFL}
 Select the pathname to a @file{libmbfl.sh} file to use in the macros @func{mbfl_library_loader} and
 @func{mbfl_embed_library}, @ref{preprocessor library, Loading or including the library}.  The
 selected pathname overrides the library installed on the system.
-
-@item --mbfl-utils-library=@var{MBFL_UTILS_FILE_PATHNAME}
-Select the pathname to a @file{libmbflutils.sh} file to use in the macros
-@func{mbfl_utils_library_loader} and @func{mbfl_embed_utils_library}, @ref{preprocessor library,
-Loading or including the library}.  The selected pathname overrides the library installed on the
-system.
 @end table
 
 @c page
