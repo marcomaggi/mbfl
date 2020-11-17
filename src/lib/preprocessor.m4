@@ -36,28 +36,30 @@ m4_changequote(`[[[', `]]]')
 
 m4_dnl function parameters handling
 
-m4_define([[[mbfl_mandatory_parameter]]],[[[local $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]]])
-m4_define([[[mbfl_mandatory_integer_parameter]]],[[[local -i $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]]])
+m4_define([[[mbfl_mandatory_parameter]]],[[[local $4 $1=${$2:?"missing $3 parameter to '$FUNCNAME'"}]]])
+m4_define([[[mbfl_mandatory_integer_parameter]]],[[[mbfl_mandatory_parameter($1,$2,$3,-i)]]])
 
-m4_define([[[mbfl_optional_parameter]]],[[[local $1="${$2:-$3}"]]])
-m4_define([[[mbfl_optional_integer_parameter]]],[[[local -i $1="${$2:-$3}"]]])
+m4_define([[[mbfl_optional_parameter]]],[[[local $4 $1="${$2:-$3}"]]])
+m4_define([[[mbfl_optional_integer_parameter]]],[[[mbfl_optional_parameter($1,$2,$3,-i)]]])
 
 m4_define([[[mbfl_mandatory_nameref_parameter]]],[[[m4_dnl
-local mbfl_a_variable_$1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}
+local mbfl_a_variable_$1=${$2:?"missing $3 parameter to '$FUNCNAME'"}
 local -n $1=$[[[]]]mbfl_a_variable_$1
 ]]])
 
 
 m4_dnl script's command line arguments handling
 
-m4_define([[[mbfl_command_line_argument]]],[[[local $1="${ARGV[$2]}"]]])
+m4_define([[[mbfl_command_line_argument]]],[[[local $3 $1="${ARGV[$2]}"]]])
 
-m4_define([[[mbfl_extract_command_line_argument]]],[[[mbfl_command_line_argument($1,$2); mbfl_variable_unset(ARGV[$2])]]])
+m4_define([[[mbfl_extract_command_line_argument]]],[[[mbfl_command_line_argument($1,$2,$3); mbfl_variable_unset(ARGV[$2])]]])
 
 
 m4_dnl library loading and embedding
 
 m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,'__MBFL_LIBRARY__',$1) || exit 100]]])
+m4_define([[[mbfl_load_library]]],[[[source m4_ifelse($1,,'__MBFL_LIBRARY__',$1) || exit 100]]])
+
 m4_define([[[mbfl_embed_library]]],[[[m4_include(m4_ifelse($1,,__MBFL_LIBRARY__,$1))]]])
 
 

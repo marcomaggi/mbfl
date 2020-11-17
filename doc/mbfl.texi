@@ -651,8 +651,8 @@ Expands into the version number of this package.
 
 
 @deffn {Preprocessor Macro} __PACKAGE_DATADIR__
-Expands into the absolute pathname of the directory under which the @value{PACKAGE} library is
-installed.  For example:
+Expands into the absolute pathname of the directory under which the libraries distributed with
+@value{PACKAGE} are installed.  For example:
 
 @example
 /usr/local/share/mbfl
@@ -684,7 +684,7 @@ library at runtime, let's say it is ``statically linked''.
 
 @itemize
 @item
-If the optional argument @var{LIBRARY_FILE_PATHNAME} is @strong{not} used:
+If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is not} used:
 
 @itemize -
 @item
@@ -699,15 +699,17 @@ embedded.
 @end itemize
 
 @item
-If the optional argument @var{LIBRARY_FILE_PATHNAME} is used: that argument is interpreted as file
-system pathname of a library to embed in the source file.  Does not matter which library, either a
-@file{libmbfl.sh} implementation or some other library.
+If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is} used: that argument is interpreted
+as file system pathname of a library to embed in the source file.  Does not matter which library,
+either a @file{libmbfl.sh} implementation or some other library.
 @end itemize
 @end deffn
 
 
 @deffn {Preprocessor Macro} mbfl_library_loader
 @deffnx {Preprocessor Macro} mbfl_library_loader @var{LIBRARY_FILE_PATHNAME}
+@deffnx {Preprocessor Macro} mbfl_load_library
+@deffnx {Preprocessor Macro} mbfl_load-library @var{LIBRARY_FILE_PATHNAME}
 Expand to a block of code that ``reliably'' sources a library file; the resulting output script does
 need to source the library at runtime, let's say it is ``dynamically linked''.
 
@@ -740,12 +742,12 @@ sources the library.
 @section Function parameters handling
 
 
-@deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{VARNAME} @var{NUMBER} @var{DESCRIPTION}
+@deffn {Preprocessor Macro} mbfl_mandatory_parameter @var{VARNAME} @var{NUMBER} @var{DESCRIPTION} @var{OPTIONS}
 Define a variable local to a shell function holding an argument to the function.  @var{VARNAME} is
 the name of the variable; @var{NUMBER} is the positional parameter number; @var{DESCRIPTION} is a
-description of the argument.
+description of the argument; @var{OPTIONS} are options for the shell built--in @code{local}.
 
-Example, the following:
+For example, the following:
 
 @example
 mbfl_mandatory_parameter(PATHNAME, 2, file pathname)
@@ -762,7 +764,7 @@ Another example the following function:
 
 @example
 function message () @{
-  mbfl_mandatory_parameter(PROGNAME, 1, program name)
+  mbfl_mandatory_parameter(PROGNAME, 1, program name, -r)
   mbfl_mandatory_parameter(STRING,   2, message string)
 
   printf '%s: %s\n' "$PROGNAME" "$STRING"
@@ -774,8 +776,8 @@ is expanded to:
 
 @smallexample
 function message () @{
-  local PROGNAME=$@{1:?"missing program name parameter to '$FUNCNAME'"@}
-  local STRING=$@{2:?"missing message string parameter to '$FUNCNAME'"@}
+  local -r PROGNAME=$@{1:?"missing program name parameter to '$FUNCNAME'"@}
+  local    STRING=$@{2:?"missing message string parameter to '$FUNCNAME'"@}
 
   printf '%s: %s\n' "$PROGNAME" "$STRING"
 @}
@@ -803,7 +805,8 @@ local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 where the @emph{proxy variable} @var{NAME} is defined as an alias of the @emph{data variable}, whose
 name is stored in the numeric parameter; the additional @emph{name variable}
 @code{mbfl_a_variable_@var{NAME}} holds the name of the @emph{data variable}.  We can use the macro
-@func{mbfl_datavar} to retrieve the name of the data variable.
+@func{mbfl_datavar} to retrieve the name of the data variable.  @ref{preprocessor nameref, Variable
+name references}.
 @end deffn
 
 
@@ -815,12 +818,14 @@ This assigns the integer attribute to the variable; @bashref{Bash Builtins, Bash
 
 @deffn {Preprocessor Macro} mbfl_optional_parameter @var{VARNAME} @var{NUMBER}
 @deffnx {Preprocessor Macro} mbfl_optional_parameter @var{VARNAME} @var{NUMBER} @var{DEFAULT_VALUE}
+@deffnx {Preprocessor Macro} mbfl_optional_parameter @var{VARNAME} @var{NUMBER} @var{DEFAULT_VALUE} @var{OPTIONS}
 Define a variable local to a shell function holding an argument to the
 function.
 
 The argument @var{VARNAME} is the name of the variable.  The argument @var{NUMBER} is the positional
 parameter number.  The argument @var{DEFAULT_VALUE} is the initialisation value for the variable if
-the argument is not used; when @var{DEFAULT_VALUE} is not present: the variable is left empty.
+the argument is not used; when @var{DEFAULT_VALUE} is not present: the variable is left empty;
+@var{OPTIONS} are options for the shell built--in @code{local}.
 
 Example, the following:
 
@@ -839,14 +844,14 @@ local COUNT=$@{2:-123@}"
 and the following:
 
 @example
-mbfl_optional_parameter(COUNT, 2)
+mbfl_optional_parameter(COUNT, 2,,-i)
 @end example
 
 @noindent
 is expanded to:
 
 @smallexample
-local COUNT=$@{2:-@}"
+local -i COUNT=$@{2:-@}"
 @end smallexample
 @end deffn
 
@@ -865,30 +870,33 @@ this assigns the integer attribute to the variable; @bashref{Bash Builtins, Bash
 
 
 @deffn {Preprocessor Macro} mbfl_command_line_argument @var{VARNAME} @var{ARGINDEX}
+@deffnx {Preprocessor Macro} mbfl_command_line_argument @var{VARNAME} @var{ARGINDEX} @var{OPTIONS}
 Define a variable local to a shell function holding an argument to the script.  @var{VARNAME} is the
-variable name, @var{ARGINDEX} is the argument index in the @code{ARGV} array.
+variable name; @var{ARGINDEX} is the argument index in the @code{ARGV} array; @var{OPTIONS} are
+options for the shell built--in @code{local} .
 
 Example, the following:
 
 @example
-mbfl_command_line_argument(PATHNAME,3)
+mbfl_command_line_argument(PATHNAME, 3, -r)
 @end example
 
 @noindent
 is expanded to:
 
 @example
-local PATHNAME=$@{ARGV[3]@}
+local -r PATHNAME=$@{ARGV[3]@}
 @end example
 @end deffn
 
 
 @deffn {Preprocessor Macro} mbfl_extract_command_line_argument @var{VARNAME} @var{ARGINDEX}
+@deffnx {Preprocessor Macro} mbfl_extract_command_line_argument @var{VARNAME} @var{ARGINDEX} @var{OPTIONS}
 Expand into an equivalent of:
 
 @example
-mbfl_command_line_argument(@var{VARNAME}, @var{ARGINDEX})
-mbfl_variable_unset(@var{VARNAME}[@var{ARGINDEX}])
+mbfl_command_line_argument(@var{VARNAME}, @var{ARGINDEX}, @var{OPTIONS})
+mbfl_variable_unset(ARGV[@var{ARGINDEX}])
 @end example
 
 We use this macro to access a non--option command line argument and to remove it from the array

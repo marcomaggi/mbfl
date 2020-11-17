@@ -56,7 +56,6 @@ declare -r datadir="@datadir@"
 declare -r pkgdatadir="@datadir@/@PACKAGE@"
 
 declare -r PACKAGE_VERSION='@PACKAGE_VERSION@'
-declare -r PACKAGE_DATADIR=$pkgdatadir
 
 # The absolute pathname of the MBFL  library loaded by this script.  The
 # variable "mbfl_LOADED_LIBRARY" is defined by  the loader code block in
@@ -172,7 +171,7 @@ function script_option_update_bash_program () {
 
 function main () {
     local M4_FLAGS='--prefix-builtins'
-    local PREPROCESSOR=${PACKAGE_DATADIR}/preprocessor.m4
+    local PREPROCESSOR=${pkgdatadir}/preprocessor.m4
 
     M4_FLAGS+=" ${includes} ${symbols}"
     if { test "$script_option_NO_PREPROCESSOR" = no && mbfl_file_is_readable "$PREPROCESSOR"; }
@@ -193,11 +192,11 @@ function main () {
             fi
             if test "$script_option_PRESERVE_COMMENTS" = 'yes'
     	    then program_m4 \
-		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$PACKAGE_DATADIR" \
+		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$pkgdatadir" \
 		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
 		     ${M4_FLAGS} -
             else program_m4 \
-		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$PACKAGE_DATADIR" \
+		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$pkgdatadir" \
 		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
 		     ${M4_FLAGS} - | filter_drop_comments
             fi
