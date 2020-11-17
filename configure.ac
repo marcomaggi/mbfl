@@ -237,6 +237,17 @@ dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
 dnl variable argument.
 AC_PATH_PROG([MBFL_PROGRAM_SLEEP],[$MBFL_PROGRAM_SLEEP],[/bin/false])
 
+dnl --------------------------------------------------------------------
+
+AC_ARG_WITH([date],
+  AS_HELP_STRING([--with-date],[select a pathname for the executable date]),
+  [MBFL_PROGRAM_DATE=$withval],
+  [MBFL_PROGRAM_DATE=/bin/date])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_DATE],[$MBFL_PROGRAM_DATE],[/bin/false])
+
 
 #### sendmail interface
 

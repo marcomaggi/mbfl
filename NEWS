@@ -222,6 +222,7 @@ changes!
     mbfl_PROGRAM_CHMOD
     mbfl_PROGRAM_CHOWN
     mbfl_PROGRAM_CP
+    mbfl_PROGRAM_DATE
     mbfl_PROGRAM_ID
     mbfl_PROGRAM_LN
     mbfl_PROGRAM_LS

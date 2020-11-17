@@ -5125,23 +5125,30 @@ Return true if @var{DIRECTORY} is not the empty string and is a directory.
 
 @defun mbfl_file_directory_is_readable @var{DIRECTORY}
 @defunx mbfl_file_directory_is_readable @var{DIRECTORY} @var{PRINT_ERROR}
+@defunx mbfl_directory_is_readable @var{DIRECTORY}
+@defunx mbfl_directory_is_readable @var{DIRECTORY} @var{PRINT_ERROR}
 Return true if @var{DIRECTORY} is not the empty string, is a directory and is readable.
 @end defun
 
 
 @defun mbfl_file_directory_is_writable @var{DIRECTORY}
 @defunx mbfl_file_directory_is_writable @var{DIRECTORY} @var{PRINT_ERROR}
+@defunx mbfl_directory_is_writable @var{DIRECTORY}
+@defunx mbfl_directory_is_writable @var{DIRECTORY} @var{PRINT_ERROR}
 Return true if @var{DIRECTORY} is not the empty string, is a directory and is writable.
 @end defun
 
 
 @defun mbfl_file_directory_is_executable @var{DIRECTORY}
 @defunx mbfl_file_directory_is_executable @var{DIRECTORY} @var{PRINT_ERROR}
+@defunx mbfl_directory_is_executable @var{DIRECTORY}
+@defunx mbfl_directory_is_executable @var{DIRECTORY} @var{PRINT_ERROR}
 Return true if @var{DIRECTORY} is not the empty string, is a directory and is executable.
 @end defun
 
 
 @defun mbfl_file_directory_validate_writability @var{DIRECTORY} @var{DESCRIPTION}
+@defunx mbfl_directory_validate_writability @var{DIRECTORY} @var{DESCRIPTION}
 Test directory existence and writability; return true if the directory exists and is writable.  If
 the condition is not met: Print informative messages using @var{DESCRIPTION} to refer to the
 directory.
@@ -6287,6 +6294,20 @@ defaults to @file{/bin/cp}.
 @end defvar
 
 
+@cindex Configuration option @option{--with-date}
+@cindex Option @option{--with-date}
+@cindex @option{--with-date}, configuration option
+@cindex Command @command{date}
+@cindex External command @command{date}
+@cindex @command{date}, external command
+@anchor{mbfl_PROGRAM_DATE}
+@defvar mbfl_PROGRAM_DATE
+The preselected file system pathname of the program @command{date}; it is selected by the
+@command{configure} script and customisable with its command line option @option{--with-date}; it
+defaults to @file{/bin/date}.
+@end defvar
+
+
 @cindex Configuration option @option{--with-id}
 @cindex Option @option{--with-id}
 @cindex @option{--with-id}, configuration option
@@ -6566,10 +6587,9 @@ useful to debug a script.
 
 
 @defun mbfl_times_and_dates_enable
-Declare the commands required to handle times and dates.  @ref{program declaring, Declaring the
-intention to use a program}.
+Enable times and dates processing facilities.
 
-The programs are: @command{date}.
+The required programs are: @command{date}.
 @end defun
 
 
@@ -6584,8 +6604,9 @@ The programs are: @command{date}.
 @section Raw call to @command{date}
 
 
-@defun mbfl_exec_date @var{OPT} @dots{}
+@defun mbfl_exec_date @var{ARG} @dots{}
 Execute @command{date} with the optional arguments appended to the command line.
+@ref{mbfl_PROGRAM_DATE, Preselected program pathnames}.
 @end defun
 
 

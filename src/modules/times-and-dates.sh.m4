@@ -31,13 +31,16 @@
 #### module initialisation
 
 function mbfl_times_and_dates_enable () {
-    mbfl_declare_program date
+    :
 }
 
 function mbfl_exec_date () {
-    mbfl_local_varref(DATE)
-    mbfl_program_found_var mbfl_datavar(DATE) date || exit_because_program_not_found
-    mbfl_program_exec "$DATE" "$@"
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_DATE"
+    then mbfl_program_exec "$mbfl_PROGRAM_DATE" "$@"
+    else
+	mbfl_message_error_printf 'program "date" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_DATE"
+	return_because_program_not_found
+    fi
 }
 
 function mbfl_exec_date_format () {

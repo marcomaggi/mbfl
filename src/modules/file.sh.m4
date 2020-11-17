@@ -1094,24 +1094,28 @@ function mbfl_file_is_directory () {
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     mbfl_file_pathname_p_is "$PRINT_ERROR" '-d' 'a directory' "$PATHNAME"
 }
+function mbfl_directory_is_readable () { mbfl_file_directory_is_readable "$@"; }
 function mbfl_file_directory_is_readable () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     mbfl_file_is_directory "$PATHNAME" "$PRINT_ERROR" && \
         mbfl_file_pathname_is_readable "$PATHNAME" "$PRINT_ERROR"
 }
+function mbfl_directory_is_writable () { mbfl_file_directory_is_writable "$@"; }
 function mbfl_file_directory_is_writable () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     mbfl_file_is_directory "$PATHNAME" "$PRINT_ERROR" && \
         mbfl_file_pathname_is_writable "$PATHNAME" "$PRINT_ERROR"
 }
+function mbfl_directory_is_executable () { mbfl_file_directory_is_executable "$@"; }
 function mbfl_file_directory_is_executable () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
     mbfl_file_is_directory "$PATHNAME" "$PRINT_ERROR" && \
         mbfl_file_pathname_is_executable "$PATHNAME" "$PRINT_ERROR"
 }
+function mbfl_directory_validate_writability () { mbfl_file_directory_validate_writability "$@"; }
 function mbfl_file_directory_validate_writability () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory pathname)
     mbfl_mandatory_parameter(DESCRIPTION, 2, directory description)
