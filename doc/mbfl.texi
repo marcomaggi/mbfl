@@ -193,6 +193,10 @@ $ ./configure \
       --libdir=/opt/mbfl/3.0.0/lib64
 @end example
 
+This package relies on: @gnu{} @mfour{} for preprocessing scripts; the @gnu{} Coreutils to perform
+many file system related tasks; the package @command{sudo} to perform tasks with modified user
+privileges.
+
 @menu
 * overview quick::              Quick run--time loading.
 * overview reliable::           Reliable run--time loading.
@@ -533,8 +537,8 @@ The @mbfl{} script preprocessor is a command line program named @command{mbflpp.
 Bash script that makes use of the @mbfl{} library.  It can remove comments, blank lines, blank
 characters at the beginning of lines, and it can expand macros.
 
-The macro preprocessing is done with the @gnu{} @mfour{} program, using a library of macros called
-@file{preprocessor.m4} which is installed on the system with the @mbfl{} package.
+The macro preprocessing is performed by the @gnu{} @mfour{} program, using a library of macros
+called @file{preprocessor.m4} which is installed on the system with the @mbfl{} package.
 
 The use of the preprocessor is fully optional: every feature of the @mbfl{} library can be used
 without the preprocessor.
