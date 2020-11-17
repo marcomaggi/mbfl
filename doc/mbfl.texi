@@ -120,6 +120,8 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 
 @menu
 * overview::                    Overview of the package.
+* config script::               Inspecting @mbfl{} installation with the
+                                configuration script.
 * preprocessor::                Using the script preprocessor.
 * base::                        Some base functions.
 * shell::                       Shell facilities.
@@ -482,6 +484,45 @@ string in the environment in which @code{read} is evaluated.  This happens in fu
 @func{mbfl_read_maybe_null} and @func{mbfl_dialog_ask_password}; notice, though, that these
 functions @strong{do not} mutate the @code{IFS} value in the environment of the caller.
 @end itemize
+
+@c page
+@node config script
+@chapter Inspecting @mbfl{} installation with the configuration script
+
+
+@cindex @command{mbfl-config}, installation inspection script
+@cindex Installation inspection script @command{mbfl-config},
+@cindex Configuration inspection script @command{mbfl-config},
+
+
+The package installs a shell script @command{mbfl-config} which we can use to inspect the
+file system installation pathnames and other informations about @mbfl{}.  Synopsis:
+
+@example
+mbfl-config [@var{OPTION}]
+@end example
+
+Available options:
+
+@table @code
+@item --library
+Print the full pathname of the core library @file{libmbfl.sh}.
+
+@item --testlib
+Print the full pathname of the testing library @file{libmbfltest.sh}.
+
+@item --utilslib
+Print the full pathname of the utilities library @file{libmbflutils.sh}.
+
+@item --libpath
+Print the librarires installation directory.
+
+@item --version
+Print the version number.
+
+@item --help
+Print the help screen.
+@end table
 
 @c page
 @node preprocessor
