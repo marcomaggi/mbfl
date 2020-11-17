@@ -253,7 +253,7 @@ AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 #### let's go
 
 AC_CONFIG_FILES([Makefile]
-  [meta/scripts/mbfl-config]
+  [src/bin/mbfl-config]
   [src/bin/mbflpp.sh.m4]
   [tests/setup.sh]
   [src/modules/config-pathnames.sh.m4])

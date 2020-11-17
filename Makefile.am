@@ -48,8 +48,6 @@ EXTRA_DIST		+=			\
 
 #### meta infrastructure
 
-bin_SCRIPTS		= meta/scripts/mbfl-config
-
 autoconfdir		= $(datadir)/aclocal
 dist_autoconf_DATA	= meta/autoconf/mbfl.m4
 
@@ -115,6 +113,7 @@ EXTRA_DIST			+=		\
 	src/bin/mbfltest.sh.m4
 
 bin_SCRIPTS			=		\
+	src/bin/mbfl-config			\
 	src/bin/mbflpp.sh			\
 	src/bin/mbfltest.sh
 
