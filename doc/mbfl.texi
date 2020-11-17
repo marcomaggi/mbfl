@@ -194,7 +194,6 @@ $ ./configure \
 @menu
 * overview quick::              Quick run--time loading.
 * overview reliable::           Reliable run--time loading.
-* overview direct::             Direct inclusion.
 * overview interactive::        Using the library interactively.
 * overview rv::                 Result variables.
 * overview notes::              Miscellaneous notes.
@@ -209,8 +208,7 @@ The easiest way to use the library is to include at run--time the library file @
 the script.  To do it, we install the package on the system and use this code in the scripts:
 
 @example
-source "$@{MBFL_LIBRARY:=$(type -p mbfl-config &>/dev/null \
-   && mbfl-config)@}"
+source "$@{MBFL_LIBRARY:=$(type -p mbfl-config &>/dev/null && mbfl-config)@}"
 @end example
 
 @noindent
@@ -227,81 +225,15 @@ arguments to acquire the pathname.  @command{mbfl-config} is installed by the pa
 @section Reliable run--time loading
 
 
-A more reliable way to load the library is to use the preprocessor macros @func{mbfl_embed_library}
-or @func{mbfl_library_loader}, @ref{preprocessor library, Loading or including the library}.
+The reliable way to load the library is to use the preprocessor macros @func{mbfl_embed_library} or
+@func{mbfl_library_loader}, @ref{preprocessor library, Loading or including the library}.
 
-@c page
-@node overview direct
-@section Direct inclusion
+Either the library is embedded in the script or it is sourced from a hard--coded file system
+pathname; this reduces the chances a script being tricked into loading a file different from the
+actual library.
 
-
-Another solution is to directly include the library in the script; this is easy if we preprocess our
-scripts with @gnu{} @mfour{}.  We only need to put the following in the script:
-
-@example
-m4_include(libmbfl.sh)
-@end example
-
-@noindent
-then preprocess the script with:
-
-@example
-$ m4 --prefix-builtins --include=/path/to/library \
-         script.sh.m4 >script.sh
-@end example
-
-@noindent
-easy to do in a @file{Makefile}.  The installation directory pathname of the library
-(@file{/path/to/library} in the example) is the output of @code{mbfl-config --libpath}.
-
-It is also interesting to process the script with the following rule of @gnu{} Make: assuming that
-the source scripts are in the @file{src/modules} directory of the source tree:
-
-@example
-vpath	%.sh.m4		$(srcdir)/src/modules
-
-M4      = ...
-M4FLAGS = --prefix-builtins --include=/path/to/library
-
-%.sh: %.sh.m4
-        $(M4) $(M4FLAGS) $(<) | \
-        grep --invert-match -e '^#' -e '^$$' | \
-        sed -e "s/^ \\+//" >$(@@)
-@end example
-
-@noindent
-this will remove all the comments and blank lines, decreasing the size of the script significantly
-if one makes use of verbose comments; note that this will wipe out the @code{#!/bin/bash} first
-line, too.
-
-Usually we want the script to begin with @code{#!/bin/bash} followed by a comment describing the
-license terms.  We can do it by preparing a script like the following:
-
-@example
-#!/bin/bash
-# ... license ...
-
-m4_include(realscript.sh)
-
-### end of file
-@end example
-
-@noindent
-and processing it with the following makefile rule:
-
-@example
-M4      = ...
-M4FLAGS = --prefix-builtins --include=/path/to/library
-
-script.sh: script.sh.m4 realscript.sh
-        $(M4) $(M4FLAGS) $(<) >$(@@)
-@end example
-
-@noindent
-@file{realscript.sh} can be processed as explained above.
-
-At this point, though, it is better to use the @mbfl{} preprocessor.  @ref{preprocessor, Using the
-script preprocessor}.
+To use the preprocessor macros we must process a script's source file with the preprocessor,
+possibly using an appropriate @file{Makefile}; @ref{preprocessor, Using the script preprocessor}.
 
 @c page
 @node overview interactive
@@ -349,7 +281,10 @@ mbfl_file_extension_var
 @noindent
 the first variant will print the result to stdout, while the @code{_var} variant will store the
 result in a ``result variable'' whose name is handed to it as first argument; this mechanism is
-built using the @code{local -n} feature of Bash.  Example:
+built using the @code{local -n} feature of Bash.  The @code{_var} variants are often a bit faster
+because the output variant is often a wrapper for the @code{_var} variant.
+
+Basic @api{} usage example:
 
 @example
 mbfl_file_extension /path/to/file.ext
@@ -360,8 +295,14 @@ mbfl_file_extension_var _RV /path/to/file.ext
 "$_RV"  @result{} ext
 @end example
 
-The @code{_var} variants are often a bit faster because the output variant is often a wrapper for
-the @code{_var} variant.
+@noindent
+read below to understand why we should use the preprocessor and write the code like this:
+
+@example
+mbfl_local_varref(RV)
+mbfl_file_extension_var mbfl_datavar(RV) /path/to/file.ext
+"$RV"   @result{} ext
+@end example
 
 @c ------------------------------------------------------------------------
 
@@ -460,7 +401,7 @@ function main () @{
     echo X=$X >&2
 @}
 function mbfl_func () @{
-    local -n Y=$@{1:?@}
+    mbfl_mandatory_nameref_parameter(Y, 1, the result variable)
     Y=1
 @}
 
@@ -486,9 +427,9 @@ When using @mbfl{} we want to be aware of the following:
 
 @itemize
 @item
-When in doubt about some functions work: we should take a look at the source code.  When doing this
-we must remember that: there is no word splitting when performing variable assignment; so there is
-no need to use double quotes in the following cases:
+When in doubt about how some functions work: we should take a look at the source code.  When doing
+this we must remember that: there is no word splitting when performing variable assignment; so there
+is no need to use double quotes in the following cases:
 
 @example
 alpha=$beta
@@ -508,8 +449,8 @@ esac
 
 @item
 Some functions take a variable name as argument and store in the referenced variable some value; to
-avoid name collision: select a name that starts with @code{p_}.  It is guaranteed that @mbfl{} never
-uses variables with name starting with such a prefix.
+avoid name collision without using the preprocessor: select a name that starts with @code{p_}.  It
+is guaranteed that @mbfl{} never uses variables with name starting with such a prefix.
 
 @item
 The @code{read} built in does word splitting on the text it reads, even when there is a single
