@@ -410,7 +410,7 @@ endif
 
 #### interface to "make check"
 
-MBFL_CHECK_BUILT_TESTS		=		\
+EXTRA_DIST			+=		\
 	tests/arrays.test.m4			\
 	tests/atexit.test.m4			\
 	tests/bash-feature-coproc.test.m4	\
@@ -434,20 +434,10 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/setup.sh				\
 	tests/signaltest.sh
 
-EXTRA_DIST			+= $(MBFL_CHECK_BUILT_TESTS)
-
-CHECK_BUILT_EXAMPLES		=		\
-	examples/compress.sh			\
-	examples/template.sh			\
-	examples/template-actions.sh
-
-check_SCRIPTS			=		\
-	$(CHECK_BUILT_EXAMPLES)			\
-	$(MBFL_CHECK_BUILT_TESTS)
-
-TESTS				=		\
+MBFL_CHECK_BUILT_TESTS		=		\
 	tests/arrays.test			\
 	tests/atexit.test			\
+	tests/bash-feature-coproc.test		\
 	tests/compress.test			\
 	tests/encode.test			\
 	tests/fd.test				\
@@ -463,9 +453,19 @@ TESTS				=		\
 	tests/strings.test			\
 	tests/system.test			\
 	tests/times-and-dates.test		\
-	tests/variables.test			\
-	\
-	tests/bash-feature-coproc.test
+	tests/variables.test
+
+MBFL_CHECK_BUILT_EXAMPLES		=	\
+	examples/compress.sh			\
+	examples/template.sh			\
+	examples/template-actions.sh
+
+check_SCRIPTS			=		\
+	$(MBFL_CHECK_BUILT_EXAMPLES)		\
+	$(MBFL_CHECK_BUILT_TESTS)
+
+TESTS				=		\
+	$(MBFL_CHECK_BUILT_TESTS)
 
 CLEANFILES			+=		\
 	$(MBFL_CHECK_BUILT_TESTS)		\
