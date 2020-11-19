@@ -36,7 +36,7 @@ then
     declare -r mbfl_ORG_PWD=$PWD
 
     declare -i ARGC=0 ARGC1=0 ARG1ST=0
-    declare -a ARGV ARGV1
+    mbfl_declare_numeric_array(ARGV) ARGV1
 
     for ((ARGC1=0; $# > 0; ++ARGC1))
     do

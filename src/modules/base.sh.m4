@@ -102,8 +102,9 @@ MBFL_CREATE_OPTION_PROCEDURES([[[verbose_program]]])
 
 if test "$mbfl_INTERACTIVE" != yes
 then
-    declare -a mbfl_EXIT_CODES mbfl_EXIT_NAMES
-    declare -A mbfl_EXIT_CODES_BY_NAME
+    mbfl_declare_numeric_array(mbfl_EXIT_CODES)
+    mbfl_declare_numeric_array(mbfl_EXIT_NAMES)
+    mbfl_declare_symbolic_array(mbfl_EXIT_CODES_BY_NAME)
     mbfl_EXIT_CODES[0]=0
     mbfl_EXIT_NAMES[0]=success
     mbfl_EXIT_CODES_BY_NAME[success]=0

@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -33,7 +33,7 @@
 ## ------------------------------------------------------------
 
 test "$mbfl_INTERACTIVE" = yes || {
-    declare -a mbfl_signal_HANDLERS
+    mbfl_declare_numeric_array(mbfl_signal_HANDLERS)
     i=0
     { while kill -l $i ; do let ++i; done; } &>/dev/null
     declare -i mbfl_signal_MAX_SIGNUM=$i

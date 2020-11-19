@@ -35,7 +35,7 @@ then
     # set: it is a key in this  array.  If a string does *not* represent
     # the name of an action set: it is not a key in this array.
     #
-    declare -A mbfl_action_sets_EXISTS
+    mbfl_declare_symbolic_array(mbfl_action_sets_EXISTS)
 
     # Associative array: the keys are strings like:
     #
@@ -55,7 +55,7 @@ then
     #   the actions tree: it has no action subset, and the value in this
     #   this array is the special name "NONE".
     #
-    declare -A mbfl_action_sets_SUBSETS
+    mbfl_declare_symbolic_array(mbfl_action_sets_SUBSETS)
 
     # Associative array: the keys are strings like:
     #
@@ -74,7 +74,7 @@ then
     #   script_after_parsing_options_$KEYWORD
     #   script_action_$KEYWORD
     #
-    declare -A mbfl_action_sets_KEYWORDS
+    mbfl_declare_symbolic_array(mbfl_action_sets_KEYWORDS)
 
     # Associative array: the keys are strings like:
     #
@@ -84,12 +84,12 @@ then
     # associated  script  action.   Such   descriptions  are  used  when
     # composing the help screen.
     #
-    declare -A mbfl_action_sets_DESCRIPTIONS
+    mbfl_declare_symbolic_array(mbfl_action_sets_DESCRIPTIONS)
 
     # Associative array: the keys are  the ${ACTION_SET}, the values are
     # strings representing the action command line arguments.
     #
-    declare -A mbfl_action_sets_IDENTIFIERS
+    mbfl_declare_symbolic_array(mbfl_action_sets_IDENTIFIERS)
 
     # If "mbfl_actions_dispatch()"  selects an  action set: its  name is
     # stored  here.   This variable  is  used  when composing  the  help
@@ -359,7 +359,7 @@ END
     #
     # NOTE I  hate how we are  handling the "ITERATOR" array;  but with the limited  features of the
     # shell language: I do not know how else we could do it.  (Marco Maggi; Sep 19, 2020)
-    local -A ITERATOR
+    mbfl_local_numeric_array(ITERATOR)
     ITERATOR[ACTION_SET]='MAIN'
     ITERATOR[COMMANDS_LIST]=$PROGNAME
     ITERATOR[FUNCTIONS_SUFFIX]=$PROGNAME
@@ -369,7 +369,7 @@ END
 
 function mbfl_actions_completion_visit_node () {
     local ACTION_IDENTIFIER KEY
-    local -A TMP
+    mbfl_local_numeric_array(TMP)
 
     mbfl_actions_completion_print_dispatcher
     KEY=${ITERATOR[ACTION_SET]}

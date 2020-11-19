@@ -28,7 +28,7 @@
 #page
 #### global variables
 
-declare -A mbfl_location_HANDLERS
+mbfl_declare_symbolic_array(mbfl_location_HANDLERS)
 declare -i mbfl_location_COUNTER=0
 
 # Identifier from  the atexit module,  associated to the  atexit handler

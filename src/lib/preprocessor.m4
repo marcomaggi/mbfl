@@ -159,6 +159,11 @@ m4_define([[[mbfl_unset_variable]]],[[[unset -v $1]]])
 
 m4_dnl array slots
 
+m4_define([[[mbfl_declare_numeric_array]]],[[[declare -a $1[[[]]]m4_ifelse($2,,,=$2)]]])
+m4_define([[[mbfl_declare_symbolic_array]]],[[[declare -A $1[[[]]]m4_ifelse($2,,,=$2)]]])
+m4_define([[[mbfl_local_numeric_array]]],[[[local -a $1[[[]]]m4_ifelse($2,,,=$2)]]])
+m4_define([[[mbfl_local_symbolic_array]]],[[[local -A $1[[[]]]m4_ifelse($2,,,=$2)]]])
+
 m4_define([[[mbfl_slot_ref]]],[[[${$1[$2]}]]])
 m4_define([[[mbfl_slot_set]]],$1[$2]=$3)
 m4_define([[[mbfl_slots_number]]], ${[[[#]]]$1[@]})

@@ -30,7 +30,7 @@
 #page
 #### parser configuration
 
-declare -A mbfl_semver_CONFIG
+mbfl_declare_symbolic_array(mbfl_semver_CONFIG)
 
 function mbfl_semver_reset_config () {
     mbfl_semver_CONFIG[PARSE_LEADING_V]='optional'

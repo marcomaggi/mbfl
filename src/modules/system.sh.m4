@@ -39,7 +39,7 @@ function mbfl_system_enable_programs () {
 #page
 #### reading entries from /etc/passwd
 
-declare -A mbfl_system_PASSWD_ENTRIES
+mbfl_declare_symbolic_array(mbfl_system_PASSWD_ENTRIES)
 declare -i mbfl_system_PASSWD_COUNT=0
 
 function mbfl_system_passwd_reset () {
@@ -273,7 +273,7 @@ function mbfl_system_user_name_to_numerical_id () {
 #page
 #### reading entries from /etc/group
 
-declare -A mbfl_system_GROUP_ENTRIES
+mbfl_declare_symbolic_array(mbfl_system_GROUP_ENTRIES)
 declare -i mbfl_system_GROUP_COUNT=0
 
 function mbfl_system_group_reset () {

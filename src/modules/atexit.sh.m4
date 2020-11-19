@@ -28,7 +28,7 @@
 #page
 #### global variables
 
-declare -a mbfl_atexit_HANDLERS
+mbfl_declare_numeric_array(mbfl_atexit_HANDLERS)
 declare -i mbfl_atexit_NEXT=0
 
 function mbfl_atexit_enable () {

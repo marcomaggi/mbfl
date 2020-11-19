@@ -29,12 +29,12 @@
 #page
 #### simple finding of external programs
 
-declare -a mbfl_split_PATH
+mbfl_declare_numeric_array(mbfl_split_PATH)
 
 function mbfl_program_split_path () {
     if ((0 == ${#mbfl_split_PATH[@]}))
     then
-	local -a SPLITFIELD
+	mbfl_local_numeric_array(SPLITFIELD)
 	local -i SPLITCOUNT i
 
 	mbfl_string_split "$PATH" :
@@ -109,7 +109,7 @@ function mbfl_program_find () {
 #### program finding functions
 
 if test "$mbfl_INTERACTIVE" != 'yes'
-then declare -A mbfl_program_PATHNAMES
+then mbfl_declare_symbolic_array(mbfl_program_PATHNAMES)
 fi
 
 function mbfl_declare_program () {

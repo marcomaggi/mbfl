@@ -37,12 +37,12 @@
 if test "$mbfl_INTERACTIVE" = 'yes'
 then
     declare -i mbfl_getopts_INDEX=0
-    declare -a mbfl_getopts_KEYWORDS
-    declare -a mbfl_getopts_DEFAULTS
-    declare -a mbfl_getopts_BRIEFS
-    declare -a mbfl_getopts_LONGS
-    declare -a mbfl_getopts_HASARG
-    declare -a mbfl_getopts_DESCRIPTION
+    mbfl_declare_numeric_array(mbfl_getopts_KEYWORDS)
+    mbfl_declare_numeric_array(mbfl_getopts_DEFAULTS)
+    mbfl_declare_numeric_array(mbfl_getopts_BRIEFS)
+    mbfl_declare_numeric_array(mbfl_getopts_LONGS)
+    mbfl_declare_numeric_array(mbfl_getopts_HASARG)
+    mbfl_declare_numeric_array(mbfl_getopts_DESCRIPTION)
 fi
 
 function mbfl_getopts_reset () {
@@ -54,12 +54,12 @@ function mbfl_getopts_reset () {
     unset mbfl_getopts_DESCRIPTION
 
     mbfl_getopts_INDEX=0
-    declare -a mbfl_getopts_KEYWORDS
-    declare -a mbfl_getopts_DEFAULTS
-    declare -a mbfl_getopts_BRIEFS
-    declare -a mbfl_getopts_LONGS
-    declare -a mbfl_getopts_HASARG
-    declare -a mbfl_getopts_DESCRIPTION
+    mbfl_declare_numeric_array(mbfl_getopts_KEYWORDS)
+    mbfl_declare_numeric_array(mbfl_getopts_DEFAULTS)
+    mbfl_declare_numeric_array(mbfl_getopts_BRIEFS)
+    mbfl_declare_numeric_array(mbfl_getopts_LONGS)
+    mbfl_declare_numeric_array(mbfl_getopts_HASARG)
+    mbfl_declare_numeric_array(mbfl_getopts_DESCRIPTION)
 }
 
 #page

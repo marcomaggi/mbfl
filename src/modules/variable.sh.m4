@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018 Marco Maggi
+# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -83,7 +83,8 @@ function mbfl_variable_array_to_colon_variable () {
 function mbfl_variable_colon_variable_drop_duplicate () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
     local item
-    local -a mbfl_FIELDS FIELDS
+    mbfl_local_numeric_array(mbfl_FIELDS)
+    mbfl_local_numeric_array(FIELDS)
     local -i dimension count i
 
     mbfl_variable_colon_variable_to_array "$COLON_VARIABLE"

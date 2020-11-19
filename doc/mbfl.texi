@@ -1236,6 +1236,65 @@ In addition to the macros documented here, we can manipulate arrays with some fu
 @ref{variables arrays, Manipulating arrays with functions}.
 
 
+@menu
+* preprocessor arrays declare:: Declaring arrays.
+* preprocessor arrays slots::   Accessing slots.
+* preprocessor arrays inspect:: Inspecting arrays.
+@end menu
+
+@c page
+@node preprocessor arrays declare
+@subsection Declaring arrays
+
+
+@deffn {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME}, @var{INIT})
+Respectively expand into the statements:
+
+@example
+declare -A @var{ARRAYNAME}
+declare -A @var{ARRAYNAME}=$@var{INIT}
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_local_symbolic_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_local_symbolic_array (@var{ARRAYNAME}, @var{INIT})
+Respectively expand into the statements:
+
+@example
+local -A @var{ARRAYNAME}
+local -A @var{ARRAYNAME}=$@var{INIT}
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_declare_numeric_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_declare_numeric_array (@var{ARRAYNAME}, @var{INIT})
+Respectively expand into the statements:
+
+@example
+declare -a @var{ARRAYNAME}
+declare -a @var{ARRAYNAME}=$@var{INIT}
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_local_numeric_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_local_numeric_array (@var{ARRAYNAME}, @var{INIT})
+Respectively expand into the statements:
+
+@example
+local -a @var{ARRAYNAME}
+local -a @var{ARRAYNAME}=$@var{INIT}
+@end example
+@end deffn
+
+@c page
+@node preprocessor arrays slots
+@subsection Accessing slots
+
+
 @deffn {Preprocessor Macros} mbfl_slot_ref (@var{ARRAYNAME}, @var{KEY})
 Expands into the expression:
 
@@ -1260,6 +1319,10 @@ Expands into the expression:
 which stores the value of @var{EXPR} in the slot @var{KEY} of the array variable @var{ARRAYNAME}.
 This macro works with both indexed and associative arrays.
 @end deffn
+
+@c page
+@node preprocessor arrays inspect
+@subsection Inspecting arrays
 
 
 @deffn {Preprocessor Macro} mbfl_slots_number (@var{ARRAYNAME})

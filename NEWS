@@ -126,7 +126,13 @@ changes!
     mbfl_program_set_exec_flags
     mbfl_program_reset_exec_flags
 
-* Started arrays module.
+* Started arrays module.  Added preprocessor macros for arrays handling:
+
+    mbfl_declare_symbolic_array
+    mbfl_declare_numeric_array
+    mbfl_local_symbolic_array
+    mbfl_local_numeric_array
+    mbfl_slots_number
 
 * Added  functions  to  the  system   module  to  inspect  entries  from
   /etc/passwd and /etc/group.
@@ -244,10 +250,6 @@ changes!
 * Added functions to the location module:
 
     mbfl_location_handler_suspend_testing
-
-* Added preprocessor macros for arrays handling:
-
-    mbfl_slots_number
 
 * Total  reorganisation  of  script   termination  facilities,  see  the
   documentation node "exit".  Added the functions:
