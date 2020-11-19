@@ -32,7 +32,7 @@
 mbfl_declare_numeric_array(mbfl_split_PATH)
 
 function mbfl_program_split_path () {
-    if ((0 == ${#mbfl_split_PATH[@]}))
+    if ((0 == mbfl_slots_number(mbfl_split_PATH)))
     then
 	mbfl_local_numeric_array(SPLITFIELD)
 	local -i SPLITCOUNT i

@@ -399,9 +399,9 @@ function mbfl_semver_compare_prerelease_version () {
 
     RV=0
 
-    if (( ${#ONE_IDENTIFIERS[@]} < ${#TWO_IDENTIFIERS[@]} ))
-    then MIN=${#ONE_IDENTIFIERS[@]}
-    else MIN=${#TWO_IDENTIFIERS[@]}
+    if (( mbfl_slots_number(ONE_IDENTIFIERS) < ${#TWO_IDENTIFIERS[@]} ))
+    then MIN=mbfl_slots_number(ONE_IDENTIFIERS)
+    else MIN=mbfl_slots_number(TWO_IDENTIFIERS)
     fi
 
     #echo ${FUNCNAME}: MIN=$MIN >&2
@@ -441,9 +441,9 @@ function mbfl_semver_compare_prerelease_version () {
     then
 	# All the identifiers compared  so far are equal.  If a  specification has more identifiers:
 	# it is greater.
-	if   (( ${#ONE_IDENTIFIERS[@]} < ${#TWO_IDENTIFIERS[@]} ))
+	if   (( mbfl_slots_number(ONE_IDENTIFIERS) < ${#TWO_IDENTIFIERS[@]} ))
 	then RV=-1
-	elif (( ${#ONE_IDENTIFIERS[@]} > ${#TWO_IDENTIFIERS[@]} ))
+	elif (( mbfl_slots_number(ONE_IDENTIFIERS) > ${#TWO_IDENTIFIERS[@]} ))
 	then RV=+1
 	fi
     fi

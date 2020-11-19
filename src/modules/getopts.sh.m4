@@ -591,13 +591,13 @@ function mbfl_getopts_p_test_option () {
 function mbfl_getopts_print_long_switches () {
     local i=0
 
-    for ((i=0; $i < ${#mbfl_getopts_LONGS[@]}; ++i))
+    for ((i=0; $i < mbfl_slots_number(mbfl_getopts_LONGS); ++i))
     do
         if test -n "${mbfl_getopts_LONGS[$i]}"
         then printf -- '--%s' "${mbfl_getopts_LONGS[$i]}"
         else continue
         fi
-        if (( (i+1) < ${#mbfl_getopts_LONGS[@]}))
+        if (( (i+1) < mbfl_slots_number(mbfl_getopts_LONGS)))
 	then echo -n ' '
 	fi
     done

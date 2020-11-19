@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2018 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -31,7 +31,7 @@
 
 function mbfl_array_is_empty () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF, 1, array variable name)
-    if ((0 == ${#mbfl_ARRAY_VARREF[@]}))
+    if ((0 == mbfl_slots_number(mbfl_ARRAY_VARREF)))
     then return 0
     else return 1
     fi
@@ -39,7 +39,7 @@ function mbfl_array_is_empty () {
 
 function mbfl_array_is_not_empty () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF, 1, array variable name)
-    if ((0 != ${#mbfl_ARRAY_VARREF[@]}))
+    if ((0 != mbfl_slots_number(mbfl_ARRAY_VARREF)))
     then return 0
     else return 1
     fi
@@ -48,12 +48,12 @@ function mbfl_array_is_not_empty () {
 function mbfl_array_length_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
     mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF,  2, array variable name)
-    mbfl_RESULT_VARREF=${#mbfl_ARRAY_VARREF[@]}
+    mbfl_RESULT_VARREF=mbfl_slots_number(mbfl_ARRAY_VARREF)
 }
 
 function mbfl_array_length () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF, 1, array variable name)
-    echo ${#mbfl_ARRAY_VARREF[@]}
+    echo mbfl_slots_number(mbfl_ARRAY_VARREF)
 }
 
 ### end of file

@@ -63,7 +63,7 @@ function mbfl_string_quote_var () {
     local -i mbfl_I
     local mbfl_ch
     mbfl_RESULT_VARREF=
-    for ((mbfl_I=0; mbfl_I < ${#mbfl_STRING}; ++mbfl_I))
+    for ((mbfl_I=0; mbfl_I < mbfl_string_len(mbfl_STRING); ++mbfl_I))
     do
         mbfl_ch=mbfl_string_idx(mbfl_STRING, $mbfl_I)
         if test "$mbfl_ch" = \\
@@ -88,14 +88,14 @@ function mbfl_string_length () {
     # We  want this  function to  accept empty  strings, so  we use  the
     # "optional" macro here.
     mbfl_optional_parameter(STRING, 1)
-    echo ${#STRING}
+    echo mbfl_string_len(STRING)
 }
 function mbfl_string_length_equal_to () {
     mbfl_mandatory_integer_parameter(LENGTH, 1, length of string)
     # We  want this  function to  accept empty  strings, so  we use  the
     # "optional" macro here.
     mbfl_optional_parameter(STRING, 2)
-    test ${#STRING} -eq $LENGTH
+    test mbfl_string_len(STRING) -eq $LENGTH
 }
 function mbfl_string_is_empty () {
     # We  want this  function to  accept empty  strings, so  we use  the
@@ -116,7 +116,7 @@ function mbfl_string_first_var () {
     mbfl_mandatory_parameter(mbfl_CHAR, 3, char)
     mbfl_optional_parameter(mbfl_BEGIN, 4, 0)
     local -i mbfl_I
-    for ((mbfl_I=mbfl_BEGIN; mbfl_I < ${#mbfl_STRING}; ++mbfl_I))
+    for ((mbfl_I=mbfl_BEGIN; mbfl_I < mbfl_string_len(mbfl_STRING); ++mbfl_I))
     do
 	if test "mbfl_string_idx(mbfl_STRING, $mbfl_I)" = "$mbfl_CHAR"
 	then
@@ -147,7 +147,7 @@ function mbfl_string_last_var () {
     mbfl_mandatory_parameter(mbfl_CHAR, 3, char)
     mbfl_optional_parameter(mbfl_BEGIN, 4)
     local -i mbfl_I
-    for ((mbfl_I=${mbfl_BEGIN:-((${#mbfl_STRING}-1))}; mbfl_I >= 0; --mbfl_I))
+    for ((mbfl_I=${mbfl_BEGIN:-((mbfl_string_len(mbfl_STRING)-1))}; mbfl_I >= 0; --mbfl_I))
     do
 	if test "mbfl_string_idx(mbfl_STRING, $mbfl_I)" = "$mbfl_CHAR"
 	then
@@ -221,14 +221,14 @@ function mbfl_string_chars () {
     mbfl_mandatory_parameter(STRING, 1, string)
     local -i i j
     local ch
-    for ((i=0, j=0; i < ${#STRING}; ++i, ++j))
+    for ((i=0, j=0; i < mbfl_string_len(STRING); ++i, ++j))
     do
         ch=mbfl_string_idx(STRING, $i)
         if test "$ch" != $'\\'
         then SPLITFIELD[$j]=$ch
         else
             let ++i
-            if test $i != ${#STRING}
+            if test $i != mbfl_string_len(STRING)
             then SPLITFIELD[$j]=${ch}mbfl_string_idx(STRING, $i)
             else SPLITFIELD[$j]=$ch
             fi
@@ -243,16 +243,16 @@ function mbfl_string_split () {
     local -i i j k=0 first=0
     SPLITFIELD=()
     SPLITCOUNT=0
-    for ((i=0; i < ${#STRING}; ++i))
+    for ((i=0; i < mbfl_string_len(STRING); ++i))
     do
-        if (( (i + ${#SEPARATOR}) > ${#STRING}))
+        if (( (i + mbfl_string_len(SEPARATOR)) > mbfl_string_len(STRING)))
 	then break
 	elif mbfl_string_equal_substring "$STRING" $i "$SEPARATOR"
 	then
 	    # Here $i is the index of the first char in the separator.
 	    SPLITFIELD[$k]=${STRING:$first:$((i - first))}
 	    let ++k
-	    let i+=${#SEPARATOR}-1
+	    let i+=mbfl_string_len(SEPARATOR)-1
 	    # Place  the "first"  marker to  the beginning  of the  next
 	    # substring; "i" will  be incremented by "for",  that is why
 	    # we do "+1" here.
@@ -271,7 +271,7 @@ function mbfl_string_split_blanks () {
 
     SPLITFIELD=()
     SPLITCOUNT=0
-    for ((i=0; i < ${#STRING}; ++i))
+    for ((i=0; i < mbfl_string_len(STRING); ++i))
     do
 	CH=mbfl_string_idx(STRING, $i)
 	if test ' ' = "$CH" -o $'\t' = "$CH"
@@ -280,7 +280,7 @@ function mbfl_string_split_blanks () {
 	    SPLITFIELD[${#SPLITFIELD[@]}]=$ACCUM
 	    ACCUM=
 	    # Consume all the adjacent blanks, if any.
-	    for ((i=$i; i < ${#STRING}; ++i))
+	    for ((i=$i; i < mbfl_string_len(STRING); ++i))
 	    do
 		CH=mbfl_string_idx(STRING, $((i+1)))
 		if test ' ' != "$CH" -a $'\t' != "$CH"
@@ -351,10 +351,10 @@ function mbfl_string_equal_substring () {
     mbfl_mandatory_parameter(POSITION, 2, position)
     mbfl_mandatory_parameter(PATTERN,  3, pattern)
     local i
-    if (( (POSITION + ${#PATTERN}) > ${#STRING} ))
+    if (( (POSITION + mbfl_string_len(PATTERN)) > mbfl_string_len(STRING) ))
     then return 1
     fi
-    for ((i=0; i < "${#PATTERN}"; ++i))
+    for ((i=0; i < "mbfl_string_len(PATTERN)"; ++i))
     do
 	if test "mbfl_string_idx(PATTERN, $i)" != "mbfl_string_idx(STRING, $(($POSITION+$i)))"
 	then return 1
@@ -404,9 +404,9 @@ function mbfl_p_string_is () {
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$2
     local -i i
-    if ((0 < ${#STRING}))
+    if ((0 < mbfl_string_len(STRING)))
     then
-	for ((i=0; i < ${#STRING}; ++i))
+	for ((i=0; i < mbfl_string_len(STRING); ++i))
 	do
 	    if ! "mbfl_string_is_${CLASS}_char" "mbfl_string_idx(STRING, $i)"
 	    then return 1
@@ -468,7 +468,7 @@ function mbfl_string_is_network_hostname () {
     # answer by Sakari A. Maaranen, last visited Nov 23, 2018.
     local -r REX="^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$"
 
-    if ((${#STRING} <= 255)) && [[ $STRING =~ $REX ]]
+    if ((mbfl_string_len(STRING) <= 255)) && [[ $STRING =~ $REX ]]
     then return 0
     fi
     return 1
@@ -485,7 +485,7 @@ function mbfl_string_is_network_ip_address () {
     # answer by Jorge Ferreira, last visited Nov 23, 2018.
     local -r REX="^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
 
-    if ((${#STRING} <= 255)) && [[ $STRING =~ $REX ]]
+    if ((mbfl_string_len(STRING) <= 255)) && [[ $STRING =~ $REX ]]
     then return 0
     fi
     return 1
@@ -565,9 +565,9 @@ function mbfl_string_strip_carriage_return_var () {
     then
 	mbfl_local_varref(CH)
 
-	mbfl_string_index_var mbfl_datavar(CH) "$LINE" $((${#LINE} - 1))
+	mbfl_string_index_var mbfl_datavar(CH) "$LINE" $((mbfl_string_len(LINE) - 1))
 	if mbfl_string_equal "$CH" $'\r'
-	then RESULT_NAMEREF=${LINE:0:((${#LINE} - 1))}
+	then RESULT_NAMEREF=${LINE:0:((mbfl_string_len(LINE) - 1))}
 	else RESULT_NAMEREF=$LINE
 	fi
     fi

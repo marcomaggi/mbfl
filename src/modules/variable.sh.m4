@@ -30,7 +30,7 @@
 #page
 function mbfl_variable_find_in_array () {
     mbfl_mandatory_parameter(ELEMENT, 1, element parameter)
-    local -i i ARRAY_DIM=${#mbfl_FIELDS[*]}
+    local -i i ARRAY_DIM=mbfl_slots_number(mbfl_FIELDS)
     for ((i=0; i < ARRAY_DIM; ++i))
     do
 	if mbfl_string_equal "${mbfl_FIELDS[$i]}" "$ELEMENT"
@@ -68,7 +68,7 @@ function mbfl_variable_colon_variable_to_array () {
 }
 function mbfl_variable_array_to_colon_variable () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
-    local -i i dimension=${#mbfl_FIELDS[*]}
+    local -i i dimension=mbfl_slots_number(mbfl_FIELDS)
 
     if test $dimension = 0
     then eval $COLON_VARIABLE=
@@ -88,7 +88,7 @@ function mbfl_variable_colon_variable_drop_duplicate () {
     local -i dimension count i
 
     mbfl_variable_colon_variable_to_array "$COLON_VARIABLE"
-    dimension=${#mbfl_FIELDS[*]}
+    dimension=mbfl_slots_number(mbfl_FIELDS)
 
     FIELDS=("${mbfl_FIELDS[@]}")
     mbfl_FIELDS=()
@@ -117,8 +117,15 @@ function mbfl_variable_alloc () {
     while true
     do
 	mbfl_NAME=mbfl_u_variable_${RANDOM}
+	# How do we test if there is a collision  with variable names?  We test the name as a scalar
+	# variable name and verify its string length, then we  test the name as an array name and we
+	# verify its number of slots.  For some reason I cannot make:
+	#
+	#    test -v $mbfl_NAME
+	#
+	# work (Marco Maggi; Nov 19, 2020).
 	local -n mbfl_REF=$mbfl_NAME
-	if ((0 == ${#mbfl_REF} && 0 == ${#mbfl_REF[@]}))
+	if ((0 == mbfl_string_len(mbfl_REF) && 0 == mbfl_slots_number(mbfl_REF)))
 	then break
 	fi
     done
