@@ -57,7 +57,7 @@ function signaltest () {
     fi
 
     dotest-debug "executing test script"
-    PATH="$PATH" $BASH signaltest.sh ${SIGNALTEST_FLAGS} >"$tmpfile" &
+    PATH="$PATH" $BASH "$testsdir"/signaltest.sh ${SIGNALTEST_FLAGS} >"$tmpfile" &
     pid=$!
     dotest-debug "test script pid: $pid"
 

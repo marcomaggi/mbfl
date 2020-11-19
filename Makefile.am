@@ -482,19 +482,17 @@ MBFL_TESTS_LIBMBFLTEST	= $(builddir)/src/lib/libmbfltest.sh
 MBFL_TESTS_MBFLPP	= $(builddir)/src/bin/mbflpp.sh
 MBFL_TESTS_ENV		=  MBFL_TESTS_LIBMBFL=$(MBFL_TESTS_LIBMBFL); export MBFL_TESTS_LIBMBFL;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLTEST=$(MBFL_TESTS_LIBMBFLTEST); export MBFL_TESTS_LIBMBFLTEST;
-# We reset PATH so we can load files with the "source" command.
-MBFL_TESTS_ENV		+= PATH=$(srcdir)/tests:$(builddir)/tests:$(srcdir)/src/lib:$(PATH); export PATH;
 # We  set TMPDIR  because  if the  "/tmp" directory  is  mounted on  a
 # separate partition with "noexec"  attribute: tests for executability
 # of files  will fail if  the temporary  test files are  created under
 # "/tmp".
 MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp; export TMPDIR;
-# We need to access some files in the examples dir.
+# We need to access some files in the examples dir and the tests dir.
+MBFL_TESTS_ENV		+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_TESTS_ENV		+= examplesdir=$(builddir)/examples; export examplesdir;
-MBFL_TESTS_ENV		+= MBFLTEST_LIBRARY=$(builddir)/src/lib/libmbfltest.sh; export MBFLTEST_LIBRARY;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_TESTS_MBFLPP)
-MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash --mbfl-library=$(MBFL_TESTS_LIBMBFL)
+MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash
 
 MBFL_TESTS_PREREQUISITES	=		\
 	$(MBFL_TESTS_LIBMBFL)			\
@@ -564,6 +562,8 @@ MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:$(builddir)/tests:$(DESTDIR)$(bindir):
 MBFL_INSTCHECK_ENV	+= PATH="`mbfl-config --libpath`":$$PATH; export PATH;
 MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFL="`mbfl-config --library`"; export MBFL_TESTS_LIBMBFL;
 MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLTEST="`mbfl-config --testlib`"; export MBFL_TESTS_LIBMBFLTEST;
+MBFL_INSTCHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;
+MBFL_INSTCHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;
 MBFL_INSTCHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_INSTCHECK_RUN	= $(MBFL_INSTCHECK_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_INSTCHECK_FLAGS)
