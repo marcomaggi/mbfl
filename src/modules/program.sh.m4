@@ -39,7 +39,7 @@ function mbfl_program_split_path () {
 
 	mbfl_string_split "$PATH" :
 	for ((i=0; i < SPLITCOUNT; ++i))
-	do mbfl_split_PATH[$i]=${SPLITFIELD[$i]}
+	do mbfl_split_PATH[$i]=mbfl_slot_ref(SPLITFIELD, $i)
 	done
 	return_success
     else return_failure
@@ -129,7 +129,7 @@ function mbfl_program_validate_declared () {
 
     for PROGRAM in "${!mbfl_program_PATHNAMES[@]}"
     do
-	PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$PROGRAM"]}
+	PROGRAM_PATHNAME=mbfl_slot_ref(mbfl_program_PATHNAMES, "$PROGRAM")
 	# NOTE We do *not* want to test for  the executability of the program here!  This is because
 	# we also  want to find a  program that is executable  only by some other  user, for example
 	# "/sbin/ifconfig" is executable only by root (or it should be).
@@ -145,7 +145,7 @@ function mbfl_program_validate_declared () {
 function mbfl_program_found_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(mbfl_PROGRAM,               2, program name)
-    local -r mbfl_PROGRAM_PATHNAME=${mbfl_program_PATHNAMES["$mbfl_PROGRAM"]}
+    local -r mbfl_PROGRAM_PATHNAME=mbfl_slot_ref(mbfl_program_PATHNAMES, "$mbfl_PROGRAM")
 
     # NOTE We do *not* want  to test for the executability of the program  here!  This is because we
     # also  want to  find  a  program that  is  executable  only by  some  other  user, for  example

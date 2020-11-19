@@ -66,13 +66,13 @@ function mbfl_location_leave () {
 
     if ((0 < mbfl_location_COUNTER))
     then
-	local -i i HANDLERS_COUNT=${mbfl_location_HANDLERS[${mbfl_location_COUNTER}:count]}
+	local -i i HANDLERS_COUNT=mbfl_slot_ref(mbfl_location_HANDLERS, ${mbfl_location_COUNTER}:count)
 	local HANDLER HANDLER_KEY
 
 	for ((i=HANDLERS_COUNT; 0 < i; --i))
 	do
 	    HANDLER_KEY=${mbfl_location_COUNTER}:${i}
-	    HANDLER=${mbfl_location_HANDLERS[${HANDLER_KEY}]}
+	    HANDLER=mbfl_slot_ref(mbfl_location_HANDLERS, ${HANDLER_KEY})
 	    #echo --$FUNCNAME--handler_key--${HANDLER_KEY}-- >&2
 	    if mbfl_string_is_not_empty $HANDLER
 	    then eval $HANDLER
@@ -130,10 +130,10 @@ function mbfl_location_handler () {
 	local COUNT_KEY=${mbfl_location_COUNTER}:count
 	let ++mbfl_location_HANDLERS[${COUNT_KEY}]
 
-	local HANDLER_KEY=${mbfl_location_COUNTER}:${mbfl_location_HANDLERS[${COUNT_KEY}]}
+	local HANDLER_KEY=${mbfl_location_COUNTER}:mbfl_slot_ref(mbfl_location_HANDLERS, ${COUNT_KEY})
 	mbfl_location_HANDLERS[${HANDLER_KEY}]=${HANDLER}
 
-	#echo --$FUNCNAME--count-key--${mbfl_location_HANDLERS[${COUNT_KEY}]}--handler-key--${HANDLER_KEY} >&2
+	#echo --$FUNCNAME--count-key--mbfl_slot_ref(mbfl_location_HANDLERS, ${COUNT_KEY})--handler-key--${HANDLER_KEY} >&2
     else
 	mbfl_message_error 'attempt to register a location handler outside any location'
 	exit_because_no_location

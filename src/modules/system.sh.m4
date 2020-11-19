@@ -60,13 +60,13 @@ function mbfl_system_passwd_read () {
 	    do
 		if [[ $LINE =~ $REX ]]
 		then
-		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:name"]=${BASH_REMATCH[1]}
-		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:passwd"]=${BASH_REMATCH[2]}
-		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:uid"]=${BASH_REMATCH[3]}
-		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gid"]=${BASH_REMATCH[4]}
-		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gecos"]=${BASH_REMATC[5]}
-		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:dir"]=${BASH_REMATCH[6]}
-		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:shell"]=${BASH_REMATCH[7]}
+		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:name"]=mbfl_slot_ref(BASH_REMATCH, 1)
+		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:passwd"]=mbfl_slot_ref(BASH_REMATCH, 2)
+		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:uid"]=mbfl_slot_ref(BASH_REMATCH, 3)
+		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gid"]=mbfl_slot_ref(BASH_REMATCH, 4)
+		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:gecos"]=mbfl_slot_ref(BASH_REMATC, 5)
+		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:dir"]=mbfl_slot_ref(BASH_REMATCH, 6)
+		    mbfl_system_PASSWD_ENTRIES["${mbfl_system_PASSWD_COUNT}:shell"]=mbfl_slot_ref(BASH_REMATCH, 7)
 		    let ++mbfl_system_PASSWD_COUNT
 		else
 		    :
@@ -92,13 +92,13 @@ function mbfl_system_passwd_print_entries () {
 
     for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
     do
-	printf "name='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
-	printf "passwd='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:passwd]}"
-	printf "uid=%d "	"${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
-	printf "gid=%d "	"${mbfl_system_PASSWD_ENTRIES[${i}:gid]}"
-	printf "gecos='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:gecos]}"
-	printf "dir='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:dir]}"
-	printf "shell='%s'\n"	"${mbfl_system_PASSWD_ENTRIES[${i}:shell]}"
+	printf "name='%s' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:name)"
+	printf "passwd='%s' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:passwd)"
+	printf "uid=%d "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:uid)"
+	printf "gid=%d "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:gid)"
+	printf "gecos='%s' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:gecos)"
+	printf "dir='%s' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:dir)"
+	printf "shell='%s'\n"	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:shell)"
     done
 }
 
@@ -108,13 +108,13 @@ function mbfl_system_passwd_print_entries_as_xml () {
     for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
     do
 	printf '<entry '
-	printf "name='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
-	printf "passwd='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:passwd]}"
-	printf "uid='%d' "	"${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
-	printf "gid='%d' "	"${mbfl_system_PASSWD_ENTRIES[${i}:gid]}"
-	printf "gecos='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:gecos]}"
-	printf "dir='%s' "	"${mbfl_system_PASSWD_ENTRIES[${i}:dir]}"
-	printf "shell='%s'"	"${mbfl_system_PASSWD_ENTRIES[${i}:shell]}"
+	printf "name='%s' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:name)"
+	printf "passwd='%s' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:passwd)"
+	printf "uid='%d' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:uid)"
+	printf "gid='%d' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:gid)"
+	printf "gecos='%s' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:gecos)"
+	printf "dir='%s' "	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:dir)"
+	printf "shell='%s'"	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:shell)"
 	printf '/>\n'
     done
 }
@@ -125,13 +125,13 @@ function mbfl_system_passwd_print_entries_as_json () {
     for ((i=0; i < mbfl_system_PASSWD_COUNT; ++i))
     do
 	printf '"entry": { '
-	printf '"name": "%s", '		"${mbfl_system_PASSWD_ENTRIES[${i}:name]}"
-	printf '"passwd": "%s", '	"${mbfl_system_PASSWD_ENTRIES[${i}:passwd]}"
-	printf '"uid": %d, '		"${mbfl_system_PASSWD_ENTRIES[${i}:uid]}"
-	printf '"gid": %d, '		"${mbfl_system_PASSWD_ENTRIES[${i}:gid]}"
-	printf '"gecos": "%s", '	"${mbfl_system_PASSWD_ENTRIES[${i}:gecos]}"
-	printf '"dir": "%s", '		"${mbfl_system_PASSWD_ENTRIES[${i}:dir]}"
-	printf '"shell": "%s"'		"${mbfl_system_PASSWD_ENTRIES[${i}:shell]}"
+	printf '"name": "%s", '		"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:name)"
+	printf '"passwd": "%s", '	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:passwd)"
+	printf '"uid": %d, '		"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:uid)"
+	printf '"gid": %d, '		"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:gid)"
+	printf '"gecos": "%s", '	"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:gecos)"
+	printf '"dir": "%s", '		"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:dir)"
+	printf '"shell": "%s"'		"mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${i}:shell)"
 	printf ' }\n'
     done
 }
@@ -143,11 +143,11 @@ m4_define([[[MBFL_PASSWD_DECLARE_GETTER]]],[[[
 function mbfl_system_passwd_get_$1_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
     mbfl_mandatory_integer_parameter(mbfl_INDEX, 2, passwd entry index)
-    mbfl_RESULT_VARREF=${mbfl_system_PASSWD_ENTRIES[${mbfl_INDEX}:$1]}
+    mbfl_RESULT_VARREF=mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${mbfl_INDEX}:$1)
 }
 function mbfl_system_passwd_get_$1 () {
     mbfl_mandatory_integer_parameter(INDEX, 1, passwd entry index)
-    echo "${mbfl_system_PASSWD_ENTRIES[${INDEX}:$1]}"
+    echo "mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${INDEX}:$1)"
 }
 ]]])
 MBFL_PASSWD_DECLARE_GETTER(name)
@@ -168,7 +168,7 @@ function mbfl_system_passwd_find_entry_by_name_var () {
 
     for ((mbfl_I=0; mbfl_I < mbfl_system_PASSWD_COUNT; ++mbfl_I))
     do
-	if mbfl_string_equal "$mbfl_THE_NAME" "${mbfl_system_PASSWD_ENTRIES[${mbfl_I}:name]}"
+	if mbfl_string_equal "$mbfl_THE_NAME" "mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${mbfl_I}:name)"
 	then
 	    mbfl_RESULT_VARREF=$mbfl_I
 	    return 0
@@ -195,7 +195,7 @@ function mbfl_system_passwd_find_entry_by_uid_var () {
 
     for ((mbfl_I=0; mbfl_I < mbfl_system_PASSWD_COUNT; ++mbfl_I))
     do
-	if mbfl_string_equal "$mbfl_THE_UID" "${mbfl_system_PASSWD_ENTRIES[${mbfl_I}:uid]}"
+	if mbfl_string_equal "$mbfl_THE_UID" "mbfl_slot_ref(mbfl_system_PASSWD_ENTRIES, ${mbfl_I}:uid)"
 	then
 	    mbfl_RESULT_VARREF=$mbfl_I
 	    return 0
@@ -294,21 +294,21 @@ function mbfl_system_group_read () {
 	    do
 		if [[ $LINE =~ $REX ]]
 		then
-		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:name"]=${BASH_REMATCH[1]}
-		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:passwd"]=${BASH_REMATCH[2]}
-		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:gid"]=${BASH_REMATCH[3]}
-		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:users"]=${BASH_REMATCH[4]}
+		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:name"]=mbfl_slot_ref(BASH_REMATCH, 1)
+		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:passwd"]=mbfl_slot_ref(BASH_REMATCH, 2)
+		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:gid"]=mbfl_slot_ref(BASH_REMATCH, 3)
+		    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:users"]=mbfl_slot_ref(BASH_REMATCH, 4)
 
 		    # Let's parse the "users" field.
-		    if mbfl_string_is_not_empty "${mbfl_system_GROUP_ENTRIES[${mbfl_system_GROUP_COUNT}:users]}"
+		    if mbfl_string_is_not_empty "mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${mbfl_system_GROUP_COUNT}:users)"
 		    then
 			{
 			    local SPLITFIELD
 			    local -i SPLITCOUNT i
-			    mbfl_string_split "${mbfl_system_GROUP_ENTRIES[${mbfl_system_GROUP_COUNT}:users]}" ','
+			    mbfl_string_split "mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${mbfl_system_GROUP_COUNT}:users)" ','
 			    mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:users:count"]=$SPLITCOUNT
 			    for ((i=0; i < SPLITCOUNT; ++i))
-			    do mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:users:${i}"]=${SPLITFIELD[$i]}
+			    do mbfl_system_GROUP_ENTRIES["${mbfl_system_GROUP_COUNT}:users:${i}"]=mbfl_slot_ref(SPLITFIELD, $i)
 			    done
 			}
 		    fi
@@ -336,10 +336,10 @@ function mbfl_system_group_print_entries () {
 
     for ((i=0; i < mbfl_system_GROUP_COUNT; ++i))
     do
-	printf "name='%s' "	"${mbfl_system_GROUP_ENTRIES[${i}:name]}"
-	printf "passwd='%s' "	"${mbfl_system_GROUP_ENTRIES[${i}:passwd]}"
-	printf "gid=%d "	"${mbfl_system_GROUP_ENTRIES[${i}:gid]}"
-	printf "users='%s'\n"	"${mbfl_system_GROUP_ENTRIES[${i}:users]}"
+	printf "name='%s' "	"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:name)"
+	printf "passwd='%s' "	"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:passwd)"
+	printf "gid=%d "	"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:gid)"
+	printf "users='%s'\n"	"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:users)"
     done
 }
 
@@ -349,10 +349,10 @@ function mbfl_system_group_print_entries_as_xml () {
     for ((i=0; i < mbfl_system_GROUP_COUNT; ++i))
     do
 	printf '<entry '
-	printf "name='%s' "	"${mbfl_system_GROUP_ENTRIES[${i}:name]}"
-	printf "passwd='%s' "	"${mbfl_system_GROUP_ENTRIES[${i}:passwd]}"
-	printf "gid='%d' "	"${mbfl_system_GROUP_ENTRIES[${i}:gid]}"
-	printf "users='%s'"	"${mbfl_system_GROUP_ENTRIES[${i}:users]}"
+	printf "name='%s' "	"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:name)"
+	printf "passwd='%s' "	"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:passwd)"
+	printf "gid='%d' "	"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:gid)"
+	printf "users='%s'"	"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:users)"
 	printf '/>\n'
     done
 }
@@ -363,10 +363,10 @@ function mbfl_system_group_print_entries_as_json () {
     for ((i=0; i < mbfl_system_GROUP_COUNT; ++i))
     do
 	printf '"entry": { '
-	printf '"name": "%s", '		"${mbfl_system_GROUP_ENTRIES[${i}:name]}"
-	printf '"passwd": "%s", '	"${mbfl_system_GROUP_ENTRIES[${i}:passwd]}"
-	printf '"gid": %d, '		"${mbfl_system_GROUP_ENTRIES[${i}:gid]}"
-	printf '"users": "%s"'		"${mbfl_system_GROUP_ENTRIES[${i}:users]}"
+	printf '"name": "%s", '		"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:name)"
+	printf '"passwd": "%s", '	"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:passwd)"
+	printf '"gid": %d, '		"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:gid)"
+	printf '"users": "%s"'		"mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${i}:users)"
 	printf ' }\n'
     done
 }
@@ -378,11 +378,11 @@ m4_define([[[MBFL_GROUP_DECLARE_GETTER]]],[[[
 function mbfl_system_group_get_$1_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
     mbfl_mandatory_integer_parameter(mbfl_GROUP_INDEX, 2, group entry index)
-    mbfl_RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${mbfl_GROUP_INDEX}:$1]}
+    mbfl_RESULT_VARREF=mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${mbfl_GROUP_INDEX}:$1)
 }
 function mbfl_system_group_get_$1 () {
     mbfl_mandatory_integer_parameter(GROUP_INDEX, 1, group entry index)
-    echo "${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:$1]}"
+    echo "mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${GROUP_INDEX}:$1)"
 }
 ]]])
 MBFL_GROUP_DECLARE_GETTER(name)
@@ -395,11 +395,11 @@ MBFL_GROUP_DECLARE_GETTER(users)
 function mbfl_system_group_get_users_count_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
     mbfl_mandatory_integer_parameter(mbfl_GROUP_INDEX, 2, group entry index)
-    mbfl_RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${mbfl_GROUP_INDEX}:users:count]}
+    mbfl_RESULT_VARREF=mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${mbfl_GROUP_INDEX}:users:count)
 }
 function mbfl_system_group_get_users_count () {
     mbfl_mandatory_integer_parameter(GROUP_INDEX, 1, group entry index)
-    echo "${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:users:count]}"
+    echo "mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${GROUP_INDEX}:users:count)"
 }
 
 ### ------------------------------------------------------------------------
@@ -408,12 +408,12 @@ function mbfl_system_group_get_user_name_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable name)
     mbfl_mandatory_integer_parameter(mbfl_GROUP_INDEX,   2, group entry index)
     mbfl_mandatory_integer_parameter(mbfl_USER_INDEX,    3, user index)
-    mbfl_RESULT_VARREF=${mbfl_system_GROUP_ENTRIES[${mbfl_GROUP_INDEX}:users:${mbfl_USER_INDEX}]}
+    mbfl_RESULT_VARREF=mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${mbfl_GROUP_INDEX}:users:${mbfl_USER_INDEX})
 }
 function mbfl_system_group_get_user_name () {
     mbfl_mandatory_integer_parameter(GROUP_INDEX, 1, group entry index)
     mbfl_mandatory_integer_parameter(USER_INDEX,  2, user index)
-    echo "${mbfl_system_GROUP_ENTRIES[${GROUP_INDEX}:users:${USER_INDEX}]}"
+    echo "mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${GROUP_INDEX}:users:${USER_INDEX})"
 }
 
 #page
@@ -426,7 +426,7 @@ function mbfl_system_group_find_entry_by_name_var () {
 
     for ((mbfl_I=0; mbfl_I < mbfl_system_GROUP_COUNT; ++mbfl_I))
     do
-	if mbfl_string_equal "$mbfl_THE_NAME" "${mbfl_system_GROUP_ENTRIES[${mbfl_I}:name]}"
+	if mbfl_string_equal "$mbfl_THE_NAME" "mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${mbfl_I}:name)"
 	then
 	    mbfl_RESULT_VARREF=$mbfl_I
 	    return 0
@@ -453,7 +453,7 @@ function mbfl_system_group_find_entry_by_gid_var () {
 
     for ((mbfl_I=0; mbfl_I < mbfl_system_GROUP_COUNT; ++mbfl_I))
     do
-	if mbfl_string_equal "$mbfl_THE_GID" "${mbfl_system_GROUP_ENTRIES[${mbfl_I}:gid]}"
+	if mbfl_string_equal "$mbfl_THE_GID" "mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${mbfl_I}:gid)"
 	then
 	    mbfl_RESULT_VARREF=$mbfl_I
 	    return 0

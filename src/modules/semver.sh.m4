@@ -68,7 +68,7 @@ function mbfl_semver_parse () {
     # For debugging purposes.
     #echo ${FUNCNAME}: INPUT_STRING="${mbfl_INPUT_STRING:$mbfl_START_INDEX}" START_INDEX=$mbfl_START_INDEX >&2
 
-    case ${mbfl_semver_CONFIG[PARSE_LEADING_V]}
+    case mbfl_slot_ref(mbfl_semver_CONFIG, PARSE_LEADING_V)
     in
 	'mandatory')
 	    if test "mbfl_string_idx(mbfl_INPUT_STRING, $mbfl_START_INDEX)" = 'v'
@@ -155,14 +155,14 @@ function mbfl_p_semver_parse_version_numbers () {
     if [[ "${mbfl_INPUT_STRING:$mbfl_START_INDEX}" =~ $REX ]]
     then
 	# For debugging purposes.
-	# echo ${FUNCNAME}: successful match "${BASH_REMATCH[@]}" >&2
-	# echo ${FUNCNAME}: MAJOR_NUMBER="${BASH_REMATCH[1]}" >&2
-	# echo ${FUNCNAME}: MINOR_NUMBER="${BASH_REMATCH[4]}" >&2
-	# echo ${FUNCNAME}: PATCH_LEVEL="${BASH_REMATCH[7]}" >&2
+	# echo ${FUNCNAME}: successful match "mbfl_slot_ref(BASH_REMATCH, @)" >&2
+	# echo ${FUNCNAME}: MAJOR_NUMBER="mbfl_slot_ref(BASH_REMATCH, 1)" >&2
+	# echo ${FUNCNAME}: MINOR_NUMBER="mbfl_slot_ref(BASH_REMATCH, 4)" >&2
+	# echo ${FUNCNAME}: PATCH_LEVEL="mbfl_slot_ref(BASH_REMATCH, 7)" >&2
 
-	mbfl_MAJOR_NUMBER=${BASH_REMATCH[1]}
-	mbfl_MINOR_NUMBER=${BASH_REMATCH[3]}
-	mbfl_PATCH_LEVEL=${BASH_REMATCH[5]}
+	mbfl_MAJOR_NUMBER=mbfl_slot_ref(BASH_REMATCH, 1)
+	mbfl_MINOR_NUMBER=mbfl_slot_ref(BASH_REMATCH, 3)
+	mbfl_PATCH_LEVEL=mbfl_slot_ref(BASH_REMATCH, 5)
 	let mbfl_START_INDEX+=2+${#mbfl_MAJOR_NUMBER}+${#mbfl_MINOR_NUMBER}+${#mbfl_PATCH_LEVEL}
 	return 0
     else
@@ -212,10 +212,10 @@ function mbfl_p_semver_parse_prerelease_version () {
     if [[ "${mbfl_INPUT_STRING:$mbfl_START_INDEX}" =~ $REX ]]
     then
 	# For debugging purposes.
-	#echo ${FUNCNAME}: successful match "${BASH_REMATCH[@]}" >&2
-	#echo ${FUNCNAME}: PRERELEASE_VERSION="${BASH_REMATCH[1]}" >&2
+	#echo ${FUNCNAME}: successful match "mbfl_slot_ref(BASH_REMATCH, @)" >&2
+	#echo ${FUNCNAME}: PRERELEASE_VERSION="mbfl_slot_ref(BASH_REMATCH, 1)" >&2
 
-	mbfl_PRERELEASE_VERSION=${BASH_REMATCH[1]}
+	mbfl_PRERELEASE_VERSION=mbfl_slot_ref(BASH_REMATCH, 1)
 	let mbfl_START_INDEX+=1+${#BASH_REMATCH[1]}
 	return 0
     else
@@ -234,7 +234,7 @@ function mbfl_p_semver_parse_prerelease_version () {
 #
 function mbfl_p_semver_parse_build_metadata () {
     local IDRANGE='0-9A-Za-z'
-    if ${mbfl_semver_CONFIG[ACCEPT_UNDERSCORE_IN_BUILD_METADATA]}
+    if mbfl_slot_ref(mbfl_semver_CONFIG, ACCEPT_UNDERSCORE_IN_BUILD_METADATA)
     then IDRANGE+='_'
     fi
     # Let's make sure that the quoted hypen is the last character in the range!
@@ -258,10 +258,10 @@ function mbfl_p_semver_parse_build_metadata () {
     if [[ "${mbfl_INPUT_STRING:$mbfl_START_INDEX}" =~ $REX ]]
     then
 	# For debugging purposes.
-	#echo ${FUNCNAME}: successful match "${BASH_REMATCH[@]}" >&2
-	#echo ${FUNCNAME}: BUILD_METADATA="${BASH_REMATCH[1]}" >&2
+	#echo ${FUNCNAME}: successful match "mbfl_slot_ref(BASH_REMATCH, @)" >&2
+	#echo ${FUNCNAME}: BUILD_METADATA="mbfl_slot_ref(BASH_REMATCH, 1)" >&2
 
-	mbfl_BUILD_METADATA=${BASH_REMATCH[1]}
+	mbfl_BUILD_METADATA=mbfl_slot_ref(BASH_REMATCH, 1)
 	let mbfl_START_INDEX+=1+${#BASH_REMATCH[1]}
 	return 0
     else
@@ -286,7 +286,7 @@ function mbfl_semver_split_prerelease_version () {
     # Parse the first, mandatory identifier.
     if [[ "$mbfl_INPUT_SPEC" =~ $IDREX ]]
     then
-	mbfl_RV[0]=${BASH_REMATCH[1]}
+	mbfl_RV[0]=mbfl_slot_ref(BASH_REMATCH, 1)
 	j=${#BASH_REMATCH[1]}
     else return 1
     fi
@@ -295,7 +295,7 @@ function mbfl_semver_split_prerelease_version () {
     do
 	if [[ "${mbfl_INPUT_SPEC:$j}" =~ $DOTIDREX ]]
 	then
-	    mbfl_RV[$i]=${BASH_REMATCH[1]}
+	    mbfl_RV[$i]=mbfl_slot_ref(BASH_REMATCH, 1)
 	    j+=1+${#BASH_REMATCH[1]}
 	else return 1
 	fi
@@ -340,19 +340,19 @@ function mbfl_semver_compare_components_var () {
     mbfl_mandatory_nameref_parameter(ONE_COMPONENTS, 2, first semantic version specification components)
     mbfl_mandatory_nameref_parameter(TWO_COMPONENTS, 3, second semantic version specification components)
 
-    if   test "${ONE_COMPONENTS[MAJOR_NUMBER]}" -lt "${TWO_COMPONENTS[MAJOR_NUMBER]}"
+    if   test "mbfl_slot_ref(ONE_COMPONENTS, MAJOR_NUMBER)" -lt "mbfl_slot_ref(TWO_COMPONENTS, MAJOR_NUMBER)"
     then RV=-1
-    elif test "${ONE_COMPONENTS[MAJOR_NUMBER]}" -gt "${TWO_COMPONENTS[MAJOR_NUMBER]}"
+    elif test "mbfl_slot_ref(ONE_COMPONENTS, MAJOR_NUMBER)" -gt "mbfl_slot_ref(TWO_COMPONENTS, MAJOR_NUMBER)"
     then RV=+1
     else
-    	if   test "${ONE_COMPONENTS[MINOR_NUMBER]}" -lt "${TWO_COMPONENTS[MINOR_NUMBER]}"
+    	if   test "mbfl_slot_ref(ONE_COMPONENTS, MINOR_NUMBER)" -lt "mbfl_slot_ref(TWO_COMPONENTS, MINOR_NUMBER)"
     	then RV=-1
-    	elif test "${ONE_COMPONENTS[MINOR_NUMBER]}" -gt "${TWO_COMPONENTS[MINOR_NUMBER]}"
+    	elif test "mbfl_slot_ref(ONE_COMPONENTS, MINOR_NUMBER)" -gt "mbfl_slot_ref(TWO_COMPONENTS, MINOR_NUMBER)"
     	then RV=+1
     	else
-    	    if   test "${ONE_COMPONENTS[PATCH_LEVEL]}" -lt "${TWO_COMPONENTS[PATCH_LEVEL]}"
+    	    if   test "mbfl_slot_ref(ONE_COMPONENTS, PATCH_LEVEL)" -lt "mbfl_slot_ref(TWO_COMPONENTS, PATCH_LEVEL)"
     	    then RV=-1
-    	    elif test "${ONE_COMPONENTS[PATCH_LEVEL]}" -gt "${TWO_COMPONENTS[PATCH_LEVEL]}"
+    	    elif test "mbfl_slot_ref(ONE_COMPONENTS, PATCH_LEVEL)" -gt "mbfl_slot_ref(TWO_COMPONENTS, PATCH_LEVEL)"
     	    then RV=+1
     	    else
     		# Major  number, minor  number  and patch  level  are equal.   We  must compare  the
@@ -370,8 +370,8 @@ function mbfl_semver_compare_components_var () {
     		    # identifier.
     		    mbfl_semver_compare_prerelease_version		\
     			mbfl_datavar(RV)				\
-    			"${ONE_COMPONENTS[PRERELEASE_VERSION]}"		\
-    			"${TWO_COMPONENTS[PRERELEASE_VERSION]}"
+    			"mbfl_slot_ref(ONE_COMPONENTS, PRERELEASE_VERSION)"		\
+    			"mbfl_slot_ref(TWO_COMPONENTS, PRERELEASE_VERSION)"
     		    return $?
     		fi
     	    fi
@@ -407,18 +407,18 @@ function mbfl_semver_compare_prerelease_version () {
     #echo ${FUNCNAME}: MIN=$MIN >&2
     for ((i=0; i < MIN; ++i))
     do
-	mbfl_string_is_digit "${ONE_IDENTIFIERS[$i]}"
+	mbfl_string_is_digit "mbfl_slot_ref(ONE_IDENTIFIERS, $i)"
 	ONE_IS_NUMERIC=$?
 
-	mbfl_string_is_digit "${TWO_IDENTIFIERS[$i]}"
+	mbfl_string_is_digit "mbfl_slot_ref(TWO_IDENTIFIERS, $i)"
 	TWO_IS_NUMERIC=$?
 
 	if (( 0 == ONE_IS_NUMERIC && 0 == TWO_IS_NUMERIC ))
 	then
 	    # They are both numeric, so let's compare them as numbers.
-	    if   test "${ONE_IDENTIFIERS[$i]}" -lt "${TWO_IDENTIFIERS[$i]}"
+	    if   test "mbfl_slot_ref(ONE_IDENTIFIERS, $i)" -lt "mbfl_slot_ref(TWO_IDENTIFIERS, $i)"
 	    then RV=-1 ; break
-	    elif test "${ONE_IDENTIFIERS[$i]}" -gt "${TWO_IDENTIFIERS[$i]}"
+	    elif test "mbfl_slot_ref(ONE_IDENTIFIERS, $i)" -gt "mbfl_slot_ref(TWO_IDENTIFIERS, $i)"
 	    then RV=+1 ; break
 	    fi
 	elif (( 0 == ONE_IS_NUMERIC ))
@@ -426,11 +426,11 @@ function mbfl_semver_compare_prerelease_version () {
 	elif (( 0 == TWO_IS_NUMERIC ))
 	then RV=-1 ; break ;# TWO is numeric, ONE is not: TWO is lesser according to the standard.
 	else
-	    #echo ${FUNCNAME}: ONE_IDENTIFIERS[$i]="${ONE_IDENTIFIERS[$i]}" TWO_IDENTIFIERS[$i]="${TWO_IDENTIFIERS[$i]}" >&2
+	    #echo ${FUNCNAME}: ONE_IDENTIFIERS[$i]="mbfl_slot_ref(ONE_IDENTIFIERS, $i)" TWO_IDENTIFIERS[$i]="mbfl_slot_ref(TWO_IDENTIFIERS, $i)" >&2
 	    # They are both non-numeric, so let's compare them as strings.
-	    if   test "${ONE_IDENTIFIERS[$i]}" '<' "${TWO_IDENTIFIERS[$i]}"
+	    if   test "mbfl_slot_ref(ONE_IDENTIFIERS, $i)" '<' "mbfl_slot_ref(TWO_IDENTIFIERS, $i)"
 	    then RV=-1 ; break
-	    elif test "${ONE_IDENTIFIERS[$i]}" '>' "${TWO_IDENTIFIERS[$i]}"
+	    elif test "mbfl_slot_ref(ONE_IDENTIFIERS, $i)" '>' "mbfl_slot_ref(TWO_IDENTIFIERS, $i)"
 	    then RV=+1 ; break
 	    fi
 	fi

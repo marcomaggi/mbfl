@@ -197,7 +197,7 @@ function mbfl_getopts_parse () {
 
     for ((i=ARG1ST; i < ARGC1; ++i))
     do
-        argument=${ARGV1[$i]}
+        argument=mbfl_slot_ref(ARGV1, $i)
 
 	if mbfl_string_equal "$argument" '--'
         then
@@ -205,7 +205,7 @@ function mbfl_getopts_parse () {
 	    local -i j
 	    for ((j=1+i; j < ARGC1; ++j))
 	    do
-		ARGV[$ARGC]=${ARGV1[$j]}
+		ARGV[$ARGC]=mbfl_slot_ref(ARGV1, $j)
 		let ++ARGC
 	    done
 	    break
@@ -253,7 +253,7 @@ function mbfl_getopts_parse () {
     if mbfl_option_encoded_args
     then
         for ((i=0; i < ARGC; ++i))
-        do ARGV[$i]=$(mbfl_decode_hex "${ARGV[$i]}")
+        do ARGV[$i]=$(mbfl_decode_hex "mbfl_slot_ref(ARGV, $i)")
         done
     fi
     return_success
@@ -267,10 +267,10 @@ function mbfl_getopts_p_process_script_option () {
 
     for ((i=0; i < mbfl_getopts_INDEX; ++i))
     do
-        keyword=${mbfl_getopts_KEYWORDS[$i]}
-        brief=${mbfl_getopts_BRIEFS[$i]}
-        long=${mbfl_getopts_LONGS[$i]}
-        hasarg=${mbfl_getopts_HASARG[$i]}
+        keyword=mbfl_slot_ref(mbfl_getopts_KEYWORDS, $i)
+        brief=mbfl_slot_ref(mbfl_getopts_BRIEFS, $i)
+        long=mbfl_slot_ref(mbfl_getopts_LONGS, $i)
+        hasarg=mbfl_slot_ref(mbfl_getopts_HASARG, $i)
         if test \( -n "$OPT" \) -a \
 		\( \( -n "$brief" -a "$brief" = "$OPT" \) -o \( -n "$long" -a "$long" = "$OPT" \) \)
 	then
@@ -413,7 +413,7 @@ function mbfl_getopts_print_usage_screen () {
     else
         for ((i=0; i < mbfl_getopts_INDEX; ++i))
         do
-            if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
+            if test "mbfl_slot_ref(mbfl_getopts_HASARG, $i)" = 'witharg'
             then
                 brief_hasarg='VALUE'
                 long_hasarg='=VALUE'
@@ -424,19 +424,19 @@ function mbfl_getopts_print_usage_screen () {
 
             printf '\t'
 
-            brief=${mbfl_getopts_BRIEFS[$i]}
+            brief=mbfl_slot_ref(mbfl_getopts_BRIEFS, $i)
             if test -n "$brief"
 	    then printf -- '-%s%s ' "$brief" "$brief_hasarg"
 	    fi
 
-            long=${mbfl_getopts_LONGS[$i]}
+            long=mbfl_slot_ref(mbfl_getopts_LONGS, $i)
             if test -n "$long"
 	    then printf -- '--%s%s' "$long" "$long_hasarg"
 	    fi
 
             printf '\n'
 
-            description=${mbfl_getopts_DESCRIPTION[$i]}
+            description=mbfl_slot_ref(mbfl_getopts_DESCRIPTION, $i)
             if mbfl_string_is_empty "$description"
 	    then description='undocumented option'
 	    fi
@@ -446,9 +446,9 @@ function mbfl_getopts_print_usage_screen () {
 	    # use '\x27' in the description string to print a single quote character.
             printf '\t\t%b\n' "$description"
 
-            if test "${mbfl_getopts_HASARG[$i]}" = 'witharg'
+            if test "mbfl_slot_ref(mbfl_getopts_HASARG, $i)" = 'witharg'
             then
-                item=${mbfl_getopts_DEFAULTS[$i]}
+                item=mbfl_slot_ref(mbfl_getopts_DEFAULTS, $i)
                 if mbfl_string_is_not_empty "$item"
                 then printf -v default "'%s'" "$item"
                 else default='empty'
@@ -457,7 +457,7 @@ function mbfl_getopts_print_usage_screen () {
             else
                 if test ${mbfl_getopts_KEYWORDS[$i]:0:7} = ACTION_
 		then
-                    if test "${mbfl_getopts_DEFAULTS[$i]}" = 'yes'
+                    if test "mbfl_slot_ref(mbfl_getopts_DEFAULTS, $i)" = 'yes'
                     then printf '\t\t(default action)\n'
                     fi
 		fi
@@ -593,8 +593,8 @@ function mbfl_getopts_print_long_switches () {
 
     for ((i=0; $i < mbfl_slots_number(mbfl_getopts_LONGS); ++i))
     do
-        if test -n "${mbfl_getopts_LONGS[$i]}"
-        then printf -- '--%s' "${mbfl_getopts_LONGS[$i]}"
+        if test -n "mbfl_slot_ref(mbfl_getopts_LONGS, $i)"
+        then printf -- '--%s' "mbfl_slot_ref(mbfl_getopts_LONGS, $i)"
         else continue
         fi
         if (( (i+1) < mbfl_slots_number(mbfl_getopts_LONGS)))
@@ -609,7 +609,7 @@ function mbfl_getopts_print_long_switches () {
 
 #     for ((i=0; $i < ${mbfl_getopts_actargs_INDEX}; ++i))
 #     do
-#         argument=${mbfl_getopts_actargs_STRINGS[$i]}
+#         argument=mbfl_slot_ref(mbfl_getopts_actargs_STRINGS, $i)
 #         if test -n "$argument"
 #         then echo -n "$argument"
 #         else continue

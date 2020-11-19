@@ -441,23 +441,23 @@ function mbfl_p_file_remove_dots_from_pathname_var () {
     mbfl_file_split "$mbfl_PATHNAME"
     for ((mbfl_input_counter=0, mbfl_output_counter=0; mbfl_input_counter < SPLITCOUNT; ++mbfl_input_counter))
     do
-        case ${SPLITPATH[$mbfl_input_counter]} in
+        case mbfl_slot_ref(SPLITPATH, $mbfl_input_counter) in
             '.')
             ;;
             '..')
                 let --mbfl_output_counter
                 ;;
             *)
-                mbfl_output[$mbfl_output_counter]=${SPLITPATH[$mbfl_input_counter]}
+                mbfl_output[$mbfl_output_counter]=mbfl_slot_ref(SPLITPATH, $mbfl_input_counter)
                 let ++mbfl_output_counter
                 ;;
         esac
     done
     {
 	local -i i
-	mbfl_PATHNAME=${mbfl_output[0]}
+	mbfl_PATHNAME=mbfl_slot_ref(mbfl_output, 0)
 	for ((i=1; $i < $mbfl_output_counter; ++i))
-	do mbfl_PATHNAME+=/${mbfl_output[$i]}
+	do mbfl_PATHNAME+=/[[[]]]mbfl_slot_ref(mbfl_output, $i)
 	done
     }
     RESULT_VARREF1=$mbfl_PATHNAME

@@ -33,7 +33,7 @@ function mbfl_variable_find_in_array () {
     local -i i ARRAY_DIM=mbfl_slots_number(mbfl_FIELDS)
     for ((i=0; i < ARRAY_DIM; ++i))
     do
-	if mbfl_string_equal "${mbfl_FIELDS[$i]}" "$ELEMENT"
+	if mbfl_string_equal "mbfl_slot_ref(mbfl_FIELDS, $i)" "$ELEMENT"
 	then
 	    printf '%d\n' $i
 	    return 0
@@ -73,9 +73,9 @@ function mbfl_variable_array_to_colon_variable () {
     if test $dimension = 0
     then eval $COLON_VARIABLE=
     else
-	eval ${COLON_VARIABLE}=\'"${mbfl_FIELDS[0]}"\'
+	eval ${COLON_VARIABLE}=\'"mbfl_slot_ref(mbfl_FIELDS, 0)"\'
 	for ((i=1; $i < $dimension; ++i))
-        do eval $COLON_VARIABLE=\'"${!COLON_VARIABLE}:${mbfl_FIELDS[$i]}"\'
+        do eval $COLON_VARIABLE=\'"${!COLON_VARIABLE}:mbfl_slot_ref(mbfl_FIELDS, $i)"\'
 	done
     fi
     return 0
@@ -90,12 +90,12 @@ function mbfl_variable_colon_variable_drop_duplicate () {
     mbfl_variable_colon_variable_to_array "$COLON_VARIABLE"
     dimension=mbfl_slots_number(mbfl_FIELDS)
 
-    FIELDS=("${mbfl_FIELDS[@]}")
+    FIELDS=("mbfl_slot_ref(mbfl_FIELDS, @)")
     mbfl_FIELDS=()
 
     for ((i=0, count=0; i < dimension; ++i))
     do
-	item=${FIELDS[$i]}
+	item=mbfl_slot_ref(FIELDS, $i)
 	if mbfl_variable_element_is_in_array "$item"
 	then continue
 	fi
