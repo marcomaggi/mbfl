@@ -32,17 +32,16 @@
 #PAGE
 #### setup
 
-source setup.sh
+mbfl_load_library("$MBFL_TESTS_LIBMBFL")
+mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
 function script () {
     local -r examplesdir=${examplesdir:?'missing examplesdir in the environment'}
-    MBFL_LIBRARY="${MBFL_LIBRARY:?'missing libmbfl.sh pathname'}" \
-		"${BASH}" "${examplesdir}/template.sh" "$@" 2>&1
+    "$mbfl_PROGRAM_BASH" "${examplesdir}/template.sh" "$@" 2>&1
 }
 function script_with_actions () {
     local -r examplesdir=${examplesdir:?'missing examplesdir in the environment'}
-    MBFL_LIBRARY="${MBFL_LIBRARY:?'missing libmbfl.sh pathname'}" \
-		"${BASH}" "${examplesdir}/template-actions.sh" "$@" 2>&1
+    "$mbfl_PROGRAM_BASH" "${examplesdir}/template-actions.sh" "$@" 2>&1
 }
 
 #PAGE

@@ -35,7 +35,8 @@
 #PAGE
 #### setup
 
-source setup.sh
+mbfl_load_library("$MBFL_TESTS_LIBMBFL")
+mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
 #page
 #### array variables

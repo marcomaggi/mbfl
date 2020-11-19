@@ -709,7 +709,7 @@ either a @file{libmbfl.sh} implementation or some other library.
 @deffn {Preprocessor Macro} mbfl_library_loader
 @deffnx {Preprocessor Macro} mbfl_library_loader @var{LIBRARY_FILE_PATHNAME}
 @deffnx {Preprocessor Macro} mbfl_load_library
-@deffnx {Preprocessor Macro} mbfl_load-library @var{LIBRARY_FILE_PATHNAME}
+@deffnx {Preprocessor Macro} mbfl_load_library @var{LIBRARY_FILE_PATHNAME}
 Expand to a block of code that ``reliably'' sources a library file; the resulting output script does
 need to source the library at runtime, let's say it is ``dynamically linked''.
 

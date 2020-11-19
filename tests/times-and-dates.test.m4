@@ -36,7 +36,8 @@
 #page
 #### setup
 
-source setup.sh
+mbfl_load_library("$MBFL_TESTS_LIBMBFL")
+mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
 mbfl_times_and_dates_enable
 

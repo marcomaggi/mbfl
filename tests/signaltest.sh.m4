@@ -46,7 +46,7 @@ script_EXAMPLES=
 #### load library
 
 mbfl_INTERACTIVE='no'
-source "${MBFL_LIBRARY:=libmbfl.sh}"
+mbfl_load_library("$MBFL_TESTS_LIBMBFL")
 
 #page
 #### global variables
@@ -113,3 +113,6 @@ function quitting () {
 mbfl_main
 
 ### end of file
+# Local Variables:
+# mode: sh
+# End:
