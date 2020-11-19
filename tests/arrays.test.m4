@@ -110,6 +110,38 @@ function array-macro-slot-value-len-1.1 () {
     dotest-equal 3 mbfl_slot_value_len(ARRY, 0)
 }
 
+### ------------------------------------------------------------------------
+
+# Put on the same line two macros that expand into  a string containing a sharp sign "#"; see if the
+# sharp sign is interpreted as a comment delimiter (wrong) or not (right).
+#
+function array-macro-misc-1.1 () {
+    mbfl_declare_numeric_array(ARRY1, (a b c d))
+    mbfl_declare_numeric_array(ARRY2, (e f g))
+    local RV
+
+    if ((mbfl_slots_number(ARRY1) == mbfl_slots_number(ARRY2)))
+    then RV=0
+    else RV=1
+    fi
+    dotest-equal 1 $RV
+}
+
+# Put on the same line two macros that expand into  a string containing a sharp sign "#"; see if the
+# sharp sign is interpreted as a comment delimiter (wrong) or not (right).
+#
+function array-macro-misc-1.2 () {
+    mbfl_declare_numeric_array(ARRY1, (a b c d))
+    mbfl_declare_numeric_array(ARRY2, (e f g))
+    local RV
+
+    if ((2 < mbfl_slots_number(ARRY1) || 3 == mbfl_slots_number(ARRY2)))
+    then RV=0
+    else RV=1
+    fi
+    dotest-equal 0 $RV
+}
+
 #page
 #### let's go
 
