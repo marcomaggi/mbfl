@@ -916,7 +916,7 @@ The preprocessor implements facilities to declare variables with unique names an
 for variables with the NAMEREF attribute.
 
 The basic usage pattern is to declare a variable in a caller function with the preprocessor
-directive @func{mbfl_local_varref} and to access a such variable from a callee function using the
+directive @func{mbfl_local_varref} and to access such a variable from a callee function using the
 preprocessor directive @func{mbfl_mandatory_nameref_parameter} as follows:
 
 @example
