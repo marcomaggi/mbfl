@@ -410,49 +410,40 @@ endif
 
 #### interface to "make check"
 
-EXTRA_DIST			+=		\
+MBFL_CHECK_BUILT_TESTS		=		\
 	tests/arrays.test.m4			\
+	tests/atexit.test.m4			\
+	tests/bash-feature-coproc.test.m4	\
+	tests/compress.test.m4			\
+	tests/encode.test.m4			\
+	tests/fd.test.m4			\
+	tests/file.test.m4			\
 	tests/getopts.test.m4			\
+	tests/locations.test.m4			\
+	tests/message.test.m4			\
 	tests/process.test.m4			\
 	tests/program.test.m4			\
+	tests/script.test.m4			\
 	tests/semver.test.m4			\
+	tests/signal.test.m4			\
 	tests/strings.test.m4			\
 	tests/system.test.m4			\
+	tests/times-and-dates.test.m4		\
 	tests/variables.test.m4			\
-	\
-	tests/atexit.test			\
-	tests/compress.test			\
-	tests/encode.test			\
-	tests/fd.test				\
-	tests/file.test				\
-	tests/locations.test			\
-	tests/message.test			\
-	tests/script.test			\
-	tests/signal.test			\
-	tests/times-and-dates.test		\
-	tests/bash-feature-coproc.test		\
 	\
 	tests/setup.sh				\
 	tests/signaltest.sh
+
+EXTRA_DIST			+= $(MBFL_CHECK_BUILT_TESTS)
 
 CHECK_BUILT_EXAMPLES		=		\
 	examples/compress.sh			\
 	examples/template.sh			\
 	examples/template-actions.sh
 
-CHECK_BUILT_TESTS		=		\
-	tests/arrays.test			\
-	tests/getopts.test			\
-	tests/process.test			\
-	tests/program.test			\
-	tests/semver.test			\
-	tests/strings.test			\
-	tests/system.test			\
-	tests/variables.test
-
 check_SCRIPTS			=		\
 	$(CHECK_BUILT_EXAMPLES)			\
-	$(CHECK_BUILT_TESTS)
+	$(MBFL_CHECK_BUILT_TESTS)
 
 TESTS				=		\
 	tests/arrays.test			\
@@ -477,7 +468,7 @@ TESTS				=		\
 	tests/bash-feature-coproc.test
 
 CLEANFILES			+=		\
-	$(CHECK_BUILT_TESTS)			\
+	$(MBFL_CHECK_BUILT_TESTS)		\
 	$(builddir)/tests/$(am__dirstamp)
 
 ## --------------------------------------------------------------------
