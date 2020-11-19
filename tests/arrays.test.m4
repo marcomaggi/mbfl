@@ -88,6 +88,29 @@ function array-length-var-1.2 () {
 }
 
 #page
+#### preprocessor macros
+
+function array-macro-slot-set-ref-1.1 () {
+    mbfl_declare_numeric_array(ARRY)
+    mbfl_slot_set(ARRY, 0, 'abc')
+    dotest-equal 'abc' mbfl_slot_ref(ARRY, 0)
+}
+
+function array-macro-slot-set-ref-1.2 () {
+    mbfl_declare_symbolic_array(ARRY)
+    mbfl_slot_set(ARRY, 'key', 'abc')
+    dotest-equal 'abc' mbfl_slot_ref(ARRY, 'key')
+}
+
+### ------------------------------------------------------------------------
+
+function array-macro-slot-value-len-1.1 () {
+    mbfl_declare_numeric_array(ARRY)
+    mbfl_slot_set(ARRY, 0, 'abc')
+    dotest-equal 3 mbfl_slot_value_len(ARRY, 0)
+}
+
+#page
 #### let's go
 
 dotest array-

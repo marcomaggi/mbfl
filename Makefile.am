@@ -411,6 +411,7 @@ endif
 #### interface to "make check"
 
 EXTRA_DIST			+=		\
+	tests/arrays.test.m4			\
 	tests/getopts.test.m4			\
 	tests/process.test.m4			\
 	tests/program.test.m4			\
@@ -419,7 +420,6 @@ EXTRA_DIST			+=		\
 	tests/system.test.m4			\
 	tests/variables.test.m4			\
 	\
-	tests/arrays.test			\
 	tests/atexit.test			\
 	tests/compress.test			\
 	tests/encode.test			\
@@ -441,6 +441,7 @@ CHECK_BUILT_EXAMPLES		=		\
 	examples/template-actions.sh
 
 CHECK_BUILT_TESTS		=		\
+	tests/arrays.test			\
 	tests/getopts.test			\
 	tests/process.test			\
 	tests/program.test			\

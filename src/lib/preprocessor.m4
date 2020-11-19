@@ -168,6 +168,8 @@ m4_define([[[mbfl_slot_ref]]],[[[${$1[$2]}]]])
 m4_define([[[mbfl_slot_set]]],$1[$2]=$3)
 m4_define([[[mbfl_slots_number]]], ${[[[#]]]$1[@]})
 
+m4_define([[[mbfl_slot_value_len]]],[[[${[[[#]]]$1[$2]}]]])
+
 
 m4_dnl string macros
 

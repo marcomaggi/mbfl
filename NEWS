@@ -133,6 +133,7 @@ changes!
     mbfl_local_symbolic_array
     mbfl_local_numeric_array
     mbfl_slots_number
+    mbfl_slot_value_len
 
 * Added  functions  to  the  system   module  to  inspect  entries  from
   /etc/passwd and /etc/group.

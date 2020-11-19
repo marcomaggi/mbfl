@@ -1320,6 +1320,18 @@ which stores the value of @var{EXPR} in the slot @var{KEY} of the array variable
 This macro works with both indexed and associative arrays.
 @end deffn
 
+
+@deffn {Preprocessor Macro} mbfl_slot_value_len (@var{ARRAYNAME}, @var{KEY})
+Expand into the expression:
+
+@example
+$@{#@var{ARRAYNAME}[@var{KEY}]@}
+@end example
+
+@noindent
+which is meant to evaluate to the number of characters in the value of the slot @var{KEY}.
+@end deffn
+
 @c page
 @node preprocessor arrays inspect
 @subsection Inspecting arrays
