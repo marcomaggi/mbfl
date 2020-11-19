@@ -28,14 +28,14 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-source "${MBFL_LIBRARY:=$(mbfl-config)}"
+mbfl_load_library("$MBFL_TESTS_LIBMBFL")
 
 function main () {
     mbfl_atexit_enable
     mbfl_atexit_register one
     mbfl_atexit_register two
     mbfl_atexit_register three
-    exit 0
+    exit_success
 }
 
 function one () {

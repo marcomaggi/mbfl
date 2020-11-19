@@ -537,22 +537,22 @@ test: all $(check_SCRIPTS)
 	done
 
 test-template: examples/template.sh src/lib/libmbfl.sh
-	$(MBFL_PROGRAM_BASH) $(builddir)/examples/template.sh $(MBFLFLAGS)
+	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(builddir)/examples/template.sh $(MBFLFLAGS)
 
 test-template-actions: examples/template-actions.sh src/lib/libmbfl.sh
-	$(MBFL_PROGRAM_BASH) $(builddir)/examples/template-actions.sh $(MBFLFLAGS)
+	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(builddir)/examples/template-actions.sh $(MBFLFLAGS)
 
 test-script-atexit: tests/script-atexit.sh
-	$(MBFL_PROGRAM_BASH) $(builddir)/tests/script-atexit.sh $(MBFLFLAGS)
+	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(builddir)/tests/script-atexit.sh $(MBFLFLAGS)
 
 test-sendmail-gmail:
-	$(MBFL_PROGRAM_BASH) $(srcdir)/examples/test-sendmail-gmail.sh $(MBFLFLAGS)
+	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(srcdir)/examples/test-sendmail-gmail.sh $(MBFLFLAGS)
 
 test-sendmail-poste:
-	$(MBFL_PROGRAM_BASH) $(srcdir)/examples/test-sendmail-poste.sh $(MBFLFLAGS)
+	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(srcdir)/examples/test-sendmail-poste.sh $(MBFLFLAGS)
 
 test-sendmail-localhost:
-	$(MBFL_PROGRAM_BASH) $(srcdir)/examples/test-sendmail-localhost.sh $(MBFLFLAGS)
+	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(srcdir)/examples/test-sendmail-localhost.sh $(MBFLFLAGS)
 
 
 #### interface to "make installcheck"
