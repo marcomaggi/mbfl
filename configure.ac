@@ -41,6 +41,17 @@ AC_SUBST([MBFL_SEMANTIC_VERSION],MMUX_PACKAGE_SEMANTIC_VERSION)
 
 #### external programs
 
+AC_ARG_WITH([m4],
+  AS_HELP_STRING([--with-m4],[select a pathname for the executable m4]),
+  [MBFL_PROGRAM_M4=$withval],
+  [MBFL_PROGRAM_M4=/usr/bin/m4])
+
+dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
+dnl variable argument.
+AC_PATH_PROG([MBFL_PROGRAM_M4],[$MBFL_PROGRAM_M4],[/bin/false])
+
+dnl --------------------------------------------------------------------
+
 AC_ARG_WITH([bash],
   AS_HELP_STRING([--with-bash],[select a pathname for the executable bash]),
   [MBFL_PROGRAM_BASH=$withval],

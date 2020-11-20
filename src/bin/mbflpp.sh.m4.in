@@ -107,7 +107,6 @@ mbfl_declare_option BASH_PROGRAM "$mbfl_PROGRAM_BASH" \
 #page
 #### external programs declarations
 
-mbfl_declare_program m4
 mbfl_declare_program grep
 mbfl_declare_program sed
 mbfl_declare_program cat
@@ -227,9 +226,7 @@ function filter_drop_comments () {
 #### program interfaces
 
 function program_m4 () {
-    local M4
-    mbfl_program_found_var M4 m4 || exit $?
-    mbfl_program_exec "$M4" "$@"
+    mbfl_program_exec "@MBFL_PROGRAM_M4@" "$@"
 }
 function program_grep () {
     local GREP
