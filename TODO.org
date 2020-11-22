@@ -1,5 +1,10 @@
 ﻿-*- coding: utf-8-with-signature-unix; -*-
 
+* TODO Package Configuration
+** TODO Change procedure to select external command line programs
+   Make it possible to select  program from the PATH if no specific command  line option is use when
+   executing "configure".
+
 * TODO Documentation
 ** TODO Review preprocessor documentation
 ** TODO Review testing documentation
@@ -7,5 +12,5 @@
 
 # Local Variables:
 # ispell-local-dictionary: "en_GB-ise-w_accents"
-# fill-column: 200
+# fill-column: 100
 # End:
