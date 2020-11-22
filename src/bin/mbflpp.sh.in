@@ -1,4 +1,3 @@
-#!/bin/bash
 # mbflpp.sh --
 #
 # Part of: Marco's BASH Functions Library
@@ -29,7 +28,7 @@
 #### MBFL's related options and variables
 
 script_PROGNAME=mbflpp.sh
-script_VERSION='3.0.0-devel.7'
+script_VERSION='@PACKAGE_VERSION@'
 script_COPYRIGHT_YEARS='2005, 2009, 2018'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL3
@@ -41,38 +40,7 @@ ${script_PROGNAME} <INFILE >OUTFILE
 ${script_PROGNAME} --outfile=OUTFILE INFILE1 INFILE2 ..."
 
 #page
-#### load the library
-
-# Embedding the library is the safest way.  Does not really matter if this script becomes big.
-# libmbfl.m4 --
-#
-# Part of: Marco's BASH Functions Library
-# Contents: library file
-# Date: Fri Nov 28, 2003
-#
-# Abstract
-#
-#	This is the library file of MBFL. It must be sourced in shell
-#	scripts at the beginning of evaluation.
-#
-# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020 Marco Maggi
-# <mrc.mgg@gmail.com>
-#
-# This is free software; you  can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  3.0 of the License,  or (at
-# your option) any later version.
-#
-# This library  is distributed in the  hope that it will  be useful, but
-# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# Lesser General Public License for more details.
-#
-# You  should have  received a  copy of  the GNU  Lesser  General Public
-# License along  with this library; if  not, write to  the Free Software
-# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA.
-#
+#### embedded library
 
 declare -r mbfl_LOADED_MBFL='yes'
 shopt -s expand_aliases
@@ -5696,35 +5664,23 @@ ATQ=$(mbfl_program_found atq) || exit_because_program_not_found
 mbfl_program_exec "$ATQ" -q "$QUEUE"
 }
 
-
-### end of file
-# Local Variables:
-# mode: sh
-# End:
-
-
 #page
 #### global variables
 
-declare -r prefix="/"
-declare -r exec_prefix="${prefix}"
-declare -r bindirx="${exec_prefix}/bin"
-declare -r datarootdir="${prefix}/share"
-declare -r datadir="${datarootdir}"
-declare -r pkgdatadir="${datarootdir}/mbfl"
+declare -r prefix="@prefix@"
+declare -r exec_prefix="@exec_prefix@"
+declare -r bindirx="@bindir@"
+declare -r datarootdir="@datarootdir@"
+declare -r datadir="@datadir@"
+declare -r pkgdatadir="@datadir@/@PACKAGE@"
 
-declare -r PACKAGE_VERSION='3.0.0-devel.7'
-declare -r PACKAGE_DATADIR=$pkgdatadir
+declare -r PACKAGE_VERSION='@PACKAGE_VERSION@'
 
 # The absolute pathname of the MBFL  library loaded by this script.  The
 # variable "mbfl_LOADED_LIBRARY" is defined by  the loader code block in
 # "loader.sh".
 #
 declare -r DEFAULT_MBFL_LIBRARY=${pkgdatadir}/libmbfl.sh
-
-# The absolute pathname of the installed MBFL utilities library.
-#
-declare -r DEFAULT_MBFL_UTILS_LIBRARY=${pkgdatadir}/libmbflutils.sh
 
 # A string  representing command  line options for  GNU m4:  the symbols
 # definitions.   It  is built  by  appending  the definitions  from  the
@@ -5761,14 +5717,15 @@ mbfl_declare_option OUTPUT            -   o output            witharg "selects a
 mbfl_declare_option EVAL              no  e eval              noarg "if used evaluates the output script in bash, instead of printing it"
 mbfl_declare_option NO_PREPROCESSOR   no '' no-prepro         noarg "do not load the m4 preprocessor library"
 
-mbfl_declare_option MBFL_LIBRARY      "$DEFAULT_MBFL_LIBRARY" '' mbfl-library witharg "pathname of the MBFL library"
-mbfl_declare_option MBFL_UTILS_LIBRARY "$DEFAULT_MBFL_UTILS_LIBRARY" '' mbfl-utils-library witharg "pathname of the MBFL utilities library"
-mbfl_declare_option BASH_PROGRAM      "$BASH" '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
+mbfl_declare_option MBFL_LIBRARY "$DEFAULT_MBFL_LIBRARY" \
+		    '' mbfl-library witharg "pathname of the MBFL library"
+
+mbfl_declare_option BASH_PROGRAM "$mbfl_PROGRAM_BASH" \
+		    '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
 
 #page
 #### external programs declarations
 
-mbfl_declare_program m4
 mbfl_declare_program grep
 mbfl_declare_program sed
 mbfl_declare_program cat
@@ -5832,7 +5789,7 @@ function script_option_update_bash_program () {
 
 function main () {
     local M4_FLAGS='--prefix-builtins'
-    local PREPROCESSOR=${PACKAGE_DATADIR}/preprocessor.m4
+    local PREPROCESSOR=${pkgdatadir}/preprocessor.m4
 
     M4_FLAGS+=" ${includes} ${symbols}"
     if { test "$script_option_NO_PREPROCESSOR" = no && mbfl_file_is_readable "$PREPROCESSOR"; }
@@ -5853,19 +5810,17 @@ function main () {
             fi
             if test "$script_option_PRESERVE_COMMENTS" = 'yes'
     	    then program_m4 \
-		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$PACKAGE_DATADIR" \
+		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$pkgdatadir" \
 		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
-		     -D__MBFL_UTILS_LIBRARY__="$script_option_MBFL_UTILS_LIBRARY" \
 		     ${M4_FLAGS} -
             else program_m4 \
-		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$PACKAGE_DATADIR" \
+		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$pkgdatadir" \
 		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
-		     -D__MBFL_UTILS_LIBRARY__="$script_option_MBFL_UTILS_LIBRARY" \
 		     ${M4_FLAGS} - | filter_drop_comments
             fi
     	} | {
             if test "$script_option_EVAL" = 'yes'
-    	    then exec "$BASH"
+    	    then exec "$mbfl_PROGRAM_BASH"
             else
     		if test "$script_option_OUTPUT" = '-'
     		then program_cat
@@ -5890,9 +5845,7 @@ function filter_drop_comments () {
 #### program interfaces
 
 function program_m4 () {
-    local M4
-    mbfl_program_found_var M4 m4 || exit $?
-    mbfl_program_exec "$M4" "$@"
+    mbfl_program_exec "@MBFL_PROGRAM_M4@" "$@"
 }
 function program_grep () {
     local GREP
