@@ -16,6 +16,9 @@ changes!
   installed under directories *without* the version part.  No pkg-config
   module is installed.
 
+* *BACKWARDS INCOMPATIBILITY* The testing  script "mbfltest.sh" has been
+   removed from the package.
+
 * The package configuration allows us to select a hard-coded path to the
   GNU Coreutils program "id", in  addition to "whoami" and "sudo".  Some
   of the default selections have been changed:
