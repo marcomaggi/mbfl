@@ -47,7 +47,6 @@ MBFLPP_GENERAL_FLAGS	= --no-prepro 						\
 
 EXTRA_DIST		+=			\
 	src/backup/libmbfl.sh			\
-	src/backup/mbfltest.sh			\
 	src/backup/preprocessor.m4
 
 
@@ -114,16 +113,11 @@ dist_mbflprepro_DATA		= $(MBFL_PREPROCESSOR)
 
 #### scripts generation
 
-EXTRA_DIST			+=		\
-	src/bin/mbfltest.sh.m4
-
 bin_SCRIPTS			=		\
 	src/bin/mbfl-config			\
-	src/bin/mbflpp.sh			\
-	src/bin/mbfltest.sh
+	src/bin/mbflpp.sh
 
 CLEANFILES			+=		\
-	src/bin/mbfltest.sh			\
 	src/bin/$(am__dirstamp)
 
 MAINTAINERCLEANFILES			+=	\

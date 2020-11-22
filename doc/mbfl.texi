@@ -8203,7 +8203,6 @@ his taste.
 
 @menu
 * testing intro::               A way to organise a test suite.
-* testing shell::               A script to run tests.
 * testing config::              Configuring the package.
 * testing running::             Running tests.
 * testing compare::             Validating results by comparing.
@@ -8297,71 +8296,6 @@ test_CMD      = $(test_ENV) $(BASH_PROGRAM)
 
 test-modules:
         @@$(foreach f,$(test_FILES),$(test_CMD) $(f);)
-@end example
-
-@c page
-@node testing shell
-@section A script to run tests
-
-
-@mbfl{} comes with a script that can be used to handle the execution
-of tests; it is called @command{mbfltest.sh}.  Synopsis:
-
-@example
-mbfltest.sh [options] TESTFILE ...
-@end example
-
-@noindent
-supported options are all the @mbfl{} generic ones (@ref{getopts
-options, Predefined options}) and additionally:
-
-@table @code
-@item --start
-Print start messages for tests, it is the same as invoking
-@func{dotest-set-report-start}.
-
-@item --end
-Print end messages for tests, it is the same as invoking
-@func{dotest-set-report-success}.
-
-@item --match=VALUE
-Select match pattern for tests, it is the same as setting the
-@env{TESTMATCH} variable.
-
-@item --directory=VALUE
-Change directory before executing tests, but after having located the
-test files on the file system.
-
-@item --library=VALUE
-Select a specific version of the @mbfl{} library.
-@end table
-
-When running tests with the script: in the test modules we can omit the
-sourcing of @mbfl{} and the @mbfl{} test library, @command{mbfltest.sh}
-does this before sourcing the test module.  Each test module is evaluated
-in a @bash{} subprocess, so: there is no interference between modules;
-each module has to do its own initialisation and finalisation.
-
-With @gnu{} Make we can do:
-
-@example
-MBFLTEST        = mbfltest.sh
-MBFLTEST_FLAGS  = --end
-ifneq (,$(TESTMATCH))
-MBFLTEST_FLAGS  += --match=$(TESTMATCH)
-endif
-
-srcdir          = ...
-testdir         = $(srcdir)/tests
-TESTNAME        = *
-TESTFILES       = $(wildcard $(testdir)/$(TESTNAME).test)
-
-.PHONY: test tests
-
-ifneq ($(strip $(TESTFILES)),)
-test tests:
-        $(MBFLTEST) $(MBFLTEST_FLAGS) $(TESTFILES)
-endif
 @end example
 
 @c page
