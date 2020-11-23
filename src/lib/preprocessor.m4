@@ -60,10 +60,10 @@ m4_define([[[mbfl_extract_command_line_argument]]],[[[mbfl_command_line_argument
 
 m4_dnl library loading and embedding
 
-m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,'__MBFL_LIBRARY__',$1) || exit 100]]])
-m4_define([[[mbfl_load_library]]],[[[source m4_ifelse($1,,'__MBFL_LIBRARY__',$1) || exit 100]]])
+m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
+m4_define([[[mbfl_load_library]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
 
-m4_define([[[mbfl_embed_library]]],[[[m4_include(m4_ifelse($1,,__MBFL_LIBRARY__,$1))]]])
+m4_define([[[mbfl_embed_library]]],[[[m4_include(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]])
 
 
 m4_dnl handling of variables with NAMEREF attribute

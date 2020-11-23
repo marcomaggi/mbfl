@@ -29,7 +29,7 @@
 
 script_PROGNAME=mbflpp.sh
 script_VERSION='@PACKAGE_VERSION@'
-script_COPYRIGHT_YEARS='2005, 2009, 2018'
+script_COPYRIGHT_YEARS='2005, 2009, 2018, 2020'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=GPL3
 script_USAGE="usage: ${script_PROGNAME} [options] <INFILE >OUTFILE"
@@ -5811,11 +5811,11 @@ function main () {
             if test "$script_option_PRESERVE_COMMENTS" = 'yes'
     	    then program_m4 \
 		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$pkgdatadir" \
-		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
+		     -D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_MBFL_LIBRARY" \
 		     ${M4_FLAGS} -
             else program_m4 \
 		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$pkgdatadir" \
-		     -D__MBFL_LIBRARY__="$script_option_MBFL_LIBRARY" \
+		     -D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_MBFL_LIBRARY" \
 		     ${M4_FLAGS} - | filter_drop_comments
             fi
     	} | {
