@@ -577,50 +577,94 @@ supported.
 
 @table @code
 @item --preserve-comments
+@cindex @option{--preserve-comments}, preprocessor option
+@cindex Preprocessor option @option{--preserve-comments}
 Do not filter out comments.
 
 @item --add-bash
+@cindex @option{--add-bash}, preprocessor option
+@cindex Preprocessor option @option{--add-bash}
 Add @code{#!BASH_PROGRAM} at the beginning of the output, where @code{BASH_PROGRAM} is selected with
 the command line option @option{--bash-program}.
 
 @item --bash-program=BASH_PROGRAM
+@cindex @option{--bash-program}, preprocessor option
+@cindex Preprocessor option @option{--bash-program}
 Select the absolute file pathname of the Bash executable to use when the option @option{--add-bash}
 is used.  It defaults to the preselected @command{bash} program, @ref{mbfl_PROGRAM_BASH, Preselected
 programs}.
 
 @item -D@var{NAME}[=@var{VALUE}]
 @itemx --define=@var{NAME}[=@var{VALUE}]
+@cindex @option{--define}, preprocessor option
+@cindex Preprocessor option @option{--define}
 Define a new symbol (@mfour{} syntax).  This is equivalent to the @option{--define} option of
 @mfour{}.
 
 @item -I@var{VALUE}
 @itemx --include=@var{VALUE}
+@cindex @option{--include}, preprocessor option
+@cindex Preprocessor option @option{--include}
 Add a search path for files.  @var{VALUE} must be a directory pathname and it is handed to @mfour{}
 to search for macro files.  We can use this option multiple times.  @mfour{} can include files using
 the built--in @func{m4_include}.
 
 @item --library=@var{LIBRARY_FILE_PATHNAME}
+@cindex @option{--library}, preprocessor option
+@cindex Preprocessor option @option{--library}
 Include an @mfour{} library.  @var{LIBRARY_FILE_PATHNAME} must be the name of an @mfour{} macro file
 which is evaluated before the input files.
 
 @item -o@var{OUTPUT_FILE_PATHNAME}
 @itemx --output=@var{OUTPUT_FILE_PATHNAME}
+@cindex @option{--output}, preprocessor option
+@cindex Preprocessor option @option{--output}
 Select an output file, @code{-} for stdout.
 
 @item -e
 @itemx --eval
+@cindex @option{--eval}, preprocessor option
+@cindex Preprocessor option @option{--eval}
 Send the result of preprocessing to @bash{}, rather than print it.  The evaluation is performed by
 the preselected @command{bash} program, @ref{mbfl_PROGRAM_BASH, Preselected programs}.
 
 @item --no-prepro
+@cindex @option{--no-prepro}, preprocessor option
+@cindex Preprocessor option @option{--no-prepro}
 Do not load the installed preprocessor's macros library @file{preprocessor.m4}.  If we use this
 option: we are meant to use the option @option{--library} to load a replacement macros library from
 a known location.
 
-@item --mbfl-library=@var{LIBMBFL}
-Select the pathname to a @file{libmbfl.sh} file to use in the macros @func{mbfl_library_loader} and
+@item --libmbfl=@var{LIBMBFL}
+@cindex @option{--libmbfl}, preprocessor option
+@cindex Preprocessor option @option{--libmbfl}
+Select the pathname to a @file{libmbfl.sh} file to use in the macros @func{mbfl_load_library} and
 @func{mbfl_embed_library}, @ref{preprocessor library, Loading or including the library}.  The
 selected pathname overrides the library installed on the system.
+
+@item --print-libpath
+@cindex @option{--print-libpath}, preprocessor option
+@cindex Preprocessor option @option{--print-libpath}
+Print on @stdout{} the file system absolute pathname of the libraries installation directory, then
+exit successfully.
+
+@item --print-libmbfl
+@cindex @option{--print-libmbfl}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfl}
+Print on @stdout{} the file system absolute pathname of the installed library @file{libmbfl.sh},
+then exit successfully.
+
+@item --print-libmbfltest
+@cindex @option{--print-libmbfltest}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfltest}
+Print on @stdout{} the file system absolute pathname of the installed library @file{libmbfltest.sh},
+then exit successfully.
+
+@item --print-libmbflutils
+@cindex @option{--print-libmbflutils}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbflutils}
+Print on @stdout{} the file system absolute pathname of the installed library
+@file{libmbflutils.sh}, then exit successfully.
 @end table
 
 @c page
@@ -688,12 +732,12 @@ If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is not} used:
 
 @itemize -
 @item
-If the option @option{--mbfl-library} @strong{is not} used on the command line of
+If the option @option{--libmbfl} @strong{is not} used on the command line of
 @command{mbflpp.sh}: the library @file{libmbfl.sh} installed on the system is embedded, for example
 @file{/usr/share/libmbfl.sh}.
 
 @item
-If the option @option{--mbfl-library} @strong{is} used on the command line of @command{mbflpp.sh}:
+If the option @option{--libmbfl} @strong{is} used on the command line of @command{mbflpp.sh}:
 the file pathname selected by the option is used to locate the library @file{libmbfl.sh} to be
 embedded.
 @end itemize
@@ -719,14 +763,14 @@ If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is not} used:
 
 @itemize -
 @item
-If the option @option{--mbfl-library} @strong{is not} used on the command line of
-@command{mbflpp.sh}: the macro use expands into shell code that sources the library
-@file{libmbfl.sh} installed on the system, for example @file{/usr/share/libmbfl.sh}.
+If the option @option{--libmbfl} @strong{is not} used on the command line of @command{mbflpp.sh}:
+the macro use expands into shell code that sources the library @file{libmbfl.sh} installed on the
+system, for example @file{/usr/share/libmbfl.sh}.
 
 @item
-If the option @option{--mbfl-library} @strong{is} used on the command line of @command{mbflpp.sh}:
-the macro use expands into shell code that sources the file pathname selected by the option; it is
-meant to be an implementation of @file{libmbfl.sh}.
+If the option @option{--libmbfl} @strong{is} used on the command line of @command{mbflpp.sh}: the
+macro use expands into shell code that sources the file pathname selected by the option; it is meant
+to be an implementation of @file{libmbfl.sh}.
 @end itemize
 
 @item

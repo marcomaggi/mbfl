@@ -31,9 +31,9 @@
 declare -r mbfl_LOADED_MBFL='yes'
 shopt -s expand_aliases
 
+m4_include(config-values.sh)
 m4_include(base.sh)
 m4_include(shell.sh)
-m4_include(config-pathnames.sh)
 m4_include(main.sh)
 m4_include(string.sh)
 m4_include(atexit.sh)

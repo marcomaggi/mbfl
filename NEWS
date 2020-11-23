@@ -19,6 +19,18 @@ changes!
 * *BACKWARDS INCOMPATIBILITY* The testing  script "mbfltest.sh" has been
    removed from the package.
 
+* *BACKWARDS INCOMPATIBILITY*  The command line  option "--mbfl-library"
+   of  the   preprocessor  script   "mbflpp.sh"  has  been   renamed  to
+   "--libmbfl".
+
+* The preprocessor script "mbflpp.sh" accepts the following command line
+  options:
+
+     --print-libpath
+     --print-libmbfl
+     --print-libmbfltest
+     --print-libmbflutils
+
 * The package configuration allows us to select a hard-coded path to the
   GNU Coreutils program "id", in  addition to "whoami" and "sudo".  Some
   of the default selections have been changed:

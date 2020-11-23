@@ -33,6 +33,7 @@ MBFL_PROGRAM_BASH	= @MBFL_PROGRAM_BASH@
 # template in "$(srcdir)/src/bin/mbflpp.sh.in".
 #
 MBFL_PROGRAM_MBFLPP	= $(builddir)/src/bin/mbflpp.sh
+MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 
 # These flags are always used on  the command line of "mbflpp.sh".  We
 # can set "MBFLPPFLAGS" on the command line of "make".
@@ -125,9 +126,8 @@ MAINTAINERCLEANFILES			+=	\
 
 ## --------------------------------------------------------------------
 
-MBFL_SCRIPTS_LIBMBFL		= $(srcdir)/src/backup/libmbfl.sh
-MBFL_SCRIPTS_ENV		= MBFL_LIBRARY=$(MBFL_SCRIPTS_LIBMBFL); export MBFL_LIBRARY;
-MBFL_SCRIPTS_RUN		= $(MBFL_SCRIPTS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
+MBFL_SCRIPTS_ENV		=
+MBFL_SCRIPTS_RUN		= $(MBFL_SCRIPTS_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --preserve-comments
 
 MBFL_SCRIPTS_PREREQUISITES	=		\
@@ -178,7 +178,7 @@ MBFL_LIB_MODULES		=		\
 	src/modules/arrays.sh			\
 	src/modules/atexit.sh			\
 	src/modules/base.sh			\
-	src/modules/config-pathnames.sh		\
+	src/modules/config-values.sh		\
 	src/modules/dialog.sh			\
 	src/modules/encode.sh			\
 	src/modules/fd.sh			\
@@ -203,9 +203,9 @@ CLEANFILES			+=		\
 	src/modules/$(am__dirstamp)
 
 MBFL_MODULES_LIBMBFL		= $(srcdir)/src/backup/libmbfl.sh
-MBFL_MODULES_ENV		= MBFL_LIBRARY=$(MBFL_MODULES_LIBMBFL); export MBFL_LIBRARY;
-MBFL_MODULES_RUN		= $(MBFL_MODULES_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
-MBFL_MODULES_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
+MBFL_MODULES_ENV		=
+MBFL_MODULES_RUN		= $(MBFL_MODULES_ENV) $(MBFL_RUN_MBFLPP)
+MBFL_MODULES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --libmbfl="$(MBFL_MODULES_LIBMBFL)"
 
 MBFL_MODULES_PREREQUISITES	=		\
 	$(MBFL_MODULES_LIBMBFL)			\
@@ -229,10 +229,9 @@ CLEANFILES			+=		\
 	src/lib/libmbfl.sh			\
 	src/lib/$(am__dirstamp)
 
-MBFL_LIB_LIBMBFL		= $(srcdir)/src/backup/libmbfl.sh
-MBFL_LIB_ENV			= MBFL_LIBRARY=$(MBFL_LIB_LIBMBFL); export MBFL_LIBRARY;
-MBFL_LIB_RUN			= $(MBFL_LIB_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
-MBFL_LIB_FLAGS			= $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(builddir)/src/modules
+MBFL_LIB_ENV		=
+MBFL_LIB_RUN		= $(MBFL_LIB_ENV) $(MBFL_RUN_MBFLPP)
+MBFL_LIB_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(builddir)/src/modules
 
 MBFL_LIB_PREREQUISITES	=			\
 	$(MBFL_LIB_LIBMBFL)			\
@@ -261,9 +260,8 @@ CLEANFILES			+=		\
 	$(MBFL_LIBUTILS_MODULES)		\
 	src/utils-modules/$(am__dirstamp)
 
-MBFL_UTILS_MODULES_LIBRARY	= $(builddir)/src/lib/libmbfl.sh
-MBFL_UTILS_MODULES_ENV		= MBFL_LIBRARY=$(MBFL_UTILS_MODULES_LIBRARY); export MBFL_LIBRARY;
-MBFL_UTILS_MODULES_RUN		= $(MBFL_UTILS_MODULES_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
+MBFL_UTILS_MODULES_ENV		=
+MBFL_UTILS_MODULES_RUN		= $(MBFL_UTILS_MODULES_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_UTILS_MODULES_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
 MBFL_UTILS_MODULES_PREREQUISITES	=		\
@@ -288,9 +286,8 @@ CLEANFILES			+=		\
 	src/lib/libmbflutils.sh			\
 	src/lib/$(am__dirstamp)
 
-MBFL_LIBUTILS_LIBMBFL		= $(builddir)/src/lib/libmbfl.sh
-MBFL_LIBUTILS_ENV		= MBFL_LIBRARY=$(MBFL_LIBUTILS_LIBMBFL); export MBFL_LIBRARY;
-MBFL_LIBUTILS_RUN		= $(MBFL_LIBUTILS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
+MBFL_LIBUTILS_ENV		=
+MBFL_LIBUTILS_RUN		= $(MBFL_LIBUTILS_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_LIBUTILS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(builddir)/src/utils-modules
 
 MBFL_LIBUTILS_PREREQUISITES	=		\
@@ -311,9 +308,8 @@ CLEANFILES			+=		\
 	src/lib/libmbfltest.sh			\
 	src/lib/$(am__dirstamp)
 
-MBFL_LIBTEST_LIBMBFL		= $(builddir)/src/lib/libmbfl.sh
-MBFL_LIBTEST_ENV		= MBFL_LIBRARY=$(MBFL_LIBTEST_LIBMBFL); export MBFL_LIBRARY;
-MBFL_LIBTEST_RUN		= $(MBFL_LIBTEST_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
+MBFL_LIBTEST_ENV		=
+MBFL_LIBTEST_RUN		= $(MBFL_LIBTEST_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_LIBTEST_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
 
 MBFL_LIBTEST_PREREQUISITES	=		\
@@ -356,9 +352,9 @@ CLEANFILES			+=		\
 	examples/$(am__dirstamp)
 
 MBFL_EXAMPLES_LIBMBFL		= $(builddir)/src/lib/libmbfl.sh
-MBFL_EXAMPLES_ENV		= MBFL_LIBRARY=$(MBFL_EXAMPLES_LIBMBFL); export MBFL_LIBRARY;
-MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
-MBFL_EXAMPLES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --mbfl-library=$(MBFL_EXAMPLES_LIBMBFL)
+MBFL_EXAMPLES_ENV		=
+MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_RUN_MBFLPP)
+MBFL_EXAMPLES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --libmbfl="$(MBFL_EXAMPLES_LIBMBFL)"
 
 MBFL_EXAMPLES_PREREQUISITES	=		\
 	$(MBFL_EXAMPLES_LIBMBFL)		\
@@ -477,8 +473,8 @@ MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp; export TMPDIR;
 MBFL_TESTS_ENV		+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_TESTS_ENV		+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
-MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
-MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash
+MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_RUN_MBFLPP)
+MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash --libmbfl="$(MBFL_TESTS_LIBMBFL)"
 
 MBFL_TESTS_PREREQUISITES	=		\
 	$(MBFL_TESTS_LIBMBFL)			\

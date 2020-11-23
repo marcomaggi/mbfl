@@ -28,7 +28,6 @@
 #### global variables
 
 declare -r mbfl_LOADED='yes'
-declare -r mbfl_SEMANTIC_VERSION='__SEMANTIC_VERSION__'
 
 : ${script_PROGNAME:='<unknown>'}
 : ${script_VERSION:='<unknown>'}

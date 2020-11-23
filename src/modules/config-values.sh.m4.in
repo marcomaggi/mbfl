@@ -1,4 +1,10 @@
-# config-pathnames.sh.m4 --
+# config-values.sh.m4 --
+
+declare -r mbfl_PACKAGE='@PACKAGE@'
+declare -r mbfl_PACKAGE_NAME='@PACKAGE_NAME@'
+declare -r mbfl_PACKAGE_VERSION='@PACKAGE_VERSION@'
+declare -r mbfl_CORE_VERSION='@MBFL_CORE_VERSION@'
+declare -r mbfl_SEMANTIC_VERSION='@MBFL_SEMANTIC_VERSION@'
 
 declare -r mbfl_PROGRAM_BASH='@MBFL_PROGRAM_BASH@'
 declare -r mbfl_PROGRAM_CHMOD='@MBFL_PROGRAM_CHMOD@'
