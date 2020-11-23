@@ -30,12 +30,12 @@ MBFL_LIB_INSTDIR	= $(datadir)/$(PACKAGE)
 MBFL_PROGRAM_BASH	= @MBFL_PROGRAM_BASH@
 
 # This  script  is  generated  by  "configure"  after  processing  the
-# template in "$(srcdir)/src/bin/mbflpp.sh.in".
+# template in "$(srcdir)/src/bin/mbflpp.bash.in".
 #
-MBFL_PROGRAM_MBFLPP	= $(builddir)/src/bin/mbflpp.sh
+MBFL_PROGRAM_MBFLPP	= $(builddir)/src/bin/mbflpp.bash
 MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 
-# These flags are always used on  the command line of "mbflpp.sh".  We
+# These flags are always used on  the command line of "mbflpp.bash".  We
 # can set "MBFLPPFLAGS" on the command line of "make".
 #
 MBFLPP_GENERAL_FLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 $(MBFLPPFLAGS)
@@ -108,35 +108,26 @@ dist_mbflprepro_DATA		= $(MBFL_PREPROCESSOR)
 
 #### scripts generation
 
-bin_SCRIPTS			=		\
-	src/bin/mbfl-config			\
-	src/bin/mbflpp.sh
-
-CLEANFILES			+=		\
-	src/bin/$(am__dirstamp)
-
-MAINTAINERCLEANFILES			+=	\
-	src/bin/mbflpp.sh
+bin_SCRIPTS			= src/bin/mbflpp.bash
+CLEANFILES			+= src/bin/$(am__dirstamp)
+MAINTAINERCLEANFILES		+= src/bin/mbflpp.bash
 
 ## --------------------------------------------------------------------
 
-MBFL_SCRIPTS_ENV		=
-MBFL_SCRIPTS_RUN		= $(MBFL_SCRIPTS_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --preserve-comments
+# MBFL_SCRIPTS_ENV		=
+# MBFL_SCRIPTS_RUN		= $(MBFL_SCRIPTS_ENV) $(MBFL_RUN_MBFLPP)
+# MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --preserve-comments
 
-MBFL_SCRIPTS_PREREQUISITES	=		\
-	$(MBFL_SCRIPTS_LIBMBFL)			\
-	$(MBFL_PREPROCESSOR)			\
-	src/bin/$(am__dirstamp)
+# MBFL_SCRIPTS_PREREQUISITES	=		\
+# 	$(MBFL_PREPROCESSOR)			\
+# 	src/bin/$(am__dirstamp)
 
-## --------------------------------------------------------------------
+# src/bin/$(am__dirstamp):
+# 	@$(MKDIR_P) src/bin
+# 	@: > src/bin/$(am__dirstamp)
 
-src/bin/$(am__dirstamp):
-	@$(MKDIR_P) src/bin
-	@: > src/bin/$(am__dirstamp)
-
-src/bin/%.sh: src/bin/%.sh.m4 $(MBFL_SCRIPTS_PREREQUISITES)
-	$(MBFL_SCRIPTS_RUN) $(MBFL_SCRIPTS_FLAGS) <$< >$@
+# src/bin/%.sh: src/bin/%.sh.m4 $(MBFL_SCRIPTS_PREREQUISITES)
+# 	$(MBFL_SCRIPTS_RUN) $(MBFL_SCRIPTS_FLAGS) <$< >$@
 
 
 #### libmbfl modules generation
@@ -228,7 +219,6 @@ MBFL_LIB_RUN		= $(MBFL_LIB_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_LIB_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(builddir)/src/modules
 
 MBFL_LIB_PREREQUISITES	=			\
-	$(MBFL_LIB_LIBMBFL)			\
 	src/lib/$(am__dirstamp)			\
 	$(MBFL_PREPROCESSOR)
 
@@ -259,7 +249,6 @@ MBFL_UTILS_MODULES_RUN		= $(MBFL_UTILS_MODULES_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_UTILS_MODULES_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
 MBFL_UTILS_MODULES_PREREQUISITES	=		\
-	$(MBFL_UTILS_MODULES_LIBRARY)			\
 	src/utils-modules/$(am__dirstamp)		\
 	$(MBFL_PREPROCESSOR)
 
@@ -285,7 +274,6 @@ MBFL_LIBUTILS_RUN		= $(MBFL_LIBUTILS_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_LIBUTILS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(builddir)/src/utils-modules
 
 MBFL_LIBUTILS_PREREQUISITES	=		\
-	$(MBFL_LIBUTILS_LIBMBFL)		\
 	src/lib/$(am__dirstamp)			\
 	$(MBFL_PREPROCESSOR)
 
@@ -307,7 +295,6 @@ MBFL_LIBTEST_RUN		= $(MBFL_LIBTEST_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_LIBTEST_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
 
 MBFL_LIBTEST_PREREQUISITES	=		\
-	$(MBFL_LIBTEST_LIBMBFL)			\
 	src/lib/$(am__dirstamp)			\
 	$(MBFL_PREPROCESSOR)
 

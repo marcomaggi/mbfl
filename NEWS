@@ -19,12 +19,18 @@ changes!
 * *BACKWARDS INCOMPATIBILITY* The testing  script "mbfltest.sh" has been
    removed from the package.
 
+* *BACKWARDS INCOMPATIBILITY*  The preprocessor script has  been renamed
+   from "mbflpp.sh" to "mbflpp.bash".
+
 * *BACKWARDS INCOMPATIBILITY*  The command line  option "--mbfl-library"
-   of  the   preprocessor  script   "mbflpp.sh"  has  been   renamed  to
+   of  the  preprocessor  script   "mbflpp.bash"  has  been  renamed  to
    "--libmbfl".
 
-* The preprocessor script "mbflpp.sh" accepts the following command line
-  options:
+* *BACKWARDS INCOMPATIBILITY* The script  "mbfl-config" has been removed
+   from the distribution.
+
+* The preprocessor  script "mbflpp.bash"  accepts the  following command
+  line options:
 
      --print-libpath
      --print-libmbfl

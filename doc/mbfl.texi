@@ -214,7 +214,7 @@ The easiest way to use the library is to include at run--time the library file @
 the script.  To do it, we install the package on the system and use this code in the scripts:
 
 @example
-source "$@{MBFL_LIBRARY:=$(type -p mbfl-config &>/dev/null && mbfl-config)@}"
+source "$@{MBFL_LIBRARY:=$(type -p mbflpp.bash &>/dev/null && mbflpp.bash)@}"
 @end example
 
 @noindent
@@ -222,8 +222,8 @@ after the service variables have been declared.  @ref{variables service, Require
 variables}.
 
 This code will read the full pathname of the library from the environment variable
-@env{MBFL_LIBRARY}; if this variable is not set: the script @command{mbfl-config} is invoked with no
-arguments to acquire the pathname.  @command{mbfl-config} is installed by the package in the
+@env{MBFL_LIBRARY}; if this variable is not set: the script @command{mbflpp.bash} is invoked with no
+arguments to acquire the pathname.  @command{mbflpp.bash} is installed by the package in the
 @code{$(bindir)} directory, which we must include in the @env{PATH} environment variable.
 
 @c page
@@ -533,7 +533,7 @@ Print the help screen.
 @chapter Using the script preprocessor
 
 
-The @mbfl{} script preprocessor is a command line program named @command{mbflpp.sh}; it is itself a
+The @mbfl{} script preprocessor is a command line program named @command{mbflpp.bash}; it is itself a
 Bash script that makes use of the @mbfl{} library.  It can remove comments, blank lines, blank
 characters at the beginning of lines, and it can expand macros.
 
@@ -564,8 +564,8 @@ without the preprocessor.
 Synopsis:
 
 @smallexample
-mbflpp.sh [@var{OPTIONS}] <@var{INFILE} >@var{OUTFILE}
-mbflpp.sh [@var{OPTIONS}] --outfile=@var{OUTFILE} [--] @vari{INFILE} @varii{INFILE} ...
+mbflpp.bash [@var{OPTIONS}] <@var{INFILE} >@var{OUTFILE}
+mbflpp.bash [@var{OPTIONS}] --outfile=@var{OUTFILE} [--] @vari{INFILE} @varii{INFILE} ...
 @end smallexample
 
 @noindent
@@ -672,7 +672,7 @@ Print on @stdout{} the file system absolute pathname of the installed library
 @section Quotes and quoted macro names
 
 
-The @mfour{} preprocessor is invoked by @command{mbflpp.sh} with the @option{--prefix-builtins}
+The @mfour{} preprocessor is invoked by @command{mbflpp.bash} with the @option{--prefix-builtins}
 option; so all the @mfour{} built in macros and directives are available prefixed with @code{m4_}.
 
 The quoting for the preprocessor is changed with:
@@ -733,11 +733,11 @@ If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is not} used:
 @itemize -
 @item
 If the option @option{--libmbfl} @strong{is not} used on the command line of
-@command{mbflpp.sh}: the library @file{libmbfl.sh} installed on the system is embedded, for example
+@command{mbflpp.bash}: the library @file{libmbfl.sh} installed on the system is embedded, for example
 @file{/usr/share/libmbfl.sh}.
 
 @item
-If the option @option{--libmbfl} @strong{is} used on the command line of @command{mbflpp.sh}:
+If the option @option{--libmbfl} @strong{is} used on the command line of @command{mbflpp.bash}:
 the file pathname selected by the option is used to locate the library @file{libmbfl.sh} to be
 embedded.
 @end itemize
@@ -763,12 +763,12 @@ If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is not} used:
 
 @itemize -
 @item
-If the option @option{--libmbfl} @strong{is not} used on the command line of @command{mbflpp.sh}:
+If the option @option{--libmbfl} @strong{is not} used on the command line of @command{mbflpp.bash}:
 the macro use expands into shell code that sources the library @file{libmbfl.sh} installed on the
 system, for example @file{/usr/share/libmbfl.sh}.
 
 @item
-If the option @option{--libmbfl} @strong{is} used on the command line of @command{mbflpp.sh}: the
+If the option @option{--libmbfl} @strong{is} used on the command line of @command{mbflpp.bash}: the
 macro use expands into shell code that sources the file pathname selected by the option; it is meant
 to be an implementation of @file{libmbfl.sh}.
 @end itemize
