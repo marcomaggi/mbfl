@@ -35,7 +35,7 @@
 mbfl_load_library("$MBFL_TESTS_LIBMBFL")
 mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
-dotest-set-debug
+#dotest-set-debug
 
 function debug-wait () {
     local -i thousands=${1:?"missing thousands argument to '${FUNCNAME}'"}
