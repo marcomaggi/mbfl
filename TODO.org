@@ -1,5 +1,11 @@
 ﻿-*- coding: utf-8-with-signature-unix; -*-
 
+* TODO Renaming libraries
+** TODO Rename "libmbfl.sh" to "libmbfl.bash".
+** TODO Rename "libmbfltest.sh" to "libmbfltest.bash".
+** TODO Rename "libmbflutils.sh" to "libmbflutils.bash".
+* TODO Libraries refactorisation
+** TODO Split the at interface into its own separate library, "libmbflat.bash".
 * TODO Package Configuration
 ** TODO Change procedure to select external command line programs
    Make it possible to select  program from the PATH if no specific command  line option is use when
@@ -8,6 +14,7 @@
 * TODO Documentation
 ** TODO Review preprocessor documentation
 ** TODO Review testing documentation
+** TODO Document the library "libmbflutils".
 * Local Variables
 
 # Local Variables:
