@@ -38,13 +38,7 @@ MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 # These flags are always used on  the command line of "mbflpp.sh".  We
 # can set "MBFLPPFLAGS" on the command line of "make".
 #
-MBFLPP_GENERAL_FLAGS	= --no-prepro 						\
-			  --include=$(srcdir)/src/lib				\
-			  --library=$(srcdir)/src/lib/preprocessor.m4	 	\
-			  --define=__PACKAGE_NAME__=$(PACKAGE)			\
-			  --define=__PACKAGE_VERSION__=$(MBFL_CORE_VERSION)	\
-			  --define=__SEMANTIC_VERSION__=$(MBFL_SEMANTIC_VERSION)\
-			  $(MBFLPPFLAGS)
+MBFLPP_GENERAL_FLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 $(MBFLPPFLAGS)
 
 EXTRA_DIST		+=			\
 	src/backup/libmbfl.sh			\
