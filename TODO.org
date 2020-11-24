@@ -12,7 +12,7 @@
    executing "configure".
 
 * TODO Documentation
-** TODO Review preprocessor documentation
+** DONE Review preprocessor documentation
 ** TODO Review testing documentation
 ** TODO Document the library "libmbflutils".
 * Local Variables
