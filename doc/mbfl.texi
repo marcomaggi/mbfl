@@ -648,7 +648,7 @@ Print on @stdout{} the file system absolute pathname of the installed library
 
 
 The @mfour{} preprocessor is invoked by @value{PROSCRIPTCMD} with the @option{--prefix-builtins}
-option; so all the @mfour{} built in macros and directives are available prefixed with @code{m4_}.
+option; so all the @mfour{} built--in macros and directives are available prefixed with @code{m4_}.
 
 The quoting for the preprocessor is changed with:
 

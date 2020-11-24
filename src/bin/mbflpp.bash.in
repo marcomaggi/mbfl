@@ -5833,13 +5833,17 @@ function main () {
     	    then printf '#!%s\n' "$script_option_BASH_PROGRAM"
             fi
             if test "$script_option_PRESERVE_COMMENTS" = 'yes'
-    	    then program_m4 \
-		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$pkgdatadir" \
-		     -D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_LIBMBFL" \
+    	    then program_m4								\
+		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION"				\
+		     -D__PACKAGE_DATADIR__="$pkgdatadir"				\
+		     -D__MBFL_LIBRARY__="$script_option_LIBMBFL"			\
+		     -D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_LIBMBFL"	\
 		     ${M4_FLAGS} -
             else program_m4 \
-		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION" -D__PACKAGE_DATADIR__="$pkgdatadir" \
-		     -D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_LIBMBFL" \
+		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION"				\
+		     -D__PACKAGE_DATADIR__="$pkgdatadir"				\
+		     -D__MBFL_LIBRARY__="$script_option_LIBMBFL"			\
+		     -D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_LIBMBFL"	\
 		     ${M4_FLAGS} - | filter_drop_comments
             fi
     	} | {
