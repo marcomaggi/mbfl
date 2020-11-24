@@ -1436,8 +1436,57 @@ evaluating to the number of pairs in the array variable @var{ARRAYNAME}.
 
 @c page
 @node base
-@chapter Some base functions
+@chapter Some base functions and variables
 
+
+@menu
+* base variables::              Miscellaneous variables.
+* base functions::              Miscellaneous functions.
+@end menu
+
+@c page
+@node base variables
+@section Miscellaneous variables
+
+
+@defvar mbfl_INSTDIR_PREFIX
+Hold the value of the @gnu{} Autoconf substitution @code{@@prefix@@}.
+@end defvar
+
+
+@defvar mbfl_INSTDIR_EXEC_PREFIX
+Hold the value of the @gnu{} Autoconf substitution @code{@@exec_prefix@@}.
+@end defvar
+
+
+@defvar mbfl_INSTDIR_BINDIR
+Hold the value of the @gnu{} Autoconf substitution @code{@@bindir@@}.  The preprocessor script is
+installed under this directory, so we can compose its pathname as follows:
+
+@example
+printf -v MBFLPP_PATHNAME '%s/@value{PROSCRIPT}' "$mbfl_INSTDIR_BINDIR"
+@end example
+@end defvar
+
+
+@defvar mbfl_INSTDIR_DATAROOTDIR
+Hold the value of the @gnu{} Autoconf substitution @code{@@datarootdir@@}.
+@end defvar
+
+
+@defvar mbfl_INSTDIR_DATADIR
+Hold the value of the @gnu{} Autoconf substitution @code{@@datadir@@}.  All the libraries installed
+by @value{PACKAGE} are under this directory, so we can compose pathnames as follows:
+
+@example
+printf -v LIBMBFL_PATHNAME '%s/@value{LIBMBFL}'      "$mbfl_INSTDIR_DATADIR"
+printf -v PREPRO_PATHNAME  '%s/preprocessor.m4' "$mbfl_INSTDIR_DATADIR"
+@end example
+@end defvar
+
+@c page
+@node base functions
+@section Miscellaneous functions
 
 
 @defun mbfl_set_maybe @var{NAME} @var{VALUE}

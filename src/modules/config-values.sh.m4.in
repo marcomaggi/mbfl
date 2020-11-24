@@ -27,6 +27,21 @@ declare -r mbfl_PROGRAM_STAT='@MBFL_PROGRAM_STAT@'
 declare -r mbfl_PROGRAM_SUDO='@MBFL_PROGRAM_SUDO@'
 declare -r mbfl_PROGRAM_WHOAMI='@MBFL_PROGRAM_WHOAMI@'
 
+function mbfl_p_define_some_configuration_values () {
+    local prefix="@prefix@"
+    local exec_prefix="@exec_prefix@"
+    local bindir="@bindir@"
+    local datarootdir="@datarootdir@"
+    local datadir="@datadir@"
+
+    declare -g mbfl_INSTDIR_PREFIX=$prefix
+    declare -g mbfl_INSTDIR_EXEC_PREFIX=$exec_prefix
+    declare -g mbfl_INSTDIR_BINDIR=$bindir
+    declare -g mbfl_INSTDIR_DATAROOTDIR=$datarootdir
+    declare -g mbfl_INSTDIR_DATADIR=$datadir
+}
+mbfl_p_define_some_configuration_values
+
 ### end of file
 # Local Variables:
 # mode: sh
