@@ -140,8 +140,6 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 
 @menu
 * overview::                    Overview of the package.
-* config script::               Inspecting @mbfl{} installation with the
-                                configuration script.
 * preprocessor::                Using the script preprocessor.
 * base::                        Some base functions.
 * shell::                       Shell facilities.
@@ -190,18 +188,19 @@ Indexes
 This document describes version @value{VERSION} of @value{PACKAGE}, a library of functions for the
 @gnu{} Bash shell.  This package is an attempt to make @gnu{} Bash a viable solution for medium
 sized scripts; it needs at least Bash version @value{REQUIRED_BASH_VERSION}.  A set of modules
-implementing common operations and a script template are offered by this package and the author has
+implementing common operations and script templates are offered by this package and the author has
 used them with success in implementing non--small scripts.
 
 The philosophy of @mbfl{} is to do the work as much as possible without external commands.  For
 example: string manipulation is done using the special variable substitution provided by Bash, and
-no use is done of utilities like @command{sed}, @command{grep} and @command{ed}.
+no use is done of utilities like @command{sed}, @command{grep} and @command{ed}.  Despite that,
+@value{PACKAGE} really needs the @gnu{} Coreutils package to perform a lot of tasks.
 
 The library is better used starting from the template scripts in the @file{examples/} subdirectory
 of the distribution, especially @file{template.sh} and @file{template-actions.sh}.  This is because,
 with @mbfl{}, some choices are made to reduce the application--dependent part of the script to the
 smallest dimension; if we follow another schema, @mbfl{} modules may be inadequate.  This is
-especially true for the options parsing module.
+especially true for the actions and options parsing modules.
 
 Starting with version 3: this package installs files under directories @strong{without} the version
 part.  If we desire to install multiple versions of the package: we should install under
@@ -216,55 +215,50 @@ many file system related tasks; the package @command{sudo} to perform tasks with
 privileges.
 
 @menu
-* overview quick::              Quick run--time loading.
-* overview reliable::           Reliable run--time loading.
+* overview loading::            How to load the core library.
 * overview interactive::        Using the library interactively.
 * overview rv::                 Result variables.
 * overview notes::              Miscellaneous notes.
 @end menu
 
 @c page
-@node overview quick
-@section Quick run--time loading
+@node overview loading
+@section Loading the library
 
 
-The easiest way to use the library is to include at run--time the library file @value{LIBMBFLFILE} in
-the script.  To do it, we install the package on the system and use this code in the scripts:
+The easiest way to use the core library is to include at run--time the library file
+@value{LIBMBFLFILE} in the script.  To do it, we install the package on the system and use this code
+in the scripts:
 
 @example
-source "$@{MBFL_LIBRARY:=$(type -p mbflpp.bash &>/dev/null && mbflpp.bash)@}"
+source "$@{MBFL_LIBMBFL:=$(mbflpp.bash --print-libmbfl)@}" || exit 100
 @end example
 
 @noindent
-after the service variables have been declared.  @ref{variables service, Required user defined
-variables}.
+after the service variables have been declared; @ref{variables service, Required user defined
+variables}.  The exit code @samp{100} is reserved for errors while loading libraries;
+@ref{exit_because_error_loading_library, Exit codes and return codes}.
 
 This code will read the full pathname of the library from the environment variable
-@env{MBFL_LIBRARY}; if this variable is not set: the script @value{PROSCRIPTCMD} is invoked with no
-arguments to acquire the pathname.  @value{PROSCRIPTCMD} is installed by the package in the
-@code{$(bindir)} directory, which we must include in the @env{PATH} environment variable.
-
-@c page
-@node overview reliable
-@section Reliable run--time loading
-
+@env{MBFL_LIBMBFL}; if this variable is not set: the script @value{PROSCRIPTCMD} is executed to
+acquire the pathname.  @value{PROSCRIPTCMD} is installed by the package in the @code{$bindir}
+directory, which we must include in the @env{PATH} environment variable.
 
 The reliable way to load the library is to use the preprocessor macros @func{mbfl_embed_library} or
-@func{mbfl_load_library}, @ref{preprocessor loading, Libraries loading and embedding}.
+@func{mbfl_load_library}, @ref{preprocessor loading, Libraries loading and embedding}.  Either the
+library is embedded in the script or it is sourced from a hard--coded file system pathname; this
+reduces the chances of a script being tricked into loading a file different from the actual library.
 
-Either the library is embedded in the script or it is sourced from a hard--coded file system
-pathname; this reduces the chances a script being tricked into loading a file different from the
-actual library.
-
-To use the preprocessor macros we must process a script's source file with the preprocessor,
-possibly using an appropriate @file{Makefile}; @ref{preprocessor, Using the script preprocessor}.
+To use the preprocessor macros we must process a script's source file with the preprocessor script
+@value{PROSCRIPTCMD}, possibly using an appropriate @file{Makefile}; @ref{preprocessor, Using the
+script preprocessor}.
 
 @c page
 @node overview interactive
 @section Using the library interactively
 
 
-It is possible, but not recommended, to source the library in an interactive shell, though some
+It is possible, but not recommended, to source the core library in an interactive shell, though some
 modules must be disabled.  The purpose of interactive loading is only to test and debug the
 functions by hand.
 
@@ -303,10 +297,10 @@ mbfl_file_extension_var
 @end example
 
 @noindent
-the first variant will print the result to stdout, while the @code{_var} variant will store the
+the first variant will print the result to @stdout{}, while the @code{_var} variant will store the
 result in a ``result variable'' whose name is handed to it as first argument; this mechanism is
 built using the @code{local -n} feature of Bash.  The @code{_var} variants are often a bit faster
-because the output variant is often a wrapper for the @code{_var} variant.
+because many output variants are wrappers for the @code{_var} variants.
 
 Basic @api{} usage example:
 
@@ -506,45 +500,6 @@ string in the environment in which @code{read} is evaluated.  This happens in fu
 @func{mbfl_read_maybe_null} and @func{mbfl_dialog_ask_password}; notice, though, that these
 functions @strong{do not} mutate the @code{IFS} value in the environment of the caller.
 @end itemize
-
-@c page
-@node config script
-@chapter Inspecting @mbfl{} installation with the configuration script
-
-
-@cindex @command{mbfl-config}, installation inspection script
-@cindex Installation inspection script @command{mbfl-config},
-@cindex Configuration inspection script @command{mbfl-config},
-
-
-The package installs a shell script @command{mbfl-config} which we can use to inspect the
-file system installation pathnames and other informations about @mbfl{}.  Synopsis:
-
-@example
-mbfl-config [@var{OPTION}]
-@end example
-
-Available options:
-
-@table @code
-@item --library
-Print the full pathname of the core library @value{LIBMBFLFILE}.
-
-@item --testlib
-Print the full pathname of the testing library @file{libmbfltest.sh}.
-
-@item --utilslib
-Print the full pathname of the utilities library @file{libmbflutils.sh}.
-
-@item --libpath
-Print the librarires installation directory.
-
-@item --version
-Print the version number.
-
-@item --help
-Print the help screen.
-@end table
 
 @c page
 @node preprocessor
@@ -1632,18 +1587,24 @@ In addition, the following functions are predefined; @mbfl{}'s modules define ot
 functions.
 
 
+@anchor{exit_because_error_loading_library}
+@anchor{return_because_error_loading_library}
 @deffn {Function} exit_because_error_loading_library
 @deffnx {Alias} return_because_error_loading_library
 Exit or return with code @code{100}.
 @end deffn
 
 
+@anchor{exit_because_invalid_function_name}
+@anchor{return_because_invalid_function_name}
 @deffn {Function} exit_because_invalid_function_name
 @deffnx {Alias} return_because_invalid_function_name
 Exit or return with code @code{91}.
 @end deffn
 
 
+@anchor{ecause_invalid_mbfl_version}
+@anchor{return_invalid_mbfl_version}
 @anchor{exit_because_invalid_mbfl_version}
 @deffn {Function} exit_because_invalid_mbfl_version
 @deffnx {Alias} return_because_invalid_mbfl_version
