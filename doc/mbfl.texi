@@ -507,14 +507,14 @@ functions @strong{do not} mutate the @code{IFS} value in the environment of the 
 
 
 The @mbfl{} script preprocessor is a command line program named @value{PROSCRIPTCMD}; it is itself a
-Bash script that makes use of the @mbfl{} library.  It can remove comments, blank lines, blank
-characters at the beginning of lines, and it can expand macros.
+Bash script that makes use of the @mbfl{} library (embedded in the source code).  It can remove
+comments, blank lines, blank characters at the beginning of lines, and it can expand macros.
 
 The macro preprocessing is performed by the @gnu{} @mfour{} program, using a library of macros
 called @file{preprocessor.m4} which is installed on the system with the @mbfl{} package.
 
-The use of the preprocessor is fully optional: every feature of the @mbfl{} library can be used
-without the preprocessor.
+While some features of @value{PACKAGE} are available without: use of the preprocessor is strongly
+recommended.
 
 @menu
 * preprocessor invoking::       Invoking the preprocessor.
@@ -545,8 +545,8 @@ mbflpp.bash [@var{OPTIONS}] --outfile=@var{OUTFILE} [--] @vari{INFILE} @varii{IN
 all the @var{INFILE} arguments are interpreted as file system pathnames selecting input files to
 concatenate in the specified order.
 
-All the @mbfl{} built in command line options are available, additionally the following options are
-supported.
+All the @mbfl{} built--in command line options are available, @ref{getopts options, Predefined
+options}.  Additionally the following options are supported.
 
 @table @code
 @item --preserve-comments
@@ -574,13 +574,14 @@ programs}.
 Define a new symbol (@mfour{} syntax).  This is equivalent to the @option{--define} option of
 @mfour{}.
 
-@item -I@var{VALUE}
-@itemx --include=@var{VALUE}
+@item -I@var{INCLUDE_DIRECTORY_PATHNAME}
+@itemx --include=@var{INCLUDE_DIRECTORY_PATHNAME}
 @cindex @option{--include}, preprocessor option
 @cindex Preprocessor option @option{--include}
-Add a search path for files.  @var{VALUE} must be a directory pathname and it is handed to @mfour{}
-to search for macro files.  We can use this option multiple times.  @mfour{} can include files using
-the built--in @func{m4_include}.
+Add a directory to the search path for include files.  @var{INCLUDE_DIRECTORY_PATHNAME} must be a
+directory pathname and it is handed to @mfour{} to search for macro files.  We can use this option
+multiple times.  @mfour{} can include files using the built--in @func{m4_include},
+@mfourref{Include, Including named files}.
 
 @item --library=@var{LIBRARY_FILE_PATHNAME}
 @cindex @option{--library}, preprocessor option
@@ -615,11 +616,12 @@ Select the pathname to a @value{LIBMBFLFILE} file to use in the macros @func{mbf
 @func{mbfl_embed_library}, @ref{preprocessor loading, Libraries loading and embedding}.  The
 selected pathname overrides the library installed on the system.
 
-@item --print-libpath
-@cindex @option{--print-libpath}, preprocessor option
-@cindex Preprocessor option @option{--print-libpath}
+@item --print-libdir
+@cindex @option{--print-libdir}, preprocessor option
+@cindex Preprocessor option @option{--print-libdir}
 Print on @stdout{} the file system absolute pathname of the libraries installation directory, then
-exit successfully.
+exit successfully.  The installation directory is selected with the option @option{--datadir} of
+@command{configure} at package--configuration time.
 
 @item --print-libmbfl
 @cindex @option{--print-libmbfl}, preprocessor option
