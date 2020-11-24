@@ -375,6 +375,7 @@ endif
 #### interface to "make check"
 
 EXTRA_DIST			+=		\
+	tests/base.test.m4			\
 	tests/arrays.test.m4			\
 	tests/atexit.test.m4			\
 	tests/bash-feature-coproc.test.m4	\
@@ -399,6 +400,7 @@ EXTRA_DIST			+=		\
 	tests/signaltest.sh.m4
 
 MBFL_CHECK_BUILT_TESTS		=		\
+	tests/base.test				\
 	tests/arrays.test			\
 	tests/atexit.test			\
 	tests/bash-feature-coproc.test		\
