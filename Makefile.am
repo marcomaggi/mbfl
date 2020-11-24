@@ -523,7 +523,7 @@ MBFL_INSTCHECK_FLAGS	= $(user_flags)
 # This thing with the PATH environment variable is needed to run
 # distcheck successfully.
 MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:$(builddir)/tests:$(DESTDIR)$(bindir):$$PATH; export PATH;
-MBFL_INSTCHECK_ENV	+= PATH="`mbflpp.bash --print-libpath`":$$PATH; export PATH;
+MBFL_INSTCHECK_ENV	+= PATH="`mbflpp.bash --print-libdir`":$$PATH; export PATH;
 MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFL="`mbflpp.bash --print-libmbfl`"; export MBFL_TESTS_LIBMBFL;
 MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLTEST="`mbflpp.bash --print-libmbfltest`"; export MBFL_TESTS_LIBMBFLTEST;
 MBFL_INSTCHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;

@@ -5725,7 +5725,7 @@ mbfl_declare_option LIBMBFL "$DEFAULT_LIBMBFL" '' libmbfl witharg 'pathname of t
 mbfl_declare_option BASH_PROGRAM "$mbfl_PROGRAM_BASH" \
 		    '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
 
-mbfl_declare_option PRINT_LIBPATH      no '' print-libpath      noarg 'print the librarires installation directory'
+mbfl_declare_option PRINT_LIBPATH      no '' print-libdir       noarg 'print the librarires installation directory'
 mbfl_declare_option PRINT_LIBMBFL      no '' print-libmbfl      noarg 'print the full installation pathname of the library "libmbfl.sh"'
 mbfl_declare_option PRINT_LIBMBFLTEST  no '' print-libmbfltest  noarg 'print the full installation pathname of the library "libmbfltest.sh"'
 mbfl_declare_option PRINT_LIBMBFLUTILS no '' print-libmbflutils noarg 'print the full installation pathname of the library "libmbflutils.sh"'
