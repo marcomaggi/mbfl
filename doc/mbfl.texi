@@ -8,6 +8,15 @@
 @include macros.texi
 
 @c page
+@c ------------------------------------------------------------------------
+@c Local macros.
+@c ------------------------------------------------------------------------
+
+@macro mfourref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,m4}
+@end macro
+
+@c page
 @c ------------------------------------------------------------
 @c Values.
 @c ------------------------------------------------------------
@@ -43,6 +52,17 @@
 @set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}}
 @set DOWNLOAD_URL               @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}/downloads}
 @set DOCUMENTATION_URL          @url{https://marcomaggi.github.io/docs/@value{PACKAGE_NICKNAME}.html}
+
+@set PROSCRIPT                  mbflpp.bash
+@set PROSCRIPTCMD               @command{@value{PROSCRIPT}}
+
+@set LIBMBFL                    libmbfl.sh
+@set LIBMBFLTEST                libmbfltest.sh
+@set LIBMBFLUTILS               libmbflutils.sh
+
+@set LIBMBFLFILE                @file{libmbfl.sh}
+@set LIBMBFLTESTFILE            @file{libmbfltest.sh}
+@set LIBMBFLUTILSFILE           @file{libmbflutils.sh}
 
 @c page
 @c ------------------------------------------------------------
@@ -188,9 +208,7 @@ part.  If we desire to install multiple versions of the package: we should insta
 @file{/opt/mbfl/$(VERSION)}, by using the appropriate command line option at configuration time:
 
 @example
-$ ./configure \
-      --prefix=/opt/mbfl/3.0.0 \
-      --libdir=/opt/mbfl/3.0.0/lib64
+$ ./configure --prefix=/opt/mbfl/3.0.0
 @end example
 
 This package relies on: @gnu{} @mfour{} for preprocessing scripts; the @gnu{} Coreutils to perform
@@ -210,7 +228,7 @@ privileges.
 @section Quick run--time loading
 
 
-The easiest way to use the library is to include at run--time the library file @file{libmbfl.sh} in
+The easiest way to use the library is to include at run--time the library file @value{LIBMBFLFILE} in
 the script.  To do it, we install the package on the system and use this code in the scripts:
 
 @example
@@ -222,8 +240,8 @@ after the service variables have been declared.  @ref{variables service, Require
 variables}.
 
 This code will read the full pathname of the library from the environment variable
-@env{MBFL_LIBRARY}; if this variable is not set: the script @command{mbflpp.bash} is invoked with no
-arguments to acquire the pathname.  @command{mbflpp.bash} is installed by the package in the
+@env{MBFL_LIBRARY}; if this variable is not set: the script @value{PROSCRIPTCMD} is invoked with no
+arguments to acquire the pathname.  @value{PROSCRIPTCMD} is installed by the package in the
 @code{$(bindir)} directory, which we must include in the @env{PATH} environment variable.
 
 @c page
@@ -232,7 +250,7 @@ arguments to acquire the pathname.  @command{mbflpp.bash} is installed by the pa
 
 
 The reliable way to load the library is to use the preprocessor macros @func{mbfl_embed_library} or
-@func{mbfl_library_loader}, @ref{preprocessor library, Loading or including the library}.
+@func{mbfl_load_library}, @ref{preprocessor loading, Libraries loading and embedding}.
 
 Either the library is embedded in the script or it is sourced from a hard--coded file system
 pathname; this reduces the chances a script being tricked into loading a file different from the
@@ -510,7 +528,7 @@ Available options:
 
 @table @code
 @item --library
-Print the full pathname of the core library @file{libmbfl.sh}.
+Print the full pathname of the core library @value{LIBMBFLFILE}.
 
 @item --testlib
 Print the full pathname of the testing library @file{libmbfltest.sh}.
@@ -533,7 +551,7 @@ Print the help screen.
 @chapter Using the script preprocessor
 
 
-The @mbfl{} script preprocessor is a command line program named @command{mbflpp.bash}; it is itself a
+The @mbfl{} script preprocessor is a command line program named @value{PROSCRIPTCMD}; it is itself a
 Bash script that makes use of the @mbfl{} library.  It can remove comments, blank lines, blank
 characters at the beginning of lines, and it can expand macros.
 
@@ -547,7 +565,7 @@ without the preprocessor.
 * preprocessor invoking::       Invoking the preprocessor.
 * preprocessor quoting::        Quotes and quoted macro names.
 * preprocessor defines::        Predefined symbols.
-* preprocessor library::        Loading or including the library.
+* preprocessor loading::        Libraries loading and embedding.
 * preprocessor parameters::     Function parameters handling.
 * preprocessor arguments::      Script arguments handling.
 * preprocessor nameref::        Variable name references.
@@ -638,8 +656,8 @@ a known location.
 @item --libmbfl=@var{LIBMBFL}
 @cindex @option{--libmbfl}, preprocessor option
 @cindex Preprocessor option @option{--libmbfl}
-Select the pathname to a @file{libmbfl.sh} file to use in the macros @func{mbfl_load_library} and
-@func{mbfl_embed_library}, @ref{preprocessor library, Loading or including the library}.  The
+Select the pathname to a @value{LIBMBFLFILE} file to use in the macros @func{mbfl_load_library} and
+@func{mbfl_embed_library}, @ref{preprocessor loading, Libraries loading and embedding}.  The
 selected pathname overrides the library installed on the system.
 
 @item --print-libpath
@@ -651,7 +669,7 @@ exit successfully.
 @item --print-libmbfl
 @cindex @option{--print-libmbfl}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl}
-Print on @stdout{} the file system absolute pathname of the installed library @file{libmbfl.sh},
+Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLFILE},
 then exit successfully.
 
 @item --print-libmbfltest
@@ -672,7 +690,7 @@ Print on @stdout{} the file system absolute pathname of the installed library
 @section Quotes and quoted macro names
 
 
-The @mfour{} preprocessor is invoked by @command{mbflpp.bash} with the @option{--prefix-builtins}
+The @mfour{} preprocessor is invoked by @value{PROSCRIPTCMD} with the @option{--prefix-builtins}
 option; so all the @mfour{} built in macros and directives are available prefixed with @code{m4_}.
 
 The quoting for the preprocessor is changed with:
@@ -713,17 +731,17 @@ Expands into the absolute pathname of the @value{PACKAGE} library file.  For exa
 @end deffn
 
 @c page
-@node preprocessor library
+@node preprocessor loading
 @section Loading or including the library
 
 
-We can include in scripts the code needed to source the library at run--time or the whole library
-itself.
+We can include in scripts the code needed to source a library at run--time or we can embed a whole
+library itself.
 
 
 @deffn {Preprocessor Macro} mbfl_embed_library
 @deffnx {Preprocessor Macro} mbfl_embed_library @var{LIBRARY_FILE_PATHNAME}
-Expands into the contents of a library; the resulting output script does not need to load the
+Expands into the contents of a library file; the resulting output script does not need to load the
 library at runtime, let's say it is ``statically linked''.
 
 @itemize
@@ -732,21 +750,29 @@ If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is not} used:
 
 @itemize -
 @item
-If the option @option{--libmbfl} @strong{is not} used on the command line of
-@command{mbflpp.bash}: the library @file{libmbfl.sh} installed on the system is embedded, for example
-@file{/usr/share/libmbfl.sh}.
+If the option @option{--libmbfl} @strong{is not} used on the command line of @value{PROSCRIPTCMD}:
+the library @value{LIBMBFLFILE} installed on the system is embedded.
 
 @item
-If the option @option{--libmbfl} @strong{is} used on the command line of @command{mbflpp.bash}:
-the file pathname selected by the option is used to locate the library @file{libmbfl.sh} to be
-embedded.
+If the option @option{--libmbfl} @strong{is} used on the command line of @value{PROSCRIPTCMD}: the
+file pathname selected by the option is used to locate the library @value{LIBMBFLFILE} to be embedded.
 @end itemize
 
 @item
 If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is} used: that argument is interpreted
 as file system pathname of a library to embed in the source file.  Does not matter which library,
-either a @file{libmbfl.sh} implementation or some other library.
+either a @value{LIBMBFLFILE} implementation or some other library.
 @end itemize
+
+The macro expands into a use of the M4 built--in @func{m4_include}:
+
+@example
+m4_include(@var{LIBRARY_FILE_PATHNAME})
+@end example
+
+@noindent
+so the argument @var{LIBRARY_FILE_PATHNAME} must be a M4 expression expanding into a file system
+pathname, @mfourref{Include, Including named files}.
 @end deffn
 
 
@@ -754,8 +780,8 @@ either a @file{libmbfl.sh} implementation or some other library.
 @deffnx {Preprocessor Macro} mbfl_library_loader @var{LIBRARY_FILE_PATHNAME}
 @deffnx {Preprocessor Macro} mbfl_load_library
 @deffnx {Preprocessor Macro} mbfl_load_library @var{LIBRARY_FILE_PATHNAME}
-Expand to a block of code that ``reliably'' sources a library file; the resulting output script does
-need to source the library at runtime, let's say it is ``dynamically linked''.
+Expand to a block of code that sources a library file; the resulting output script does need to
+source the library at runtime, let's say it is ``dynamically linked''.
 
 @itemize
 @item
@@ -763,22 +789,38 @@ If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is not} used:
 
 @itemize -
 @item
-If the option @option{--libmbfl} @strong{is not} used on the command line of @command{mbflpp.bash}:
-the macro use expands into shell code that sources the library @file{libmbfl.sh} installed on the
-system, for example @file{/usr/share/libmbfl.sh}.
+If the option @option{--libmbfl} @strong{is not} used on the command line of @value{PROSCRIPTCMD}:
+the macro use expands into shell code that sources the library @value{LIBMBFLFILE} installed on the
+system.
 
 @item
-If the option @option{--libmbfl} @strong{is} used on the command line of @command{mbflpp.bash}: the
+If the option @option{--libmbfl} @strong{is} used on the command line of @value{PROSCRIPTCMD}: the
 macro use expands into shell code that sources the file pathname selected by the option; it is meant
-to be an implementation of @file{libmbfl.sh}.
+to be an implementation of @value{LIBMBFLFILE}.
 @end itemize
 
 @item
 If the optional argument @var{LIBRARY_FILE_PATHNAME} @strong{is} used: that argument is interpreted
 as file system pathname of a library to source in the code; does not matter which library, either a
-@file{libmbfl.sh} implementation or some other library.  The macro use expands into shell code that
-sources the library.
+@value{LIBMBFLFILE} implementation or some other library.  The macro use expands into shell code
+that sources the library.
 @end itemize
+
+The macro use expands into:
+
+@example
+source @var{LIBRARY_FILE_PATHNAME} || exit 100
+@end example
+
+@noindent
+so, in the general case, the argument @var{LIBRARY_FILE_PATHNAME} must be a M4 expression expanding
+into a Bash expression evaluating into a file system pathname.
+
+As example, we can load a library selecting it from an environment variable as follows:
+
+@example
+mbfl_load_library("$@{MY_LIBPATH:?'variable not set'@}/libmy.bash")
+@end example
 @end deffn
 
 @c page
