@@ -1029,6 +1029,8 @@ with the macro @func{mbfl_namevar}; we can retrieve its @dfn{data variable} name
 Other macros declare variables similarly, using the same scheme of 3 variable declarations: name
 variable, data variable, proxy variable.
 
+Yes: it's madness@dots{}
+
 @c page
 @node preprocessor nameref access
 @subsection Variables accessors
@@ -1221,7 +1223,7 @@ unset -v -n @var{NAME}
 unset -v @var{NAME}
 @end example
 
-Unset all the @emph{proxy variable} @var{NAME} and all the variables associated to it.
+Unset the @emph{proxy variable} @var{NAME} and all the variables associated to it.
 @end deffn
 
 @c page

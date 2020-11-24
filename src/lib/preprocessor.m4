@@ -149,12 +149,8 @@ m4_define([[[mbfl_global_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3
 m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
 m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar($1)]]])
 
-m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
-  unset -v $mbfl_a_variable_$1
-  unset -v mbfl_a_variable_$1
-  unset -v -n $1
-  unset -v $1
-]]])
+m4_dnl Keep this expansion a single line with semicolons!
+m4_define([[[mbfl_unset_varref]]],[[[unset -v $mbfl_a_variable_$1; unset -v mbfl_a_variable_$1; unset -v -n $1; unset -v $1;]]])
 
 m4_define([[[mbfl_variable_unset]]],[[[unset -v $1]]])
 m4_define([[[mbfl_unset_variable]]],[[[unset -v $1]]])
