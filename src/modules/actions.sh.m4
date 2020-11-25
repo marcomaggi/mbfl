@@ -9,31 +9,27 @@
 #
 # Copyright (C) 2013, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 #
-# This is free software; you  can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  3.0 of the License,  or (at
-# your option) any later version.
+# This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
+# General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
+# License, or (at your option) any later version.
 #
-# This library  is distributed in the  hope that it will  be useful, but
-# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# This library is distributed in the hope that  it will be useful, but WITHOUT ANY WARRANTY; without
+# even the  implied warranty of MERCHANTABILITY  or FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU
 # Lesser General Public License for more details.
 #
-# You  should have  received a  copy of  the GNU  Lesser  General Public
-# License along  with this library; if  not, write to  the Free Software
-# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA.
+# You should have received a copy of the  GNU Lesser General Public License along with this library;
+# if not,  write to  the Free  Software Foundation,  Inc., 59  Temple Place,  Suite 330,  Boston, MA
+# 02111-1307 USA.
 #
 
 #page
 #### global variables
 
-if test "$mbfl_INTERACTIVE" != 'yes'
+if mbfl_string_neq("$mbfl_INTERACTIVE", 'yes')
 then
-    # Associative array: the keys are the  names of the action sets, the
-    # values are "true".   If a string represents the name  of an action
-    # set: it is a key in this  array.  If a string does *not* represent
-    # the name of an action set: it is not a key in this array.
+    # Associative array:  the keys are the  names of the action  sets, the values are  "true".  If a
+    # string represents  the name of an  action set: it  is a key in  this array.  If a  string does
+    # *not* represent the name of an action set: it is not a key in this array.
     #
     mbfl_declare_symbolic_array(mbfl_action_sets_EXISTS)
 
@@ -41,19 +37,15 @@ then
     #
     #   ${ACTION_SET}-${ACTION_IDENTIFIER}
     #
-    # the values  are the  names of  the actions  sets being  subsets of
-    # $ACTION_SET.
+    # the values are the names of the actions sets being subsets of $ACTION_SET.
     #
-    # Every  action   set  might   be  associated  to   multiple  action
-    # identifiers.
+    # Every action set might be associated to multiple action identifiers.
     #
-    # * If the  pair $ACTION_SET, $ACTION_IDENTIFIER is  a non-leaf node
-    #   in the actions tree: it has  an action subset, whose name is the
-    #   value in this array.
+    # * If the pair $ACTION_SET,  $ACTION_IDENTIFIER is a non-leaf node in the  actions tree: it has
+    #   an action subset, whose name is the value in this array.
     #
-    # * If the  pair $ACTION_SET, $ACTION_IDENTIFIER  is a leaf  node in
-    #   the actions tree: it has no action subset, and the value in this
-    #   this array is the special name "NONE".
+    # * If the pair  $ACTION_SET, $ACTION_IDENTIFIER is a leaf  node in the actions tree:  it has no
+    #   action subset, and the value in this this array is the special name "NONE".
     #
     mbfl_declare_symbolic_array(mbfl_action_sets_SUBSETS)
 
@@ -61,14 +53,11 @@ then
     #
     #   ${ACTION_SET}-${ACTION_IDENTIFIER}
     #
-    # the  values  are  strings  used  to  compose  the  function  names
-    # associated with the script action.
+    # the values are strings used to compose the function names associated with the script action.
     #
-    # Every  action   set  might   be  associated  to   multiple  action
-    # identifiers.  The  strings from  this array's  values are  used to
-    # compose  the  main function  name,  the  "before parsing  options"
-    # function  name,  the  "after  parsing options"  function  name  as
-    # follows:
+    # Every action set  might be associated to  multiple action identifiers.  The  strings from this
+    # array's  values are  used to  compose the  main function  name, the  "before parsing  options"
+    # function name, the "after parsing options" function name as follows:
     #
     #   script_before_parsing_options_$KEYWORD
     #   script_after_parsing_options_$KEYWORD
@@ -80,20 +69,18 @@ then
     #
     #   ${ACTION_SET}-${ACTION_IDENTIFIER}
     #
-    # the  values   are  strings  representing  a   description  of  the
-    # associated  script  action.   Such   descriptions  are  used  when
-    # composing the help screen.
+    # the  values are  strings representing  a description  of the  associated script  action.  Such
+    # descriptions are used when composing the help screen.
     #
     mbfl_declare_symbolic_array(mbfl_action_sets_DESCRIPTIONS)
 
-    # Associative array: the keys are  the ${ACTION_SET}, the values are
-    # strings representing the action command line arguments.
+    # Associative array:  the keys are  the ${ACTION_SET}, the  values are strings  representing the
+    # action command line arguments.
     #
     mbfl_declare_symbolic_array(mbfl_action_sets_IDENTIFIERS)
 
-    # If "mbfl_actions_dispatch()"  selects an  action set: its  name is
-    # stored  here.   This variable  is  used  when composing  the  help
-    # screen.
+    # If "mbfl_actions_dispatch()" selects an action set: its name is stored here.  This variable is
+    # used when composing the help screen.
     #
     # The default value "NONE" indicates that there is currently no action selected.
     declare mbfl_action_sets_SELECTED_SET=NONE
@@ -107,7 +94,7 @@ function mbfl_declare_action_set () {
     if mbfl_string_is_name "$ACTION_SET"
     then
         if mbfl_string_is_empty "mbfl_slot_ref(mbfl_action_sets_EXISTS, ${ACTION_SET})"
-        then mbfl_action_sets_EXISTS[${ACTION_SET}]=true
+        then mbfl_slot_set(mbfl_action_sets_EXISTS,${ACTION_SET},true)
         else
             mbfl_message_error_printf 'action set declared twice: "%s"' "$ACTION_SET"
 	    exit_because_invalid_action_declaration
@@ -122,28 +109,26 @@ function mbfl_declare_action_set () {
 function mbfl_declare_action () {
     # The name of the action set this action belongs to.
     #
-    mbfl_mandatory_parameter(ACTION_SET,1,action set)
+    mbfl_mandatory_parameter(ACTION_SET,1,action set,-r)
 
     # A unique string (in this script) identifying this action.
     #
-    mbfl_mandatory_parameter(ACTION_KEYWORD,2,keyword)
+    mbfl_mandatory_parameter(ACTION_KEYWORD,2,keyword,-r)
 
-    # If $ACTION_SUBSET  is "NONE" it means  that this action is  a leaf
-    # and it will set the main function to run.
+    # If $ACTION_SUBSET  is "NONE" it  means that this  action is  a leaf and  it will set  the main
+    # function to run.
     #
-    mbfl_mandatory_parameter(ACTION_SUBSET,3,subset)
+    mbfl_mandatory_parameter(ACTION_SUBSET,3,subset,-r)
 
-    # A string  representing the  argument on the  command line  used to
-    # select this action.
+    # A string representing the argument on the command line used to select this action.
     #
-    mbfl_mandatory_parameter(ACTION_IDENTIFIER,4,identifier)
+    mbfl_mandatory_parameter(ACTION_IDENTIFIER,4,identifier,-r)
 
-    # A string  describing this action, to  be used to compose  the help
-    # screen.
+    # A string describing this action, to be used to compose the help screen.
     #
-    mbfl_mandatory_parameter(ACTION_DESCRIPTION,5,description)
+    mbfl_mandatory_parameter(ACTION_DESCRIPTION,5,description,-r)
 
-    local KEY=${ACTION_SET}-${ACTION_IDENTIFIER}
+    local -r KEY=${ACTION_SET}-${ACTION_IDENTIFIER}
 
     if ! mbfl_string_is_identifier "$ACTION_IDENTIFIER"
     then
@@ -151,8 +136,11 @@ function mbfl_declare_action () {
         exit_because_invalid_action_declaration
     fi
 
+    # mbfl_set_option_debug
+    # mbfl_message_debug_printf 'declaring action keyword "%s" as subset of "%s"' "$ACTION_KEYWORD" "$ACTION_SET"
+
     if mbfl_string_is_name "$ACTION_KEYWORD"
-    then mbfl_action_sets_KEYWORDS[${KEY}]=${ACTION_KEYWORD}
+    then mbfl_slot_set(mbfl_action_sets_KEYWORDS,${KEY},${ACTION_KEYWORD})
     else
         mbfl_message_error_printf \
 	    'internal error: invalid keyword for action "%s": "%s"' \
@@ -161,7 +149,7 @@ function mbfl_declare_action () {
     fi
 
     if mbfl_actions_set_exists_or_none "$ACTION_SUBSET"
-    then mbfl_action_sets_SUBSETS[${KEY}]=$ACTION_SUBSET
+    then mbfl_slot_set(mbfl_action_sets_SUBSETS,${KEY},${ACTION_SUBSET})
     else
         mbfl_message_error_printf \
 	    'internal error: invalid or non-existent action subset identifier for action "%s": "%s"' \
@@ -169,38 +157,35 @@ function mbfl_declare_action () {
         exit_because_invalid_action_declaration
     fi
 
-    mbfl_action_sets_DESCRIPTIONS[${KEY}]=$ACTION_DESCRIPTION
-    mbfl_action_sets_IDENTIFIERS[${ACTION_SET}]+=" ${ACTION_IDENTIFIER}"
-    return 0
+    mbfl_slot_set(mbfl_action_sets_DESCRIPTIONS,${KEY},"$ACTION_DESCRIPTION")
+    mbfl_slot_append(mbfl_action_sets_IDENTIFIERS, ${ACTION_SET}, " $ACTION_IDENTIFIER")
+    return_success
 }
 
 #page
-# Return 0  if ACTION_SET is the  identifier of an existent  action set;
-# else return 1.
+# Return 0 if ACTION_SET is the identifier of an existent action set; else return 1.
 #
 function mbfl_actions_set_exists () {
     mbfl_mandatory_parameter(ACTION_SET,1,action set)
     mbfl_string_is_name "$ACTION_SET" && ${mbfl_action_sets_EXISTS[${ACTION_SET}]:-false}
 }
 
-# Return 0 if ACTION_SET is the  identifier of an existent action set or
-# it is the string "NONE"; else return 1.
+# Return 0 if  ACTION_SET is the identifier  of an existent action  set or it is  the string "NONE";
+# else return 1.
 #
 function mbfl_actions_set_exists_or_none () {
     mbfl_mandatory_parameter(ACTION_SET,1,action set)
 
-    mbfl_actions_set_exists "$ACTION_SET" || mbfl_string_equal 'NONE' "$ACTION_SET"
+    mbfl_actions_set_exists "$ACTION_SET" || mbfl_string_eq(NONE, "$ACTION_SET")
 }
 
 #page
-# Parse  the  next command  line  argument  and select  accordingly  the
-# functions for the main module.
+# Parse the next command line argument and select accordingly the functions for the main module.
 #
-# Upon  entering this  function: the  global variable  ARGV1 must  be an
-# array containing all  the command line arguments;  the global variable
-# ARGC1 must be  an integer representing the number of  values in ARGV1;
-# the global variable  ARG1ST must be an integer  representing the index
-# in ARGV1 of the next argument to be processed.
+# Upon entering this function: the global variable ARGV1 must be an array containing all the command
+# line arguments; the global variable ARGC1 must be  an integer representing the number of values in
+# ARGV1; the global variable  ARG1ST must be an integer representing the index  in ARGV1 of the next
+# argument to be processed.
 #
 function mbfl_actions_dispatch () {
     mbfl_mandatory_parameter(ACTION_SET,1,action set)
@@ -210,19 +195,19 @@ function mbfl_actions_dispatch () {
     if ! mbfl_actions_set_exists "$ACTION_SET"
     then
         mbfl_message_error_printf 'invalid action identifier: "%s"' "$ACTION_SET"
-        return 1
+        return_failure
     fi
 
     # If  there are  no more  command  line arguments:  just accept  the
     # previously selected values for the functions.
     if (( ARG1ST == ARGC1 ))
-    then return 0
+    then return_success
     fi
 
-    local IDENTIFIER=mbfl_slot_ref(ARGV1, $ARG1ST)
-    local KEY=${ACTION_SET}-${IDENTIFIER}
-    local ACTION_SUBSET=mbfl_slot_ref(mbfl_action_sets_SUBSETS, ${KEY})
-    local ACTION_KEYWORD=mbfl_slot_ref(mbfl_action_sets_KEYWORDS, ${KEY})
+    local -r IDENTIFIER=mbfl_slot_ref(ARGV1, $ARG1ST)
+    local -r KEY=${ACTION_SET}-${IDENTIFIER}
+    local -r ACTION_SUBSET=mbfl_slot_ref(mbfl_action_sets_SUBSETS, ${KEY})
+    local -r ACTION_KEYWORD=mbfl_slot_ref(mbfl_action_sets_KEYWORDS, ${KEY})
     #mbfl_message_debug_printf 'processing argument "%s" for action selection' "$IDENTIFIER"
     if mbfl_string_is_empty "$ACTION_KEYWORD"
     then
@@ -230,7 +215,7 @@ function mbfl_actions_dispatch () {
         # identifier:  just leave  it alone.   We accept  the previously
         # selected functions and return success.
         #mbfl_message_debug_printf 'argument "%s" is not an action identifier' "$IDENTIFIER"
-        return 0
+        return_success
     else
         # The  next  argument  from  the command  line  *is*  an  action
         # identifier: consume it and select its functions.
@@ -250,7 +235,7 @@ function mbfl_actions_dispatch () {
             # leaf  in  the actions  tree.   Stop  recursing and  return
             # success.
             #mbfl_message_debug_printf 'argument "%s" is an action identifier without action subset' "$IDENTIFIER"
-            return 0
+            return_success
         fi
     fi
 }
@@ -262,12 +247,12 @@ function mbfl_actions_fake_action_set () {
     if mbfl_actions_set_exists "$ACTION_SET"
     then
 	mbfl_action_sets_SELECTED_SET=$ACTION_SET
-	return 0
-    else return 1
+	return_success
+    else return_failure
     fi
 }
-# If an action set  has been selected and its name  is not "NONE": print
-# the help screen documenting the available actions.
+# If an action set has  been selected and its name is not "NONE":  print the help screen documenting
+# the available actions.
 #
 function mbfl_actions_print_usage_screen () {
     local ACTION_SET=$mbfl_action_sets_SELECTED_SET
@@ -283,7 +268,7 @@ function mbfl_actions_print_usage_screen () {
 		   "$ACTION_IDENTIFIER" "mbfl_slot_ref(mbfl_action_sets_DESCRIPTIONS, ${KEY})"
 	done
     fi
-    return 0
+    return_success
 }
 
 #page
@@ -322,7 +307,7 @@ function mbfl_actions_completion_print_script () {
 	    mbfl_actions_completion_fake_cat <<END
 
 # Setup completion for the command "$PROGNAME".
-complete -F $FUNCNAME_ENTRY_POINT -o default $PROGNAME
+complete -F $FUNCNAME_ENTRY_POINT -o default "$PROGNAME"
 
 function $FUNCNAME_ENTRY_POINT () {
     local -r word_to_be_completed=\mbfl_slot_ref(COMP_WORDS, \${COMP_CWORD})
@@ -331,7 +316,7 @@ function $FUNCNAME_ENTRY_POINT () {
 
 # Perform the "compgen" call to select the completion from a list of candidate words.
 function $FUNCNAME_COMPGEN () {
-    local -r candidate_completions=\${1:?"missing candidate completions argument"}
+    local -r candidate_completions=\${1:?"\${FUNCNAME}: missing candidate completions argument"}
     COMPREPLY=(\`compgen -W "\$candidate_completions" -- "\$word_to_be_completed"\`)
 }
 
@@ -342,7 +327,7 @@ END
 
 # Perform the "compgen" call to select the completion from a list of candidate words.
 function $FUNCNAME_COMPGEN () {
-    local -r candidate_completions=\${1:?"missing candidate completions argument"}
+    local -r candidate_completions=\${1:?"\${FUNCNAME}: missing candidate completions argument"}
     COMPREPLY=(\`compgen -W "\$candidate_completions" -- "\$word_to_be_completed"\`)
 }
 
@@ -359,46 +344,46 @@ END
     #
     # NOTE I  hate how we are  handling the "ITERATOR" array;  but with the limited  features of the
     # shell language: I do not know how else we could do it.  (Marco Maggi; Sep 19, 2020)
-    mbfl_local_numeric_array(ITERATOR)
-    ITERATOR[ACTION_SET]='MAIN'
-    ITERATOR[COMMANDS_LIST]=$PROGNAME
-    ITERATOR[FUNCTIONS_SUFFIX]=$PROGNAME
-    mbfl_actions_completion_visit_node
+    mbfl_local_symbolic_array(ITERATOR)
+    mbfl_slot_set(ITERATOR, ACTION_SET,       'MAIN')
+    mbfl_slot_set(ITERATOR, COMMANDS_LIST,    "$PROGNAME")
+    mbfl_slot_set(ITERATOR, FUNCTIONS_SUFFIX, "$PROGNAME")
+    mbfl_p_actions_completion_visit_node
     exit_success
 }
 
-function mbfl_actions_completion_visit_node () {
+function mbfl_p_actions_completion_visit_node () {
     local ACTION_IDENTIFIER KEY
-    mbfl_local_numeric_array(TMP)
+    mbfl_local_symbolic_array(TMP)
 
     mbfl_actions_completion_print_dispatcher
     KEY=mbfl_slot_ref(ITERATOR, ACTION_SET)
     for ACTION_IDENTIFIER in mbfl_slot_ref(mbfl_action_sets_IDENTIFIERS, $KEY)
     do
 	# Save the ITERATOR array.
-	TMP[ACTION_SET]=mbfl_slot_ref(ITERATOR, ACTION_SET)
-	TMP[COMMANDS_LIST]=mbfl_slot_ref(ITERATOR, COMMANDS_LIST)
-	TMP[FUNCTIONS_SUFFIX]=mbfl_slot_ref(ITERATOR, FUNCTIONS_SUFFIX)
+	mbfl_slot_set(TMP,ACTION_SET,       mbfl_slot_ref(ITERATOR, ACTION_SET))
+	mbfl_slot_set(TMP,COMMANDS_LIST,    mbfl_slot_ref(ITERATOR, COMMANDS_LIST))
+	mbfl_slot_set(TMP,FUNCTIONS_SUFFIX, mbfl_slot_ref(ITERATOR, FUNCTIONS_SUFFIX))
 
 	# Update ITERATOR to represent the next node.
 	printf -v KEY '%s-%s' mbfl_slot_ref(ITERATOR, ACTION_SET) $ACTION_IDENTIFIER
-	ITERATOR[ACTION_SET]=mbfl_slot_ref(mbfl_action_sets_SUBSETS, $KEY)
+	mbfl_slot_set(ITERATOR,ACTION_SET,mbfl_slot_ref(mbfl_action_sets_SUBSETS, $KEY))
 	printf -v ITERATOR[COMMANDS_LIST]    '%s %s' "mbfl_slot_ref(ITERATOR, COMMANDS_LIST)"    $ACTION_IDENTIFIER
 	printf -v ITERATOR[FUNCTIONS_SUFFIX] '%s-%s' "mbfl_slot_ref(ITERATOR, FUNCTIONS_SUFFIX)" $ACTION_IDENTIFIER
 
 	if mbfl_string_equal 'NONE' "mbfl_slot_ref(ITERATOR, ACTION_SET)"
-	then mbfl_actions_completion_print_leaf
-	else mbfl_actions_completion_visit_node
+	then mbfl_p_actions_completion_print_leaf
+	else mbfl_p_actions_completion_visit_node
 	fi
 
 	# Restore the ITERATOR array.
-	ITERATOR[ACTION_SET]=mbfl_slot_ref(TMP, ACTION_SET)
-	ITERATOR[COMMANDS_LIST]=mbfl_slot_ref(TMP, COMMANDS_LIST)
-	ITERATOR[FUNCTIONS_SUFFIX]=mbfl_slot_ref(TMP, FUNCTIONS_SUFFIX)
+	mbfl_slot_set(ITERATOR,ACTION_SET,mbfl_slot_ref(TMP, ACTION_SET))
+	mbfl_slot_set(ITERATOR,COMMANDS_LIST,mbfl_slot_ref(TMP, COMMANDS_LIST))
+	mbfl_slot_set(ITERATOR,FUNCTIONS_SUFFIX,mbfl_slot_ref(TMP, FUNCTIONS_SUFFIX))
     done
 }
 
-function mbfl_actions_completion_print_leaf () {
+function mbfl_p_actions_completion_print_leaf () {
     local FUNCNAME_DISPATCH
 
     printf -v FUNCNAME_DISPATCH '%s-dispatch-completion-%s' "$NAMESPACE" "mbfl_slot_ref(ITERATOR, FUNCTIONS_SUFFIX)"
@@ -407,7 +392,7 @@ function mbfl_actions_completion_print_leaf () {
 # which has no subcommands.
 #
 function $FUNCNAME_DISPATCH () {
-    local -ir index_of_command=\${1:?'missing argument: index of command'}
+    local -ir index_of_command=\${1:?"\${FUNCNAME}: missing argument: index of command"}
     local -ir index_of_next_arg=\$((1 + index_of_command))
     :
 }
@@ -419,7 +404,8 @@ function mbfl_actions_completion_print_dispatcher () {
     # Function name.  The function selects the candidate  completions for the command line word that
     # must be completed.
     local FUNCNAME_DISPATCH
-    local ACTION_SET=mbfl_slot_ref(ITERATOR, ACTION_SET) ACTION_IDENTIFIER
+    local ACTION_SET=mbfl_slot_ref(ITERATOR, ACTION_SET)
+    local ACTION_IDENTIFIER
 
     printf -v FUNCNAME_DISPATCH '%s-dispatch-completion-%s' "$NAMESPACE" "mbfl_slot_ref(ITERATOR, FUNCTIONS_SUFFIX)"
 
@@ -427,7 +413,7 @@ function mbfl_actions_completion_print_dispatcher () {
 # Dispatch command-line completion for the command "mbfl_slot_ref(ITERATOR, COMMANDS_LIST)".
 #
 function $FUNCNAME_DISPATCH () {
-    local -ir index_of_command=\${1:?\'missing argument: index of command\'}
+    local -ir index_of_command=\${1:?"\${FUNCNAME}: missing argument: index of command"}
     local -ir index_of_subcommand=\$((1 + index_of_command))
 
     # Are we completing a subcommand name of "mbfl_slot_ref(ITERATOR, COMMANDS_LIST)"?

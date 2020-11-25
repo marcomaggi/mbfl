@@ -127,7 +127,7 @@ mbfl_location_enable_cleanup_atexit
 #
 
 mbfl_declare_action_set ONE_GREEN
-#                   action-set	keyword		subset		identifier	description
+#                   action-set	keyword			subset	identifier	description
 mbfl_declare_action ONE_GREEN	ONE_GREEN_SOLID		NONE	solid		'Do main action one green solid.'
 mbfl_declare_action ONE_GREEN	ONE_GREEN_LIQUID	NONE	liquid		'Do main action one green liquid.'
 mbfl_declare_action ONE_GREEN	ONE_GREEN_GAS		NONE	gas		'Do main action one green gas.'
@@ -145,7 +145,7 @@ mbfl_declare_action ONE_RED	ONE_RED_GAS		NONE	gas		'Do main action one red gas.'
 ### --------------------------------------------------------------------
 
 mbfl_declare_action_set TWO_GREEN
-#                   action-set	keyword		subset		identifier	description
+#                   action-set	keyword			subset	identifier	description
 mbfl_declare_action TWO_GREEN	TWO_GREEN_SOLID		NONE	solid		'Do main action two green solid.'
 mbfl_declare_action TWO_GREEN	TWO_GREEN_LIQUID	NONE	liquid		'Do main action two green liquid.'
 mbfl_declare_action TWO_GREEN	TWO_GREEN_GAS		NONE	gas		'Do main action two green gas.'
@@ -163,7 +163,7 @@ mbfl_declare_action TWO_RED	TWO_RED_GAS		NONE	gas		'Do main action two red gas.'
 ### --------------------------------------------------------------------
 
 mbfl_declare_action_set THREE_GREEN
-#                   action-set	keyword		subset		identifier	description
+#                   action-set	keyword			subset	identifier	description
 mbfl_declare_action THREE_GREEN	THREE_GREEN_SOLID	NONE	solid		'Do main action three green solid.'
 mbfl_declare_action THREE_GREEN	THREE_GREEN_LIQUID	NONE	liquid		'Do main action three green liquid.'
 mbfl_declare_action THREE_GREEN	THREE_GREEN_GAS		NONE	gas		'Do main action three green gas.'
