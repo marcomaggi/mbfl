@@ -113,6 +113,34 @@ function array-macro-slot-value-len-1.1 () {
 
 ### ------------------------------------------------------------------------
 
+function array-macro-slot-append-1.1 () {
+    mbfl_declare_symbolic_array(PAIRS)
+    mbfl_slot_set(PAIRS, 'abc', '123')
+    mbfl_slot_append(PAIRS, 'abc', '+456')
+    dotest-equal '123+456' mbfl_slot_ref(PAIRS, 'abc')
+}
+
+function array-macro-slot-append-1.2 () {
+    mbfl_declare_symbolic_array(PAIRS)
+    mbfl_slot_append(PAIRS, 'abc', '+456')
+    dotest-equal '+456' mbfl_slot_ref(PAIRS, 'abc')
+}
+
+function array-macro-slot-append-1.3 () {
+    mbfl_declare_symbolic_array(PAIRS)
+    mbfl_slot_set(PAIRS, 'abc', '123')
+    mbfl_slot_append(PAIRS, 'abc', ' 456')
+    dotest-equal '123 456' "mbfl_slot_ref(PAIRS, 'abc')"
+}
+
+function array-macro-slot-append-1.4 () {
+    mbfl_declare_symbolic_array(PAIRS)
+    mbfl_slot_append(PAIRS, 'abc', ' 456')
+    dotest-equal ' 456' "mbfl_slot_ref(PAIRS, 'abc')"
+}
+
+### ------------------------------------------------------------------------
+
 # Put on the same line two macros that expand into  a string containing a sharp sign "#"; see if the
 # sharp sign is interpreted as a comment delimiter (wrong) or not (right).
 #

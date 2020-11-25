@@ -1415,6 +1415,28 @@ This macro works with both indexed and associative arrays.
 @end deffn
 
 
+@deffn {Preprocessor Macros} mbfl_slot_append (@var{ARRAYNAME}, @var{KEY}, @var{EXPR})
+Expands into the expression:
+
+@example
+@var{ARRAYNAME}[@var{KEY}]+=@var{EXPR}
+@end example
+
+@noindent
+which appends the value of @var{EXPR} in the slot @var{KEY} of the array variable @var{ARRAYNAME}.
+This macro works with both indexed and associative arrays.
+
+Example:
+
+@example
+mbfl_declare_symbolic_array(PAIRS)
+mbfl_slot_set(PAIRS, 'abc', '123')
+mbfl_slot_append(PAIRS, 'abc', ' 456')
+"mbfl_slot_ref(PAIRS, 'abc')"   @result{} 123\ 456
+@end example
+@end deffn
+
+
 @deffn {Preprocessor Macro} mbfl_slot_value_len (@var{ARRAYNAME}, @var{KEY})
 Expand into the expression:
 
