@@ -186,12 +186,18 @@ m4_define([[[mbfl_string_idx]]],[[[${$1:$2:1}]]])
 
 m4_dnl We  protect  the  expansion  of these  macros  by  wrapping  the
 m4_dnl expression into curly braces.
-m4_define([[[mbfl_string_eq]]], [[[{ test "$1"  '=' "$2"; }]]])
-m4_define([[[mbfl_string_neq]]],[[[{ test "$1" '!=' "$2"; }]]])
-m4_define([[[mbfl_string_lt]]], [[[{ test "$1"  '<' "$2"; }]]])
-m4_define([[[mbfl_string_gt]]], [[[{ test "$1"  '>' "$2"; }]]])
-m4_define([[[mbfl_string_le]]], [[[{ test "$1"  '<' "$2" -o "$1" '=' "$2"; }]]])
-m4_define([[[mbfl_string_ge]]], [[[{ test "$1"  '>' "$2" -o "$1" '=' "$2"; }]]])
+m4_define([[[mbfl_string_eq]]], [[[{ test $1  '=' $2; }]]])
+m4_define([[[mbfl_string_neq]]],[[[{ test $1 '!=' $2; }]]])
+m4_define([[[mbfl_string_lt]]], [[[{ test $1  '<' $2; }]]])
+m4_define([[[mbfl_string_gt]]], [[[{ test $1  '>' $2; }]]])
+
+m4_dnl These implementations are wrong because they evaluate the arguments twice!!!
+m4_dnl
+m4_dnl m4_define([[[mbfl_string_le]]], [[[{ test $1  '<' $2 -o $1 '=' $2; }]]])
+m4_dnl m4_define([[[mbfl_string_ge]]], [[[{ test $1  '>' $2 -o $1 '=' $2; }]]])
+
+m4_define([[[mbfl_string_le]]], [[[{ mbfl_string_less_or_equal    $1 $2; }]]])
+m4_define([[[mbfl_string_ge]]], [[[{ mbfl_string_greater_or_equal $1 $2; }]]])
 
 
 m4_dnl done

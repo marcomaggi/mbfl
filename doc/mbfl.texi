@@ -1272,6 +1272,17 @@ which evaluates to the character at index @var{EXPR} in the string in the variab
 @subsection Comparing strings
 
 
+The following macros take their arguments as they are, without enclosing them into double or single
+quotes, as follows:
+
+@example
+test $1 '=' $2
+@end example
+
+@noindent
+so we must take care of quoting the arguments appropriately.
+
+
 @deffn {Preprocessor Macro} mbfl_string_eq (@vari{STR}, @varii{STR})
 Return successfully if the arguments are equal when compared when compared lexicographically as
 strings; otherwise return failure.
