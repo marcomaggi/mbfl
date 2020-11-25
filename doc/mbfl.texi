@@ -8547,7 +8547,7 @@ after the execution is terminated.
 The return value of the test functions is used as result of the test: true, the test succeeded;
 false, the test failed.  Remembering that the return value of a function is the return value of its
 last executed command, the functions @func{dotest-equal} and @func{dotest-output}, and of course the
-@command{test} command, may be used to return the correct value.
+Bash built--in @code{test}, might be used to return the correct value.
 @end defun
 
 
