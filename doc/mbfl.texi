@@ -1313,7 +1313,7 @@ lexicographically as strings; otherwise return failure.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_string_gt (@vari{STR}, @varii{STR})
+@deffn {Preprocessor Macro} mbfl_string_ge (@vari{STR}, @varii{STR})
 Return successfully if @vari{STR} is greater than or equal to @varii{STR} when compared when
 compared lexicographically as strings; otherwise return failure.
 @end deffn
