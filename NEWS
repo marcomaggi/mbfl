@@ -116,6 +116,15 @@ changes!
     mbfl_string_is_false
     mbfl_string_strip_carriage_return_var
 
+* Added string macros:
+
+    mbfl_string_eq
+    mbfl_string_neq
+    mbfl_string_lt
+    mbfl_string_gt
+    mbfl_string_le
+    mbfl_string_gt
+
 * Added times and dates module.
 
 * Added functions to the file module:

@@ -1191,6 +1191,155 @@ function string-is-no-1.2 () {
 }
 
 #page
+#### comparison using macros
+
+function string-macro-equal-1.1 () {
+    mbfl_string_eq('', '')
+}
+
+function string-macro-equal-1.2 () {
+    ! mbfl_string_eq('a', '')
+}
+
+function string-macro-equal-1.3 () {
+    ! mbfl_string_eq('', 'a')
+}
+
+function string-macro-equal-1.3 () {
+    mbfl_string_eq('ciao', 'ciao')
+}
+
+function string-macro-equal-1.4 () {
+    ! mbfl_string_eq('ciao', 'hello')
+}
+
+### --------------------------------------------------------------------
+
+function string-macro-not-equal-1.1 () {
+    ! mbfl_string_neq('', '')
+}
+
+function string-macro-not-equal-1.2 () {
+    mbfl_string_neq('a', '')
+}
+
+function string-macro-not-equal-1.3 () {
+    mbfl_string_neq('', 'a')
+}
+
+function string-macro-not-equal-1.3 () {
+    ! mbfl_string_neq('ciao', 'ciao')
+}
+
+function string-macro-not-equal-1.4 () {
+    mbfl_string_neq('ciao', 'hello')
+}
+
+### --------------------------------------------------------------------
+
+function string-macro-less-1.1 () {
+    ! mbfl_string_lt('', '')
+}
+
+function string-macro-less-1.2 () {
+    ! mbfl_string_lt('a', '')
+}
+
+function string-macro-less-1.3 () {
+    mbfl_string_lt('', 'a')
+}
+
+function string-macro-less-1.3 () {
+    ! mbfl_string_lt('ciao', 'ciao')
+}
+
+function string-macro-less-1.4 () {
+    mbfl_string_lt('ciao', 'hello')
+}
+
+function string-macro-less-1.4 () {
+    ! mbfl_string_lt('hello', 'ciao')
+}
+
+### --------------------------------------------------------------------
+
+function string-macro-greater-1.1 () {
+    ! mbfl_string_gt('', '')
+}
+
+function string-macro-greater-1.2 () {
+    mbfl_string_gt('a', '')
+}
+
+function string-macro-greater-1.3 () {
+    ! mbfl_string_gt('', 'a')
+}
+
+function string-macro-greater-1.3 () {
+    ! mbfl_string_gt('ciao', 'ciao')
+}
+
+function string-macro-greater-1.4 () {
+    ! mbfl_string_gt('ciao', 'hello')
+}
+
+function string-macro-greater-1.4 () {
+    mbfl_string_gt('hello', 'ciao')
+}
+
+### --------------------------------------------------------------------
+
+function string-macro-less-or-equal-1.1 () {
+    mbfl_string_le('', '')
+}
+
+function string-macro-less-or-equal-1.2 () {
+    ! mbfl_string_le('a', '')
+}
+
+function string-macro-less-or-equal-1.3 () {
+    mbfl_string_le('', 'a')
+}
+
+function string-macro-less-or-equal-1.3 () {
+    mbfl_string_le('ciao', 'ciao')
+}
+
+function string-macro-less-or-equal-1.4 () {
+    mbfl_string_le('ciao', 'hello')
+}
+
+function string-macro-less-or-equal-1.4 () {
+    ! mbfl_string_le('hello', 'ciao')
+}
+
+### --------------------------------------------------------------------
+
+function string-macro-greater-or-equal-1.1 () {
+    mbfl_string_ge('', '')
+}
+
+function string-macro-greater-or-equal-1.2 () {
+    mbfl_string_ge('a', '')
+}
+
+function string-macro-greater-or-equal-1.3 () {
+    ! mbfl_string_ge('', 'a')
+}
+
+function string-macro-greater-or-equal-1.3 () {
+    mbfl_string_ge('ciao', 'ciao')
+}
+
+function string-macro-greater-or-equal-1.4 () {
+    ! mbfl_string_ge('ciao', 'hello')
+}
+
+function string-macro-greater-or-equal-1.4 () {
+    mbfl_string_ge('hello', 'ciao')
+}
+
+#page
 #### miscellaneous
 
 function string-strip-carriage-return-var-1.1 () {
@@ -1231,6 +1380,7 @@ function string-bool-2.2 () {
 }
 
 #page
+#### let's go
 
 dotest string-
 dotest-final-report

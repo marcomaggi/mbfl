@@ -1234,6 +1234,15 @@ Unset the @emph{proxy variable} @var{NAME} and all the variables associated to i
 In addition to the macros documented here, we can manipulate strings with some functions;
 @ref{strings, Manipulating strings with functions}.
 
+@menu
+* preprocessor strings inspection::     Inspecting strings.
+* preprocessor strings comparison::     Comparing strings.
+@end menu
+
+@c page
+@node preprocessor strings inspection
+@subsection Inspecting strings
+
 
 @deffn {Preprocessor Macros} mbfl_string_len (@var{VAR})
 Expands into the expression:
@@ -1256,6 +1265,46 @@ $@{@var{VAR}:@var{EXPR}:1@}
 
 @noindent
 which evaluates to the character at index @var{EXPR} in the string in the variable @var{VAR}.
+@end deffn
+
+@c page
+@node preprocessor strings comparison
+@subsection Comparing strings
+
+
+@deffn {Preprocessor Macro} mbfl_string_eq (@vari{STR}, @varii{STR})
+Return successfully if the arguments are equal when compared when compared lexicographically as
+strings; otherwise return failure.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_neq (@vari{STR}, @varii{STR})
+Return successfully if the arguments are different when compared lexicographically as strings;
+otherwise return failure.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_lt (@vari{STR}, @varii{STR})
+Return successfully if @vari{STR} is less than @varii{STR} when compared when compared
+lexicographically as strings; otherwise return failure.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_gt (@vari{STR}, @varii{STR})
+Return successfully if @vari{STR} is greater than @varii{STR} when compared when compared
+lexicographically as strings; otherwise return failure.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_le (@vari{STR}, @varii{STR})
+Return successfully if @vari{STR} is less than or equal to @varii{STR} when compared when compared
+lexicographically as strings; otherwise return failure.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_gt (@vari{STR}, @varii{STR})
+Return successfully if @vari{STR} is greater than or equal to @varii{STR} when compared when
+compared lexicographically as strings; otherwise return failure.
 @end deffn
 
 @c page
