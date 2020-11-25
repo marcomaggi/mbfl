@@ -405,7 +405,9 @@ function dotest-final-report () {
         fi
         printf '\n'
     fi
-    if ((0 == dotest_TEST_FAILED_NUMBER))
+    if ((0 == dotest_TEST_NUMBER))
+    then exit 77
+    elif ((0 == dotest_TEST_FAILED_NUMBER))
     then exit 0
     else exit 1
     fi
