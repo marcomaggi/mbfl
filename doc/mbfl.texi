@@ -8284,22 +8284,13 @@ Print the help screen, brief version.  It @strong{excludes} the predefined comma
 @chapter Building test suites
 
 
-@mbfl{} comes with a little library of functions that may be used to
-build test suites; its aim is at building tests for Bash functions,
-commands and scripts.
-
-The ideas at the base of this library are taken from the @code{tcltest}
-package distributed with the @acronym{TCL} core @footnote{@acronym{TCL}
-stands for @emph{Tool Command Language} and it is a scripting language
-originally written by John Ousterhout, see: @url{http://www.tcl.tk/}.};
-this package had contributions from the following people/entities: Sun
-Microsystems, Inc.; Scriptics Corporation; Ajuba Solutions; Don Porter,
-@acronym{NIST}; probably many many others.
-
-The library tries to do as much as possible using functions and aliases,
-not variables; this is an attempt to let the user redefine functions to
-his taste.
-
+@mbfl{} comes with a little library @value{LIBMBFLTESTFILE} of functions that may be used to build
+test suites; its aim is at building tests for Bash functions, commands and scripts@footnote{The
+ideas at the base of this library are taken from the @code{tcltest} package distributed with the
+@acronym{TCL} core; @acronym{TCL} stands for @emph{Tool Command Language} and it is a scripting
+language originally written by John Ousterhout, see: @url{http://www.tcl.tk/}}.  The library tries
+to do as much as possible using functions and aliases, not variables; this is an attempt to let the
+user redefine functions to his taste.
 
 @menu
 * testing intro::               A way to organise a test suite.
@@ -8316,26 +8307,22 @@ his taste.
 @section A way to organise a test suite
 
 
-A useful way to organise a test suite is to split it into a set of
-files: one for each module to be tested.
+A useful way to organise a test suite is to split it into a set of files: one for each module to be
+tested.
 
-The file @file{libmbfltest.sh} must be sourced at the beginning of each
-test file.  This means that the variables that you set may interfere
-with the ones in the library; this should not happen because the test
-library prefixes variable names with @code{mbfl_} or @code{dotest_}, but
-one exception is @env{TMPDIR}: do not set it in your script, use
-@func{dotest-echo-tmpdir} to access that value.  @ref{testing files,
-Handling files in tests}.
+The file @file{libmbfltest.sh} must be sourced at the beginning of each test file.  This means that
+the variables that you set may interfere with the ones in the library; this should not happen
+because the test library prefixes variable names with @code{mbfl_} or @code{dotest_}, but one
+exception is @env{TMPDIR}: do not set it in your script, use @func{dotest-echo-tmpdir} to access
+that value.  @ref{testing files, Handling files in tests}.
 
 
 @subsubheading A not so automated example
 
-To understand how the library works lets examine a bare bones example.
-
-The function @code{dotest} should be invoked at the end of each module
-in the test suite; each module should define functions starting with the
-same prefix.  A module should be stored in a file, and should look like
-the following:
+To understand how the library works lets examine a bare bones example.  The function @code{dotest}
+should be invoked at the end of each module in the test suite; each module should define functions
+starting with the same prefix.  A module should be stored in a file, and should look like the
+following:
 
 @example
 # mymodule.test --
@@ -8373,8 +8360,7 @@ directories selected by the @env{PATH} environment variables, so we may
 want to do:
 
 @example
-$ PATH=path/to/modules:$@{PATH@} \
-TESTMATCH=module-featureA bash mymodule.test
+$ PATH=path/to/modules:$@{PATH@} TESTMATCH=module-featureA bash mymodule.test
 @end example
 
 It is better to put such stuff in a @file{Makefile}, with @gnu{} Make:
@@ -8405,9 +8391,8 @@ test-modules:
 
 @defun dotest-set-verbose
 @defunx dotest-unset-verbose
-Set or unset verbose execution.  If verbose mode is on: some commands
-output messages on stderr describing what is going on.  Examples: files
-and directories creation/removal.
+Set or unset verbose execution.  If verbose mode is on: some commands output messages on stderr
+describing what is going on.  Examples: files and directories creation/removal.
 @end defun
 
 
@@ -8418,10 +8403,9 @@ Return true if verbose mode is on, false otherwise.
 
 @defun dotest-set-test
 @defunx dotest-unset-test
-Set or unset test execution.  If test mode is on: external commands (like
-@command{rm} and @command{mkdir}) are not executed, the command line is
-sent to stderr.  Test mode is meant to be used to debug the test library
-functions.
+Set or unset test execution.  If test mode is on: external commands (like @command{rm} and
+@command{mkdir}) are not executed, the command line is sent to stderr.  Test mode is meant to be
+used to debug the test library functions.
 @end defun
 
 
@@ -8455,14 +8439,13 @@ Return true if start function reporting is on; otherwise return false.
 
 @defun dotest-set-report-success
 @defunx dotest-unset-report-success
-Set or unset printing a message when a function execution
-succeeds.  Failed tests always cause a message to be printed.
+Set or unset printing a message when a function execution succeeds.  Failed tests always cause a
+message to be printed.
 @end defun
 
 
 @defun dotest-option-report-success
-Return true if success function reporting is on; otherwise return
-false.
+Return true if success function reporting is on; otherwise return false.
 @end defun
 
 @c page
@@ -8471,43 +8454,37 @@ false.
 
 
 @defun dotest-final-report
-This function must be invoked as last command in the test file to report
-errors and correctly exit the test script (in a way compatible with the
-requirements of @gnu{} Automake).
+This function must be invoked as last command in the test file to report errors and correctly exit
+the test script, in a way compatible with the requirements of @gnu{} Automake,
+@automakeref{Scripts-based Testsuites, Scripts-based Testsuites}.
 @end defun
 
 
 @defun dotest @var{PATTERN}
-Run all the functions matching @var{PATTERN}.  Usually @var{PATTERN} is
-the first part of the name of the functions to be executed; the function
-names are selected with the following code:
+Run all the functions matching @var{PATTERN}.  Usually @var{PATTERN} is the first part of the name
+of the functions to be executed; the function names are selected with the following code:
 
 @example
 compgen -A function @var{PATTERN}
 @end example
 
-There's no constraint on function names, but they must be one--word
-names.
+There's no constraint on function names, but they must be one--word names.
 
-Before running a test function: the current process working directory is
-saved, and it is restored after the execution is terminated.
+Before running a test function: the current process working directory is saved, and it is restored
+after the execution is terminated.
 
-The return value of the test functions is used as result of the test:
-true, the test succeeded; false, the test failed.  Remembering that the
-return value of a function is the return value of its last executed
-command, the functions @func{dotest-equal} and @func{dotest-output}, and
-of course the @command{test} command, may be used to return the correct
-value.
+The return value of the test functions is used as result of the test: true, the test succeeded;
+false, the test failed.  Remembering that the return value of a function is the return value of its
+last executed command, the functions @func{dotest-equal} and @func{dotest-output}, and of course the
+@command{test} command, may be used to return the correct value.
 @end defun
 
 
-Messages are printed before and after the execution of each function,
-according to the mode selected with: @func{dotest-set-report-success},
-@func{dotest-set-report-start}, @dots{}  @ref{testing config,
+Messages are printed before and after the execution of each function, according to the mode selected
+with: @func{dotest-set-report-success}, @func{dotest-set-report-start}, @dots{} @ref{testing config,
 Configuring the package}
 
-The following environment variables will influence the behaviour of
-@func{dotest}.
+The following environment variables will influence the behaviour of @func{dotest}.
 
 
 @defvar TESTMATCH
@@ -8517,16 +8494,14 @@ Restrict the @var{PATTERN} argument to @func{dotest}.  First function names are 
 
 
 @defvar TESTSTART
-If @code{yes}: It is equivalent to invoking
-@func{dotest-set-report-start}.  If @code{no}: It is equivalent to
-invoking @func{dotest-unset-report-start}.
+If @code{yes}: It is equivalent to invoking @func{dotest-set-report-start}.  If @code{no}: It is
+equivalent to invoking @func{dotest-unset-report-start}.
 @end defvar
 
 
 @defvar TESTSUCCESS
-If @code{yes}: It is equivalent to invoking
-@func{dotest-set-report-success}.  If @code{no}: It is equivalent to
-invoking @func{dotest-unset-report-success}.
+If @code{yes}: It is equivalent to invoking @func{dotest-set-report-success}.  If @code{no}: It is
+equivalent to invoking @func{dotest-unset-report-success}.
 @end defvar
 
 @c page

@@ -346,6 +346,10 @@
 @ref{\NODE\,\TITLE\,\TITLE\,autoconf}
 @end macro
 
+@macro automakeref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,automake}
+@end macro
+
 @macro bashref{NODE, TITLE}
 @ref{\NODE\,\TITLE\,\TITLE\,bash}
 @end macro
