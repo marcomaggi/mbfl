@@ -37,6 +37,10 @@ changes!
 * BACKWARDS INCOMPATIBILITY The  interface to the command  "at" has been
   refactored into its own library "libmbfl-at.bash".
 
+* BACKWARDS INCOMPATIBILITY The interfaces  to archiving and compressing
+  programs (tar, gzip, ...) have  been refactored into their own library
+  "libmbfl-arch.bash".
+
 * The package configuration allows us to select a hard-coded file system
   pathnames to the GNU Coreutils programs and the executable "sudo".
 

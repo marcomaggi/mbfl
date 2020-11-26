@@ -60,11 +60,13 @@
 @set LIBMBFLTEST                libmbfltest.sh
 @set LIBMBFLUTILS               libmbflutils.sh
 @set LIBMBFLAT                  libmbfl-at.bash
+@set LIBMBFLARCH                libmbfl-arch.bash
 
 @set LIBMBFLFILE                @file{libmbfl.bash}
 @set LIBMBFLTESTFILE            @file{libmbfltest.bash}
 @set LIBMBFLUTILSFILE           @file{libmbflutils.bash}
 @set LIBMBFLATFILE              @file{libmbfl-at.bash}
+@set LIBMBFLARCHFILE            @file{libmbfl-arch.bash}
 
 @c page
 @c ------------------------------------------------------------
@@ -167,6 +169,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 Appendices
 
 * libmbfl-at::                  Interface to the external program @command{at}.
+* libmbfl-arch::                Archiving and compressing files.
 * sendmail::                    Examples for sending email.
 * Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
@@ -4323,8 +4326,6 @@ the password.
 * file realpath::               Normalising pathnames.
 * file perms::                  Setting and getting file access permissions.
 * file owner::                  Setting file owner and group.
-* file tar::                    Manipulating tar archives.
-* file compress::               Compressing files.
 * file testing::                Testing file existence and the like.
 * file read and write::         Reading and writing files with privileges.
 * file misc::                   Miscellaneous commands.
@@ -5194,159 +5195,6 @@ Execute the program @command{chown} using the given optional arguments.
 
 @defun mbfl_exec_chgrp @var{PATHNAME} @var{OPT} @dots{}
 Execute the program @command{chgrp} using the given optional arguments.
-@end defun
-
-@c page
-@node file tar
-@section Manipulating tar archives
-
-
-@cindex @command{tar} archives
-@cindex Creating tar archives
-@cindex Archives, @command{tar}
-@CindexCommand{tar}
-
-
-Remember that when we execute a script with the @option{--test} option: the external commands are
-not executed: a command line is echoed to stdout.  It is recommended to use this mode to fine tune
-the command line options required by @command{tar}.
-
-
-@defun mbfl_file_enable_tar
-Declare the @command{tar} command.  @ref{program declaring, Declaring the intention to use a
-program}
-@end defun
-
-
-@defun mbfl_exec_tar @var{ARG} @dots{}
-@defunx mbfl_tar_exec @var{ARG}  @dots{}
-Execute @command{tar} with whatever arguments are used.  Return the exit status of the @command{tar}
-process.
-@end defun
-
-
-@defun mbfl_tar_create_to_stdout @var{DIRECTORY} @var{OPT} @dots{}
-Create an archive and send it to stdout.  The root of the archive is the @var{DIRECTORY}.  Files are
-selected with the @code{.} (dot) pattern.  The optional arguments @var{OPT} are placed on the
-command line of @command{tar} in option position.  Return the exit status of the @command{tar}
-process.
-@end defun
-
-
-@defun mbfl_tar_create_to_file @var{DIRECTORY} @var{ARCHIVE} @var{OPT} @dots{}
-Create an archive named @var{ARCHIVE} holding the contents of @var{DIRECTORY}.  Before creating the
-archive, the process changes the current directory to @var{DIRECTORY} and selects the files with the
-@code{.} (dot) pattern.  The optional arguments @var{OPT} are placed on the command line of
-@command{tar} in option position.  Return the exit status of the @command{tar} process.
-@end defun
-
-
-@defun mbfl_tar_archive_directory_to_file @var{DIRECTORY} @var{ARCHIVE} @var{OPT} @dots{}
-Like @func{mbfl_tar_create_to_file} but archive all the contents of @var{DIRECTORY}, including the
-directory itself (not its parents).  The optional arguments @var{OPT} are placed on the command line
-of @command{tar} in option position.  Return the exit status of the @command{tar} process.
-@end defun
-
-
-@defun mbfl_tar_extract_from_stdin @var{DIRECTORY} @var{OPT} @dots{}
-Read an archive from stdin and extract it under @var{DIRECTORY} (using the @option{--directory}
-option of @command{tar}).  The optional arguments @var{OPT} are placed on the command line of
-@command{tar} in option position.  Return the exit status of the @command{tar} process.
-@end defun
-
-
-@defun mbfl_tar_extract_from_file @var{DIRECTORY} @var{ARCHIVE} @var{OPT} @dots{}
-Read an archive from a file and extract it under @var{DIRECTORY} (using the @option{--directory}
-option of @command{tar}).  The optional arguments @var{OPT} are placed on the command line of
-@command{tar} in option position.  Return the exit status of the @command{tar} process.
-@end defun
-
-
-@defun mbfl_tar_list @var{ARCHIVE} @var{OPT} @dots{}
-Print to stdout the list of files in @var{ARCHIVE}.  The optional arguments @var{OPT} are placed on
-the command line of @command{tar} in option position.  Return the exit status of the @command{tar}
-process.
-@end defun
-
-@c page
-@node file compress
-@section Compressing files
-
-
-@cindex Files, compression
-@cindex Compressing files
-@CindexCommand{gzip}
-@CindexCommand{bzip2}
-
-
-This module has an internal state, stored in global variables.  The state holds informations about:
-
-@itemize
-@item
-The selected compression external program (default: @command{gzip}).
-
-@item
-Whether the program should keep the original files or replace them with the (de)compressed version
-(default: do not keep).
-
-@item
-Whether the output must be sent to standard output or a file (default: send to a file).
-@end itemize
-
-@c ------------------------------------------------------------
-
-@subsubheading Initialisation
-
-@defun mbfl_file_enable_compress
-Declare the programs required to compress a file.  @ref{program declaring, Declaring the intention
-to use a program}
-
-The programs are: @command{gzip}, @command{bzip2}, @command{lzip}, @command{xz}.
-@end defun
-
-@c ------------------------------------------------------------
-
-@subsubheading Configuration
-
-The selection will affect all the future invocations of the compression/decompression functions.
-
-
-@defun mbfl_file_compress_select_gzip
-@defunx mbfl_file_compress_select_bzip
-@defunx mbfl_file_compress_select_bzip2
-@defunx mbfl_file_compress_select_lzip
-@defunx mbfl_file_compress_select_xz
-Select a compressor program.
-@end defun
-
-
-@defun mbfl_file_compress_keep
-@defunx mbfl_file_compress_nokeep
-Select whether the compress program should keep the original file or not.
-@end defun
-
-
-@defun mbfl_file_compress_select_stdout
-@defunx mbfl_file_compress_select_nostdout
-Select if the output must be sent to stdout or a file.  This takes precedence over the keep/no keep
-configuration: if the output is sent to stdout the original file is kept.
-@end defun
-
-@c ------------------------------------------------------------
-
-@subsubheading Actions
-
-Additional arguments to the selected compressor may be appended to the invocation of the following
-functions and are handed to the compressor unchanged.
-
-
-@defun mbfl_file_compress @var{PATHNAME} @var{OPT} @dots{}
-Compress @var{PATHNAME}, a file pathname, with the currently selected compressor program.
-@end defun
-
-
-@defun mbfl_file_decompress @var{PATHNAME} @var{OPT} @dots{}
-Decompress @var{PATHNAME}, a file pathname, with the currently selected compressor program.
 @end defun
 
 @c page
@@ -8981,6 +8829,179 @@ Print the letters identifying queues with pending jobs.
 
 @defun mbfl_at_print_queue
 Print the currently selected queue letter.
+@end defun
+
+@c page
+@node libmbfl-arch
+@appendix Archiving and compressing files
+
+
+@cindex @value{LIBMBFLARCHFILE}, library interface archiving and compressing
+@cindex Interface to archiving and compressing, library @value{LIBMBFLARCHFILE}
+@cindex Library interface to archiving and compressing, @value{LIBMBFLARCHFILE}
+@cindex Archiving and compressing, library @value{LIBMBFLARCHFILE}
+@cindex Compressing and archiving, library @value{LIBMBFLARCHFILE}
+
+
+This section documents the library @value{LIBMBFLARCHFILE}, an interface to the archiving and
+compressing facilities implemented by the most common external programs.
+
+@menu
+* libmbfl-arch tar::            Manipulating tar archives.
+* libmbfl-arch compress::       Compressing files.
+@end menu
+
+@c page
+@node libmbfl-arch tar
+@appendixsec Manipulating tar archives
+
+
+@cindex @command{tar} archives
+@cindex Creating tar archives
+@cindex Archives, @command{tar}
+@CindexCommand{tar}
+
+
+Remember that when we execute a script with the @option{--test} option: the external commands are
+not executed: a command line is echoed to stdout.  It is recommended to use this mode to fine tune
+the command line options required by @command{tar}.
+
+
+@defun mbfl_file_enable_tar
+Declare the @command{tar} command.  @ref{program declaring, Declaring the intention to use a
+program}
+@end defun
+
+
+@defun mbfl_exec_tar @var{ARG} @dots{}
+@defunx mbfl_tar_exec @var{ARG}  @dots{}
+Execute @command{tar} with whatever arguments are used.  Return the exit status of the @command{tar}
+process.
+@end defun
+
+
+@defun mbfl_tar_create_to_stdout @var{DIRECTORY} @var{OPT} @dots{}
+Create an archive and send it to stdout.  The root of the archive is the @var{DIRECTORY}.  Files are
+selected with the @code{.} (dot) pattern.  The optional arguments @var{OPT} are placed on the
+command line of @command{tar} in option position.  Return the exit status of the @command{tar}
+process.
+@end defun
+
+
+@defun mbfl_tar_create_to_file @var{DIRECTORY} @var{ARCHIVE} @var{OPT} @dots{}
+Create an archive named @var{ARCHIVE} holding the contents of @var{DIRECTORY}.  Before creating the
+archive, the process changes the current directory to @var{DIRECTORY} and selects the files with the
+@code{.} (dot) pattern.  The optional arguments @var{OPT} are placed on the command line of
+@command{tar} in option position.  Return the exit status of the @command{tar} process.
+@end defun
+
+
+@defun mbfl_tar_archive_directory_to_file @var{DIRECTORY} @var{ARCHIVE} @var{OPT} @dots{}
+Like @func{mbfl_tar_create_to_file} but archive all the contents of @var{DIRECTORY}, including the
+directory itself (not its parents).  The optional arguments @var{OPT} are placed on the command line
+of @command{tar} in option position.  Return the exit status of the @command{tar} process.
+@end defun
+
+
+@defun mbfl_tar_extract_from_stdin @var{DIRECTORY} @var{OPT} @dots{}
+Read an archive from stdin and extract it under @var{DIRECTORY} (using the @option{--directory}
+option of @command{tar}).  The optional arguments @var{OPT} are placed on the command line of
+@command{tar} in option position.  Return the exit status of the @command{tar} process.
+@end defun
+
+
+@defun mbfl_tar_extract_from_file @var{DIRECTORY} @var{ARCHIVE} @var{OPT} @dots{}
+Read an archive from a file and extract it under @var{DIRECTORY} (using the @option{--directory}
+option of @command{tar}).  The optional arguments @var{OPT} are placed on the command line of
+@command{tar} in option position.  Return the exit status of the @command{tar} process.
+@end defun
+
+
+@defun mbfl_tar_list @var{ARCHIVE} @var{OPT} @dots{}
+Print to stdout the list of files in @var{ARCHIVE}.  The optional arguments @var{OPT} are placed on
+the command line of @command{tar} in option position.  Return the exit status of the @command{tar}
+process.
+@end defun
+
+@c page
+@node libmbfl-arch compress
+@appendixsec Compressing files
+
+
+@cindex Files, compression
+@cindex Compressing files
+@CindexCommand{gzip}
+@CindexCommand{bzip2}
+
+
+This module has an internal state, stored in global variables.  The state holds informations about:
+
+@itemize
+@item
+The selected compression external program (default: @command{gzip}).
+
+@item
+Whether the program should keep the original files or replace them with the (de)compressed version
+(default: do not keep).
+
+@item
+Whether the output must be sent to standard output or a file (default: send to a file).
+@end itemize
+
+@c ------------------------------------------------------------
+
+@subsubheading Initialisation
+
+@defun mbfl_file_enable_compress
+Declare the programs required to compress a file.  @ref{program declaring, Declaring the intention
+to use a program}
+
+The programs are: @command{gzip}, @command{bzip2}, @command{lzip}, @command{xz}.
+@end defun
+
+@c ------------------------------------------------------------
+
+@subsubheading Configuration
+
+The selection will affect all the future invocations of the compression/decompression functions.
+
+
+@defun mbfl_file_compress_select_gzip
+@defunx mbfl_file_compress_select_bzip
+@defunx mbfl_file_compress_select_bzip2
+@defunx mbfl_file_compress_select_lzip
+@defunx mbfl_file_compress_select_xz
+Select a compressor program.
+@end defun
+
+
+@defun mbfl_file_compress_keep
+@defunx mbfl_file_compress_nokeep
+Select whether the compress program should keep the original file or not.
+@end defun
+
+
+@defun mbfl_file_compress_select_stdout
+@defunx mbfl_file_compress_select_nostdout
+Select if the output must be sent to stdout or a file.  This takes precedence over the keep/no keep
+configuration: if the output is sent to stdout the original file is kept.
+@end defun
+
+@c ------------------------------------------------------------
+
+@subsubheading Actions
+
+Additional arguments to the selected compressor may be appended to the invocation of the following
+functions and are handed to the compressor unchanged.
+
+
+@defun mbfl_file_compress @var{PATHNAME} @var{OPT} @dots{}
+Compress @var{PATHNAME}, a file pathname, with the currently selected compressor program.
+@end defun
+
+
+@defun mbfl_file_decompress @var{PATHNAME} @var{OPT} @dots{}
+Decompress @var{PATHNAME}, a file pathname, with the currently selected compressor program.
 @end defun
 
 @c page

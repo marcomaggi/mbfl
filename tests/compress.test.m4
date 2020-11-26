@@ -208,6 +208,7 @@ function compress-bzip-decompress-2.3 () {
 }
 
 #PAGE
+#### let's go
 
 dotest compress-
 dotest-final-report

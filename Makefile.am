@@ -321,6 +321,27 @@ src/lib/libmbfl-at.bash: src/lib/libmbfl-at.bash.m4 $(MBFL_LIBAT_PREREQUISITES)
 	$(MBFL_LIBAT_RUN) $(MBFL_LIBAT_FLAGS) <$< >$@
 
 
+#### libmbfl-arch generation
+
+EXTRA_DIST			+= src/lib/libmbfl-arch.bash.m4
+mbfllibarchdir			= $(MBFL_LIB_INSTDIR)
+mbfllibarch_DATA		= src/lib/libmbfl-arch.bash
+CLEANFILES			+=		\
+	src/lib/libmbfl-arch.bash		\
+	src/lib/$(am__dirstamp)
+
+MBFL_LIBARCH_ENV		=
+MBFL_LIBARCH_RUN		= $(MBFL_LIBARCH_ENV) $(MBFL_RUN_MBFLPP)
+MBFL_LIBARCH_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
+
+MBFL_LIBARCH_PREREQUISITES	=		\
+	src/lib/$(am__dirstamp)			\
+	$(MBFL_PREPROCESSOR)
+
+src/lib/libmbfl-arch.bash: src/lib/libmbfl-arch.bash.m4 $(MBFL_LIBARCH_PREREQUISITES)
+	$(MBFL_LIBARCH_RUN) $(MBFL_LIBARCH_FLAGS) <$< >$@
+
+
 #### examples
 
 EXTRA_DIST			+=		\
@@ -357,6 +378,7 @@ MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_EXAMPLES_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --add-bash
 MBFL_EXAMPLES_FLAGS		+= --libmbfl="$(MBFL_EXAMPLES_LIBMBFL)"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_AT__=$(builddir)/src/lib/libmbfl-at.bash
+MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_ARCH__=$(builddir)/src/lib/libmbfl-arch.bash
 
 MBFL_EXAMPLES_PREREQUISITES	=		\
 	$(MBFL_EXAMPLES_LIBMBFL)		\
@@ -466,8 +488,10 @@ MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export 
 
 MBFL_TESTS_LIBMBFL	= $(builddir)/src/lib/libmbfl.bash
 MBFL_TESTS_LIBMBFLTEST	= $(builddir)/src/lib/libmbfltest.bash
+MBFL_TESTS_LIBMBFLARCH	= $(builddir)/src/lib/libmbfl-arch.bash
 MBFL_TESTS_ENV		=  MBFL_TESTS_LIBMBFL=$(MBFL_TESTS_LIBMBFL); export MBFL_TESTS_LIBMBFL;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLTEST=$(MBFL_TESTS_LIBMBFLTEST); export MBFL_TESTS_LIBMBFLTEST;
+MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLARCH=$(MBFL_TESTS_LIBMBFLARCH); export MBFL_TESTS_LIBMBFLARCH;
 # We  set TMPDIR  because  if the  "/tmp" directory  is  mounted on  a
 # separate partition with "noexec"  attribute: tests for executability
 # of files  will fail if  the temporary  test files are  created under
@@ -478,7 +502,8 @@ MBFL_TESTS_ENV		+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_TESTS_ENV		+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash --libmbfl="$(MBFL_TESTS_LIBMBFL)"
+MBFL_TESTS_FLAGS	=  $(MBFLPP_GENERAL_FLAGS) --add-bash --libmbfl="$(MBFL_TESTS_LIBMBFL)"
+MBFL_TESTS_FLAGS	+= --define=__LIBMBFL_ARCH__=$(builddir)/src/lib/libmbfl-arch.bash
 
 MBFL_TESTS_PREREQUISITES	=		\
 	$(MBFL_TESTS_LIBMBFL)			\
@@ -547,6 +572,7 @@ MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:$(builddir)/tests:$(DESTDIR)$(bindir):
 MBFL_INSTCHECK_ENV	+= PATH="`mbflpp.bash --print-libdir`":$$PATH; export PATH;
 MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFL="`mbflpp.bash --print-libmbfl`"; export MBFL_TESTS_LIBMBFL;
 MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLTEST="`mbflpp.bash --print-libmbfltest`"; export MBFL_TESTS_LIBMBFLTEST;
+MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLARCH="`mbflpp.bash --print-libdir`/libmbfl-arch.bash"; export MBFL_TESTS_LIBMBFLARCH;
 MBFL_INSTCHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_INSTCHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;
