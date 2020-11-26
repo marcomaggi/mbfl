@@ -60,9 +60,9 @@
 @set LIBMBFLTEST                libmbfltest.sh
 @set LIBMBFLUTILS               libmbflutils.sh
 
-@set LIBMBFLFILE                @file{libmbfl.sh}
-@set LIBMBFLTESTFILE            @file{libmbfltest.sh}
-@set LIBMBFLUTILSFILE           @file{libmbflutils.sh}
+@set LIBMBFLFILE                @file{libmbfl.bash}
+@set LIBMBFLTESTFILE            @file{libmbfltest.bash}
+@set LIBMBFLUTILSFILE           @file{libmbflutils.bash}
 
 @c page
 @c ------------------------------------------------------------
@@ -632,7 +632,7 @@ then exit successfully.
 @item --print-libmbfltest
 @cindex @option{--print-libmbfltest}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfltest}
-Print on @stdout{} the file system absolute pathname of the installed library @file{libmbfltest.sh},
+Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLTESTFILE},
 then exit successfully.
 
 @item --print-libmbflutils
@@ -8392,8 +8392,8 @@ user redefine functions to his taste.
 A useful way to organise a test suite is to split it into a set of files: one for each module to be
 tested.
 
-The file @file{libmbfltest.sh} must be sourced at the beginning of each test file.  This means that
-the variables that you set may interfere with the ones in the library; this should not happen
+The file @value{LIBMBFLTESTFILE} must be sourced at the beginning of each test file.  This means
+that the variables that you set may interfere with the ones in the library; this should not happen
 because the test library prefixes variable names with @code{mbfl_} or @code{dotest_}, but one
 exception is @env{TMPDIR}: do not set it in your script, use @func{dotest-echo-tmpdir} to access
 that value.  @ref{testing files, Handling files in tests}.
@@ -8409,7 +8409,7 @@ following:
 @example
 # mymodule.test --
 
-source libmbfltest.sh
+source @value{LIBMBFLTEST}
 source module.sh
 
 function module-featureA-1.1 () @{ ... @}

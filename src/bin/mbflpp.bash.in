@@ -5679,14 +5679,14 @@ declare -r SEMANTIC_VERSION='@MBFL_SEMANTIC_VERSION@'
 
 declare -r MBFL_INSTALLDIR=$pkgdatadir
 
-# The file system pathname  in which the file "libmbfl.sh" is installed.  This  is the default value
+# The file system pathname  in which the file "libmbfl.bash" is installed.  This  is the default value
 # of the option "--libmbfl".
 #
-declare -r DEFAULT_LIBMBFL=${pkgdatadir}/libmbfl.sh
+declare -r DEFAULT_LIBMBFL=${pkgdatadir}/libmbfl.bash
 
-# The file system pathname in which the file "libmbfltest.sh" is installed.
+# The file system pathname in which the file "libmbfltest.bash" is installed.
 #
-declare -r DEFAULT_LIBMBFLTEST=${pkgdatadir}/libmbfltest.sh
+declare -r DEFAULT_LIBMBFLTEST=${pkgdatadir}/libmbfltest.bash
 
 # A string representing  command line options for GNU  m4: the symbols definitions.  It  is built by
 # appending the definitions from the command line option "--define" as:
@@ -5720,15 +5720,15 @@ mbfl_declare_option OUTPUT            -   o output            witharg "selects a
 mbfl_declare_option EVAL              no  e eval              noarg "if used evaluates the output script in bash, instead of printing it"
 mbfl_declare_option NO_PREPROCESSOR   no '' no-prepro         noarg "do not load the m4 preprocessor library"
 
-mbfl_declare_option LIBMBFL "$DEFAULT_LIBMBFL" '' libmbfl witharg 'pathname of the MBFL library "libmbfl.sh"'
+mbfl_declare_option LIBMBFL "$DEFAULT_LIBMBFL" '' libmbfl witharg 'pathname of the MBFL library "libmbfl.bash"'
 
 mbfl_declare_option BASH_PROGRAM "$mbfl_PROGRAM_BASH" \
 		    '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
 
 mbfl_declare_option PRINT_LIBPATH      no '' print-libdir       noarg 'print the librarires installation directory'
-mbfl_declare_option PRINT_LIBMBFL      no '' print-libmbfl      noarg 'print the full installation pathname of the library "libmbfl.sh"'
-mbfl_declare_option PRINT_LIBMBFLTEST  no '' print-libmbfltest  noarg 'print the full installation pathname of the library "libmbfltest.sh"'
-mbfl_declare_option PRINT_LIBMBFLUTILS no '' print-libmbflutils noarg 'print the full installation pathname of the library "libmbflutils.sh"'
+mbfl_declare_option PRINT_LIBMBFL      no '' print-libmbfl      noarg 'print the full installation pathname of the library "libmbfl.bash"'
+mbfl_declare_option PRINT_LIBMBFLTEST  no '' print-libmbfltest  noarg 'print the full installation pathname of the library "libmbfltest.bash"'
+mbfl_declare_option PRINT_LIBMBFLUTILS no '' print-libmbflutils noarg 'print the full installation pathname of the library "libmbflutils.bash"'
 
 #page
 #### external programs declarations
@@ -5796,15 +5796,15 @@ function script_option_update_print_libpath () {
     exit_success
 }
 function script_option_update_print_libmbfl () {
-    printf '%s/libmbfl.sh\n' "$MBFL_INSTALLDIR"
+    printf '%s/libmbfl.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
 function script_option_update_print_libmbfltest () {
-    printf '%s/libmbfltest.sh\n' "$MBFL_INSTALLDIR"
+    printf '%s/libmbfltest.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
 function script_option_update_print_libmbflutils () {
-    printf '%s/libmbflutils.sh\n' "$MBFL_INSTALLDIR"
+    printf '%s/libmbflutils.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
 

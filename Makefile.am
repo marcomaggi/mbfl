@@ -5,17 +5,17 @@
 # 1.   Generate the  built scripts  using: the  backup libraries;  the
 # source preprocessor.
 #
-# 2. Generate the built library "libmbfl.sh" using: the built scripts;
-# the source preprocessor.
+# 2.  Generate  the  built  library "libmbfl.bash"  using:  the  built
+# scripts; the source preprocessor.
 #
-# 3.   Generate the  built library  "libmbfltest.sh" using:  the built
-# scripts; the built "libmbfl.sh"; the source preprocessor.
+# 3.  Generate  the built library "libmbfltest.bash"  using: the built
+# scripts; the built "libmbfl.bash"; the source preprocessor.
 #
-# 4.  Generate  the built  library "libmbflutils.sh" using:  the built
-# scripts; the built "libmbfl.sh"; the source preprocessor.
+# 4.  Generate the built  library "libmbflutils.bash" using: the built
+# scripts; the built "libmbfl.bash"; the source preprocessor.
 #
 # 5. Generate the  built examples using: the built  scripts; the built
-# "libmbfl.sh"; the source preprocessor.
+# "libmbfl.bash"; the source preprocessor.
 #
 
 ACLOCAL_AMFLAGS		= -I meta/autotools
@@ -41,7 +41,7 @@ MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 MBFLPP_GENERAL_FLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 $(MBFLPPFLAGS)
 
 EXTRA_DIST		+=			\
-	src/backup/libmbfl.sh			\
+	src/backup/libmbfl.bash			\
 	src/backup/preprocessor.m4
 
 
@@ -187,7 +187,7 @@ CLEANFILES			+=		\
 	$(MBFL_LIB_MODULES)			\
 	src/modules/$(am__dirstamp)
 
-MBFL_MODULES_LIBMBFL		= $(srcdir)/src/backup/libmbfl.sh
+MBFL_MODULES_LIBMBFL		= $(srcdir)/src/backup/libmbfl.bash
 MBFL_MODULES_ENV		=
 MBFL_MODULES_RUN		= $(MBFL_MODULES_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_MODULES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --libmbfl="$(MBFL_MODULES_LIBMBFL)"
@@ -207,11 +207,11 @@ src/modules/%.sh: src/modules/%.sh.m4 $(MBFL_MODULES_PREREQUISITES)
 
 #### libmbfl generation
 
-EXTRA_DIST			+= src/lib/libmbfl.sh.m4
+EXTRA_DIST			+= src/lib/libmbfl.bash.m4
 mbfllibdir			= $(MBFL_LIB_INSTDIR)
-mbfllib_DATA			= src/lib/libmbfl.sh
+mbfllib_DATA			= src/lib/libmbfl.bash
 CLEANFILES			+=		\
-	src/lib/libmbfl.sh			\
+	src/lib/libmbfl.bash			\
 	src/lib/$(am__dirstamp)
 
 MBFL_LIB_ENV		=
@@ -226,7 +226,7 @@ src/lib/$(am__dirstamp):
 	@$(MKDIR_P) src/lib
 	@: > src/lib/$(am__dirstamp)
 
-src/lib/libmbfl.sh: src/lib/libmbfl.sh.m4 $(MBFL_LIB_MODULES) $(MBFL_LIB_PREREQUISITES)
+src/lib/libmbfl.bash: src/lib/libmbfl.bash.m4 $(MBFL_LIB_MODULES) $(MBFL_LIB_PREREQUISITES)
 	$(MBFL_LIB_RUN) $(MBFL_LIB_FLAGS) <$< >$@
 
 
@@ -262,11 +262,11 @@ src/utils-modules/%.sh: src/utils-modules/%.sh.m4 $(MBFL_UTILS_MODULES_PREREQUIS
 
 #### libmbflutils generation
 
-EXTRA_DIST			+= src/lib/libmbflutils.sh.m4
+EXTRA_DIST			+= src/lib/libmbflutils.bash.m4
 mbfllibutilsdir			= $(MBFL_LIB_INSTDIR)
-mbfllibutils_DATA		= src/lib/libmbflutils.sh
+mbfllibutils_DATA		= src/lib/libmbflutils.bash
 CLEANFILES			+=		\
-	src/lib/libmbflutils.sh			\
+	src/lib/libmbflutils.bash			\
 	src/lib/$(am__dirstamp)
 
 MBFL_LIBUTILS_ENV		=
@@ -277,17 +277,17 @@ MBFL_LIBUTILS_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbflutils.sh: src/lib/libmbflutils.sh.m4 $(MBFL_LIBUTILS_MODULES) $(MBFL_LIBUTILS_PREREQUISITES)
+src/lib/libmbflutils.bash: src/lib/libmbflutils.bash.m4 $(MBFL_LIBUTILS_MODULES) $(MBFL_LIBUTILS_PREREQUISITES)
 	$(MBFL_LIBUTILS_RUN) $(MBFL_LIBUTILS_FLAGS) <$< >$@
 
 
 #### libmbfltest generation
 
-EXTRA_DIST			+= src/lib/libmbfltest.sh.m4
+EXTRA_DIST			+= src/lib/libmbfltest.bash.m4
 mbfllibtestdir			= $(MBFL_LIB_INSTDIR)
-mbfllibtest_DATA		= src/lib/libmbfltest.sh
+mbfllibtest_DATA		= src/lib/libmbfltest.bash
 CLEANFILES			+=		\
-	src/lib/libmbfltest.sh			\
+	src/lib/libmbfltest.bash			\
 	src/lib/$(am__dirstamp)
 
 MBFL_LIBTEST_ENV		=
@@ -298,7 +298,7 @@ MBFL_LIBTEST_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbfltest.sh: src/lib/libmbfltest.sh.m4 $(MBFL_LIBTEST_PREREQUISITES)
+src/lib/libmbfltest.bash: src/lib/libmbfltest.bash.m4 $(MBFL_LIBTEST_PREREQUISITES)
 	$(MBFL_LIBTEST_RUN) $(MBFL_LIBTEST_FLAGS) <$< >$@
 
 
@@ -332,7 +332,7 @@ CLEANFILES			+=		\
 	$(MBFL_EXAMPLES_BUILT_FILES)		\
 	examples/$(am__dirstamp)
 
-MBFL_EXAMPLES_LIBMBFL		= $(builddir)/src/lib/libmbfl.sh
+MBFL_EXAMPLES_LIBMBFL		= $(builddir)/src/lib/libmbfl.bash
 MBFL_EXAMPLES_ENV		=
 MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_EXAMPLES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --libmbfl="$(MBFL_EXAMPLES_LIBMBFL)"
@@ -443,8 +443,8 @@ CLEANFILES			+=		\
 
 MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
 
-MBFL_TESTS_LIBMBFL	= $(builddir)/src/lib/libmbfl.sh
-MBFL_TESTS_LIBMBFLTEST	= $(builddir)/src/lib/libmbfltest.sh
+MBFL_TESTS_LIBMBFL	= $(builddir)/src/lib/libmbfl.bash
+MBFL_TESTS_LIBMBFLTEST	= $(builddir)/src/lib/libmbfltest.bash
 MBFL_TESTS_ENV		=  MBFL_TESTS_LIBMBFL=$(MBFL_TESTS_LIBMBFL); export MBFL_TESTS_LIBMBFL;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLTEST=$(MBFL_TESTS_LIBMBFLTEST); export MBFL_TESTS_LIBMBFLTEST;
 # We  set TMPDIR  because  if the  "/tmp" directory  is  mounted on  a
@@ -498,10 +498,10 @@ test: all $(check_SCRIPTS)
 	do $(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) "$$item" $(AM_TEST_LOG_FLAGS);	\
 	done
 
-test-template: examples/template.sh src/lib/libmbfl.sh
+test-template: examples/template.sh src/lib/libmbfl.bash
 	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(builddir)/examples/template.sh $(MBFLFLAGS)
 
-test-template-actions: examples/template-actions.sh src/lib/libmbfl.sh
+test-template-actions: examples/template-actions.sh src/lib/libmbfl.bash
 	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(builddir)/examples/template-actions.sh $(MBFLFLAGS)
 
 test-script-atexit: tests/script-atexit.sh

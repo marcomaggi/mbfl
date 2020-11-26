@@ -1,11 +1,12 @@
 ﻿-*- coding: utf-8-with-signature-unix; -*-
 
-* TODO Renaming libraries
-** TODO Rename "libmbfl.sh" to "libmbfl.bash".
-** TODO Rename "libmbfltest.sh" to "libmbfltest.bash".
-** TODO Rename "libmbflutils.sh" to "libmbflutils.bash".
+* DONE Renaming libraries
+** DONE Rename "libmbfl.sh" to "libmbfl.bash".
+** DONE Rename "libmbfltest.sh" to "libmbfltest.bash".
+** DONE Rename "libmbflutils.sh" to "libmbflutils.bash".
 * TODO Libraries refactorisation
-** TODO Split the at interface into its own separate library, "libmbflat.bash".
+** TODO Split the at interface into its own separate library, "libmbfl-at.bash".
+** TODO Split the compress modules into their own separate library, "libmbfl-compress.bash".
 * TODO Package Configuration
 ** TODO Change procedure to select external command line programs
    Make it possible to select  program from the PATH if no specific command  line option is use when
@@ -15,6 +16,8 @@
 ** DONE Review preprocessor documentation
 ** DONE Review testing documentation
 ** TODO Document the library "libmbflutils".
+** TODO Document the library "libmbfl-at".
+** TODO Document the library "libmbfl-compress".
 * Local Variables
 
 # Local Variables:
