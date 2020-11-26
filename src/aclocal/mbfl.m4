@@ -41,6 +41,19 @@
 AC_DEFUN([MBFL_SETUP],
   [AC_PATH_PROG([MBFLPP],[mbflpp.bash],[:])
 
+   AS_VAR_SET([mbfl_MINIMUM_REQUIRED_SEMANTIC_VERSION],[$1])
+   AC_CACHE_CHECK([minimum required MBFL semantic version $mbfl_MINIMUM_REQUIRED_SEMANTIC_VERSION],
+     [mbfl_cv_compliant_version],
+     [AS_IF([test "x$mbfl_MINIMUM_REQUIRED_SEMANTIC_VERSION" = "x"],
+            [echo empty >&2 ; AS_VAR_SET([mbfl_cv_compliant_version],[yes])],
+            ["$MBFLPP" --check-version="$mbfl_MINIMUM_REQUIRED_SEMANTIC_VERSION"],
+            [AS_VAR_SET([mbfl_cv_compliant_version],[yes])],
+            [AS_VAR_SET([mbfl_cv_compliant_version],[no])])])
+
+   AS_IF([test "x$mbfl_cv_compliant_version" = "xno"],
+         [AS_VAR_SET([mbfl_SEMANTIC_VERSION],[$("$MBFLPP" --version-only)])
+          AC_MSG_ERROR([the installed MBFL package is too old: $mbfl_SEMANTIC_VERSION],[1])])
+
    AC_CACHE_CHECK([installation directory of MBFL libraries],
      [mbfl_cv_pathname_libdir],
      [AS_VAR_SET([mbfl_cv_pathname_libdir],[$("${MBFLPP}" --print-libdir)])])

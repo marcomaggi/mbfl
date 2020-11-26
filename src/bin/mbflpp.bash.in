@@ -26,7 +26,7 @@
 #### MBFL's related options and variables
 
 declare -r script_PROGNAME='mbflpp.bash'
-declare -r script_VERSION='3.0.0'
+declare -r script_VERSION='@PACKAGE_VERSION@'
 declare -r script_COPYRIGHT_YEARS='2005, 2009, 2018, 2020'
 declare -r script_AUTHOR='Marco Maggi'
 declare -r script_LICENSE=GPL3
@@ -5515,14 +5515,16 @@ function script_option_update_check_version () {
 
     if mbfl_semver_compare_var mbflpp_RV "$SEMANTIC_VERSION" "$script_option_CHECK_VERSION"
     then
-	if ((mbflpp_RV <= 0))
+	if ((mbflpp_RV >= 0))
 	then
-	    mbfl_message_verbose_printf 'sucessful check: given semantic version "%s" is greater than MBFL version "%s"\n' \
-					"$script_option_CHECK_VERSION" "$SEMANTIC_VERSION"
+	    mbfl_message_verbose_printf \
+		'sucessful check: the given semantic version "%s" is less than, or equal to, the MBFL package version "%s"\n' \
+		"$script_option_CHECK_VERSION" "$SEMANTIC_VERSION"
 	    exit_success
 	else
-	    mbfl_message_verbose_printf 'failed check: given semantic version "%s" is not greater than MBFL version "%s"\n' \
-					"$script_option_CHECK_VERSION" "$SEMANTIC_VERSION"
+	    mbfl_message_verbose_printf \
+		'sucessful check: the given semantic version "%s" is greater than the MBFL package version "%s"\n' \
+		"$script_option_CHECK_VERSION" "$SEMANTIC_VERSION"
 	    exit_failure
 	fi
     else

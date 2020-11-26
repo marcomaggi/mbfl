@@ -712,11 +712,11 @@ package:
 
 @itemize
 @item
-If the option's value is greater than, or equal to, the package value: exit successfully with exit
-code @samp{0}.
+If the option's value is less than, or equal to, the package value: exit successfully with exit code
+@samp{0}.
 
 @item
-If the option's value is less than the package value: exit with failure with exit code @samp{1}.
+If the option's value is greater than the package value: exit with failure with exit code @samp{1}.
 
 @item
 If the value @var{MINIMUM_REQUIRED_SEMANTIC_VERSION} is a string invalid as semantic version: exit
