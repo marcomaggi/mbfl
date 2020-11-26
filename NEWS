@@ -16,40 +16,31 @@ changes!
   installed under directories *without* the version part.  No pkg-config
   module is installed.
 
-* *BACKWARDS INCOMPATIBILITY* The testing  script "mbfltest.sh" has been
-   removed from the package.
+* BACKWARDS INCOMPATIBILITY  The testing  script "mbfltest.sh"  has been
+  removed from the package.
 
-* *BACKWARDS INCOMPATIBILITY*  The preprocessor script has  been renamed
-   from "mbflpp.sh" to "mbflpp.bash".
+* BACKWARDS INCOMPATIBILITY  The script  "mbfl-config" has  been removed
+  from the distribution.
 
-* *BACKWARDS INCOMPATIBILITY*  The command line  option "--mbfl-library"
-   of  the  preprocessor  script   "mbflpp.bash"  has  been  renamed  to
-   "--libmbfl".
-
-* *BACKWARDS INCOMPATIBILITY* The script  "mbfl-config" has been removed
-   from the distribution.
-
-* The preprocessor  script "mbflpp.bash"  accepts the  following command
-  line options:
+* BACKWARDS  INCOMPATIBILITY The  preprocessor script  has been  renamed
+  from "mbflpp.sh" to "mbflpp.bash".  The following command line options
+  have been added:
 
      --print-libpath
      --print-libmbfl
      --print-libmbfltest
      --print-libmbflutils
 
-* *BACKWARDS INCOMPATIBILITY* The library  files have been renamed, from
-   file extension ".sh" to ".bash".
+* BACKWARDS INCOMPATIBILITY  The library  files have been  renamed, from
+  file extension ".sh" to ".bash".
 
-* The package configuration allows us to select a hard-coded path to the
-  GNU Coreutils program "id", in  addition to "whoami" and "sudo".  Some
-  of the default selections have been changed:
+* The package configuration allows us to select a hard-coded file system
+  pathnames to the GNU Coreutils programs and the executable "sudo".
 
-    /bin/id
-    /bin/whoami
-    /usr/bin/sudo
-
-* The  way  the library  is  reliably  loaded  has been  reviewed.   The
-  preprocessor can include the needed code with a macro.
+* Added preprocessor macros to  automatically include the library loader
+  and automatically embed  the whole library in the  output script.  The
+  way the  library is reliably  loaded has  been reviewed and  very much
+  simplified.
 
 * The quoting for m4 preprocessing is changed from:
 
@@ -58,9 +49,6 @@ changes!
   to:
 
      m4_changequote(`[[[', `]]]')
-
-* Added preprocessor macros to  automatically include the library loader
-  and automatically embed the whole library in the output script.
 
 * Added some  "_var" variants  to functions.   For example  two variants
   exist to extract the filename extension:
@@ -136,6 +124,8 @@ changes!
     mbfl_file_realpath_var
     mbfl_file_link
 
+* Started interface to "stat" from GNU Coreutils.
+
 * BACKWARDS INCOMPATIBILITY The following  functions now use the program
   "stat":
 
@@ -179,8 +169,6 @@ changes!
 
 * Added module "atexit" implementing atexit handlers.
 
-* Started interface to "stat" from GNU Coreutils.
-
 * Added module "fd" implementing file descriptors handlers.
 
 * Added  support for  automatic  generation  of command-line  completion
@@ -202,7 +190,7 @@ changes!
 * Added new script  variable "script_REQUIRED_MBFL_VERSION".  Introduced
   validation of required MBFL semantic version.
 
-* Started the shell module, mainly for introspection facilities.
+* Started the "shell" module, mainly for introspection facilities.
 
 * Added functions:
 
@@ -227,10 +215,8 @@ changes!
     mbfl_system_real_group_id_var
     mbfl_system_real_group_name_var
 
-* Added functions:
-
-    mbfl_option_show_program_save
-    mbfl_option_show_program_restore
+* More functions to query/set/unset/save/restore the value of predefined
+  command line options.
 
 * Added functions:
 
@@ -260,6 +246,7 @@ changes!
 
 * Exposed the following global variables as part of the public API:
 
+    mbfl_PROGRAM_BASH
     mbfl_PROGRAM_CHMOD
     mbfl_PROGRAM_CHOWN
     mbfl_PROGRAM_CP
@@ -279,13 +266,6 @@ changes!
 
 * Started module "process" to handle job control.
 
-* More functions to query/set/unset/save/restore the value of predefined
-  command line options.
-
-* Added functions to the location module:
-
-    mbfl_location_handler_suspend_testing
-
 * Total  reorganisation  of  script   termination  facilities,  see  the
   documentation node "exit".  Added the functions:
 
@@ -293,7 +273,7 @@ changes!
     mbfl_declare_exit_code
     mbfl_print_exit_code
 
-* *BACKWARDS INCOMPATIBILITY* The functions:
+* BACKWARDS INCOMPATIBILITY The functions:
 
     mbfl_program_found
     mbfl_program_found_var
