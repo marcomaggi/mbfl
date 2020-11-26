@@ -48,7 +48,7 @@ EXTRA_DIST		+=			\
 #### meta infrastructure
 
 autoconfdir		= $(datadir)/aclocal
-dist_autoconf_DATA	= meta/autoconf/mbfl.m4
+dist_autoconf_DATA	= src/aclocal/mbfl.m4
 
 
 #### documentation
