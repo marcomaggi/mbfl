@@ -216,6 +216,7 @@ privileges.
 
 @menu
 * overview loading::            How to load the core library.
+* overview autotools::          Using the @gnu{} Autotools.
 * overview interactive::        Using the library interactively.
 * overview rv::                 Result variables.
 * overview notes::              Miscellaneous notes.
@@ -252,6 +253,48 @@ reduces the chances of a script being tricked into loading a file different from
 To use the preprocessor macros we must process a script's source file with the preprocessor script
 @value{PROSCRIPTCMD}, possibly using an appropriate @file{Makefile}; @ref{preprocessor, Using the
 script preprocessor}.
+
+@c page
+@node overview autotools
+@section Using the @gnu{} Autotools
+
+
+When we use the full @gnu{} Autotools suite to organise a package's infrastructure, we should do the
+following:
+
+@enumerate
+@item
+Include the @gnu{} Autoconf macro file @file{mbfl.m4} (distributed with @mbfl{}) in the distribution
+and use it by adding the following to @file{acinclude.m4}:
+
+@example
+m4_include(mbfl.m4)
+@end example
+
+@item
+In the template @file{configure.ac} we add the macro use:
+
+@example
+MBFL_SETUP
+@end example
+
+@noindent
+it will add to @file{Makefile.in} the following variable definitions:
+
+@example
+MBFL_LIBDIR = @@MBFL_LIBDIR@@
+MBFL_LIBMBFL = @@MBFL_LIBMBFL@@
+MBFL_LIBMBFLTEST = @@MBFL_LIBMBFLTEST@@
+@end example
+
+@noindent
+holding the absolute file system pathnames of the libraries installation directory and the libraries
+@value{LIBMBFLFILE} and @value{LIBMBFLTESTFILE}.
+
+@item
+In the template file @file{Makefile.am} we can use the @env{MBFL_} variables to drive the loading or
+embedding of libraries into our scripts, libraries and test files.
+@end enumerate
 
 @c page
 @node overview interactive
