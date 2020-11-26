@@ -120,6 +120,7 @@ MAINTAINERCLEANFILES		+= src/bin/mbflpp.bash
 
 # MBFL_SCRIPTS_PREREQUISITES	=		\
 # 	$(MBFL_PREPROCESSOR)			\
+#	$(MBFL_PROGRAM_MBFLPP)			\
 # 	src/bin/$(am__dirstamp)
 
 # src/bin/$(am__dirstamp):
@@ -191,6 +192,7 @@ MBFL_MODULES_RUN		= $(MBFL_MODULES_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_MODULES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --libmbfl="$(MBFL_MODULES_LIBMBFL)"
 
 MBFL_MODULES_PREREQUISITES	=		\
+	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_MODULES_LIBMBFL)			\
 	src/modules/$(am__dirstamp)		\
 	$(MBFL_PREPROCESSOR)
@@ -218,6 +220,7 @@ MBFL_LIB_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(build
 
 MBFL_LIB_PREREQUISITES	=			\
 	src/lib/$(am__dirstamp)			\
+	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/$(am__dirstamp):
@@ -248,6 +251,7 @@ MBFL_UTILS_MODULES_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
 MBFL_UTILS_MODULES_PREREQUISITES	=		\
 	src/utils-modules/$(am__dirstamp)		\
+	$(MBFL_PROGRAM_MBFLPP)				\
 	$(MBFL_PREPROCESSOR)
 
 src/utils-modules/$(am__dirstamp):
@@ -273,6 +277,7 @@ MBFL_LIBUTILS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(b
 
 MBFL_LIBUTILS_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
+	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfl-utils.bash: src/lib/libmbfl-utils.bash.m4 $(MBFL_LIBUTILS_MODULES) $(MBFL_LIBUTILS_PREREQUISITES)
@@ -294,6 +299,7 @@ MBFL_LIBTEST_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
 
 MBFL_LIBTEST_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
+	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfltest.bash: src/lib/libmbfltest.bash.m4 $(MBFL_LIBTEST_PREREQUISITES)
@@ -315,6 +321,7 @@ MBFL_LIBAT_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
 
 MBFL_LIBAT_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
+	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfl-at.bash: src/lib/libmbfl-at.bash.m4 $(MBFL_LIBAT_PREREQUISITES)
@@ -336,6 +343,7 @@ MBFL_LIBARCH_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
 
 MBFL_LIBARCH_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
+	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfl-arch.bash: src/lib/libmbfl-arch.bash.m4 $(MBFL_LIBARCH_PREREQUISITES)
@@ -377,12 +385,13 @@ MBFL_EXAMPLES_ENV		=
 MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_EXAMPLES_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --add-bash
 MBFL_EXAMPLES_FLAGS		+= --libmbfl="$(MBFL_EXAMPLES_LIBMBFL)"
-MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_AT__=$(builddir)/src/lib/libmbfl-at.bash
-MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_ARCH__=$(builddir)/src/lib/libmbfl-arch.bash
+MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_AT__="$(builddir)/src/lib/libmbfl-at.bash"
+MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_ARCH__="$(builddir)/src/lib/libmbfl-arch.bash"
 
 MBFL_EXAMPLES_PREREQUISITES	=		\
-	$(MBFL_EXAMPLES_LIBMBFL)		\
 	examples/$(am__dirstamp)		\
+	$(MBFL_EXAMPLES_LIBMBFL)		\
+	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
 examples/$(am__dirstamp):
@@ -503,11 +512,12 @@ MBFL_TESTS_ENV		+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_TESTS_FLAGS	=  $(MBFLPP_GENERAL_FLAGS) --add-bash --libmbfl="$(MBFL_TESTS_LIBMBFL)"
-MBFL_TESTS_FLAGS	+= --define=__LIBMBFL_ARCH__=$(builddir)/src/lib/libmbfl-arch.bash
+MBFL_TESTS_FLAGS	+= --define=__LIBMBFL_ARCH__="$(builddir)/src/lib/libmbfl-arch.bash"
 
 MBFL_TESTS_PREREQUISITES	=		\
-	$(MBFL_TESTS_LIBMBFL)			\
 	tests/$(am__dirstamp)			\
+	$(MBFL_TESTS_LIBMBFL)			\
+	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
 # Read "Parallel Test Harness" in the documentation of GNU Automake to
