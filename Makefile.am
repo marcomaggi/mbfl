@@ -11,7 +11,7 @@
 # 3.  Generate  the built library "libmbfltest.bash"  using: the built
 # scripts; the built "libmbfl.bash"; the source preprocessor.
 #
-# 4.  Generate the built  library "libmbflutils.bash" using: the built
+# 4.  Generate the built library "libmbfl-utils.bash" using: the built
 # scripts; the built "libmbfl.bash"; the source preprocessor.
 #
 # 5. Generate the  built examples using: the built  scripts; the built
@@ -228,7 +228,7 @@ src/lib/libmbfl.bash: src/lib/libmbfl.bash.m4 $(MBFL_LIB_MODULES) $(MBFL_LIB_PRE
 	$(MBFL_LIB_RUN) $(MBFL_LIB_FLAGS) <$< >$@
 
 
-#### libmbflutils generation: modules
+#### libmbfl-utils generation: modules
 
 EXTRA_DIST			+=		\
 	src/utils-modules/utils-file.sh.m4
@@ -258,13 +258,13 @@ src/utils-modules/%.sh: src/utils-modules/%.sh.m4 $(MBFL_UTILS_MODULES_PREREQUIS
 	$(MBFL_UTILS_MODULES_RUN) $(MBFL_UTILS_MODULES_FLAGS) <$< >$@
 
 
-#### libmbflutils generation
+#### libmbfl-utils generation
 
-EXTRA_DIST			+= src/lib/libmbflutils.bash.m4
+EXTRA_DIST			+= src/lib/libmbfl-utils.bash.m4
 mbfllibutilsdir			= $(MBFL_LIB_INSTDIR)
-mbfllibutils_DATA		= src/lib/libmbflutils.bash
+mbfllibutils_DATA		= src/lib/libmbfl-utils.bash
 CLEANFILES			+=		\
-	src/lib/libmbflutils.bash			\
+	src/lib/libmbfl-utils.bash			\
 	src/lib/$(am__dirstamp)
 
 MBFL_LIBUTILS_ENV		=
@@ -275,7 +275,7 @@ MBFL_LIBUTILS_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbflutils.bash: src/lib/libmbflutils.bash.m4 $(MBFL_LIBUTILS_MODULES) $(MBFL_LIBUTILS_PREREQUISITES)
+src/lib/libmbfl-utils.bash: src/lib/libmbfl-utils.bash.m4 $(MBFL_LIBUTILS_MODULES) $(MBFL_LIBUTILS_PREREQUISITES)
 	$(MBFL_LIBUTILS_RUN) $(MBFL_LIBUTILS_FLAGS) <$< >$@
 
 

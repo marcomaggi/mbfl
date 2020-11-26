@@ -5725,10 +5725,20 @@ mbfl_declare_option LIBMBFL "$DEFAULT_LIBMBFL" '' libmbfl witharg 'pathname of t
 mbfl_declare_option BASH_PROGRAM "$mbfl_PROGRAM_BASH" \
 		    '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
 
-mbfl_declare_option PRINT_LIBPATH      no '' print-libdir       noarg 'print the librarires installation directory'
-mbfl_declare_option PRINT_LIBMBFL      no '' print-libmbfl      noarg 'print the full installation pathname of the library "libmbfl.bash"'
-mbfl_declare_option PRINT_LIBMBFLTEST  no '' print-libmbfltest  noarg 'print the full installation pathname of the library "libmbfltest.bash"'
-mbfl_declare_option PRINT_LIBMBFLUTILS no '' print-libmbflutils noarg 'print the full installation pathname of the library "libmbflutils.bash"'
+mbfl_declare_option PRINT_LIBPATH       no '' print-libdir        noarg \
+		    'print the librarires installation directory'
+mbfl_declare_option PRINT_LIBMBFL       no '' print-libmbfl       noarg \
+		    'print the full installation pathname of the library "libmbfl.bash"'
+mbfl_declare_option PRINT_LIBMBFLTEST   no '' print-libmbfltest   noarg \
+		    'print the full installation pathname of the library "libmbfltest.bash"'
+mbfl_declare_option PRINT_LIBMBFL_TEST  no '' print-libmbfl-test  noarg \
+		    'print the full installation pathname of the library "libmbfltest.bash"'
+mbfl_declare_option PRINT_LIBMBFL_UTILS no '' print-libmbfl-utils noarg \
+		    'print the full installation pathname of the library "libmbfl-utils.bash"'
+mbfl_declare_option PRINT_LIBMBFL_ARCH  no '' print-libmbfl-arch  noarg \
+		    'print the full installation pathname of the library "libmbfl-arch.bash"'
+mbfl_declare_option PRINT_LIBMBFL_AT    no '' print-libmbfl-at    noarg \
+		    'print the full installation pathname of the library "libmbfl-at.bash"'
 
 #page
 #### external programs declarations
@@ -5799,13 +5809,25 @@ function script_option_update_print_libmbfl () {
     printf '%s/libmbfl.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
-function script_option_update_print_libmbfltest () {
+function script_option_update_print_libmbfl_test () {
     printf '%s/libmbfltest.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
-function script_option_update_print_libmbflutils () {
-    printf '%s/libmbflutils.bash\n' "$MBFL_INSTALLDIR"
+function script_option_update_print_libmbfl_utils () {
+    printf '%s/libmbfl-utils.bash\n' "$MBFL_INSTALLDIR"
     exit_success
+}
+function script_option_update_print_libmbfl_arch () {
+    printf '%s/libmbfl-arch.bash\n' "$MBFL_INSTALLDIR"
+    exit_success
+}
+function script_option_update_print_libmbfl_at () {
+    printf '%s/libmbfl-at.bash\n' "$MBFL_INSTALLDIR"
+    exit_success
+}
+
+function script_option_update_print_libmbfltest () {
+    script_option_update_print_libmbfl_test
 }
 
 #page

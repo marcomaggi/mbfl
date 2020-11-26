@@ -28,8 +28,10 @@ changes!
 
      --print-libpath
      --print-libmbfl
-     --print-libmbfltest
-     --print-libmbflutils
+     --print-libmbfl-test
+     --print-libmbfl-utils
+     --print-libmbfl-arch
+     --print-libmbfl-at
 
 * BACKWARDS INCOMPATIBILITY  The library  files have been  renamed, from
   file extension ".sh" to ".bash".

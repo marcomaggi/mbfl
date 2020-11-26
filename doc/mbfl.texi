@@ -58,13 +58,13 @@
 
 @set LIBMBFL                    libmbfl.sh
 @set LIBMBFLTEST                libmbfltest.sh
-@set LIBMBFLUTILS               libmbflutils.sh
+@set LIBMBFLUTILS               libmbfl-utils.sh
 @set LIBMBFLAT                  libmbfl-at.bash
 @set LIBMBFLARCH                libmbfl-arch.bash
 
 @set LIBMBFLFILE                @file{libmbfl.bash}
 @set LIBMBFLTESTFILE            @file{libmbfltest.bash}
-@set LIBMBFLUTILSFILE           @file{libmbflutils.bash}
+@set LIBMBFLUTILSFILE           @file{libmbfl-utils.bash}
 @set LIBMBFLATFILE              @file{libmbfl-at.bash}
 @set LIBMBFLARCHFILE            @file{libmbfl-arch.bash}
 
@@ -678,16 +678,31 @@ Print on @stdout{} the file system absolute pathname of the installed library @v
 then exit successfully.
 
 @item --print-libmbfltest
+@itemx --print-libmbfl-test
 @cindex @option{--print-libmbfltest}, preprocessor option
+@cindex @option{--print-libmbfl-test}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfltest}
+@cindex Preprocessor option @option{--print-libmbfl-test}
 Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLTESTFILE},
 then exit successfully.
 
-@item --print-libmbflutils
-@cindex @option{--print-libmbflutils}, preprocessor option
-@cindex Preprocessor option @option{--print-libmbflutils}
+@item --print-libmbfl-utils
+@cindex @option{--print-libmbfl-utils}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfl-utils}
 Print on @stdout{} the file system absolute pathname of the installed library
-@file{libmbflutils.sh}, then exit successfully.
+@value{LIBMBFLUTILSFILE}, then exit successfully.
+
+@item --print-libmbfl-arch
+@cindex @option{--print-libmbfl-arch}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfl-arch}
+Print on @stdout{} the file system absolute pathname of the installed library
+@value{LIBMBFLARCHFILE}, then exit successfully.
+
+@item --print-libmbfl-at
+@cindex @option{--print-libmbfl-at}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfl-at}
+Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLATFILE},
+then exit successfully.
 @end table
 
 @c page
