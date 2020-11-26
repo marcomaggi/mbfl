@@ -32,6 +32,7 @@ changes!
      --print-libmbfl-utils
      --print-libmbfl-arch
      --print-libmbfl-at
+     --check-version
 
 * BACKWARDS INCOMPATIBILITY  The library  files have been  renamed, from
   file extension ".sh" to ".bash".

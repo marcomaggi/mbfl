@@ -703,6 +703,28 @@ Print on @stdout{} the file system absolute pathname of the installed library
 @cindex Preprocessor option @option{--print-libmbfl-at}
 Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLATFILE},
 then exit successfully.
+
+@item --check-version=@var{MINIMUM_REQUIRED_SEMANTIC_VERSION}
+@cindex @option{--check-version}, preprocessor option
+@cindex Preprocessor option @option{--check-version}
+Compare the given @var{MINIMUM_REQUIRED_SEMANTIC_VERSION} with the version of the installed @mbfl{}
+package:
+
+@itemize
+@item
+If the option's value is greater than, or equal to, the package value: exit successfully with exit
+code @samp{0}.
+
+@item
+If the option's value is less than the package value: exit with failure with exit code @samp{1}.
+
+@item
+If the value @var{MINIMUM_REQUIRED_SEMANTIC_VERSION} is a string invalid as semantic version: exit
+with failure with exit code @code{3}.
+@end itemize
+
+If the option @option{--verbose} is used @strong{before} this option: a message describing the
+result of the comparison is printed on @stderr{}.
 @end table
 
 @c page

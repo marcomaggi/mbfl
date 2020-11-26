@@ -26,7 +26,7 @@
 #### MBFL's related options and variables
 
 declare -r script_PROGNAME='mbflpp.bash'
-declare -r script_VERSION='@PACKAGE_VERSION@'
+declare -r script_VERSION='3.0.0'
 declare -r script_COPYRIGHT_YEARS='2005, 2009, 2018, 2020'
 declare -r script_AUTHOR='Marco Maggi'
 declare -r script_LICENSE=GPL3
@@ -5402,6 +5402,8 @@ mbfl_declare_option LIBMBFL "$DEFAULT_LIBMBFL" '' libmbfl witharg 'pathname of t
 mbfl_declare_option BASH_PROGRAM "$mbfl_PROGRAM_BASH" \
 		    '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
 
+mbfl_declare_option CHECK_VERSION '' '' check-version witharg 'check the given version against the one of MBFL'
+
 mbfl_declare_option PRINT_LIBPATH       no '' print-libdir        noarg \
 		    'print the librarires installation directory'
 mbfl_declare_option PRINT_LIBMBFL       no '' print-libmbfl       noarg \
@@ -5428,6 +5430,7 @@ mbfl_declare_program cat
 #### exit code declarations
 
 mbfl_declare_exit_code 2 wrong_command_line_arguments
+mbfl_declare_exit_code 3 invalid_semantic_version
 
 #page
 #### option update functions
@@ -5505,6 +5508,27 @@ function script_option_update_print_libmbfl_at () {
 
 function script_option_update_print_libmbfltest () {
     script_option_update_print_libmbfl_test
+}
+
+function script_option_update_check_version () {
+    local -i mbflpp_RV
+
+    if mbfl_semver_compare_var mbflpp_RV "$SEMANTIC_VERSION" "$script_option_CHECK_VERSION"
+    then
+	if ((mbflpp_RV <= 0))
+	then
+	    mbfl_message_verbose_printf 'sucessful check: given semantic version "%s" is greater than MBFL version "%s"\n' \
+					"$script_option_CHECK_VERSION" "$SEMANTIC_VERSION"
+	    exit_success
+	else
+	    mbfl_message_verbose_printf 'failed check: given semantic version "%s" is not greater than MBFL version "%s"\n' \
+					"$script_option_CHECK_VERSION" "$SEMANTIC_VERSION"
+	    exit_failure
+	fi
+    else
+	mbfl_message_error_printf 'invalid semantic version: "%s"' "$script_option_CHECK_VERSION"
+	exit_because_invalid_semantic_version
+    fi
 }
 
 #page
