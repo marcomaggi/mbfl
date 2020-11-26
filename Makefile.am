@@ -142,7 +142,6 @@ EXTRA_DIST			+=		\
 	src/modules/fd.sh.m4			\
 	src/modules/file.sh.m4			\
 	src/modules/getopts.sh.m4		\
-	src/modules/interfaces.sh.m4		\
 	src/modules/locations.sh.m4		\
 	src/modules/main.sh.m4			\
 	src/modules/message.sh.m4		\
@@ -169,7 +168,6 @@ MBFL_LIB_MODULES		=		\
 	src/modules/fd.sh			\
 	src/modules/file.sh			\
 	src/modules/getopts.sh			\
-	src/modules/interfaces.sh		\
 	src/modules/locations.sh		\
 	src/modules/main.sh			\
 	src/modules/message.sh			\
@@ -230,7 +228,7 @@ src/lib/libmbfl.bash: src/lib/libmbfl.bash.m4 $(MBFL_LIB_MODULES) $(MBFL_LIB_PRE
 	$(MBFL_LIB_RUN) $(MBFL_LIB_FLAGS) <$< >$@
 
 
-#### libmbflutils modules generation
+#### libmbflutils generation: modules
 
 EXTRA_DIST			+=		\
 	src/utils-modules/utils-file.sh.m4
@@ -302,6 +300,27 @@ src/lib/libmbfltest.bash: src/lib/libmbfltest.bash.m4 $(MBFL_LIBTEST_PREREQUISIT
 	$(MBFL_LIBTEST_RUN) $(MBFL_LIBTEST_FLAGS) <$< >$@
 
 
+#### libmbfl-at generation
+
+EXTRA_DIST			+= src/lib/libmbfl-at.bash.m4
+mbfllibatdir			= $(MBFL_LIB_INSTDIR)
+mbfllibat_DATA			= src/lib/libmbfl-at.bash
+CLEANFILES			+=		\
+	src/lib/libmbfl-at.bash			\
+	src/lib/$(am__dirstamp)
+
+MBFL_LIBAT_ENV			=
+MBFL_LIBAT_RUN			= $(MBFL_LIBAT_ENV) $(MBFL_RUN_MBFLPP)
+MBFL_LIBAT_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
+
+MBFL_LIBAT_PREREQUISITES	=		\
+	src/lib/$(am__dirstamp)			\
+	$(MBFL_PREPROCESSOR)
+
+src/lib/libmbfl-at.bash: src/lib/libmbfl-at.bash.m4 $(MBFL_LIBAT_PREREQUISITES)
+	$(MBFL_LIBAT_RUN) $(MBFL_LIBAT_FLAGS) <$< >$@
+
+
 #### examples
 
 EXTRA_DIST			+=		\
@@ -335,7 +354,9 @@ CLEANFILES			+=		\
 MBFL_EXAMPLES_LIBMBFL		= $(builddir)/src/lib/libmbfl.bash
 MBFL_EXAMPLES_ENV		=
 MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_EXAMPLES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --libmbfl="$(MBFL_EXAMPLES_LIBMBFL)"
+MBFL_EXAMPLES_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --add-bash
+MBFL_EXAMPLES_FLAGS		+= --libmbfl="$(MBFL_EXAMPLES_LIBMBFL)"
+MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_AT__=$(builddir)/src/lib/libmbfl-at.bash
 
 MBFL_EXAMPLES_PREREQUISITES	=		\
 	$(MBFL_EXAMPLES_LIBMBFL)		\

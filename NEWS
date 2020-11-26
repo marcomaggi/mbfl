@@ -34,6 +34,9 @@ changes!
 * BACKWARDS INCOMPATIBILITY  The library  files have been  renamed, from
   file extension ".sh" to ".bash".
 
+* BACKWARDS INCOMPATIBILITY The  interface to the command  "at" has been
+  refactored into its own library "libmbfl-at.bash".
+
 * The package configuration allows us to select a hard-coded file system
   pathnames to the GNU Coreutils programs and the executable "sudo".
 

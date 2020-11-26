@@ -5,7 +5,7 @@
 ** DONE Rename "libmbfltest.sh" to "libmbfltest.bash".
 ** DONE Rename "libmbflutils.sh" to "libmbflutils.bash".
 * TODO Libraries refactorisation
-** TODO Split the at interface into its own separate library, "libmbfl-at.bash".
+** DONE Split the at interface into its own separate library, "libmbfl-at.bash".
 ** TODO Split the compress modules into their own separate library, "libmbfl-compress.bash".
 * TODO Package Configuration
 ** TODO Change procedure to select external command line programs

@@ -53,7 +53,7 @@ script_EXAMPLES="Examples:
 
 # We embed because it makes it easier to use this script in MBFL's own test suite.
 mbfl_embed_library
-# mbfl_library_loader
+mbfl_embed_library(__LIBMBFL_AT__)
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ACTION_SCHEDULE    no  S   schedule        noarg   'schedules a command'

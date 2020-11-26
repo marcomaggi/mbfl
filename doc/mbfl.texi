@@ -59,10 +59,12 @@
 @set LIBMBFL                    libmbfl.sh
 @set LIBMBFLTEST                libmbfltest.sh
 @set LIBMBFLUTILS               libmbflutils.sh
+@set LIBMBFLAT                  libmbfl-at.bash
 
 @set LIBMBFLFILE                @file{libmbfl.bash}
 @set LIBMBFLTESTFILE            @file{libmbfltest.bash}
 @set LIBMBFLUTILSFILE           @file{libmbflutils.bash}
+@set LIBMBFLATFILE              @file{libmbfl-at.bash}
 
 @c page
 @c ------------------------------------------------------------
@@ -164,7 +166,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 
 Appendices
 
-* interfaces::                  Interfaces to external programs.
+* libmbfl-at::                  Interface to the external program @command{at}.
 * sendmail::                    Examples for sending email.
 * Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
@@ -8873,29 +8875,23 @@ dotest-final-report
 @end example
 
 @c page
-@node interfaces
-@appendix Interfaces to external programs
+@node libmbfl-at
+@appendix Interface to the external program @command{at}
 
 
-@menu
-* interfaces at::               Scheduling jobs for later execution.
-@end menu
-
-@c page
-@node interfaces at
-@appendixsec Scheduling jobs for later execution
+@cindex @value{LIBMBFLATFILE}, library interface to @command{at}
+@cindex Library interface to @command{at}, @value{LIBMBFLATFILE}
+@cindex @command{at} command, library interface @value{LIBMBFLATFILE}
 
 
-This section documents the interface to the @command{atd} daemon; we may want to read the
-@command{at}(1) manual page.  The @command{at} service allows a user to schedule commands to be
-executed at a later time.
+This section documents the interface to the @command{atd} daemon; the @command{at} service allows a
+user to schedule commands to be executed at a later time, we may want to read the @command{at}(1)
+manual page.  The interface is defined by the library @value{LIBMBFLATFILE}.
 
 This interface is suitable for scripts that define a unique simple policy to schedule commands;
 example: at each run they schedule a command in a fixed queue, to be executed at a fixed time in the
-future.
-
-This is good to implement the logic: if a condition does not happen before time @code{T}, then
-execute command @command{C}.
+future.  This is good to implement the logic: if a condition does not happen before time @code{T},
+then execute command @code{C}.
 
 @c ------------------------------------------------------------------------
 

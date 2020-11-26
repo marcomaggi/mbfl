@@ -53,7 +53,6 @@ m4_include(dialog.sh)
 m4_include(system.sh)
 m4_include(arrays.sh)
 m4_include(semver.sh)
-m4_include(interfaces.sh)
 
 ### end of file
 # Local Variables:
