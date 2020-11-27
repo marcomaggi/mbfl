@@ -232,7 +232,7 @@ and compressing files}.
 
 Starting with version 3: this package installs files under directories @strong{without} the version
 part.  If we desire to install multiple versions of the package: we should install under
-@file{/opt/mbfl/$(VERSION)}, by using the appropriate command line option at configuration time:
+@file{/opt/mbfl/$VERSION}, by using the appropriate command line option at configuration time:
 
 @example
 $ ./configure --prefix=/opt/mbfl/3.0.0
@@ -287,8 +287,8 @@ script preprocessor}.
 @section Using the @gnu{} Autotools
 
 
-When we use the full @gnu{} Autotools suite to organise a package's infrastructure, we should do the
-following:
+When we use the full @gnu{} Autotools suite to organise a package's infrastructure depending on
+@mbfl{}, we should do the following:
 
 @enumerate
 @item
@@ -300,24 +300,26 @@ m4_include(mbfl.m4)
 @end example
 
 @item
-In the template @file{configure.ac} we add the macro use:
+In the template @file{configure.ac} we add the macro use, optionally specifying the minimum @mbfl{}
+semantic version we need (@pxref{semver spec, Semantic Versioning specification}):
 
 @example
-MBFL_SETUP
+MBFL_SETUP(v3.0.0)
 @end example
 
 @noindent
 it will add to @file{Makefile.in} the following variable definitions:
 
 @example
-MBFL_LIBDIR = @@MBFL_LIBDIR@@
-MBFL_LIBMBFL = @@MBFL_LIBMBFL@@
+MBFLPP           = @@MBFLPP@@
+MBFL_LIBDIR      = @@MBFL_LIBDIR@@
+MBFL_LIBMBFL     = @@MBFL_LIBMBFL@@
 MBFL_LIBMBFLTEST = @@MBFL_LIBMBFLTEST@@
 @end example
 
 @noindent
-holding the absolute file system pathnames of the libraries installation directory and the libraries
-@value{LIBMBFLFILE} and @value{LIBMBFLTESTFILE}.
+holding the absolute file system pathnames of the preprocessor script, the libraries installation
+directory, and the libraries @value{LIBMBFLFILE} and @value{LIBMBFLTESTFILE}.
 
 @item
 In the template file @file{Makefile.am} we can use the @env{MBFL_} variables to drive the loading or
@@ -336,14 +338,14 @@ functions by hand.
 To do this execute the following code in the shell before sourcing the library:
 
 @example
-mbfl_INTERACTIVE=yes
+declare -r mbfl_INTERACTIVE=yes
 @end example
 
 @noindent
 without exporting the variable.  The ``dangerous'' blocks of code in the library are surrounded by:
 
 @example
-if test "$mbfl_INTERACTIVE" != 'yes'
+if mbfl_string_eq_yes("$mbfl_INTERACTIVE")
 then
     ...
 fi
@@ -1424,6 +1426,16 @@ lexicographically as strings; otherwise return failure.
 @deffn {Preprocessor Macro} mbfl_string_ge (@vari{STR}, @varii{STR})
 Return successfully if @vari{STR} is greater than or equal to @varii{STR} when compared when
 compared lexicographically as strings; otherwise return failure.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_eq_yes (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_eq_no (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_eq_true (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_eq_false (@var{STR})
+Return successfully if the argument @var{STR} is equal to, respectively: @samp{yes}, @samp{no},
+@samp{true}, @samp{false} when compared when compared lexicographically as string; otherwise return
+failure.
 @end deffn
 
 @c page

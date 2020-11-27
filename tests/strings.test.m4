@@ -1339,6 +1339,36 @@ function string-macro-greater-or-equal-1.4 () {
     mbfl_string_ge('hello', 'ciao')
 }
 
+### ------------------------------------------------------------------------
+
+function string-macro-equal-fixed-1.1 () {
+    mbfl_string_eq_yes('yes')
+}
+function string-macro-equal-fixed-1.2 () {
+    ! mbfl_string_eq_yes('ciao')
+}
+
+function string-macro-equal-fixed-2.1 () {
+    mbfl_string_eq_no('no')
+}
+function string-macro-equal-fixed-2.2 () {
+    ! mbfl_string_eq_no('ciao')
+}
+
+function string-macro-equal-fixed-1.1 () {
+    mbfl_string_eq_true('true')
+}
+function string-macro-equal-fixed-1.2 () {
+    ! mbfl_string_eq_true('ciao')
+}
+
+function string-macro-equal-fixed-2.1 () {
+    mbfl_string_eq_false('false')
+}
+function string-macro-equal-fixed-2.2 () {
+    ! mbfl_string_eq_false('ciao')
+}
+
 #page
 #### miscellaneous
 

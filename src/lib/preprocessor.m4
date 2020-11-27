@@ -199,6 +199,11 @@ m4_dnl m4_define([[[mbfl_string_ge]]], [[[{ test $1  '>' $2 -o $1 '=' $2; }]]])
 m4_define([[[mbfl_string_le]]], [[[{ mbfl_string_less_or_equal    $1 $2; }]]])
 m4_define([[[mbfl_string_ge]]], [[[{ mbfl_string_greater_or_equal $1 $2; }]]])
 
+m4_define([[[mbfl_string_eq_yes]]],   [[[{ test $1  '=' 'yes'; }]]])
+m4_define([[[mbfl_string_eq_no]]],    [[[{ test $1  '=' 'no'; }]]])
+m4_define([[[mbfl_string_eq_true]]],  [[[{ test $1  '=' 'true'; }]]])
+m4_define([[[mbfl_string_eq_false]]], [[[{ test $1  '=' 'false'; }]]])
+
 
 m4_dnl done
 
