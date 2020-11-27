@@ -1369,6 +1369,36 @@ function string-macro-equal-fixed-2.2 () {
     ! mbfl_string_eq_false('ciao')
 }
 
+### ------------------------------------------------------------------------
+
+function string-macro-not-equal-fixed-1.1 () {
+    ! mbfl_string_neq_yes('yes')
+}
+function string-macro-not-equal-fixed-1.2 () {
+    mbfl_string_neq_yes('ciao')
+}
+
+function string-macro-not-equal-fixed-2.1 () {
+    ! mbfl_string_neq_no('no')
+}
+function string-macro-not-equal-fixed-2.2 () {
+    mbfl_string_neq_no('ciao')
+}
+
+function string-macro-not-equal-fixed-1.1 () {
+    ! mbfl_string_neq_true('true')
+}
+function string-macro-not-equal-fixed-1.2 () {
+    mbfl_string_neq_true('ciao')
+}
+
+function string-macro-not-equal-fixed-2.1 () {
+    ! mbfl_string_neq_false('false')
+}
+function string-macro-not-equal-fixed-2.2 () {
+    mbfl_string_neq_false('ciao')
+}
+
 #page
 #### miscellaneous
 

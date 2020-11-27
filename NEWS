@@ -129,6 +129,10 @@ changes!
     mbfl_string_eq_no
     mbfl_string_eq_true
     mbfl_string_eq_false
+    mbfl_string_neq_yes
+    mbfl_string_neq_no
+    mbfl_string_neq_true
+    mbfl_string_neq_false
 
 * Added times and dates module.
 

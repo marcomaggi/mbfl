@@ -204,6 +204,11 @@ m4_define([[[mbfl_string_eq_no]]],    [[[{ test $1  '=' 'no'; }]]])
 m4_define([[[mbfl_string_eq_true]]],  [[[{ test $1  '=' 'true'; }]]])
 m4_define([[[mbfl_string_eq_false]]], [[[{ test $1  '=' 'false'; }]]])
 
+m4_define([[[mbfl_string_neq_yes]]],   [[[{ test $1  '!=' 'yes'; }]]])
+m4_define([[[mbfl_string_neq_no]]],    [[[{ test $1  '!=' 'no'; }]]])
+m4_define([[[mbfl_string_neq_true]]],  [[[{ test $1  '!=' 'true'; }]]])
+m4_define([[[mbfl_string_neq_false]]], [[[{ test $1  '!=' 'false'; }]]])
+
 
 m4_dnl done
 

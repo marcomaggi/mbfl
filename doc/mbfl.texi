@@ -1438,6 +1438,16 @@ Return successfully if the argument @var{STR} is equal to, respectively: @samp{y
 failure.
 @end deffn
 
+
+@deffn {Preprocessor Macro} mbfl_string_neq_yes (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_neq_no (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_neq_true (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_neq_false (@var{STR})
+Return successfully if the argument @var{STR} is @strong{not} equal to, respectively: @samp{yes},
+@samp{no}, @samp{true}, @samp{false} when compared when compared lexicographically as string;
+otherwise return failure.
+@end deffn
+
 @c page
 @node preprocessor variables
 @section Manipulating variables with macros
