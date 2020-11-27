@@ -108,7 +108,7 @@ function mbfl_program_find () {
 #page
 #### program finding functions
 
-if test "$mbfl_INTERACTIVE" != 'yes'
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then mbfl_declare_symbolic_array(mbfl_program_PATHNAMES)
 fi
 

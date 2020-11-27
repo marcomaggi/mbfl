@@ -345,7 +345,7 @@ declare -r mbfl_INTERACTIVE=yes
 without exporting the variable.  The ``dangerous'' blocks of code in the library are surrounded by:
 
 @example
-if mbfl_string_eq_yes("$mbfl_INTERACTIVE")
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
     ...
 fi

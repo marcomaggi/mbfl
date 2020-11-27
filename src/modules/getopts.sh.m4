@@ -34,7 +34,7 @@
 #PAGE
 #### global variables
 
-if test "$mbfl_INTERACTIVE" = 'yes'
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
     declare -i mbfl_getopts_INDEX=0
     mbfl_declare_numeric_array(mbfl_getopts_KEYWORDS)
@@ -65,10 +65,8 @@ function mbfl_getopts_reset () {
 #page
 #### default options description
 
-if test "$mbfl_INTERACTIVE" != yes
-then
-
-    mbfl_message_DEFAULT_OPTIONS="
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then mbfl_message_DEFAULT_OPTIONS="
 \t--tmpdir=DIR
 \t\tselect a directory for temporary files
 \t-i --interactive
@@ -115,7 +113,6 @@ then
 \t\tprint usage informations and the list of script specific
 \t\toptions, then exit
 "
-
 fi
 
 #page

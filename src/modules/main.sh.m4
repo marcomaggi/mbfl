@@ -30,7 +30,7 @@
 #PAGE
 #### generic variables
 
-if test "$mbfl_INTERACTIVE" != yes
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
     declare mbfl_option_TMPDIR=${TMPDIR:-/tmp/${USER}}
     declare -r mbfl_ORG_PWD=$PWD
@@ -95,7 +95,7 @@ function mbfl_main_set_after_parsing_options () {
 #page
 #### exit codes management
 
-if test "$mbfl_INTERACTIVE" != yes
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then declare -i mbfl_main_pending_EXIT_CODE=0
 fi
 
@@ -144,7 +144,7 @@ function mbfl_main_print_exit_code_names () {
 #PAGE
 #### license message variables
 
-if test "$mbfl_INTERACTIVE" != 'yes'
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
 
 declare -r mbfl_message_LICENSE_GPL="${script_PROGNAME} version ${script_VERSION}
@@ -270,7 +270,7 @@ fi
 #PAGE
 #### version message variables
 
-if test "$mbfl_INTERACTIVE" != 'yes'
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
 
 declare -r mbfl_message_VERSION="${script_PROGNAME} version ${script_VERSION}

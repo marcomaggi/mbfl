@@ -99,7 +99,7 @@ MBFL_CREATE_OPTION_PROCEDURES([[[verbose_program]]])
 #page
 #### exit codes and return codes
 
-if test "$mbfl_INTERACTIVE" != yes
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
     mbfl_declare_numeric_array(mbfl_EXIT_CODES)
     mbfl_declare_numeric_array(mbfl_EXIT_NAMES)
@@ -267,7 +267,7 @@ function mbfl_print_exit_code_names () {
 #page
 #### script termination facilities
 
-if test "$mbfl_INTERACTIVE" != yes
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then declare -i mbfl_PENDING_EXIT_CODE=0
 fi
 

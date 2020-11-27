@@ -32,12 +32,18 @@
 ## Global variables.
 ## ------------------------------------------------------------
 
-test "$mbfl_INTERACTIVE" = yes || {
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then
     mbfl_declare_numeric_array(mbfl_signal_HANDLERS)
-    i=0
-    { while kill -l $i ; do let ++i; done; } &>/dev/null
-    declare -i mbfl_signal_MAX_SIGNUM=$i
-}
+    declare -i mbfl_signal_MAX_SIGNUM
+
+    function mbfl_p_signal_init_module () {
+	local -i i=0
+	{ while kill -l $i ; do let ++i; done; } &>/dev/null
+	mbfl_signal_MAX_SIGNUM=$i
+    }
+    mbfl_p_signal_init_module
+fi
 
 #PAGE
 function mbfl_signal_map_signame_to_signum () {

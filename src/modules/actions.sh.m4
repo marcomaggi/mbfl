@@ -25,7 +25,7 @@
 #page
 #### global variables
 
-if mbfl_string_neq("$mbfl_INTERACTIVE", 'yes')
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
     # Associative array:  the keys are the  names of the action  sets, the values are  "true".  If a
     # string represents  the name of an  action set: it  is a key in  this array.  If a  string does
