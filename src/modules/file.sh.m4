@@ -28,7 +28,7 @@
 # 02111-1307 USA.
 #
 
-#page
+
 #### helpers
 
 function mbfl_file_p_validate_executable_hard_coded_pathname () {
@@ -37,7 +37,7 @@ function mbfl_file_p_validate_executable_hard_coded_pathname () {
     ! mbfl_string_equal '/bin/false' "$PROGRAM_PATHNAME" && mbfl_file_is_executable "$PROGRAM_PATHNAME"
 }
 
-#page
+
 #### pathname parsing utilities
 
 # Scan  backwards the  PATHNAME  starting at  INDEX,  assuming that  the
@@ -88,7 +88,7 @@ function mbfl_p_file_looking_at_component_beginning () {
     test 0 -eq $INDEX -o "mbfl_string_idx(PATHNAME, $((INDEX - 1)))" = '/'
 }
 
-#page
+
 #### changing directory functions
 
 function mbfl_cd () {
@@ -104,7 +104,7 @@ function mbfl_change_directory () {
     cd "$@" "$DIRECTORY" &>/dev/null
 }
 
-#page
+
 #### pathname name functions: extension
 
 function mbfl_file_extension_var () {
@@ -164,7 +164,7 @@ function mbfl_file_extension () {
     fi
 }
 
-#page
+
 #### pathname name functions: dirname
 
 function mbfl_file_dirname_var () {
@@ -200,7 +200,7 @@ function mbfl_file_dirname () {
     fi
 }
 
-#page
+
 #### pathname name functions: rootname
 
 function mbfl_file_rootname_var () {
@@ -268,7 +268,7 @@ function mbfl_file_rootname () {
     fi
 }
 
-#page
+
 #### pathname name functions: tailname
 
 function mbfl_file_tail_var () {
@@ -299,7 +299,7 @@ function mbfl_file_tail () {
     fi
 }
 
-#page
+
 #### pathname name functions: splitting components
 
 function mbfl_file_split () {
@@ -324,7 +324,7 @@ function mbfl_file_split () {
     return_success
 }
 
-#page
+
 #### pathname normalisation: stripping slashes
 
 function mbfl_file_strip_trailing_slash_var () {
@@ -385,7 +385,7 @@ function mbfl_file_strip_leading_slash () {
     fi
 }
 
-#page
+
 #### pathname normalisation: full normalisation
 
 function mbfl_file_normalise_var () {
@@ -492,7 +492,7 @@ function mbfl_p_file_normalise2_var () {
     cd - >/dev/null
 }
 
-#page
+
 #### pathname normalisation: realpath
 
 function mbfl_file_enable_realpath () {
@@ -522,7 +522,7 @@ function mbfl_file_realpath_var () {
     fi
 }
 
-#page
+
 #### relative pathnames: extracting subpathnames
 
 function mbfl_file_subpathname_var () {
@@ -557,7 +557,7 @@ function mbfl_file_subpathname () {
     fi
 }
 
-#page
+
 #### file pathname type functions
 
 function mbfl_file_is_absolute () {
@@ -588,7 +588,7 @@ function mbfl_file_is_relative_filename () {
     mbfl_file_is_file "$PATHNAME" && mbfl_file_is_relative "$PATHNAME"
 }
 
-#PAGE
+
 #### temporary directory functions
 
 function mbfl_file_find_tmpdir_var () {
@@ -630,7 +630,7 @@ function mbfl_file_find_tmpdir () {
     fi
 }
 
-#page
+
 #### removal functions: removing files
 
 function mbfl_file_enable_remove () {
@@ -744,7 +744,7 @@ function mbfl_file_remove_directory_silently () {
     mbfl_file_remove_directory "$PATHNAME" yes
 }
 
-#page
+
 #### file copy functions
 
 function mbfl_file_enable_copy () {
@@ -824,7 +824,7 @@ function mbfl_file_copy_to_directory () {
     mbfl_exec_cp "$@" --target-directory="${TARGET_DIRECTORY}/" -- "$SOURCE"
 }
 
-#page
+
 #### file move functions
 
 function mbfl_file_enable_move () {
@@ -874,7 +874,7 @@ function mbfl_file_move_to_directory () {
     mbfl_exec_mv "$@" --target-directory="${TARGET_DIRECTORY}/" -- "$SOURCE"
 }
 
-#page
+
 #### directory creation functions
 
 function mbfl_file_enable_make_directory () {
@@ -921,7 +921,7 @@ function mbfl_file_make_if_not_directory () {
     fi
 }
 
-#page
+
 #### symbolic link functions
 
 function mbfl_file_enable_symlink () {
@@ -953,7 +953,7 @@ function mbfl_file_symlink () {
     mbfl_exec_ln --symbolic "$@" -- "$ORIGINAL_NAME" "$SYMLINK_NAME"
 }
 
-#page
+
 #### file listing functions
 
 function mbfl_file_enable_listing () {
@@ -1012,7 +1012,7 @@ function mbfl_file_normalise_link () {
     mbfl_exec_readlink --canonicalize --no-newline -- "$PATHNAME"
 }
 
-#page
+
 #### file permissions inspection functions
 
 function mbfl_file_pathname_p_is () {
@@ -1136,7 +1136,7 @@ function mbfl_file_is_symlink () {
     mbfl_file_pathname_p_is "$PRINT_ERROR" '-L' 'readable' "$PATHNAME"
 }
 
-#page
+
 #### file permissions functions
 
 function mbfl_file_enable_permissions () {
@@ -1179,7 +1179,7 @@ function mbfl_file_get_permissions_var () {
     mbfl_RESULT_VARREF=$(mbfl_file_stat "$mbfl_PATHNAME" --format='0%a')
 }
 
-#page
+
 #### file permissions conversions
 
 mbfl_declare_numeric_array(mbfl_SYMBOLIC_PERMISSIONS)
@@ -1220,7 +1220,7 @@ function mbfl_system_octal_to_symbolic_permissions () {
     mbfl_file_octal_to_symbolic_permissions "$@"
 }
 
-#page
+
 #### file owner and group functions
 
 function mbfl_file_enable_owner_and_group () {
@@ -1268,7 +1268,7 @@ function mbfl_file_set_group () {
     mbfl_exec_chgrp "$@" "$GROUP" -- "$PATHNAME"
 }
 
-#page
+
 #### reading and writing files with privileges
 
 function mbfl_file_append () {
@@ -1286,7 +1286,7 @@ function mbfl_file_read () {
     mbfl_program_bash_command "printf '%s' \"\$(<${FILENAME})\""
 }
 
-#page
+
 #### interface to "stat"
 
 function mbfl_file_enable_stat () {

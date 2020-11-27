@@ -5547,34 +5547,35 @@ function main () {
     M4_FLAGS+=" ${M4_LIBRARY_OPTIONS}"
 
     if ! {
+	    # If there are  no arguments on the command  line: read input from stdin.   If there are
+	    # arguments on the command line: they must all by files.
             if ((0 == ARGC))
     	    then program_cat
-            else
-    		mbfl_argv_all_files || exit_because_wrong_command_line_arguments
-    		program_cat "${ARGV[@]}"
-            fi
+            elif mbfl_argv_all_files
+    	    then program_cat "${ARGV[@]}"
+	    else exit_because_wrong_command_line_arguments
+	    fi
     	} | {
-            if test "$script_option_ADD_BASH" = 'yes'
-    	    then printf '#!%s\n' "$script_option_BASH_PROGRAM"
-            fi
+    	    program_m4									\
+		-D__PACKAGE_VERSION__="$PACKAGE_VERSION"				\
+		-D__PACKAGE_DATADIR__="$pkgdatadir"					\
+		-D__MBFL_LIBRARY__="$script_option_LIBMBFL"				\
+		-D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_LIBMBFL"	\
+		${M4_FLAGS} -
+    	} | {
             if test "$script_option_PRESERVE_COMMENTS" = 'yes'
-    	    then program_m4								\
-		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION"				\
-		     -D__PACKAGE_DATADIR__="$pkgdatadir"				\
-		     -D__MBFL_LIBRARY__="$script_option_LIBMBFL"			\
-		     -D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_LIBMBFL"	\
-		     ${M4_FLAGS} -
-            else program_m4 \
-		     -D__PACKAGE_VERSION__="$PACKAGE_VERSION"				\
-		     -D__PACKAGE_DATADIR__="$pkgdatadir"				\
-		     -D__MBFL_LIBRARY__="$script_option_LIBMBFL"			\
-		     -D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_LIBMBFL"	\
-		     ${M4_FLAGS} - | filter_drop_comments
-            fi
-    	} | {
+	    then program_cat
+	    else filter_drop_comments
+	    fi
+    	} | filter_page_separators | {
+	    # If we  send the output to  a "bash" process: there  is no need to  prepend the shebang
+	    # line.
             if test "$script_option_EVAL" = 'yes'
     	    then exec "$mbfl_PROGRAM_BASH"
             else
+		if test "$script_option_ADD_BASH" = 'yes'
+    		then printf '#!%s\n' "$script_option_BASH_PROGRAM"
+		fi
     		if test "$script_option_OUTPUT" = '-'
     		then program_cat
     		else program_cat >"$script_option_OUTPUT"
@@ -5592,6 +5593,10 @@ function main () {
 function filter_drop_comments () {
     program_grep --invert-match --regexp='^[ \t]*#' --regexp='^$' | \
         program_sed --expression='s/^[ \t]\+//g'
+}
+
+function filter_page_separators () {
+    program_grep --invert-match --regexp='^'$'\f''$'
 }
 
 #page
@@ -5615,6 +5620,11 @@ function program_cat () {
     mbfl_program_found_var CAT cat || exit $?
     mbfl_program_exec "$CAT" "$@"
 }
+# function program_cat () {
+#     while read
+#     do echo -e "$REPLY"
+#     done
+# }
 
 #page
 #### let's go
