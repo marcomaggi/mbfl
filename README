@@ -1,6 +1,7 @@
+-*- coding: utf-8-unix -*-
 
-		     Marco's Bash Functions Library
-		     ==============================
+		    Marco's Bash Functions Libraries
+		    ================================
 
 
 Topics
@@ -163,7 +164,6 @@ at:
 ### end of file
 # Local Variables:
 # mode: text
-# coding: utf-8-unix
 # fill-column: 72
 # paragraph-start: "*"
 # End:

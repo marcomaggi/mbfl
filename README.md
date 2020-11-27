@@ -1,7 +1,4 @@
-# Marco's Bash Functions Library
-
-[![Build Status](https://travis-ci.org/marcomaggi/mbfl.svg?branch=master)](https://travis-ci.org/marcomaggi/mbfl)
-
+# Marco's Bash Functions Libraries
 
 ## Introduction
 

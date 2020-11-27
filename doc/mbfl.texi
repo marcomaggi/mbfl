@@ -1,7 +1,7 @@
 \input texinfo.tex
 @c %**start of header
 @setfilename mbfl.info
-@settitle Marco's Bash Functions Library
+@settitle Marco's Bash Functions Libraries
 @c %**end of header
 
 @include version.texi
@@ -21,7 +21,7 @@
 @c Values.
 @c ------------------------------------------------------------
 
-@set TITLE                      Marco's Bash Functions Library
+@set TITLE                      Marco's Bash Functions Libraries
 
 @c To be used as @value{PACKAGE} whenever we need to include the full
 @c name of this package.
@@ -74,9 +74,10 @@
 @c ------------------------------------------------------------
 
 @copying
-This document describes version @value{VERSION} of @value{PACKAGE}, a library of functions for the
-@gnu{} Bash shell.  It requires Bash at least version @value{REQUIRED_BASH_VERSION}.  The package is
-distributed under the terms of the @gnu{} Lesser General Public License (@lgpl{}).
+This document describes version @value{VERSION} of @value{PACKAGE}, a collection of libraries of
+functions for the @gnu{} Bash shell.  It requires Bash at least version
+@value{REQUIRED_BASH_VERSION}.  The package is distributed under the terms of the @gnu{} Lesser
+General Public License (@lgpl{}).
 
 The latest release can be downloaded from:
 
@@ -168,6 +169,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 
 Appendices
 
+* libmbfl-utils::               Utilities library.
 * libmbfl-at::                  Interface to the external program @command{at}.
 * libmbfl-arch::                Archiving and compressing files.
 * sendmail::                    Examples for sending email.
@@ -190,22 +192,43 @@ Indexes
 @chapter Overview of the package
 
 
-This document describes version @value{VERSION} of @value{PACKAGE}, a library of functions for the
-@gnu{} Bash shell.  This package is an attempt to make @gnu{} Bash a viable solution for medium
-sized scripts; it needs at least Bash version @value{REQUIRED_BASH_VERSION}.  A set of modules
-implementing common operations and script templates are offered by this package and the author has
-used them with success in implementing non--small scripts.
+This document describes version @value{VERSION} of @value{PACKAGE}, a collection of libraries of
+functions for the @gnu{} Bash shell.  This package is an attempt to make @gnu{} Bash a viable
+solution for medium sized scripts; it needs at least Bash version @value{REQUIRED_BASH_VERSION}.  A
+set of modules implementing common operations and script templates are offered by this package and
+the author has used them with success in implementing non--small scripts.
 
 The philosophy of @mbfl{} is to do the work as much as possible without external commands.  For
-example: string manipulation is done using the special variable substitution provided by Bash, and
-no use is done of utilities like @command{sed}, @command{grep} and @command{ed}.  Despite that,
-@value{PACKAGE} really needs the @gnu{} Coreutils package to perform a lot of tasks.
+example: string manipulation is implemented using the special variable substitution provided by
+Bash, and no use is done of utilities like @command{sed}, @command{grep} and @command{ed}.  Despite
+that, @value{PACKAGE} really needs the @gnu{} Coreutils package to perform a lot of tasks.
 
-The library is better used starting from the template scripts in the @file{examples/} subdirectory
-of the distribution, especially @file{template.sh} and @file{template-actions.sh}.  This is because,
-with @mbfl{}, some choices are made to reduce the application--dependent part of the script to the
-smallest dimension; if we follow another schema, @mbfl{} modules may be inadequate.  This is
-especially true for the actions and options parsing modules.
+The libraries are better used starting from the template scripts in the @file{examples/}
+subdirectory of the distribution, especially @file{template.sh} and @file{template-actions.sh}.
+This is because, with @mbfl{}, some choices are made to reduce the application--dependent part of
+the script to the smallest dimension; if we follow another schema, @mbfl{} modules may be
+inadequate.  This is especially true for the actions and options parsing modules.
+
+The installed libraries are:
+
+@table @asis
+@item @file{libmbfl.bash}
+The core library implementing shell language extensions, adaptations and system interface.
+
+@item @file{libmbfltest.bash}
+A library to organise test suites for shell functions; @ref{testing, Building test suites}.
+
+@item @file{libmbfl-utils.bash}
+A library of utilities, not always required by a script; @ref{libmbfl-utils, Utilities library}.
+
+@item @file{libmbfl-at.bash}
+An interface to the executable @command{at} and the daemon @command{atd}; @ref{libmbfl-at, Interface
+to the external program @command{at}}.
+
+@item @file{libmbfl-arch.bash}
+An interface to the common file system archiving and compressing tools; @ref{libmbfl-arch, Archiving
+and compressing files}.
+@end table
 
 Starting with version 3: this package installs files under directories @strong{without} the version
 part.  If we desire to install multiple versions of the package: we should install under
@@ -8758,6 +8781,18 @@ function mytest-1.2 () @{
 dotest mytest-
 dotest-final-report
 @end example
+
+@c page
+@node libmbfl-utils
+@appendix Utilities library
+
+
+@cindex @value{LIBMBFLUTILSFILE}, utilities library
+@cindex Library of utilities, @value{LIBMBFLUTILSFILE}
+@cindex Utilities, the library @value{LIBMBFLUTILSFILE}
+
+
+This appendix documents the library @value{LIBMBFLUTILSFILE}, a collection of utility modules.
 
 @c page
 @node libmbfl-at
