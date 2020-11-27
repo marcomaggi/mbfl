@@ -840,6 +840,19 @@ m4_include(@var{LIBRARY_FILE_PATHNAME})
 @noindent
 so the argument @var{LIBRARY_FILE_PATHNAME} must be a M4 expression expanding into a file system
 pathname, @mfourref{Include, Including named files}.
+
+As example, we could preprocess a script with the following command line:
+
+@example
+@value{PROSCRIPT} --define=__LIBFILE_PTN__=/path/to/libmy.bash -oscript.bash script.bash.m4
+@end example
+
+@noindent
+and in the script's source file we write:
+
+@example
+mbfl_embed_library(__LIBFILE_PTN__)
+@end example
 @end deffn
 
 
@@ -886,7 +899,27 @@ into a Bash expression evaluating into a file system pathname.
 As example, we can load a library selecting it from an environment variable as follows:
 
 @example
+mbfl_load_library("$@{MY_LIBPTN:?'variable not set'@}")
+@end example
+
+@noindent
+or we can select only the library's installation directory with an environment variable:
+
+@example
 mbfl_load_library("$@{MY_LIBPATH:?'variable not set'@}/libmy.bash")
+@end example
+
+As other example, we could preprocess a script with the following command line:
+
+@example
+@value{PROSCRIPT} --define=__LIBFILE_PTN__=/path/to/libmy.bash -oscript.bash script.bash.m4
+@end example
+
+@noindent
+and in the script's source file we write:
+
+@example
+mbfl_load_library('__LIBFILE_PTN__')
 @end example
 @end deffn
 
