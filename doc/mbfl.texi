@@ -8849,6 +8849,20 @@ dotest-final-report
 
 This appendix documents the library @value{LIBMBFLUTILSFILE}, a collection of utility modules.
 
+@menu
+* libmbfl-utils files::         File system utilities.
+@end menu
+
+@c page
+@node libmbfl-utils files
+@appendixsec File system utilities
+
+
+@defun mbflutils_file_normalise_directory @var{DIRSTRU}
+
+@end defun
+
+
 @c page
 @node libmbfl-at
 @appendix Interface to the external program @command{at}
