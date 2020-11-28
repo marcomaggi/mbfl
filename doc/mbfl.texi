@@ -6492,7 +6492,7 @@ The preselected file system pathname of the program @command{\LOWERPROGNAME\}; i
 @command{configure} script and customisable by setting a variable on its command line:
 
 @example
-configure \UPPERPROGNAME\=/path/to/\LOWERPROGNAME\
+configure MBFL_PROGRAM_\UPPERPROGNAME\=/path/to/\LOWERPROGNAME\
 @end example
 @end defvar
 
