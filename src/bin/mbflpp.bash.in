@@ -5399,7 +5399,7 @@ mbfl_declare_option NO_PREPROCESSOR   no '' no-prepro         noarg "do not load
 
 mbfl_declare_option LIBMBFL "$DEFAULT_LIBMBFL" '' libmbfl witharg 'pathname of the MBFL library "libmbfl.bash"'
 
-mbfl_declare_option BASH_PROGRAM "$mbfl_PROGRAM_BASH" \
+mbfl_declare_option BASH_PROGRAM "@MBFL_PROGRAM_BASH@" \
 		    '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
 
 mbfl_declare_option CHECK_VERSION '' '' check-version witharg 'check the given version against the one of MBFL'
