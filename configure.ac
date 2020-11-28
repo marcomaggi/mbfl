@@ -41,223 +41,29 @@ AC_SUBST([MBFL_SEMANTIC_VERSION],MMUX_PACKAGE_SEMANTIC_VERSION)
 
 #### external programs
 
-AC_ARG_WITH([m4],
-  AS_HELP_STRING([--with-m4],[select a pathname for the executable m4]),
-  [MBFL_PROGRAM_M4=$withval],
-  [MBFL_PROGRAM_M4=/usr/bin/m4])
+AC_PATH_PROG([MBFL_PROGRAM_BASH],       [bash])
+AC_PATH_PROG([MBFL_PROGRAM_M4],         [m4])
+AC_PATH_PROG([MBFL_PROGRAM_SUDO],       [sudo])
 
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_M4],[$MBFL_PROGRAM_M4],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([bash],
-  AS_HELP_STRING([--with-bash],[select a pathname for the executable bash]),
-  [MBFL_PROGRAM_BASH=$withval],
-  [MBFL_PROGRAM_BASH=/bin/bash])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_BASH],[$MBFL_PROGRAM_BASH],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([sudo],
-  AS_HELP_STRING([--with-sudo],[select a pathname for the executable sudo]),
-  [MBFL_PROGRAM_SUDO=$withval],
-  [MBFL_PROGRAM_SUDO=/usr/bin/sudo])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_SUDO],[$MBFL_PROGRAM_SUDO],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([whoami],
-  AS_HELP_STRING([--with-whoami],[select a pathname for the executable whoami]),
-  [MBFL_PROGRAM_WHOAMI=$withval],
-  [MBFL_PROGRAM_WHOAMI=/bin/whoami])
-
-dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_WHOAMI],[$MBFL_PROGRAM_WHOAMI],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([id],
-  AS_HELP_STRING([--with-id],[select a pathname for the executable id]),
-  [MBFL_PROGRAM_ID=$withval],
-  [MBFL_PROGRAM_ID=/bin/id])
-
-dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_ID],[$MBFL_PROGRAM_ID],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([stat],
-  AS_HELP_STRING([--with-stat],[select a pathname for the executable stat]),
-  [MBFL_PROGRAM_STAT=$withval],
-  [MBFL_PROGRAM_STAT=/bin/stat])
-
-dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_STAT],[$MBFL_PROGRAM_STAT],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([chown],
-  AS_HELP_STRING([--with-chown],[select a pathname for the executable chown]),
-  [MBFL_PROGRAM_CHOWN=$withval],
-  [MBFL_PROGRAM_CHOWN=/bin/chown])
-
-dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_CHOWN],[$MBFL_PROGRAM_CHOWN],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([chgrp],
-  AS_HELP_STRING([--with-chgrp],[select a pathname for the executable chgrp]),
-  [MBFL_PROGRAM_CHGRP=$withval],
-  [MBFL_PROGRAM_CHGRP=/bin/chgrp])
-
-dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_CHGRP],[$MBFL_PROGRAM_CHGRP],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([chmod],
-  AS_HELP_STRING([--with-chmod],[select a pathname for the executable chmod]),
-  [MBFL_PROGRAM_CHMOD=$withval],
-  [MBFL_PROGRAM_CHMOD=/bin/chmod])
-
-dnl Remember  that  "AC_PATH_PROG"  already  calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_CHMOD],[$MBFL_PROGRAM_CHMOD],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([realpath],
-  AS_HELP_STRING([--with-realpath],[select a pathname for the executable realpath]),
-  [MBFL_PROGRAM_REALPATH=$withval],
-  [MBFL_PROGRAM_REALPATH=/bin/realpath])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_REALPATH],[$MBFL_PROGRAM_REALPATH],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([readlink],
-  AS_HELP_STRING([--with-readlink],[select a pathname for the executable readlink]),
-  [MBFL_PROGRAM_READLINK=$withval],
-  [MBFL_PROGRAM_READLINK=/bin/readlink])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_READLINK],[$MBFL_PROGRAM_READLINK],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([ls],
-  AS_HELP_STRING([--with-ls],[select a pathname for the executable ls]),
-  [MBFL_PROGRAM_LS=$withval],
-  [MBFL_PROGRAM_LS=/bin/ls])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_LS],[$MBFL_PROGRAM_LS],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([rm],
-  AS_HELP_STRING([--with-rm],[select a pathname for the executable rm]),
-  [MBFL_PROGRAM_RM=$withval],
-  [MBFL_PROGRAM_RM=/bin/rm])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_RM],[$MBFL_PROGRAM_RM],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([rmdir],
-  AS_HELP_STRING([--with-rmdir],[select a pathname for the executable rmdir]),
-  [MBFL_PROGRAM_RMDIR=$withval],
-  [MBFL_PROGRAM_RMDIR=/bin/rmdir])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_RMDIR],[$MBFL_PROGRAM_RMDIR],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([mv],
-  AS_HELP_STRING([--with-mv],[select a pathname for the executable mv]),
-  [MBFL_PROGRAM_MV=$withval],
-  [MBFL_PROGRAM_MV=/bin/mv])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_MV],[$MBFL_PROGRAM_MV],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([cp],
-  AS_HELP_STRING([--with-cp],[select a pathname for the executable cp]),
-  [MBFL_PROGRAM_CP=$withval],
-  [MBFL_PROGRAM_CP=/bin/cp])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_CP],[$MBFL_PROGRAM_CP],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([mkdir],
-  AS_HELP_STRING([--with-mkdir],[select a pathname for the executable mkdir]),
-  [MBFL_PROGRAM_MKDIR=$withval],
-  [MBFL_PROGRAM_MKDIR=/bin/mkdir])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_MKDIR],[$MBFL_PROGRAM_MKDIR],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([ln],
-  AS_HELP_STRING([--with-ln],[select a pathname for the executable ln]),
-  [MBFL_PROGRAM_LN=$withval],
-  [MBFL_PROGRAM_LN=/bin/ln])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_LN],[$MBFL_PROGRAM_LN],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([sleep],
-  AS_HELP_STRING([--with-sleep],[select a pathname for the executable sleep]),
-  [MBFL_PROGRAM_SLEEP=$withval],
-  [MBFL_PROGRAM_SLEEP=/bin/sleep])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_SLEEP],[$MBFL_PROGRAM_SLEEP],[/bin/false])
-
-dnl --------------------------------------------------------------------
-
-AC_ARG_WITH([date],
-  AS_HELP_STRING([--with-date],[select a pathname for the executable date]),
-  [MBFL_PROGRAM_DATE=$withval],
-  [MBFL_PROGRAM_DATE=/bin/date])
-
-dnl Remember  that  "AC_PATH_PROG"  already calls  "AC_SUBST"  for  its
-dnl variable argument.
-AC_PATH_PROG([MBFL_PROGRAM_DATE],[$MBFL_PROGRAM_DATE],[/bin/false])
+# The following are the GNU Coreutils.
+AC_PATH_PROG([MBFL_PROGRAM_CHGRP],	[chgrp])
+AC_PATH_PROG([MBFL_PROGRAM_CHMOD],	[chmod])
+AC_PATH_PROG([MBFL_PROGRAM_CHOWN],	[chown])
+AC_PATH_PROG([MBFL_PROGRAM_CP],         [cp])
+AC_PATH_PROG([MBFL_PROGRAM_DATE],	[date])
+AC_PATH_PROG([MBFL_PROGRAM_ID],         [id])
+AC_PATH_PROG([MBFL_PROGRAM_INSTALL],	[install])
+AC_PATH_PROG([MBFL_PROGRAM_LN],         [ln])
+AC_PATH_PROG([MBFL_PROGRAM_LS],         [ls])
+AC_PATH_PROG([MBFL_PROGRAM_MKDIR],	[mkdir])
+AC_PATH_PROG([MBFL_PROGRAM_MV],         [mv])
+AC_PATH_PROG([MBFL_PROGRAM_READLINK],	[readlink])
+AC_PATH_PROG([MBFL_PROGRAM_REALPATH],	[realpath])
+AC_PATH_PROG([MBFL_PROGRAM_RMDIR],	[rmdir])
+AC_PATH_PROG([MBFL_PROGRAM_RM],         [rm])
+AC_PATH_PROG([MBFL_PROGRAM_SLEEP],	[sleep])
+AC_PATH_PROG([MBFL_PROGRAM_STAT],	[stat])
+AC_PATH_PROG([MBFL_PROGRAM_WHOAMI],	[whoami])
 
 
 #### sendmail interface
