@@ -452,6 +452,7 @@ function mbfl_string_is_username () {
     fi
 }
 function mbfl_string_is_groupname () {
+    mbfl_optional_parameter(STRING,1)
     mbfl_string_is_username "$STRING"
 }
 function mbfl_string_is_network_port () {
