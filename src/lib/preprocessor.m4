@@ -191,8 +191,12 @@ m4_changecom([[[MBFL_SHARP()]]])
 
 m4_define([[[mbfl_string_not_empty]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
 { test ${MBFL_SHARP()$1} -ne 0; }m4_dnl
-m4_changecom([[[MBFL_SHARP()]]])
-]]])
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
+m4_define([[[mbfl_string_last_char]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+${$1:$((${MBFL_SHARP()$1} - 1)):1}m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
 
 m4_dnl We  protect  the  expansion  of these  macros  by  wrapping  the
 m4_dnl expression into curly braces.
