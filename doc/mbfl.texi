@@ -16,6 +16,10 @@
 @ref{\NODE\,\TITLE\,\TITLE\,m4}
 @end macro
 
+@macro coreutilsref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,coreutils}
+@end macro
+
 @c page
 @c ------------------------------------------------------------
 @c Values.
@@ -5167,7 +5171,7 @@ Execute the program @command{realpath} using the given optional command line arg
 @cindex Files, permissions
 @cindex Getting file permissions
 @cindex Permissions of files
-@CindexCommand{chmod}
+@cindex @command{chmod}, changing file and directory access permissions
 
 
 @defun mbfl_file_enable_permissions
@@ -5259,8 +5263,8 @@ mbfl_file_octal_to_symbolic_permissions '5'
 @cindex Files, owner and group
 @cindex Owner of of files
 @cindex Group of of files
-@CindexCommand{chown}
-@CindexCommand{chgrp}
+@cindex @command{chown}, changing file and directory onwer
+@cindex @command{chgrp}, changing file and directory group
 
 
 @defun mbfl_file_enable_owner_and_group
@@ -8628,10 +8632,192 @@ This appendix documents the library @value{LIBMBFLUTILSFILE}, a collection of ut
 @appendixsec File system utilities
 
 
-@defun mbflutils_file_normalise_directory @var{DIRSTRU}
+@menu
+* libmbfl-utils files declare:: Declaring file and directory structures.
+* libmbfl-utils files stat::    Acquiring attributes of files and directories.
+* libmbfl-utils files install:: Installing and normalising files.
+@end menu
 
+@c page
+@node libmbfl-utils files declare
+@appendixsubsec Declaring file and directory structures
+
+
+In many file system operations we need a description of a file or directory, both to select its
+attributes and to report meaningful errors to the user of a script.  The following @api{} allows us
+to store such informations into a Bash symbolic array, so that we can use the resulting compound
+value as single parameter to function calls; @bashref{Arrays, Arrays}.  In this documentation such
+arrays will be often referred to as ``data structures''.
+
+We can declare a file structure as follows:
+
+@example
+mbfl_declare_symbolic_array(LOGFILE)
+
+mbflutils_file_init_file_struct mbfl_datavar(LOGFILE) \
+  '/var/log/software.log' 'root' 'root' '0640' 'log file for software'
+@end example
+
+@noindent
+another example:
+
+@example
+function caller () @{
+  mbfl_local_symbolic_array(LOGFILE)
+
+  callee mbfl_datavar(LOGFILE)
+  ...
+@}
+
+function callee () @{
+  mbfl_mandatory_nameref_parameter(LOGFILE, 1, log file data structure)
+
+  mbflutils_file_init_file_struct mbfl_datavar(LOGFILE) \
+    '/var/log/software.log' 'root' 'root' '0640' 'log file for software'
+@}
+@end example
+
+
+@defun mbflutils_file_init_file_struct @var{ARRYNAME} @var{PATHNAME} @var{DESCRIPTION}
+@defunx mbflutils_file_init_directory_struct @var{ARRYNAME} @var{PATHNAME} @var{DESCRIPTION}
+@defunx mbflutils_file_init_file_struct @var{ARRYNAME} @var{PATHNAME} @var{DESCRIPTION} @var{OWNER} @var{GROUP} @var{MODE}
+@defunx mbflutils_file_init_directory_struct @var{ARRYNAME} @var{PATHNAME} @var{DESCRIPTION} @var{OWNER} @var{GROUP} @var{MODE}
+Initialise a symbolic array variable as representing the file system pathname and attributes of a
+file or directory; such array variable is to be used later to install the file or directory, or
+change its attributes as specified.
+
+The arguments are:
+
+@table @var
+@item ARRYNAME
+The name of the array variable, which should have been previously declared.
+
+@item PATHNAME
+Mandatory parameter.  A string representing the file system pathname of the file or directory; it is
+stored in the symbolic array with key @code{PATHNAME}.
+
+@item DESCRIPTION
+Mandatory parameter.  A string representing the description of the file or directory; it is stored
+in the symbolic array with key @code{DESCRIPTION}.  This description is used in verbose and error
+messages by printing it with the Bash built--in @func{printf}, using the format specification
+@samp{%b}, so some backslash sequences are expanded; @bashref{Bash Builtins, Bash Builtin Commands}.
+
+@item OWNER
+Optional parameter, defaults to the empty string.  A string representing the owner of the file or
+directory; it is stored in the symbolic array with key @code{OWNER}.
+
+@item GROUP
+Optional parameter, defaults to the empty string.  A string representing the group of the file or
+directory; it is stored in the symbolic array with key @code{GROUP}.
+
+@item MODE
+Optional parameter, defaults to the empty string.  A string representing the octal or symbolic mode
+of the file or directory; it is stored in the symbolic array with key @code{MODE}.
+@end table
 @end defun
 
+@c page
+@node libmbfl-utils files stat
+@appendixsubsec Acquiring attributes of files and directories
+
+
+We usually want to acquire file system attributes from the file system itself, for example:
+
+@example
+mbfl_declare_symbolic_array(LOGFILE)
+
+mbflutils_file_init_file_struct mbfl_datavar(LOGFILE) \
+  '/var/log/software.log' 'log file for software'
+
+mbflutils_file_stat_file mbfl_datavar(LOGFILE)
+
+"mbfl_slot_ref(LOGFILE,OWNER)"  @result{} root
+"mbfl_slot_ref(LOGFILE,GROUP)"  @result{} root
+"mbfl_slot_ref(LOGFILE,MODE)"   @result{} 0640
+@end example
+
+
+@defun mbflutils_file_stat_file @var{ARRYNAME}
+@defunx mbflutils_file_stat_directory @var{ARRYNAME}
+Acquire the attributes of an existent file or directory as specified in the symbolic array variable
+whose name is @var{ARRYNAME}; the array must have been previously declared with
+@func{mbflutils_file_init_file_struct} or @func{mbflutils_file_init_directory_struct}.
+
+The array must have been previously initialised with the following keys:
+
+@table @code
+@item PATHNAME
+A string representing the file system pathname of the file or directory.  This key is mandatory.
+
+@item DESCRIPTION
+A string representing the description of the file or directory.  This key is optional.
+@end table
+
+The following keys are set, or reset, by these functions reading the values from the file system:
+
+@table @code
+@item OWNER
+A string representing the owner of the file or directory.
+
+@item GROUP
+A string representing the group of the file or directory.
+
+@item MODE
+A string representing the access permissions mode of the file or directory.
+@end table
+@end defun
+
+@c page
+@node libmbfl-utils files install
+@appendixsubsec Installing and normalising files
+
+
+@cindex Normalising file and directory access permissions.
+@cindex Normalising file and directory owners
+@cindex Normalising file and directory groups
+@cindex @command{chmod}, normalising file and directory access permissions
+@cindex @command{chown}, normalising file and directory owners
+@cindex @command{chgrp}, normalising file and directory groups
+
+
+It happens that a script must install files and directories, or normalise the attributes of already
+existent files and directories; the @api{} described in this section serves this purpose.
+
+
+@defun mbflutils_file_install_file @var{ARRYNAME} @var{OPT} @dots{}
+@defunx mbflutils_file_install_directory @var{ARRYNAME} @var{OPT} @dots{}
+Install a new file or directory according to the specification in the symbolic array variable whose
+name is @var{ARRYNAME}; the array must have been previously declared with
+@func{mbflutils_file_init_file_struct} or @func{mbflutils_file_init_directory_struct}.
+
+When successful return by calling @func{return_success}, otherwise return by calling
+@func{return_failure}.
+
+If verbose execution is enabled: appropriate verbose messages are displayed on @stderr{} describing
+the operation.  If an error occurs: an appropriate error message is displayed on @stderr{}
+describing the cause of the error.
+
+The installation is performed using the external program @command{install} from the package @gnu{}
+Coreutils, @coreutilsref{install invocation, @command{install} copy files and set attributes}.
+@command{install} is a preselected program, @ref{mbfl_PROGRAM_INSTALL, Preselected program
+pathnames}.  The optional arguments @var{OPT} are placed on the command line of @command{install} in
+option position.
+@end defun
+
+
+@defun mbflutils_file_normalise_file @var{ARRYNAME}
+@defunx mbflutils_file_normalise_directory @var{ARRYNAME}
+Change the attributes of an existent file or directory according to the specification in the
+symbolic array variable whose name is @var{ARRYNAME}; the array must have been previously declared
+with @func{mbflutils_file_init_file_struct} or @func{mbflutils_file_init_directory_struct}.
+
+When successful return by calling @func{return_success}, otherwise return by calling
+@func{return_failure}.
+
+If verbose execution is enabled: appropriate verbose messages are displayed on @stderr{} describing
+the operation.  If an error occurs: an appropriate error message is displayed on @stderr{}
+describing the cause of the error.
+@end defun
 
 @c page
 @node libmbfl-at

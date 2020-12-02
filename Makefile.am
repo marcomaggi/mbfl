@@ -448,6 +448,8 @@ EXTRA_DIST			+=		\
 	tests/times-and-dates.test.m4		\
 	tests/variables.test.m4			\
 	\
+	tests/mbflutils-files.test.m4		\
+	\
 	tests/script-atexit.sh.m4		\
 	tests/signaltest.sh.m4
 
@@ -471,7 +473,9 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/strings.test			\
 	tests/system.test			\
 	tests/times-and-dates.test		\
-	tests/variables.test
+	tests/variables.test			\
+	\
+	tests/mbflutils-files.test
 
 MBFL_CHECK_BUILT_EXAMPLES		=	\
 	examples/compress.sh			\
@@ -498,9 +502,11 @@ MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export 
 MBFL_TESTS_LIBMBFL	= $(builddir)/src/lib/libmbfl.bash
 MBFL_TESTS_LIBMBFLTEST	= $(builddir)/src/lib/libmbfltest.bash
 MBFL_TESTS_LIBMBFLARCH	= $(builddir)/src/lib/libmbfl-arch.bash
+MBFL_TESTS_LIBMBFLUTILS	= $(builddir)/src/lib/libmbfl-utils.bash
 MBFL_TESTS_ENV		=  MBFL_TESTS_LIBMBFL=$(MBFL_TESTS_LIBMBFL); export MBFL_TESTS_LIBMBFL;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLTEST=$(MBFL_TESTS_LIBMBFLTEST); export MBFL_TESTS_LIBMBFLTEST;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLARCH=$(MBFL_TESTS_LIBMBFLARCH); export MBFL_TESTS_LIBMBFLARCH;
+MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLUTILS=$(MBFL_TESTS_LIBMBFLUTILS); export MBFL_TESTS_LIBMBFLUTILS;
 # We  set TMPDIR  because  if the  "/tmp" directory  is  mounted on  a
 # separate partition with "noexec"  attribute: tests for executability
 # of files  will fail if  the temporary  test files are  created under
@@ -517,6 +523,9 @@ MBFL_TESTS_FLAGS	+= --define=__LIBMBFL_ARCH__="$(builddir)/src/lib/libmbfl-arch.
 MBFL_TESTS_PREREQUISITES	=		\
 	tests/$(am__dirstamp)			\
 	$(MBFL_TESTS_LIBMBFL)			\
+	$(MBFL_TESTS_LIBMBFLTEST)		\
+	$(MBFL_TESTS_LIBMBFLARCH)		\
+	$(MBFL_TESTS_LIBMBFLUTILS)		\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
