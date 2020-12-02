@@ -791,11 +791,16 @@ function string-is-6.8 () { ! mbfl_string_is_identifier ''; }
 function string-is-7.1 () { mbfl_string_is_username abcd; }
 function string-is-7.2 () { mbfl_string_is_username ab_cd; }
 function string-is-7.3 () { mbfl_string_is_username _abcd123; }
-function string-is-7.4 () { ! mbfl_string_is_username 1abcd3 ; }
-function string-is-7.5 () { ! mbfl_string_is_username "\n"; }
-function string-is-7.6 () { ! mbfl_string_is_username '-abcd123'; }
+function string-is-7.4 () { mbfl_string_is_username 1abcd3 ; }
+function string-is-7.5.1 () { ! mbfl_string_is_username $'\n'; }
+function string-is-7.5.2 () { ! mbfl_string_is_username $'marco\n'; }
+function string-is-7.6 () { mbfl_string_is_username '-abcd123'; }
 function string-is-7.7 () { mbfl_string_is_username a-b_c-d; }
 function string-is-7.8 () { ! mbfl_string_is_username ''; }
+function string-is-7.9 () { mbfl_string_is_username marco.firefox; }
+function string-is-7.10 () { mbfl_string_is_username 123; }
+function string-is-7.11 () { mbfl_string_is_username +123; }
+function string-is-7.12 () { ! mbfl_string_is_username +abc; }
 
 function string-is-8.1 () { mbfl_string_is_extended_identifier abcd; }
 function string-is-8.2 () { mbfl_string_is_extended_identifier ab_cd; }
@@ -806,6 +811,20 @@ function string-is-8.6 () { ! mbfl_string_is_extended_identifier '-abcd123'; }
 function string-is-8.7 () { mbfl_string_is_extended_identifier a-b_c-d; }
 function string-is-8.8 () { ! mbfl_string_is_extended_identifier ''; }
 function string-is-8.9 () { ! mbfl_string_is_extended_identifier '-abc.d.1_23'; }
+
+function string-is-9.1 () { mbfl_string_is_groupname abcd; }
+function string-is-9.2 () { mbfl_string_is_groupname ab_cd; }
+function string-is-9.3 () { mbfl_string_is_groupname _abcd123; }
+function string-is-9.4 () { mbfl_string_is_groupname 1abcd3 ; }
+function string-is-9.5.1 () { ! mbfl_string_is_groupname $'\n'; }
+function string-is-9.5.2 () { ! mbfl_string_is_groupname $'marco\n'; }
+function string-is-9.6 () { mbfl_string_is_groupname '-abcd123'; }
+function string-is-9.7 () { mbfl_string_is_groupname a-b_c-d; }
+function string-is-9.8 () { ! mbfl_string_is_groupname ''; }
+function string-is-9.9 () { mbfl_string_is_groupname marco.firefox; }
+function string-is-9.10 () { mbfl_string_is_groupname 123; }
+function string-is-9.11 () { mbfl_string_is_groupname +123; }
+function string-is-9.12 () { ! mbfl_string_is_groupname +abc; }
 
 #page
 #### validating email addresses
@@ -1397,6 +1416,44 @@ function string-macro-not-equal-fixed-2.1 () {
 }
 function string-macro-not-equal-fixed-2.2 () {
     mbfl_string_neq_false('ciao')
+}
+
+
+#### inspection using macros
+
+function string-macro-empty-1.1 () {
+    local -r STR
+    mbfl_string_empty(STR)
+}
+function string-macro-empty-1.2 () {
+    local -r STR='ciao'
+    ! mbfl_string_empty(STR)
+}
+
+function string-macro-empty-2.1 () {
+    local -r STR=
+    mbfl_string_not_empty(STR)
+    dotest-equal 1 $? 'empty string is empty'
+}
+function string-macro-empty-2.2 () {
+    local -r STR='ciao'
+    mbfl_string_not_empty(STR)
+    dotest-equal 0 $? 'non-empty string is not empty'
+}
+
+### ------------------------------------------------------------------------
+
+function string-macro-last-char-1.1 () {
+    local -r STR='ciao'
+    dotest-equal 'o' mbfl_string_last_char(STR)
+}
+function string-macro-last-char-1.2 () {
+    local -r STR=$'ciao\n'
+    dotest-equal $'\n' "mbfl_string_last_char(STR)"
+}
+function string-macro-last-char-1.3 () {
+    local -r STR=
+    dotest-equal '' "mbfl_string_last_char(STR)"
 }
 
 #page

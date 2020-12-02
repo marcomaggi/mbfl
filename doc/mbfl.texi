@@ -13,11 +13,11 @@
 @c ------------------------------------------------------------------------
 
 @macro mfourref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,m4}
+@xref{\NODE\,\TITLE\,\TITLE\,m4}
 @end macro
 
 @macro coreutilsref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,coreutils}
+@xref{\NODE\,\TITLE\,\TITLE\,coreutils}
 @end macro
 
 @c page
@@ -1403,6 +1403,31 @@ which evaluates to the number of characters in the string in the variable @var{V
 @end deffn
 
 
+@deffn {Preprocessor Macros} mbfl_string_empty (@var{VAR})
+Expand into the expression:
+
+@example
+@{ test $@{#@var{VAR}@} -eq 0; @}
+@end example
+
+@noindent
+which evaluates to true if the string value in the variable @var{VAR} @strong{is} the empty string.
+@end deffn
+
+
+@deffn {Preprocessor Macros} mbfl_string_not_empty (@var{VAR})
+Expand into the expression:
+
+@example
+@{ test $@{#@var{VAR}@} -ne 0; @}
+@end example
+
+@noindent
+which evaluates to true if the string value in the variable @var{VAR} @strong{is not} the empty
+string.
+@end deffn
+
+
 @deffn {Preprocessor Macros} mbfl_string_idx (@var{VAR}, @var{EXPR})
 Expands into the expression:
 
@@ -1412,6 +1437,41 @@ $@{@var{VAR}:@var{EXPR}:1@}
 
 @noindent
 which evaluates to the character at index @var{EXPR} in the string in the variable @var{VAR}.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_last_char (@var{VAR})
+Expand into the expression:
+
+@example
+$@{$1:$(($@{#$1@} - 1)):1@}
+@end example
+
+@noindent
+which, if it is not empty, evaluates to the last character of the string in the variable @var{VAR};
+if the string empty: the result of the evaluation is the empty string.
+
+Usage examples:
+
+@example
+@{
+  local STR='ciao'
+  test 'o' = mbfl_string_last_char(STR)
+@}
+@result{} 0
+
+@{
+  local STR=$'ciao\n'
+  test $'\n' = "mbfl_string_last_char(STR)"
+@}
+@result{} 0
+
+@{
+  local -r STR=
+  test '' = "mbfl_string_last_char(STR)"
+@}
+@result{} 0
+@end example
 @end deffn
 
 @c page
@@ -2803,9 +2863,19 @@ character of @var{STRING} or the first char of @var{STRING} is a dash.
 
 
 @defun mbfl_string_is_username @var{STRING}
-Return true if @var{STRING} is non--empty, all its characters are in the
-ranges @code{[a-zA-Z0-9_-]}, the first character is in the range
-@code{[a-zA-Z_]}; else return false.
+@defunx mbfl_string_is_groupname @var{STRING}
+Return true if @var{STRING} is valid as user name or group name according to the common Unix
+standards; otherwise return false.  @var{STRING} must be non--empty, it must not terminate with a
+newline, it must match the following regular expression:
+
+@example
+^(([a-zA-Z0-9_\.\-]+)|(\+[0-9]+))$
+@end example
+
+As a special case: @var{STRING} can be composed of digits with a leading plus sign @samp{+}, this is
+supported by @command{chown} and @command{chgrp} from the @gnu{} Coreutils as a way to specify
+numeric user and group name unambiguously; @coreutilsref{Disambiguating names and IDs, chown@comma{}
+chgrp@comma{} chroot@comma{} id Disambiguating user names and IDs}.
 @end defun
 
 

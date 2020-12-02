@@ -116,6 +116,11 @@ changes!
     mbfl_string_is_true
     mbfl_string_is_false
     mbfl_string_strip_carriage_return_var
+    mbfl_string_is_groupname
+
+* BACKWARDS   INCOMPATIBILITY    The   definition   of    the   function
+  "mbfl_string_is_username()" has been changed  to better conform to the
+  Unix standards.
 
 * Added string macros:
 

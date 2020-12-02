@@ -441,11 +441,18 @@ function mbfl_string_is_extended_identifier () {
 	&& mbfl_string_not_equal "mbfl_string_idx(STRING, 0)" '-'
 }
 function mbfl_string_is_username () {
-    # Accept $1  even if  it is  empty; for  this reason  we do  not use
-    # MBFL_MANDATORY_PARAMETER.
-    local STRING=$1
-    mbfl_string_is_not_empty "$STRING" && \
-	mbfl_string_is_identifier "$STRING"
+    mbfl_optional_parameter(STRING,1)
+    local -r REX='^(([a-zA-Z0-9_\.\-]+)|(\+[0-9]+))$'
+
+    if mbfl_string_equal $'\n' "mbfl_string_last_char(STRING)"
+    then return_failure
+    elif [[ "$STRING" =~ $REX ]]
+    then return_success
+    else return_failure
+    fi
+}
+function mbfl_string_is_groupname () {
+    mbfl_string_is_username "$STRING"
 }
 function mbfl_string_is_network_port () {
     # We want  to accept  an empty  parameter and  return unsuccessfully
