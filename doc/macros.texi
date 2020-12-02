@@ -339,19 +339,19 @@
 @c ------------------------------------------------------------
 
 @macro glibcref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,libc}
+@xref{\NODE\,\TITLE\,\TITLE\,libc}
 @end macro
 
 @macro autoconfref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,autoconf}
+@xref{\NODE\,\TITLE\,\TITLE\,autoconf}
 @end macro
 
 @macro automakeref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,automake}
+@xref{\NODE\,\TITLE\,\TITLE\,automake}
 @end macro
 
 @macro bashref{NODE, TITLE}
-@ref{\NODE\,\TITLE\,\TITLE\,bash}
+@xref{\NODE\,\TITLE\,\TITLE\,bash}
 @end macro
 
 @macro bibref{TAG}
