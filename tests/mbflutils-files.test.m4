@@ -8,7 +8,7 @@
 #
 #	This file must be executed with:
 #
-#		$ make all test TESTMATCH=file-
+#		$ make all test TESTMATCH=mbflutils-file-
 #
 #	that will select these tests.
 #
@@ -41,13 +41,102 @@ mbfl_load_library("$MBFL_TESTS_LIBMBFL")
 mbfl_load_library("$MBFL_TESTS_LIBMBFLUTILS")
 mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
+mbfl_file_enable_permissions
+mbfl_system_enable_programs
+
 
-#### file name functions: internal parsing utilities
+#### file name functions: acquiring file/directory attributes
+
+# Stat a file: the file exists.
+#
+function mbflutils-file-stat-1.1 () {
+    mbfl_local_assoc_array_varref(THE_STRU)
+    local -i RV=0
+
+    #dotest-set-debug
+    #mbfl_set_option_debug
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler dotest-clean-files
+	local tmpdir=$(dotest-echo-tmpdir)
+	local -r THE_PATHNAME=$(dotest-mkfile file.ext)
+	local -r EXPECTED_USERNAME=$(mbfl_system_effective_user_id --name)
+	local -r EXPECTED_GROUPNAME=$(mbfl_system_effective_group_id --name)
+	local -r EXPECTED_MODE='0640'
+
+	if mbfl_file_set_permissions u+rw-x,g+r-wx,o-rwx,a-st "$THE_PATHNAME"
+	then
+	    if mbflutils_file_init_file_struct mbfl_datavar(THE_STRU) "$THE_PATHNAME" "test file for '${FUNCNAME}'"
+	    then
+		if mbflutils_file_stat mbfl_datavar(THE_STRU)
+		then
+		    dotest-equal "$THE_PATHNAME"		"mbfl_slot_ref(THE_STRU,PATHNAME)"    'file pathname' && \
+			dotest-equal "$EXPECTED_USERNAME"	"mbfl_slot_ref(THE_STRU,OWNER)"	      'file owner'    && \
+			dotest-equal "$EXPECTED_GROUPNAME"	"mbfl_slot_ref(THE_STRU,GROUP)"	      'file group'    && \
+			dotest-equal "$EXPECTED_MODE"		"mbfl_slot_ref(THE_STRU,MODE)"	      'file mode'
+		    RV=$?
+		else RV=$?
+		fi
+	    else RV=$?
+	    fi
+	else
+	    mbfl_message_error_printf 'error setting permissions for temporary test file: "%s"' "$THE_PATHNAME"
+	    RV=1
+	fi
+    }
+    mbfl_location_leave
+    return $RV
+}
+
+### ------------------------------------------------------------------------
+
+# Stat a directory: the directory exists.
+#
+function mbflutils-file-stat-2.1 () {
+    mbfl_local_assoc_array_varref(THE_STRU)
+    local -i RV=0
+
+    dotest-set-debug
+    #mbfl_set_option_debug
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler dotest-clean-files
+	local tmpdir=$(dotest-echo-tmpdir)
+	local -r THE_PATHNAME=$(dotest-mkdir file.ext)
+	local -r EXPECTED_USERNAME=$(mbfl_system_effective_user_id --name)
+	local -r EXPECTED_GROUPNAME=$(mbfl_system_effective_group_id --name)
+	local -r EXPECTED_MODE='0640'
+
+	if mbfl_file_set_permissions u+rw-x,g+r-wx,o-rwx,a-st "$THE_PATHNAME"
+	then
+	    if mbflutils_file_init_directory_struct mbfl_datavar(THE_STRU) "$THE_PATHNAME" "test file for '${FUNCNAME}'"
+	    then
+		if mbflutils_file_stat mbfl_datavar(THE_STRU)
+		then
+		    dotest-equal "$THE_PATHNAME"		"mbfl_slot_ref(THE_STRU,PATHNAME)"    'file pathname' && \
+			dotest-equal "$EXPECTED_USERNAME"	"mbfl_slot_ref(THE_STRU,OWNER)"	      'file owner'    && \
+			dotest-equal "$EXPECTED_GROUPNAME"	"mbfl_slot_ref(THE_STRU,GROUP)"	      'file group'    && \
+			dotest-equal "$EXPECTED_MODE"		"mbfl_slot_ref(THE_STRU,MODE)"	      'file mode'
+		    RV=$?
+		else RV=$?
+		fi
+	    else RV=$?
+	    fi
+	else
+	    mbfl_message_error_printf 'error setting permissions for temporary test file: "%s"' "$THE_PATHNAME"
+	    RV=1
+	fi
+    }
+    mbfl_location_leave
+    return $RV
+}
 
 
 #### let's go
 
-dotest file-
+dotest mbflutils-file-
 dotest-final-report
 
 ### end of file

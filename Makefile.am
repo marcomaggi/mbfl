@@ -381,16 +381,23 @@ CLEANFILES			+=		\
 	examples/$(am__dirstamp)
 
 MBFL_EXAMPLES_LIBMBFL		= $(builddir)/src/lib/libmbfl.bash
+MBFL_EXAMPLES_LIBMBFLAT		= $(builddir)/src/lib/libmbfl-at.bash
+MBFL_EXAMPLES_LIBMBFLARCH	= $(builddir)/src/lib/libmbfl-arch.bash
+MBFL_EXAMPLES_LIBMBFLUTILS	= $(builddir)/src/lib/libmbfl-utils.bash
 MBFL_EXAMPLES_ENV		=
 MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_EXAMPLES_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --add-bash
 MBFL_EXAMPLES_FLAGS		+= --libmbfl="$(MBFL_EXAMPLES_LIBMBFL)"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_AT__="$(builddir)/src/lib/libmbfl-at.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_ARCH__="$(builddir)/src/lib/libmbfl-arch.bash"
+MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_UTILS__="$(builddir)/src/lib/libmbfl-utils.bash"
 
 MBFL_EXAMPLES_PREREQUISITES	=		\
 	examples/$(am__dirstamp)		\
 	$(MBFL_EXAMPLES_LIBMBFL)		\
+	$(MBFL_EXAMPLES_LIBMBFLAT)		\
+	$(MBFL_EXAMPLES_LIBMBFLARCH)		\
+	$(MBFL_EXAMPLES_LIBMBFLUTILS)		\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
@@ -584,28 +591,46 @@ test-sendmail-localhost:
 
 #### interface to "make installcheck"
 
-MBFL_INSTCHECK_FLAGS	= $(user_flags)
-# This thing with the PATH environment variable is needed to run
-# distcheck successfully.
+# This  thing with  the PATH  environment  variable is  needed to  run
+# distcheck successfully.   We need  to remember  that, for  some sick
+# reason, the  Bash built-in "source"  will search for the  file under
+# PATH's directories.
+#
 MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:$(builddir)/tests:$(DESTDIR)$(bindir):$$PATH; export PATH;
 MBFL_INSTCHECK_ENV	+= PATH="`mbflpp.bash --print-libdir`":$$PATH; export PATH;
 MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFL="`mbflpp.bash --print-libmbfl`"; export MBFL_TESTS_LIBMBFL;
 MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLTEST="`mbflpp.bash --print-libmbfltest`"; export MBFL_TESTS_LIBMBFLTEST;
 MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLARCH="`mbflpp.bash --print-libdir`/libmbfl-arch.bash"; export MBFL_TESTS_LIBMBFLARCH;
+MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLUTILS="`mbflpp.bash --print-libdir`/libmbfl-utils.bash"; export MBFL_TESTS_LIBMBFLUTILS;
 MBFL_INSTCHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_INSTCHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;
 MBFL_INSTCHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
-MBFL_INSTCHECK_RUN	= $(MBFL_INSTCHECK_ENV) $(MBFL_PROGRAM_BASH) $(MBFL_INSTCHECK_FLAGS)
+MBFL_INSTCHECK_RUN	= $(MBFL_PROGRAM_BASH) $(MBFL_INSTCHECK_FLAGS)
 
+# If a  test script executes no  test functions: its exit  code is 77,
+# which signals  GNU Automake's  test harness that  the test  has been
+# skipped.  This is fine when running  "make check", but will cause an
+# error when  running "make installcheck";  so we intercept  that exit
+# code and normalise it to 0.
+#
+# We  want  to support  the  case  of  a  ".test" script  being  under
+# "$(srcdir)" rather than under "$(builddir)"; so we look for the file
+# in both directories.
+#
 installcheck-local:
-	@for f in $(TESTS);					\
-	do							\
-		if   test -f $(srcdir)/$$f ;			\
-		then $(MBFL_INSTCHECK_RUN) $(srcdir)/$$f ;	\
-		elif test -f $(builddir)/$$f ;			\
-		then $(MBFL_INSTCHECK_RUN) $(builddir)/$$f ;	\
-		fi;						\
-	done
+	$(MBFL_INSTCHECK_ENV) RV=0;				\
+	for FILE in $(TESTS); do				\
+	    for DIR in "$(builddir)" "$(srcdir)"; do		\
+	        if test -f "$$DIR/$$FILE";			\
+	        then						\
+	            if $(MBFL_INSTCHECK_RUN) "$$DIR/$$FILE" ;	\
+	            then break;					\
+	            else RV=$$?; break 2;			\
+	            fi;						\
+	        fi;						\
+	    done;						\
+	done;							\
+	if test "$$RV" = 77; then exit 0; else exit $$RV; fi;
 
 ### end of file

@@ -29,128 +29,127 @@ mbfl_file_enable_owner_and_group
 mbfl_file_enable_permissions
 
 
+#### file system operations: tables of functions
+
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then
+    mbfl_declare_symbolic_array(MBFLUTILS_FILE_FUNCTIONS)
+    mbfl_slot_set(MBFLUTILS_FILE_FUNCTIONS, IS_TYPE, 'mbflutils_p_file_is_file')
+
+    mbfl_declare_symbolic_array(MBFLUTILS_DIRECTORY_FUNCTIONS)
+    mbfl_slot_set(MBFLUTILS_DIRECTORY_FUNCTIONS, IS_TYPE, 'mbflutils_p_file_is_directory')
+fi
+
+
 #### file system operations: data structures declaration
 
 function mbflutils_file_init_directory_struct () {
-    mbfl_mandatory_nameref_parameter(DIRECTORY_STRUCT,1, directory array name)
-    mbfl_mandatory_parameter(DIRECTORY_PATHNAME,      2, directory pathname)
-    mbfl_optional_parameter(DIRECTORY_DESCRIPTION,    3, description)
-    mbfl_optional_parameter(DIRECTORY_OWNER,          4, directory owner)
-    mbfl_optional_parameter(DIRECTORY_GROUP,          5, directory group)
-    mbfl_optional_parameter(DIRECTORY_MODE,           6, directory mode)
+    mbfl_mandatory_nameref_parameter(STRUCT,1, file system struct array name)
+    mbfl_mandatory_parameter(PATHNAME,      2, directory pathname)
+    mbfl_mandatory_parameter(DESCRIPTION,   3, directory description)
+    mbfl_optional_parameter(OWNER,          4)
+    mbfl_optional_parameter(GROUP,          5)
+    mbfl_optional_parameter(MODE,           6)
 
-    mbfl_slot_set(DIRECTORY_STRUCT,PATHNAME,	"$DIRECTORY_PATHNAME")
-    mbfl_slot_set(DIRECTORY_STRUCT,DESCRIPTION, "$DIRECTORY_DESCRIPTION")
-    mbfl_slot_set(DIRECTORY_STRUCT,OWNER,	"$DIRECTORY_OWNER")
-    mbfl_slot_set(DIRECTORY_STRUCT,GROUP,	"$DIRECTORY_GROUP")
-    mbfl_slot_set(DIRECTORY_STRUCT,MODE,	"$DIRECTORY_MODE")
+    if mbfl_string_is_empty "$PATHNAME"
+    then
+	mbfl_message_error_printf 'the given %b file system pathname is empty' "$DESCRIPTION"
+	return_failure
+    else
+	mbfl_slot_set(STRUCT,PATHNAME,    "$PATHNAME")
+	mbfl_slot_set(STRUCT,DESCRIPTION, "$DESCRIPTION")
+	mbfl_slot_set(STRUCT,OWNER,       "$OWNER")
+	mbfl_slot_set(STRUCT,GROUP,       "$GROUP")
+	mbfl_slot_set(STRUCT,MODE,        "$MODE")
+	mbfl_slot_set(STRUCT,TYPE,        'directory')
+	mbfl_slot_set(STRUCT,FUNCTIONS,   'MBFLUTILS_DIRECTORY_FUNCTIONS')
+    fi
 }
 
 function mbflutils_file_init_file_struct () {
-    mbfl_mandatory_nameref_parameter(FILE_STRUCT,1, file array name)
-    mbfl_mandatory_parameter(FILE_PATHNAME,      2, file pathname)
-    mbfl_optional_parameter(FILE_DESCRIPTION,    3, description)
-    mbfl_optional_parameter(FILE_OWNER,          4, file owner)
-    mbfl_optional_parameter(FILE_GROUP,          5, file group)
-    mbfl_optional_parameter(FILE_MODE,           6, file mode)
+    mbfl_mandatory_nameref_parameter(STRUCT,1, file system struct array name)
+    mbfl_mandatory_parameter(PATHNAME,      2, file pathname)
+    mbfl_mandatory_parameter(DESCRIPTION,   3, file description)
+    mbfl_optional_parameter(OWNER,          4)
+    mbfl_optional_parameter(GROUP,          5)
+    mbfl_optional_parameter(MODE,           6)
 
-    mbfl_slot_set(FILE_STRUCT,PATHNAME,		"$FILE_PATHNAME")
-    mbfl_slot_set(FILE_STRUCT,DESCRIPTION,	"$FILE_DESCRIPTION")
-    mbfl_slot_set(FILE_STRUCT,OWNER,		"$FILE_OWNER")
-    mbfl_slot_set(FILE_STRUCT,GROUP,		"$FILE_GROUP")
-    mbfl_slot_set(FILE_STRUCT,MODE,		"$FILE_MODE")
+    if mbfl_string_is_empty "$PATHNAME"
+    then
+	mbfl_message_error_printf 'the given %b file system pathname is empty' "$DESCRIPTION"
+	return_failure
+    else
+	mbfl_slot_set(STRUCT,PATHNAME,    "$PATHNAME")
+	mbfl_slot_set(STRUCT,DESCRIPTION, "$DESCRIPTION")
+	mbfl_slot_set(STRUCT,OWNER,       "$OWNER")
+	mbfl_slot_set(STRUCT,GROUP,       "$GROUP")
+	mbfl_slot_set(STRUCT,MODE,        "$MODE")
+	mbfl_slot_set(STRUCT,TYPE,        'file')
+	mbfl_slot_set(STRUCT,FUNCTIONS,   'MBFLUTILS_FILE_FUNCTIONS')
+    fi
 }
 
 
 #### file system operations: data structures initialisation from file system
 
-function mbflutils_file_stat_directory () {
-    mbfl_mandatory_nameref_parameter(DIRECTORY_STRUCT, 1, directory array name)
+function mbflutils_file_stat () {
+    mbfl_mandatory_nameref_parameter(SELF, 1, file system struct array name)
 
-    if ! mbfl_string_is_empty "mbfl_slot_ref(DIRECTORY_STRUCT, PATHNAME)"
+    if ! {
+	    # Access the table of functions.
+	    local -n FUNCTIONS=mbfl_slot_ref(SELF,FUNCTIONS)
+	    mbfl_slot_ref(FUNCTIONS,IS_TYPE) mbfl_datavar(SELF)
+	}
     then
-	local -r DESCRIPTION="mbfl_slot_ref(DIRECTORY_STRUCT,DESCRIPTION)"
-	if mbfl_string_is_empty "$DESCRIPTION"
+	# Let's be more specific about the error.
+	if mbfl_string_is_empty "mbfl_slot_ref(SELF, PATHNAME)"
 	then mbfl_message_error_printf						\
 		 'the file system pathname given as %b is an empty string'	\
-		 "$DESCRIPTION"
-	else mbfl_message_error_printf 'the given file system pathname is an empty string'
-	fi
-	return_failure
-    elif ! mbfl_file_exists "mbfl_slot_ref(DIRECTORY_STRUCT, PATHNAME)"
-    then
-	local -r DESCRIPTION="mbfl_slot_ref(DIRECTORY_STRUCT,DESCRIPTION)"
-	if mbfl_string_is_empty "$DESCRIPTION"
+		 "mbfl_slot_ref(SELF,DESCRIPTION)"
+	elif ! mbfl_file_exists "mbfl_slot_ref(SELF, PATHNAME)"
 	then mbfl_message_error_printf						\
 		 'the file system pathname given as %b does not exist: "%s"'	\
-		 "$DESCRIPTION" "mbfl_slot_ref(DIRECTORY_STRUCT,PATHNAME)"
+		 "mbfl_slot_ref(SELF,DESCRIPTION)" "mbfl_slot_ref(SELF,PATHNAME)"
 	else mbfl_message_error_printf						\
-		 'the given file system pathname does not exist: "%s"'		\
-		 "mbfl_slot_ref(DIRECTORY_STRUCT,PATHNAME)"
-	fi
-	return_failure
-    elif ! mbfl_file_is_directory "mbfl_slot_ref(DIRECTORY_STRUCT, PATHNAME)"
-    then
-	local -r DESCRIPTION="mbfl_slot_ref(DIRECTORY_STRUCT,DESCRIPTION)"
-	if mbfl_string_is_empty "$DESCRIPTION"
-	then mbfl_message_error_printf						\
-		 'the file system pathname given as %b is not a directory: "%s"'	\
-		 "$DESCRIPTION" "mbfl_slot_ref(DIRECTORY_STRUCT,PATHNAME)"
-	else mbfl_message_error_printf						\
-		 'the given file system pathname is not a directory: "%s"'		\
-		 "mbfl_slot_ref(DIRECTORY_STRUCT,PATHNAME)"
+		 'the file system pathname given as %b is not a %s: "%s"'	\
+		 "mbfl_slot_ref(SELF,DESCRIPTION)"				\
+		 "mbfl_slot_ref(SELF, TYPE)"					\
+		 "mbfl_slot_ref(SELF,PATHNAME)"
 	fi
 	return_failure
     else
-	mbfl_file_get_owner_var		mbfl_datavar(DIRECTORY_STRUCT)[OWNER] "mbfl_slot_ref(DIRECTORY_STRUCT, PATHNAME)"
-	mbfl_file_get_group_var		mbfl_datavar(DIRECTORY_STRUCT)[GROUP] "mbfl_slot_ref(DIRECTORY_STRUCT, PATHNAME)"
-	mbfl_file_get_permissions_var	mbfl_datavar(DIRECTORY_STRUCT)[MODE]  "mbfl_slot_ref(DIRECTORY_STRUCT, PATHNAME)"
-	return_success
-    fi
-}
+	# We modify the struct only if the values acquisitions are successful.
+	mbfl_local_varref(OWNER)
+	mbfl_local_varref(GROUP)
+	mbfl_local_varref(MODE)
 
-function mbflutils_file_stat_file () {
-    mbfl_mandatory_nameref_parameter(FILE_STRUCT, 1, file array name)
-
-    if ! mbfl_string_is_empty "mbfl_slot_ref(FILE_STRUCT, PATHNAME)"
-    then
-	local -r DESCRIPTION="mbfl_slot_ref(FILE_STRUCT,DESCRIPTION)"
-	if mbfl_string_is_empty "$DESCRIPTION"
-	then mbfl_message_error_printf						\
-		 'the file system pathname given as %b is an empty string'	\
-		 "$DESCRIPTION"
-	else mbfl_message_error_printf 'the given file system pathname is an empty string'
+	if ! mbfl_file_get_owner_var mbfl_datavar(OWNER) "mbfl_slot_ref(SELF, PATHNAME)"
+	then
+	    mbfl_message_error_printf					\
+		'acquiring access file system owner of %b: "%s"'	\
+		"mbfl_slot_ref(SELF, DESCRIPTION)"			\
+		"mbfl_slot_ref(SELF, PATHNAME)"
+	    return_failure
+	elif ! mbfl_file_get_group_var mbfl_datavar(GROUP) "mbfl_slot_ref(SELF, PATHNAME)"
+	then
+	    mbfl_message_error_printf					\
+		'acquiring file system group of %b: "%s"'		\
+		"mbfl_slot_ref(SELF, DESCRIPTION)"			\
+		"mbfl_slot_ref(SELF, PATHNAME)"
+	    return_failure
+	elif ! mbfl_file_get_permissions_var mbfl_datavar(MODE) "mbfl_slot_ref(SELF, PATHNAME)"
+	then
+	    mbfl_message_error_printf					\
+		'acquiring file system access permissions of %b: "%s"'	\
+		"mbfl_slot_ref(SELF, DESCRIPTION)"			\
+		"mbfl_slot_ref(SELF, PATHNAME)"
+	    return_failure
+	else
+	    mbfl_slot_set(SELF, OWNER, "$OWNER")
+	    mbfl_slot_set(SELF, GROUP, "$GROUP")
+	    mbfl_slot_set(SELF, MODE,  "$MODE")
+	    return_success
 	fi
-	return_failure
-    elif ! mbfl_file_exists "mbfl_slot_ref(FILE_STRUCT, PATHNAME)"
-    then
-	local -r DESCRIPTION="mbfl_slot_ref(FILE_STRUCT,DESCRIPTION)"
-	if mbfl_string_is_empty "$DESCRIPTION"
-	then mbfl_message_error_printf						\
-		 'the file system pathname given as %b does not exist: "%s"'	\
-		 "$DESCRIPTION" "mbfl_slot_ref(FILE_STRUCT,PATHNAME)"
-	else mbfl_message_error_printf						\
-		 'the given file system pathname does not exist: "%s"'		\
-		 "mbfl_slot_ref(FILE_STRUCT,PATHNAME)"
-	fi
-	return_failure
-    elif ! mbfl_file_is_file "mbfl_slot_ref(FILE_STRUCT, PATHNAME)"
-    then
-	local -r DESCRIPTION="mbfl_slot_ref(FILE_STRUCT,DESCRIPTION)"
-	if mbfl_string_is_empty "$DESCRIPTION"
-	then mbfl_message_error_printf						\
-		 'the file system pathname given as %b is not a file: "%s"'	\
-		 "$DESCRIPTION" "mbfl_slot_ref(FILE_STRUCT,PATHNAME)"
-	else mbfl_message_error_printf						\
-		 'the given file system pathname is not a file: "%s"'		\
-		 "mbfl_slot_ref(FILE_STRUCT,PATHNAME)"
-	fi
-	return_failure
-    else
-	mbfl_file_get_owner_var		mbfl_datavar(FILE_STRUCT)[OWNER] "mbfl_slot_ref(FILE_STRUCT, PATHNAME)"
-	mbfl_file_get_group_var		mbfl_datavar(FILE_STRUCT)[GROUP] "mbfl_slot_ref(FILE_STRUCT, PATHNAME)"
-	mbfl_file_get_permissions_var	mbfl_datavar(FILE_STRUCT)[MODE]  "mbfl_slot_ref(FILE_STRUCT, PATHNAME)"
-	return_success
     fi
 }
 
@@ -428,6 +427,18 @@ function mbflutils_file_p_normalise_file_group () {
 	    "mbfl_slot_ref(FILE_STRUCT,DESCRIPTION)" "mbfl_slot_ref(FILE_STRUCT,PATHNAME)"
 	exit_because_failure
     fi
+}
+
+
+#### file system operations: type-specific function
+
+function mbflutils_p_file_is_file () {
+    mbfl_mandatory_nameref_parameter(SELF, 1, file system struct array name)
+    mbfl_file_is_file "mbfl_slot_ref(SELF, PATHNAME)"
+}
+function mbflutils_p_file_is_directory () {
+    mbfl_mandatory_nameref_parameter(SELF, 1, file system struct array name)
+    mbfl_file_is_directory "mbfl_slot_ref(SELF, PATHNAME)"
 }
 
 ### end of file

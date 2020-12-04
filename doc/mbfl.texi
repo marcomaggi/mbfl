@@ -8722,7 +8722,7 @@ arrays will be often referred to as ``data structures''.
 We can declare a file structure as follows:
 
 @example
-mbfl_declare_symbolic_array(LOGFILE)
+mbfl_declare_assoc_array_varref(LOGFILE)
 
 mbflutils_file_init_file_struct mbfl_datavar(LOGFILE) \
   '/var/log/software.log' 'root' 'root' '0640' 'log file for software'
@@ -8733,7 +8733,7 @@ another example:
 
 @example
 function caller () @{
-  mbfl_local_symbolic_array(LOGFILE)
+  mbfl_local_assoc_array_varref(LOGFILE)
 
   callee mbfl_datavar(LOGFILE)
   ...
@@ -8794,12 +8794,12 @@ of the file or directory; it is stored in the symbolic array with key @code{MODE
 We usually want to acquire file system attributes from the file system itself, for example:
 
 @example
-mbfl_declare_symbolic_array(LOGFILE)
+mbfl_declare_assoc_array_varref(LOGFILE)
 
 mbflutils_file_init_file_struct mbfl_datavar(LOGFILE) \
   '/var/log/software.log' 'log file for software'
 
-mbflutils_file_stat_file mbfl_datavar(LOGFILE)
+mbflutils_file_stat mbfl_datavar(LOGFILE)
 
 "mbfl_slot_ref(LOGFILE,OWNER)"  @result{} root
 "mbfl_slot_ref(LOGFILE,GROUP)"  @result{} root
@@ -8807,33 +8807,22 @@ mbflutils_file_stat_file mbfl_datavar(LOGFILE)
 @end example
 
 
-@defun mbflutils_file_stat_file @var{ARRYNAME}
-@defunx mbflutils_file_stat_directory @var{ARRYNAME}
-Acquire the attributes of an existent file or directory as specified in the symbolic array variable
-whose name is @var{ARRYNAME}; the array must have been previously declared with
-@func{mbflutils_file_init_file_struct} or @func{mbflutils_file_init_directory_struct}.
+@defun mbflutils_file_stat @var{ARRYNAME}
+Acquire the attributes of an existent file system entry as specified in the symbolic array variable
+whose name is @var{ARRYNAME}; the array must have been previously declared with one of the
+@func{mbflutils_file_init_*_struct} functions.
 
-The array must have been previously initialised with the following keys:
-
-@table @code
-@item PATHNAME
-A string representing the file system pathname of the file or directory.  This key is mandatory.
-
-@item DESCRIPTION
-A string representing the description of the file or directory.  This key is optional.
-@end table
-
-The following keys are set, or reset, by these functions reading the values from the file system:
+The following keys are set, or reset, by this function reading the values from the file system:
 
 @table @code
 @item OWNER
-A string representing the owner of the file or directory.
+A string representing the owner of the file system entry.
 
 @item GROUP
-A string representing the group of the file or directory.
+A string representing the group of the file system entry.
 
 @item MODE
-A string representing the access permissions mode of the file or directory.
+A string representing the access permissions mode of the file system entry.
 @end table
 @end defun
 

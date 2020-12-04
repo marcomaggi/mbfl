@@ -141,10 +141,20 @@ m4_define([[[mbfl_global_varref]]],[[[m4_dnl
   m4_ifelse($2,,,$1=$2)
 ]]])
 
+m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
+  declare mbfl_a_variable_$1
+  mbfl_variable_alloc mbfl_a_variable_$1
+  declare -g $3 $[[[mbfl_a_variable_$1]]]
+  declare -n $1=$[[[]]]mbfl_a_variable_$1
+  m4_ifelse($2,,,$1=$2)
+]]])
+
 m4_define([[[mbfl_local_index_array_varref]]],[[[mbfl_local_varref($1,$2,-a $3)]]])
 m4_define([[[mbfl_local_assoc_array_varref]]],[[[mbfl_local_varref($1,$2,-A $3)]]])
 m4_define([[[mbfl_global_index_array_varref]]],[[[mbfl_global_varref($1,$2,-a $3)]]])
 m4_define([[[mbfl_global_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3)]]])
+m4_define([[[mbfl_declare_index_array_varref]]],[[[mbfl_global_varref($1,$2,-a $3)]]])
+m4_define([[[mbfl_declare_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3)]]])
 
 m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
 m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar($1)]]])
