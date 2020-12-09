@@ -145,6 +145,23 @@ function mbfl_location_handler_suspend_testing () {
     mbfl_location_handler mbfl_option_test_restore
 }
 
+function mbfl_location_handler_change_directory () {
+    mbfl_mandatory_parameter(NEWPWD, 1, new process working directory)
+
+    if ! mbfl_directory_is_executable "$NEWPWD"
+    then
+	# We do not want "pushd" to change directory itself; we doit later with "mbfl_cd()".
+	pushd -n "$NEWPWD" &>/dev/null
+	if mbfl_cd "$NEWPWD"
+	then
+	    mbfl_location_handler 'popd'
+	    return_success
+	else return_failure
+	fi
+    else return_failure
+    fi
+}
+
 ### end of file
 # Local Variables:
 # mode: sh

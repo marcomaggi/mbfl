@@ -2075,6 +2075,28 @@ For a discussion of its usage see @ref{program executing testing, Testing a scri
 programs}.
 @end defun
 
+
+@defun mbfl_location_handler_change_directory @var{NEWPWD}
+Does this:
+
+@enumerate
+@item
+Check that @var{NEWPWD} is a string representing the file system pathname of an existent and
+executable directory.
+
+@item
+Push the current working directory to the directories stack (@command{pushd}).
+
+@item
+Change the current working directory to @var{NEWPWD} using @func{mbfl_cd}.
+
+@item
+Register a new location handler that pops the top from the directories stack (@command{popd}).
+@end enumerate
+
+When successful return true, otherwise return false.
+@end defun
+
 @c page
 @node locations examples
 @section Locations usage examples
