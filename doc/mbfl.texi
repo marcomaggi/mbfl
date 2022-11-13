@@ -46,7 +46,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017-2018, 2020
+@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017-2018, 2020, 2022
 
 @c ------------------------------------------------------------------------
 
@@ -615,7 +615,7 @@ Synopsis:
 
 @smallexample
 mbflpp.bash [@var{OPTIONS}] <@var{INFILE} >@var{OUTFILE}
-mbflpp.bash [@var{OPTIONS}] --outfile=@var{OUTFILE} [--] @vari{INFILE} @varii{INFILE} ...
+mbflpp.bash [@var{OPTIONS}] --output=@var{OUTFILE} [--] @vari{INFILE} @varii{INFILE} ...
 @end smallexample
 
 @noindent
