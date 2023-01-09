@@ -12,7 +12,7 @@
 #	functionalities; in the  way the author has understood parameter  expansion: there are cases
 #	that are not correctly handled.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2017, 2018, 2020 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2017, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -916,8 +916,8 @@ function mbfl_file_make_if_not_directory () {
     fi
     # Make sure the directory exists.  If it already exists: clean up the sudo request!
     if mbfl_file_is_directory "$PATHNAME"
-    then mbfl_file_make_directory "$PATHNAME" "$PERMISSIONS" "$@"
-    else mbfl_program_reset_sudo_user
+    then mbfl_program_reset_sudo_user
+    else mbfl_file_make_directory "$PATHNAME" "$PERMISSIONS" "$@"
     fi
 }
 
