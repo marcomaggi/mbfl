@@ -12,7 +12,7 @@
 #         Support for encoded argument values is provided and requires
 #       the "encode.sh" file to be included in the script.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -31,7 +31,7 @@
 # USA.
 #
 
-#PAGE
+
 #### global variables
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -62,7 +62,7 @@ function mbfl_getopts_reset () {
     mbfl_declare_numeric_array(mbfl_getopts_DESCRIPTION)
 }
 
-#page
+
 #### default options description
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -115,7 +115,7 @@ then mbfl_message_DEFAULT_OPTIONS="
 "
 fi
 
-#page
+
 function mbfl_declare_option () {
     mbfl_mandatory_parameter(keyword, 1, option declaration keyword)
     local default=$2
@@ -187,7 +187,7 @@ function mbfl_p_declare_option_test_length () {
     fi
 }
 
-#page
+
 function mbfl_getopts_parse () {
     local p_OPT= p_OPTARG= argument=
     local -i i
@@ -256,7 +256,7 @@ function mbfl_getopts_parse () {
     return_success
 }
 
-#page
+
 function mbfl_getopts_p_process_script_option () {
     mbfl_mandatory_parameter(OPT, 1, option name)
     mbfl_optional_parameter(OPTARG, 2)
@@ -298,7 +298,7 @@ function mbfl_getopts_p_process_script_option () {
     mbfl_message_error_printf 'unknown option "%s"' "$OPT"
     return_failure
 }
-#PAGE
+
 function mbfl_getopts_p_process_predefined_option_no_arg () {
     mbfl_mandatory_parameter(OPT, 1, option name)
     local i=0
@@ -367,7 +367,7 @@ function mbfl_getopts_p_process_predefined_option_no_arg () {
     esac
     return_success
 }
-#PAGE
+
 function mbfl_getopts_p_process_predefined_option_with_arg () {
     mbfl_mandatory_parameter(OPT, 1, option name)
     mbfl_mandatory_parameter(OPTARG, 2, option argument)
@@ -399,7 +399,7 @@ function mbfl_getopts_p_process_predefined_option_with_arg () {
     esac
     return_success
 }
-#page
+
 function mbfl_getopts_print_usage_screen () {
     mbfl_mandatory_parameter(BRIEF_OR_LONG,1,brief or long selection)
     local i=0 item brief long description long_hasarg long_hasarg default
@@ -472,7 +472,7 @@ function mbfl_getopts_print_usage_screen () {
 	printf '\n'
     fi
 }
-#page
+
 function mbfl_getopts_islong () {
     mbfl_mandatory_parameter(ARGUMENT, 1, argument)
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
@@ -500,7 +500,7 @@ function mbfl_getopts_islong_with () {
     fi
 }
 
-#page
+
 function mbfl_getopts_isbrief () {
     mbfl_mandatory_parameter(ARGUMENT, 1, argument)
     mbfl_optional_parameter(OPTION_VARIABLE_NAME, 2)
@@ -528,7 +528,7 @@ function mbfl_getopts_isbrief_with () {
     fi
 }
 
-#PAGE
+
 function mbfl_wrong_num_args () {
     mbfl_mandatory_integer_parameter(required, 1, required number of args)
     mbfl_mandatory_integer_parameter(argc, 2, given number of args)
@@ -581,7 +581,7 @@ function mbfl_argv_all_files () {
     return_success
 }
 
-#page
+
 function mbfl_getopts_p_test_option () {
     test "${!1}" = yes
 }
@@ -617,7 +617,7 @@ function mbfl_getopts_print_long_switches () {
 #     return_success
 # }
 
-#page
+
 #### miscellaneous functions
 
 function mbfl_getopts_gather_mbfl_options_var () {
@@ -637,6 +637,15 @@ function mbfl_getopts_gather_mbfl_options_var () {
     fi
     if mbfl_option_test
     then FLAGS+=' --test'
+    fi
+    if mbfl_option_interactive
+    then FLAGS+=' --interactive'
+    fi
+    if mbfl_option_null
+    then FLAGS+=' --null'
+    fi
+    if mbfl_option_encoded_args
+    then FLAGS+=' --encoded-args'
     fi
 }
 
