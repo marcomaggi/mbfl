@@ -1308,6 +1308,42 @@ function main () @{
 @end example
 @end deffn
 
+@c ------------------------------------------------------------------------
+
+@cindex Declaring read--only arrays
+
+With these macros it is not possible to declare a read--only array; the macro use:
+
+@example
+mbfl_local_varref(ARRY, ([a]=1), -rA)
+@end example
+
+@noindent
+expands into:
+
+@example
+local mbfl_a_variable_ARRY
+mbfl_variable_alloc mbfl_a_variable_ARRY
+local -rA $mbfl_a_variable_ARRY
+local -n ARRY=$mbfl_a_variable_ARRY
+ARRY=([a]=1)
+@end example
+
+@noindent
+so when the array is initialised it has already been declared as read--only: an error results.  It
+is not possible to modify this macro to allow such declaration, because, while this syntax works:
+
+@example
+declare -rA ARRY=([a]=1)
+@end example
+
+@noindent
+the following is invalid according to Bash:
+
+@example
+declare -rA $mbfl_a_variable_ARRY=([a]=1)
+@end example
+
 @c page
 @node preprocessor nameref partial
 @subsection Partial NAMEREF declarations
