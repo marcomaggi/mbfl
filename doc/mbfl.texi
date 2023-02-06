@@ -8505,7 +8505,7 @@ function my-func () @{
     echo $(($1 + $2))
 @}
 function mytest-1.1 () @{
-    dotest-result 5 `my-func 2 3`
+    dotest-equal 5 `my-func 2 3`
 @}
 dotest mytest-
 @end example
@@ -8518,9 +8518,9 @@ function my-func () @{
     echo $(($1 + $2))
 @}
 function mytest-1.1 () @{
-    dotest-result 5 `my-func 2 3` && \
-      dotest-result 5 `my-func 1 4` && \
-      dotest-result 5 `my-func 3 2` && \
+    dotest-equal 5 `my-func 2 3` && \
+      dotest-equal 5 `my-func 1 4` && \
+      dotest-equal 5 `my-func 3 2` && \
 @}
 dotest mytest-
 @end example
