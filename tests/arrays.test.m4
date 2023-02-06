@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -28,13 +28,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
 mbfl_load_library("$MBFL_TESTS_LIBMBFL")
 mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
-#page
+
 #### arrays inspection
 
 function array-inspection-1.1 () {
@@ -59,7 +59,7 @@ function array-inspection-2.2 () {
     mbfl_array_is_not_empty ARRY
 }
 
-#page
+
 #### array length
 
 function array-length-1.1 () {
@@ -88,7 +88,48 @@ function array-length-var-1.2 () {
     dotest-equal 3 "$RV"
 }
 
-#page
+
+#### array copying
+
+function array-copy-assoc-length-1.1 () {
+    mbfl_local_varref(SRC,([a]=1 [b]=2 [c]=3), -A)
+    mbfl_local_varref(DST,, -A)
+
+
+    mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
+    mbfl_array_length DST | dotest-output 3
+}
+function array-copy-numeric-length-1.2 () {
+    mbfl_local_varref(SRC,([a]=1 [b]=2 [c]=3), -A)
+    mbfl_local_varref(DST,, -A)
+
+
+    mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
+    mbfl_array_length DST | dotest-output 3
+}
+
+function array-copy-assoc-elms-1.1 () {
+    mbfl_local_varref(SRC,([a]=1 [b]=2 [c]=3), -A)
+    mbfl_local_varref(DST,, -A)
+
+
+    mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
+    dotest-equal 1 mbfl_slot_ref(DST, a) && \
+	dotest-equal 2 mbfl_slot_ref(DST, b) && \
+	dotest-equal 3 mbfl_slot_ref(DST, c)
+}
+function array-copy-numeric-elms-1.2 () {
+    mbfl_local_varref(SRC,([a]=1 [b]=2 [c]=3), -A)
+    mbfl_local_varref(DST,, -A)
+
+
+    mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
+    dotest-equal 1 mbfl_slot_ref(DST, a) && \
+	dotest-equal 2 mbfl_slot_ref(DST, b) && \
+	dotest-equal 3 mbfl_slot_ref(DST, c)
+}
+
+
 #### preprocessor macros
 
 function array-macro-slot-set-ref-1.1 () {
@@ -171,7 +212,7 @@ function array-macro-misc-1.2 () {
     dotest-equal 0 $RV
 }
 
-#page
+
 #### let's go
 
 dotest array-

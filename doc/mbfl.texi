@@ -2477,6 +2477,23 @@ index and return true; else print nothing and return false.
 A wrapper for @func{mbfl_variable_find_in_array} that does not print anything.
 @end defun
 
+
+@defun mbfl_array_copy @var{DST} @var{SRC}
+Copy element--by--element the source array @var{SRC} into the destination array @var{DST}; both
+@var{DST} and @var{SRC} should be references to variables.
+
+@example
+mbfl_local_varref(SRC, ([a]=1 [b]=2 [c]=3), -A)
+mbfl_local_varref(DST,, -A)
+
+mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
+
+mbfl_slot_ref(DST, a)   @result{} 1
+mbfl_slot_ref(DST, b)   @result{} 2
+mbfl_slot_ref(DST, c)   @result{} 3
+@end example
+@end defun
+
 @c page
 @node variables colon
 @section Manipulating colon variables

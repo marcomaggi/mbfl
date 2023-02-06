@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -26,7 +26,7 @@
 # USA.
 #
 
-#page
+
 #### array inspection
 
 function mbfl_array_is_empty () {
@@ -55,6 +55,20 @@ function mbfl_array_length () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF, 1, array variable name)
     echo mbfl_slots_number(mbfl_ARRAY_VARREF)
 }
+
+
+#### array manipulation
+
+function mbfl_array_copy () {
+    mbfl_mandatory_nameref_parameter(DST, 1, destination array variable)
+    mbfl_mandatory_nameref_parameter(SRC, 2, source array variable)
+
+    local KEY
+    for KEY in "${!SRC[@]}"
+    do mbfl_slot_set(DST, "$KEY", mbfl_slot_ref(SRC, "$KEY"))
+    done
+}
+
 
 ### end of file
 # Local Variables:
