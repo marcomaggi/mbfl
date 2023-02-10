@@ -1683,15 +1683,17 @@ local -a @var{ARRAYNAME}=$@var{INIT}
 
 
 @deffn {Preprocessor Macros} mbfl_slot_ref (@var{ARRAYNAME}, @var{KEY})
-Expands into the expression:
+@deffnx {Preprocessor Macros} mbfl_slot_qref (@var{ARRAYNAME}, @var{KEY})
+Expand as follows:
 
 @example
-$@{@var{ARRAYNAME}[@var{KEY}]@}
+mbfl_slot_ref(@var{ARRAYNAME},  @var{KEY}) @expansion{}  $@{@var{ARRAYNAME}[@var{KEY}]@}
+mbfl_slot_qref(@var{ARRAYNAME}, @var{KEY}) @expansion{} "$@{@var{ARRAYNAME}[@var{KEY}]@}"
 @end example
 
 @noindent
-which evaluates to the value of the slot @var{KEY} in the array variable @var{ARRAYNAME}.  This
-macro works with both indexed and associative arrays.
+which evaluate to the value of the slot @var{KEY} in the array variable @var{ARRAYNAME}.  These
+macros works with both indexed and associative arrays.
 @end deffn
 
 
@@ -1725,7 +1727,7 @@ Example:
 mbfl_declare_symbolic_array(PAIRS)
 mbfl_slot_set(PAIRS, 'abc', '123')
 mbfl_slot_append(PAIRS, 'abc', ' 456')
-"mbfl_slot_ref(PAIRS, 'abc')"   @result{} 123\ 456
+mbfl_slot_qref(PAIRS, 'abc')   @result{} 123\ 456
 @end example
 @end deffn
 

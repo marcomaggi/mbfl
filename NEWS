@@ -182,6 +182,9 @@ changes!
     mbfl_local_symbolic_array
     mbfl_local_numeric_array
     mbfl_slots_number
+    mbfl_slot_ref
+    mbfl_slot_qref
+    mbfl_slot_set
     mbfl_slot_value_len
     mbfl_slot_append
 

@@ -9,7 +9,7 @@ m4_dnl Abstract
 m4_dnl
 m4_dnl	Library of macros to preprocess BASH scripts using MBFL.
 m4_dnl
-m4_dnl Copyright (c) 2003-2005, 2009, 2013, 2018, 2020 Marco Maggi
+m4_dnl Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 m4_dnl <mrc.mgg@gmail.com>
 m4_dnl
 m4_dnl This  is free  software; you  can redistribute  it and/or  modify it
@@ -176,6 +176,8 @@ m4_define([[[mbfl_local_symbolic_array]]],   [[[local   -A $1[[[]]]m4_ifelse($2,
 m4_define([[[mbfl_slot_ref]]],    [[[${$1[$2]}]]])
 m4_define([[[mbfl_slot_set]]],    [[[$1[$2]=$3]]])
 m4_define([[[mbfl_slot_append]]], [[[$1[$2]+=$3]]])
+
+m4_define([[[mbfl_slot_qref]]],    [[["${$1[$2]}"]]])
 
 m4_define([[[mbfl_slots_number]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
 ${MBFL_SHARP()$1[@]}
