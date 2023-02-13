@@ -4140,7 +4140,7 @@ The following functions may be used to set, unset and query the state of the pre
 Query/set/unset the encoded arguments option.
 
 @func{mbfl_option_\OPTNAME\} returns true if the option @option{--\OPTARG\} was used on the command
-line.\TAILDOC\
+line.  \TAILDOC\
 @end defun
 
 @end macro
