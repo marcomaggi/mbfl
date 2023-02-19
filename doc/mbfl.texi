@@ -1385,6 +1385,10 @@ main
 @subsection Special NAMEREF declarations
 
 
+For other preprocessor macros handling arrays, @ref{preprocessor arrays, Manipulating arrays with
+macros}.  For functions handling array, @ref{arrays, Manipulating arrays with functions}.
+
+
 @deffn {Preprocessor Macro} mbfl_local_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
 Like @func{mbfl_local_varref} but always include the @code{-a} option to the @command{local}
 definition of the data variable.  This makes the data variable an indexed array.
@@ -1619,10 +1623,6 @@ unset -v @var{VAR}
 @section Manipulating arrays with macros
 
 
-In addition to the macros documented here, we can manipulate arrays with some functions;
-@ref{variables arrays, Manipulating arrays with functions}.
-
-
 @menu
 * preprocessor arrays declare:: Declaring arrays.
 * preprocessor arrays slots::   Accessing slots.
@@ -1632,6 +1632,11 @@ In addition to the macros documented here, we can manipulate arrays with some fu
 @c page
 @node preprocessor arrays declare
 @subsection Declaring arrays
+
+
+In addition to the macros documented here, we can manipulate arrays with some functions;
+@ref{arrays, Manipulating arrays with functions}.  We can also define variable name references to
+arrays, @ref{preprocessor nameref special, Special NAMEREF declarations}.
 
 
 @deffn {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME})
@@ -1680,6 +1685,11 @@ local -a @var{ARRAYNAME}=$@var{INIT}
 @c page
 @node preprocessor arrays slots
 @subsection Accessing slots
+
+
+In addition to the macros documented here, we can manipulate arrays with some functions;
+@ref{arrays, Manipulating arrays with functions}.  We can also define variable name references to
+arrays, @ref{preprocessor nameref special, Special NAMEREF declarations}.
 
 
 @deffn {Preprocessor Macros} mbfl_slot_ref (@var{ARRAYNAME}, @var{KEY})
@@ -1746,6 +1756,11 @@ which is meant to evaluate to the number of characters in the value of the slot 
 @c page
 @node preprocessor arrays inspect
 @subsection Inspecting arrays
+
+
+In addition to the macros documented here, we can manipulate arrays with some functions;
+@ref{arrays, Manipulating arrays with functions}.  We can also define variable name references to
+arrays, @ref{preprocessor nameref special, Special NAMEREF declarations}.
 
 
 @deffn {Preprocessor Macro} mbfl_slots_number (@var{ARRAYNAME})
@@ -2272,7 +2287,6 @@ func
 
 @menu
 * variables service::           Required user defined variables.
-* variables arrays::            Manipulating arrays with functions.
 * variables colon::             Manipulating colon variables.
 * variables misc::              Miscellaneous variable functions.
 @end menu
@@ -2416,12 +2430,80 @@ Notice that @code{script_DESCRIPTION} and @code{script_EXAMPLES}
 @strong{do not} end with a newline character.
 
 @c page
-@node variables arrays
+@node variables colon
+@section Manipulating colon variables
+
+
+@defun mbfl_variable_colon_variable_to_array @var{VARNAME}
+Take @var{VARNAME}'s value, a colon separated list of string, and store each string in the array
+@code{mbfl_FIELDS}, starting with a base index of zero.
+
+Example:
+
+@example
+VAR=a:b:c:d:e
+declare -a mbfl_FIELDS
+
+mbfl_variable_colon_variable_to_array VAR
+
+echo $@{#mbfl_FIELDS[*]@}       @print{} 5
+echo "$@{mbfl_FIELDS[0]@}"      @print{} a
+echo "$@{mbfl_FIELDS[1]@}"      @print{} b
+echo "$@{mbfl_FIELDS[2]@}"      @print{} c
+echo "$@{mbfl_FIELDS[3]@}"      @print{} d
+echo "$@{mbfl_FIELDS[4]@}"      @print{} e
+@end example
+@end defun
+
+
+@defun mbfl_variable_array_to_colon_variable @var{VARNAME}
+Store each value from the array @code{mbfl_FIELDS} (with base index zero) in @var{VARNAME} as a
+colon separated list of strings.
+
+Example:
+
+@example
+declare -a mbfl_FIELDS=(a b c d e)
+
+mbfl_variable_array_to_colon_variable VAR
+echo $VAR                       @print{} a:b:c:d:e
+@end example
+@end defun
+
+
+@defun mbfl_variable_colon_variable_drop_duplicate @var{VARNAME}
+Take @var{VARNAME}'s value, a colon separated list of string, and remove duplicates.  Reset
+@var{VARNAME} to the result.
+@end defun
+
+@c page
+@node variables misc
+@section Miscellaneous variable functions.
+
+
+@defun mbfl_variable_alloc @var{_RV}
+Generate a unique variable name and store it in the variable @var{_RV}.
+
+To avoid allocating the same name twice: the function examines the new name testing if its value as
+variable is empty; if it is empty, it considers it ``new''.  So, whenever we allocate a name: we
+should locally initialise the variable to some non--empty value.
+
+@example
+local NAME
+
+mbfl_variable_alloc NAME
+$NAME   @result{} mbfl_a_variable_2323_7652
+@end example
+@end defun
+
+@c page
+@node arrays
 @section Manipulating arrays with functions
 
 
 In addition to the functions documented here, we can manipulate arrays with some preprocessor
-macros; @ref{preprocessor arrays, Manipulating arrays with macros}.
+macros, @ref{preprocessor arrays, Manipulating arrays with macros}.  We can also define variable
+name references to arrays, @ref{preprocessor nameref special, Special NAMEREF declarations}.
 
 
 @defun mbfl_array_is_empty @var{ARRAY_VARNAME}
@@ -2493,73 +2575,6 @@ mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
 mbfl_slot_ref(DST, a)   @result{} 1
 mbfl_slot_ref(DST, b)   @result{} 2
 mbfl_slot_ref(DST, c)   @result{} 3
-@end example
-@end defun
-
-@c page
-@node variables colon
-@section Manipulating colon variables
-
-
-@defun mbfl_variable_colon_variable_to_array @var{VARNAME}
-Take @var{VARNAME}'s value, a colon separated list of string, and store each string in the array
-@code{mbfl_FIELDS}, starting with a base index of zero.
-
-Example:
-
-@example
-VAR=a:b:c:d:e
-declare -a mbfl_FIELDS
-
-mbfl_variable_colon_variable_to_array VAR
-
-echo $@{#mbfl_FIELDS[*]@}       @print{} 5
-echo "$@{mbfl_FIELDS[0]@}"      @print{} a
-echo "$@{mbfl_FIELDS[1]@}"      @print{} b
-echo "$@{mbfl_FIELDS[2]@}"      @print{} c
-echo "$@{mbfl_FIELDS[3]@}"      @print{} d
-echo "$@{mbfl_FIELDS[4]@}"      @print{} e
-@end example
-@end defun
-
-
-@defun mbfl_variable_array_to_colon_variable @var{VARNAME}
-Store each value from the array @code{mbfl_FIELDS} (with base index zero) in @var{VARNAME} as a
-colon separated list of strings.
-
-Example:
-
-@example
-declare -a mbfl_FIELDS=(a b c d e)
-
-mbfl_variable_array_to_colon_variable VAR
-echo $VAR                       @print{} a:b:c:d:e
-@end example
-@end defun
-
-
-@defun mbfl_variable_colon_variable_drop_duplicate @var{VARNAME}
-Take @var{VARNAME}'s value, a colon separated list of string, and remove duplicates.  Reset
-@var{VARNAME} to the result.
-@end defun
-
-@c page
-@node variables misc
-@section Miscellaneous variable functions.
-
-
-@defun mbfl_variable_alloc @var{_RV}
-Generate a unique variable name and store it in the variable @var{_RV}.
-
-To avoid allocating the same name twice: the function examines the new name testing if its value as
-variable is empty; if it is empty, it considers it ``new''.  So, whenever we allocate a name: we
-should locally initialise the variable to some non--empty value.
-
-@example
-local NAME
-
-mbfl_variable_alloc NAME
-$NAME   @result{} mbfl_a_variable_2323_7652
 @end example
 @end defun
 
