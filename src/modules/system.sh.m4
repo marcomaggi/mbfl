@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2005, 2009, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -221,7 +221,7 @@ function mbfl_system_passwd_uid_to_name_var () {
     mbfl_mandatory_integer_parameter(mbfl_THE_UID,       2, user id)
     local -i mbfl_USER_INDEX
     if mbfl_system_passwd_find_entry_by_uid_var mbfl_USER_INDEX $mbfl_THE_UID
-    then mbfl_system_passwd_get_name_var mbfl_RESULT_VARREF $mbfl_USER_INDEX
+    then mbfl_system_passwd_get_name_var mbfl_datavar(mbfl_RESULT_VARREF) $mbfl_USER_INDEX
     else return 1
     fi
 }
@@ -241,7 +241,7 @@ function mbfl_system_passwd_name_to_uid_var () {
     mbfl_mandatory_parameter(mbfl_THE_NAME,              2, user name)
     local -i mbfl_USER_INDEX
     if mbfl_system_passwd_find_entry_by_name_var mbfl_USER_INDEX "$mbfl_THE_NAME"
-    then mbfl_system_passwd_get_uid_var mbfl_RESULT_VARREF $mbfl_USER_INDEX
+    then mbfl_system_passwd_get_uid_var mbfl_datavar(mbfl_RESULT_VARREF) $mbfl_USER_INDEX
     else return 1
     fi
 }
@@ -479,7 +479,7 @@ function mbfl_system_group_gid_to_name_var () {
     mbfl_mandatory_integer_parameter(mbfl_THE_GID,       2, group id)
     local -i mbfl_GROUP_INDEX
     if mbfl_system_group_find_entry_by_gid_var mbfl_GROUP_INDEX $mbfl_THE_GID
-    then mbfl_system_group_get_name_var mbfl_RESULT_VARREF $mbfl_GROUP_INDEX
+    then mbfl_system_group_get_name_var mbfl_datavar(mbfl_RESULT_VARREF) $mbfl_GROUP_INDEX
     else return 1
     fi
 }
@@ -499,7 +499,7 @@ function mbfl_system_group_name_to_gid_var () {
     mbfl_mandatory_parameter(mbfl_THE_NAME,              2, group name)
     local -i GROUP_INDEX
     if mbfl_system_group_find_entry_by_name_var GROUP_INDEX "$mbfl_THE_NAME"
-    then mbfl_system_group_get_gid_var mbfl_RESULT_VARREF $GROUP_INDEX
+    then mbfl_system_group_get_gid_var mbfl_datavar(mbfl_RESULT_VARREF) $GROUP_INDEX
     else return 1
     fi
 }
