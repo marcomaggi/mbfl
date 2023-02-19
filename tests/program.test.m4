@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2004, 2005, 2012, 2013, 2014, 2018, 2020 Marco Maggi
+# Copyright (c) 2004, 2005, 2012, 2013, 2014, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -29,13 +29,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
 mbfl_load_library("$MBFL_TESTS_LIBMBFL")
 mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
-#page
+
 #### splitting path
 
 function program-split-path-1.1 () {
@@ -47,7 +47,7 @@ function program-split-path-1.1 () {
     fi
 }
 
-#PAGE
+
 #### run simple programs
 
 function program-1.1.1 () {
@@ -80,7 +80,7 @@ function program-1.2.4 () {
     ! mbfl_program_exec2 0 1 2 false
 }
 
-#page
+
 #### tests for mbfl_declare_program and related stuff
 
 function program-3.1 () {
@@ -122,7 +122,7 @@ function program-3.6 () {
     dotest-equal 99 $?
 }
 
-#page
+
 #### tests for sudo invocation
 
 function program-4.1 () {
@@ -168,7 +168,7 @@ function program-4.2 () {
     fi
 }
 
-#page
+
 #### tests for background execution
 
 # Background execution with "mbfl_program_execbg()".
@@ -192,8 +192,8 @@ function program-5.1.1 () {
 		    {
 			mbfl_location_handler 'mbfl_fd_close 11'
 			mbfl_set_option_show_program
-			mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; read -n 0 ; echo -n "$REPLY" >&1'
-			if wait $mbfl_program_BGPID
+			mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; read -n 3 -u 0; echo -n "$REPLY" >&1'
+			if mbfl_process_wait $mbfl_program_BGPID
 			then
 			    if false
 			    then
@@ -238,8 +238,8 @@ function program-5.1.2 () {
 			mbfl_location_handler 'mbfl_fd_close 11'
 			mbfl_program_redirect_stderr_to_stdout
 			mbfl_set_option_show_program
-			mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; echo -n err >&2 ; read -n 0 ; echo -n "$REPLY" >&1'
-			if wait $mbfl_program_BGPID
+			mbfl_program_execbg 10 11 "$BASH" -c 'echo -n out >&1; echo -n err >&2 ; read -n 3 -u 0; echo -n "$REPLY" >&1'
+			if mbfl_process_wait $mbfl_program_BGPID
 			then
 			    if false
 			    then
@@ -262,7 +262,7 @@ function program-5.1.2 () {
     dotest-clean-files
 }
 
-#page
+
 #### tests for background execution with more channels redirection
 
 # Background execution with "mbfl_program_execbg2()".
@@ -313,8 +313,8 @@ function program-5.2 () {
 	    fi
 
 	    mbfl_set_option_show_program
-	    mbfl_program_execbg2 10 11 12 "$BASH" -c 'echo -n out >&1; echo -n err >&2; read -n 0 ; echo -n "$REPLY" >&1'
-	    if wait $mbfl_program_BGPID
+	    mbfl_program_execbg2 10 11 12 "$BASH" -c 'echo -n out >&1; echo -n err >&2; read -n 3 -u 0; echo -n "$REPLY" >&1'
+	    if mbfl_process_wait $mbfl_program_BGPID
 	    then
 		if false
 		then
@@ -338,7 +338,7 @@ function program-5.2 () {
     return $RV
 }
 
-#page
+
 #### finding programs
 
 function program-find-1.1 () {
@@ -361,7 +361,7 @@ function program-find-2.1 () {
      dotest-equal /bin/ls "$RESULT")
 }
 
-#page
+
 #### executing by replacing
 
 function program-replace-1.1 () {
@@ -392,7 +392,7 @@ function program-replace-2.2 () {
     dotest-equal "$RESULT" "$mbfl_PROGRAM_BASH"
 }
 
-#PAGE
+
 #### let's go
 
 dotest program-
