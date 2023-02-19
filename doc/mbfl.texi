@@ -4202,6 +4202,22 @@ function call.
 @section Interface functions
 
 
+@menu
+* getopts interface declare::   Declaring command--line options.
+* getopts interface parse::     Parsing command--line options.
+* getopts interface preds::     Inspecting string options with
+                                predicates.
+* getopts interface args::      Command--line arguments.
+* getopts interface exit::      Exiting and returning.
+* getopts interface gather::    Gathering predefined options.
+* getopts interface misc::      Miscellaneous functions.
+@end menu
+
+@c page
+@node getopts interface declare
+@subsection Declaring command--line options
+
+
 Every declared option should have a long switch, the brief switch can be omitted.
 
 
@@ -4238,9 +4254,13 @@ sequences in @var{DESCRIPTION}.
 @end table
 @end defun
 
+@c page
+@node getopts interface parse
+@subsection Parsing command--line options
+
 
 @defun mbfl_getopts_parse
-Parse a set of command line options.  The options are handed to user defined functions.  The global
+Parse a set of command--line options.  The options are handed to user defined functions.  The global
 array @code{ARGV1} and the global variable @code{ARGC1} must hold the command line arguments and the
 number of command line arguments, the global variable @code{ARG1ST} must hold the index of the first
 element in @code{ARGV1} that must be parsed.  Non--option arguments are left in the global array
@@ -4248,6 +4268,10 @@ element in @code{ARGV1} that must be parsed.  Non--option arguments are left in 
 
 If successful return @code{0}, else return @code{1}.
 @end defun
+
+@c page
+@node getopts interface preds
+@subsection Inspecting string options with predicates
 
 
 @defun mbfl_getopts_islong @var{STRING}
@@ -4359,6 +4383,27 @@ mbfl_getopts_isbrief_with wappa         @result{} 1
 @end example
 @end defun
 
+@c page
+@node getopts interface args
+@subsection Command--line arguments
+
+
+Usually, in a script action function, we want to do this:
+
+@example
+function script_action_DO_SOMETHING () @{
+    local -r NUMBER_OF_REQUIRED_ARGUMENTS=3
+
+    if ! mbfl_wrong_num_args $NUMBER_OF_REQUIRED_ARGUMENTS $ARGC
+    then
+        mbfl_main_print_usage_screen_brief
+        exit_because_wrong_num_args
+    fi
+
+    ... do something ...
+@}
+@end example
+
 
 @defun mbfl_wrong_num_args @var{REQUIRED} @var{PRESENT}
 Validate the number of arguments.  @var{REQUIRED} is the required number of arguments, @var{PRESENT}
@@ -4371,12 +4416,6 @@ the required one: print an error message and return with code one; else return w
 Validate the number of arguments.  @var{ARGC} must be between @var{MIN_REQUIRED} and
 @var{MAX_REQUIRED}, inclusive.
 @end defun
-
-
-@deffn {Function} exit_because_wrong_num_args
-@deffnx {Alias} return_because_wrong_num_args
-Exit or return with code @code{98}.
-@end deffn
 
 
 @defun mbfl_argv_from_stdin
@@ -4394,32 +4433,13 @@ Check that all the arguments in @code{ARGV} are file names of existent files.  R
 if no errors, else print an error message and return with code 1.
 @end defun
 
-
-@defun mbfl_getopts_print_long_switches
-Print all the long switches in a row, separated by spaces.  This is useful to retrieve the option
-for Bash programmable completion.
-@end defun
-
-
-@deffn {Function} exit_because_invalid_option_declaration
-@deffnx {Alias} return_because_invalid_option_declaration
-Exit or return with code @code{93}.
-@end deffn
-
-
-@deffn {Function} exit_because_invalid_option_argument
-@deffnx {Alias} return_because_invalid_option_argument
-Exit or return with code @code{92}.
-@end deffn
-
-
-@defun mbfl_getopts_reset
-Reset to empty the internal state representing the declared options.
-@end defun
+@c page
+@node getopts interface gather
+@subsection Gathering predefined options
 
 
 @defun mbfl_getopts_gather_mbfl_options_var @var{_RV}
-Append to the data variable whose name is @var{_RV} a list of @mbfl{} command line options
+Append to the data variable whose name is @var{_RV} a list of @mbfl{} command--line options
 reflecting the current @mbfl{} options state.  Assuming no predefined options were given on the
 command line:
 
@@ -4447,6 +4467,44 @@ mbfl_option_interactive
 mbfl_option_null
 mbfl_option_encoded_args
 @end example
+@end defun
+
+@c page
+@node getopts interface exit
+@subsection Exiting and returning
+
+
+@deffn {Function} exit_because_wrong_num_args
+@deffnx {Alias} return_because_wrong_num_args
+Exit or return with code @code{98}.
+@end deffn
+
+
+
+@deffn {Function} exit_because_invalid_option_declaration
+@deffnx {Alias} return_because_invalid_option_declaration
+Exit or return with code @code{93}.
+@end deffn
+
+
+@deffn {Function} exit_because_invalid_option_argument
+@deffnx {Alias} return_because_invalid_option_argument
+Exit or return with code @code{92}.
+@end deffn
+
+@c page
+@node getopts interface misc
+@subsection Miscellaneous functions
+
+
+@defun mbfl_getopts_print_long_switches
+Print all the long switches in a row, separated by spaces.  This is useful to retrieve the option
+for Bash programmable completion.
+@end defun
+
+
+@defun mbfl_getopts_reset
+Reset to empty the internal state representing the declared options.
 @end defun
 
 @c page
