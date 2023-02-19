@@ -9,7 +9,7 @@
 #	This is the utilities library file of MBFL.  It can be sourced in shell scripts at the
 #	beginning of evaluation.
 #
-# Copyright (c) 2020 Marco Maggi
+# Copyright (c) 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -25,7 +25,9 @@
 # 02111-1307 USA.
 #
 
-declare -r mbfl_LOADED_MBFLUTILS='yes'
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then declare -r mbfl_LOADED_MBFLUTILS='yes'
+fi
 
 m4_include(utils-file.sh)
 
