@@ -1774,6 +1774,17 @@ $@{#@var{ARRAYNAME}[@@]@}
 evaluating to the number of pairs in the array variable @var{ARRAYNAME}.
 @end deffn
 
+
+@deffn {Preprocessor Macro} mbfl_slots_values (@var{ARRAYNAME}))
+@deffnx {Preprocessor Macro} mbfl_slots_qvalues (@var{ARRAYNAME}))
+Expand to a ``list'' of array values, respectively:
+
+@example
+ mbfl_slots_values(@var{ARRAYNAME})     @expansion{}  $@{@var{ARRAYNAME}[@@]@}
+mbfl_slots_qvalues(@var{ARRAYNAME})     @expansion{} "$@{@var{ARRAYNAME}[@@]@}"
+@end example
+@end deffn
+
 @c page
 @node base
 @chapter Some base functions and variables
@@ -4438,6 +4449,22 @@ if no errors, else print an error message and return with code 1.
 @subsection Gathering predefined options
 
 
+Gathering predefined options is useful when executing an @mbfl{} script as subprocess for an @mbfl{}
+script: we can hand the subprocess the same options that were given to the process, or maybe change
+them.  The following functions are used to gather the required options:
+
+@example
+mbfl_option_verbose
+mbfl_option_verbose_program
+mbfl_option_debug
+mbfl_option_show_program
+mbfl_option_test
+mbfl_option_interactive
+mbfl_option_null
+mbfl_option_encoded_args
+@end example
+
+
 @defun mbfl_getopts_gather_mbfl_options_var @var{_RV}
 Append to the data variable whose name is @var{_RV} a list of @mbfl{} command--line options
 reflecting the current @mbfl{} options state.  Assuming no predefined options were given on the
@@ -4452,20 +4479,72 @@ mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
 "$FLAGS"        @result{} '--verbose --test'
 @end example
 
-This is useful when executing an @mbfl{} script as subprocess for an @mbfl{} script: we can hand the
-subprocess the same options that were given to the process, or maybe change them.
-
-This function uses the following functions to gather the required options:
+We can test how this works with:
 
 @example
-mbfl_option_verbose
-mbfl_option_verbose_program
-mbfl_option_debug
-mbfl_option_show_program
-mbfl_option_test
-mbfl_option_interactive
-mbfl_option_null
-mbfl_option_encoded_args
+@{
+   mbfl_local_varref(FLAGS)
+   local -a ARGV1=('--show-program' '--verbose-program')
+   local -i ARGC1=mbfl_slots_number(ARGV1)
+   local -i ARG1ST=0
+   local -a ARGV
+   local -i ARGC=0
+
+   mbfl_getopts_reset
+   mbfl_getopts_parse
+
+   FLAGS='-a -b -c'
+   mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
+   mbfl_string_equal "$FLAGS" '-a -b -c --verbose-program --show-program'
+@}
+@result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_getopts_gather_mbfl_options_array @var{_RV_ARRAY}
+Append to the pairs in the indexed array variable whose name is @var{_RV_ARRAY} a list of @mbfl{}
+command--line options reflecting the current @mbfl{} options state.  Assuming no predefined options
+were given on the command line:
+
+@example
+mbfl_local_index_array_varref(FLAGS_ARRY)
+
+mbfl_set_option_verbose
+mbfl_set_option_test
+mbfl_getopts_gather_mbfl_options_array mbfl_datavar(FLAGS_ARRY)
+mbfl_slot_ref(FLAGS_ARRY, 0)    @result{} --verbose
+mbfl_slot_ref(FLAGS_ARRY, 1)    @result{} --test
+@end example
+
+We can test how this works with:
+
+@example
+@{
+   mbfl_local_index_array_varref(FLAGS_ARRY, ('-a' '-b' '-c'))
+   local -a ARGV1=('--show-program' '--verbose-program')
+   local -i ARGC1=mbfl_slots_number(ARGV1)
+   local -i ARG1ST=0
+   local -a ARGV
+   local -i ARGC=0
+
+   mbfl_getopts_reset
+   mbfl_getopts_parse
+
+   FLAGS='-a -b -c'
+   mbfl_getopts_gather_mbfl_options_array mbfl_datavar(FLAGS_ARRY)
+   mbfl_slot_ref(FLAGS_ARRY, 0)         @result{} -a
+   mbfl_slot_ref(FLAGS_ARRY, 1)         @result{} -b
+   mbfl_slot_ref(FLAGS_ARRY, 2)         @result{} -c
+   mbfl_slot_ref(FLAGS_ARRY, 3)         @result{} --verbose-program
+   mbfl_slot_ref(FLAGS_ARRY, 4)         @result{} --show-program
+@}
+@end example
+
+Once we have built the array, we can extract its values with:
+
+@example
+mbfl_slots_qvalues(FLAGS_ARRY)
 @end example
 @end defun
 

@@ -10,7 +10,7 @@
 #
 #		$ TESTMATCH=getopts- bash getopts.test
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -32,13 +32,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
 mbfl_load_library("$MBFL_TESTS_LIBMBFL")
 mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
-#page
+
 
 function getopts-1.1 () { mbfl_getopts_islong --option; }
 function getopts-1.2 () { ! mbfl_getopts_islong -option;  }
@@ -52,7 +52,7 @@ function getopts-1.7 () {
     dotest-equal option $name
 }
 
-#page
+
 
 function getopts-2.1 () { mbfl_getopts_islong_with --option=one ; }
 function getopts-2.2 () { ! mbfl_getopts_islong_with --option ; }
@@ -79,7 +79,7 @@ function getopts-2.7 () {
 }
 function getopts-2.8 () { ! mbfl_getopts_islong_with --afasd= ; }
 
-#page
+
 
 function getopts-3.1 () { mbfl_getopts_isbrief -a; }
 function getopts-3.2 () { ! mbfl_getopts_isbrief -aa; }
@@ -97,7 +97,7 @@ function getopts-4.4 () {
     dotest-equal A $p_name && dotest-equal 123 $p_value
 }
 
-#page
+
 
 function getopts-5.1 () {
     mbfl_getopts_reset
@@ -121,7 +121,7 @@ function getopts-5.4 () {
     dotest-equal script_action_alpha ${mbfl_main_SCRIPT_FUNCTION}
 }
 
-#page
+
 
 function getopts-6.1 () {
     mbfl_getopts_reset
@@ -139,7 +139,7 @@ function getopts-6.3 () {
 	dotest-output '<unknown>: error: action option must be with no argument "ACTION_DELTA"'
 }
 
-#page
+
 
 function getopts-7.1 () {
     mbfl_getopts_reset
@@ -149,7 +149,7 @@ function getopts-7.1 () {
         '--option --another'
 }
 
-#page
+
 #### parsing tests: brief options
 
 # brief options with no argument
@@ -245,7 +245,7 @@ function getopts-8.2.4 () {
     dotest-equal 1 $?
 }
 
-#page
+
 #### parsing tests: long options
 
 ## long options with no argument
@@ -342,7 +342,7 @@ function getopts-9.2.4 () {
     dotest-equal 1 $?
 }
 
-#page
+
 #### parsing tests: end of options marker
 
 function getopts-10.1 () {
@@ -399,8 +399,8 @@ function getopts-10.3 () {
 	&& dotest-equal 0  ${ARGC}
 }
 
-#page
-#### miscellaneous functions
+
+#### gathering options into a variable
 
 # Gather MBFL options: empty FLAGS, no options.
 #
@@ -409,7 +409,7 @@ function getopts-11.0 () {
 
     mbfl_getopts_reset
     local -a ARGV1=()
-    local -i ARGC1=${#ARGV1[@]}
+    local -i ARGC1=mbfl_slots_number(ARGV1)
     local -i ARG1ST=0
     mbfl_getopts_parse
     mbfl_getopts_gather_mbfl_options_var mbfl_datavar(FLAGS)
@@ -423,7 +423,7 @@ function getopts-11.1 () {
 
     mbfl_getopts_reset
     local -a ARGV1=()
-    local -i ARGC1=${#ARGV1[@]}
+    local -i ARGC1=mbfl_slots_number(ARGV1)
     local -i ARG1ST=0
     mbfl_getopts_parse
     FLAGS='-a -b -c'
@@ -444,7 +444,7 @@ function getopts-11.2 () {
     mbfl_unset_option_test
 
     local -a ARGV1=('--show-program' '--verbose-program')
-    local -i ARGC1=${#ARGV1[@]}
+    local -i ARGC1=mbfl_slots_number(ARGV1)
     local -i ARG1ST=0
     local -a ARGV
     local -i ARGC=0
@@ -474,7 +474,90 @@ function getopts-11.3 () {
     dotest-equal '-a -b -c --verbose --test' "$FLAGS"
 }
 
-#page
+
+#### gathering options into an indexed array
+
+# Gather MBFL options: empty FLAGS_ARRY, no options.
+#
+function getopts-12.0 () {
+    mbfl_local_index_array_varref(FLAGS_ARRY)
+
+    mbfl_getopts_reset
+    local -a ARGV1=()
+    local -i ARGC1=mbfl_slots_number(ARGV1)
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+    mbfl_getopts_gather_mbfl_options_array mbfl_datavar(FLAGS_ARRY)
+    dotest-equal '' mbfl_slots_qvalues(FLAGS_ARRY)
+}
+
+# Gather MBFL options: non-empty FLAGS_ARRY, no options.
+#
+function getopts-12.1 () {
+    mbfl_local_index_array_varref(FLAGS_ARRY, ('-a' '-b' '-c'))
+
+    mbfl_getopts_reset
+    local -a ARGV1=()
+    local -i ARGC1=mbfl_slots_number(ARGV1)
+    local -i ARG1ST=0
+    mbfl_getopts_parse
+
+    mbfl_getopts_gather_mbfl_options_array mbfl_datavar(FLAGS_ARRY)
+    dotest-equal	'-a'			mbfl_slot_ref(FLAGS_ARRY, 0)	&& \
+	dotest-equal	'-b'			mbfl_slot_ref(FLAGS_ARRY, 1)	&& \
+	dotest-equal	'-c'			mbfl_slot_ref(FLAGS_ARRY, 2)
+}
+
+# Gather MBFL options: non-empty FLAGS_ARRY, some options.
+#
+function getopts-12.2 () {
+    mbfl_local_index_array_varref(FLAGS_ARRY, ('-a' '-b' '-c'))
+
+    mbfl_getopts_reset
+    mbfl_unset_option_verbose
+    mbfl_unset_option_verbose_program
+    mbfl_unset_option_debug
+    mbfl_unset_option_show_program
+    mbfl_unset_option_test
+
+    local -a ARGV1=('--show-program' '--verbose-program')
+    local -i ARGC1=mbfl_slots_number(ARGV1)
+    local -i ARG1ST=0
+    local -a ARGV
+    local -i ARGC=0
+    mbfl_getopts_parse
+
+    mbfl_getopts_gather_mbfl_options_array mbfl_datavar(FLAGS_ARRY)
+    dotest-equal	'-a'			mbfl_slot_ref(FLAGS_ARRY, 0)	&& \
+	dotest-equal	'-b'			mbfl_slot_ref(FLAGS_ARRY, 1)	&& \
+	dotest-equal	'-c'			mbfl_slot_ref(FLAGS_ARRY, 2)	&& \
+	dotest-equal	'--verbose-program'	mbfl_slot_ref(FLAGS_ARRY, 3)	&& \
+	dotest-equal	'--show-program'	mbfl_slot_ref(FLAGS_ARRY, 4)
+}
+
+# Gather MBFL options: non-empty FLAGS_ARRY, some options.
+#
+function getopts-12.3 () {
+    mbfl_local_index_array_varref(FLAGS_ARRY, ([0]='-a' [1]='-b' [2]='-c'))
+
+    mbfl_getopts_reset
+    mbfl_unset_option_verbose
+    mbfl_unset_option_verbose_program
+    mbfl_unset_option_debug
+    mbfl_unset_option_show_program
+    mbfl_unset_option_test
+
+    mbfl_set_option_verbose
+    mbfl_set_option_test
+    mbfl_getopts_gather_mbfl_options_array mbfl_datavar(FLAGS_ARRY)
+    dotest-equal	'-a'			mbfl_slot_ref(FLAGS_ARRY, 0)	&& \
+	dotest-equal	'-b'			mbfl_slot_ref(FLAGS_ARRY, 1)	&& \
+	dotest-equal	'-c'			mbfl_slot_ref(FLAGS_ARRY, 2)	&& \
+	dotest-equal	'--verbose'		mbfl_slot_ref(FLAGS_ARRY, 3)	&& \
+	dotest-equal	'--test'		mbfl_slot_ref(FLAGS_ARRY, 4)
+}
+
+
 #### let's go
 
 dotest getopts-

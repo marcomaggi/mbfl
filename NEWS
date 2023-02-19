@@ -182,6 +182,8 @@ changes!
     mbfl_local_symbolic_array
     mbfl_local_numeric_array
     mbfl_slots_number
+    mbfl_slots_values
+    mbfl_slots_qvalues
     mbfl_slot_ref
     mbfl_slot_qref
     mbfl_slot_set
@@ -251,6 +253,7 @@ changes!
 
     mbfl_getopts_reset
     mbfl_getopts_gather_mbfl_options_var
+    mbfl_getopts_gather_mbfl_options_array
 
 * Added functions:
 
