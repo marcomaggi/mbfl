@@ -350,6 +350,28 @@ src/lib/libmbfl-arch.bash: src/lib/libmbfl-arch.bash.m4 $(MBFL_LIBARCH_PREREQUIS
 	$(MBFL_LIBARCH_RUN) $(MBFL_LIBARCH_FLAGS) <$< >$@
 
 
+#### libmbfl-passwords generation
+
+EXTRA_DIST			+= src/lib/libmbfl-passwords.bash.m4
+mbfllibpasswordsdir		= $(MBFL_LIB_INSTDIR)
+mbfllibpasswords_DATA		= src/lib/libmbfl-passwords.bash
+CLEANFILES			+=		\
+	src/lib/libmbfl-passwords.bash		\
+	src/lib/$(am__dirstamp)
+
+MBFL_LIBPASSWORDS_ENV		=
+MBFL_LIBPASSWORDS_RUN		= $(MBFL_LIBPASSWORDS_ENV) $(MBFL_RUN_MBFLPP)
+MBFL_LIBPASSWORDS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
+
+MBFL_LIBPASSWORDS_PREREQUISITES	=		\
+	src/lib/$(am__dirstamp)			\
+	$(MBFL_PROGRAM_MBFLPP)			\
+	$(MBFL_PREPROCESSOR)
+
+src/lib/libmbfl-passwords.bash: src/lib/libmbfl-passwords.bash.m4 $(MBFL_LIBPASSWORDS_PREREQUISITES)
+	$(MBFL_LIBPASSWORDS_RUN) $(MBFL_LIBPASSWORDS_FLAGS) <$< >$@
+
+
 #### examples
 
 EXTRA_DIST			+=		\
@@ -456,6 +478,7 @@ EXTRA_DIST			+=		\
 	tests/variables.test.m4			\
 	\
 	tests/mbflutils-files.test.m4		\
+	tests/mbfl-passwords.test.m4		\
 	\
 	tests/script-atexit.sh.m4		\
 	tests/signaltest.sh.m4
@@ -482,7 +505,8 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/times-and-dates.test		\
 	tests/variables.test			\
 	\
-	tests/mbflutils-files.test
+	tests/mbflutils-files.test		\
+	tests/mbfl-passwords.test
 
 MBFL_CHECK_BUILT_EXAMPLES		=	\
 	examples/compress.sh			\
@@ -510,10 +534,12 @@ MBFL_TESTS_LIBMBFL	= $(builddir)/src/lib/libmbfl.bash
 MBFL_TESTS_LIBMBFLTEST	= $(builddir)/src/lib/libmbfltest.bash
 MBFL_TESTS_LIBMBFLARCH	= $(builddir)/src/lib/libmbfl-arch.bash
 MBFL_TESTS_LIBMBFLUTILS	= $(builddir)/src/lib/libmbfl-utils.bash
+MBFL_TESTS_LIBMBFLPASSWORDS = $(builddir)/src/lib/libmbfl-passwords.bash
 MBFL_TESTS_ENV		=  MBFL_TESTS_LIBMBFL=$(MBFL_TESTS_LIBMBFL); export MBFL_TESTS_LIBMBFL;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLTEST=$(MBFL_TESTS_LIBMBFLTEST); export MBFL_TESTS_LIBMBFLTEST;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLARCH=$(MBFL_TESTS_LIBMBFLARCH); export MBFL_TESTS_LIBMBFLARCH;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLUTILS=$(MBFL_TESTS_LIBMBFLUTILS); export MBFL_TESTS_LIBMBFLUTILS;
+MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLPASSWORDS=$(MBFL_TESTS_LIBMBFLPASSWORDS); export MBFL_TESTS_LIBMBFLPASSWORDS;
 # We  set TMPDIR  because  if the  "/tmp" directory  is  mounted on  a
 # separate partition with "noexec"  attribute: tests for executability
 # of files  will fail if  the temporary  test files are  created under
@@ -533,6 +559,7 @@ MBFL_TESTS_PREREQUISITES	=		\
 	$(MBFL_TESTS_LIBMBFLTEST)		\
 	$(MBFL_TESTS_LIBMBFLARCH)		\
 	$(MBFL_TESTS_LIBMBFLUTILS)		\
+	$(MBFL_TESTS_LIBMBFLPASSWORDS)		\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
