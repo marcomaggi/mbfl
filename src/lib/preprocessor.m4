@@ -180,7 +180,7 @@ m4_define([[[mbfl_slot_append]]], [[[$1[$2]+=$3]]])
 m4_define([[[mbfl_slot_qref]]],    [[["${$1[$2]}"]]])
 
 m4_define([[[mbfl_slots_number]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-${MBFL_SHARP()$1[@]}
+${MBFL_SHARP()$1[@]}m4_dnl
 m4_changecom([[[MBFL_SHARP()]]])]]])
 
 m4_define([[[mbfl_slot_value_len]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
@@ -188,11 +188,11 @@ ${MBFL_SHARP()$1[$2]}m4_dnl
 m4_changecom([[[MBFL_SHARP()]]])]]])
 
 m4_define([[[mbfl_slots_values]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-${$1[@]}
+${$1[@]}m4_dnl
 m4_changecom([[[MBFL_SHARP()]]])]]])
 
 m4_define([[[mbfl_slots_qvalues]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-"${$1[@]}"
+"${$1[@]}"m4_dnl
 m4_changecom([[[MBFL_SHARP()]]])]]])
 
 
