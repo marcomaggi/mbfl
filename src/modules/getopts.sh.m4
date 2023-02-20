@@ -653,28 +653,28 @@ function mbfl_getopts_gather_mbfl_options_array () {
     local -i IDX=mbfl_slots_number(FLAGS_ARRY)
 
     if mbfl_option_verbose
-    then mbfl_slot_set(FLAGS_ARRY, $IDX, ' --verbose'); let ++IDX
+    then mbfl_slot_set(FLAGS_ARRY, $IDX, '--verbose'); let ++IDX
     fi
     if mbfl_option_verbose_program
-    then mbfl_slot_set(FLAGS_ARRY, $IDX, ' --verbose-program'); let ++IDX
+    then mbfl_slot_set(FLAGS_ARRY, $IDX, '--verbose-program'); let ++IDX
     fi
     if mbfl_option_debug
-    then mbfl_slot_set(FLAGS_ARRY, $IDX, ' --debug'); let ++IDX
+    then mbfl_slot_set(FLAGS_ARRY, $IDX, '--debug'); let ++IDX
     fi
     if mbfl_option_show_program
-    then mbfl_slot_set(FLAGS_ARRY, $IDX, ' --show-program'); let ++IDX
+    then mbfl_slot_set(FLAGS_ARRY, $IDX, '--show-program'); let ++IDX
     fi
     if mbfl_option_test
-    then mbfl_slot_set(FLAGS_ARRY, $IDX, ' --test'); let ++IDX
+    then mbfl_slot_set(FLAGS_ARRY, $IDX, '--test'); let ++IDX
     fi
     if mbfl_option_interactive
-    then mbfl_slot_set(FLAGS_ARRY, $IDX, ' --interactive'); let ++IDX
+    then mbfl_slot_set(FLAGS_ARRY, $IDX, '--interactive'); let ++IDX
     fi
     if mbfl_option_null
-    then mbfl_slot_set(FLAGS_ARRY, $IDX, ' --null'); let ++IDX
+    then mbfl_slot_set(FLAGS_ARRY, $IDX, '--null'); let ++IDX
     fi
     if mbfl_option_encoded_args
-    then mbfl_slot_set(FLAGS_ARRY, $IDX, ' --encoded-args'); let ++IDX
+    then mbfl_slot_set(FLAGS_ARRY, $IDX, '--encoded-args'); let ++IDX
     fi
 }
 
