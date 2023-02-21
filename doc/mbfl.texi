@@ -2907,9 +2907,19 @@ into lower case.
 @section Matching a string with a class
 
 
+@menu
+* strings class char::          Character classes.
+* strings class string::        String classes.
+* strings class special::       Special well known string formats.
+@end menu
+
+@c page
+@node strings class char
+@subsection Character classes
+
+
 @defun mbfl_string_is_alpha_char @var{CHAR}
-Return true if @var{CHAR} is in one of the ranges: @samp{[a-z]},
-@samp{[A-Z]}.
+Return true if @var{CHAR} is in one of the ranges: @samp{[a-z]}, @samp{[A-Z]}.
 @end defun
 
 
@@ -2929,34 +2939,187 @@ mbfl_string_is_alpha_char @var{CHAR} || \
 
 
 @defun mbfl_string_is_noblank_char @var{CHAR}
-Return true if @var{CHAR} is none of the characters: @samp{ },
-@samp{\n}, @samp{\r}, @samp{\f}, @samp{\t}.  @var{CHAR} is meant to be
-the unquoted version of the non--blank characters, the one obtained
-with:
+Return true if @var{CHAR} is none of the characters: @samp{ }, @samp{\n}, @samp{\r}, @samp{\f},
+@samp{\t}.  @var{CHAR} is meant to be the unquoted version of the non--blank characters, the one
+obtained with:
 
 @example
-$'char'
+$'@var{CHAR}'
 @end example
 @end defun
 
 
 @defun mbfl_string_is_name_char @var{CHAR}
-Return true if @func{mbfl_string_is_alnum_char} returns true when
-applied to @var{CHAR} or @var{CHAR} is an underscore, @samp{_}.
+Return true if @func{mbfl_string_is_alnum_char} returns true when applied to @var{CHAR} or
+@var{CHAR} is an underscore, @samp{_}.
 @end defun
 
 
 @defun mbfl_string_is_identifier_char @var{CHAR}
-Return true if @func{mbfl_string_is_alnum_char} returns true when
-applied to @var{CHAR} or @var{CHAR} is an underscore, @samp{_}, or dash,
-@samp{-}.
+Return true if @func{mbfl_string_is_alnum_char} returns true when applied to @var{CHAR} or
+@var{CHAR} is an underscore, @samp{_}, or dash, @samp{-}.
 @end defun
 
 
 @defun mbfl_string_is_extended_identifier_char @var{CHAR}
-Like @func{mbfl_string_is_identifier_char}, but also accept dots
-@samp{.}.
+Like @func{mbfl_string_is_identifier_char}, but also accept dots @samp{.}.
 @end defun
+
+
+@defun mbfl_string_is_ascii_symbol_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+. , : ;
+@{ [ ( ) ] @}
+_
+= < > ~
++ - * / %
+& $ ! ?
+" ' ` ^
+| # @
+@end example
+@end defun
+
+
+@defun mbfl_string_is_lower_case_vowel_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+a e i o u y
+@end example
+@end defun
+
+
+@defun mbfl_string_is_lower_case_consonant_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+b c d f g h j k l m n p q r s t v w x z
+@end example
+@end defun
+
+
+@defun mbfl_string_is_lower_case_base16_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+a b c d e f 0 1 2 3 4 5 6 7 8 9
+@end example
+@end defun
+
+
+@defun mbfl_string_is_upper_case_vowel_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+A E I O U Y
+@end example
+@end defun
+
+
+@defun mbfl_string_is_upper_case_consonant_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+B C D F G H J K L M N P Q R S T V W X Z
+@end example
+@end defun
+
+
+@defun mbfl_string_is_upper_case_base16_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+A B C D E F 0 1 2 3 4 5 6 7 8 9
+@end example
+@end defun
+
+
+@defun mbfl_string_is_mixed_case_vowel_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+a e i o u y
+A E I O U Y
+@end example
+@end defun
+
+
+@defun mbfl_string_is_mixed_case_consonant_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+b c d f g h j k l m n p q r s t v w x z
+B C D F G H J K L M N P Q R S T V W X Z
+@end example
+@end defun
+
+
+@defun mbfl_string_is_mixed_case_base16_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+A B C D E F
+a b c d e f
+0 1 2 3 4 5 6 7 8 9
+@end example
+@end defun
+
+
+@defun mbfl_string_is_base32_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+2 3 4 5 6 7
+@end example
+
+@noindent
+according to @rfc{} 4648, without padding character, as described in:
+
+@center @url{https://datatracker.ietf.org/doc/html/rfc4648}
+@end defun
+
+
+@defun mbfl_string_is_base64_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+0 1 2 3 4 5 6 7 8 9
++ /
+@end example
+
+@noindent
+according to @rfc{} 4648, without padding character, as described in:
+
+@center @url{https://datatracker.ietf.org/doc/html/rfc4648}
+@end defun
+
+
+@defun mbfl_string_is_ascii_noblank_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+0 1 2 3 4 5 6 7 8 9
+. , : ;
+@{ [ ( ) ] @}
+_
+= < > ~
++ - * / %
+& $ ! ?
+" ' ` ^
+| # @
+@end example
+@end defun
+
+@c page
+@node strings class string
+@subsection String classes
 
 
 @defun mbfl_string_is_alpha @var{STRING}
@@ -2966,9 +3129,21 @@ Like @func{mbfl_string_is_identifier_char}, but also accept dots
 @defunx mbfl_string_is_name @var{STRING}
 @defunx mbfl_string_is_identifier @var{STRING}
 @defunx mbfl_string_is_extended_identifier @var{STRING}
-Return true if @var{STRING} is non--empty and the associated char
-function returns true for each character in @var{STRING}.  As additional
-constraint:
+@defunx mbfl_string_is_ascii_symbol @var{STRING}
+@defunx mbfl_string_is_lower_case_vowel @var{STRING}
+@defunx mbfl_string_is_lower_case_consonant @var{STRING}
+@defunx mbfl_string_is_lower_case_base16 @var{STRING}
+@defunx mbfl_string_is_upper_case_vowel @var{STRING}
+@defunx mbfl_string_is_upper_case_consonant @var{STRING}
+@defunx mbfl_string_is_upper_case_base16 @var{STRING}
+@defunx mbfl_string_is_mixed_case_vowel @var{STRING}
+@defunx mbfl_string_is_mixed_case_consonant @var{STRING}
+@defunx mbfl_string_is_mixed_case_base16 @var{STRING}
+@defunx mbfl_string_is_base32 @var{STRING}
+@defunx mbfl_string_is_base64 @var{STRING}
+@defunx mbfl_string_is_ascii_noblank @var{STRING}
+Return true if @var{STRING} is non--empty and the associated char function returns true for each
+character in @var{STRING}.  As additional constraint:
 
 @itemize
 @item
@@ -2982,6 +3157,10 @@ returns true when applied to the first character of @var{STRING}.
 character of @var{STRING} or the first char of @var{STRING} is a dash.
 @end itemize
 @end defun
+
+@c page
+@node strings class special
+@subsection Special well known string formats
 
 
 @defun mbfl_string_is_username @var{STRING}

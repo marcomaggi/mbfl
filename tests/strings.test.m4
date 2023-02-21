@@ -12,7 +12,7 @@
 #
 #	will select these tests.
 #
-# Copyright (c) 2004, 2005, 2009, 2013, 2014, 2018, 2020 Marco Maggi
+# Copyright (c) 2004, 2005, 2009, 2013, 2014, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -34,13 +34,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
 mbfl_load_library("$MBFL_TESTS_LIBMBFL")
 mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
-#page
+
 #### quoted characters
 
 function string-is-quoted-char-1.1 () {
@@ -95,7 +95,7 @@ function string-quote-var-3.1 () {
     fi
 }
 
-#page
+
 #### string inspection: emptiness
 
 function string-is-empty-1.1.1 () {
@@ -132,7 +132,7 @@ function string-is-not-empty-1.3 () {
     mbfl_string_is_not_empty abcdefghilm
 }
 
-#page
+
 #### string inspection: length
 
 function string-length-1.1.1 () {
@@ -183,7 +183,7 @@ function string-length-equal-to-1.3 () {
     mbfl_string_length_equal_to 11 abcdefghilm
 }
 
-#page
+
 #### string inspection: character at index
 
 function string-index-1.1 () {
@@ -233,7 +233,7 @@ function string-index-var-1.4 () {
     fi
 }
 
-#page
+
 #### string inspection: first character
 
 function string-first-1.1 () {
@@ -315,7 +315,7 @@ function string-first-var-1.7 () {
     fi
 }
 
-#page
+
 #### string inspection: last character
 
 function string-last-1.1 () {
@@ -394,7 +394,7 @@ function string-last-var-1.8 () {
     fi
 }
 
-#page
+
 #### string inspection: range of characters
 
 function string-range-1.1 () {
@@ -454,7 +454,7 @@ function string-range-var-1.5 () {
     fi
 }
 
-#page
+
 #### sptlitting a string into characters
 
 function string-chars-1.1 () {
@@ -560,7 +560,7 @@ function string-chars-1.6 () {
 	dotest-equal f "${SPLITFIELD[5]}"
 }
 
-#page
+
 #### matching a substring
 
 function string-equal-substring-1.1 () {
@@ -582,7 +582,7 @@ function string-equal-substring-1.6 () {
     ! mbfl_string_equal_substring abcdefghi 4 123
 }
 
-#page
+
 
 function string-split-1.1 () {
     local SPLITFIELD SPLITCOUNT string
@@ -659,7 +659,7 @@ function string-split-1.6 () {
 	dotest-equal 4 $SPLITCOUNT
 }
 
-#page
+
 #### splitting a string at blanks
 
 function string-split-blanks-1.1 () {
@@ -747,7 +747,8 @@ function string-split-blanks-1.5 () {
 	dotest-equal rs  "${SPLITFIELD[5]}"
 }
 
-#page
+
+#### character class predicates
 
 function string-is-1.1 () { mbfl_string_is_alpha abcd; }
 function string-is-1.2 () { ! mbfl_string_is_alpha 123 ; }
@@ -826,7 +827,52 @@ function string-is-9.10 () { mbfl_string_is_groupname 123; }
 function string-is-9.11 () { mbfl_string_is_groupname +123; }
 function string-is-9.12 () { ! mbfl_string_is_groupname +abc; }
 
-#page
+function string-is-10.1 () { mbfl_string_is_ascii_symbol_char '('; }
+function string-is-10.2 () { ! mbfl_string_is_ascii_symbol_char 'a'; }
+
+function string-is-11.1 () { mbfl_string_is_lower_case_vowel_char 'a'; }
+function string-is-11.2 () { ! mbfl_string_is_lower_case_vowel_char 'A'; }
+
+function string-is-12.1 () { mbfl_string_is_lower_case_consonant_char 'c'; }
+function string-is-12.2 () { ! mbfl_string_is_lower_case_consonant_char 'C'; }
+
+function string-is-13.1 () { mbfl_string_is_lower_case_base16 'd'; }
+function string-is-13.2 () { ! mbfl_string_is_lower_case_base16 'D'; }
+
+function string-is-14.1 () { mbfl_string_is_upper_case_vowel_char 'A'; }
+function string-is-14.2 () { ! mbfl_string_is_upper_case_vowel_char 'a'; }
+
+function string-is-15.1 () { mbfl_string_is_upper_case_consonant_char 'B'; }
+function string-is-15.2 () { ! mbfl_string_is_upper_case_consonant_char 'b'; }
+
+function string-is-16.1 () { mbfl_string_is_upper_case_base16 'D'; }
+function string-is-16.2 () { ! mbfl_string_is_upper_case_base16 'd'; }
+
+function string-is-17.1 () { mbfl_string_is_mixed_case_vowel_char 'a'; }
+function string-is-17.2 () { mbfl_string_is_mixed_case_vowel_char 'A'; }
+function string-is-17.3 () { ! mbfl_string_is_mixed_case_vowel_char 'x'; }
+
+function string-is-18.1 () { mbfl_string_is_mixed_case_consonant_char 'x'; }
+function string-is-18.2 () { mbfl_string_is_mixed_case_consonant_char 'x'; }
+function string-is-18.3 () { ! mbfl_string_is_mixed_case_consonant_char '2'; }
+
+function string-is-19.1 () { mbfl_string_is_mixed_case_base16 'D'; }
+function string-is-19.2 () { mbfl_string_is_mixed_case_base16 'd'; }
+function string-is-19.3 () { ! mbfl_string_is_mixed_case_base16 'x'; }
+
+function string-is-20.1 () { mbfl_string_is_base32_char '4'; }
+function string-is-20.2 () { mbfl_string_is_base32_char 'A'; }
+function string-is-20.3 () { ! mbfl_string_is_base32_char ','; }
+
+function string-is-21.1 () { mbfl_string_is_base64_char 'd'; }
+function string-is-21.2 () { mbfl_string_is_base64_char '3'; }
+function string-is-21.3 () { ! mbfl_string_is_base64_char '('; }
+
+function string-is-22.1 () { mbfl_string_is_ascii_noblank_char 'd'; }
+function string-is-22.2 () { mbfl_string_is_ascii_noblank_char '3'; }
+function string-is-22.3 () { ! mbfl_string_is_ascii_noblank_char ' '; }
+
+
 #### validating email addresses
 
 function string-is-email-address-1.1 () {
@@ -875,7 +921,7 @@ function string-is-email-address-2.6 () {
     ! mbfl_string_is_email_address 'marco@localhost@there'
 }
 
-#page
+
 #### validating network port numbers
 
 function string-is-network-port-1.1 () {
@@ -885,7 +931,7 @@ function string-is-network-port-2.1 () {
     ! mbfl_string_is_network_port ciao
 }
 
-#page
+
 #### validating network hostnames
 
 function string-is-network-hostname-1.1 () {
@@ -898,7 +944,7 @@ function string-is-network-hostname-2.1 () {
     ! mbfl_string_is_network_hostname 'ciao mamma'
 }
 
-#page
+
 #### validating network IP address
 
 function string-is-network-ip-address-1.1 () {
@@ -918,7 +964,7 @@ function string-is-network-ip-address-2.3 () {
     ! mbfl_string_is_network_ip_address 500.0.0.0
 }
 
-#page
+
 #### uppercase and lowercase conversion
 
 function string-toupper-1.1 () {
@@ -979,7 +1025,7 @@ function string-tolower-var-1.3 () {
     dotest-equal "" "$RV"
 }
 
-#page
+
 
 function string-sprintf-1.1 () {
     local var=1
@@ -988,7 +1034,7 @@ function string-sprintf-1.1 () {
     test "$var" = "pre-woah-post"
 }
 
-#page
+
 #### replacing
 
 function string-replace-1.1 () {
@@ -1013,7 +1059,7 @@ function string-replace-var-1.2 () {
     dotest-equal 'abfg' "$RV"
 }
 
-#page
+
 #### skipping
 
 function string-skip-1.1 () {
@@ -1042,7 +1088,7 @@ function string-skip-1.3 () {
     dotest-equal 7 $i
 }
 
-#page
+
 #### comparison
 
 function string-equal-1.1 () {
@@ -1209,7 +1255,7 @@ function string-is-no-1.2 () {
     ! mbfl_string_is_no 'yes'
 }
 
-#page
+
 #### comparison using macros
 
 function string-macro-equal-1.1 () {
@@ -1456,7 +1502,7 @@ function string-macro-last-char-1.3 () {
     dotest-equal '' "mbfl_string_last_char(STR)"
 }
 
-#page
+
 #### miscellaneous
 
 function string-strip-carriage-return-var-1.1 () {
@@ -1480,7 +1526,7 @@ function string-strip-carriage-return-var-1.3 () {
     dotest-equal '' "$RV"
 }
 
-#page
+
 #### specific strings
 
 function string-bool-1.1 () {
@@ -1496,7 +1542,7 @@ function string-bool-2.2 () {
     mbfl_string_is_false 'false'
 }
 
-#page
+
 #### let's go
 
 dotest string-

@@ -8,30 +8,79 @@
 #
 #       This is a collection of string functions for the GNU BASH shell.
 #
-#       The functions make heavy usage of special variable substitutions
-#       (like ${name:num:num})  so, maybe, other Bourne  shells will not
-#       work at all.
+#       The functions make heavy usage of  special variable substitutions (like ${name:num:num}) so,
+#       maybe, other Bourne shells will not work at all.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
-# This is free software; you can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  3.0 of the License,  or (at
-# your option) any later version.
+# This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
+# General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
+# License, or (at your option) any later version.
 #
-# This library  is distributed in the  hope that it will  be useful, but
-# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# This library is distributed in the hope that  it will be useful, but WITHOUT ANY WARRANTY; without
+# even the  implied warranty of MERCHANTABILITY  or FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU
 # Lesser General Public License for more details.
 #
-# You  should have  received a  copy of  the GNU  Lesser  General Public
-# License along  with this library; if  not, write to  the Free Software
-# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA.
+# You should have received a copy of the  GNU Lesser General Public License along with this library;
+# if not,  write to  the Free  Software Foundation,  Inc., 59  Temple Place,  Suite 330,  Boston, MA
+# 02111-1307 USA.
 #
 
-#page
+
+#### global variables, known character ranges
+
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then
+
+# These should be  all the symbols in the ASCII  table in the range [0, 127],  with the exception of
+# blanks.  Notice the value is the concatenation of the strings:
+#
+#    '.,:;{[()]}_=<>~+-*/%&$!?"^|#@'
+#    "'"
+#    '`'
+#
+declare -r MBFL_ASCII_RANGE_ASCII_SYMBOLS='.,:;{[()]}_=<>~+-*/%&$!?"^|#@'"'"'`'
+
+declare -r MBFL_ASCII_RANGE_DIGITS='0123456789'
+
+declare -r MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET='abcdefghijklmnopqrstuvwxyz'
+declare -r MBFL_ASCII_RANGE_LOWER_CASE_VOWELS='aeiouy'
+declare -r MBFL_ASCII_RANGE_LOWER_CASE_CONSONANTS='bcdfghjklmnpqrstvwxz'
+declare -r MBFL_ASCII_RANGE_LOWER_CASE_ALNUM='abcdefghijklmnopqrstuvwxyz0123456789'
+declare -r MBFL_ASCII_RANGE_LOWER_CASE_BASE16='abcdef0123456789'
+
+declare -r MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+declare -r MBFL_ASCII_RANGE_UPPER_CASE_VOWELS='AEIOUY'
+declare -r MBFL_ASCII_RANGE_UPPER_CASE_CONSONANTS='BCDFGHJKLMNPQRSTVWXZ'
+declare -r MBFL_ASCII_RANGE_UPPER_CASE_ALNUM='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+declare -r MBFL_ASCII_RANGE_UPPER_CASE_BASE16='ABCDEF0123456789'
+
+declare -r MBFL_ASCII_RANGE_MIXED_CASE_ALPHABET="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}"
+declare -r MBFL_ASCII_RANGE_MIXED_CASE_VOWELS="${MBFL_ASCII_RANGE_LOWER_CASE_VOWELS}${MBFL_ASCII_RANGE_UPPER_CASE_VOWELS}"
+declare -r MBFL_ASCII_RANGE_MIXED_CASE_CONSONANTS="${MBFL_ASCII_RANGE_LOWER_CASE_CONSONANTS}${MBFL_ASCII_RANGE_UPPER_CASE_CONSONANTS}"
+declare -r MBFL_ASCII_RANGE_MIXED_CASE_ALNUM="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}${MBFL_ASCII_RANGE_DIGITS}"
+declare -r MBFL_ASCII_RANGE_MIXED_CASE_BASE16='abcdefABCDEF0123456789'
+
+# According to RFC 4648, without padding character, as described in:
+#
+#  <https://datatracker.ietf.org/doc/html/rfc4648>
+#
+declare -r MBFL_ASCII_RANGE_BASE32="${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}234567"
+
+# According to RFC 4648, without padding character, as described in:
+#
+#  <https://datatracker.ietf.org/doc/html/rfc4648>
+#
+declare -r MBFL_ASCII_RANGE_BASE64="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}${MBFL_ASCII_RANGE_DIGITS}+/"
+
+# We need to quote the symbols to avoit a further round of evaluation!!!
+#
+declare -r MBFL_ASCII_RANGE_ASCII_NOBLANK="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}${MBFL_ASCII_RANGE_DIGITS}${MBFL_ASCII_RANGE_ASCII_SYMBOLS}"
+
+fi
+
+
 #### quoted characters
 
 function mbfl_string_is_quoted_char () {
@@ -81,7 +130,7 @@ function mbfl_string_quote () {
     fi
 }
 
-#page
+
 #### inspecting a string
 
 function mbfl_string_length () {
@@ -132,10 +181,10 @@ function mbfl_string_first () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(CHAR, 2, char)
     mbfl_optional_parameter(BEGIN, 3)
-    local RESULT_VARNAME
+    mbfl_local_varref(RESULT_VARNAME)
     # Be  careful  to  return  the  same exit  status  of  the  call  to
     # "mbfl_string_first_var".
-    if mbfl_string_first_var RESULT_VARNAME "$STRING" "$CHAR" "$BEGIN"
+    if mbfl_string_first_var mbfl_datavar(RESULT_VARNAME) "$STRING" "$CHAR" "$BEGIN"
     then printf '%s\n' "$RESULT_VARNAME"
     else return $?
     fi
@@ -163,10 +212,10 @@ function mbfl_string_last () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(CHAR, 2, char)
     mbfl_optional_parameter(BEGIN, 3)
-    local RESULT_VARNAME
+    mbfl_local_varref(RESULT_VARNAME)
     # Be  careful  to  return  the  same exit  status  of  the  call  to
     # "mbfl_string_last_var".
-    if mbfl_string_last_var RESULT_VARNAME "$STRING" "$CHAR" "$BEGIN"
+    if mbfl_string_last_var mbfl_datavar(RESULT_VARNAME) "$STRING" "$CHAR" "$BEGIN"
     then printf '%s\n' "$RESULT_VARNAME"
     else return $?
     fi
@@ -198,8 +247,8 @@ function mbfl_string_range () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(BEGIN, 2, begin)
     mbfl_optional_parameter(END, 3)
-    local RESULT_VARNAME
-    if mbfl_string_range_var RESULT_VARNAME "$STRING" "$BEGIN" "$END"
+    mbfl_local_varref(RESULT_VARNAME)
+    if mbfl_string_range_var mbfl_datavar(RESULT_VARNAME) "$STRING" "$BEGIN" "$END"
     then printf '%s\n' "$RESULT_VARNAME"
     else return $?
     fi
@@ -214,7 +263,7 @@ function mbfl_string_is_false () {
     test 'false' = "$STRING"
 }
 
-#page
+
 #### splitting
 
 function mbfl_string_chars () {
@@ -297,7 +346,7 @@ function mbfl_string_split_blanks () {
     return 0
 }
 
-#page
+
 #### comparison
 
 function mbfl_string_equal () {
@@ -363,7 +412,9 @@ function mbfl_string_equal_substring () {
     return 0
 }
 
-#page
+
+#### character predicates
+
 function mbfl_string_is_alpha_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
     ! test \( "$CHAR" \< A -o Z \< "$CHAR" \) -a \( "$CHAR" \< a -o z \< "$CHAR" \)
@@ -394,12 +445,41 @@ function mbfl_string_is_noblank_char () {
 	\( "$CHAR" != $'\n' \) -a \( "$CHAR" != $'\r' \) -a \
 	\( "$CHAR" != $'\t' \) -a \( "$CHAR" != $'\f' \)
 }
-function mbfl_string_is_alpha ()   { mbfl_p_string_is 'alpha'   "$@"; }
-function mbfl_string_is_digit ()   { mbfl_p_string_is 'digit'   "$@"; }
-function mbfl_string_is_alnum ()   { mbfl_p_string_is 'alnum'   "$@"; }
-function mbfl_string_is_noblank () { mbfl_p_string_is 'noblank' "$@"; }
+
+
+#### character predicates from character ranges and similar
+
+m4_define([[[MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE]]],[[[
+function $1 () {
+    mbfl_mandatory_parameter(CHAR, 1, char)
+    mbfl_local_varref(RV)
+    mbfl_string_first_var mbfl_datavar(RV) "$[[[]]]$2[[[]]]" "$CHAR"
+}
+]]])
+
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_ascii_symbol_char,	      MBFL_ASCII_RANGE_ASCII_SYMBOLS)
+
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_lower_case_vowel_char,	      MBFL_ASCII_RANGE_LOWER_CASE_VOWELS)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_lower_case_consonant_char,    MBFL_ASCII_RANGE_LOWER_CASE_CONSONANTS)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_lower_case_base16_char,	      MBFL_ASCII_RANGE_LOWER_CASE_BASE16)
+
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_upper_case_vowel_char,	      MBFL_ASCII_RANGE_UPPER_CASE_VOWELS)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_upper_case_consonant_char,    MBFL_ASCII_RANGE_UPPER_CASE_CONSONANTS)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_upper_case_base16_char,	      MBFL_ASCII_RANGE_UPPER_CASE_BASE16)
+
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_mixed_case_vowel_char,	      MBFL_ASCII_RANGE_MIXED_CASE_VOWELS)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_mixed_case_consonant_char,    MBFL_ASCII_RANGE_MIXED_CASE_CONSONANTS)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_mixed_case_base16_char,	      MBFL_ASCII_RANGE_MIXED_CASE_BASE16)
+
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_base32_char,		      MBFL_ASCII_RANGE_BASE32)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_base64_char,		      MBFL_ASCII_RANGE_BASE64)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_ascii_noblank_char,	      MBFL_ASCII_RANGE_ASCII_NOBLANK)
+
+
+#### string predicates
+
 function mbfl_p_string_is () {
-    mbfl_mandatory_parameter(CLASS, 1, class)
+    mbfl_mandatory_parameter(CHAR_PRED_FUNC, 1, char predicate func)
     # Accept $2  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$2
@@ -408,7 +488,7 @@ function mbfl_p_string_is () {
     then
 	for ((i=0; i < mbfl_string_len(STRING); ++i))
 	do
-	    if ! "mbfl_string_is_${CLASS}_char" "mbfl_string_idx(STRING, $i)"
+	    if ! $CHAR_PRED_FUNC "mbfl_string_idx(STRING, $i)"
 	    then return 1
 	    fi
 	done
@@ -416,28 +496,47 @@ function mbfl_p_string_is () {
     else return 1
     fi
 }
+function mbfl_string_is_alpha			() { mbfl_p_string_is mbfl_string_is_alpha_char   "$@"; }
+function mbfl_string_is_digit			() { mbfl_p_string_is mbfl_string_is_digit_char   "$@"; }
+function mbfl_string_is_alnum			() { mbfl_p_string_is mbfl_string_is_alnum_char   "$@"; }
+function mbfl_string_is_noblank			() { mbfl_p_string_is mbfl_string_is_noblank_char "$@"; }
+function mbfl_string_is_ascii_symbol		() { mbfl_p_string_is mbfl_string_is_ascii_symbol_char "$@"; }
+function mbfl_string_is_lower_case_vowel	() { mbfl_p_string_is mbfl_string_is_lower_case_vowel_char "$@"; }
+function mbfl_string_is_lower_case_consonant	() { mbfl_p_string_is mbfl_string_is_lower_case_consonant_char "$@"; }
+function mbfl_string_is_lower_case_base16	() { mbfl_p_string_is mbfl_string_is_lower_case_base16_char "$@"; }
+function mbfl_string_is_upper_case_vowel	() { mbfl_p_string_is mbfl_string_is_upper_case_vowel_char "$@"; }
+function mbfl_string_is_upper_case_consonant	() { mbfl_p_string_is mbfl_string_is_upper_case_consonant_char "$@"; }
+function mbfl_string_is_upper_case_base16	() { mbfl_p_string_is mbfl_string_is_upper_case_base16_char "$@"; }
+function mbfl_string_is_mixed_case_vowel	() { mbfl_p_string_is mbfl_string_is_mixed_case_vowel_char "$@"; }
+function mbfl_string_is_mixed_case_consonant	() { mbfl_p_string_is mbfl_string_is_mixed_case_consonant_char "$@"; }
+function mbfl_string_is_mixed_case_base16	() { mbfl_p_string_is mbfl_string_is_mixed_case_base16_char "$@"; }
+function mbfl_string_is_base32			() { mbfl_p_string_is mbfl_string_is_base32_char "$@"; }
+function mbfl_string_is_base64			() { mbfl_p_string_is mbfl_string_is_base64_char "$@"; }
+function mbfl_string_is_ascii_noblank		() { mbfl_p_string_is mbfl_string_is_ascii_noblank_char "$@"; }
+
 function mbfl_string_is_name () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
     local STRING=$1
-    mbfl_string_is_not_empty "$STRING" && mbfl_p_string_is name "$STRING" && { ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"; }
+    mbfl_string_is_not_empty "$STRING" && \
+	mbfl_p_string_is mbfl_string_is_name_char "$STRING" && \
+	{ ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"; }
 }
 function mbfl_string_is_identifier () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
-    local STRING=$1
+    mbfl_optional_parameter(STRING, 1)
     mbfl_string_is_not_empty "$STRING"					\
-	&&   mbfl_p_string_is identifier "$STRING"			\
+	&&   mbfl_p_string_is mbfl_string_is_identifier_char "$STRING"	\
 	&& ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"		\
 	&& mbfl_string_not_equal "mbfl_string_idx(STRING, 0)" '-'
 }
 function mbfl_string_is_extended_identifier () {
-    # Accept $1  even if  it is  empty; for  this reason  we do  not use
-    # MBFL_MANDATORY_PARAMETER.
+    # Accept $1 even if it is empty; for this reason we do not use MBFL_MANDATORY_PARAMETER.
     local STRING=$1
     mbfl_string_is_not_empty "$STRING" \
-	&&   mbfl_p_string_is extended_identifier "$STRING"		\
-	&& ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"		\
+	&&   mbfl_p_string_is mbfl_string_is_extended_identifier_char "$STRING"		\
+	&& ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"				\
 	&& mbfl_string_not_equal "mbfl_string_idx(STRING, 0)" '-'
 }
 function mbfl_string_is_username () {
@@ -456,8 +555,7 @@ function mbfl_string_is_groupname () {
     mbfl_string_is_username "$STRING"
 }
 function mbfl_string_is_network_port () {
-    # We want  to accept  an empty  parameter and  return unsuccessfully
-    # when given.
+    # We want to accept an empty parameter and return unsuccessfully when given.
     mbfl_optional_parameter(STRING, 1)
 
     if mbfl_string_is_not_empty "$STRING" && mbfl_string_is_digit "$STRING" && ((0 <= STRING && STRING <= 1024))
@@ -466,8 +564,7 @@ function mbfl_string_is_network_port () {
     fi
 }
 function mbfl_string_is_network_hostname () {
-    # We want  to accept  an empty  parameter and  return unsuccessfully
-    # when given.
+    # We want to accept an empty parameter and return unsuccessfully when given.
     mbfl_optional_parameter(STRING, 1)
     # This regular expression comes from:
     #
@@ -483,14 +580,14 @@ function mbfl_string_is_network_hostname () {
 }
 
 function mbfl_string_is_network_ip_address () {
-    # We want  to accept  an empty  parameter and  return unsuccessfully
-    # when given.
+    # We want to accept an empty parameter and return unsuccessfully when given.
     mbfl_optional_parameter(STRING, 1)
     # This regular expression comes from:
     #
     #   https://stackoverflow.com/questions/106179/regular-expression-to-match-dns-hostname-or-ip-address
     #
     # answer by Jorge Ferreira, last visited Nov 23, 2018.
+    #
     local -r REX="^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
 
     if ((mbfl_string_len(STRING) <= 255)) && [[ $STRING =~ $REX ]]
@@ -500,8 +597,7 @@ function mbfl_string_is_network_ip_address () {
 }
 
 function mbfl_string_is_email_address () {
-    # We want  to accept  an empty  parameter and  return unsuccessfully
-    # when given.
+    # We want to accept an empty parameter and return unsuccessfully when given.
     mbfl_optional_parameter(ADDRESS, 1)
     local -r REX='^[a-zA-Z0-9_.\-]+(@[a-zA-Z0-9_.\-]+)?$'
 
@@ -511,7 +607,7 @@ function mbfl_string_is_email_address () {
     fi
 }
 
-#page
+
 #### case conversion
 
 function mbfl_string_toupper () {
@@ -530,7 +626,7 @@ function mbfl_string_tolower_var () {
     mbfl_RESULT_VARREF="${2,,}"
 }
 
-#page
+
 #### miscellaneous
 
 function mbfl_string_replace () {
