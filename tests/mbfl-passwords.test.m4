@@ -6,9 +6,10 @@
 #
 # Abstract
 #
-#	This file must be executed with:
+#	This file must be executed with one among:
 #
 #		$ make all test TESTMATCH=mbfl-passwords-
+#		$ make all check TESTS=tests/mbfl-passwords.test ; less tests/mbfl-passwords.log
 #
 #	that will select these tests.
 #
@@ -42,102 +43,74 @@ mbfl_load_library("$MBFL_TESTS_LIBMBFLPASSWORDS")
 mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
 
 
-#### digits
+#### macros
 
-function mbfl-passwords-digits-1.1 () {
-    local PASSWD=$(mbfl_passwords_digits 1)
+# $1 - test function name
+# $2 - password generating function
+# $3 - password length
+# $4 - validating function
+#
+m4_define([[[MBFL_DEFINE_TEST_PRINTING_FUNCTION]]],[[[
+function $1 () {
+    local PASSWD=$($2 $3)
     dotest-printf 'generated password: "%s"\n' "$PASSWD" >&2
-    dotest-equal 1 mbfl_string_len(PASSWD) && \
-	mbfl_string_is_digit "$PASSWD"
+    dotest-equal $3 mbfl_string_len(PASSWD) && $4 "$PASSWD"
 }
+]]])
 
-function mbfl-passwords-digits-1.2 () {
-    local PASSWD=$(mbfl_passwords_digits 75)
-    dotest-printf 'generated password: "%s"\n' "$PASSWD"
-    dotest-equal 75 mbfl_string_len(PASSWD) && \
-	mbfl_string_is_digit "$PASSWD"
+# $1 - test function name
+# $2 - password generating function
+# $3 - password length
+# $4 - validating function
+#
+m4_define([[[MBFL_DEFINE_TEST_VAR_FUNCTION]]],[[[
+function $1 () {
+    mbfl_local_varref(PASSWD)
+    $2 mbfl_datavar(PASSWD) $3
+    dotest-printf 'generated password: "%s"\n' "$PASSWD" >&2
+    dotest-equal $3 mbfl_string_len(PASSWD) && $4 "$PASSWD"
 }
+]]])
 
-if false
-then
+# $1 - test stem
+# $2 - function to test
+# $3 - validation function
+#
+m4_define([[[MBFL_DEFINE_TESTS_GROUP]]],[[[
+MBFL_DEFINE_TEST_PRINTING_FUNCTION(mbfl-passwords-[[[]]]$1[[[]]]-1.1, $2,  1, $3)
+MBFL_DEFINE_TEST_PRINTING_FUNCTION(mbfl-passwords-[[[]]]$1[[[]]]-1.2, $2, 75, $3)
 
-# printf 'mbfl_passwords_ascii_symbols: (%d) %s\n' ${#MBFL_PASSWORDS_ASCII_SYMBOLS[@]} $(mbfl_passwords_ascii_symbols 1)
-# printf 'mbfl_passwords_ascii_symbols: (%d) %s\n' ${#MBFL_PASSWORDS_ASCII_SYMBOLS[@]} $(mbfl_passwords_ascii_symbols 75)
+MBFL_DEFINE_TEST_VAR_FUNCTION(mbfl-passwords-[[[]]]$1[[[]]]-2.1, $2[[[]]]_var,  1, $3)
+MBFL_DEFINE_TEST_VAR_FUNCTION(mbfl-passwords-[[[]]]$1[[[]]]-2.2, $2[[[]]]_var, 75, $3)
+]]])
 
-echo
+
+#### test groups
 
-### ------------------------------------------------------------------------
+MBFL_DEFINE_TESTS_GROUP(digits,			mbfl_passwords_digit,			mbfl_string_is_digit)
+MBFL_DEFINE_TESTS_GROUP(ascii-symbols,		mbfl_passwords_ascii_symbols,		mbfl_string_is_ascii_symbol)
 
-printf 'mbfl_passwords_lower_case_vowels: (%d) %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_VOWELS[@]} $(mbfl_passwords_lower_case_vowels 1)
-printf 'mbfl_passwords_lower_case_vowels: (%d) %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_VOWELS[@]} $(mbfl_passwords_lower_case_vowels 75)
+MBFL_DEFINE_TESTS_GROUP(lower-case-vowels,	mbfl_passwords_lower_case_vowels,	mbfl_string_is_lower_case_vowel)
+MBFL_DEFINE_TESTS_GROUP(lower-case-consonants,	mbfl_passwords_lower_case_consonants,	mbfl_string_is_lower_case_consonant)
+MBFL_DEFINE_TESTS_GROUP(lower-case-alphabet,	mbfl_passwords_lower_case_alphabet,	mbfl_string_is_lower_case_alphabet)
+MBFL_DEFINE_TESTS_GROUP(lower-case-alnum,	mbfl_passwords_lower_case_alnum,	mbfl_string_is_lower_case_alnum)
+MBFL_DEFINE_TESTS_GROUP(lower-case-base16,	mbfl_passwords_lower_case_base16,	mbfl_string_is_lower_case_base16)
 
-printf 'mbfl_passwords_lower_case_consonants (%d): %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_CONSONANTS[@]} $(mbfl_passwords_lower_case_consonants 1)
-printf 'mbfl_passwords_lower_case_consonants (%d): %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_CONSONANTS[@]} $(mbfl_passwords_lower_case_consonants 75)
+MBFL_DEFINE_TESTS_GROUP(upper-case-vowels,	mbfl_passwords_upper_case_vowels,	mbfl_string_is_upper_case_vowel)
+MBFL_DEFINE_TESTS_GROUP(upper-case-consonants,	mbfl_passwords_upper_case_consonants,	mbfl_string_is_upper_case_consonant)
+MBFL_DEFINE_TESTS_GROUP(upper-case-alphabet,	mbfl_passwords_upper_case_alphabet,	mbfl_string_is_upper_case_alphabet)
+MBFL_DEFINE_TESTS_GROUP(upper-case-alnum,	mbfl_passwords_upper_case_alnum,	mbfl_string_is_upper_case_alnum)
+MBFL_DEFINE_TESTS_GROUP(upper-case-base16,	mbfl_passwords_upper_case_base16,	mbfl_string_is_upper_case_base16)
 
-printf 'mbfl_passwords_lower_case_alphabet (%d): %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_ALPHABET[@]} $(mbfl_passwords_lower_case_alphabet 1)
-printf 'mbfl_passwords_lower_case_alphabet (%d): %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_ALPHABET[@]} $(mbfl_passwords_lower_case_alphabet 75)
+MBFL_DEFINE_TESTS_GROUP(mixed-case-vowels,	mbfl_passwords_mixed_case_vowels,	mbfl_string_is_mixed_case_vowel)
+MBFL_DEFINE_TESTS_GROUP(mixed-case-consonants,	mbfl_passwords_mixed_case_consonants,	mbfl_string_is_mixed_case_consonant)
+MBFL_DEFINE_TESTS_GROUP(mixed-case-alphabet,	mbfl_passwords_mixed_case_alphabet,	mbfl_string_is_mixed_case_alphabet)
+MBFL_DEFINE_TESTS_GROUP(mixed-case-alnum,	mbfl_passwords_mixed_case_alnum,	mbfl_string_is_mixed_case_alnum)
+MBFL_DEFINE_TESTS_GROUP(mixed-case-base16,	mbfl_passwords_mixed_case_base16,	mbfl_string_is_mixed_case_base16)
 
-printf 'mbfl_passwords_lower_case_alnum (%d): %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_ALNUM[@]} $(mbfl_passwords_lower_case_alnum 1)
-printf 'mbfl_passwords_lower_case_alnum (%d): %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_ALNUM[@]} $(mbfl_passwords_lower_case_alnum 75)
-
-printf 'mbfl_passwords_lower_case_base16 (%d): %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_BASE16[@]} $(mbfl_passwords_lower_case_base16 1)
-printf 'mbfl_passwords_lower_case_base16 (%d): %s\n' ${#MBFL_PASSWORDS_LOWER_CASE_BASE16[@]} $(mbfl_passwords_lower_case_base16 75)
-
-echo
-
-### ------------------------------------------------------------------------
-
-printf 'mbfl_passwords_upper_case_vowels: (%d) %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_VOWELS[@]} $(mbfl_passwords_upper_case_vowels 75)
-printf 'mbfl_passwords_upper_case_vowels: (%d) %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_VOWELS[@]} $(mbfl_passwords_upper_case_vowels 75)
-
-printf 'mbfl_passwords_upper_case_consonants (%d): %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_CONSONANTS[@]} $(mbfl_passwords_upper_case_consonants 1)
-printf 'mbfl_passwords_upper_case_consonants (%d): %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_CONSONANTS[@]} $(mbfl_passwords_upper_case_consonants 75)
-
-printf 'mbfl_passwords_upper_case_alphabet (%d): %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_ALPHABET[@]} $(mbfl_passwords_upper_case_alphabet 1)
-printf 'mbfl_passwords_upper_case_alphabet (%d): %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_ALPHABET[@]} $(mbfl_passwords_upper_case_alphabet 75)
-
-printf 'mbfl_passwords_upper_case_alnum (%d): %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_ALNUM[@]} $(mbfl_passwords_upper_case_alnum 1)
-printf 'mbfl_passwords_upper_case_alnum (%d): %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_ALNUM[@]} $(mbfl_passwords_upper_case_alnum 75)
-
-printf 'mbfl_passwords_upper_case_base16 (%d): %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_BASE16[@]} $(mbfl_passwords_upper_case_base16 1)
-printf 'mbfl_passwords_upper_case_base16 (%d): %s\n' ${#MBFL_PASSWORDS_UPPER_CASE_BASE16[@]} $(mbfl_passwords_upper_case_base16 75)
-
-echo
-
-### ------------------------------------------------------------------------
-
-printf 'mbfl_passwords_mixed_case_vowels: (%d) %s\n' ${#MBFL_PASSWORDS_MIXED_CASE_VOWELS[@]} $(mbfl_passwords_mixed_case_vowels 75)
-printf 'mbfl_passwords_mixed_case_vowels: (%d) %s\n' ${#MBFL_PASSWORDS_MIXED_CASE_VOWELS[@]} $(mbfl_passwords_mixed_case_vowels 75)
-
-printf 'mbfl_passwords_mixed_case_consonants (%d): %s\n' ${#MBFL_PASSWORDS_MIXED_CASE_CONSONANTS[@]} $(mbfl_passwords_mixed_case_consonants 1)
-printf 'mbfl_passwords_mixed_case_consonants (%d): %s\n' ${#MBFL_PASSWORDS_MIXED_CASE_CONSONANTS[@]} $(mbfl_passwords_mixed_case_consonants 75)
-
-printf 'mbfl_passwords_mixed_case_alphabet (%d): %s\n' ${#MBFL_PASSWORDS_MIXED_CASE_ALPHABET[@]} $(mbfl_passwords_mixed_case_alphabet 1)
-printf 'mbfl_passwords_mixed_case_alphabet (%d): %s\n' ${#MBFL_PASSWORDS_MIXED_CASE_ALPHABET[@]} $(mbfl_passwords_mixed_case_alphabet 75)
-
-printf 'mbfl_passwords_mixed_case_alnum (%d): %s\n' ${#MBFL_PASSWORDS_MIXED_CASE_ALNUM[@]} $(mbfl_passwords_mixed_case_alnum 1)
-printf 'mbfl_passwords_mixed_case_alnum (%d): %s\n' ${#MBFL_PASSWORDS_MIXED_CASE_ALNUM[@]} $(mbfl_passwords_mixed_case_alnum 75)
-
-echo
-
-### ------------------------------------------------------------------------
-
-printf 'mbfl_passwords_base32: (%d) %s\n' ${#MBFL_PASSWORDS_BASE32[@]} $(mbfl_passwords_base32 1)
-printf 'mbfl_passwords_base32: (%d) %s\n' ${#MBFL_PASSWORDS_BASE32[@]} $(mbfl_passwords_base32 75)
-
-printf 'mbfl_passwords_base64: (%d) %s\n' ${#MBFL_PASSWORDS_BASE64[@]} $(mbfl_passwords_base64 1)
-printf 'mbfl_passwords_base64: (%d) %s\n' ${#MBFL_PASSWORDS_BASE64[@]} $(mbfl_passwords_base64 75)
-
-printf 'mbfl_passwords_ascii: (%d) %s\n' ${#MBFL_PASSWORDS_ASCII[@]} "$(mbfl_passwords_ascii 1)"
-printf 'mbfl_passwords_ascii: (%d) %s\n' ${#MBFL_PASSWORDS_ASCII[@]} "$(mbfl_passwords_ascii 75)"
-
-echo
-
-### ------------------------------------------------------------------------
-
-printf 'mbfl_passwords_mine: %s\n' $(mbfl_passwords_mine)
-
-fi
+MBFL_DEFINE_TESTS_GROUP(base32,			mbfl_passwords_base32,			mbfl_string_is_base32)
+MBFL_DEFINE_TESTS_GROUP(base64,			mbfl_passwords_base64,			mbfl_string_is_base64)
+MBFL_DEFINE_TESTS_GROUP(ascii_noblank,		mbfl_passwords_ascii_noblank,		mbfl_string_is_ascii_noblank)
 
 
 #### let's go
