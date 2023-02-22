@@ -872,6 +872,28 @@ function string-is-22.1 () { mbfl_string_is_ascii_noblank_char 'd'; }
 function string-is-22.2 () { mbfl_string_is_ascii_noblank_char '3'; }
 function string-is-22.3 () { ! mbfl_string_is_ascii_noblank_char ' '; }
 
+function string-is-23.1 () {   mbfl_string_is_lower_case_alphabet_char 'c'; }
+function string-is-23.2 () { ! mbfl_string_is_lower_case_alphabet_char 'C'; }
+
+function string-is-24.1 () {   mbfl_string_is_lower_case_alnum_char 'c'; }
+function string-is-24.2 () { ! mbfl_string_is_lower_case_alnum_char 'C'; }
+
+function string-is-25.1 () {   mbfl_string_is_upper_case_alphabet_char 'C'; }
+function string-is-25.2 () { ! mbfl_string_is_upper_case_alphabet_char 'c'; }
+
+function string-is-26.1 () {   mbfl_string_is_upper_case_alnum_char 'C'; }
+function string-is-26.2 () {   mbfl_string_is_upper_case_alnum_char '2'; }
+function string-is-26.3 () { ! mbfl_string_is_upper_case_alnum_char 'd'; }
+
+function string-is-27.1 () {   mbfl_string_is_mixed_case_alphabet_char 'c'; }
+function string-is-27.2 () {   mbfl_string_is_mixed_case_alphabet_char 'C'; }
+function string-is-27.3 () { ! mbfl_string_is_mixed_case_alphabet_char '2'; }
+
+function string-is-28.1 () {   mbfl_string_is_mixed_case_alnum_char 'c'; }
+function string-is-28.2 () {   mbfl_string_is_mixed_case_alnum_char 'C'; }
+function string-is-28.3 () {   mbfl_string_is_mixed_case_alnum_char '3'; }
+function string-is-28.3 () { ! mbfl_string_is_mixed_case_alnum_char '('; }
+
 
 #### validating email addresses
 

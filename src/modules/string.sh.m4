@@ -461,14 +461,20 @@ MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_ascii_symbol_cha
 
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_lower_case_vowel_char,	      MBFL_ASCII_RANGE_LOWER_CASE_VOWELS)
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_lower_case_consonant_char,    MBFL_ASCII_RANGE_LOWER_CASE_CONSONANTS)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_lower_case_alphabet_char,     MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_lower_case_alnum_char,	      MBFL_ASCII_RANGE_LOWER_CASE_ALNUM)
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_lower_case_base16_char,	      MBFL_ASCII_RANGE_LOWER_CASE_BASE16)
 
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_upper_case_vowel_char,	      MBFL_ASCII_RANGE_UPPER_CASE_VOWELS)
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_upper_case_consonant_char,    MBFL_ASCII_RANGE_UPPER_CASE_CONSONANTS)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_upper_case_alphabet_char,     MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_upper_case_alnum_char,	      MBFL_ASCII_RANGE_UPPER_CASE_ALNUM)
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_upper_case_base16_char,	      MBFL_ASCII_RANGE_UPPER_CASE_BASE16)
 
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_mixed_case_vowel_char,	      MBFL_ASCII_RANGE_MIXED_CASE_VOWELS)
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_mixed_case_consonant_char,    MBFL_ASCII_RANGE_MIXED_CASE_CONSONANTS)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_mixed_case_alphabet_char,     MBFL_ASCII_RANGE_MIXED_CASE_ALPHABET)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_mixed_case_alnum_char,	      MBFL_ASCII_RANGE_MIXED_CASE_ALNUM)
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_mixed_case_base16_char,	      MBFL_ASCII_RANGE_MIXED_CASE_BASE16)
 
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_base32_char,		      MBFL_ASCII_RANGE_BASE32)
@@ -500,16 +506,26 @@ function mbfl_string_is_alpha			() { mbfl_p_string_is mbfl_string_is_alpha_char 
 function mbfl_string_is_digit			() { mbfl_p_string_is mbfl_string_is_digit_char   "$@"; }
 function mbfl_string_is_alnum			() { mbfl_p_string_is mbfl_string_is_alnum_char   "$@"; }
 function mbfl_string_is_noblank			() { mbfl_p_string_is mbfl_string_is_noblank_char "$@"; }
+
 function mbfl_string_is_ascii_symbol		() { mbfl_p_string_is mbfl_string_is_ascii_symbol_char "$@"; }
 function mbfl_string_is_lower_case_vowel	() { mbfl_p_string_is mbfl_string_is_lower_case_vowel_char "$@"; }
 function mbfl_string_is_lower_case_consonant	() { mbfl_p_string_is mbfl_string_is_lower_case_consonant_char "$@"; }
+function mbfl_string_is_lower_case_alphabet	() { mbfl_p_string_is mbfl_string_is_lower_case_alphabet_char "$@"; }
+function mbfl_string_is_lower_case_alnum	() { mbfl_p_string_is mbfl_string_is_lower_case_alnum_char "$@"; }
 function mbfl_string_is_lower_case_base16	() { mbfl_p_string_is mbfl_string_is_lower_case_base16_char "$@"; }
+
 function mbfl_string_is_upper_case_vowel	() { mbfl_p_string_is mbfl_string_is_upper_case_vowel_char "$@"; }
 function mbfl_string_is_upper_case_consonant	() { mbfl_p_string_is mbfl_string_is_upper_case_consonant_char "$@"; }
+function mbfl_string_is_upper_case_alphabet	() { mbfl_p_string_is mbfl_string_is_upper_case_alphabet_char "$@"; }
+function mbfl_string_is_upper_case_alnum	() { mbfl_p_string_is mbfl_string_is_upper_case_alnum_char "$@"; }
 function mbfl_string_is_upper_case_base16	() { mbfl_p_string_is mbfl_string_is_upper_case_base16_char "$@"; }
+
 function mbfl_string_is_mixed_case_vowel	() { mbfl_p_string_is mbfl_string_is_mixed_case_vowel_char "$@"; }
 function mbfl_string_is_mixed_case_consonant	() { mbfl_p_string_is mbfl_string_is_mixed_case_consonant_char "$@"; }
+function mbfl_string_is_mixed_case_alphabet	() { mbfl_p_string_is mbfl_string_is_mixed_case_alphabet_char "$@"; }
+function mbfl_string_is_mixed_case_alnum	() { mbfl_p_string_is mbfl_string_is_mixed_case_alnum_char "$@"; }
 function mbfl_string_is_mixed_case_base16	() { mbfl_p_string_is mbfl_string_is_mixed_case_base16_char "$@"; }
+
 function mbfl_string_is_base32			() { mbfl_p_string_is mbfl_string_is_base32_char "$@"; }
 function mbfl_string_is_base64			() { mbfl_p_string_is mbfl_string_is_base64_char "$@"; }
 function mbfl_string_is_ascii_noblank		() { mbfl_p_string_is mbfl_string_is_ascii_noblank_char "$@"; }

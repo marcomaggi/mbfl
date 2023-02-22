@@ -3000,11 +3000,30 @@ b c d f g h j k l m n p q r s t v w x z
 @end defun
 
 
-@defun mbfl_string_is_lower_case_base16_char @var{CHAR}
+@defun mbfl_string_is_lower_case_consonant_char @var{CHAR}
 Return true if @var{CHAR} is in the following set, otherwise return false:
 
 @example
-a b c d e f 0 1 2 3 4 5 6 7 8 9
+b c d f g h j k l m n p q r s t v w x z
+@end example
+@end defun
+
+
+@defun mbfl_string_is_lower_case_alphabet_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+@end example
+@end defun
+
+
+@defun mbfl_string_is_lower_case_alnum_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+0 1 2 3 4 5 6 7 8 9
 @end example
 @end defun
 
@@ -3023,6 +3042,25 @@ Return true if @var{CHAR} is in the following set, otherwise return false:
 
 @example
 B C D F G H J K L M N P Q R S T V W X Z
+@end example
+@end defun
+
+
+@defun mbfl_string_is_upper_case_alphabet_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+@end example
+@end defun
+
+
+@defun mbfl_string_is_upper_case_alnum_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+0 1 2 3 4 5 6 7 8 9
 @end example
 @end defun
 
@@ -3053,6 +3091,31 @@ Return true if @var{CHAR} is in the following set, otherwise return false:
 b c d f g h j k l m n p q r s t v w x z
 B C D F G H J K L M N P Q R S T V W X Z
 @end example
+@end defun
+
+
+@defun mbfl_string_is_mixed_case_alphabet_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+@end example
+
+This is equivalent to @func{mbfl_string_is_alpha_char}.
+@end defun
+
+
+@defun mbfl_string_is_mixed_case_alnum_char @var{CHAR}
+Return true if @var{CHAR} is in the following set, otherwise return false:
+
+@example
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+0 1 2 3 4 5 6 7 8 9
+@end example
+
+This is equivalent to @func{mbfl_string_is_alnum_char}.
 @end defun
 
 
@@ -3132,12 +3195,18 @@ _
 @defunx mbfl_string_is_ascii_symbol @var{STRING}
 @defunx mbfl_string_is_lower_case_vowel @var{STRING}
 @defunx mbfl_string_is_lower_case_consonant @var{STRING}
+@defunx mbfl_string_is_lower_case_alphabet @var{STRING}
+@defunx mbfl_string_is_lower_case_alnumt @var{STRING}
 @defunx mbfl_string_is_lower_case_base16 @var{STRING}
 @defunx mbfl_string_is_upper_case_vowel @var{STRING}
 @defunx mbfl_string_is_upper_case_consonant @var{STRING}
+@defunx mbfl_string_is_upper_case_alphabet @var{STRING}
+@defunx mbfl_string_is_upper_case_alnumt @var{STRING}
 @defunx mbfl_string_is_upper_case_base16 @var{STRING}
 @defunx mbfl_string_is_mixed_case_vowel @var{STRING}
 @defunx mbfl_string_is_mixed_case_consonant @var{STRING}
+@defunx mbfl_string_is_mixed_case_alphabet @var{STRING}
+@defunx mbfl_string_is_mixed_case_alnumt @var{STRING}
 @defunx mbfl_string_is_mixed_case_base16 @var{STRING}
 @defunx mbfl_string_is_base32 @var{STRING}
 @defunx mbfl_string_is_base64 @var{STRING}
