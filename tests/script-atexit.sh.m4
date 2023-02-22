@@ -28,7 +28,7 @@ y#
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_LIBMBFL_CORE")
 
 function main () {
     mbfl_atexit_enable

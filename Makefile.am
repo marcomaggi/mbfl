@@ -530,11 +530,11 @@ MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export 
 # This  environment setting  is used  both  to compile  ".test.m4" files  and to  run
 # ".test" files.
 #
-MBFL_TESTS_ENV		=  MBFL_TESTS_LIBMBFL_CORE=$(builddir)/src/lib/libmbfl.bash; export MBFL_TESTS_LIBMBFL_CORE;
-MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_TEST=$(builddir)/src/lib/libmbfl-tests.bash; export MBFL_TESTS_LIBMBFL_TEST;
-MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_ARCH=$(builddir)/src/lib/libmbfl-arch.bash; export MBFL_TESTS_LIBMBFL_ARCH;
-MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_UTILS=$(builddir)/src/lib/libmbfl-utils.bash; export MBFL_TESTS_LIBMBFL_UTILS;
-MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_PASSWORDS=$(builddir)/src/lib/libmbfl-passwords.bash; export MBFL_TESTS_LIBMBFL_PASSWORDS;
+MBFL_TESTS_ENV		=  MBFL_LIBMBFL_CORE=$(builddir)/src/lib/libmbfl.bash; export MBFL_LIBMBFL_CORE;
+MBFL_TESTS_ENV		+= MBFL_LIBMBFL_TEST=$(builddir)/src/lib/libmbfl-tests.bash; export MBFL_LIBMBFL_TEST;
+MBFL_TESTS_ENV		+= MBFL_LIBMBFL_ARCH=$(builddir)/src/lib/libmbfl-arch.bash; export MBFL_LIBMBFL_ARCH;
+MBFL_TESTS_ENV		+= MBFL_LIBMBFL_UTILS=$(builddir)/src/lib/libmbfl-utils.bash; export MBFL_LIBMBFL_UTILS;
+MBFL_TESTS_ENV		+= MBFL_LIBMBFL_PASSWORDS=$(builddir)/src/lib/libmbfl-passwords.bash; export MBFL_LIBMBFL_PASSWORDS;
 # We set TMPDIR  because if the "/tmp"  directory is mounted on  a separate partition
 # with  "noexec"  attribute: tests  for  executability  of  files  will fail  if  the
 # temporary test files are created under "/tmp".
@@ -587,8 +587,10 @@ tests/signal.test: tests/signaltest.sh
 .PHONY: test-sendmail-gmail test-sendmail-poste test-sendmail-localhost
 
 test: all $(check_SCRIPTS)
-	$(AM_TESTS_ENVIRONMENT) shopt -s nullglob; for item in $(builddir)/tests/*$(file)*.test;\
-	do echo $$MBFL_TESTS_LIBMBFL_TEST; $(MBFL_PROGRAM_BASH) "$$item" $(AM_TEST_LOG_FLAGS);	\
+	$(AM_TESTS_ENVIRONMENT)					\
+	shopt -s nullglob					;\
+	for item in $(builddir)/tests/*$(file)*.test		;\
+	do $(MBFL_PROGRAM_BASH) "$$item" $(AM_TEST_LOG_FLAGS)	;\
 	done
 
 test-template: examples/template.sh src/lib/libmbfl.bash
@@ -619,12 +621,12 @@ test-sendmail-localhost:
 #
 MBFL_ICHECK_ENV	 = PATH=$(DESTDIR)$(bindir):$$PATH; export PATH;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBDIR="`mbflpp.bash --print-libdir`"; export MBFL_TESTS_LIBDIR;
-MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_CORE="`mbflpp.bash --print-libmbfl`"; export MBFL_TESTS_LIBMBFL_CORE;
-MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_TEST="`mbflpp.bash --print-libmbfl-tests`"; export MBFL_TESTS_LIBMBFL_TEST;
-MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_ARCH="$$MBFL_TESTS_LIBDIR/libmbfl-arch.bash"; export MBFL_TESTS_LIBMBFL_ARCH;
-MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_AT="$$MBFL_TESTS_LIBDIR/libmbfl-at.bash"; export MBFL_TESTS_LIBMBFL_AT;
-MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_UTILS="$$MBFL_TESTS_LIBDIR/libmbfl-utils.bash"; export MBFL_TESTS_LIBMBFL_UTILS;
-MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_PASSWORDS="$$MBFL_TESTS_LIBDIR/libmbfl-passwords.bash"; export MBFL_TESTS_LIBMBFL_PASSWORDS;
+MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_CORE="`mbflpp.bash --print-libmbfl`"; export MBFL_LIBMBFL_CORE;
+MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_TEST="`mbflpp.bash --print-libmbfl-tests`"; export MBFL_LIBMBFL_TEST;
+MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_ARCH="$$MBFL_TESTS_LIBDIR/libmbfl-arch.bash"; export MBFL_LIBMBFL_ARCH;
+MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_AT="$$MBFL_TESTS_LIBDIR/libmbfl-at.bash"; export MBFL_LIBMBFL_AT;
+MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_UTILS="$$MBFL_TESTS_LIBDIR/libmbfl-utils.bash"; export MBFL_LIBMBFL_UTILS;
+MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_PASSWORDS="$$MBFL_TESTS_LIBDIR/libmbfl-passwords.bash"; export MBFL_LIBMBFL_PASSWORDS;
 MBFL_ICHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_ICHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_ICHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;

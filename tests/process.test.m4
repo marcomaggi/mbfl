@@ -32,8 +32,8 @@ y# process.test --
 
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
+mbfl_load_library("$MBFL_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_LIBMBFL_TEST")
 
 
 #### disowning a process

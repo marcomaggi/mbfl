@@ -46,7 +46,7 @@ script_EXAMPLES=
 #### load library
 
 mbfl_INTERACTIVE='no'
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_LIBMBFL_CORE")
 
 
 #### global variables

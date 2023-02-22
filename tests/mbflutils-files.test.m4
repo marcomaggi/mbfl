@@ -37,9 +37,9 @@
 
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_UTILS")
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
+mbfl_load_library("$MBFL_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_LIBMBFL_UTILS")
+mbfl_load_library("$MBFL_LIBMBFL_TEST")
 
 mbfl_file_enable_permissions
 mbfl_system_enable_programs

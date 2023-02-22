@@ -37,9 +37,9 @@
 
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
-mbfl_load_library("$MBFL_TESTS_LIBMBFL_ARCH")
+mbfl_load_library("$MBFL_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_LIBMBFL_TEST")
+mbfl_load_library("$MBFL_LIBMBFL_ARCH")
 
 testfile="$TMPDIR/proof.txt"
 
