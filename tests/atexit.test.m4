@@ -10,7 +10,7 @@
 #
 #		$ make all test TESTMATCH=atexit-
 #
-# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -31,13 +31,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#page
+
 #### helpers
 
 declare -i flag1=0 flag2=0 flag3=0
@@ -58,7 +58,7 @@ function flag_it_3 () {
     let ++flag3
 }
 
-#page
+
 #### tests with no identifiers
 
 function atexit-1.1 () {
@@ -79,7 +79,7 @@ function atexit-1.2 () {
     dotest-equal 1 ${flag1} && dotest-equal 1 ${flag2} && dotest-equal 1 ${flag3}
 }
 
-#page
+
 #### tests with identifier
 
 function atexit-2.1 () {
@@ -95,7 +95,7 @@ function atexit-2.1 () {
     dotest-equal 1 ${flag1} && dotest-equal 0 ${flag2} && dotest-equal 1 ${flag3}
 }
 
-#PAGE
+
 
 dotest atexit-
 dotest-final-report

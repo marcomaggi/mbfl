@@ -1,4 +1,4 @@
-# message.test --
+y# message.test --
 #
 # Part of: Marco's BASH function libraries
 # Contents: tests for the message library
@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2004, 2005, 2009, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2004, 2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -29,21 +29,21 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 ## ------------------------------------------------------------
 ## Setup.
 ## ------------------------------------------------------------
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#PAGE
+
 
 function message-1.1 () {
     mbfl_message_string "abcde\n" 2>&1 | dotest-output abcde
 }
 
-#page
+
 
 function message-2.1 () {
     mbfl_message_verbose abcde\n 2>&1 | dotest-output
@@ -57,7 +57,7 @@ function message-2.2 () {
     } 2>&1 | dotest-output "<unknown>: abcde"
 }
 
-#page
+
 
 function message-3.1 () {
     {
@@ -67,7 +67,7 @@ function message-3.1 () {
     }  2>&1 | dotest-output "<unknown>: debug: abcde"
 }
 
-#page
+
 
 function message-4.1 () {
     mbfl_message_warning abcde 2>&1 | dotest-output "<unknown>: warning: abcde"
@@ -77,7 +77,8 @@ function message-5.1 () {
     mbfl_message_error abcde 2>&1 | dotest-output "<unknown>: error: abcde"
 }
 
-#PAGE
+
+#### let's go
 
 dotest message-
 dotest-final-report

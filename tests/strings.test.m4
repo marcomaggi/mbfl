@@ -37,8 +37,8 @@
 
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
 
 #### quoted characters

@@ -10,7 +10,7 @@
 #
 #		$ make all test file=locations
 #
-# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -31,13 +31,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#page
+
 #### simple handlers
 
 # Access  the  variables  "R_one"  and  "X"  in  the  uplevel  syntactic
@@ -68,7 +68,7 @@ function handler_append () {
     RESULT+=$THING
 }
 
-#page
+
 #### basics
 
 function locations-01.1 () {
@@ -85,7 +85,7 @@ function locations-01.1 () {
     { dotest-equal 1 $R_one; } && { dotest-equal 2 $R_two; } && { dotest-equal 3 $R_three; }
 }
 
-#page
+
 #### nested locations
 #
 # Remember that the handlers are called when a location is left.
@@ -141,7 +141,7 @@ function locations-02.2 () {
     dotest-equal 0342516 "$RESULT"
 }
 
-#page
+
 #### nested function calls
 
 # Two nested function calls.
@@ -205,7 +205,7 @@ function sub-sub-locations-03.2 () {
     mbfl_location_handler "handler_append 4"
 }
 
-#page
+
 #### locations sequence
 
 function locations-04.1 () {
@@ -228,7 +228,7 @@ function locations-04.1 () {
     dotest-equal 01234 "$RESULT"
 }
 
-#page
+
 #### running location handlers upon exiting a script
 
 function locations-05.1 () {
@@ -301,7 +301,7 @@ function worker-locations-06.1 () {
     mbfl_location_leave
 }
 
-#page
+
 #### special handlers: test mode suspension
 
 function locations-test-suspension-1.0 () {
@@ -368,7 +368,7 @@ function locations-test-suspension-1.1 () {
 	dotest-equal 1 $RESULT_BRANCH 'result of suspending branch'
 }
 
-#page
+
 #### internals inspection
 
 # After all the tests we have run: the counter must be back to zero.
@@ -387,7 +387,7 @@ function locations-98.2 () {
     done
 }
 
-#page
+
 #### running all location handlers
 
 function locations-99.1 () {
@@ -425,7 +425,7 @@ function sub-sub-locations-99.2 () {
     mbfl_location_handler "handler_append 4"
 }
 
-#page
+
 #### let's go
 
 dotest locations-

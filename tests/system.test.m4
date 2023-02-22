@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2005, 2013, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2005, 2013, 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -28,13 +28,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#page
+
 #### searching entries in /etc/passwd: by name
 
 function system-passwd-find-entry-by-name-var-1.1 () {
@@ -67,7 +67,7 @@ function system-passwd-find-entry-by-name-1.1 () {
     fi
 }
 
-#page
+
 #### searching entries in /etc/passwd: by uid
 
 function system-passwd-find-entry-by-uid-var-1.1 () {
@@ -100,7 +100,7 @@ function system-passwd-find-entry-by-uid-1.1 () {
     fi
 }
 
-#page
+
 #### /etc/passwd: conversion between names and UIDs
 
 function system-passwd-uid-to-name-var-1.1 () {
@@ -161,7 +161,7 @@ function system-passwd-numerical-uid-to-name-1.1 () {
     mbfl_system_numerical_user_id_to_name 0 | dotest-output 'root'
 }
 
-#page
+
 #### printing entries in /etc/passwd
 
 function system-passwd-print-entries-raw-1.1 () {
@@ -182,7 +182,7 @@ function system-passwd-print-entries-xml-3.1 () {
     fi
 }
 
-#page
+
 #### searching entries in /etc/group: by name
 
 function system-group-find-entry-by-name-var-1.1 () {
@@ -215,7 +215,7 @@ function system-group-find-entry-by-name-1.1 () {
     fi
 }
 
-#page
+
 #### searching entries in /etc/group: by gid
 
 function system-group-find-entry-by-gid-var-1.1 () {
@@ -248,7 +248,7 @@ function system-group-find-entry-by-gid-1.1 () {
     fi
 }
 
-#page
+
 #### printing entries in /etc/group
 
 function system-group-print-entries-raw-1.1 () {
@@ -269,7 +269,7 @@ function system-group-print-entries-xml-3.1 () {
     fi
 }
 
-#page
+
 #### retrieving users from /etc/group
 
 function system-group-get-user-in-group-var-1.1 () {
@@ -312,7 +312,7 @@ function system-group-get-user-in-group-1.1 () {
     fi
 }
 
-#page
+
 #### /etc/group: conversion between names and GIDs
 
 function system-group-gid-to-name-var-1.1 () {
@@ -373,7 +373,7 @@ function system-group-numerical-gid-to-name-1.1 () {
     mbfl_system_numerical_group_id_to_name 0 | dotest-output 'root'
 }
 
-#page
+
 #### tests for "whoami" from GNU Coreutils
 
 function system-users-whoami-1.0 () {
@@ -404,7 +404,7 @@ function system-users-whoami-1.1 () {
 	dotest-printf 'the username is: %s' "$USERNAME"
 }
 
-#page
+
 #### tests for "id" from GNU Coreutils
 
 function system-users-id-1.0 () {
@@ -667,7 +667,7 @@ function system-users-id-2.7.2 () {
 	dotest-printf 'the real group name is: %s' "$GROUPNAME"
 }
 
-#page
+
 #### end of tests
 
 dotest system-

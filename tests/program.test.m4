@@ -1,4 +1,4 @@
-# program.test --
+y# program.test --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: tests for the program.sh functions
@@ -32,8 +32,8 @@
 
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
 
 #### splitting path

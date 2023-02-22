@@ -1,4 +1,4 @@
-#
+y#
 # Part of: Marco's Bash Functions Library
 # Contents: test script for atexit module
 # Date: Sun Nov 25, 2018
@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (C) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -28,7 +28,7 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
 
 function main () {
     mbfl_atexit_enable

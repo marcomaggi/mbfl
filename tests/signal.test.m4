@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003, 2004, 2005, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -29,11 +29,11 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
 #dotest-set-debug
 
@@ -76,7 +76,7 @@ function signaltest () {
     dotest-clean-files
 }
 
-#PAGE
+
 #### tests
 
 function signal-1.1 () {
@@ -86,7 +86,7 @@ function signal-1.2 () {
     signaltest "SIGUSR2"
 }
 
-#PAGE
+
 #### let's go
 
 dotest signal-

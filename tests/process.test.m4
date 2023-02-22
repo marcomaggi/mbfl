@@ -1,4 +1,4 @@
-# process.test --
+y# process.test --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: tests for the process functions
@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2020 Marco Maggi
+# Copyright (c) 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -29,13 +29,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#page
+
 #### disowning a process
 
 function process-disown-1.1 () {
@@ -68,7 +68,7 @@ function process-disown-1.1 () {
 	dotest-equal 0 $WAIT_RV 'wait return status'
 }
 
-#page
+
 #### let's go
 
 dotest process-

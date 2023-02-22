@@ -10,7 +10,7 @@
 #
 #		$ TESTMATCH=compress- make all test
 #
-# Copyright (c) 2005, 2012, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2005, 2012, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -32,11 +32,11 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
 function compress () {
     local -r examplesdir=${examplesdir:?'missing examplesdir in the environment'}
@@ -68,7 +68,7 @@ function sub-compress-assert-existent-compressed () {
     dotest-assert-file-exists "$compressed" 'compressed file does not exist'
 }
 
-#page
+
 
 function compress-gzip-compress-1.1 () {
     dotest-mktmpdir
@@ -101,7 +101,7 @@ function compress-gzip-compress-1.3 () {
     dotest-clean-files
 }
 
-#page
+
 
 function compress-gzip-decompress-2.1 () {
     dotest-mktmpdir
@@ -137,7 +137,7 @@ function compress-gzip-decompress-2.3 () {
     dotest-clean-files
 }
 
-#page
+
 
 function compress-bzip-compress-1.1 () {
     dotest-mktmpdir
@@ -170,7 +170,7 @@ function compress-bzip-compress-1.3 () {
     dotest-clean-files
 }
 
-#page
+
 
 function compress-bzip-decompress-2.1 () {
     dotest-mktmpdir
@@ -207,7 +207,7 @@ function compress-bzip-decompress-2.3 () {
     dotest-clean-files
 }
 
-#PAGE
+
 #### let's go
 
 dotest compress-

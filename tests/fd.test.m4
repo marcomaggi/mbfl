@@ -10,7 +10,7 @@
 #
 #		$ TESTMATCH=fd- make all tests
 #
-# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -31,11 +31,11 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
 #dotest-set-debug
 
@@ -45,7 +45,7 @@ mbfl_file_enable_remove
 
 mbfl_declare_program mkfifo
 
-#page
+
 #### helpers
 
 function program_mkfifo () {
@@ -57,7 +57,7 @@ function program_mkfifo () {
     "$MKFIFO" --mode=0600 "$@" "$PATHNAME"
 }
 
-#page
+
 #### reading from a file
 
 # Write to a test file, then read from it.
@@ -133,7 +133,7 @@ function fd-file-read-write-2.1 () {
     dotest-equal '1234' "$LINE" && $CLOSED_INFD && $CLOSED_OUFD
 }
 
-#page
+
 #### reading and writing using a FIFO
 
 # Write to a test FIFO, then read from it.
@@ -210,7 +210,7 @@ function fd-fifo-read-write-1.3 () {
     dotest-equal '1234' "$LINE"
 }
 
-#page
+
 #### duplicating file descriptors
 
 # Write to a test FIFO, then read from it.  Use location handlers to
@@ -259,7 +259,7 @@ function fd-dup-fifo-read-write-1.1 () {
     dotest-equal '1234' "$LINE1" && dotest-equal '5678' "$LINE2" && dotest-equal '90' "$LINE3"
 }
 
-#page
+
 #### moving file descriptors
 
 # Write to a test FIFO, then read from it.  Use location handlers to
@@ -322,7 +322,7 @@ function fd-move-file-read-write-1.1 () {
     dotest-equal '1234' "$LINE"
 }
 
-#page
+
 #### let's go
 
 dotest fd-

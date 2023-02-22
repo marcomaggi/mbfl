@@ -10,7 +10,7 @@
 #
 #		$ TESTMATCH=encode- make all tests
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -32,13 +32,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#page
+
 #### encoding/decoding hex
 
 function encode-hex-var-1.1 () {
@@ -96,7 +96,7 @@ function filter-hex-1.2 () {
     dotest-equal "$PLAIN" "$DECODED"
 }
 
-#page
+
 #### encoding/decoding octal
 
 function encode-oct-var-1.1 () {
@@ -137,7 +137,7 @@ function filter-oct-var-1.1 () {
     dotest-equal "$PLAIN" "$DECODED"
 }
 
-#page
+
 #### let's go
 
 dotest encode-

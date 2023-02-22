@@ -12,7 +12,7 @@
 #
 #	will select these tests.
 #
-# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -33,15 +33,15 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
 mbfl_times_and_dates_enable
 
-#page
+
 #### current time and date
 
 function times-and-dates--current-1.1 () {
@@ -76,7 +76,7 @@ function times-and-dates--current-1.8 () {
     mbfl_date_current_time
 }
 
-#page
+
 #### special formats
 
 function times-and-dates--current-2.1 () {
@@ -87,7 +87,8 @@ function times-and-dates--current-2.2 () {
     mbfl_date_iso_timestamp
 }
 
-#page
+
+#### let's go
 
 dotest times-and-dates-
 dotest-final-report

@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -28,13 +28,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#page
+
 #### helper functions
 
 declare -A p_semver_CONFIG
@@ -134,7 +134,7 @@ function p-semver-parse-correct-build-metadata () {
     p-semver-parse-correct-specification "$MAJOR_NUMBER" "$MINOR_NUMBER" "$PATCH_LEVEL" "$PRERELEASE_VERSION" "$BUILD_METADATA" "$TAIL"
 }
 
-#page
+
 #### Correct semantic version specification.  No prerelease version.  No build metadata.
 
 function semver-parse-1.1.01 () { p-semver-parse-correct-version-numbers  '1'  '2'  '3'	      ;}
@@ -145,7 +145,7 @@ function semver-parse-1.1.03 () { p-semver-parse-correct-version-numbers '10' '2
 function semver-parse-1.1.10 () { p-semver-parse-correct-version-numbers '1' '2' '3' '/'      ;}
 function semver-parse-1.1.11 () { p-semver-parse-correct-version-numbers '1' '2' '3' '_'      ;}
 
-#page
+
 #### Correct semantic version specification.  Prerelease version.  No build metadata.
 
 # Tests for single identifier specifications.
@@ -170,7 +170,7 @@ function semver-parse-1.2.14 () { p-semver-parse-correct-prerelease-version 'alp
 function semver-parse-1.2.20 () { p-semver-parse-correct-prerelease-version 'alpha' '_beta'	      ;}
 function semver-parse-1.2.21 () { p-semver-parse-correct-prerelease-version 'alpha' '[beta'	      ;}
 
-#page
+
 #### Correct semantic version specification.  No prerelease version.  Build metadata.
 
 function semver-parse-1.3.01 () { p-semver-parse-correct-build-metadata 'x86-64'	      ;}
@@ -179,7 +179,7 @@ function semver-parse-1.3.01 () { p-semver-parse-correct-build-metadata 'x86-64'
 function semver-parse-1.3.10 () { p-semver-parse-correct-build-metadata 'x86-64' '[alpha'     ;}
 function semver-parse-1.3.11 () { p-semver-parse-correct-build-metadata 'x86-64' '_alpha'     ;}
 
-#page
+
 #### Correct semantic version specification.  With prerelease version.  With build metadata.
 
 function semver-parse-1.4.01 () {
@@ -222,7 +222,7 @@ function semver-parse-1.4.04 () {
     mbfl_location_leave
 }
 
-#page
+
 #### miscellaneous errors
 
 # Expected a leading 'v' character.
@@ -328,7 +328,7 @@ function semver-parse-error-version-numbers-2.2 () {
 	dotest-equal 'invalid version numbers specification' "${RV[PARSING_ERROR_MESSAGE]}"
 }
 
-#page
+
 #### errors in prerelease version
 
 # Empty prerelease version after hypen character.
@@ -345,7 +345,7 @@ function semver-parse-error-prerelease-version-1.1 () {
     dotest-equal 1 $? 'return status' && dotest-equal 'invalid prerelease version' "${RV[PARSING_ERROR_MESSAGE]}"
 }
 
-#page
+
 #### errors in build metadata
 
 # Invalid character in build metadata causes parsing to stop.
@@ -406,7 +406,7 @@ function semver-parse-error-build-metadata-1.1 () {
     dotest-equal 1 $? 'return status' && dotest-equal 'invalid build metadata' "${RV[PARSING_ERROR_MESSAGE]}"
 }
 
-#page
+
 #### splitting prerelease version
 
 function semver-split-prerelease-version-1.0 () {
@@ -446,7 +446,7 @@ function semver-split-prerelease-version-1.2 () {
 	dotest-equal	'56'		${RV[5]}	'identifier 6'
 }
 
-#page
+
 #### semantic version specifications comparison
 
 # Version numbers comparison.
@@ -545,7 +545,7 @@ function semver-compare-example-2.0 () {
     dotest-equal 0 $? 'return status' && dotest-equal -1 $RV 'comparison result'
 }
 
-#page
+
 #### end of tests
 
 dotest semver-

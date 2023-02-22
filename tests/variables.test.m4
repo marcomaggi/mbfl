@@ -10,7 +10,7 @@
 #
 #		$ make all test file=variables
 #
-# Copyright (c) 2004, 2005, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2004, 2005, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -32,13 +32,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#page
+
 #### array variables
 
 function variable-find-in-array-1.1 () {
@@ -78,7 +78,7 @@ function variable-element-is-in-array-1.2 () {
     ! mbfl_variable_element_is_in_array gasp
 }
 
-#page
+
 #### colon variables
 
 function variable-colon-variable-to-array-1.1 () {
@@ -109,7 +109,7 @@ function variable-colon-variable-to-array-2.1 () {
     dotest-equal a:b:c:d:e $v
 }
 
-#page
+
 #### variables allocation
 
 function variable-alloc-1.1 () {
@@ -121,7 +121,7 @@ function variable-alloc-1.1 () {
     dotest-equal 123 ${!NAME}
 }
 
-#page
+
 #### local variable references, simple variables
 
 # Local varref, no init value, no attributes.  Variable set and ref.
@@ -181,7 +181,7 @@ function worker-varref-local-simple-2.1 () {
     RV="$VAR"
 }
 
-#page
+
 #### local variable references, array variables
 
 # Local varref, no init value, no attributes.  Variable set and ref.
@@ -309,7 +309,7 @@ function worker-varref-local-array-3.2 () {
     RV2=${ARRY[2]}
 }
 
-#page
+
 #### global variable references, simple variables
 
 # Global varref, no init value, no attributes.  Variable set and ref.
@@ -369,7 +369,7 @@ function worker-varref-global-simple-2.1 () {
     RV="$VAR"
 }
 
-#page
+
 #### global variable references, array variables
 
 # Global varref, no init value, no attributes.  Variable set and ref.
@@ -497,7 +497,7 @@ function worker-varref-global-array-3.2 () {
     RV2=${ARRY[2]}
 }
 
-#page
+
 #### unsetting nameref variables
 
 function varref-unset-1.1 () {
@@ -541,7 +541,7 @@ function varref-unset-3.1 () {
     dotest-equal 123 "$RV" && dotest-equal '' $VAR
 }
 
-#page
+
 #### NAMEREF variables, generation in sub-function
 
 function varref-sub-generation-1.1 () {
@@ -560,7 +560,7 @@ function worker-varref-sub-generation-1.1 () {
     RV=mbfl_datavar(VAR)
 }
 
-#page
+
 #### let's go
 
 dotest variable-

@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2003, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2003, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -29,7 +29,7 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### MBFL's related options and variables
 
 script_REQUIRED_MBFL_VERSION=v3.0.0-devel.3
@@ -42,18 +42,18 @@ script_USAGE="usage: ${script_PROGNAME} [options]"
 script_DESCRIPTION='Test scripts for signal handling.'
 script_EXAMPLES=
 
-#page
+
 #### load library
 
 mbfl_INTERACTIVE='no'
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
 
-#page
+
 #### global variables
 
 declare SIGSPEC='none'
 
-#page
+
 #### functions
 
 function main () {

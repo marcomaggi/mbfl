@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -29,11 +29,11 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
 function script () {
     local -r examplesdir=${examplesdir:?'missing examplesdir in the environment'}
@@ -44,7 +44,7 @@ function script_with_actions () {
     "$mbfl_PROGRAM_BASH" "${examplesdir}/template-actions.sh" "$@" 2>&1
 }
 
-#PAGE
+
 #### test template for basic options
 
 function script-template-1.1 () {
@@ -66,7 +66,7 @@ function script-template-1.6 () {
     script --version-only | dotest-output 1.0
 }
 
-#PAGE
+
 #### test template for custom non-action options
 
 function script-template-2.1 () {
@@ -95,14 +95,14 @@ function script-template-2.7 () {
     script --= | dotest-output 'template.sh: error: invalid command line argument: "--="'
 }
 
-#page
+
 #### test template for arguments
 
 function script-template-3.1 () {
     script a b c | dotest-output "action one, arguments: 3, 'a b c'"
 }
 
-#page
+
 #### test template for exit codes inspection
 
 function script-template-4.1 () {
@@ -137,7 +137,7 @@ function script-template-4.10 () {
     script --print-exit-code-names=0 | dotest-output "success"
 }
 
-#page
+
 #### test template for custom action options
 
 function script-template-5.1 () {
@@ -160,7 +160,7 @@ function script-template-5.6 () {
         dotest-output "template.sh: script_after_parsing_options\naction four, arguments: 3, 'a b c'"
 }
 
-#page
+
 #### test template-action: options parsing
 
 function script-action-1.1.1 () {
@@ -238,7 +238,7 @@ function script-action-1.7.2 () {
     dotest-equal 92 $?
 }
 
-#page
+
 #### script with actions: all the actions
 
 function script-action-2.1.1 () {
@@ -347,7 +347,7 @@ function script-action-4.3.3 () {
     script_with_actions three red gas    | dotest-output "action script_action_THREE_RED_GAS"
 }
 
-#page
+
 #### script with actions: different actions, different options
 
 # brief options
@@ -377,7 +377,7 @@ function script-action-5.2.3 () {
 	dotest-output "action one green gas: G='yes' H='2' I='3' ARGC=0 ARGV=''"
 }
 
-#page
+
 #### script with actions: action errors
 
 # Missing last action identifier
@@ -392,7 +392,7 @@ function script-action-6.1.2 () {
     dotest-equal $? 0
 }
 
-#PAGE
+
 #### let's go
 
 dotest script-

@@ -10,7 +10,7 @@
 #
 #		$ make all test file=bash-feature-coproc
 #
-# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -31,13 +31,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#page
+
 #### chatting with a coprocess
 
 function coproc-1.1 () {
@@ -75,7 +75,7 @@ function worker-coproc-1.1 () {
     mbfl_exit $?
 }
 
-#page
+
 #### let's go
 
 dotest coproc-

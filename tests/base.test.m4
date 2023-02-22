@@ -10,7 +10,7 @@
 #
 #		$ make all test file=base
 #
-# Copyright (c) 2020 Marco Maggi
+# Copyright (c) 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -32,13 +32,13 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
-#page
+
 #### base variables
 
 function base-installation-directories-1.1 () {
@@ -49,7 +49,7 @@ function base-installation-directories-1.1 () {
 	printf 'datadir=%s\n' "${mbfl_INSTDIR_DATADIR:?}"
 }
 
-#page
+
 #### let's go
 
 dotest base-

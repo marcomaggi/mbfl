@@ -12,7 +12,7 @@
 #
 #	that will select these tests.
 #
-# Copyright (c) 2020 Marco Maggi
+# Copyright (c) 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -37,9 +37,9 @@
 
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLUTILS")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_UTILS")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
 
 mbfl_file_enable_permissions
 mbfl_system_enable_programs

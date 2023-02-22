@@ -12,7 +12,7 @@
 #
 #	that will select these tests.
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -34,16 +34,16 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#PAGE
+
 #### setup
 
-mbfl_load_library("$MBFL_TESTS_LIBMBFL")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLTEST")
-mbfl_load_library("$MBFL_TESTS_LIBMBFLARCH")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_CORE")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_TEST")
+mbfl_load_library("$MBFL_TESTS_LIBMBFL_ARCH")
 
 testfile="$TMPDIR/proof.txt"
 
-#page
+
 #### file name functions: internal parsing utilities
 
 function file-backwards-looking-at-double-dot-1.1 () {
@@ -88,7 +88,7 @@ function file-looking-at-component-beginning-1.3 () {
     ! mbfl_p_file_looking_at_component_beginning '/path/to/file.ext' 8
 }
 
-#PAGE
+
 #### file name functions: extension
 
 file-extension-1.1 () {
@@ -167,7 +167,7 @@ file-extension-var-1.9 () {
     dotest-equal '' "$RV"
 }
 
-#PAGE
+
 #### file name functions: dirname
 
 function file-dirname-1.1 () {
@@ -286,7 +286,7 @@ function file-dirname-var-1.14 () {
     dotest-equal './abcd' "$RV"
 }
 
-#PAGE
+
 #### file name functions: rootname
 
 function file-rootname-1.1 () {
@@ -406,7 +406,7 @@ function file-rootname-var-1.12 () {
     dotest-equal '/path/to/file' "$RV"
 }
 
-#page
+
 #### file name functions: tailname
 
 function file-tail-1.1 () {
@@ -437,7 +437,7 @@ function file-tail-var-1.3 () {
     dotest-equal 'file.ext' "$RV"
 }
 
-#PAGE
+
 #### file name functions: split
 
 function file-split-1.1 () {
@@ -469,7 +469,7 @@ function file-split-1.3 () {
 	dotest-equal 3 $SPLITCOUNT
 }
 
-#page
+
 #### pathname normalisation: stripping trailing slashes
 
 function file-strip-trailing-slash-1.1 () {
@@ -524,7 +524,7 @@ function file-strip-trailing-slash-var-1.6 () {
     dotest-equal 'file' "$RV"
 }
 
-#page
+
 #### pathname normalisation: stripping leading slashes
 
 function file-strip-leading-slash-1.1 () {
@@ -579,7 +579,7 @@ function file-strip-leading-slash-var-1.6 () {
     dotest-equal 'file' "$RV"
 }
 
-#PAGE
+
 #### pathname normalisation: full normalisation
 
 function file-normalise-1.1 () {
@@ -651,7 +651,7 @@ function file-normalise-2.6 () {
 	dotest-output abc/def/lmn/opq/rst/X/Y
 }
 
-#page
+
 #### pathname normalisation: realpath
 #
 # We run these tests  only if an executable "realpath" is found  at package configuration-time.  For
@@ -699,7 +699,7 @@ then
 
 fi
 
-#page
+
 #### relative pathnames: extracting subpathnames
 
 function file-subpathname-1.1 () {
@@ -743,7 +743,7 @@ function file-subpathname-var-3.1 () {
     ! mbfl_file_subpathname_var RV /a/b/c /d
 }
 
-#page
+
 #### removing files and directories
 
 function file-remove-1.1 () {
@@ -786,7 +786,7 @@ function file-remove-1.4 () {
     dotest-clean-files
 }
 
-#page
+
 #### creating directories
 
 function file-mkdir-1.1 () {
@@ -797,7 +797,7 @@ function file-mkdir-1.1 () {
     dotest-clean-files
 }
 
-#page
+
 #### creating links
 
 function file-link-1.1 () {
@@ -824,7 +824,7 @@ function file-symlink-1.1 () {
     dotest-clean-files
 }
 
-#page
+
 #### file system inspection: file owner
 
 function file-owner-1.1 () {
@@ -850,7 +850,7 @@ function file-owner-var-1.1 () {
     dotest-equal "$USER" "$RV"
 }
 
-#page
+
 #### file system inspection: file size
 
 function file-size-1.1 () {
@@ -878,7 +878,7 @@ function file-size-var-1.1 () {
     dotest-equal 10 "$RV"
 }
 
-#page
+
 #### command interfaces: tar
 
 function file-tar-1.1 () {
@@ -923,7 +923,7 @@ function file-tar-2.1 () {
     dotest-clean-files
 }
 
-#page
+
 
 file-is-file-1.1 () {
     local PATHNAME result
@@ -1107,7 +1107,7 @@ file-directory-is-executable-1.3 () {
     result=$?; dotest-clean-files; return $result
 }
 
-#page
+
 
 file-get-permissions-1.1 () {
     dotest-mktmpdir
@@ -1134,7 +1134,7 @@ file-get-permissions-2.1 () {
     } | dotest-output ${MODE}
 }
 
-#page
+
 
 file-write-1.1 () {
     dotest-mktmpdir
@@ -1170,7 +1170,7 @@ file-read-1.1 () {
     dotest-equal "${STRING}" "${CONTENT}"
 }
 
-#page
+
 
 function file-move-1.1 () {
     local src dst
@@ -1219,7 +1219,7 @@ function file-move-2.2 () {
     dotest-clean-files
 }
 
-#page
+
 
 function file-copy-1.1 () {
     local src dst
@@ -1245,7 +1245,7 @@ function file-copy-2.1 () {
     dotest-clean-files
 }
 
-#page
+
 #### file commands: interface to "stat"
 
 function file-stat-1.1 () {
@@ -1266,7 +1266,7 @@ function file-stat-1.2 () {
     dotest-clean-files
 }
 
-#page
+
 #### file compression: gzip
 
 # Keep input file.  Print compressed data to stdout.
@@ -1409,7 +1409,7 @@ function file-compression-gzip-1.4 () {
     return $retval
 }
 
-#page
+
 #### file compression: bzip2
 
 # Keep input file.  Print compressed data to stdout.
@@ -1552,7 +1552,7 @@ function file-compression-bzip2-1.4 () {
     return $retval
 }
 
-#page
+
 #### file compression: lzip
 
 # Keep input file.  Print compressed data to stdout.
@@ -1695,7 +1695,7 @@ function file-compression-lzip-1.4 () {
     return $retval
 }
 
-#page
+
 #### file compression: xz
 
 # Keep input file.  Print compressed data to stdout.
@@ -1838,7 +1838,7 @@ function file-compression-xz-1.4 () {
     return $retval
 }
 
-#page
+
 #### file permissions functions
 
 function file-permissions-conversion-symbolic-to-octal-1.1 () {
@@ -1854,7 +1854,8 @@ function file-permissions-conversion-symbolic-to-octal-1.4 () {
     mbfl_file_octal_to_symbolic_permissions '5' | dotest-output 'r-x'
 }
 
-#PAGE
+
+#### let's go
 
 dotest file-
 dotest-final-report

@@ -35,10 +35,12 @@ MBFL_PROGRAM_BASH	= @MBFL_PROGRAM_BASH@
 MBFL_PROGRAM_MBFLPP	= $(builddir)/src/bin/mbflpp.bash
 MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 
-# These flags are always used on  the command line of "mbflpp.bash".  We
-# can set "MBFLPPFLAGS" on the command line of "make".
+MBFL_PREPROCESSOR	= $(srcdir)/src/lib/preprocessor.m4
+
+# These flags  are always  used on  the command  line of  "mbflpp.bash".  We  can set
+# "MBFLPPFLAGS" on the command line of "make".
 #
-MBFLPP_GENERAL_FLAGS	= --no-prepro --library=$(srcdir)/src/lib/preprocessor.m4 $(MBFLPPFLAGS)
+MBFLPP_GENERAL_FLAGS	= --no-prepro --library=$(MBFL_PREPROCESSOR) $(MBFLPPFLAGS)
 
 EXTRA_DIST		+=			\
 	src/backup/libmbfl.bash			\
@@ -101,7 +103,6 @@ install-html-local:
 
 #### preprocessor macros file
 
-MBFL_PREPROCESSOR		= src/lib/preprocessor.m4
 mbflpreprodir			= $(MBFL_LIB_INSTDIR)
 dist_mbflprepro_DATA		= $(MBFL_PREPROCESSOR)
 
@@ -402,24 +403,20 @@ CLEANFILES			+=		\
 	$(MBFL_EXAMPLES_BUILT_FILES)		\
 	examples/$(am__dirstamp)
 
-MBFL_EXAMPLES_LIBMBFL		= $(builddir)/src/lib/libmbfl.bash
-MBFL_EXAMPLES_LIBMBFLAT		= $(builddir)/src/lib/libmbfl-at.bash
-MBFL_EXAMPLES_LIBMBFLARCH	= $(builddir)/src/lib/libmbfl-arch.bash
-MBFL_EXAMPLES_LIBMBFLUTILS	= $(builddir)/src/lib/libmbfl-utils.bash
 MBFL_EXAMPLES_ENV		=
 MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_EXAMPLES_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --add-bash
-MBFL_EXAMPLES_FLAGS		+= --libmbfl="$(MBFL_EXAMPLES_LIBMBFL)"
+MBFL_EXAMPLES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash
+MBFL_EXAMPLES_FLAGS		+= --libmbfl="$(builddir)/src/lib/libmbfl.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_AT__="$(builddir)/src/lib/libmbfl-at.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_ARCH__="$(builddir)/src/lib/libmbfl-arch.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_UTILS__="$(builddir)/src/lib/libmbfl-utils.bash"
 
 MBFL_EXAMPLES_PREREQUISITES	=		\
 	examples/$(am__dirstamp)		\
-	$(MBFL_EXAMPLES_LIBMBFL)		\
-	$(MBFL_EXAMPLES_LIBMBFLAT)		\
-	$(MBFL_EXAMPLES_LIBMBFLARCH)		\
-	$(MBFL_EXAMPLES_LIBMBFLUTILS)		\
+	$(builddir)/src/lib/libmbfl.bash	\
+	$(builddir)/src/lib/libmbfl-at.bash	\
+	$(builddir)/src/lib/libmbfl-arch.bash	\
+	$(builddir)/src/lib/libmbfl-utils.bash	\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
@@ -530,37 +527,34 @@ CLEANFILES			+=		\
 
 MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export TESTSTART;
 
-MBFL_TESTS_LIBMBFL	= $(builddir)/src/lib/libmbfl.bash
-MBFL_TESTS_LIBMBFLTEST	= $(builddir)/src/lib/libmbfltest.bash
-MBFL_TESTS_LIBMBFLARCH	= $(builddir)/src/lib/libmbfl-arch.bash
-MBFL_TESTS_LIBMBFLUTILS	= $(builddir)/src/lib/libmbfl-utils.bash
-MBFL_TESTS_LIBMBFLPASSWORDS = $(builddir)/src/lib/libmbfl-passwords.bash
-MBFL_TESTS_ENV		=  MBFL_TESTS_LIBMBFL=$(MBFL_TESTS_LIBMBFL); export MBFL_TESTS_LIBMBFL;
-MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLTEST=$(MBFL_TESTS_LIBMBFLTEST); export MBFL_TESTS_LIBMBFLTEST;
-MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLARCH=$(MBFL_TESTS_LIBMBFLARCH); export MBFL_TESTS_LIBMBFLARCH;
-MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLUTILS=$(MBFL_TESTS_LIBMBFLUTILS); export MBFL_TESTS_LIBMBFLUTILS;
-MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFLPASSWORDS=$(MBFL_TESTS_LIBMBFLPASSWORDS); export MBFL_TESTS_LIBMBFLPASSWORDS;
-# We  set TMPDIR  because  if the  "/tmp" directory  is  mounted on  a
-# separate partition with "noexec"  attribute: tests for executability
-# of files  will fail if  the temporary  test files are  created under
-# "/tmp".
+# This  environment setting  is used  both  to compile  ".test.m4" files  and to  run
+# ".test" files.
+#
+MBFL_TESTS_ENV		=  MBFL_TESTS_LIBMBFL_CORE=$(builddir)/src/lib/libmbfl.bash; export MBFL_TESTS_LIBMBFL_CORE;
+MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_TEST=$(builddir)/src/lib/libmbfltest.bash; export MBFL_TESTS_LIBMBFL_TEST;
+MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_ARCH=$(builddir)/src/lib/libmbfl-arch.bash; export MBFL_TESTS_LIBMBFL_ARCH;
+MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_UTILS=$(builddir)/src/lib/libmbfl-utils.bash; export MBFL_TESTS_LIBMBFL_UTILS;
+MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_PASSWORDS=$(builddir)/src/lib/libmbfl-passwords.bash; export MBFL_TESTS_LIBMBFL_PASSWORDS;
+# We set TMPDIR  because if the "/tmp"  directory is mounted on  a separate partition
+# with  "noexec"  attribute: tests  for  executability  of  files  will fail  if  the
+# temporary test files are created under "/tmp".
 MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp; export TMPDIR;
 # We need to access some files in the examples dir and the tests dir.
 MBFL_TESTS_ENV		+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_TESTS_ENV		+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_TESTS_FLAGS	=  $(MBFLPP_GENERAL_FLAGS) --add-bash --libmbfl="$(MBFL_TESTS_LIBMBFL)"
-MBFL_TESTS_FLAGS	+= --define=__LIBMBFL_ARCH__="$(builddir)/src/lib/libmbfl-arch.bash"
+MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash
 
-MBFL_TESTS_PREREQUISITES	=		\
-	tests/$(am__dirstamp)			\
-	$(MBFL_TESTS_LIBMBFL)			\
-	$(MBFL_TESTS_LIBMBFLTEST)		\
-	$(MBFL_TESTS_LIBMBFLARCH)		\
-	$(MBFL_TESTS_LIBMBFLUTILS)		\
-	$(MBFL_TESTS_LIBMBFLPASSWORDS)		\
-	$(MBFL_PROGRAM_MBFLPP)			\
+MBFL_TESTS_PREREQUISITES=				\
+	tests/$(am__dirstamp)				\
+	$(builddir)/src/lib/libmbfl.bash		\
+	$(builddir)/src/lib/libmbfltest.bash		\
+	$(builddir)/src/lib/libmbfl-arch.bash		\
+	$(builddir)/src/lib/libmbfl-at.bash		\
+	$(builddir)/src/lib/libmbfl-utils.bash		\
+	$(builddir)/src/lib/libmbfl-passwords.bash	\
+	$(MBFL_PROGRAM_MBFLPP)				\
 	$(MBFL_PREPROCESSOR)
 
 # Read "Parallel Test Harness" in the documentation of GNU Automake to
@@ -593,8 +587,8 @@ tests/signal.test: tests/signaltest.sh
 .PHONY: test-sendmail-gmail test-sendmail-poste test-sendmail-localhost
 
 test: all $(check_SCRIPTS)
-	shopt -s nullglob; for item in $(srcdir)/tests/*$(file)*.test $(builddir)/tests/*$(file)*.test;	\
-	do $(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) "$$item" $(AM_TEST_LOG_FLAGS);	\
+	$(AM_TESTS_ENVIRONMENT) shopt -s nullglob; for item in $(builddir)/tests/*$(file)*.test;\
+	do echo $$MBFL_TESTS_LIBMBFL_TEST; $(MBFL_PROGRAM_BASH) "$$item" $(AM_TEST_LOG_FLAGS);	\
 	done
 
 test-template: examples/template.sh src/lib/libmbfl.bash
@@ -623,17 +617,19 @@ test-sendmail-localhost:
 # reason, the  Bash built-in "source"  will search for the  file under
 # PATH's directories.
 #
-MBFL_INSTCHECK_ENV	= PATH=$(srcdir)/tests:$(builddir)/tests:$(DESTDIR)$(bindir):$$PATH; export PATH;
-MBFL_INSTCHECK_ENV	+= PATH="`mbflpp.bash --print-libdir`":$$PATH; export PATH;
-MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFL="`mbflpp.bash --print-libmbfl`"; export MBFL_TESTS_LIBMBFL;
-MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLTEST="`mbflpp.bash --print-libmbfltest`"; export MBFL_TESTS_LIBMBFLTEST;
-MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLARCH="`mbflpp.bash --print-libdir`/libmbfl-arch.bash"; export MBFL_TESTS_LIBMBFLARCH;
-MBFL_INSTCHECK_ENV	+= MBFL_TESTS_LIBMBFLUTILS="`mbflpp.bash --print-libdir`/libmbfl-utils.bash"; export MBFL_TESTS_LIBMBFLUTILS;
-MBFL_INSTCHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;
-MBFL_INSTCHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
-MBFL_INSTCHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;
-MBFL_INSTCHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
-MBFL_INSTCHECK_RUN	= $(MBFL_PROGRAM_BASH) $(MBFL_INSTCHECK_FLAGS)
+MBFL_ICHECK_ENV	 = PATH=$(DESTDIR)$(bindir):$$PATH; export PATH;
+MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_CORE="`mbflpp.bash --print-libmbfl`"; export MBFL_TESTS_LIBMBFL_CORE;
+MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_TEST="`mbflpp.bash --print-libmbfltest`"; export MBFL_TESTS_LIBMBFL_TEST;
+MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBDIR="`mbflpp.bash --print-libdir`"; export MBFL_TESTS_LIBDIR;
+MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_ARCH="$$MBFL_TESTS_LIBDIR/libmbfl-arch.bash"; export MBFL_TESTS_LIBMBFL_ARCH;
+MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_AT="$$MBFL_TESTS_LIBDIR/libmbfl-at.bash"; export MBFL_TESTS_LIBMBFL_AT;
+MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_UTILS="$$MBFL_TESTS_LIBDIR/libmbfl-utils.bash"; export MBFL_TESTS_LIBMBFL_UTILS;
+MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_PASSWORDS="$$MBFL_TESTS_LIBDIR/libmbfl-passwords.bash"; export MBFL_TESTS_LIBMBFL_PASSWORDS;
+MBFL_ICHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;
+MBFL_ICHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
+MBFL_ICHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;
+MBFL_ICHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
+MBFL_ICHECK_RUN	= $(MBFL_PROGRAM_BASH) $(MBFL_ICHECK_FLAGS)
 
 # If a  test script executes no  test functions: its exit  code is 77,
 # which signals  GNU Automake's  test harness that  the test  has been
@@ -645,19 +641,22 @@ MBFL_INSTCHECK_RUN	= $(MBFL_PROGRAM_BASH) $(MBFL_INSTCHECK_FLAGS)
 # "$(srcdir)" rather than under "$(builddir)"; so we look for the file
 # in both directories.
 #
-installcheck-local:
-	$(MBFL_INSTCHECK_ENV) RV=0;				\
-	for FILE in $(TESTS); do				\
-	    for DIR in "$(builddir)" "$(srcdir)"; do		\
-	        if test -f "$$DIR/$$FILE";			\
-	        then						\
-	            if $(MBFL_INSTCHECK_RUN) "$$DIR/$$FILE" ;	\
-	            then break;					\
-	            else RV=$$?; break 2;			\
-	            fi;						\
-	        fi;						\
-	    done;						\
-	done;							\
-	if test "$$RV" = 77; then exit 0; else exit $$RV; fi;
+installcheck-local: $(TESTS)
+	$(MBFL_ICHECK_ENV) RV=0					;\
+	which mbflpp.bash					;\
+	echo --$(MBFL_TESTS_LIBMBFL_CORE)			;\
+	echo --$(MBFL_TESTS_LIBMBFL_TEST)			;\
+	echo --$(MBFL_TESTS_LIBMBFL_AT)				;\
+	echo --$(MBFL_TESTS_LIBMBFL_ARCH)			;\
+	echo --$(MBFL_TESTS_LIBMBFL_UTILS)			;\
+	echo --$(MBFL_TESTS_LIBMBFL_PASSWORDS)			;\
+	exit							;\
+	for FILE in $(TESTS)					;\
+	do							\
+	    if ! $(MBFL_ICHECK_RUN) "$(builddir)/$$FILE"	;\
+	    then RV=$$?; break					;\
+	    fi							;\
+	done							;\
+	if test "$$RV" = 77; then exit 0; else exit $$RV; fi	;
 
 ### end of file
