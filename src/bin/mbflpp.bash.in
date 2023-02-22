@@ -8,7 +8,7 @@
 #
 #	Preprocessor for BASH scripts using MBFL.
 #
-# Copyright (c) 2005, 2009, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2005, 2009, 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU
 # General Public  License as  published by  the Free Software  Foundation, either  version 3  of the
@@ -5590,8 +5590,12 @@ function main () {
 #page
 #### stream filters
 
+# By inverting the match rule  for "grep": we include in the output all the  lines that do not match
+# the given regexp.  We  want the lines starting with "#" to be  dropped, unless the character after
+# the "#" is "!".
+#
 function filter_drop_comments () {
-    program_grep --invert-match --regexp='^[ \t]*#' --regexp='^$' | \
+    program_grep --invert-match --regexp='^[ \t]*#\([^!]\|$\)' --regexp='^$' | \
         program_sed --expression='s/^[ \t]\+//g'
 }
 

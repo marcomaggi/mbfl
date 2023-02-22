@@ -584,8 +584,8 @@ functions @strong{do not} mutate the @code{IFS} value in the environment of the 
 
 
 The @mbfl{} script preprocessor is a command line program named @value{PROSCRIPTCMD}; it is itself a
-Bash script that makes use of the @mbfl{} library (embedded in the source code).  It can remove
-comments, blank lines, blank characters at the beginning of lines, and it can expand macros.
+@gnu{} Bash script that makes use of the @mbfl{} library (embedded in the source code).  It can
+remove comments, blank lines, blank characters at the beginning of lines, and it can expand macros.
 
 The macro preprocessing is performed by the @gnu{} @mfour{} program, using a library of macros
 called @file{preprocessor.m4} which is installed on the system with the @mbfl{} package.
@@ -629,7 +629,9 @@ options}.  Additionally the following options are supported.
 @item --preserve-comments
 @cindex @option{--preserve-comments}, preprocessor option
 @cindex Preprocessor option @option{--preserve-comments}
-Do not filter out comments.
+Do not filter out comments.  By default every line starting with optional blanks followed by
+@samp{#} is removed, unless the character right after @samp{#} is @samp{!}; this option turns off
+this removal.  If we want a persistent comment we just start it with @samp{#!}.
 
 @item --add-bash
 @cindex @option{--add-bash}, preprocessor option

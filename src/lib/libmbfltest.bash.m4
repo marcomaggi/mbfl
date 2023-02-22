@@ -1,35 +1,35 @@
-# libmbfltest.sh --
-#
-# Part of: Marco's BASH Functions Library
-# Contents: test functions
-# Date: Mon Oct  4, 2004
-#
-# Abstract
-#
-#	This file  defines a set  of functions to  be used to  drive the
-#	test suite. It must be sources  at the beginning of all the test
-#	files.
-#
-# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
-# <mrc.mgg@gmail.com>
-#
-# This is free software; you  can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  3.0 of the License,  or (at
-# your option) any later version.
-#
-# This library  is distributed in the  hope that it will  be useful, but
-# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
-# Lesser General Public License for more details.
-#
-# You  should have  received a  copy of  the GNU  Lesser  General Public
-# License along  with this library; if  not, write to  the Free Software
-# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA.
-#
+#! libmbfltest.sh --
+#!
+#! Part of: Marco's BASH Functions Library
+#! Contents: test functions
+#! Date: Mon Oct  4, 2004
+#!
+#! Abstract
+#!
+#!	This file  defines a set  of functions to  be used to  drive the
+#!	test suite. It must be sources  at the beginning of all the test
+#!	files.
+#!
+#! Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
+#! <mrc.mgg@gmail.com>
+#!
+#! This is free software; you  can redistribute it and/or modify it under
+#! the terms of the GNU Lesser General Public License as published by the
+#! Free Software  Foundation; either version  3.0 of the License,  or (at
+#! your option) any later version.
+#!
+#! This library  is distributed in the  hope that it will  be useful, but
+#! WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+#! MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+#! Lesser General Public License for more details.
+#!
+#! You  should have  received a  copy of  the GNU  Lesser  General Public
+#! License along  with this library; if  not, write to  the Free Software
+#! Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
+#! USA.
+#!
 
-#page
+
 #### shell configuration
 
 shopt -s expand_aliases
@@ -40,7 +40,7 @@ test -z ${dotest_TEST_NUMBER}        && declare -i dotest_TEST_NUMBER=0
 test -z ${dotest_TEST_FAILED_NUMBER} && declare -i dotest_TEST_FAILED_NUMBER=0
 declare -a dotest_TEST_FAILED
 
-#page
+
 #### output messages
 
 alias dotest-echo='dotest-p-echo ${FUNCNAME}'
@@ -68,7 +68,7 @@ function dotest-p-printf () {
     } >&2
 }
 
-#page
+
 #### configuration
 
 function dotest-p-create-option-functions () {
@@ -85,7 +85,7 @@ function dotest-p-create-option-functions () {
 }
 dotest-p-create-option-functions
 
-#page
+
 #### test execution
 
 function dotest () {
@@ -164,7 +164,7 @@ function dotest-p-report-success-from-environment () {
     esac
 }
 
-#page
+
 #### testing results
 
 function dotest-output () {
@@ -237,7 +237,7 @@ function dotest-equal () {
     fi
 }
 
-#page
+
 #### file functions
 
 function dotest-echo-tmpdir () {
@@ -337,7 +337,7 @@ function dotest-assert-file-unexists () {
     fi
 }
 
-#page
+
 #### program interfaces
 
 function dotest-program-mkdir () {
@@ -372,7 +372,7 @@ function dotest-program-exec () {
     fi
 }
 
-#page
+
 #### utility functions
 
 function dotest-string-is-empty () {
@@ -382,7 +382,7 @@ function dotest-string-is-not-empty () {
     test ${#1} -ne 0
 }
 
-#page
+
 #### final report
 
 trap dotest-clean-files EXIT
@@ -413,7 +413,7 @@ function dotest-final-report () {
     fi
 }
 
-### end of file
+#!# end of file
 # Local Variables:
 # mode: sh
 # End:

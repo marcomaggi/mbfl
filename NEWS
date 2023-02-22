@@ -52,6 +52,9 @@ changes!
   way the  library is reliably  loaded has  been reviewed and  very much
   simplified.
 
+* The  preprocessor now  recognises  persistent  comments starting  with
+  "#!": these are not removed.
+
 * The quoting for m4 preprocessing is changed from:
 
      m4_changequote(`[[', `]]')
