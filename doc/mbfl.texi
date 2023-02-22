@@ -710,12 +710,9 @@ exit successfully.  The installation directory is selected with the option @opti
 Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLFILE},
 then exit successfully.
 
-@item --print-libmbfltest
-@itemx --print-libmbfl-test
-@cindex @option{--print-libmbfltest}, preprocessor option
-@cindex @option{--print-libmbfl-test}, preprocessor option
-@cindex Preprocessor option @option{--print-libmbfltest}
-@cindex Preprocessor option @option{--print-libmbfl-test}
+@item --print-libmbfl-tests
+@cindex @option{--print-libmbfl-tests}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfl-tests}
 Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLTESTSFILE},
 then exit successfully.
 

@@ -618,9 +618,9 @@ test-sendmail-localhost:
 # PATH's directories.
 #
 MBFL_ICHECK_ENV	 = PATH=$(DESTDIR)$(bindir):$$PATH; export PATH;
+MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBDIR="`mbflpp.bash --print-libdir`"; export MBFL_TESTS_LIBDIR;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_CORE="`mbflpp.bash --print-libmbfl`"; export MBFL_TESTS_LIBMBFL_CORE;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_TEST="`mbflpp.bash --print-libmbfl-tests`"; export MBFL_TESTS_LIBMBFL_TEST;
-MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBDIR="`mbflpp.bash --print-libdir`"; export MBFL_TESTS_LIBDIR;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_ARCH="$$MBFL_TESTS_LIBDIR/libmbfl-arch.bash"; export MBFL_TESTS_LIBMBFL_ARCH;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_AT="$$MBFL_TESTS_LIBDIR/libmbfl-at.bash"; export MBFL_TESTS_LIBMBFL_AT;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_UTILS="$$MBFL_TESTS_LIBDIR/libmbfl-utils.bash"; export MBFL_TESTS_LIBMBFL_UTILS;
@@ -643,16 +643,8 @@ MBFL_ICHECK_RUN	= $(MBFL_PROGRAM_BASH) $(MBFL_ICHECK_FLAGS)
 #
 installcheck-local: $(TESTS)
 	$(MBFL_ICHECK_ENV) RV=0					;\
-	which mbflpp.bash					;\
-	echo --$(MBFL_TESTS_LIBMBFL_CORE)			;\
-	echo --$(MBFL_TESTS_LIBMBFL_TEST)			;\
-	echo --$(MBFL_TESTS_LIBMBFL_AT)				;\
-	echo --$(MBFL_TESTS_LIBMBFL_ARCH)			;\
-	echo --$(MBFL_TESTS_LIBMBFL_UTILS)			;\
-	echo --$(MBFL_TESTS_LIBMBFL_PASSWORDS)			;\
-	exit							;\
 	for FILE in $(TESTS)					;\
-	do							\
+	do  echo "running: '$(builddir)/$$FILE'"		;\
 	    if ! $(MBFL_ICHECK_RUN) "$(builddir)/$$FILE"	;\
 	    then RV=$$?; break					;\
 	    fi							;\

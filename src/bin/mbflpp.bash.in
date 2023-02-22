@@ -5453,9 +5453,9 @@ declare -r MBFL_INSTALLDIR=$pkgdatadir
 #
 declare -r DEFAULT_LIBMBFL=${pkgdatadir}/libmbfl.bash
 
-# The file system pathname in which the file "libmbfltest.bash" is installed.
+# The file system pathname in which the file "libmbfl-tests.bash" is installed.
 #
-declare -r DEFAULT_LIBMBFLTEST=${pkgdatadir}/libmbfltest.bash
+declare -r DEFAULT_LIBMBFLTEST=${pkgdatadir}/libmbfl-tests.bash
 
 # A string representing  command line options for GNU  m4: the symbols definitions.  It  is built by
 # appending the definitions from the command line option "--define" as:
@@ -5496,20 +5496,20 @@ mbfl_declare_option BASH_PROGRAM "@MBFL_PROGRAM_BASH@" \
 
 mbfl_declare_option CHECK_VERSION '' '' check-version witharg 'check the given version against the one of MBFL'
 
-mbfl_declare_option PRINT_LIBPATH       no '' print-libdir        noarg \
+mbfl_declare_option PRINT_LIBPATH		no '' print-libdir        noarg \
 		    'print the librarires installation directory'
-mbfl_declare_option PRINT_LIBMBFL       no '' print-libmbfl       noarg \
+mbfl_declare_option PRINT_LIBMBFL		no '' print-libmbfl       noarg \
 		    'print the full installation pathname of the library "libmbfl.bash"'
-mbfl_declare_option PRINT_LIBMBFLTEST   no '' print-libmbfltest   noarg \
-		    'print the full installation pathname of the library "libmbfltest.bash"'
-mbfl_declare_option PRINT_LIBMBFL_TEST  no '' print-libmbfl-test  noarg \
-		    'print the full installation pathname of the library "libmbfltest.bash"'
-mbfl_declare_option PRINT_LIBMBFL_UTILS no '' print-libmbfl-utils noarg \
+mbfl_declare_option PRINT_LIBMBFL_TESTS		no '' print-libmbfl-tests   noarg \
+		    'print the full installation pathname of the library "libmbfl-tests.bash"'
+mbfl_declare_option PRINT_LIBMBFL_UTILS		no '' print-libmbfl-utils noarg \
 		    'print the full installation pathname of the library "libmbfl-utils.bash"'
-mbfl_declare_option PRINT_LIBMBFL_ARCH  no '' print-libmbfl-arch  noarg \
+mbfl_declare_option PRINT_LIBMBFL_ARCH		no '' print-libmbfl-arch  noarg \
 		    'print the full installation pathname of the library "libmbfl-arch.bash"'
-mbfl_declare_option PRINT_LIBMBFL_AT    no '' print-libmbfl-at    noarg \
+mbfl_declare_option PRINT_LIBMBFL_AT		no '' print-libmbfl-at    noarg \
 		    'print the full installation pathname of the library "libmbfl-at.bash"'
+mbfl_declare_option PRINT_LIBMBFL_PASSWORDS	no '' print-libmbfl-passwords    noarg \
+		    'print the full installation pathname of the library "libmbfl-passwords.bash"'
 
 #page
 #### external programs declarations
@@ -5581,8 +5581,8 @@ function script_option_update_print_libmbfl () {
     printf '%s/libmbfl.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
-function script_option_update_print_libmbfl_test () {
-    printf '%s/libmbfltest.bash\n' "$MBFL_INSTALLDIR"
+function script_option_update_print_libmbfl_tests () {
+    printf '%s/libmbfl-tests.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
 function script_option_update_print_libmbfl_utils () {
@@ -5597,9 +5597,9 @@ function script_option_update_print_libmbfl_at () {
     printf '%s/libmbfl-at.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
-
-function script_option_update_print_libmbfltest () {
-    script_option_update_print_libmbfl_test
+function script_option_update_print_libmbfl_passwords () {
+    printf '%s/libmbfl-passwords.bash\n' "$MBFL_INSTALLDIR"
+    exit_success
 }
 
 function script_option_update_check_version () {
