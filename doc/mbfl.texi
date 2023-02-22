@@ -61,16 +61,18 @@
 @set PROSCRIPTCMD               @command{@value{PROSCRIPT}}
 
 @set LIBMBFL                    libmbfl.sh
-@set LIBMBFLTEST                libmbfltest.sh
+@set LIBMBFLTESTS               libmbfl-tests.sh
 @set LIBMBFLUTILS               libmbfl-utils.sh
 @set LIBMBFLAT                  libmbfl-at.bash
 @set LIBMBFLARCH                libmbfl-arch.bash
+@set LIBMBFLpasswords           libmbfl-passwords.bash
 
 @set LIBMBFLFILE                @file{libmbfl.bash}
-@set LIBMBFLTESTFILE            @file{libmbfltest.bash}
+@set LIBMBFLTESTSFILE           @file{libmbfl-tests.bash}
 @set LIBMBFLUTILSFILE           @file{libmbfl-utils.bash}
 @set LIBMBFLATFILE              @file{libmbfl-at.bash}
 @set LIBMBFLARCHFILE            @file{libmbfl-arch.bash}
+@set LIBMBFLPASSWORDSFILE       @file{libmbfl-passwords.bash}
 
 @c page
 @c ------------------------------------------------------------
@@ -219,7 +221,7 @@ The installed libraries are:
 @item @file{libmbfl.bash}
 The core library implementing shell language extensions, adaptations and system interface.
 
-@item @file{libmbfltest.bash}
+@item @file{libmbfl-tests.bash}
 A library to organise test suites for shell functions; @ref{testing, Building test suites}.
 
 @item @file{libmbfl-utils.bash}
@@ -318,12 +320,12 @@ it will add to @file{Makefile.in} the following variable definitions:
 MBFLPP           = @@MBFLPP@@
 MBFL_LIBDIR      = @@MBFL_LIBDIR@@
 MBFL_LIBMBFL     = @@MBFL_LIBMBFL@@
-MBFL_LIBMBFLTEST = @@MBFL_LIBMBFLTEST@@
+MBFL_LIBMBFLTESTS = @@MBFL_LIBMBFLTESTS@@
 @end example
 
 @noindent
 holding the absolute file system pathnames of the preprocessor script, the libraries installation
-directory, and the libraries @value{LIBMBFLFILE} and @value{LIBMBFLTESTFILE}.
+directory, and the libraries @value{LIBMBFLFILE} and @value{LIBMBFLTESTSFILE}.
 
 @item
 In the template file @file{Makefile.am} we can use the @env{MBFL_} variables to drive the loading or
@@ -714,7 +716,7 @@ then exit successfully.
 @cindex @option{--print-libmbfl-test}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfltest}
 @cindex Preprocessor option @option{--print-libmbfl-test}
-Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLTESTFILE},
+Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLTESTSFILE},
 then exit successfully.
 
 @item --print-libmbfl-utils
@@ -8719,7 +8721,7 @@ Print the help screen, brief version.  It @strong{excludes} the predefined comma
 @chapter Building test suites
 
 
-@mbfl{} comes with a little library @value{LIBMBFLTESTFILE} of functions that may be used to build
+@mbfl{} comes with a little library @value{LIBMBFLTESTSFILE} of functions that may be used to build
 test suites; its aim is at building tests for Bash functions, commands and scripts@footnote{The
 ideas at the base of this library are taken from the @code{tcltest} package distributed with the
 @acronym{TCL} core; @acronym{TCL} stands for @emph{Tool Command Language} and it is a scripting
@@ -8745,7 +8747,7 @@ user redefine functions to his taste.
 A useful way to organise a test suite is to split it into a set of files: one for each module to be
 tested.
 
-The file @value{LIBMBFLTESTFILE} must be sourced at the beginning of each test file.  This means
+The file @value{LIBMBFLTESTSFILE} must be sourced at the beginning of each test file.  This means
 that the variables that you set may interfere with the ones in the library; this should not happen
 because the test library prefixes variable names with @code{mbfl_} or @code{dotest_}, but one
 exception is @env{TMPDIR}: do not set it in your script, use @func{dotest-echo-tmpdir} to access
@@ -8762,7 +8764,7 @@ following:
 @example
 # mymodule.test --
 
-source @value{LIBMBFLTEST}
+source @value{LIBMBFLTESTS}
 source module.sh
 
 function module-featureA-1.1 () @{ ... @}

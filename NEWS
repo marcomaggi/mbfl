@@ -44,6 +44,9 @@ changes!
   programs (tar, gzip, ...) have  been refactored into their own library
   "libmbfl-arch.bash".
 
+* BACKWARDS  INCOMPATIBILITY  The  library "libmbfltest.bash"  has  been
+  renamed to "libmbfl-tests.bash".
+
 * The package configuration allows us to select a hard-coded file system
   pathnames to the GNU Coreutils programs and the executable "sudo".
 

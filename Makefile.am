@@ -8,7 +8,7 @@
 # 2.  Generate  the  built  library "libmbfl.bash"  using:  the  built
 # scripts; the source preprocessor.
 #
-# 3.  Generate  the built library "libmbfltest.bash"  using: the built
+# 3.  Generate the built library "libmbfl-tests.bash" using: the built
 # scripts; the built "libmbfl.bash"; the source preprocessor.
 #
 # 4.  Generate the built library "libmbfl-utils.bash" using: the built
@@ -285,13 +285,13 @@ src/lib/libmbfl-utils.bash: src/lib/libmbfl-utils.bash.m4 $(MBFL_LIBUTILS_MODULE
 	$(MBFL_LIBUTILS_RUN) $(MBFL_LIBUTILS_FLAGS) <$< >$@
 
 
-#### libmbfltest generation
+#### libmbfl-tests generation
 
-EXTRA_DIST			+= src/lib/libmbfltest.bash.m4
+EXTRA_DIST			+= src/lib/libmbfl-tests.bash.m4
 mbfllibtestdir			= $(MBFL_LIB_INSTDIR)
-mbfllibtest_DATA		= src/lib/libmbfltest.bash
+mbfllibtest_DATA		= src/lib/libmbfl-tests.bash
 CLEANFILES			+=		\
-	src/lib/libmbfltest.bash		\
+	src/lib/libmbfl-tests.bash		\
 	src/lib/$(am__dirstamp)
 
 MBFL_LIBTEST_ENV		=
@@ -303,7 +303,7 @@ MBFL_LIBTEST_PREREQUISITES	=		\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbfltest.bash: src/lib/libmbfltest.bash.m4 $(MBFL_LIBTEST_PREREQUISITES)
+src/lib/libmbfl-tests.bash: src/lib/libmbfl-tests.bash.m4 $(MBFL_LIBTEST_PREREQUISITES)
 	$(MBFL_LIBTEST_RUN) $(MBFL_LIBTEST_FLAGS) <$< >$@
 
 
@@ -531,7 +531,7 @@ MBFL_TESTS_VERBENV	= TESTSUCCESS=yes; export TESTSUCCESS; TESTSTART=yes; export 
 # ".test" files.
 #
 MBFL_TESTS_ENV		=  MBFL_TESTS_LIBMBFL_CORE=$(builddir)/src/lib/libmbfl.bash; export MBFL_TESTS_LIBMBFL_CORE;
-MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_TEST=$(builddir)/src/lib/libmbfltest.bash; export MBFL_TESTS_LIBMBFL_TEST;
+MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_TEST=$(builddir)/src/lib/libmbfl-tests.bash; export MBFL_TESTS_LIBMBFL_TEST;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_ARCH=$(builddir)/src/lib/libmbfl-arch.bash; export MBFL_TESTS_LIBMBFL_ARCH;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_UTILS=$(builddir)/src/lib/libmbfl-utils.bash; export MBFL_TESTS_LIBMBFL_UTILS;
 MBFL_TESTS_ENV		+= MBFL_TESTS_LIBMBFL_PASSWORDS=$(builddir)/src/lib/libmbfl-passwords.bash; export MBFL_TESTS_LIBMBFL_PASSWORDS;
@@ -549,7 +549,7 @@ MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash
 MBFL_TESTS_PREREQUISITES=				\
 	tests/$(am__dirstamp)				\
 	$(builddir)/src/lib/libmbfl.bash		\
-	$(builddir)/src/lib/libmbfltest.bash		\
+	$(builddir)/src/lib/libmbfl-tests.bash		\
 	$(builddir)/src/lib/libmbfl-arch.bash		\
 	$(builddir)/src/lib/libmbfl-at.bash		\
 	$(builddir)/src/lib/libmbfl-utils.bash		\
@@ -619,7 +619,7 @@ test-sendmail-localhost:
 #
 MBFL_ICHECK_ENV	 = PATH=$(DESTDIR)$(bindir):$$PATH; export PATH;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_CORE="`mbflpp.bash --print-libmbfl`"; export MBFL_TESTS_LIBMBFL_CORE;
-MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_TEST="`mbflpp.bash --print-libmbfltest`"; export MBFL_TESTS_LIBMBFL_TEST;
+MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_TEST="`mbflpp.bash --print-libmbfl-tests`"; export MBFL_TESTS_LIBMBFL_TEST;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBDIR="`mbflpp.bash --print-libdir`"; export MBFL_TESTS_LIBDIR;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_ARCH="$$MBFL_TESTS_LIBDIR/libmbfl-arch.bash"; export MBFL_TESTS_LIBMBFL_ARCH;
 MBFL_ICHECK_ENV	+= MBFL_TESTS_LIBMBFL_AT="$$MBFL_TESTS_LIBDIR/libmbfl-at.bash"; export MBFL_TESTS_LIBMBFL_AT;
