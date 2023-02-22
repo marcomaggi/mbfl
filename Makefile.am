@@ -116,7 +116,7 @@ MAINTAINERCLEANFILES		+= src/bin/mbflpp.bash
 
 # MBFL_SCRIPTS_ENV		=
 # MBFL_SCRIPTS_RUN		= $(MBFL_SCRIPTS_ENV) $(MBFL_RUN_MBFLPP)
-# MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash --preserve-comments
+# MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash
 
 # MBFL_SCRIPTS_PREREQUISITES	=		\
 # 	$(MBFL_PREPROCESSOR)			\
@@ -216,7 +216,7 @@ CLEANFILES			+=		\
 
 MBFL_LIB_ENV		=
 MBFL_LIB_RUN		= $(MBFL_LIB_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIB_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(builddir)/src/modules
+MBFL_LIB_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --include=$(builddir)/src/modules
 
 MBFL_LIB_PREREQUISITES	=			\
 	src/lib/$(am__dirstamp)			\
@@ -268,12 +268,12 @@ EXTRA_DIST			+= src/lib/libmbfl-utils.bash.m4
 mbfllibutilsdir			= $(MBFL_LIB_INSTDIR)
 mbfllibutils_DATA		= src/lib/libmbfl-utils.bash
 CLEANFILES			+=		\
-	src/lib/libmbfl-utils.bash			\
+	src/lib/libmbfl-utils.bash		\
 	src/lib/$(am__dirstamp)
 
 MBFL_LIBUTILS_ENV		=
 MBFL_LIBUTILS_RUN		= $(MBFL_LIBUTILS_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBUTILS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments --include=$(builddir)/src/utils-modules
+MBFL_LIBUTILS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --include=$(builddir)/src/utils-modules
 
 MBFL_LIBUTILS_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
@@ -290,12 +290,12 @@ EXTRA_DIST			+= src/lib/libmbfltest.bash.m4
 mbfllibtestdir			= $(MBFL_LIB_INSTDIR)
 mbfllibtest_DATA		= src/lib/libmbfltest.bash
 CLEANFILES			+=		\
-	src/lib/libmbfltest.bash			\
+	src/lib/libmbfltest.bash		\
 	src/lib/$(am__dirstamp)
 
 MBFL_LIBTEST_ENV		=
 MBFL_LIBTEST_RUN		= $(MBFL_LIBTEST_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBTEST_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
+MBFL_LIBTEST_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
 
 MBFL_LIBTEST_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
@@ -317,7 +317,7 @@ CLEANFILES			+=		\
 
 MBFL_LIBAT_ENV			=
 MBFL_LIBAT_RUN			= $(MBFL_LIBAT_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBAT_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
+MBFL_LIBAT_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
 
 MBFL_LIBAT_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
@@ -339,7 +339,7 @@ CLEANFILES			+=		\
 
 MBFL_LIBARCH_ENV		=
 MBFL_LIBARCH_RUN		= $(MBFL_LIBARCH_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBARCH_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --preserve-comments
+MBFL_LIBARCH_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
 
 MBFL_LIBARCH_PREREQUISITES	=		\
 	src/lib/$(am__dirstamp)			\
