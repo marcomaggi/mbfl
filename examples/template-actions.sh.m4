@@ -29,7 +29,7 @@
 # TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### MBFL's related options and variables
 
 declare -r script_PROGNAME=template-actions.sh
@@ -45,14 +45,14 @@ declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.4
 
 declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
 
-#page
+
 #### library loading
 
 # We embed because it makes it easier to use this script in MBFL's own test suite.
 mbfl_embed_library
 # mbfl_library_loader
 
-#page
+
 #### declare external programs usage
 
 #mbfl_file_enable_compress
@@ -68,7 +68,7 @@ mbfl_embed_library
 #mbfl_file_enable_tar
 #mbfl_declare_program git
 
-#page
+
 #### declare exit codes
 
 # mbfl_declare_exit_code 2 second_error
@@ -76,13 +76,13 @@ mbfl_embed_library
 # mbfl_declare_exit_code 4 fourth_error
 # mbfl_declare_exit_code 8 eighth_error
 
-#page
+
 #### configure global behaviour
 
 mbfl_atexit_enable
 mbfl_location_enable_cleanup_atexit
 
-#page
+
 #### declaration of script actions tree
 #
 # main --+-- one ---+--- green --+--- solid
@@ -211,7 +211,7 @@ mbfl_declare_action MAIN	TWO		TWO		two		'Do main action two.'
 mbfl_declare_action MAIN	THREE		THREE		three		'Do main action three.'
 mbfl_declare_action MAIN	HELP		HELP		help		'Help the user of this script.'
 
-#page
+
 #### script action functions: main
 
 # Set up main variables and action-specific options for the main action:
@@ -241,7 +241,7 @@ function main () {
 	"$script_option_X" "$script_option_Y" "$script_option_Z" "$ARGC" "${ARGV[*]}"
 }
 
-#page
+
 #### script action functions: first level
 
 # Set up main variables and action-specific options for the action:
@@ -306,7 +306,7 @@ function script_action_HELP () {
     mbfl_main_print_usage_screen_brief
 }
 
-#page
+
 #### script action functions: second level, action root "one"
 
 # Set up main variables and action-specific options for the action:
@@ -358,7 +358,7 @@ function script_action_ONE_RED () {
     mbfl_main_print_usage_screen_brief
 }
 
-#page
+
 #### script action functions: second level, action root "two"
 
 # Set up main variables and action-specific options for the action:
@@ -410,7 +410,7 @@ function script_action_TWO_RED () {
     mbfl_main_print_usage_screen_brief
 }
 
-#page
+
 #### script action functions: second level, action root "three"
 
 # Set up main variables and action-specific options for the action:
@@ -462,7 +462,7 @@ function script_action_THREE_RED () {
     mbfl_main_print_usage_screen_brief
 }
 
-#page
+
 #### script action functions: second level, action root "help"
 
 function script_before_parsing_options_HELP_USAGE () {
@@ -497,7 +497,7 @@ function script_action_HELP_PRINT_COMPLETIONS_SCRIPT () {
     fi
 }
 
-#page
+
 #### script action functions: third level, action root "one green"
 
 # Set up main variables and action-specific options for the action:
@@ -567,7 +567,7 @@ function script_action_ONE_GREEN_GAS () {
 	"$script_option_G" "$script_option_H" "$script_option_I" "$ARGC" "${ARGV[*]}"
 }
 
-#page
+
 #### script action functions: third level, action root "one white"
 
 # Set up main variables and action-specific options for the action:
@@ -619,7 +619,7 @@ function script_action_ONE_WHITE_GAS () {
     printf "action ${FUNCNAME}\n"
 }
 
-#page
+
 #### script action functions: third level, action root "one red"
 
 # Set up main variables and action-specific options for the action:
@@ -671,7 +671,7 @@ function script_action_ONE_RED_GAS () {
     printf "action ${FUNCNAME}\n"
 }
 
-#page
+
 #### script action functions: third level, action root "two green"
 
 # Set up main variables and action-specific options for the action:
@@ -723,7 +723,7 @@ function script_action_TWO_GREEN_GAS () {
     printf "action ${FUNCNAME}\n"
 }
 
-#page
+
 #### script action functions: third level, action root "two white"
 
 # Set up main variables and action-specific options for the action:
@@ -775,7 +775,7 @@ function script_action_TWO_WHITE_GAS () {
     printf "action ${FUNCNAME}\n"
 }
 
-#page
+
 #### script action functions: third level, action root "two red"
 
 # Set up main variables and action-specific options for the action:
@@ -827,7 +827,7 @@ function script_action_TWO_RED_GAS () {
     printf "action ${FUNCNAME}\n"
 }
 
-#page
+
 #### script action functions: third level, action root "three green"
 
 # Set up main variables and action-specific options for the action:
@@ -879,7 +879,7 @@ function script_action_THREE_GREEN_GAS () {
     printf "action ${FUNCNAME}\n"
 }
 
-#page
+
 #### script action functions: third level, action root "three white"
 
 # Set up main variables and action-specific options for the action:
@@ -931,7 +931,7 @@ function script_action_THREE_WHITE_GAS () {
     printf "action ${FUNCNAME}\n"
 }
 
-#page
+
 #### script action functions: third level, action root "three red"
 
 # Set up main variables and action-specific options for the action:
@@ -983,7 +983,7 @@ function script_action_THREE_RED_GAS () {
     printf "action ${FUNCNAME}\n"
 }
 
-#page
+
 #### required MBFL's version
 
 function script_check_mbfl_semantic_version () {
@@ -1016,7 +1016,7 @@ function script_check_mbfl_semantic_version () {
     fi
 }
 
-#page
+
 #### let's go
 
 #mbfl_set_option_debug

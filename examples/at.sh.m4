@@ -33,7 +33,7 @@
 # MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### MBFL's related options and variables
 
 script_PROGNAME=at.sh
@@ -75,7 +75,7 @@ mbfl_at_enable
 mbfl_declare_exit_code 3 wrong_queue_identifier
 mbfl_declare_exit_code 4 wrong_command_line_arguments
 
-#page
+
 #### options update functions
 
 function script_option_update_queue () {
@@ -84,7 +84,7 @@ function script_option_update_queue () {
     fi
 }
 
-#page
+
 #### main functions
 
 function script_before_parsing_options () {
@@ -138,7 +138,7 @@ function script_action_clean () {
     mbfl_at_queue_clean
 }
 
-#page
+
 #### let's go
 
 mbfl_main

@@ -30,7 +30,7 @@
 # TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### MBFL's related options and variables
 
 script_REQUIRED_MBFL_VERSION=v3.0.0-devel.3
@@ -45,14 +45,14 @@ script_EXAMPLES="Usage examples:
 \n\
 \t${script_PROGNAME} --alpha"
 
-#page
+
 #### library embedding
 
 # We embed because it makes it easier to use this script in MBFL's own test suite.
 mbfl_embed_library
 # mbfl_library_loader
 
-#page
+
 #### declare external programs usage
 
 #mbfl_file_enable_compress
@@ -68,7 +68,7 @@ mbfl_embed_library
 #mbfl_file_enable_tar
 #mbfl_declare_program git
 
-#page
+
 #### declare exit codes
 
 mbfl_declare_exit_code 2 second_error
@@ -76,13 +76,13 @@ mbfl_declare_exit_code 3 third_error
 mbfl_declare_exit_code 3 fourth_error
 mbfl_declare_exit_code 8 eighth_error
 
-#page
+
 #### configure global behaviour
 
 mbfl_atexit_enable
 mbfl_location_enable_cleanup_atexit
 
-#page
+
 #### script options
 
 # keyword default-value brief-option long-option has-argument description
@@ -99,7 +99,7 @@ mbfl_declare_option FILE '' f file witharg 'selects a file'
 mbfl_declare_option ENABLE no e enable noarg 'enables a feature'
 mbfl_declare_option DISABLE no d disable noarg 'disables a feature'
 
-#page
+
 #### option update functions
 
 function script_option_update_beta () {
@@ -109,7 +109,7 @@ function script_option_update_alpha () {
     printf 'option alpha\n'
 }
 
-#page
+
 #### main functions
 
 function script_before_parsing_options () {
@@ -146,7 +146,7 @@ function script_action_four () {
     exit_because_success
 }
 
-#page
+
 #### let's go
 
 #mbfl_set_option_debug

@@ -32,7 +32,7 @@
 # MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### MBFL's related options and variables
 
 script_PROGNAME=pwentries.sh
@@ -48,20 +48,20 @@ script_EXAMPLES="Usage examples:
 \t${script_PROGNAME} --print-xml
 "
 
-#page
+
 #### library loading
 
 # We embed because it makes it easier to use this script in MBFL's own test suite.
 mbfl_embed_library
 # mbfl_library_loader
 
-#page
+
 #### declare exit codes
 
 mbfl_declare_exit_code 2 cannot_read_file
 mbfl_declare_exit_code 3 cannot_print_results
 
-#page
+
 #### script options
 
 # keyword default-value brief-option long-option has-argument description
@@ -69,7 +69,7 @@ mbfl_declare_option ACTION_PRINT	yes '' print        noarg 'print the entries'
 mbfl_declare_option ACTION_PRINT_XML	no  '' print-xml    noarg 'print the entries as XML'
 mbfl_declare_option ACTION_PRINT_JSON	no  '' print-json   noarg 'print the entries as JSON'
 
-#page
+
 #### main functions
 
 function main () {
@@ -119,7 +119,7 @@ function script_action_print_json () {
     fi
 }
 
-#page
+
 #### let's go
 
 mbfl_main

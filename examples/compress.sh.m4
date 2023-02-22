@@ -23,7 +23,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-#page
+
 #### MBFL's related options and variables
 
 script_PROGNAME=compress.sh
@@ -40,14 +40,14 @@ script_EXAMPLES="Usage examples:
 
 \t${script_PROGNAME} --bzip --stdout --compress file.ext >file.ext.bz2"
 
-#page
+
 #### libraries loading
 
 # We embed because it makes it easier to use this script in MBFL's own test suite.
 mbfl_embed_library
 mbfl_embed_library(__LIBMBFL_ARCH__)
 
-#page
+
 #### options definitions
 
 # keyword default-value brief-option long-option has-argument description
@@ -62,21 +62,21 @@ mbfl_declare_option KEEP no k keep noarg "keeps the original file"
 mbfl_declare_option STDOUT no '' stdout noarg "writes output to stdout"
 mbfl_declare_option GO_ON no '' go-on noarg "try to ignore errors when processing multiple files"
 
-#page
+
 #### enabling modules
 
 mbfl_file_enable_compress
 mbfl_file_enable_listing
 mbfl_file_enable_stat
 
-#page
+
 #### exit codes declarations
 
 mbfl_declare_exit_code 2 error_compressing
 mbfl_declare_exit_code 3 error_decompressing
 mbfl_declare_exit_code 4 wrong_command_line_arguments
 
-#page
+
 #### options update functions
 
 function script_option_update_gzip () {
@@ -102,7 +102,7 @@ function script_option_update_stdout () {
     mbfl_file_compress_stdout
 }
 
-#page
+
 #### main functions
 
 function script_before_parsing_options () {
@@ -185,7 +185,7 @@ function script_action_decompress () {
     exit_success
 }
 
-#page
+
 #### let's go
 
 mbfl_main

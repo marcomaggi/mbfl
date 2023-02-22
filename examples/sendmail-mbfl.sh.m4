@@ -35,7 +35,7 @@
 # MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-#page
+
 #### MBFL's global variables
 
 script_PROGNAME=sendmail-mbfl.sh
@@ -55,7 +55,7 @@ script_EXAMPLES="Usage examples:
 \t' | ${script_PROGNAME} \\
 \t\t--envelope-from=marco@localhost --envelope-to=root@localhost"
 
-#page
+
 #### script's global variables
 
 # Default  authinfo  file pathname.   This  file  holds the  credentials
@@ -152,12 +152,12 @@ declare script_option_READ_TIMEOUT=5
 #
 declare LOCAL_HOSTNAME
 
-#page
+
 #### load library
 
 mbfl_library_loader
 
-#page
+
 #### command line options
 
 # keyword default-value brief-option long-option has-argument description
@@ -185,7 +185,7 @@ mbfl_declare_option AUTH_LOGIN		no  '' auth-login noarg 'select the login author
 
 mbfl_declare_option READ_TIMEOUT	"$script_option_READ_TIMEOUT" '' timeout witharg 'select the connection timeout in seconds'
 
-#page
+
 #### programs
 
 mbfl_file_enable_remove
@@ -198,7 +198,7 @@ mbfl_declare_program hostname
 mbfl_declare_program mkfifo
 mbfl_declare_program openssl
 
-#page
+
 #### declare exit codes
 
 mbfl_declare_exit_code 2 invalid_option
@@ -219,7 +219,7 @@ mbfl_declare_exit_code 13 error_reading_from_server
 
 mbfl_declare_exit_code 14 error_writing_to_server
 
-#page
+
 #### option update functions
 
 function script_option_update_authinfo_file () {
@@ -310,7 +310,7 @@ function script_option_update_read_timeout () {
     fi
 }
 
-#page
+
 function main () {
     # Input  and   output  file  descriptors  when   using  a  connector
     # subprocess.  This  script reads from  INFD to acquire  output from
@@ -384,7 +384,7 @@ function main () {
     exit_because_success
 }
 
-#page
+
 function validate_and_normalise_configuration () {
     # Email addresses are selected with command line options.
     #
@@ -515,7 +515,7 @@ function validate_and_normalise_configuration () {
     fi
 }
 
-#page
+
 #### establishing connections to remote servers
 
 # Establish a plain connection with the selected SMTP server.  Read the
@@ -754,7 +754,7 @@ function connect_using_openssl_starttls () {
     fi
 }
 
-#page
+
 #### waiting for the connector process
 
 # To be  called when  successfully exiting the  script.  Use  the "wait"
@@ -800,7 +800,7 @@ function terminate_and_wait_for_connector_process () {
     fi
 }
 
-#page
+
 #### handling of FIFOs to the connector
 
 # Create  two temporary  FIFOs to  be used  to chat  with the  connector
@@ -877,7 +877,7 @@ function connect_cleanup_fifos () {
     mbfl_file_remove "$OUFIFO" &>/dev/null || true
 }
 
-#page
+
 #### basic reading operations from the server
 
 # Read a line  from "INFD" and store  it in the variable  "REPLY" in the
@@ -919,7 +919,7 @@ function try_to_cleanly_close_the_connection_after_wrong_answer () {
     exit_because_wrong_server_answer
 }
 
-#page
+
 #### receiving data from the server
 
 # Read a single line from $INFD, and log it if debugging mode is on.  If
@@ -983,7 +983,7 @@ function recv_until_string () {
     done
 }
 
-#page
+
 #### basic writing operations from the server
 
 # Write  a  single line  of  text  to  "$OUFD", appending  the  required
@@ -1020,7 +1020,7 @@ function write_to_server_no_log () {
     fi
 }
 
-#page
+
 #### sending data to the server
 
 # Write a  formatted line of text  to the file descriptor  $OUFD; format
@@ -1048,7 +1048,7 @@ function send_no_log () {
     write_to_server_no_log $OUFD "$LINE"
 }
 
-#page
+
 #### email message
 
 # Acquire the  email message from  the selected  source and write  it to
@@ -1165,7 +1165,7 @@ Copyright ${script_COPYRIGHT_YEARS} $script_AUTHOR
     printf "$MESSAGE"
 }
 
-#page
+
 #### SMTP/ESMTP protocol
 
 # Exchange greetings with the server.  Send  a "HELO" or "EHLO" line and
@@ -1282,7 +1282,7 @@ function esmtp_quit () {
     return 0
 }
 
-#page
+
 #### authinfo file: authentication credentials from authinfo file
 #
 # The authinfo file  is a line-oriented text file whose  lines must have
@@ -1354,7 +1354,7 @@ function authinfo_read () {
     fi
 }
 
-#page
+
 #### hostinfo file
 #
 # The hostinfo file  is a line-oriented text file whose  lines must have
@@ -1417,7 +1417,7 @@ function hostinfo_read () {
     fi
 }
 
-#page
+
 #### helpers
 
 # If the global variable LOCAL_HOSTNAME is empty: fill it with the fully
@@ -1434,7 +1434,7 @@ function acquire_local_hostname () {
     fi
 }
 
-#page
+
 #### running external programs
 
 function program_hostname () {
@@ -1449,7 +1449,7 @@ function pipe_base64 () {
     mbfl_program_exec "$BASE64"
 }
 
-#page
+
 ### let's go
 
 mbfl_main
