@@ -1,4 +1,4 @@
-# mbflutils-files.test.m4 --
+# mbfl-passwords.test.m4 --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: tests for libmbfl-passwords library
@@ -87,7 +87,7 @@ MBFL_DEFINE_TEST_VAR_FUNCTION(mbfl-passwords-[[[]]]$1[[[]]]-2.2, $2[[[]]]_var, 7
 
 #### test groups
 
-MBFL_DEFINE_TESTS_GROUP(digits,			mbfl_passwords_digit,			mbfl_string_is_digit)
+MBFL_DEFINE_TESTS_GROUP(digits,			mbfl_passwords_digits,			mbfl_string_is_digit)
 MBFL_DEFINE_TESTS_GROUP(ascii-symbols,		mbfl_passwords_ascii_symbols,		mbfl_string_is_ascii_symbol)
 
 MBFL_DEFINE_TESTS_GROUP(lower-case-vowels,	mbfl_passwords_lower_case_vowels,	mbfl_string_is_lower_case_vowel)
@@ -111,6 +111,48 @@ MBFL_DEFINE_TESTS_GROUP(mixed-case-base16,	mbfl_passwords_mixed_case_base16,	mbf
 MBFL_DEFINE_TESTS_GROUP(base32,			mbfl_passwords_base32,			mbfl_string_is_base32)
 MBFL_DEFINE_TESTS_GROUP(base64,			mbfl_passwords_base64,			mbfl_string_is_base64)
 MBFL_DEFINE_TESTS_GROUP(ascii_noblank,		mbfl_passwords_ascii_noblank,		mbfl_string_is_ascii_noblank)
+
+
+#### examples
+
+# This looks nice but  it is unsafe because predictable.  The tool  "pwgen" generates passwords that
+# are "easy" to pronounce; to do it we have  too choose the right sequence of consonants and vowels;
+# I  think it  comes down  to avoiding  certain consonants  sequences.  I  will have  to investigate
+# further in the future.  (Marco Maggi; Nov 16, 2022)
+#
+function mbfl_passwords_mine_var () {
+    mbfl_mandatory_nameref_parameter(PWD, 1, result variable)
+    mbfl_local_varref(BLOCK)
+
+    mbfl_passwords_lower_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    mbfl_passwords_lower_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    mbfl_passwords_lower_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    mbfl_passwords_lower_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    PWD+=.
+    mbfl_passwords_upper_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    mbfl_passwords_upper_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    mbfl_passwords_upper_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    mbfl_passwords_upper_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    PWD+=.
+    mbfl_passwords_digits_var			mbfl_datavar(BLOCK) 4; PWD+="$BLOCK"
+    PWD+=.
+    mbfl_passwords_lower_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    mbfl_passwords_lower_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    mbfl_passwords_lower_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+    mbfl_passwords_lower_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
+}
+
+function mbfl_passwords_mine () {
+    mbfl_local_varref(RV)
+    mbfl_passwords_mine_var mbfl_datavar(RV)
+    printf '%s' "$RV"
+}
+
+{
+    printf 'example password: "'
+    mbfl_passwords_mine
+    printf '"\n\n'
+} >&2
 
 
 #### let's go

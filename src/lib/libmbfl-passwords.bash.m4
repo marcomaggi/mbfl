@@ -153,40 +153,4 @@ MBFL_PASSWORDS_PRINTING_FUNCTION([[[mbfl_passwords_base64]]])
 MBFL_PASSWORDS_VAR_FUNCTION([[[mbfl_passwords_ascii_noblank]]],[[[MBFL_ASCII_RANGE_ASCII_NOBLANK]]])
 MBFL_PASSWORDS_PRINTING_FUNCTION([[[mbfl_passwords_ascii_noblank]]])
 
-
-#### my passwords
-
-# This looks nice but  it is unsafe because predictable.  The tool  "pwgen" generates passwords that
-# are "easy" to pronounce; to do it we have  too choose the right sequence of consonants and vowels;
-# I  think it  comes down  to avoiding  certain consonants  sequences.  I  will have  to investigate
-# further in the future.  (Marco Maggi; Nov 16, 2022)
-#
-function mbfl_passwords_mine_var () {
-    mbfl_mandatory_nameref_parameter(PWD, 1, result variable)
-    mbfl_local_varref(BLOCK)
-
-    mbfl_passwords_lower_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    mbfl_passwords_lower_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    mbfl_passwords_lower_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    mbfl_passwords_lower_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    PWD+=.
-    mbfl_passwords_upper_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    mbfl_passwords_upper_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    mbfl_passwords_upper_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    mbfl_passwords_upper_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    PWD+=.
-    mbfl_passwords_digits_var			mbfl_datavar(BLOCK) 4; PWD+="$BLOCK"
-    PWD+=.
-    mbfl_passwords_lower_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    mbfl_passwords_lower_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    mbfl_passwords_lower_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-    mbfl_passwords_lower_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
-}
-
-function mbfl_passwords_mine () {
-    mbfl_local_varref(RV)
-    mbfl_passwords_mine_var mbfl_datavar(RV)
-    printf '%s' "$RV"
-}
-
 ### end of file
