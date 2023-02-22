@@ -9,7 +9,7 @@ m4_dnl Abstract
 m4_dnl
 m4_dnl	Library of macros to preprocess BASH scripts using MBFL.
 m4_dnl
-m4_dnl Copyright (c) 2003-2005, 2009, 2013, 2018, 2020 Marco Maggi
+m4_dnl Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 m4_dnl <mrc.mgg@gmail.com>
 m4_dnl
 m4_dnl This  is free  software; you  can redistribute  it and/or  modify it
@@ -33,58 +33,37 @@ m4_dnl initial setup
 
 m4_changequote(`[[[', `]]]')
 
+m4_define([[[MBFL_SHARP]]],[[[#]]])
+
+
 
 m4_dnl function parameters handling
 
-m4_define([[[mbfl_mandatory_parameter]]],[[[local $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]]])
-m4_define([[[mbfl_mandatory_integer_parameter]]],[[[local -i $1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}]]])
+m4_define([[[mbfl_mandatory_parameter]]],[[[local $4 $1=${$2:?"missing $3 parameter to '$FUNCNAME'"}]]])
+m4_define([[[mbfl_mandatory_integer_parameter]]],[[[mbfl_mandatory_parameter($1,$2,$3,-i)]]])
 
-m4_define([[[mbfl_optional_parameter]]],[[[local $1="${$2:-$3}"]]])
-m4_define([[[mbfl_optional_integer_parameter]]],[[[local -i $1="${$2:-$3}"]]])
+m4_define([[[mbfl_optional_parameter]]],[[[local $4 $1="${$2:-$3}"]]])
+m4_define([[[mbfl_optional_integer_parameter]]],[[[mbfl_optional_parameter($1,$2,$3,-i)]]])
 
 m4_define([[[mbfl_mandatory_nameref_parameter]]],[[[m4_dnl
-local mbfl_a_variable_$1=${$2:?"missing $3 parameter to '${FUNCNAME}'"}
+local mbfl_a_variable_$1=${$2:?"missing $3 parameter to '$FUNCNAME'"}
 local -n $1=$[[[]]]mbfl_a_variable_$1
 ]]])
 
 
 m4_dnl script's command line arguments handling
 
-m4_define([[[mbfl_command_line_argument]]],[[[local $1="${ARGV[$2]}"]]])
+m4_define([[[mbfl_command_line_argument]]],[[[local $3 $1="${ARGV[$2]}"]]])
 
-m4_define([[[mbfl_extract_command_line_argument]]],[[[mbfl_command_line_argument($1,$2); mbfl_variable_unset(ARGV[$2])]]])
+m4_define([[[mbfl_extract_command_line_argument]]],[[[mbfl_command_line_argument($1,$2,$3); mbfl_variable_unset(ARGV[$2])]]])
 
 
 m4_dnl library loading and embedding
 
-m4_define([[[mbfl_library_loader]]],[[[
-declare mbfl_INTERACTIVE=no
-declare mbfl_LOADED=no
-declare mbfl_HARDCODED=$1
-declare mbfl_INSTALLED=$(type -p mbfl-config &>/dev/null && mbfl-config) &>/dev/null
+m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
+m4_define([[[mbfl_load_library]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
 
-declare item
-for item in "$MBFL_LIBRARY" "$mbfl_HARDCODED" "$mbfl_INSTALLED"
-do
-    if test -n "$item" -a -f "$item" -a -r "$item"
-    then
-        if source "$item" &>/dev/null
-	then break
-	else
-            printf '%s error: loading MBFL file "%s"\n' "$script_PROGNAME" "$item" >&2
-            exit 100
-	fi
-    fi
-done
-unset -v item
-if test "$mbfl_LOADED" != yes
-then
-    printf '%s error: incorrect evaluation of MBFL\n' "$script_PROGNAME" >&2
-    exit 100
-fi
-]]])
-
-m4_define([[[mbfl_embed_library]]],[[[m4_include(__MBFL_LIBRARY__)]]])
+m4_define([[[mbfl_embed_library]]],[[[m4_include(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]])
 
 
 m4_dnl handling of variables with NAMEREF attribute
@@ -162,20 +141,26 @@ m4_define([[[mbfl_global_varref]]],[[[m4_dnl
   m4_ifelse($2,,,$1=$2)
 ]]])
 
+m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
+  declare mbfl_a_variable_$1
+  mbfl_variable_alloc mbfl_a_variable_$1
+  declare -g $3 $[[[mbfl_a_variable_$1]]]
+  declare -n $1=$[[[]]]mbfl_a_variable_$1
+  m4_ifelse($2,,,$1=$2)
+]]])
+
 m4_define([[[mbfl_local_index_array_varref]]],[[[mbfl_local_varref($1,$2,-a $3)]]])
 m4_define([[[mbfl_local_assoc_array_varref]]],[[[mbfl_local_varref($1,$2,-A $3)]]])
 m4_define([[[mbfl_global_index_array_varref]]],[[[mbfl_global_varref($1,$2,-a $3)]]])
 m4_define([[[mbfl_global_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3)]]])
+m4_define([[[mbfl_declare_index_array_varref]]],[[[mbfl_global_varref($1,$2,-a $3)]]])
+m4_define([[[mbfl_declare_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3)]]])
 
 m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
 m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar($1)]]])
 
-m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
-  unset -v $mbfl_a_variable_$1
-  unset -v mbfl_a_variable_$1
-  unset -v -n $1
-  unset -v $1
-]]])
+m4_dnl Keep this expansion a single line with semicolons!
+m4_define([[[mbfl_unset_varref]]],[[[unset -v $mbfl_a_variable_$1; unset -v mbfl_a_variable_$1; unset -v -n $1; unset -v $1;]]])
 
 m4_define([[[mbfl_variable_unset]]],[[[unset -v $1]]])
 m4_define([[[mbfl_unset_variable]]],[[[unset -v $1]]])
@@ -183,15 +168,80 @@ m4_define([[[mbfl_unset_variable]]],[[[unset -v $1]]])
 
 m4_dnl array slots
 
-m4_define([[[mbfl_slot_ref]]],[[[${$1[$2]}]]])
-m4_define([[[mbfl_slot_set]]],$1[$2]=$3)
-m4_define([[[mbfl_slots_number]]], ${[[[#]]]$1[@]})
+m4_define([[[mbfl_declare_numeric_array]]],  [[[declare -a $1[[[]]]m4_ifelse($2,,,=$2)]]])
+m4_define([[[mbfl_declare_symbolic_array]]], [[[declare -A $1[[[]]]m4_ifelse($2,,,=$2)]]])
+m4_define([[[mbfl_local_numeric_array]]],    [[[local   -a $1[[[]]]m4_ifelse($2,,,=$2)]]])
+m4_define([[[mbfl_local_symbolic_array]]],   [[[local   -A $1[[[]]]m4_ifelse($2,,,=$2)]]])
+
+m4_define([[[mbfl_slot_ref]]],    [[[${$1[$2]}]]])
+m4_define([[[mbfl_slot_set]]],    [[[$1[$2]=$3]]])
+m4_define([[[mbfl_slot_append]]], [[[$1[$2]+=$3]]])
+
+m4_define([[[mbfl_slot_qref]]],    [[["${$1[$2]}"]]])
+
+m4_define([[[mbfl_slots_number]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+${MBFL_SHARP()$1[@]}m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
+m4_define([[[mbfl_slot_value_len]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+${MBFL_SHARP()$1[$2]}m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
+m4_define([[[mbfl_slots_values]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+${$1[@]}m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
+m4_define([[[mbfl_slots_qvalues]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+"${$1[@]}"m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
 
 
 m4_dnl string macros
 
-m4_define([[[mbfl_string_len]]],[[[${[[[#]]]$1}]]])
+m4_define([[[mbfl_string_len]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+${MBFL_SHARP()$1}m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
 m4_define([[[mbfl_string_idx]]],[[[${$1:$2:1}]]])
+
+m4_define([[[mbfl_string_empty]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+{ test ${MBFL_SHARP()$1} -eq 0; }m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])
+]]])
+
+m4_define([[[mbfl_string_not_empty]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+{ test ${MBFL_SHARP()$1} -ne 0; }m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
+m4_define([[[mbfl_string_last_char]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+${$1:$((${MBFL_SHARP()$1} - 1)):1}m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
+
+m4_dnl We  protect  the  expansion  of these  macros  by  wrapping  the
+m4_dnl expression into curly braces.
+m4_define([[[mbfl_string_eq]]], [[[{ test $1  '=' $2; }]]])
+m4_define([[[mbfl_string_neq]]],[[[{ test $1 '!=' $2; }]]])
+m4_define([[[mbfl_string_lt]]], [[[{ test $1  '<' $2; }]]])
+m4_define([[[mbfl_string_gt]]], [[[{ test $1  '>' $2; }]]])
+
+m4_dnl These implementations are wrong because they evaluate the arguments twice!!!
+m4_dnl
+m4_dnl m4_define([[[mbfl_string_le]]], [[[{ test $1  '<' $2 -o $1 '=' $2; }]]])
+m4_dnl m4_define([[[mbfl_string_ge]]], [[[{ test $1  '>' $2 -o $1 '=' $2; }]]])
+
+m4_define([[[mbfl_string_le]]], [[[{ mbfl_string_less_or_equal    $1 $2; }]]])
+m4_define([[[mbfl_string_ge]]], [[[{ mbfl_string_greater_or_equal $1 $2; }]]])
+
+m4_define([[[mbfl_string_eq_yes]]],   [[[{ test $1  '=' 'yes'; }]]])
+m4_define([[[mbfl_string_eq_no]]],    [[[{ test $1  '=' 'no'; }]]])
+m4_define([[[mbfl_string_eq_true]]],  [[[{ test $1  '=' 'true'; }]]])
+m4_define([[[mbfl_string_eq_false]]], [[[{ test $1  '=' 'false'; }]]])
+
+m4_define([[[mbfl_string_neq_yes]]],   [[[{ test $1  '!=' 'yes'; }]]])
+m4_define([[[mbfl_string_neq_no]]],    [[[{ test $1  '!=' 'no'; }]]])
+m4_define([[[mbfl_string_neq_true]]],  [[[{ test $1  '!=' 'true'; }]]])
+m4_define([[[mbfl_string_neq_false]]], [[[{ test $1  '!=' 'false'; }]]])
 
 
 m4_dnl done
