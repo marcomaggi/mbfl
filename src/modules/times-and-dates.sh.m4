@@ -27,7 +27,7 @@
 # USA.
 #
 
-#page
+
 #### module initialisation
 
 function mbfl_times_and_dates_enable () {
@@ -49,7 +49,7 @@ function mbfl_exec_date_format () {
     mbfl_exec_date "$FORMAT" "$@"
 }
 
-#page
+
 #### current time and date
 
 function mbfl_date_current_year () {
@@ -84,7 +84,7 @@ function mbfl_date_current_time () {
     mbfl_exec_date_format '+%T'
 }
 
-#page
+
 #### special formats
 
 function mbfl_date_email_timestamp () {

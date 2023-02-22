@@ -25,7 +25,7 @@
 # USA.
 #
 
-#page
+
 #### global variables
 
 mbfl_declare_symbolic_array(mbfl_location_HANDLERS)
@@ -36,7 +36,7 @@ declare -i mbfl_location_COUNTER=0
 #
 declare mbfl_location_ATEXIT_ID
 
-#page
+
 #### location delimiters
 
 # Enter into a new location.  Initialise the internal state.
@@ -103,7 +103,7 @@ function mbfl_location_disable_cleanup_atexit () {
     mbfl_atexit_forget $mbfl_location_ATEXIT_ID
 }
 
-#page
+
 #### location handlers
 
 # Register a new handler in the current location.

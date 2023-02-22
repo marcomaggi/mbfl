@@ -27,7 +27,7 @@
 # USA.
 #
 
-#PAGE
+
 #### generic variables
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -92,7 +92,7 @@ function mbfl_main_set_after_parsing_options () {
     mbfl_mandatory_parameter(FUNC,1,main function name)
     mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=${FUNC}
 }
-#page
+
 #### exit codes management
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -141,7 +141,7 @@ function mbfl_main_print_exit_code_names () {
     mbfl_main_print_exit_code_names "$@"
 }
 
-#PAGE
+
 #### license message variables
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -267,7 +267,7 @@ UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 fi
 
-#PAGE
+
 #### version message variables
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -283,7 +283,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 
 fi
 
-#page
+
 #### printing stuff
 
 function mbfl_main_print_version_number () {
@@ -363,7 +363,7 @@ function mbfl_main_print_usage_screen_brief () {
     fi
     exit_success
 }
-#PAGE
+
 #### main function
 
 # This is  the main function  of the MBFL:  it must be  invoked (without

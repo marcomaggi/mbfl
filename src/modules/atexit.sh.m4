@@ -25,7 +25,7 @@
 # USA.
 #
 
-#page
+
 #### global variables
 
 mbfl_declare_numeric_array(mbfl_atexit_HANDLERS)

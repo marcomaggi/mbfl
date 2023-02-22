@@ -27,7 +27,7 @@
 # USA.
 #
 
-#page
+
 #### module initialisation
 
 # This exists, but does nothing, for backwards compatibility.
@@ -36,7 +36,7 @@ function mbfl_system_enable_programs () {
     :
 }
 
-#page
+
 #### reading entries from /etc/passwd
 
 mbfl_declare_symbolic_array(mbfl_system_PASSWD_ENTRIES)
@@ -84,7 +84,7 @@ function mbfl_system_passwd_read () {
     fi
 }
 
-#page
+
 #### printing entries from /etc/passwd
 
 function mbfl_system_passwd_print_entries () {
@@ -136,7 +136,7 @@ function mbfl_system_passwd_print_entries_as_json () {
     done
 }
 
-#page
+
 #### passwd internal array getters
 
 m4_define([[[MBFL_PASSWD_DECLARE_GETTER]]],[[[
@@ -158,7 +158,7 @@ MBFL_PASSWD_DECLARE_GETTER(gecos)
 MBFL_PASSWD_DECLARE_GETTER(dir)
 MBFL_PASSWD_DECLARE_GETTER(shell)
 
-#page
+
 #### searching passwd entries
 
 function mbfl_system_passwd_find_entry_by_name_var () {
@@ -213,7 +213,7 @@ function mbfl_system_passwd_find_entry_by_uid () {
     fi
 }
 
-#page
+
 #### user id conversion
 
 function mbfl_system_passwd_uid_to_name_var () {
@@ -270,7 +270,7 @@ function mbfl_system_user_name_to_numerical_id () {
     fi
 }
 
-#page
+
 #### reading entries from /etc/group
 
 mbfl_declare_symbolic_array(mbfl_system_GROUP_ENTRIES)
@@ -328,7 +328,7 @@ function mbfl_system_group_read () {
     fi
 }
 
-#page
+
 #### printing entries from /etc/group
 
 function mbfl_system_group_print_entries () {
@@ -371,7 +371,7 @@ function mbfl_system_group_print_entries_as_json () {
     done
 }
 
-#page
+
 #### group internal array getters
 
 m4_define([[[MBFL_GROUP_DECLARE_GETTER]]],[[[
@@ -416,7 +416,7 @@ function mbfl_system_group_get_user_name () {
     echo "mbfl_slot_ref(mbfl_system_GROUP_ENTRIES, ${GROUP_INDEX}:users:${USER_INDEX})"
 }
 
-#page
+
 #### searching group entries
 
 function mbfl_system_group_find_entry_by_name_var () {
@@ -471,7 +471,7 @@ function mbfl_system_group_find_entry_by_gid () {
     fi
 }
 
-#page
+
 #### group id conversion
 
 function mbfl_system_group_gid_to_name_var () {
@@ -528,7 +528,7 @@ function mbfl_system_group_name_to_numerical_id () {
     fi
 }
 
-#page
+
 #### users informations
 
 function mbfl_system_whoami () {

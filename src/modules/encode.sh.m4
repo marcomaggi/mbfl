@@ -31,7 +31,7 @@
 # USA.
 #
 
-#page
+
 #### encoding hexadecimal
 
 function mbfl_encode_hex_var () {
@@ -56,7 +56,7 @@ function mbfl_encode_hex () {
     echo "$RESULT_VARNAME"
 }
 
-#page
+
 #### encoding octal
 
 function mbfl_encode_oct_var () {
@@ -81,7 +81,7 @@ function mbfl_encode_oct () {
     echo "$RESULT_VARNAME"
 }
 
-#page
+
 #### decoding hexadecimal
 
 function mbfl_decode_hex_var () {
@@ -105,7 +105,7 @@ function mbfl_decode_hex () {
     echo "$RESULT_VARNAME"
 }
 
-#page
+
 #### decoding octal
 
 function mbfl_decode_oct_var () {

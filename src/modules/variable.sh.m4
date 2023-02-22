@@ -27,7 +27,7 @@
 # USA.
 #
 
-#page
+
 function mbfl_variable_find_in_array () {
     mbfl_mandatory_parameter(ELEMENT, 1, element parameter)
     local -i i ARRAY_DIM=mbfl_slots_number(mbfl_FIELDS)
@@ -45,7 +45,7 @@ function mbfl_variable_element_is_in_array () {
     local pos
     pos=$(mbfl_variable_find_in_array "$@")
 }
-#page
+
 function mbfl_variable_colon_variable_to_array () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
     # Here we NEED to save IFS, else it will be left set to ":".
@@ -107,7 +107,7 @@ function mbfl_variable_colon_variable_drop_duplicate () {
     return 0
 }
 
-#page
+
 #### variables allocation
 
 function mbfl_variable_alloc () {

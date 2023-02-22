@@ -29,7 +29,7 @@
 # USA.
 #
 
-#PAGE
+
 #### configuration and low level functions
 
 declare mbfl_message_PROGNAME=$script_PROGNAME
@@ -55,7 +55,7 @@ function mbfl_message_p_print_prefix () {
     mbfl_message_p_print $1 "$mbfl_message_PROGNAME: $2"
 }
 
-#PAGE
+
 #### printing plain messages
 
 function mbfl_message_string () {
@@ -88,7 +88,7 @@ function mbfl_message_debug () {
     return 0
 }
 
-#page
+
 #### printing formatted messages
 
 function mbfl_message_verbose_printf () {

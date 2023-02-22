@@ -27,7 +27,7 @@
 # USA.
 #
 
-#PAGE
+
 ## ------------------------------------------------------------
 ## Global variables.
 ## ------------------------------------------------------------
@@ -45,7 +45,7 @@ then
     mbfl_p_signal_init_module
 fi
 
-#PAGE
+
 function mbfl_signal_map_signame_to_signum () {
     mbfl_mandatory_parameter(SIGSPEC, 1, signal name)
     local i name

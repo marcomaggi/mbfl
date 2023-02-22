@@ -27,7 +27,7 @@
 # 02111-1307 USA.
 #
 
-#page
+
 #### parser configuration
 
 mbfl_declare_symbolic_array(mbfl_semver_CONFIG)
@@ -39,7 +39,7 @@ function mbfl_semver_reset_config () {
 
 mbfl_semver_reset_config
 
-#page
+
 #### parser functions: main parser
 
 # The argument RV must be the name of a data  array variable to be used as object of a NAMEREF local
@@ -141,7 +141,7 @@ function mbfl_p_semver_init_result_array () {
     mbfl_RV[PARSING_ERROR_MESSAGE]=
 }
 
-#page
+
 #### parser functions: parse version numbers
 
 function mbfl_p_semver_parse_version_numbers () {
@@ -173,7 +173,7 @@ function mbfl_p_semver_parse_version_numbers () {
     fi
 }
 
-#page
+
 #### parser functions: parse prerelease version
 
 # The prerelease version must start with a hyphen.  Then a non-empty identifier must follow.  Then a
@@ -226,7 +226,7 @@ function mbfl_p_semver_parse_prerelease_version () {
     fi
 }
 
-#page
+
 #### parser functions: parse build metadata
 
 # The build  metadata must  start with a  plus.  Then  a non-empty identifier  must follow.   Then a
@@ -272,7 +272,7 @@ function mbfl_p_semver_parse_build_metadata () {
     fi
 }
 
-#page
+
 #### split prerelease version specifications
 
 function mbfl_semver_split_prerelease_version () {
@@ -304,7 +304,7 @@ function mbfl_semver_split_prerelease_version () {
     return 0
 }
 
-#page
+
 #### semantic version specifications comparison
 
 # The value stored in the NAMEREF variable RV is the classic ternary comparison result:

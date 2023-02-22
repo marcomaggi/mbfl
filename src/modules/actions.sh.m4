@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2013, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (C) 2013, 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
 # General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
@@ -22,7 +22,7 @@
 # 02111-1307 USA.
 #
 
-#page
+
 #### global variables
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -86,7 +86,7 @@ then
     declare mbfl_action_sets_SELECTED_SET=NONE
 fi
 
-#page
+
 # Declare a new action set.
 #
 function mbfl_declare_action_set () {
@@ -105,7 +105,7 @@ function mbfl_declare_action_set () {
     fi
 }
 
-#page
+
 function mbfl_declare_action () {
     # The name of the action set this action belongs to.
     #
@@ -162,7 +162,7 @@ function mbfl_declare_action () {
     return_success
 }
 
-#page
+
 # Return 0 if ACTION_SET is the identifier of an existent action set; else return 1.
 #
 function mbfl_actions_set_exists () {
@@ -179,7 +179,7 @@ function mbfl_actions_set_exists_or_none () {
     mbfl_actions_set_exists "$ACTION_SET" || mbfl_string_eq(NONE, "$ACTION_SET")
 }
 
-#page
+
 # Parse the next command line argument and select accordingly the functions for the main module.
 #
 # Upon entering this function: the global variable ARGV1 must be an array containing all the command
@@ -239,7 +239,7 @@ function mbfl_actions_dispatch () {
         fi
     fi
 }
-#page
+
 # Mutate MBFL state to mimic the selection of an action set.
 #
 function mbfl_actions_fake_action_set () {
@@ -271,7 +271,7 @@ function mbfl_actions_print_usage_screen () {
     return_success
 }
 
-#page
+
 # Print a GNU  Bash script to be  evaluated in a Bash  terminal to implement auto  completion of the
 # command line.
 #

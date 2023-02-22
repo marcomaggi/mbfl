@@ -28,7 +28,7 @@
 # USA.
 #
 
-#page
+
 function mbfl_dialog_enable_programs () {
     mbfl_declare_program stty
 }

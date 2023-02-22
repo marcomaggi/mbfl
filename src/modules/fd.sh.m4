@@ -22,7 +22,7 @@
 # 02111-1307 USA.
 #
 
-#page
+
 #### helpers
 
 function mbfl_fd_p_check_fd () {
@@ -52,7 +52,7 @@ function mbfl_fd_p_execute_operation () {
     eval "$COMMAND"
 }
 
-#page
+
 #### opening file descriptors
 
 function mbfl_fd_open_input () {
@@ -94,7 +94,7 @@ function mbfl_fd_open_input_output () {
     }
 }
 
-#page
+
 #### closing file descriptors
 
 function mbfl_fd_close () {
@@ -109,7 +109,7 @@ function mbfl_fd_close () {
     }
 }
 
-#page
+
 #### duplicating file descriptors
 
 function mbfl_fd_dup_input () {
@@ -144,7 +144,7 @@ function mbfl_fd_dup_output () {
     }
 }
 
-#page
+
 #### moving file descriptors
 
 function mbfl_fd_move () {

@@ -24,7 +24,7 @@
 # 02111-1307 USA.
 #
 
-#page
+
 #### global variables
 
 declare -r mbfl_LOADED='yes'
@@ -38,7 +38,7 @@ declare -r mbfl_LOADED='yes'
 : ${script_DESCRIPTION:='<unknown>'}
 : ${script_EXAMPLES:=}
 
-#page
+
 #### miscellaneous functions
 
 function mbfl_set_maybe () {
@@ -55,7 +55,7 @@ function mbfl_read_maybe_null () {
     fi
 }
 
-#page
+
 #### global option creation functions
 
 m4_define([[[MBFL_CREATE_OPTION_PROCEDURES]]],[[[
@@ -96,7 +96,7 @@ MBFL_CREATE_OPTION_PROCEDURES([[[test]]])
 MBFL_CREATE_OPTION_PROCEDURES([[[verbose]]])
 MBFL_CREATE_OPTION_PROCEDURES([[[verbose_program]]])
 
-#page
+
 #### exit codes and return codes
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -234,7 +234,7 @@ function mbfl_declare_exit_code () {
     }
 }
 
-#page
+
 #### exit codes inspection
 
 function mbfl_list_exit_codes () {
@@ -264,7 +264,7 @@ function mbfl_print_exit_code_names () {
     done
 }
 
-#page
+
 #### script termination facilities
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")

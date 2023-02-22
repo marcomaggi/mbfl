@@ -26,7 +26,7 @@
 # USA.
 #
 
-#page
+
 #### simple finding of external programs
 
 mbfl_declare_numeric_array(mbfl_split_PATH)
@@ -105,7 +105,7 @@ function mbfl_program_find () {
     fi
 }
 
-#page
+
 #### program finding functions
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -172,14 +172,14 @@ function mbfl_program_found () {
     fi
 }
 
-#page
+
 #### program validation functions
 
 function mbfl_program_main_validate_programs () {
     mbfl_program_validate_declared || exit_because_program_not_found
 }
 
-#page
+
 #### additional flags for the Bash built-in "exec"
 
 declare mbfl_program_EXEC_FLAGS
@@ -191,7 +191,7 @@ function mbfl_program_reset_exec_flags () {
     mbfl_program_EXEC_FLAGS=
 }
 
-#page
+
 #### redirection of stderr to stdout
 
 declare mbfl_program_STDERR_TO_STDOUT=false
@@ -210,7 +210,7 @@ function mbfl_program_reset_stderr_to_stdout () {
     mbfl_program_STDERR_TO_STDOUT=false
 }
 
-#page
+
 #### "sudo" requests
 
 # This variable holds the  name of the user "sudo" should switch to.   When the value is ":nosudo:":
@@ -305,7 +305,7 @@ function mbfl_program_reset_sudo_options () {
     mbfl_program_SUDO_OPTIONS=
 }
 
-#page
+
 #### public API for program execution
 
 # When we use one of the "mbfl_program_execbg()" functions:  the PID of the process in background is
@@ -366,7 +366,7 @@ function mbfl_program_replace2 () {
     mbfl_p_program_exec $INCHAN $OUCHAN $ERCHAN $REPLACE $BACKGROUND "$@"
 }
 
-#page
+
 #### program execution mechanism functions
 
 function mbfl_p_program_exec () {
@@ -697,7 +697,7 @@ function mbfl_p_program_log_5 () {
     }
 }
 
-#page
+
 #### executing bash commands
 
 function mbfl_program_bash () {

@@ -25,7 +25,7 @@
 # 02111-1307 USA.
 #
 
-#page
+
 #### introspection functions
 
 function mbfl_shell_is_function () {
