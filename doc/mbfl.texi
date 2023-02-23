@@ -731,6 +731,7 @@ Print on @stdout{} the file system absolute pathname of the installed library @v
 then exit successfully.
 
 @item --print-libmbfl-utils
+@anchor{--print-libmbfl-utils}
 @cindex @option{--print-libmbfl-utils}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-utils}
 Print on @stdout{} the file system absolute pathname of the installed library
@@ -9215,7 +9216,17 @@ dotest-final-report
 @cindex Utilities, the library @value{LIBMBFLUTILSFILE}
 
 
-This appendix documents the library @value{LIBMBFLUTILSFILE}, a collection of utility modules.
+This section documents the library @value{LIBMBFLUTILSFILE}, a collection of utility modules.  We
+can load this library at run--time with:
+
+@example
+mbfl_load_library(/path/to/@value{LIBMBFLUTILSFILE})
+@end example
+
+@noindent
+for details @ref{preprocessor loading, Libraries loading and embedding}.  Notice that the
+preprocessor option @option{--print-libmbfl-utils} will print the file pathname of the installed
+library, @ref{--print-libmbfl-utils, Invoking the preprocessor}.
 
 @menu
 * libmbfl-utils files::         File system utilities.
@@ -9421,6 +9432,17 @@ example: at each run they schedule a command in a fixed queue, to be executed at
 future.  This is good to implement the logic: if a condition does not happen before time @code{T},
 then execute command @code{C}.
 
+We can load this library at run--time with:
+
+@example
+mbfl_load_library(/path/to/@value{LIBMBFLATFILE})
+@end example
+
+@noindent
+for details @ref{preprocessor loading, Libraries loading and embedding}.  Notice that the
+preprocessor option @option{--print-libmbfl-at} will print the file pathname of the installed
+library, @ref{--print-libmbfl-at, Invoking the preprocessor}.
+
 @c ------------------------------------------------------------------------
 
 @subsubheading Commands declaration
@@ -9524,7 +9546,17 @@ Print the currently selected queue letter.
 
 
 This section documents the library @value{LIBMBFLARCHFILE}, an interface to the archiving and
-compressing facilities implemented by the most common external programs.
+compressing facilities implemented by the most common external programs.  We can load this library
+at run--time with:
+
+@example
+mbfl_load_library(/path/to/@value{LIBMBFLARCHFILE})
+@end example
+
+@noindent
+for details @ref{preprocessor loading, Libraries loading and embedding}.  Notice that the
+preprocessor option @option{--print-libmbfl-arch} will print the file pathname of the installed
+library, @ref{--print-libmbfl-arch, Invoking the preprocessor}.
 
 @menu
 * libmbfl-arch tar::            Manipulating tar archives.
