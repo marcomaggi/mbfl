@@ -9750,11 +9750,11 @@ Usually we want to use the passwords--generating functions as follows:
 
 @c ------------------------------------------------------------------------
 
-@macro MbflDefunPasswordFunc{STEM,STRING_FUNC}
+@macro MbflDefunPasswordFunc{STEM,STRINGFUNC}
 @defun \STEM\ @var{LEN}
 @defunx \STEM\_var @var{RV} @var{LEN}
 Generate a password string; either print it to @stdout{} or store it in the result variable
-@var{RV}.  The result string satisfies the string predicate @func{\STRING_FUNC\}.
+@var{RV}.  The result string satisfies the string predicate @func{\STRINGFUNC\}.
 @end defun
 
 @end macro
