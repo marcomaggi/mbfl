@@ -306,7 +306,7 @@ Include the @gnu{} Autoconf macro file @file{mbfl.m4} (distributed with @mbfl{})
 and use it by adding the following to @file{acinclude.m4}:
 
 @example
-m4_include(mbfl.m4)
+m4_include(path/to/mbfl.m4)
 @end example
 
 @item
