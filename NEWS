@@ -32,6 +32,7 @@ changes!
      --print-libmbfl-utils
      --print-libmbfl-arch
      --print-libmbfl-at
+     --print-libmbfl-passwords
      --check-version
 
 * BACKWARDS INCOMPATIBILITY  The library  files have been  renamed, from
@@ -46,6 +47,9 @@ changes!
 
 * BACKWARDS  INCOMPATIBILITY  The  library "libmbfltest.bash"  has  been
   renamed to "libmbfl-tests.bash".
+
+* Added  new  library   "libmbfl-passwords.bash"  to  generate  password
+  strings.
 
 * The package configuration allows us to select a hard-coded file system
   pathnames to the GNU Coreutils programs and the executable "sudo".
