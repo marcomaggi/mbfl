@@ -235,6 +235,9 @@ to the external program @command{at}}.
 @item @file{libmbfl-arch.bash}
 An interface to the common file system archiving and compressing tools; @ref{libmbfl-arch, Archiving
 and compressing files}.
+
+@item @file{libmbfl-passwords.bash}
+Password strings generation; @ref{libmbfl-passwords, Generating somewhat random passwords}.
 @end table
 
 Starting with version 3: this package installs files under directories @strong{without} the version
