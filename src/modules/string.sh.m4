@@ -76,7 +76,7 @@ declare -r MBFL_ASCII_RANGE_BASE64="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBF
 
 # We need to quote the symbols to avoit a further round of evaluation!!!
 #
-declare -r MBFL_ASCII_RANGE_ASCII_NOBLANK="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}${MBFL_ASCII_RANGE_DIGITS}${MBFL_ASCII_RANGE_ASCII_SYMBOLS}"
+declare -r MBFL_ASCII_RANGE_PRINTABLE_ASCII_NOBLANK="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}${MBFL_ASCII_RANGE_DIGITS}${MBFL_ASCII_RANGE_ASCII_SYMBOLS}"
 
 fi
 
@@ -479,7 +479,7 @@ MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_mixed_case_base1
 
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_base32_char,		      MBFL_ASCII_RANGE_BASE32)
 MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_base64_char,		      MBFL_ASCII_RANGE_BASE64)
-MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_ascii_noblank_char,	      MBFL_ASCII_RANGE_ASCII_NOBLANK)
+MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE(mbfl_string_is_printable_ascii_noblank_char, MBFL_ASCII_RANGE_PRINTABLE_ASCII_NOBLANK)
 
 
 #### string predicates
@@ -528,7 +528,7 @@ function mbfl_string_is_mixed_case_base16	() { mbfl_p_string_is mbfl_string_is_m
 
 function mbfl_string_is_base32			() { mbfl_p_string_is mbfl_string_is_base32_char "$@"; }
 function mbfl_string_is_base64			() { mbfl_p_string_is mbfl_string_is_base64_char "$@"; }
-function mbfl_string_is_ascii_noblank		() { mbfl_p_string_is mbfl_string_is_ascii_noblank_char "$@"; }
+function mbfl_string_is_printable_ascii_noblank	() { mbfl_p_string_is mbfl_string_is_printable_ascii_noblank_char "$@"; }
 
 function mbfl_string_is_name () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use

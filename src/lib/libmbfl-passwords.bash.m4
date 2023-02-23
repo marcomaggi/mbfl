@@ -150,7 +150,10 @@ MBFL_PASSWORDS_PRINTING_FUNCTION([[[mbfl_passwords_base32]]])
 MBFL_PASSWORDS_VAR_FUNCTION([[[mbfl_passwords_base64]]],[[[MBFL_ASCII_RANGE_BASE64]]])
 MBFL_PASSWORDS_PRINTING_FUNCTION([[[mbfl_passwords_base64]]])
 
-MBFL_PASSWORDS_VAR_FUNCTION([[[mbfl_passwords_ascii_noblank]]],[[[MBFL_ASCII_RANGE_ASCII_NOBLANK]]])
-MBFL_PASSWORDS_PRINTING_FUNCTION([[[mbfl_passwords_ascii_noblank]]])
+MBFL_PASSWORDS_VAR_FUNCTION([[[mbfl_passwords_printable_ascii_noblank]]],[[[MBFL_ASCII_RANGE_PRINTABLE_ASCII_NOBLANK]]])
+MBFL_PASSWORDS_PRINTING_FUNCTION([[[mbfl_passwords_printable_ascii_noblank]]])
 
 #!# end of file
+# Local Variables:
+# mode: sh
+# End:

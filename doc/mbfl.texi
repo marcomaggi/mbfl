@@ -178,6 +178,7 @@ Appendices
 * libmbfl-utils::               Utilities library.
 * libmbfl-at::                  Interface to the external program @command{at}.
 * libmbfl-arch::                Archiving and compressing files.
+* libmbfl-passwords::           Generating somewhat random passwords.
 * sendmail::                    Examples for sending email.
 * Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
@@ -629,6 +630,7 @@ options}.  Additionally the following options are supported.
 
 @table @code
 @item --preserve-comments
+@anchor{--preserve-comments}
 @cindex @option{--preserve-comments}, preprocessor option
 @cindex Preprocessor option @option{--preserve-comments}
 Do not filter out comments.  By default every line starting with optional blanks followed by
@@ -636,12 +638,14 @@ Do not filter out comments.  By default every line starting with optional blanks
 this removal.  If we want a persistent comment we just start it with @samp{#!}.
 
 @item --add-bash
+@anchor{--add-bash}
 @cindex @option{--add-bash}, preprocessor option
 @cindex Preprocessor option @option{--add-bash}
 Add @code{#!BASH_PROGRAM} at the beginning of the output, where @code{BASH_PROGRAM} is selected with
 the command line option @option{--bash-program}.
 
 @item --bash-program=BASH_PROGRAM
+@anchor{--bash-program}
 @cindex @option{--bash-program}, preprocessor option
 @cindex Preprocessor option @option{--bash-program}
 Select the absolute file pathname of the Bash executable to use when the option @option{--add-bash}
@@ -650,6 +654,7 @@ programs}.
 
 @item -D@var{NAME}[=@var{VALUE}]
 @itemx --define=@var{NAME}[=@var{VALUE}]
+@anchor{--define}
 @cindex @option{--define}, preprocessor option
 @cindex Preprocessor option @option{--define}
 Define a new symbol (@mfour{} syntax).  This is equivalent to the @option{--define} option of
@@ -657,6 +662,7 @@ Define a new symbol (@mfour{} syntax).  This is equivalent to the @option{--defi
 
 @item -I@var{INCLUDE_DIRECTORY_PATHNAME}
 @itemx --include=@var{INCLUDE_DIRECTORY_PATHNAME}
+@anchor{--include}
 @cindex @option{--include}, preprocessor option
 @cindex Preprocessor option @option{--include}
 Add a directory to the search path for include files.  @var{INCLUDE_DIRECTORY_PATHNAME} must be a
@@ -665,6 +671,7 @@ multiple times.  @mfour{} can include files using the built--in @func{m4_include
 @mfourref{Include, Including named files}.
 
 @item --library=@var{LIBRARY_FILE_PATHNAME}
+@anchor{--library}
 @cindex @option{--library}, preprocessor option
 @cindex Preprocessor option @option{--library}
 Include an @mfour{} library.  @var{LIBRARY_FILE_PATHNAME} must be the name of an @mfour{} macro file
@@ -672,18 +679,21 @@ which is evaluated before the input files.
 
 @item -o@var{OUTPUT_FILE_PATHNAME}
 @itemx --output=@var{OUTPUT_FILE_PATHNAME}
+@anchor{--output}
 @cindex @option{--output}, preprocessor option
 @cindex Preprocessor option @option{--output}
 Select an output file, @code{-} for stdout.
 
 @item -e
 @itemx --eval
+@anchor{--eval}
 @cindex @option{--eval}, preprocessor option
 @cindex Preprocessor option @option{--eval}
 Send the result of preprocessing to @bash{}, rather than print it.  The evaluation is performed by
 the preselected @command{bash} program, @ref{mbfl_PROGRAM_BASH, Preselected programs}.
 
 @item --no-prepro
+@anchor{--no-prepro}
 @cindex @option{--no-prepro}, preprocessor option
 @cindex Preprocessor option @option{--no-prepro}
 Do not load the installed preprocessor's macros library @file{preprocessor.m4}.  If we use this
@@ -691,6 +701,7 @@ option: we are meant to use the option @option{--library} to load a replacement 
 a known location.
 
 @item --libmbfl=@var{LIBMBFL}
+@anchor{--libmbfl}
 @cindex @option{--libmbfl}, preprocessor option
 @cindex Preprocessor option @option{--libmbfl}
 Select the pathname to a @value{LIBMBFLFILE} file to use in the macros @func{mbfl_load_library} and
@@ -698,6 +709,7 @@ Select the pathname to a @value{LIBMBFLFILE} file to use in the macros @func{mbf
 selected pathname overrides the library installed on the system.
 
 @item --print-libdir
+@anchor{--print-libdir}
 @cindex @option{--print-libdir}, preprocessor option
 @cindex Preprocessor option @option{--print-libdir}
 Print on @stdout{} the file system absolute pathname of the libraries installation directory, then
@@ -705,12 +717,14 @@ exit successfully.  The installation directory is selected with the option @opti
 @command{configure} at package--configuration time.
 
 @item --print-libmbfl
+@anchor{--print-libmbfl}
 @cindex @option{--print-libmbfl}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl}
 Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLFILE},
 then exit successfully.
 
 @item --print-libmbfl-tests
+@anchor{--print-libmbfl-tests}
 @cindex @option{--print-libmbfl-tests}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-tests}
 Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLTESTSFILE},
@@ -723,18 +737,28 @@ Print on @stdout{} the file system absolute pathname of the installed library
 @value{LIBMBFLUTILSFILE}, then exit successfully.
 
 @item --print-libmbfl-arch
+@anchor{--print-libmbfl-arch}
 @cindex @option{--print-libmbfl-arch}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-arch}
 Print on @stdout{} the file system absolute pathname of the installed library
 @value{LIBMBFLARCHFILE}, then exit successfully.
 
 @item --print-libmbfl-at
+@anchor{--print-libmbfl-at}
 @cindex @option{--print-libmbfl-at}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-at}
 Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLATFILE},
 then exit successfully.
 
+@item --print-libmbfl-passwords
+@anchor{--print-libmbfl-passwords}
+@cindex @option{--print-libmbfl-passwords}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfl-passwords}
+Print on @stdout{} the file system absolute pathname of the installed library
+@value{LIBMBFLPASSWORDSFILE}, then exit successfully.
+
 @item --check-version=@var{MINIMUM_REQUIRED_SEMANTIC_VERSION}
+@anchor{--check-version}
 @cindex @option{--check-version}, preprocessor option
 @cindex Preprocessor option @option{--check-version}
 Compare the given @var{MINIMUM_REQUIRED_SEMANTIC_VERSION} with the version of the installed @mbfl{}
@@ -804,7 +828,7 @@ Expands into the absolute pathname of the @value{PACKAGE} library file.  For exa
 
 @c page
 @node preprocessor loading
-@section Loading or including the library
+@section Libraries loading and embedding
 
 
 We can include in scripts the code needed to source a library at run--time or we can embed a whole
@@ -3163,7 +3187,7 @@ according to @rfc{} 4648, without padding character, as described in:
 @end defun
 
 
-@defun mbfl_string_is_ascii_noblank_char @var{CHAR}
+@defun mbfl_string_is_printable_ascii_noblank_char @var{CHAR}
 Return true if @var{CHAR} is in the following set, otherwise return false:
 
 @example
@@ -3211,7 +3235,7 @@ _
 @defunx mbfl_string_is_mixed_case_base16 @var{STRING}
 @defunx mbfl_string_is_base32 @var{STRING}
 @defunx mbfl_string_is_base64 @var{STRING}
-@defunx mbfl_string_is_ascii_noblank @var{STRING}
+@defunx mbfl_string_is_printable_ascii_noblank @var{STRING}
 Return true if @var{STRING} is non--empty and the associated char function returns true for each
 character in @var{STRING}.  As additional constraint:
 
@@ -9659,6 +9683,78 @@ Compress @var{PATHNAME}, a file pathname, with the currently selected compressor
 @defun mbfl_file_decompress @var{PATHNAME} @var{OPT} @dots{}
 Decompress @var{PATHNAME}, a file pathname, with the currently selected compressor program.
 @end defun
+
+@c page
+@node libmbfl-passwords
+@appendix Generating somewhat random passwords
+
+
+@cindex @value{LIBMBFLPASSWORDSFILE}, library generating passwords
+@cindex Library generating passwords, @value{LIBMBFLPASSWORDSFILE}
+
+
+This section documents a library generating random passwords; the library file is
+@value{LIBMBFLPASSWORDSFILE}.  We can load this library at run--time with:
+
+@example
+mbfl_load_library(/path/to/@value{LIBMBFLPASSWORDSFILE})
+@end example
+
+@noindent
+for details @ref{preprocessor loading, Libraries loading and embedding}.  Notice that the
+preprocessor option @option{--print-libmbfl-passwords} will print the file pathname of the installed
+library, @ref{--print-libmbfl-passwords, Invoking the preprocessor}.
+
+Usually we want to use the passwords--generating functions as follows:
+
+@example
+@{
+    mbfl_local_varref(PASSWD_STRING)
+    mbfl_passwords_printable_ascii_noblank mbfl_datavar(PASSWD_STRING) 8
+    echo "$PASSWORD_STRING"
+@}
+@print{} [&W4Yl*t
+@end example
+
+@c ------------------------------------------------------------------------
+
+@macro MbflDefunPasswordFunc{STEM,STRING_FUNC}
+@defun \STEM\ @var{LEN}
+@defunx \STEM\_var @var{RV} @var{LEN}
+Generate a password string; either print it to @stdout{} or store it in the result variable
+@var{RV}.  The result string satisfies the string predicate @func{\STRING_FUNC\}.
+@end defun
+
+@end macro
+
+@c ------------------------------------------------------------------------
+
+@MbflDefunPasswordFunc{mbfl_passwords_digits, mbfl_string_is_digit}
+@MbflDefunPasswordFunc{mbfl_passwords_ascii_symbols, mbfl_string_is_ascii_symbol}
+
+@c ------------------------------------------------------------------------
+
+@MbflDefunPasswordFunc{mbfl_passwords_lower_case_vowels, mbfl_string_is_lower_case_vowel}
+@MbflDefunPasswordFunc{mbfl_passwords_lower_case_consonants, mbfl_string_is_lower_case_consonant}
+@MbflDefunPasswordFunc{mbfl_passwords_lower_case_alphabet, mbfl_string_is_lower_case_alphabet}
+@MbflDefunPasswordFunc{mbfl_passwords_lower_case_alnum, mbfl_string_is_lower_case_alnum}
+@MbflDefunPasswordFunc{mbfl_passwords_lower_case_base16, mbfl_string_is_lower_case_base16}
+
+@MbflDefunPasswordFunc{mbfl_passwords_upper_case_vowels, mbfl_string_is_upper_case_vowel}
+@MbflDefunPasswordFunc{mbfl_passwords_upper_case_consonants, mbfl_string_is_upper_case_consonant}
+@MbflDefunPasswordFunc{mbfl_passwords_upper_case_alphabet, mbfl_string_is_upper_case_alphabet}
+@MbflDefunPasswordFunc{mbfl_passwords_upper_case_alnum, mbfl_string_is_upper_case_alnum}
+@MbflDefunPasswordFunc{mbfl_passwords_upper_case_base16, mbfl_string_is_upper_case_base16}
+
+@MbflDefunPasswordFunc{mbfl_passwords_mixed_case_vowels, mbfl_string_is_mixed_case_vowel}
+@MbflDefunPasswordFunc{mbfl_passwords_mixed_case_consonants, mbfl_string_is_mixed_case_consonant}
+@MbflDefunPasswordFunc{mbfl_passwords_mixed_case_alphabet, mbfl_string_is_mixed_case_alphabet}
+@MbflDefunPasswordFunc{mbfl_passwords_mixed_case_alnum, mbfl_string_is_mixed_case_alnum}
+@MbflDefunPasswordFunc{mbfl_passwords_mixed_case_base16, mbfl_string_is_mixed_case_base16}
+
+@MbflDefunPasswordFunc{mbfl_passwords_base32, mbfl_string_is_base32}
+@MbflDefunPasswordFunc{mbfl_passwords_base64, mbfl_string_is_base64}
+@MbflDefunPasswordFunc{mbfl_passwords_printable_ascii_noblank, mbfl_string_is_printable_ascii_noblank}
 
 @c page
 @node sendmail

@@ -868,9 +868,9 @@ function string-is-21.1 () { mbfl_string_is_base64_char 'd'; }
 function string-is-21.2 () { mbfl_string_is_base64_char '3'; }
 function string-is-21.3 () { ! mbfl_string_is_base64_char '('; }
 
-function string-is-22.1 () { mbfl_string_is_ascii_noblank_char 'd'; }
-function string-is-22.2 () { mbfl_string_is_ascii_noblank_char '3'; }
-function string-is-22.3 () { ! mbfl_string_is_ascii_noblank_char ' '; }
+function string-is-22.1 () { mbfl_string_is_printable_ascii_noblank_char 'd'; }
+function string-is-22.2 () { mbfl_string_is_printable_ascii_noblank_char '3'; }
+function string-is-22.3 () { ! mbfl_string_is_printable_ascii_noblank_char ' '; }
 
 function string-is-23.1 () {   mbfl_string_is_lower_case_alphabet_char 'c'; }
 function string-is-23.2 () { ! mbfl_string_is_lower_case_alphabet_char 'C'; }

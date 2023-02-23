@@ -110,7 +110,7 @@ MBFL_DEFINE_TESTS_GROUP(mixed-case-base16,	mbfl_passwords_mixed_case_base16,	mbf
 
 MBFL_DEFINE_TESTS_GROUP(base32,			mbfl_passwords_base32,			mbfl_string_is_base32)
 MBFL_DEFINE_TESTS_GROUP(base64,			mbfl_passwords_base64,			mbfl_string_is_base64)
-MBFL_DEFINE_TESTS_GROUP(ascii_noblank,		mbfl_passwords_ascii_noblank,		mbfl_string_is_ascii_noblank)
+MBFL_DEFINE_TESTS_GROUP(ascii_noblank,		mbfl_passwords_printable_ascii_noblank, mbfl_string_is_printable_ascii_noblank)
 
 
 #### examples
