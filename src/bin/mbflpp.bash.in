@@ -5711,16 +5711,16 @@ function program_sed () {
     mbfl_program_found_var SED sed || exit?
     mbfl_program_exec "$SED" "$@"
 }
-function program_cat () {
-    local CAT
-    mbfl_program_found_var CAT cat || exit $?
-    mbfl_program_exec "$CAT" "$@"
-}
 # function program_cat () {
-#     while read
-#     do echo -e "$REPLY"
-#     done
+#     local CAT
+#     mbfl_program_found_var CAT cat || exit $?
+#     mbfl_program_exec "$CAT" "$@"
 # }
+function program_cat () {
+    while IFS= read -r
+    do printf '%s\n' "$REPLY"
+    done
+}
 
 #page
 #### let's go
