@@ -17,7 +17,7 @@
 #
 #	In a "Makefile.am" we are interested in the substitution variables "MBFLPP" and "MBFLTEST".
 #
-# Copyright (c) 2009, 2012, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2009, 2012, 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -62,13 +62,34 @@ AC_DEFUN([MBFL_SETUP],
      [mbfl_cv_pathname_libmbfl],
      [AS_VAR_SET([mbfl_cv_pathname_libmbfl],[$("${MBFLPP}" --print-libmbfl)])])
 
-   AC_CACHE_CHECK([pathname of library "libmbfltest"],
-     [mbfl_cv_pathname_libmbfltest],
-     [AS_VAR_SET([mbfl_cv_pathname_libmbfltest],[$("${MBFLPP}" --print-libmbfltest)])])
+   AC_CACHE_CHECK([pathname of library "libmbfl-tests"],
+     [mbfl_cv_pathname_libmbfl_tests],
+     [AS_VAR_SET([mbfl_cv_pathname_libmbfl_tests],[$("${MBFLPP}" --print-libmbfl-tests)])])
 
-   AC_SUBST(MBFL_LIBDIR,     ["$mbfl_cv_pathname_libdir"])
-   AC_SUBST(MBFL_LIBMBFL,    ["$mbfl_cv_pathname_libmbfl"])
-   AC_SUBST(MBFL_LIBMBFLTEST,["$mbfl_cv_pathname_libmbfltest"])])
+   AC_CACHE_CHECK([pathname of library "libmbfl-utils"],
+     [mbfl_cv_pathname_libmbfl_utils],
+     [AS_VAR_SET([mbfl_cv_pathname_libmbfl_utils],[$("${MBFLPP}" --print-libmbfl-utils)])])
+
+   AC_CACHE_CHECK([pathname of library "libmbfl-at"],
+     [mbfl_cv_pathname_libmbfl_at],
+     [AS_VAR_SET([mbfl_cv_pathname_libmbfl_at],[$("${MBFLPP}" --print-libmbfl-at)])])
+
+   AC_CACHE_CHECK([pathname of library "libmbfl-arch"],
+     [mbfl_cv_pathname_libmbfl_arch],
+     [AS_VAR_SET([mbfl_cv_pathname_libmbfl_arch],[$("${MBFLPP}" --print-libmbfl-arch)])])
+
+   AC_CACHE_CHECK([pathname of library "libmbfl-passwords"],
+     [mbfl_cv_pathname_libmbfl_passwords],
+     [AS_VAR_SET([mbfl_cv_pathname_libmbfl_passwords],[$("${MBFLPP}" --print-libmbfl-passwords)])])
+
+   AC_SUBST(MBFL_LIBDIR,                ["$mbfl_cv_pathname_libdir"])
+   AC_SUBST(MBFL_LIBMBFL,               ["$mbfl_cv_pathname_libmbfl"])
+   AC_SUBST(MBFL_LIBMBFL_TESTS,         ["$mbfl_cv_pathname_libmbfl_tests"])
+   AC_SUBST(MBFL_LIBMBFL_AT,            ["$mbfl_cv_pathname_libmbfl_at"])
+   AC_SUBST(MBFL_LIBMBFL_ARCH,          ["$mbfl_cv_pathname_libmbfl_arch"])
+   AC_SUBST(MBFL_LIBMBFL_UTILS,         ["$mbfl_cv_pathname_libmbfl_utils"])
+   AC_SUBST(MBFL_LIBMBFL_PASSWORDS,     ["$mbfl_cv_pathname_libmbfl_passwords"])
+   ])
 
 ### end of file
 # Local Variables:

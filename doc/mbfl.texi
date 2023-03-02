@@ -321,15 +321,19 @@ MBFL_SETUP(v3.0.0)
 it will add to @file{Makefile.in} the following variable definitions:
 
 @example
-MBFLPP           = @@MBFLPP@@
-MBFL_LIBDIR      = @@MBFL_LIBDIR@@
-MBFL_LIBMBFL     = @@MBFL_LIBMBFL@@
-MBFL_LIBMBFLTESTS = @@MBFL_LIBMBFLTESTS@@
+MBFLPP                  = @@MBFLPP@@
+MBFL_LIBDIR             = @@MBFL_LIBDIR@@
+MBFL_LIBMBFL            = @@MBFL_LIBMBFL@@
+MBFL_LIBMBFL_TESTS      = @@MBFL_LIBMBFL_TESTS@@
+MBFL_LIBMBFL_UTILS      = @@MBFL_LIBMBFL_UTILS@@
+MBFL_LIBMBFL_AT         = @@MBFL_LIBMBFL_AT@@
+MBFL_LIBMBFL_ARCH       = @@MBFL_LIBMBFL_ARCH@@
+MBFL_LIBMBFL_PASSWORDS  = @@MBFL_LIBMBFL_PASSWORDS@@
 @end example
 
 @noindent
 holding the absolute file system pathnames of the preprocessor script, the libraries installation
-directory, and the libraries @value{LIBMBFLFILE} and @value{LIBMBFLTESTSFILE}.
+directory, and the libraries pathnames.
 
 @item
 In the template file @file{Makefile.am} we can use the @env{MBFL_} variables to drive the loading or
