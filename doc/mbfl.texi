@@ -20,6 +20,10 @@
 @xref{\NODE\,\TITLE\,\TITLE\,coreutils}
 @end macro
 
+@macro gawkref{NODE, TITLE}
+@xref{\NODE\,\TITLE\,\TITLE\,gawk}
+@end macro
+
 @c page
 @c ------------------------------------------------------------
 @c Values.
@@ -168,6 +172,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * process::                     Job control.
 * signal::                      Catching signals.
 * times::                       Times and dates.
+* math::                        Evaluating mathematical expressions.
 * system::                      Interfacing with the system.
 * semver::                      Semantic version specifications
 * main::                        Main function.
@@ -7134,6 +7139,7 @@ The following are the @gnu{} Coreutils.
 @DefineProgramVariable{CHOWN, chown}
 @DefineProgramVariable{CP, cp}
 @DefineProgramVariable{DATE, date}
+@DefineProgramVariable{GAWK, gawk}
 @DefineProgramVariable{ID, id}
 @DefineProgramVariable{INSTALL, install}
 @DefineProgramVariable{LN, ln}
@@ -7351,6 +7357,52 @@ required by @acronym{ISO} 8601 with nanoseconds precision.  Example:
 @example
 mbfl_date_iso_timestamp
 @print{} 2018-11-03T07:51:27,564646289+01:00
+@end example
+@end defun
+
+@c page
+@node math
+@chapter Evaluating mathematical expressions
+
+
+@cindex Evaluating mathematical expressions
+@cindex Evaluating arithmetic expressions
+@cindex Mathematical expressions
+@cindex Arithmetic expressions
+
+
+The @gnu{} Bash has some arithmetic facilities to evaluate expressions, they are limited to
+integers; @bashref{Shell Arithmetic, Shell Arithmetic}.  The @gnu{} Coreutils's @command{expr}
+command can also evaluate mathematical expressions, its features are also limited;
+@coreutilsref{expr invocation, @command{expr} Evaluate expressions}.
+
+GAWK instead has a wider set of facilities, so it is used by @mbfl{} for mathematics;
+@gawkref{Arbitrary Precision Arithmetic, Arithmetic and Arbitrary--Precision Arithmetic with
+@command{gawk}}.  The pathname of GAWK is available in the variable @env{mbfl_PROGRAM_GAWK}
+(@pxref{mbfl_PROGRAM_GAWK}).
+
+
+@defun mbfl_math_expr @var{EXPR_STRING}
+Evaluate the given expression string using GAWK; print the result to @stdout{}.  If an error occurs:
+return with the same status of GAWK.
+
+@example
+mbfl_math_expr '1.2 + 3.4'
+@print{} 4.6
+@end example
+@end defun
+
+
+@defun mbfl_math_expr_var @var{RV} @var{EXPR_STRING}
+Evaluate the given expression string using GAWK; only if successful: store the result in the
+variable @var{RV}.  If an error occurs: return with the same status of GAWK; @var{RV} is left
+untouched.
+
+@example
+mbfl_local_varref(RV)
+
+mbfl_math_expr_var mbfl_datavar(RV) '1.2 + 3.4'
+$RV @result{} 4.6
 @end example
 @end defun
 

@@ -293,6 +293,7 @@ changes!
     mbfl_PROGRAM_CHOWN
     mbfl_PROGRAM_CP
     mbfl_PROGRAM_DATE
+    mbfl_PROGRAM_GAWK
     mbfl_PROGRAM_ID
     mbfl_PROGRAM_INSTALL
     mbfl_PROGRAM_LN
@@ -323,6 +324,9 @@ changes!
 
   do  not call  "exit_because_program_not_found()" anymore,  rather they
   call "return_because_program_not_found()".
+
+* Added a math module to evaluate mathematical expressions; it makes use
+  of "gawk".
 
 
 Notes for revision 2.2.0

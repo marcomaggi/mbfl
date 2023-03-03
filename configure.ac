@@ -8,7 +8,7 @@ AC_INIT([Marcos Bash Functions Library],MMUX_PACKAGE_VERSION,[mrc.mgg@gmail.com]
 MMUX_INIT
 dnl This is the revision number of this configure.ac
 AC_REVISION([0.1])
-AC_COPYRIGHT([Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+AC_COPYRIGHT([Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 
 This is  free software; you can  redistribute it and/or modify  it under
 the terms of  the GNU Lesser General Public License  as published by the
@@ -44,6 +44,7 @@ AC_SUBST([MBFL_SEMANTIC_VERSION],MMUX_PACKAGE_SEMANTIC_VERSION)
 AC_PATH_PROG([MBFL_PROGRAM_BASH],       [bash])
 AC_PATH_PROG([MBFL_PROGRAM_M4],         [m4])
 AC_PATH_PROG([MBFL_PROGRAM_SUDO],       [sudo])
+AC_PATH_PROG([MBFL_PROGRAM_GAWK],       [gawk])
 
 # The following are the GNU Coreutils.
 AC_PATH_PROG([MBFL_PROGRAM_CHGRP],	[chgrp])

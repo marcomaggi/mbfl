@@ -146,6 +146,7 @@ EXTRA_DIST			+=		\
 	src/modules/getopts.sh.m4		\
 	src/modules/locations.sh.m4		\
 	src/modules/main.sh.m4			\
+	src/modules/math.sh.m4			\
 	src/modules/message.sh.m4		\
 	src/modules/process.sh.m4		\
 	src/modules/program.sh.m4		\
@@ -172,6 +173,7 @@ MBFL_LIB_MODULES		=		\
 	src/modules/getopts.sh			\
 	src/modules/locations.sh		\
 	src/modules/main.sh			\
+	src/modules/math.sh			\
 	src/modules/message.sh			\
 	src/modules/process.sh			\
 	src/modules/program.sh			\
@@ -463,6 +465,7 @@ EXTRA_DIST			+=		\
 	tests/file.test.m4			\
 	tests/getopts.test.m4			\
 	tests/locations.test.m4			\
+	tests/math.test.m4			\
 	tests/message.test.m4			\
 	tests/process.test.m4			\
 	tests/program.test.m4			\
@@ -491,6 +494,7 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/file.test				\
 	tests/getopts.test			\
 	tests/locations.test			\
+	tests/math.test				\
 	tests/message.test			\
 	tests/process.test			\
 	tests/program.test			\
