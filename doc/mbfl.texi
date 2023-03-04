@@ -619,6 +619,7 @@ recommended.
 * preprocessor strings::        Manipulating strings with macros.
 * preprocessor variables::      Manipulating variables with macros.
 * preprocessor arrays::         Manipulating arrays with macros.
+* preprocessor programs::       Defining program--execution functions.
 @end menu
 
 @c page
@@ -1839,6 +1840,65 @@ Expand to a ``list'' of array values, respectively:
 mbfl_slots_qvalues(@var{ARRAYNAME})     @expansion{} "$@{@var{ARRAYNAME}[@@]@}"
 @end example
 @end deffn
+
+@c page
+@node preprocessor programs
+@section Defining program--execution functions
+
+
+@cindex Defining program--execution functions
+@cindex Program--execution functions, definition
+@cindex Executing external programs, defining executor function
+
+
+@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_EXECUTOR (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
+Define a function we can call to execute an external program previously declared with
+@func{mbfl_declare_program} and similar functions; @ref{program declaring, Declaring the intention
+to use a program}.
+
+@table @var
+@item STEM
+A string used to compose the function name, which will be: @code{program_@var{STEM}}.
+
+@item EXECUTABLE_PATHNAME
+The executable specification of the program; it must be the same string used as argument to
+@func{mbfl_declare_program}.
+
+@item OPTIONAL_DEFAULT_FLAGS
+Optional sequence of strings that will be inserted on the command line of the program.
+@end table
+@end deffn
+
+
+With this preprocessor version the expansion of a macro use looks like this:
+
+@example
+function program_@var{STEM} () @{
+    mbfl_local_varref(PROGRAM)
+    mbfl_program_found_var mbfl_datavar(PROGRAM) @var{EXECUTABLE_PATHNAME} || exit $?
+    mbfl_program_exec "$PROGRAM" @var{OPTIONAL_DEFAULT_FLAGS} "$[[[]]]@@"
+@}
+@end example
+
+@noindent
+Let's say we want to define a function to execute @command{pamixer}, PulseAudio's mixer program:
+
+@example
+mbfl_declare_program pamixer
+
+MBFL_DEFINE_PROGRAM_EXECUTOR([[[pamixer]]], [[[pamixer]]])
+@end example
+
+@noindent
+the macro use will expand into:
+
+@example
+function program_pamixer () @{
+    mbfl_local_varref(PROGRAM)
+    mbfl_program_found_var mbfl_datavar(PROGRAM) pamixer || exit $?
+    mbfl_program_exec "$PROGRAM"  "$[[[]]]@@"
+@}
+@end example
 
 @c page
 @node base

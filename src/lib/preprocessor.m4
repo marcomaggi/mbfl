@@ -61,7 +61,7 @@ m4_define([[[mbfl_extract_command_line_argument]]],[[[mbfl_command_line_argument
 m4_dnl library loading and embedding
 
 m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
-m4_define([[[mbfl_load_library]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
+m4_define([[[mbfl_load_library]]],  [[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
 
 m4_define([[[mbfl_embed_library]]],[[[m4_include(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]])
 
@@ -173,12 +173,11 @@ m4_define([[[mbfl_declare_symbolic_array]]], [[[declare -A $1[[[]]]m4_ifelse($2,
 m4_define([[[mbfl_local_numeric_array]]],    [[[local   -a $1[[[]]]m4_ifelse($2,,,=$2)]]])
 m4_define([[[mbfl_local_symbolic_array]]],   [[[local   -A $1[[[]]]m4_ifelse($2,,,=$2)]]])
 
-m4_define([[[mbfl_slot_spec]]],    [[[$1[$2]]]])
+m4_define([[[mbfl_slot_spec]]],   [[[$1[$2]]]])
 m4_define([[[mbfl_slot_ref]]],    [[[${mbfl_slot_spec([[[$1]]],[[[$2]]])}]]])
 m4_define([[[mbfl_slot_set]]],    [[[mbfl_slot_spec([[[$1]]],[[[$2]]])=[[[$3]]]]]])
 m4_define([[[mbfl_slot_append]]], [[[mbfl_slot_spec([[[$1]]],[[[$2]]])+=[[[$3]]]]]])
-
-m4_define([[[mbfl_slot_qref]]],    [[["${$1[$2]}"]]])
+m4_define([[[mbfl_slot_qref]]],   [[["mbfl_slot_ref([[[$1]]],[[[$2]]])"]]])
 
 m4_define([[[mbfl_slots_number]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
 ${MBFL_SHARP()$1[@]}m4_dnl
@@ -243,6 +242,25 @@ m4_define([[[mbfl_string_neq_yes]]],   [[[{ test $1  '!=' 'yes'; }]]])
 m4_define([[[mbfl_string_neq_no]]],    [[[{ test $1  '!=' 'no'; }]]])
 m4_define([[[mbfl_string_neq_true]]],  [[[{ test $1  '!=' 'true'; }]]])
 m4_define([[[mbfl_string_neq_false]]], [[[{ test $1  '!=' 'false'; }]]])
+
+
+m4_dnl defining program execution functions
+
+m4_define([[[MBFL_DEFINE_PROGRAM_EXECUTOR_FUNCNAME_PREFIX]]],[[[program_]]])
+
+dnl Synopsis:
+dnl
+dnl   MBFL_DEFINE_PROGRAM_EXECUTOR(STEM, EXECUTABLE_PATHNAME, OPTIONAL_DEFAULT_FLAGS)
+dnl
+dnl If we change this macro expansion: remember to update the documentation.
+dnl
+m4_define([[[MBFL_DEFINE_PROGRAM_EXECUTOR]]],[[[
+function MBFL_DEFINE_PROGRAM_EXECUTOR_FUNCNAME_PREFIX[[[]]]$1 () {
+    mbfl_local_varref(PROGRAM)
+    mbfl_program_found_var mbfl_datavar(PROGRAM) $2 || exit $?
+    mbfl_program_exec "$PROGRAM" $3 "$[[[]]]@"
+}
+]]])
 
 
 m4_dnl done

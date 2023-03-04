@@ -328,6 +328,10 @@ changes!
 * Added a math module to evaluate mathematical expressions; it makes use
   of "gawk".
 
+* Added preprocessor macro:
+
+    MBFL_DEFINE_PROGRAM_EXECUTOR
+
 
 Notes for revision 2.2.0
 ------------------------
