@@ -1854,7 +1854,8 @@ mbfl_slots_qvalues(@var{ARRAYNAME})     @expansion{} "$@{@var{ARRAYNAME}[@@]@}"
 @deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_EXECUTOR (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
 Define a function we can call to execute an external program previously declared with
 @func{mbfl_declare_program} and similar functions; @ref{program declaring, Declaring the intention
-to use a program}.
+to use a program}.  The program is executed with @func{mbfl_program_exec}; @ref{mbfl_program_exec,
+Core @api{} for Program execution}.
 
 @table @var
 @item STEM
@@ -1899,6 +1900,13 @@ function program_pamixer () @{
     mbfl_program_exec "$PROGRAM"  "$[[[]]]@@"
 @}
 @end example
+
+
+@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_REPLACER (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
+Like @func{MBFL_DEFINE_PROGRAM_REPLACER}, but uses @func{mbfl_program_replace} rather than
+@func{mbfl_program_exec}; @ref{mbfl_program_replace, Core @api{} for program execution with
+replacement}.
+@end deffn
 
 @c page
 @node base

@@ -331,6 +331,7 @@ changes!
 * Added preprocessor macro:
 
     MBFL_DEFINE_PROGRAM_EXECUTOR
+    MBFL_DEFINE_PROGRAM_REPLACER
 
 
 Notes for revision 2.2.0
