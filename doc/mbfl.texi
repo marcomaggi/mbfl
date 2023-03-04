@@ -1875,6 +1875,19 @@ function program_pamixer () @{
 @}
 @end example
 
+@noindent
+we can use the function as:
+
+@example
+if ! program_pamixer --increase 2
+then
+    # handle the error
+fi
+@end example
+
+@noindent
+the function will return with status equal to the exit status of the program.
+
 
 @deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_EXECUTOR (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
 Define a function we can call to execute an external program previously declared with
