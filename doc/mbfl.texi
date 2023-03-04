@@ -1851,6 +1851,31 @@ mbfl_slots_qvalues(@var{ARRAYNAME})     @expansion{} "$@{@var{ARRAYNAME}[@@]@}"
 @cindex Executing external programs, defining executor function
 
 
+It happens often that we want to execute an external program; it is useful to wrap into a function
+the machinery needed to use program declaration and execution with @mbfl{}'s facilities.  Some
+preprocessor macros automate this function definition.
+
+Let's say we want to define a function to execute @command{pamixer}, PulseAudio's mixer program; we
+can use the macro @func{MBFL_DEFINE_PROGRAM_EXECUTOR}:
+
+@example
+mbfl_declare_program pamixer
+
+MBFL_DEFINE_PROGRAM_EXECUTOR([[[pamixer]]], [[[pamixer]]])
+@end example
+
+@noindent
+the macro use will expand into:
+
+@example
+function program_pamixer () @{
+    mbfl_local_varref(PROGRAM)
+    mbfl_program_found_var mbfl_datavar(PROGRAM) pamixer || exit $?
+    mbfl_program_exec "$PROGRAM"  "$@@"
+@}
+@end example
+
+
 @deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_EXECUTOR (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
 Define a function we can call to execute an external program previously declared with
 @func{mbfl_declare_program} and similar functions; @ref{program declaring, Declaring the intention
@@ -1868,8 +1893,6 @@ The executable specification of the program; it must be the same string used as 
 @item OPTIONAL_DEFAULT_FLAGS
 Optional sequence of strings that will be inserted on the command line of the program.
 @end table
-@end deffn
-
 
 With this preprocessor version the expansion of a macro use looks like this:
 
@@ -1877,29 +1900,10 @@ With this preprocessor version the expansion of a macro use looks like this:
 function program_@var{STEM} () @{
     mbfl_local_varref(PROGRAM)
     mbfl_program_found_var mbfl_datavar(PROGRAM) @var{EXECUTABLE_PATHNAME} || exit $?
-    mbfl_program_exec "$PROGRAM" @var{OPTIONAL_DEFAULT_FLAGS} "$[[[]]]@@"
+    mbfl_program_exec "$PROGRAM" @var{OPTIONAL_DEFAULT_FLAGS} "$@@"
 @}
 @end example
-
-@noindent
-Let's say we want to define a function to execute @command{pamixer}, PulseAudio's mixer program:
-
-@example
-mbfl_declare_program pamixer
-
-MBFL_DEFINE_PROGRAM_EXECUTOR([[[pamixer]]], [[[pamixer]]])
-@end example
-
-@noindent
-the macro use will expand into:
-
-@example
-function program_pamixer () @{
-    mbfl_local_varref(PROGRAM)
-    mbfl_program_found_var mbfl_datavar(PROGRAM) pamixer || exit $?
-    mbfl_program_exec "$PROGRAM"  "$[[[]]]@@"
-@}
-@end example
+@end deffn
 
 
 @deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_REPLACER (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
