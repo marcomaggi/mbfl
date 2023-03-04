@@ -1923,6 +1923,8 @@ function program_@var{STEM} () @{
 Like @func{MBFL_DEFINE_PROGRAM_REPLACER}, but uses @func{mbfl_program_replace} rather than
 @func{mbfl_program_exec}; @ref{mbfl_program_replace, Core @api{} for program execution with
 replacement}.
+
+The generated function name is @code{program_replace_@var{STEM}}.
 @end deffn
 
 @c page
