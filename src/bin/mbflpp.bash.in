@@ -5603,6 +5603,10 @@ function script_option_update_print_libmbfl_passwords () {
     printf '%s/libmbfl-passwords.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
+function script_option_update_print_libmbfl_git () {
+    printf '%s/libmbfl-git.bash\n' "$MBFL_INSTALLDIR"
+    exit_success
+}
 
 function script_option_update_check_version () {
     local -i mbflpp_RV
