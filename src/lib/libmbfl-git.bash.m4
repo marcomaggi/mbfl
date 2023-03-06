@@ -34,7 +34,7 @@ function mbfl_vc_git_enable () {
 
 #### data structures: CONFIG_VALUE
 
-function mbfl_vc_git_init_config_value () {
+function mbfl_vc_git_config_init_value_struct () {
     mbfl_mandatory_nameref_parameter(CONFIG_VALUE, 1, struct array)
     mbfl_mandatory_parameter(KEY,		2, key string)
     mbfl_optional_parameter(DEFAULT_VALUE,	3)
@@ -47,7 +47,7 @@ function mbfl_vc_git_init_config_value () {
     mbfl_slot_set(CONFIG_VALUE,TERMINATOR,	'newline')
 }
 
-function mbfl_vc_git_validate_struct_config_value () {
+function mbfl_vc_git_config_validate_value_struct () {
     mbfl_mandatory_nameref_parameter(CONFIG_VALUE, 1, reference to config value struct)
     mbfl_local_varref(FLAGS)
     # We execute  this in a subshell  so that the  call to "exit_because_failure" are  equivalent to
@@ -118,16 +118,17 @@ function mbfl_vc_git_config_get_value () {
 			--get		mbfl_slot_qref(CONFIG_VALUE,KEY)
 }
 function mbfl_vc_git_config_get_value_var () {
-    mbfl_mandatory_nameref_parameter(VALUE,	1, reference to result variable)
-    mbfl_mandatory_parameter(CONFIG_VALUE,	2, reference to config value struct)
-    VALUE=$(mbfl_vc_git_config_get_value "$CONFIG_VALUE")
+    mbfl_mandatory_nameref_parameter(VALUE,		1, reference to result variable)
+    mbfl_mandatory_nameref_parameter(CONFIG_VALUE,	2, reference to config value struct)
+    VALUE=$(mbfl_vc_git_config_get_value mbfl_datavar(CONFIG_VALUE))
 }
 function mbfl_vc_git_config_set_value () {
-    mbfl_mandatory_parameter(CONFIG_VALUE,	1, reference to config value struct)
-    mbfl_mandatory_parameter(NEW_VALUE,		2, new value string)
+    mbfl_mandatory_nameref_parameter(CONFIG_VALUE,	1, reference to config value struct)
+    mbfl_mandatory_parameter(NEW_VALUE,			2, new value string)
+    mbfl_local_varref(FLAGS)
 
     mbfl_vc_git_config_parse_config_value_flags mbfl_datavar(CONFIG_VALUE) mbfl_datavar(FLAGS)
-    mbfl_vc_git_program config $FLAGS --add mbfl_slot_qref(CONFIG_VALUE,KEY) "$VALUE"
+    mbfl_vc_git_program config $FLAGS --add mbfl_slot_qref(CONFIG_VALUE,KEY) "$NEW_VALUE"
 }
 
 

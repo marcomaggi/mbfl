@@ -10015,7 +10015,7 @@ the facilities of this library.
 
 
 @deftp {Data Structure} MBFL_VC_GIT_CONFIG_VALUE
-The ``type'' of associative arrays initialised by @func{mbfl_vc_git_init_config_value}; its
+The ``type'' of associative arrays initialised by @func{mbfl_vc_git_config_init_value_struct}; its
 fields are:
 
 @table @code
@@ -10046,7 +10046,7 @@ named @var{CONFIG_VALUE}.
 @end deftp
 
 
-@defun mbfl_vc_git_init_config_value @var{CONFIG_VALUE} @var{KEY} @var{DEFAULT_VALUE}
+@defun mbfl_vc_git_config_init_value_struct @var{CONFIG_VALUE} @var{KEY} @var{DEFAULT_VALUE}
 Initialise the associative array referenced by @var{CONFIG_VALUE} as a
 @objtype{MBFL_VC_GIT_CONFIG_VALUE} data structure.  The mandatory argument @var{KEY} is used to
 intialise the field @code{KEY}.  The optional argument @var{DEFAULT_VALUE} is used to initialise the
@@ -10056,7 +10056,7 @@ field @var{DEFAULT_VALUE}.
 @example
 mbfl_local_assoc_array_varref(CONFIG_VALUE)
 
-mbfl_vc_git_init_config_value mbfl_datavar(CONFIG_VALUE) 'marcomaggi.package-name' 'noname'
+mbfl_vc_git_config_init_value_struct mbfl_datavar(CONFIG_VALUE) 'marcomaggi.package-name' 'noname'
 @end example
 @end defun
 
@@ -10071,7 +10071,7 @@ extract is specified by the data structure @var{CONFIG_VALUE}.
 mbfl_local_assoc_array_varref(CONFIG_VALUE)
 mbfl_local_varref(PKGNAME)
 
-mbfl_vc_git_init_config_value mbfl_datavar(CONFIG_VALUE) 'marcomaggi.package-name' 'noname'
+mbfl_vc_git_config_init_value_struct mbfl_datavar(CONFIG_VALUE) 'marcomaggi.package-name' 'noname'
 mbfl_vc_git_config_get_value_var mbfl_datavar(PKGNAME) mbfl_datavar(CONFIG_VALUE)
 print '%s' "$PKGNAME"
 @end example
@@ -10081,6 +10081,14 @@ print '%s' "$PKGNAME"
 @defun mbfl_vc_git_config_set_value @var{CONFIG_VALUE} @var{NEW_VALUE}
 Set a new value for the configuration value described by @var{CONFIG_VALUE}; return the exit status
 of the @git{} invocation.
+
+@example
+mbfl_local_assoc_array_varref(CONFIG_VALUE)
+mbfl_local_varref(PKGNAME)
+
+mbfl_vc_git_config_init_value_struct mbfl_datavar(CONFIG_VALUE) 'marcomaggi.package-name' 'noname'
+mbfl_vc_git_config_set_var mbfl_datavar(CONFIG_VALUE) 'my-great-package'
+@end example
 @end defun
 
 @c page
