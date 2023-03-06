@@ -10022,9 +10022,12 @@ fields are:
 @table @code
 @item DATABASE
 A string among: @samp{local}, @samp{global}, @samp{system}, @samp{worktree}, @samp{unspecified}; it
-is initialised to @samp{unspecified}.  It is used to establish which @git{} option to use among
-@option{--local}, @option{--global}, @option{--system}, @option{--worktree}; if the field value is
-@samp{unspecified} non of these @git{} options is used.
+is initialised to @samp{unspecified}.  Notice that @samp{unspecified} is @strong{not} equivalent to
+@samp{local}.
+
+This value is used to establish which @git{} option to use among @option{--local},
+@option{--global}, @option{--system}, @option{--worktree}; if the field value is @samp{unspecified}
+non of these @git{} options is used.
 
 @item KEY
 The configuration value key.
