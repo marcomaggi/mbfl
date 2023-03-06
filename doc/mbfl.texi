@@ -10016,18 +10016,29 @@ before using the facilities of this library.
 
 @defun mbfl_vc_git_config_get_value @var{KEY} @var{DEFAULT}
 @defunx mbfl_vc_git_config_get_value_var @var{RV} @var{KEY} @var{DEFAULT}
-Extract a value from GIT's project configuration; print the result to @stdout{} or store it in the
-result variable @var{RV}; return the exit status of the @command{git} invocation.
+@defunx mbfl_vc_git_config_local_get_value @var{KEY} @var{DEFAULT}
+@defunx mbfl_vc_git_config_local_get_value_var @var{RV} @var{KEY} @var{DEFAULT}
+Extract a value from GIT's local (repository) configuration; print the result to @stdout{} or store
+it in the result variable @var{RV}; return the exit status of the @command{git} invocation.
 
 Must be called while the current working directory is under the project source tree.
 
 @example
 mbfl_local_varref(PRJNAME)
-local KEY=marcomaggi.package-name
-local NAME=noname
+local KEY='marcomaggi.package-name'
+local DEFAULT='noname'
 
-mbfl_vc_git_config_get_value_var mbfl_datavar(PRJNAME)
+mbfl_vc_git_config_get_value_var mbfl_datavar(PRJNAME) "$KEY" "$DEFAULT"
 @end example
+@end defun
+
+
+@defun mbfl_vc_git_config_global_get_value @var{KEY} @var{DEFAULT}
+@defunx mbfl_vc_git_config_global_get_value_var @var{RV} @var{KEY} @var{DEFAULT}
+Extract a value from GIT's global configuration; print the result to @stdout{} or store it in the
+result variable @var{RV}; return the exit status of the @command{git} invocation.
+
+Must be called while the current working directory is under the project source tree.
 @end defun
 
 @c page

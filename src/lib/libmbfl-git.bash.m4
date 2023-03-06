@@ -25,45 +25,60 @@
 #!
 
 
-#### version control library
+#### library initialisation
 
 function mbfl_vc_git_enable () {
     mbfl_declare_program git
 }
 
-# Extract a value from GIT's project configuration.   Print the result to stdout.  Return the return
-# value of "mbfl_vc_git_program".
-#
-# Must be called while the current working directory is under the project source tree.
-#
-function mbfl_vc_git_config_get_value () {
-    mbfl_mandatory_parameter(KEY,     1, key)
-    mbfl_mandatory_parameter(DEFAULT, 2, default value)
+
+#### configuration management: getting values
 
-    mbfl_vc_git_program config --default "$DEFAULT" --get "$KEY"
+function mbfl_vc_git_config_local_get_value () {
+    mbfl_mandatory_parameter(KEY, 1, key)
+    mbfl_optional_parameter(DEFAULT, 2)
+    mbfl_vc_git_program config --local --default "$DEFAULT" --get "$KEY"
 }
 
-# Extract a  value from  GIT's project configuration.   Store the result  in a  referenced variable.
-# Return the return value of "mbfl_vc_git_program".
-#
-# Must be called while the current working directory is under the project source tree.
-#
-function mbfl_vc_git_config_get_value_var () {
+function mbfl_vc_git_config_local_get_value_var () {
     mbfl_mandatory_nameref_parameter(VALUE, 1, result variable)
-    mbfl_mandatory_parameter(KEY,     2, key)
-    mbfl_mandatory_parameter(DEFAULT, 3, default value)
-
-    VALUE=$(mbfl_vc_git_config_get_value "$KEY" "$DEFAULT")
+    mbfl_mandatory_parameter(KEY, 2, key)
+    mbfl_optional_parameter(DEFAULT, 3)
+    VALUE=$(mbfl_vc_git_config_local_get_value "$KEY" "$DEFAULT")
 }
 
-# Run the program "git" with the given commands.  Return the exit status of executing "git".  If the
-# program "git" is not found: return the return value of "return_because_program_not_found".
-#
+### ------------------------------------------------------------------------
+
+function mbfl_vc_git_config_global_get_value () {
+    mbfl_mandatory_parameter(KEY, 1, key)
+    mbfl_optional_parameter(DEFAULT, 2)
+    mbfl_vc_git_program config --global --default "$DEFAULT" --get "$KEY"
+}
+
+function mbfl_vc_git_config_global_get_value_var () {
+    mbfl_mandatory_nameref_parameter(VALUE, 1, result variable)
+    mbfl_mandatory_parameter(KEY, 2, key)
+    mbfl_optional_parameter(DEFAULT, 3)
+    VALUE=$(mbfl_vc_git_config_global_get_value "$KEY" "$DEFAULT")
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_vc_git_config_get_value () {
+    mbfl_vc_git_config_local_get_value "$@"
+}
+function mbfl_vc_git_config_get_value_var () {
+    mbfl_vc_git_config_local_get_value_var "$@"
+}
+
+
+#### program interface
+
 function mbfl_vc_git_program () {
     mbfl_local_varref(GIT_COMMAND)
 
     mbfl_program_found_var mbfl_datavar(GIT_COMMAND) git || exit $?
-    "$GIT_COMMAND" "$@"
+    mbfl_program_exec "$GIT_COMMAND" "$@"
 }
 
 #!# end of file
