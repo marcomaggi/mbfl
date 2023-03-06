@@ -132,6 +132,17 @@ function mbfl_vc_git_config_set_value () {
 }
 
 
+#### branches management
+
+function mbfl_vc_git_branch_current_name () {
+    mbfl_vc_git_program rev-parse --abbrev-ref HEAD
+}
+function mbfl_vc_git_branch_current_name_var () {
+    mbfl_mandatory_nameref_parameter(BRANCH_NAME, 1, reference to branch name output variable)
+    BRANCH_NAME=$(mbfl_vc_git_branch_current_name)
+}
+
+
 #### program interface
 
 function mbfl_vc_git_program () {

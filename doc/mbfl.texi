@@ -9996,6 +9996,7 @@ library, @ref{--print-libmbfl-git, Invoking the preprocessor}.
 @menu
 * libmbfl-git init::            Library initialisation.
 * libmbfl-git config::          Configuration management.
+* libmbfl-git branch::          Branches management.
 * libmbfl-git program::         Running the program.
 @end menu
 
@@ -10090,6 +10091,25 @@ mbfl_vc_git_config_init_value_struct mbfl_datavar(CONFIG_VALUE) 'marcomaggi.pack
 mbfl_vc_git_config_set_var mbfl_datavar(CONFIG_VALUE) 'my-great-package'
 @end example
 @end defun
+
+@c page
+@node libmbfl-git branch
+@appendixsec Branches management
+
+
+@defun mbfl_vc_git_branch_current_name
+@defunx mbfl_vc_git_branch_current_name_var @var{CURRENT_BRANCH_NAME_RV}
+Print, or store in the result variable referenced by  @var{CURRENT_BRANCH_NAME_RV}, the name of the
+current branch.
+
+@example
+mbfl_local_varref(CURRENT_BRANCH_NAME)
+
+mbfl_vc_git_branch_current_name_var mbfl_datavar(CURRENT_BRANCH_NAME)
+printf '%s' "$CURRENT_BRANCH_NAME"
+@end example
+@end defun
+
 
 @c page
 @node libmbfl-git program
