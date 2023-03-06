@@ -10020,6 +10020,14 @@ Extract a value from GIT's project configuration; print the result to @stdout{} 
 result variable @var{RV}; return the exit status of the @command{git} invocation.
 
 Must be called while the current working directory is under the project source tree.
+
+@example
+mbfl_local_varref(PRJNAME)
+local KEY=marcomaggi.package-name
+local NAME=noname
+
+mbfl_vc_git_config_get_value_var mbfl_datavar(PRJNAME)
+@end example
 @end defun
 
 @c page
