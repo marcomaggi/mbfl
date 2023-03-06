@@ -82,6 +82,10 @@ AC_DEFUN([MBFL_SETUP],
      [mbfl_cv_pathname_libmbfl_passwords],
      [AS_VAR_SET([mbfl_cv_pathname_libmbfl_passwords],[$("${MBFLPP}" --print-libmbfl-passwords)])])
 
+   AC_CACHE_CHECK([pathname of library "libmbfl-git"],
+     [mbfl_cv_pathname_libmbfl_git],
+     [AS_VAR_SET([mbfl_cv_pathname_libmbfl_git],[$("${MBFLPP}" --print-libmbfl-git)])])
+
    AC_SUBST(MBFL_LIBDIR,                ["$mbfl_cv_pathname_libdir"])
    AC_SUBST(MBFL_LIBMBFL,               ["$mbfl_cv_pathname_libmbfl"])
    AC_SUBST(MBFL_LIBMBFL_TESTS,         ["$mbfl_cv_pathname_libmbfl_tests"])
@@ -89,6 +93,7 @@ AC_DEFUN([MBFL_SETUP],
    AC_SUBST(MBFL_LIBMBFL_ARCH,          ["$mbfl_cv_pathname_libmbfl_arch"])
    AC_SUBST(MBFL_LIBMBFL_UTILS,         ["$mbfl_cv_pathname_libmbfl_utils"])
    AC_SUBST(MBFL_LIBMBFL_PASSWORDS,     ["$mbfl_cv_pathname_libmbfl_passwords"])
+   AC_SUBST(MBFL_LIBMBFL_GIT,           ["$mbfl_cv_pathname_libmbfl_git"])
    ])
 
 ### end of file

@@ -69,7 +69,8 @@
 @set LIBMBFLUTILS               libmbfl-utils.sh
 @set LIBMBFLAT                  libmbfl-at.bash
 @set LIBMBFLARCH                libmbfl-arch.bash
-@set LIBMBFLpasswords           libmbfl-passwords.bash
+@set LIBMBFLPASSWORDS           libmbfl-passwords.bash
+@set LIBMBFLGIT                 libmbfl-git.bash
 
 @set LIBMBFLFILE                @file{libmbfl.bash}
 @set LIBMBFLTESTSFILE           @file{libmbfl-tests.bash}
@@ -77,6 +78,7 @@
 @set LIBMBFLATFILE              @file{libmbfl-at.bash}
 @set LIBMBFLARCHFILE            @file{libmbfl-arch.bash}
 @set LIBMBFLPASSWORDSFILE       @file{libmbfl-passwords.bash}
+@set LIBMBFLGITFILE             @file{libmbfl-git.bash}
 
 @c page
 @c ------------------------------------------------------------
@@ -184,6 +186,7 @@ Appendices
 * libmbfl-at::                  Interface to the external program @command{at}.
 * libmbfl-arch::                Archiving and compressing files.
 * libmbfl-passwords::           Generating somewhat random passwords.
+* libmbfl-git::                 Version control with @command{git}.
 * sendmail::                    Examples for sending email.
 * Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
@@ -243,6 +246,10 @@ and compressing files}.
 
 @item @file{libmbfl-passwords.bash}
 Password strings generation; @ref{libmbfl-passwords, Generating somewhat random passwords}.
+
+@item @file{libmbfl-git.bash}
+Basic interface to the version control program @command{git}; @ref{libmbfl-git, Version control with
+@command{git}}.
 @end table
 
 Starting with version 3: this package installs files under directories @strong{without} the version
@@ -334,6 +341,7 @@ MBFL_LIBMBFL_UTILS      = @@MBFL_LIBMBFL_UTILS@@
 MBFL_LIBMBFL_AT         = @@MBFL_LIBMBFL_AT@@
 MBFL_LIBMBFL_ARCH       = @@MBFL_LIBMBFL_ARCH@@
 MBFL_LIBMBFL_PASSWORDS  = @@MBFL_LIBMBFL_PASSWORDS@@
+MBFL_LIBMBFL_GIT        = @@MBFL_LIBMBFL_GIT@@
 @end example
 
 @noindent
@@ -770,6 +778,13 @@ then exit successfully.
 @cindex Preprocessor option @option{--print-libmbfl-passwords}
 Print on @stdout{} the file system absolute pathname of the installed library
 @value{LIBMBFLPASSWORDSFILE}, then exit successfully.
+
+@item --print-libmbfl-git
+@anchor{--print-libmbfl-git}
+@cindex @option{--print-libmbfl-git}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfl-git}
+Print on @stdout{} the file system absolute pathname of the installed library
+@value{LIBMBFLGITFILE}, then exit successfully.
 
 @item --check-version=@var{MINIMUM_REQUIRED_SEMANTIC_VERSION}
 @anchor{--check-version}
@@ -9950,6 +9965,72 @@ Generate a password string; either print it to @stdout{} or store it in the resu
 @MbflDefunPasswordFunc{mbfl_passwords_base32, mbfl_string_is_base32}
 @MbflDefunPasswordFunc{mbfl_passwords_base64, mbfl_string_is_base64}
 @MbflDefunPasswordFunc{mbfl_passwords_printable_ascii_noblank, mbfl_string_is_printable_ascii_noblank}
+
+@c page
+@node libmbfl-git
+@appendix Version control with @command{git}
+
+
+@cindex @value{LIBMBFLGITFILE}, basic interface to @command{git}
+@cindex Basic interface to @command{git}, @value{LIBMBFLGITFILE}
+@cindex Version control with @command{git}
+@cindex @command{git}, version control
+
+
+This section documents a library interfacing with the external program @command{git}; the library
+file is @value{LIBMBFLGITFILE}.  We can load this library at run--time with:
+
+@example
+mbfl_load_library(/path/to/@value{LIBMBFLGITFILE})
+@end example
+
+@noindent
+for details @ref{preprocessor loading, Libraries loading and embedding}.  Notice that the
+preprocessor option @option{--print-libmbfl-git} will print the file pathname of the installed
+library, @ref{--print-libmbfl-git, Invoking the preprocessor}.
+
+GIT is a very popular version control system; find details at:
+
+@center @url{https://git-scm.com/}
+
+@menu
+* libmbfl-git init::            Library initialisation.
+* libmbfl-git config::          Configuration management.
+* libmbfl-git program::         Running the program.
+@end menu
+
+@c page
+@node libmbfl-git init
+@appendixsec Library initialisation
+
+
+@defun mbfl_vc_git_enable
+Declare the intention of using the external program @command{git}.  We must call this function
+before using the facilities of this library.
+@end defun
+
+@c page
+@node libmbfl-git config
+@appendixsec Configuration management
+
+
+@defun mbfl_vc_git_config_get_value @var{KEY} @var{DEFAULT}
+@defunx mbfl_vc_git_config_get_value_var @var{RV} @var{KEY} @var{DEFAULT}
+Extract a value from GIT's project configuration; print the result to @stdout{} or store it in the
+result variable @var{RV}; return the exit status of the @command{git} invocation.
+
+Must be called while the current working directory is under the project source tree.
+@end defun
+
+@c page
+@node libmbfl-git program
+@appendixsec Running the program
+
+
+@defun mbfl_vc_git_program @var{ARG} @dots{}
+Run the program @command{git} with the given arguments; return the exit status of executing
+@command{git}.
+@end defun
 
 @c page
 @node sendmail

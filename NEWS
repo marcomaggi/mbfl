@@ -33,6 +33,7 @@ changes!
      --print-libmbfl-arch
      --print-libmbfl-at
      --print-libmbfl-passwords
+     --print-libmbfl-git
      --check-version
 
 * BACKWARDS INCOMPATIBILITY  The library  files have been  renamed, from
@@ -50,6 +51,8 @@ changes!
 
 * Added  new  library   "libmbfl-passwords.bash"  to  generate  password
   strings.
+
+* Added new library "libmbfl-git.bash" to interface with "git".
 
 * The package configuration allows us to select a hard-coded file system
   pathnames to the GNU Coreutils programs and the executable "sudo".

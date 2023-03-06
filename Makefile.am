@@ -375,6 +375,28 @@ src/lib/libmbfl-passwords.bash: src/lib/libmbfl-passwords.bash.m4 $(MBFL_LIBPASS
 	$(MBFL_LIBPASSWORDS_RUN) $(MBFL_LIBPASSWORDS_FLAGS) <$< >$@
 
 
+#### libmbfl-git generation
+
+EXTRA_DIST			+= src/lib/libmbfl-git.bash.m4
+mbfllibgitdir			= $(MBFL_LIB_INSTDIR)
+mbfllibgit_DATA			= src/lib/libmbfl-git.bash
+CLEANFILES			+=		\
+	src/lib/libmbfl-git.bash		\
+	src/lib/$(am__dirstamp)
+
+MBFL_LIBGIT_ENV			=
+MBFL_LIBGIT_RUN			= $(MBFL_LIBGIT_ENV) $(MBFL_RUN_MBFLPP)
+MBFL_LIBGIT_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
+
+MBFL_LIBGIT_PREREQUISITES	=		\
+	src/lib/$(am__dirstamp)			\
+	$(MBFL_PROGRAM_MBFLPP)			\
+	$(MBFL_PREPROCESSOR)
+
+src/lib/libmbfl-git.bash: src/lib/libmbfl-git.bash.m4 $(MBFL_LIBGIT_PREREQUISITES)
+	$(MBFL_LIBGIT_RUN) $(MBFL_LIBGIT_FLAGS) <$< >$@
+
+
 #### examples
 
 EXTRA_DIST			+=		\

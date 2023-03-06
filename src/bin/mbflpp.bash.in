@@ -5510,6 +5510,8 @@ mbfl_declare_option PRINT_LIBMBFL_AT		no '' print-libmbfl-at    noarg \
 		    'print the full installation pathname of the library "libmbfl-at.bash"'
 mbfl_declare_option PRINT_LIBMBFL_PASSWORDS	no '' print-libmbfl-passwords    noarg \
 		    'print the full installation pathname of the library "libmbfl-passwords.bash"'
+mbfl_declare_option PRINT_LIBMBFL_GIT		no '' print-libmbfl-git    noarg \
+		    'print the full installation pathname of the library "libmbfl-git.bash"'
 
 #page
 #### external programs declarations
