@@ -40,7 +40,7 @@ function mbfl_vc_git_config_init_value_struct () {
     mbfl_optional_parameter(DEFAULT_VALUE,	3)
 
     mbfl_slot_set(CONFIG_VALUE,MBFL_STRUCT_TYPE,'MBFL_VC_GIT_CONFIG_VALUE')
-    mbfl_slot_set(CONFIG_VALUE,DATABASE,	'local')
+    mbfl_slot_set(CONFIG_VALUE,DATABASE,	'unspecified')
     mbfl_slot_set(CONFIG_VALUE,KEY,		"$KEY")
     mbfl_slot_set(CONFIG_VALUE,DEFAULT_VALUE,	"$DEFAULT_VALUE")
     mbfl_slot_set(CONFIG_VALUE,TYPE,		'no-type')
@@ -77,6 +77,7 @@ function mbfl_vc_git_config_parse_config_value_flags () {
 	'global')	FLAGS+=' --global'	;;
 	'system')	FLAGS+=' --system'	;;
 	'worktree')	FLAGS+=' --worktree'	;;
+        'unspecified')				;;
 	*)
 	    mbfl_message_error_printf 'invalid field value "CONFIG_VALUE[DATABASE]": "%s"' mbfl_slot_qref(CONFIG_VALUE,DATABASE)
 	    exit_because_failure
@@ -140,6 +141,16 @@ function mbfl_vc_git_branch_current_name () {
 function mbfl_vc_git_branch_current_name_var () {
     mbfl_mandatory_nameref_parameter(BRANCH_NAME, 1, reference to branch name output variable)
     BRANCH_NAME=$(mbfl_vc_git_branch_current_name)
+}
+
+
+#### commits management
+
+function mbfl_vc_git_commit_all () {
+    mbfl_vc_git_program commit -a
+}
+function mbfl_vc_git_commit_staged () {
+    mbfl_vc_git_program commit
 }
 
 
