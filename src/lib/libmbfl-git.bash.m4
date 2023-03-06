@@ -32,43 +32,102 @@ function mbfl_vc_git_enable () {
 }
 
 
-#### configuration management: getting values
+#### data structures: CONFIG_VALUE
 
-function mbfl_vc_git_config_local_get_value () {
-    mbfl_mandatory_parameter(KEY, 1, key)
-    mbfl_optional_parameter(DEFAULT, 2)
-    mbfl_vc_git_program config --local --default "$DEFAULT" --get "$KEY"
+function mbfl_vc_git_init_config_value () {
+    mbfl_mandatory_nameref_parameter(CONFIG_VALUE, 1, struct array)
+    mbfl_mandatory_parameter(KEY,		2, key string)
+    mbfl_optional_parameter(DEFAULT_VALUE,	3)
+
+    mbfl_slot_set(CONFIG_VALUE,MBFL_STRUCT_TYPE,'MBFL_VC_GIT_CONFIG_VALUE')
+    mbfl_slot_set(CONFIG_VALUE,DATABASE,	'local')
+    mbfl_slot_set(CONFIG_VALUE,KEY,		"$KEY")
+    mbfl_slot_set(CONFIG_VALUE,DEFAULT_VALUE,	"$DEFAULT_VALUE")
+    mbfl_slot_set(CONFIG_VALUE,TYPE,		'no-type')
+    mbfl_slot_set(CONFIG_VALUE,TERMINATOR,	'newline')
 }
 
-function mbfl_vc_git_config_local_get_value_var () {
-    mbfl_mandatory_nameref_parameter(VALUE, 1, result variable)
-    mbfl_mandatory_parameter(KEY, 2, key)
-    mbfl_optional_parameter(DEFAULT, 3)
-    VALUE=$(mbfl_vc_git_config_local_get_value "$KEY" "$DEFAULT")
+function mbfl_vc_git_validate_struct_config_value () {
+    mbfl_mandatory_nameref_parameter(CONFIG_VALUE, 1, reference to config value struct)
+    mbfl_local_varref(FLAGS)
+    # We execute  this in a subshell  so that the  call to "exit_because_failure" are  equivalent to
+    # calls to "return_because_failure".
+    (mbfl_vc_git_config_parse_config_value_flags mbfl_datavar(CONFIG_VALUE) mbfl_datavar(FLAGS))
 }
 
-### ------------------------------------------------------------------------
+function mbfl_vc_git_config_parse_config_value_flags () {
+    mbfl_mandatory_nameref_parameter(CONFIG_VALUE,	1, reference to config value struct)
+    mbfl_mandatory_nameref_parameter(FLAGS,		2, reference to flags variable)
 
-function mbfl_vc_git_config_global_get_value () {
-    mbfl_mandatory_parameter(KEY, 1, key)
-    mbfl_optional_parameter(DEFAULT, 2)
-    mbfl_vc_git_program config --global --default "$DEFAULT" --get "$KEY"
+    if ! mbfl_string_eq('MBFL_VC_GIT_CONFIG_VALUE', mbfl_slot_qref(CONFIG_VALUE,MBFL_STRUCT_TYPE))
+    then
+	mbfl_message_error_printf 'invalid data structure type, expected "MBFL_VC_GIT_CONFIG_VALUE": "%s"' \
+				  mbfl_slot_qref(CONFIG_VALUE,MBFL_STRUCT_TYPE)
+	exit_because_failure
+    fi
+
+    if ! mbfl_string_is_extended_identifier mbfl_slot_qref(CONFIG_VALUE,KEY)
+    then
+	mbfl_message_error_printf 'invalid field value "CONFIG_VALUE[KEY]": "%s"' mbfl_slot_qref(CONFIG_VALUE,KEY)
+	exit_because_failure
+    fi
+
+    case mbfl_slot_qref(CONFIG_VALUE,DATABASE) in
+	'local')	FLAGS+=' --local'	;;
+	'global')	FLAGS+=' --global'	;;
+	'system')	FLAGS+=' --system'	;;
+	'worktree')	FLAGS+=' --worktree'	;;
+	*)
+	    mbfl_message_error_printf 'invalid field value "CONFIG_VALUE[DATABASE]": "%s"' mbfl_slot_qref(CONFIG_VALUE,DATABASE)
+	    exit_because_failure
+    esac
+
+    case mbfl_slot_qref(CONFIG_VALUE,TYPE) in
+	'bool')		FLAGS+=' --type=bool'		;;
+	'int')		FLAGS+=' --type=int'		;;
+	'bool-or-int')	FLAGS+=' --type=bool-or-int'	;;
+	'path')		FLAGS+=' --type=path'		;;
+	'expiry-date')	FLAGS+=' --type=expiry-date'	;;
+	'color')	FLAGS+=' --type=color'		;;
+	'no-type')	FLAGS+=' --no-type'		;;
+	*)
+	    mbfl_message_error_printf 'invalid field value "CONFIG_VALUE[TYPE]": "%s"' mbfl_slot_qref(CONFIG_VALUE,TYPE)
+	    exit_because_failure
+    esac
+
+    case mbfl_slot_qref(CONFIG_VALUE,TERMINATOR) in
+	'null')		FLAGS+=' --null'	;;
+	'newline')				;;
+	*)
+	    mbfl_message_error_printf 'invalid field value "CONFIG_VALUE[TERMINATOR]": "%s"' mbfl_slot_qref(CONFIG_VALUE,TERMINATOR)
+	    exit_because_failure
+    esac
 }
 
-function mbfl_vc_git_config_global_get_value_var () {
-    mbfl_mandatory_nameref_parameter(VALUE, 1, result variable)
-    mbfl_mandatory_parameter(KEY, 2, key)
-    mbfl_optional_parameter(DEFAULT, 3)
-    VALUE=$(mbfl_vc_git_config_global_get_value "$KEY" "$DEFAULT")
-}
-
-### ------------------------------------------------------------------------
+
+#### configuration management
 
 function mbfl_vc_git_config_get_value () {
-    mbfl_vc_git_config_local_get_value "$@"
+    mbfl_mandatory_nameref_parameter(CONFIG_VALUE, 1, reference to config value struct)
+    mbfl_local_varref(FLAGS)
+
+    mbfl_vc_git_config_parse_config_value_flags mbfl_datavar(CONFIG_VALUE) mbfl_datavar(FLAGS)
+    # NOTE The option "--default" and the other options must come BEFORE the option "--get"!!!
+    mbfl_vc_git_program config $FLAGS							\
+			--default	mbfl_slot_qref(CONFIG_VALUE,DEFAULT_VALUE)	\
+			--get		mbfl_slot_qref(CONFIG_VALUE,KEY)
 }
 function mbfl_vc_git_config_get_value_var () {
-    mbfl_vc_git_config_local_get_value_var "$@"
+    mbfl_mandatory_nameref_parameter(VALUE,	1, reference to result variable)
+    mbfl_mandatory_parameter(CONFIG_VALUE,	2, reference to config value struct)
+    VALUE=$(mbfl_vc_git_config_get_value "$CONFIG_VALUE")
+}
+function mbfl_vc_git_config_set_value () {
+    mbfl_mandatory_parameter(CONFIG_VALUE,	1, reference to config value struct)
+    mbfl_mandatory_parameter(NEW_VALUE,		2, new value string)
+
+    mbfl_vc_git_config_parse_config_value_flags mbfl_datavar(CONFIG_VALUE) mbfl_datavar(FLAGS)
+    mbfl_vc_git_program config $FLAGS --add mbfl_slot_qref(CONFIG_VALUE,KEY) "$VALUE"
 }
 
 

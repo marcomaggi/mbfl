@@ -136,7 +136,7 @@
 @c ------------------------------------------------------------
 
 @macro git{}
-@acronym{GIT}
+@command{git}
 @end macro
 
 @c ------------------------------------------------------------
@@ -547,6 +547,11 @@ The function variant @code{_var} stores the result in the variable @var{_RV}, ra
 @macro stderr{}
 @code{stderr}
 @end macro
+
+@macro objtype{TYPE}
+@code{\TYPE\}
+@end macro
+
 
 @c Local Variables:
 @c mode: texinfo
