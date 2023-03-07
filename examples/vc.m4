@@ -1,11 +1,12 @@
 #!
 #! Part of: Marco's Bash Functions Library
-#! Contents: wrapper for GIT
+#! Contents: test script for "libmbfl-git"
 #! Date: Mar  6, 2023
 #!
 #! Abstract
 #!
-#!	This is a wrapper for GIT built on the facilities of MBFL.
+#!	This is a wrapper for GIT built on the  facilities of MBFL.  In theory it can be extented to
+#!	support other version control systems.
 #!
 #! Copyright (C) 2023 Marco Maggi <mrc.mgg@gmail.com>
 #!
@@ -31,11 +32,11 @@ declare -r script_COPYRIGHT_YEARS='2023'
 declare -r script_AUTHOR='Marco Maggi'
 declare -r script_LICENSE=GPL3
 script_USAGE="usage: ${script_PROGNAME} [action] [options]"
-script_DESCRIPTION='User-specific operations.'
+script_DESCRIPTION='Version control facilities built upon the MBFL.'
 script_EXAMPLES="Usage examples:
 \n\
-\t${script_PROGNAME} commit ARG ...
-\t${script_PROGNAME} config repository get KEY"
+\t${script_PROGNAME} git commit ARG ...
+\t${script_PROGNAME} git config local get KEY"
 
 declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl'
 declare -r CDPATH=
@@ -65,36 +66,43 @@ mbfl_location_enable_cleanup_atexit
 
 #### actions tree
 
-mbfl_declare_action_set CONFIG_LOCAL
+mbfl_declare_action_set GIT_CONFIG_LOCAL
 #                   action-set		keyword			subset		identifier	description
-mbfl_declare_action CONFIG_LOCAL	CONFIG_LOCAL_GET	NONE		get		'Get values from repository configuration.'
-mbfl_declare_action CONFIG_LOCAL	CONFIG_LOCAL_SET	NONE		set		'Set values into repository configuration.'
+mbfl_declare_action GIT_CONFIG_LOCAL	GIT_CONFIG_LOCAL_GET	NONE		get		'Get values from repository configuration.'
+mbfl_declare_action GIT_CONFIG_LOCAL	GIT_CONFIG_LOCAL_SET	NONE		set		'Set values into repository configuration.'
 
 ## --------------------------------------------------------------------
 
-mbfl_declare_action_set CONFIG_GLOBAL
+mbfl_declare_action_set GIT_CONFIG_GLOBAL
 #                   action-set		keyword			subset		identifier	description
-mbfl_declare_action CONFIG_GLOBAL	CONFIG_GLOBAL_GET	NONE		get		'Get values from global configuration.'
-mbfl_declare_action CONFIG_GLOBAL	CONFIG_GLOBAL_SET	NONE		set		'Set values into global configuration.'
+mbfl_declare_action GIT_CONFIG_GLOBAL	GIT_CONFIG_GLOBAL_GET	NONE		get		'Get values from global configuration.'
+mbfl_declare_action GIT_CONFIG_GLOBAL	GIT_CONFIG_GLOBAL_SET	NONE		set		'Set values into global configuration.'
 
 ## --------------------------------------------------------------------
 
-mbfl_declare_action_set CONFIG
+mbfl_declare_action_set GIT_CONFIG
+#                   action-set	keyword			subset			identifier	description
+mbfl_declare_action GIT_CONFIG	GIT_CONFIG_LOCAL	GIT_CONFIG_LOCAL	local		'Repository configuration management.'
+mbfl_declare_action GIT_CONFIG	GIT_CONFIG_GLOBAL	GIT_CONFIG_GLOBAL	global		'Global configuration management.'
+
+## --------------------------------------------------------------------
+
+mbfl_declare_action_set GIT_BRANCH_CURRENT
+#                   action-set		keyword			subset		identifier	description
+mbfl_declare_action GIT_BRANCH_CURRENT	GIT_BRANCH_CURRENT_NAME	NONE		name		'Print the name of the current branch.'
+
+## --------------------------------------------------------------------
+
+mbfl_declare_action_set GIT_BRANCH
+#                   action-set	keyword			subset			identifier	description
+mbfl_declare_action GIT_BRANCH	GIT_BRANCH_CURRENT	GIT_BRANCH_CURRENT	current		'Current branch management.'
+
+## --------------------------------------------------------------------
+
+mbfl_declare_action_set GIT
 #                   action-set	keyword		subset		identifier	description
-mbfl_declare_action CONFIG	CONFIG_LOCAL	CONFIG_LOCAL	repository	'Repository configuration management.'
-mbfl_declare_action CONFIG	CONFIG_GLOBAL	CONFIG_GLOBAL	global		'Global configuration management.'
-
-## --------------------------------------------------------------------
-
-mbfl_declare_action_set BRANCH_CURRENT
-#                   action-set		keyword			subset		identifier	description
-mbfl_declare_action BRANCH_CURRENT	BRANCH_CURRENT_NAME	NONE		name		'Print the name of the current branch.'
-
-## --------------------------------------------------------------------
-
-mbfl_declare_action_set BRANCH
-#                   action-set	keyword		subset		identifier	description
-mbfl_declare_action BRANCH	BRANCH_CURRENT	BRANCH_CURRENT	current		'Current branch management.'
+mbfl_declare_action GIT		GIT_CONFIG	GIT_CONFIG	config		'Configuration management.'
+mbfl_declare_action GIT		GIT_BRANCH	GIT_BRANCH	branch		'Branches management.'
 
 ## --------------------------------------------------------------------
 
@@ -107,8 +115,7 @@ mbfl_declare_action HELP	HELP_PRINT_COMPLETIONS_SCRIPT NONE print-completions-sc
 
 mbfl_declare_action_set MAIN
 #                   action-set	keyword		subset		identifier	description
-mbfl_declare_action MAIN	CONFIG		CONFIG		config		'Configuration management.'
-mbfl_declare_action MAIN	BRANCH		BRANCH		branch		'Branches management.'
+mbfl_declare_action MAIN	GIT		GIT		git		'GIT version control system.'
 mbfl_declare_action MAIN	HELP		HELP		help		'Help the user of this script.'
 
 
@@ -126,78 +133,78 @@ function main () {
 
 #### configuration
 
-function script_before_parsing_options_CONFIG () {
+function script_before_parsing_options_GIT_CONFIG () {
     script_USAGE="usage: ${script_PROGNAME} config [action] [options]"
     script_DESCRIPTION='Configuration management.'
     script_EXAMPLES=
 }
-function script_action_CONFIG () {
+function script_action_GIT_CONFIG () {
     mbfl_main_print_usage_screen_brief
 }
 
 ### ------------------------------------------------------------------------
 
-function script_before_parsing_options_CONFIG_LOCAL () {
+function script_before_parsing_options_GIT_CONFIG_LOCAL () {
     script_USAGE="usage: ${script_PROGNAME} config local [action] [options]"
     script_DESCRIPTION='Repository configuration management.'
     script_EXAMPLES=
 }
-function script_action_CONFIG_LOCAL () {
+function script_action_GIT_CONFIG_LOCAL () {
     mbfl_main_print_usage_screen_brief
 }
 
 ### ------------------------------------------------------------------------
 
-function script_before_parsing_options_CONFIG_LOCAL_GET () {
+function script_before_parsing_options_GIT_CONFIG_LOCAL_GET () {
     script_USAGE="usage: ${script_PROGNAME} config local get [options] KEY [DEFAULT_VALUE]"
     script_DESCRIPTION='Get values from repository configuration.'
     script_EXAMPLES=
 }
-function script_action_CONFIG_LOCAL_GET () {
+function script_action_GIT_CONFIG_LOCAL_GET () {
     vc_git_config_get_value 'local'
 }
 
 ### ------------------------------------------------------------------------
 
-function script_before_parsing_options_CONFIG_LOCAL_SET () {
+function script_before_parsing_options_GIT_CONFIG_LOCAL_SET () {
     script_USAGE="usage: ${script_PROGNAME} config local set [options] KEY VALUE"
     script_DESCRIPTION='Set values into repository configuration.'
     script_EXAMPLES=
 }
-function script_action_CONFIG_LOCAL_SET () {
+function script_action_GIT_CONFIG_LOCAL_SET () {
     vc_git_config_set_value 'local'
 }
 
 ### ------------------------------------------------------------------------
 
-function script_before_parsing_options_CONFIG_GLOBAL () {
+function script_before_parsing_options_GIT_CONFIG_GLOBAL () {
     script_USAGE="usage: ${script_PROGNAME} config global [action] [options]"
     script_DESCRIPTION='Global configuration management.'
     script_EXAMPLES=
 }
-function script_action_CONFIG_GLOBAL () {
+function script_action_GIT_CONFIG_GLOBAL () {
     mbfl_main_print_usage_screen_brief
 }
 
 ### ------------------------------------------------------------------------
 
-function script_before_parsing_options_CONFIG_GLOBAL_GET () {
+function script_before_parsing_options_GIT_CONFIG_GLOBAL_GET () {
     script_USAGE="usage: ${script_PROGNAME} config global get [options] KEY [DEFAULT_VALUE]"
     script_DESCRIPTION='Get values from global configuration.'
     script_EXAMPLES=
 }
-function script_action_CONFIG_GLOBAL_GET () {
+function script_action_GIT_CONFIG_GLOBAL_GET () {
     vc_git_config_get_value 'global'
 }
 
 ### ------------------------------------------------------------------------
 
-function script_before_parsing_options_CONFIG_GLOBAL_SET () {
+function script_before_parsing_options_GIT_CONFIG_GLOBAL_SET () {
     script_USAGE="usage: ${script_PROGNAME} config global set [options] KEY VALUE"
     script_DESCRIPTION='Set values into global configuration.'
     script_EXAMPLES=
 }
-function script_action_CONFIG_GLOBAL_SET () {
+function script_action_GIT_CONFIG_GLOBAL_SET () {
     vc_git_config_set_value 'global'
 }
 
@@ -255,34 +262,34 @@ function vc_git_config_parse_database () {
 
 #### branches
 
-function script_before_parsing_options_BRANCH () {
+function script_before_parsing_options_GIT_BRANCH () {
     script_USAGE="usage: ${script_PROGNAME} branch [action] [options]"
     script_DESCRIPTION='Branches management.'
     script_EXAMPLES=
 }
-function script_action_BRANCH () {
+function script_action_GIT_BRANCH () {
     mbfl_main_print_usage_screen_brief
 }
 
 ### ------------------------------------------------------------------------
 
-function script_before_parsing_options_BRANCH_CURRENT () {
+function script_before_parsing_options_GIT_BRANCH_CURRENT () {
     script_USAGE="usage: ${script_PROGNAME} branch current [action] [options]"
     script_DESCRIPTION='Current branch management.'
     script_EXAMPLES=
 }
-function script_action_BRANCH_CURRENT () {
+function script_action_GIT_BRANCH_CURRENT () {
     mbfl_main_print_usage_screen_brief
 }
 
 ### ------------------------------------------------------------------------
 
-function script_before_parsing_options_BRANCH_CURRENT_NAME () {
+function script_before_parsing_options_GIT_BRANCH_CURRENT_NAME () {
     script_USAGE="usage: ${script_PROGNAME} branch current name [options]"
     script_DESCRIPTION='Print the name of the current branch.'
     script_EXAMPLES=
 }
-function script_action_BRANCH_CURRENT_NAME () {
+function script_action_GIT_BRANCH_CURRENT_NAME () {
     mbfl_local_varref(CURRENT_BRANCH_NAME)
 
     mbfl_vc_git_branch_current_name_var mbfl_datavar(CURRENT_BRANCH_NAME)
