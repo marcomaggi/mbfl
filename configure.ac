@@ -78,6 +78,15 @@ AS_VAR_IF(with_sendmail,'yes',
   [AC_MSG_RESULT([no])])
 AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
 
+AC_ARG_WITH([vc],
+  AS_HELP_STRING([--with-vc],[enable installation of vc example script]),
+  [true],[with_vc=no])
+AC_MSG_CHECKING([whether vc script will be installed])
+AS_VAR_IF(with_vc,'yes',
+  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([no])])
+AM_CONDITIONAL([WANT_VC],[test x$with_vc = xyes])
+
 
 #### let's go
 

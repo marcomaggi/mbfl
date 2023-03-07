@@ -11,6 +11,7 @@ prefix=/
     --cache-file=../config.cache		\
     --enable-maintainer-mode                    \
     --prefix="${prefix}"			\
+    --with-vc					\
     "$@"
 
 ### end of file

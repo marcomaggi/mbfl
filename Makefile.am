@@ -406,6 +406,7 @@ EXTRA_DIST			+=		\
 	examples/sendmail-mbfl.sh.m4		\
 	examples/template-actions.sh.m4		\
 	examples/template.sh.m4			\
+	examples/vc.m4				\
 	\
 	examples/sendmail-connector.sh		\
 	examples/sendmail-plain.sh		\
@@ -419,7 +420,8 @@ MBFL_EXAMPLES_BUILT_FILES	=		\
 	examples/pwentries.sh			\
 	examples/sendmail-mbfl.sh		\
 	examples/template-actions.sh		\
-	examples/template.sh
+	examples/template.sh			\
+	examples/vc
 
 noinst_SCRIPTS			= $(MBFL_EXAMPLES_BUILT_FILES)
 
@@ -434,6 +436,7 @@ MBFL_EXAMPLES_FLAGS		+= --libmbfl="$(builddir)/src/lib/libmbfl.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_AT__="$(builddir)/src/lib/libmbfl-at.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_ARCH__="$(builddir)/src/lib/libmbfl-arch.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_UTILS__="$(builddir)/src/lib/libmbfl-utils.bash"
+MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_GIT__="$(builddir)/src/lib/libmbfl-git.bash"
 
 MBFL_EXAMPLES_PREREQUISITES	=		\
 	examples/$(am__dirstamp)		\
@@ -441,6 +444,7 @@ MBFL_EXAMPLES_PREREQUISITES	=		\
 	$(builddir)/src/lib/libmbfl-at.bash	\
 	$(builddir)/src/lib/libmbfl-arch.bash	\
 	$(builddir)/src/lib/libmbfl-utils.bash	\
+	$(builddir)/src/lib/libmbfl-git.bash	\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
@@ -466,12 +470,43 @@ examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 examples/template-actions.sh: examples/template-actions.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
 
+examples/vc: examples/vc.m4 $(MBFL_EXAMPLES_PREREQUISITES)
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+
 if WANT_SENDMAIL
 
 dist_lisp_LISP		= examples/sendmail-mbfl.el
 bin_SCRIPTS		+= examples/sendmail-mbfl.sh
 
 endif
+
+if WANT_VC
+
+bin_SCRIPTS		+= examples/vc
+
+endif
+
+## ------------------------------------------------------------------------
+
+noinst_SCRIPTS			+= src/etc/bash_completions.d/vc.bash
+completions_PREREQUISITES	= src/etc/bash_completions.d/$(am__dirstamp)
+CLEANFILES			+=			\
+	src/etc/bash_completions.d/vc.bash		\
+	src/etc/bash_completions.d/$(am__dirstamp)
+
+if WANT_VC
+completionsdir			= $(sysconfdir)/bash_completion.d
+completions_SCRIPTS		= src/etc/bash_completions.d/vc.bash
+endif
+
+src/etc/bash_completions.d/$(am__dirstamp):
+	@$(MKDIR_P) src/etc/bash_completions.d
+	@: > src/etc/bash_completions.d/$(am__dirstamp)
+
+src/etc/bash_completions.d/vc.bash:					\
+		examples/vc						\
+		$(completions_PREREQUISITES)
+	$(MBFL_PROGRAM_BASH) examples/vc help print-completions-script >$(@)
 
 
 #### interface to "make check"
