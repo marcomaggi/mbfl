@@ -1301,10 +1301,10 @@ local; finally a @dfn{proxy variable} @var{NAME} is defined as alias for the @df
 A use of this macro expands into:
 
 @example
-declare mbfl_a_variable_@var{NAME}
+declare -g mbfl_a_variable_@var{NAME}
 mbfl_variable_alloc mbfl_a_variable_@var{NAME}
-declare @var{DECLARE_OPTIONS} $mbfl_a_variable_@var{NAME}
-declare -n @var{NAME}=$mbfl_a_variable_@var{NAME}
+declare -g @var{DECLARE_OPTIONS} $mbfl_a_variable_@var{NAME}
+declare -g -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 @end example
 
 @noindent
@@ -1455,6 +1455,8 @@ definition of the data variable.  This makes the data variable an associative ar
 @end deffn
 
 
+@c ------------------------------------------------------------------------
+
 @deffn {Preprocessor Macro} mbfl_global_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
 Like @func{mbfl_global_varref} but always include the @code{-a} option to the @command{declare}
 definition of the data variable.  This makes the data variable an indexed array.
@@ -1463,6 +1465,19 @@ definition of the data variable.  This makes the data variable an indexed array.
 
 @deffn {Preprocessor Macro} mbfl_global_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
 Like @func{mbfl_global_varref} but always include the @code{-A} option to the @command{declare}
+definition of the data variable.  This makes the data variable an associative array.
+@end deffn
+
+@c ------------------------------------------------------------------------
+
+@deffn {Preprocessor Macro} mbfl_declare_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
+Like @func{mbfl_declare_varref} but always include the @code{-a} option to the @command{declare}
+definition of the data variable.  This makes the data variable an indexed array.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_declare_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
+Like @func{mbfl_declare_varref} but always include the @code{-A} option to the @command{declare}
 definition of the data variable.  This makes the data variable an associative array.
 @end deffn
 
@@ -1846,13 +1861,24 @@ evaluating to the number of pairs in the array variable @var{ARRAYNAME}.
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_slots_values (@var{ARRAYNAME}))
-@deffnx {Preprocessor Macro} mbfl_slots_qvalues (@var{ARRAYNAME}))
+@deffn {Preprocessor Macro} mbfl_slots_values (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_slots_qvalues (@var{ARRAYNAME})
 Expand to a ``list'' of array values, respectively:
 
 @example
  mbfl_slots_values(@var{ARRAYNAME})     @expansion{}  $@{@var{ARRAYNAME}[@@]@}
 mbfl_slots_qvalues(@var{ARRAYNAME})     @expansion{} "$@{@var{ARRAYNAME}[@@]@}"
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_slots_keys (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_slots_qkeys (@var{ARRAYNAME})
+Expand to a ``list'' of array keys, respectively:
+
+@example
+ mbfl_slots_keys(@var{ARRAYNAME})       @expansion{}  $@{!@var{ARRAYNAME}[@@]@}
+mbfl_slots_qkeys(@var{ARRAYNAME})       @expansion{} "$@{!@var{ARRAYNAME}[@@]@}"
 @end example
 @end deffn
 
@@ -2744,6 +2770,35 @@ mbfl_slot_ref(DST, a)   @result{} 1
 mbfl_slot_ref(DST, b)   @result{} 2
 mbfl_slot_ref(DST, c)   @result{} 3
 @end example
+@end defun
+
+
+@defun mbfl_array_contains @var{ARRY_VAR} @var{KEY}
+Return successfully if @var{KEY} is set in the array referenced by @var{ARRAY_VAR}.
+
+@example
+local -a ARRY=([0]=a [1]=b [2]=c)
+
+mbfl_array_contains    ARRY 0 &&
+   mbfl_array_contains ARRY 1 &&
+   mbfl_array_contains ARRY 2 &&
+   ! mbfl_array_contains ARRY 3
+@end example
+@end defun
+
+
+@defun mbfl_array_dump @var{ARRY_VAR}
+@defunx mbfl_array_dump @var{ARRY_VAR} @var{NAME}
+For debugging purposes.  The argument @var{ARRY_VAR} must be the name of an array variable.  For
+each key in the array print to @stderr{} a string of the form:
+
+@example
+@var{NAME}[@var{KEY}]="@var{VALUE}"
+@end example
+
+@noindent
+where @var{KEY} is a key in the array and @var{VALUE} is its value.  If the optional argument
+@var{NAME} is not present: it defaults to @var{ARRY_VAR}.
 @end defun
 
 @c page

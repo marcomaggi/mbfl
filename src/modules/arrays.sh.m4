@@ -10,20 +10,17 @@
 #
 # Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
-# This is free software; you  can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  3.0 of the License,  or (at
-# your option) any later version.
+# This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
+# General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
+# License, or (at your option) any later version.
 #
-# This library  is distributed in the  hope that it will  be useful, but
-# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# This library is distributed in the hope that  it will be useful, but WITHOUT ANY WARRANTY; without
+# even the  implied warranty of MERCHANTABILITY  or FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU
 # Lesser General Public License for more details.
 #
-# You  should have  received a  copy of  the GNU  Lesser  General Public
-# License along  with this library; if  not, write to  the Free Software
-# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA.
+# You should have received a copy of the  GNU Lesser General Public License along with this library;
+# if not,  write to  the Free  Software Foundation,  Inc., 59  Temple Place,  Suite 330,  Boston, MA
+# 02111-1307 USA.
 #
 
 
@@ -56,17 +53,40 @@ function mbfl_array_length () {
     echo mbfl_slots_number(mbfl_ARRAY_VARREF)
 }
 
+function mbfl_array_contains () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRAY_VARREF, 1, array variable name)
+    mbfl_mandatory_parameter(mbfl_KEY, 2, the key to search for)
+    test -v mbfl_slot_spec(mbfl_ARRAY_VARREF, $mbfl_KEY)
+}
+
 
 #### array manipulation
 
 function mbfl_array_copy () {
-    mbfl_mandatory_nameref_parameter(DST, 1, destination array variable)
-    mbfl_mandatory_nameref_parameter(SRC, 2, source array variable)
+    mbfl_mandatory_nameref_parameter(mbfl_DST, 1, destination array variable)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC, 2, source array variable)
 
-    local KEY
-    for KEY in "${!SRC[@]}"
-    do mbfl_slot_set(DST, "$KEY", mbfl_slot_ref(SRC, "$KEY"))
+    local mbfl_KEY
+    for mbfl_KEY in "${!mbfl_SRC[@]}"
+    do mbfl_slot_set(mbfl_DST, "$mbfl_KEY", mbfl_slot_ref(mbfl_SRC, "$mbfl_KEY"))
     done
+}
+
+
+#### debugging
+
+function mbfl_array_dump () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to array variable)
+    mbfl_optional_parameter(mbfl_NAME,		2)
+    if mbfl_string_empty(mbfl_NAME)
+    then mbfl_NAME=$1
+    fi
+    local mbfl_KEY
+    {
+	for mbfl_KEY in mbfl_slots_qkeys(mbfl_ARRY)
+	do printf '%s[%s]="%s"\n' "$mbfl_NAME" "$mbfl_KEY" mbfl_slot_qref(mbfl_ARRY,"$mbfl_KEY")
+	done
+    } >&2
 }
 
 

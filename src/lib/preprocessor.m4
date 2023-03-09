@@ -142,10 +142,10 @@ m4_define([[[mbfl_global_varref]]],[[[m4_dnl
 ]]])
 
 m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
-  declare mbfl_a_variable_$1
+  declare -g mbfl_a_variable_$1
   mbfl_variable_alloc mbfl_a_variable_$1
   declare -g $3 $[[[mbfl_a_variable_$1]]]
-  declare -n $1=$[[[]]]mbfl_a_variable_$1
+  declare -g -n $1=$[[[]]]mbfl_a_variable_$1
   m4_ifelse($2,,,$1=$2)
 ]]])
 
@@ -153,8 +153,8 @@ m4_define([[[mbfl_local_index_array_varref]]],[[[mbfl_local_varref($1,$2,-a $3)]
 m4_define([[[mbfl_local_assoc_array_varref]]],[[[mbfl_local_varref($1,$2,-A $3)]]])
 m4_define([[[mbfl_global_index_array_varref]]],[[[mbfl_global_varref($1,$2,-a $3)]]])
 m4_define([[[mbfl_global_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3)]]])
-m4_define([[[mbfl_declare_index_array_varref]]],[[[mbfl_global_varref($1,$2,-a $3)]]])
-m4_define([[[mbfl_declare_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3)]]])
+m4_define([[[mbfl_declare_index_array_varref]]],[[[mbfl_declare_varref($1,$2,-a $3)]]])
+m4_define([[[mbfl_declare_assoc_array_varref]]],[[[mbfl_declare_varref($1,$2,-A $3)]]])
 
 m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
 m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar($1)]]])
@@ -187,13 +187,11 @@ m4_define([[[mbfl_slot_value_len]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]
 ${MBFL_SHARP()$1[$2]}m4_dnl
 m4_changecom([[[MBFL_SHARP()]]])]]])
 
-m4_define([[[mbfl_slots_values]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-${$1[@]}m4_dnl
-m4_changecom([[[MBFL_SHARP()]]])]]])
+m4_define([[[mbfl_slots_values]]],  [[[${$1[@]}]]])
+m4_define([[[mbfl_slots_qvalues]]],[[["${$1[@]}"]]])
 
-m4_define([[[mbfl_slots_qvalues]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-"${$1[@]}"m4_dnl
-m4_changecom([[[MBFL_SHARP()]]])]]])
+m4_define([[[mbfl_slots_keys]]],  [[[${!$1[@]}]]])
+m4_define([[[mbfl_slots_qkeys]]],[[["${!$1[@]}"]]])
 
 
 m4_dnl string macros
