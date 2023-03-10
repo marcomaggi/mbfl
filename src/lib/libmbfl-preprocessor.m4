@@ -81,8 +81,8 @@ dnl Declare a proxy variable NAME aliasing the data variable whose value
 dnl is the result of evaluating DATA_VARNAME_EXPR.
 dnl
 m4_define([[[mbfl_local_nameref]]],[[[m4_dnl
-  local mbfl_a_variable_$1=$2
-  local -n $1=$[[[]]]mbfl_a_variable_$1
+  local mbfl_a_variable_$1=$2; m4_dnl
+  local -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
 ]]])
 
 m4_dnl Synopsis:
@@ -106,11 +106,11 @@ m4_dnl attributes    LOCAL_OPTIONS.      A    further     local    variable
 m4_dnl mbfl_a_variable_VARNAME holds the name of the data variable.
 m4_dnl
 m4_define([[[mbfl_local_varref]]],[[[m4_dnl
-  local mbfl_a_variable_$1
-  mbfl_variable_alloc mbfl_a_variable_$1
-  local $3 $[[[mbfl_a_variable_$1]]]
-  local -n $1=$[[[]]]mbfl_a_variable_$1
-  m4_ifelse($2,,,$1=$2)
+  local mbfl_a_variable_$1; m4_dnl
+  mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
+  local $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
+  local -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
+  m4_ifelse($2,,,$1=$2;)m4_dnl
 ]]])
 
 m4_dnl Synopsis:
@@ -134,19 +134,19 @@ m4_dnl attributes    DECLARE_OPTIONS.     A   further    global    variable
 m4_dnl mbfl_a_variable_VARNAME holds the name of the data variable.
 m4_dnl
 m4_define([[[mbfl_global_varref]]],[[[m4_dnl
-  local mbfl_a_variable_$1
-  mbfl_variable_alloc mbfl_a_variable_$1
-  declare -g $3 $[[[mbfl_a_variable_$1]]]
-  local   -n $1=$[[[]]]mbfl_a_variable_$1
-  m4_ifelse($2,,,$1=$2)
+  local mbfl_a_variable_$1; m4_dnl
+  mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
+  declare -g $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
+  local   -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
+  m4_ifelse($2,,,$1=$2;)m4_dnl
 ]]])
 
 m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
-  declare -g mbfl_a_variable_$1
-  mbfl_variable_alloc mbfl_a_variable_$1
-  declare -g $3 $[[[mbfl_a_variable_$1]]]
-  declare -g -n $1=$[[[]]]mbfl_a_variable_$1
-  m4_ifelse($2,,,$1=$2)
+  declare -g mbfl_a_variable_$1; m4_dnl
+  mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
+  declare -g $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
+  declare -g -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
+  m4_ifelse($2,,,$1=$2;)m4_dnl
 ]]])
 
 m4_define([[[mbfl_local_index_array_varref]]],[[[mbfl_local_varref($1,$2,-a $3)]]])
