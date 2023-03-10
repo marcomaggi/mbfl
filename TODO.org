@@ -1,24 +1,13 @@
 ﻿-*- coding: utf-8-with-signature-unix; -*-
 
-* DONE Renaming libraries
-** DONE Rename "libmbfl.sh" to "libmbfl.bash".
-** DONE Rename "libmbfltest.sh" to "libmbfltest.bash".
-** DONE Rename "libmbflutils.sh" to "libmbflutils.bash".
-* DONE Libraries refactorisation
-** DONE Split the at interface into its own separate library, "libmbfl-at.bash".
-** DONE Split the archive and compress modules into their own separate library, "libmbfl-arch.bash".
-* TODO Package Configuration
-** TODO Change procedure to select external command line programs
-   Make it possible to select  program from the PATH if no specific command  line option is use when
-   executing "configure".
-
-* TODO Documentation
-** DONE Review preprocessor documentation
-** DONE Review testing documentation
-** TODO Document the library "libmbflutils".
-** DONE Document the library "libmbfl-at".
-** DONE Document the library "libmbfl-arch".
+* TODO Library libmbfl-git
+** TODO Interface more commands.
+* TODO Library libmbfl-utils
+** TODO Finish implementation of file/directory installation/normalisation.
+** TODO Document the library.
 * Local Variables
+
+#+STARTUP: fold
 
 # Local Variables:
 # ispell-local-dictionary: "en_GB-ise-w_accents"
