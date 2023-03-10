@@ -611,7 +611,7 @@ The @mbfl{} script preprocessor is a command line program named @value{PROSCRIPT
 remove comments, blank lines, blank characters at the beginning of lines, and it can expand macros.
 
 The macro preprocessing is performed by the @gnu{} @mfour{} program, using a library of macros
-called @file{preprocessor.m4} which is installed on the system with the @mbfl{} package.
+called @file{libmbfl-preprocessor.m4} which is installed on the system with the @mbfl{} package.
 
 While some features of @value{PACKAGE} are available without: use of the preprocessor is strongly
 recommended.
@@ -717,7 +717,7 @@ the preselected @command{bash} program, @ref{mbfl_PROGRAM_BASH, Preselected prog
 @anchor{--no-prepro}
 @cindex @option{--no-prepro}, preprocessor option
 @cindex Preprocessor option @option{--no-prepro}
-Do not load the installed preprocessor's macros library @file{preprocessor.m4}.  If we use this
+Do not load the installed preprocessor's macros library @file{libmbfl-preprocessor.m4}.  If we use this
 option: we are meant to use the option @option{--library} to load a replacement macros library from
 a known location.
 
@@ -2014,7 +2014,7 @@ by @value{PACKAGE} are under this directory, so we can compose pathnames as foll
 
 @example
 printf -v LIBMBFL_PATHNAME '%s/@value{LIBMBFL}'      "$mbfl_INSTDIR_DATADIR"
-printf -v PREPRO_PATHNAME  '%s/preprocessor.m4' "$mbfl_INSTDIR_DATADIR"
+printf -v PREPRO_PATHNAME  '%s/libmbfl-preprocessor.m4' "$mbfl_INSTDIR_DATADIR"
 @end example
 @end defvar
 

@@ -5636,7 +5636,7 @@ function script_option_update_check_version () {
 
 function main () {
     local M4_FLAGS='--prefix-builtins'
-    local PREPROCESSOR=${pkgdatadir}/preprocessor.m4
+    local PREPROCESSOR=${pkgdatadir}/libmbfl-preprocessor.m4
 
     M4_FLAGS+=" ${M4_INCLUDE_OPTIONS} ${M4_SYMBOL_DEFINITIONS}"
     if mbfl_string_equal "$script_option_NO_PREPROCESSOR" 'no' && mbfl_file_is_readable "$PREPROCESSOR"

@@ -16,6 +16,10 @@ changes!
   installed under directories *without* the version part.  No pkg-config
   module is installed.
 
+* BACKWARDS INCOMPATIBILITY The preprocessor file has been renamed:
+
+     preprocessor.m4 -> libmbfl-preprocessor.m4
+
 * BACKWARDS INCOMPATIBILITY  The testing  script "mbfltest.sh"  has been
   removed from the package.
 

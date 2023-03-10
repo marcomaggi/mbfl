@@ -35,7 +35,7 @@ MBFL_PROGRAM_BASH	= @MBFL_PROGRAM_BASH@
 MBFL_PROGRAM_MBFLPP	= $(builddir)/src/bin/mbflpp.bash
 MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 
-MBFL_PREPROCESSOR	= $(srcdir)/src/lib/preprocessor.m4
+MBFL_PREPROCESSOR	= $(srcdir)/src/lib/libmbfl-preprocessor.m4
 
 # These flags  are always  used on  the command  line of  "mbflpp.bash".  We  can set
 # "MBFLPPFLAGS" on the command line of "make".
@@ -44,7 +44,7 @@ MBFLPP_GENERAL_FLAGS	= --no-prepro --library=$(MBFL_PREPROCESSOR) $(MBFLPPFLAGS)
 
 EXTRA_DIST		+=			\
 	src/backup/libmbfl.bash			\
-	src/backup/preprocessor.m4
+	src/backup/libmbfl-preprocessor.m4
 
 
 #### meta infrastructure
