@@ -1,5 +1,27 @@
 ﻿-*- coding: utf-8-with-signature-unix; -*-
 
+* TODO Libraries infrastructure
+** TODO Implement some form of library versioning.
+
+   One way of doing it would be to have file names like:
+
+     libmbfl-git-3.0.0.bash
+
+   that is with a pattern like:
+
+     LIBNAME-SEMVER.bash
+
+   where LIBNAME has  the form "libmbfl-STEM" and  SEMVER is a full  semantic version specification,
+   without the leading "v".
+
+** TODO Implement some form of library inspection facility.
+
+   One way of doing it would be to have the preprocessed file start with a line like:
+
+     MBFL_LIBRARY_SPEC=([NAME]="libmbfl-git" [SEMVER]="3.0.0" ...)
+
+   the single first like can be easily extracted from the file and parsed like an associative array.
+
 * TODO Library libmbfl-git
 ** TODO Interface more commands.
 * TODO Library libmbfl-utils
