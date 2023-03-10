@@ -135,55 +135,55 @@ MAINTAINERCLEANFILES		+= src/bin/mbflpp.bash
 #### libmbfl modules generation
 
 EXTRA_DIST			+=		\
-	src/modules/actions.sh.m4		\
-	src/modules/arrays.sh.m4		\
-	src/modules/atexit.sh.m4		\
-	src/modules/base.sh.m4			\
-	src/modules/dialog.sh.m4		\
-	src/modules/encode.sh.m4		\
-	src/modules/fd.sh.m4			\
-	src/modules/file.sh.m4			\
-	src/modules/getopts.sh.m4		\
-	src/modules/locations.sh.m4		\
-	src/modules/main.sh.m4			\
-	src/modules/math.sh.m4			\
-	src/modules/message.sh.m4		\
-	src/modules/process.sh.m4		\
-	src/modules/program.sh.m4		\
-	src/modules/semver.sh.m4		\
-	src/modules/shell.sh.m4			\
-	src/modules/signal.sh.m4		\
-	src/modules/string.sh.m4		\
-	src/modules/system.sh.m4		\
-	src/modules/times-and-dates.sh.m4	\
-	src/modules/variable.sh.m4
+	src/modules/actions.bash.m4		\
+	src/modules/arrays.bash.m4		\
+	src/modules/atexit.bash.m4		\
+	src/modules/base.bash.m4		\
+	src/modules/dialog.bash.m4		\
+	src/modules/encode.bash.m4		\
+	src/modules/fd.bash.m4			\
+	src/modules/file.bash.m4		\
+	src/modules/getopts.bash.m4		\
+	src/modules/locations.bash.m4		\
+	src/modules/main.bash.m4		\
+	src/modules/math.bash.m4		\
+	src/modules/message.bash.m4		\
+	src/modules/process.bash.m4		\
+	src/modules/program.bash.m4		\
+	src/modules/semver.bash.m4		\
+	src/modules/shell.bash.m4		\
+	src/modules/signal.bash.m4		\
+	src/modules/string.bash.m4		\
+	src/modules/system.bash.m4		\
+	src/modules/times-and-dates.bash.m4	\
+	src/modules/variable.bash.m4
 
 # This  is *not*  the  order  in which  modules  are  included in  the
-# library; that order is established in the file "libmbl.sh.m4"!
+# library; that order is established in the file "libmbfl.bash.m4"!
 MBFL_LIB_MODULES		=		\
-	src/modules/actions.sh			\
-	src/modules/arrays.sh			\
-	src/modules/atexit.sh			\
-	src/modules/base.sh			\
-	src/modules/config-values.sh		\
-	src/modules/dialog.sh			\
-	src/modules/encode.sh			\
-	src/modules/fd.sh			\
-	src/modules/file.sh			\
-	src/modules/getopts.sh			\
-	src/modules/locations.sh		\
-	src/modules/main.sh			\
-	src/modules/math.sh			\
-	src/modules/message.sh			\
-	src/modules/process.sh			\
-	src/modules/program.sh			\
-	src/modules/semver.sh			\
-	src/modules/shell.sh			\
-	src/modules/signal.sh			\
-	src/modules/string.sh			\
-	src/modules/system.sh			\
-	src/modules/times-and-dates.sh		\
-	src/modules/variable.sh
+	src/modules/actions.bash		\
+	src/modules/arrays.bash			\
+	src/modules/atexit.bash			\
+	src/modules/base.bash			\
+	src/modules/config-values.bash		\
+	src/modules/dialog.bash			\
+	src/modules/encode.bash			\
+	src/modules/fd.bash			\
+	src/modules/file.bash			\
+	src/modules/getopts.bash		\
+	src/modules/locations.bash		\
+	src/modules/main.bash			\
+	src/modules/math.bash			\
+	src/modules/message.bash		\
+	src/modules/process.bash		\
+	src/modules/program.bash		\
+	src/modules/semver.bash			\
+	src/modules/shell.bash			\
+	src/modules/signal.bash			\
+	src/modules/string.bash			\
+	src/modules/system.bash			\
+	src/modules/times-and-dates.bash	\
+	src/modules/variable.bash
 
 CLEANFILES			+=		\
 	$(MBFL_LIB_MODULES)			\
@@ -204,7 +204,7 @@ src/modules/$(am__dirstamp):
 	@$(MKDIR_P) src/modules
 	@: > src/modules/$(am__dirstamp)
 
-src/modules/%.sh: src/modules/%.sh.m4 $(MBFL_MODULES_PREREQUISITES)
+src/modules/%.bash: src/modules/%.bash.m4 $(MBFL_MODULES_PREREQUISITES)
 	$(MBFL_MODULES_RUN) $(MBFL_MODULES_FLAGS) <$< >$@
 
 

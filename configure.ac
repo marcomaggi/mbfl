@@ -92,7 +92,7 @@ AM_CONDITIONAL([WANT_VC],[test x$with_vc = xyes])
 
 AC_CONFIG_FILES([Makefile]
   [src/bin/mbflpp.bash]
-  [src/modules/config-values.sh.m4])
+  [src/modules/config-values.bash.m4])
 MMUX_OUTPUT
 AC_OUTPUT
 
