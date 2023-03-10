@@ -46,8 +46,8 @@ m4_define([[[mbfl_optional_parameter]]],[[[local $4 $1="${$2:-$3}"]]])
 m4_define([[[mbfl_optional_integer_parameter]]],[[[mbfl_optional_parameter($1,$2,$3,-i)]]])
 
 m4_define([[[mbfl_mandatory_nameref_parameter]]],[[[m4_dnl
-local mbfl_a_variable_$1=${$2:?"missing $3 parameter to '$FUNCNAME'"}
-local -n $1=$[[[]]]mbfl_a_variable_$1
+local mbfl_a_variable_$1=${$2:?"missing $3 parameter to '$FUNCNAME'"}; m4_dnl
+local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
 ]]])
 
 
@@ -55,7 +55,10 @@ m4_dnl script's command line arguments handling
 
 m4_define([[[mbfl_command_line_argument]]],[[[local $3 $1="${ARGV[$2]}"]]])
 
-m4_define([[[mbfl_extract_command_line_argument]]],[[[mbfl_command_line_argument($1,$2,$3); mbfl_variable_unset(ARGV[$2])]]])
+m4_define([[[mbfl_extract_command_line_argument]]],[[[m4_dnl
+mbfl_command_line_argument($1,$2,$3); m4_dnl
+mbfl_variable_unset(ARGV[$2]) m4_dnl
+]]])
 
 
 m4_dnl library loading and embedding
@@ -82,7 +85,7 @@ dnl is the result of evaluating DATA_VARNAME_EXPR.
 dnl
 m4_define([[[mbfl_local_nameref]]],[[[m4_dnl
   local mbfl_a_variable_$1=$2; m4_dnl
-  local -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
+  local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
 ]]])
 
 m4_dnl Synopsis:
@@ -109,8 +112,8 @@ m4_define([[[mbfl_local_varref]]],[[[m4_dnl
   local mbfl_a_variable_$1; m4_dnl
   mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
   local $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
-  local -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
-  m4_ifelse($2,,,$1=$2;)m4_dnl
+  local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
+  m4_ifelse($2,,,; $1=$2)m4_dnl
 ]]])
 
 m4_dnl Synopsis:
@@ -137,16 +140,16 @@ m4_define([[[mbfl_global_varref]]],[[[m4_dnl
   local mbfl_a_variable_$1; m4_dnl
   mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
   declare -g $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
-  local   -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
-  m4_ifelse($2,,,$1=$2;)m4_dnl
+  local   -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
+  m4_ifelse($2,,,; $1=$2)m4_dnl
 ]]])
 
 m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
   declare -g mbfl_a_variable_$1; m4_dnl
   mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
   declare -g $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
-  declare -g -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
-  m4_ifelse($2,,,$1=$2;)m4_dnl
+  declare -g -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
+  m4_ifelse($2,,,; $1=$2)m4_dnl
 ]]])
 
 m4_define([[[mbfl_local_index_array_varref]]],[[[mbfl_local_varref($1,$2,-a $3)]]])
@@ -160,7 +163,12 @@ m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
 m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar($1)]]])
 
 m4_dnl Keep this expansion a single line with semicolons!
-m4_define([[[mbfl_unset_varref]]],[[[unset -v $mbfl_a_variable_$1; unset -v mbfl_a_variable_$1; unset -v -n $1; unset -v $1;]]])
+m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
+  unset -v $mbfl_a_variable_$1; m4_dnl
+  unset -v  mbfl_a_variable_$1; m4_dnl
+  unset -v -n $1; m4_dnl
+  unset -v    $1 m4_dnl
+]]])
 
 m4_define([[[mbfl_variable_unset]]],[[[unset -v $1]]])
 m4_define([[[mbfl_unset_variable]]],[[[unset -v $1]]])
