@@ -33,6 +33,7 @@
 
 #### MBFL's related options and variables
 
+declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.7
 declare -r script_PROGNAME=template.sh
 declare -r script_VERSION=1.0
 declare -r script_COPYRIGHT_YEARS='2004, 2005, 2009, 2012, 2014, 2018, 2020'
@@ -43,11 +44,6 @@ declare -r script_DESCRIPTION='This is an example script.'
 declare -r script_EXAMPLES="Usage examples:
 \n\
 \t${script_PROGNAME} --alpha"
-
-# This  variable   declaration  is   just  a   comment,  because  below   we  define   the  function
-# "script_check_mbfl_semantic_version()", which  is actually  used to  validate the  MBFL's required
-# version.
-declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.7
 
 declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
 
