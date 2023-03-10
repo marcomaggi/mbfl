@@ -37,6 +37,7 @@ declare -r mbfl_PROGRAM_CHGRP='/bin/chgrp'
 declare -r mbfl_PROGRAM_CHOWN='/bin/chown'
 declare -r mbfl_PROGRAM_CP='/bin/cp'
 declare -r mbfl_PROGRAM_DATE='/bin/date'
+declare -r mbfl_PROGRAM_GAWK='/bin/gawk'
 declare -r mbfl_PROGRAM_ID='/bin/id'
 declare -r mbfl_PROGRAM_INSTALL='/bin/install'
 declare -r mbfl_PROGRAM_LN='/bin/ln'
@@ -777,7 +778,7 @@ declare -r MBFL_ASCII_RANGE_MIXED_CASE_ALNUM="${MBFL_ASCII_RANGE_LOWER_CASE_ALPH
 declare -r MBFL_ASCII_RANGE_MIXED_CASE_BASE16='abcdefABCDEF0123456789'
 declare -r MBFL_ASCII_RANGE_BASE32="${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}234567"
 declare -r MBFL_ASCII_RANGE_BASE64="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}${MBFL_ASCII_RANGE_DIGITS}+/"
-declare -r MBFL_ASCII_RANGE_ASCII_NOBLANK="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}${MBFL_ASCII_RANGE_DIGITS}${MBFL_ASCII_RANGE_ASCII_SYMBOLS}"
+declare -r MBFL_ASCII_RANGE_PRINTABLE_ASCII_NOBLANK="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}${MBFL_ASCII_RANGE_DIGITS}${MBFL_ASCII_RANGE_ASCII_SYMBOLS}"
 fi
 function mbfl_string_is_quoted_char () {
 local  STRING=${1:?"missing string parameter to '$FUNCNAME'"}
@@ -1246,13 +1247,13 @@ local  $mbfl_a_variable_RV
 local -n RV=$mbfl_a_variable_RV
 mbfl_string_first_var $mbfl_a_variable_RV "$MBFL_ASCII_RANGE_BASE64" "$CHAR"
 }
-function mbfl_string_is_ascii_noblank_char () {
+function mbfl_string_is_printable_ascii_noblank_char () {
 local  CHAR=${1:?"missing char parameter to '$FUNCNAME'"}
 local mbfl_a_variable_RV
 mbfl_variable_alloc mbfl_a_variable_RV
 local  $mbfl_a_variable_RV
 local -n RV=$mbfl_a_variable_RV
-mbfl_string_first_var $mbfl_a_variable_RV "$MBFL_ASCII_RANGE_ASCII_NOBLANK" "$CHAR"
+mbfl_string_first_var $mbfl_a_variable_RV "$MBFL_ASCII_RANGE_PRINTABLE_ASCII_NOBLANK" "$CHAR"
 }
 function mbfl_p_string_is () {
 local  CHAR_PRED_FUNC=${1:?"missing char predicate func parameter to '$FUNCNAME'"}
@@ -1292,7 +1293,7 @@ function mbfl_string_is_mixed_case_alnum	() { mbfl_p_string_is mbfl_string_is_mi
 function mbfl_string_is_mixed_case_base16	() { mbfl_p_string_is mbfl_string_is_mixed_case_base16_char "$@"; }
 function mbfl_string_is_base32			() { mbfl_p_string_is mbfl_string_is_base32_char "$@"; }
 function mbfl_string_is_base64			() { mbfl_p_string_is mbfl_string_is_base64_char "$@"; }
-function mbfl_string_is_ascii_noblank		() { mbfl_p_string_is mbfl_string_is_ascii_noblank_char "$@"; }
+function mbfl_string_is_printable_ascii_noblank	() { mbfl_p_string_is mbfl_string_is_printable_ascii_noblank_char "$@"; }
 function mbfl_string_is_name () {
 local STRING=$1
 mbfl_string_is_not_empty "$STRING" && \
@@ -4509,6 +4510,22 @@ then echo "$RV"
 else return $?
 fi
 }
+function mbfl_math_expr () {
+local  EXPR_STRING=${1:?"missing mathematical expression parameter to '$FUNCNAME'"}
+local GAWK_EXPR RESULT
+printf -v GAWK_EXPR 'BEGIN { print %s }' "$EXPR_STRING"
+mbfl_program_exec "$mbfl_PROGRAM_GAWK" "$GAWK_EXPR"
+}
+function mbfl_math_expr_var () {
+local mbfl_a_variable_RV=${1:?"missing result variable parameter to '$FUNCNAME'"}
+local -n RV=$mbfl_a_variable_RV
+local  EXPR_STRING=${2:?"missing mathematical expression parameter to '$FUNCNAME'"}
+local RESULT
+if RESULT=$(mbfl_math_expr "$EXPR_STRING")
+then RV=$RESULT
+else return $?
+fi
+}
 function mbfl_system_enable_programs () {
 :
 }
@@ -5105,15 +5122,35 @@ local mbfl_a_variable_mbfl_ARRAY_VARREF=${1:?"missing array variable name parame
 local -n mbfl_ARRAY_VARREF=$mbfl_a_variable_mbfl_ARRAY_VARREF
 echo ${#mbfl_ARRAY_VARREF[@]}
 }
+function mbfl_array_contains () {
+local mbfl_a_variable_mbfl_ARRAY_VARREF=${1:?"missing array variable name parameter to '$FUNCNAME'"}
+local -n mbfl_ARRAY_VARREF=$mbfl_a_variable_mbfl_ARRAY_VARREF
+local  mbfl_KEY=${2:?"missing the key to search for parameter to '$FUNCNAME'"}
+test -v mbfl_ARRAY_VARREF[$mbfl_KEY]
+}
 function mbfl_array_copy () {
-local mbfl_a_variable_DST=${1:?"missing destination array variable parameter to '$FUNCNAME'"}
-local -n DST=$mbfl_a_variable_DST
-local mbfl_a_variable_SRC=${2:?"missing source array variable parameter to '$FUNCNAME'"}
-local -n SRC=$mbfl_a_variable_SRC
-local KEY
-for KEY in "${!SRC[@]}"
-do DST["$KEY"]=${SRC["$KEY"]}
+local mbfl_a_variable_mbfl_DST=${1:?"missing destination array variable parameter to '$FUNCNAME'"}
+local -n mbfl_DST=$mbfl_a_variable_mbfl_DST
+local mbfl_a_variable_mbfl_SRC=${2:?"missing source array variable parameter to '$FUNCNAME'"}
+local -n mbfl_SRC=$mbfl_a_variable_mbfl_SRC
+local mbfl_KEY
+for mbfl_KEY in "${!mbfl_SRC[@]}"
+do mbfl_DST["$mbfl_KEY"]=${mbfl_SRC["$mbfl_KEY"]}
 done
+}
+function mbfl_array_dump () {
+local mbfl_a_variable_mbfl_ARRY=${1:?"missing reference to array variable parameter to '$FUNCNAME'"}
+local -n mbfl_ARRY=$mbfl_a_variable_mbfl_ARRY
+local  mbfl_NAME="${2:-}"
+if { test ${#mbfl_NAME} -eq 0; }
+then mbfl_NAME=$1
+fi
+local mbfl_KEY
+{
+for mbfl_KEY in "${!mbfl_ARRY[@]}"
+do printf '%s[%s]="%s"\n' "$mbfl_NAME" "$mbfl_KEY" "${mbfl_ARRY["$mbfl_KEY"]}"
+done
+} >&2
 }
 declare -A mbfl_semver_CONFIG
 function mbfl_semver_reset_config () {
