@@ -25,8 +25,8 @@
 * TODO Library libmbfl-git
 ** TODO Interface more commands.
 * TODO Library libmbfl-utils
-** TODO Finish implementation of file/directory installation/normalisation.
-** TODO Document the library.
+** TODO Overhaul the implementation of file/directory installation/normalisation.
+** TODO Redocument the library.
 * Local Variables
 
 #+STARTUP: fold
