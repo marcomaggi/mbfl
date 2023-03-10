@@ -10,7 +10,7 @@ Notes for revision 3.0.0
 This release  has some backwards  incompatibilities.  Watch out  for the
 changes!
 
-* Officially this package now required GNU Bash at least version 4.3.
+* Officially this package now requires GNU Bash at least version 4.3.
 
 * Package building and installing  infrastructure review.  The files are
   installed under directories *without* the version part.  No pkg-config
