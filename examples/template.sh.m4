@@ -8,7 +8,7 @@
 #!	makes  use of  "action options":  its  behaviour is  configured with  command line  options,
 #!	similarly to what "tar" does with the options "--create", "--extract" and the like.
 #!
-#! Copyright (c) 2004, 2005, 2009, 2012, 2013, 2014, 2018, 2020 Marco Maggi
+#! Copyright (c) 2004, 2005, 2009, 2012, 2013, 2014, 2018, 2020, 2023 Marco Maggi
 #! <mrc.mgg@gmail.com>
 #!
 #! The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -33,17 +33,23 @@
 
 #### MBFL's related options and variables
 
-script_REQUIRED_MBFL_VERSION=v3.0.0-devel.3
-script_PROGNAME=template.sh
-script_VERSION=1.0
-script_COPYRIGHT_YEARS='2004, 2005, 2009, 2012, 2014, 2018, 2020'
-script_AUTHOR='Marco Maggi'
-script_LICENSE=liberal
-script_USAGE="usage: ${script_PROGNAME} [options] ..."
-script_DESCRIPTION='This is an example script.'
-script_EXAMPLES="Usage examples:
+declare -r script_PROGNAME=template.sh
+declare -r script_VERSION=1.0
+declare -r script_COPYRIGHT_YEARS='2004, 2005, 2009, 2012, 2014, 2018, 2020'
+declare -r script_AUTHOR='Marco Maggi'
+declare -r script_LICENSE=liberal
+declare -r script_USAGE="usage: ${script_PROGNAME} [options] ..."
+declare -r script_DESCRIPTION='This is an example script.'
+declare -r script_EXAMPLES="Usage examples:
 \n\
 \t${script_PROGNAME} --alpha"
+
+# This  variable   declaration  is   just  a   comment,  because  below   we  define   the  function
+# "script_check_mbfl_semantic_version()", which  is actually  used to  validate the  MBFL's required
+# version.
+declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.7
+
+declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
 
 
 #### library embedding

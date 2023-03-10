@@ -8,7 +8,7 @@
 #!	line actions processing.  This script uses  the "actions" module to configure its behaviour,
 #!	similarly to what "git" does with its subcommands.
 #!
-#! Copyright (c) 2013, 2014, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+#! Copyright (c) 2013, 2014, 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #!
 #! The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 #! and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -38,10 +38,17 @@ declare -r script_COPYRIGHT_YEARS='2013, 2014, 2018, 2020'
 declare -r script_AUTHOR='Marco Maggi'
 declare -r script_LICENSE=liberal
 
+# We do not define these global variables here, because the global ones are declared in the function
+# "script_before_parsing_options()".
+#
+# declare -r script_USAGE="usage: ${script_PROGNAME} [options] ..."
+# declare -r script_DESCRIPTION='This is an example script.'
+# declare -r script_EXAMPLES=
+
 # This  variable   declaration  is   just  a   comment,  because  below   we  define   the  function
 # "script_check_mbfl_semantic_version()", which  is actually  used to  validate the  MBFL's required
 # version.
-declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.4
+declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.7
 
 declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
 
