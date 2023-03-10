@@ -237,12 +237,13 @@ src/lib/libmbfl.bash: src/lib/libmbfl.bash.m4 $(MBFL_LIB_MODULES) $(MBFL_LIB_PRE
 #### libmbfl-utils generation: modules
 
 EXTRA_DIST			+=		\
-	src/utils-modules/utils-file.sh.m4
+	src/utils-modules/utils-file.bash.m4
 
 # This  is *not*  the  order  in which  modules  are  included in  the
-# library; that order is established in the file "libmblutils.sh.m4"!
+# library;    that    order    is     established    in    the    file
+# "libmbfl-utils.bash.m4"!
 MBFL_LIBUTILS_MODULES		=		\
-	src/utils-modules/utils-file.sh
+	src/utils-modules/utils-file.bash
 
 CLEANFILES			+=		\
 	$(MBFL_LIBUTILS_MODULES)		\
@@ -261,7 +262,7 @@ src/utils-modules/$(am__dirstamp):
 	@$(MKDIR_P) src/utils-modules
 	@: > src/utils-modules/$(am__dirstamp)
 
-src/utils-modules/%.sh: src/utils-modules/%.sh.m4 $(MBFL_UTILS_MODULES_PREREQUISITES)
+src/utils-modules/%.bash: src/utils-modules/%.bash.m4 $(MBFL_UTILS_MODULES_PREREQUISITES)
 	$(MBFL_UTILS_MODULES_RUN) $(MBFL_UTILS_MODULES_FLAGS) <$< >$@
 
 
