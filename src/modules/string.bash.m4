@@ -30,6 +30,8 @@
 
 #### global variables, known character ranges
 
+m4_define([[[__]]],[[[mbfl_datavar([[[$1]]])]]])
+
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
 
@@ -184,7 +186,7 @@ function mbfl_string_first () {
     mbfl_local_varref(RESULT_VARNAME)
     # Be  careful  to  return  the  same exit  status  of  the  call  to
     # "mbfl_string_first_var".
-    if mbfl_string_first_var mbfl_datavar(RESULT_VARNAME) "$STRING" "$CHAR" "$BEGIN"
+    if mbfl_string_first_var __(RESULT_VARNAME) "$STRING" "$CHAR" "$BEGIN"
     then printf '%s\n' "$RESULT_VARNAME"
     else return $?
     fi
@@ -215,7 +217,7 @@ function mbfl_string_last () {
     mbfl_local_varref(RESULT_VARNAME)
     # Be  careful  to  return  the  same exit  status  of  the  call  to
     # "mbfl_string_last_var".
-    if mbfl_string_last_var mbfl_datavar(RESULT_VARNAME) "$STRING" "$CHAR" "$BEGIN"
+    if mbfl_string_last_var __(RESULT_VARNAME) "$STRING" "$CHAR" "$BEGIN"
     then printf '%s\n' "$RESULT_VARNAME"
     else return $?
     fi
@@ -248,7 +250,7 @@ function mbfl_string_range () {
     mbfl_mandatory_parameter(BEGIN, 2, begin)
     mbfl_optional_parameter(END, 3)
     mbfl_local_varref(RESULT_VARNAME)
-    if mbfl_string_range_var mbfl_datavar(RESULT_VARNAME) "$STRING" "$BEGIN" "$END"
+    if mbfl_string_range_var __(RESULT_VARNAME) "$STRING" "$BEGIN" "$END"
     then printf '%s\n' "$RESULT_VARNAME"
     else return $?
     fi
@@ -429,7 +431,7 @@ function mbfl_string_is_alnum_char () {
 }
 function mbfl_string_is_name_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
-    mbfl_string_is_alnum_char "$CHAR" || test "$CHAR" = _
+    mbfl_string_is_alnum_char "$CHAR" || test "$CHAR" = '_'
 }
 function mbfl_string_is_identifier_char () {
     mbfl_mandatory_parameter(CHAR, 1, char)
@@ -453,7 +455,7 @@ m4_define([[[MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE]]],[[[
 function $1 () {
     mbfl_mandatory_parameter(CHAR, 1, char)
     mbfl_local_varref(RV)
-    mbfl_string_first_var mbfl_datavar(RV) "$[[[]]]$2[[[]]]" "$CHAR"
+    mbfl_string_first_var __(RV) "$[[[]]]$2[[[]]]" "$CHAR"
 }
 ]]])
 
@@ -685,7 +687,7 @@ function mbfl_string_strip_carriage_return_var () {
     then
 	mbfl_local_varref(CH)
 
-	mbfl_string_index_var mbfl_datavar(CH) "$LINE" $((mbfl_string_len(LINE) - 1))
+	mbfl_string_index_var __(CH) "$LINE" $((mbfl_string_len(LINE) - 1))
 	if mbfl_string_equal "$CH" $'\r'
 	then RESULT_NAMEREF=${LINE:0:((mbfl_string_len(LINE) - 1))}
 	else RESULT_NAMEREF=$LINE

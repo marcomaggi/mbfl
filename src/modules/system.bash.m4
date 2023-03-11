@@ -30,6 +30,8 @@
 
 #### module initialisation
 
+m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
+
 # This exists, but does nothing, for backwards compatibility.
 #
 function mbfl_system_enable_programs () {
@@ -221,7 +223,7 @@ function mbfl_system_passwd_uid_to_name_var () {
     mbfl_mandatory_integer_parameter(mbfl_THE_UID,       2, user id)
     local -i mbfl_USER_INDEX
     if mbfl_system_passwd_find_entry_by_uid_var mbfl_USER_INDEX $mbfl_THE_UID
-    then mbfl_system_passwd_get_name_var mbfl_datavar(mbfl_RESULT_VARREF) $mbfl_USER_INDEX
+    then mbfl_system_passwd_get_name_var _(mbfl_RESULT_VARREF) $mbfl_USER_INDEX
     else return 1
     fi
 }
@@ -241,7 +243,7 @@ function mbfl_system_passwd_name_to_uid_var () {
     mbfl_mandatory_parameter(mbfl_THE_NAME,              2, user name)
     local -i mbfl_USER_INDEX
     if mbfl_system_passwd_find_entry_by_name_var mbfl_USER_INDEX "$mbfl_THE_NAME"
-    then mbfl_system_passwd_get_uid_var mbfl_datavar(mbfl_RESULT_VARREF) $mbfl_USER_INDEX
+    then mbfl_system_passwd_get_uid_var _(mbfl_RESULT_VARREF) $mbfl_USER_INDEX
     else return 1
     fi
 }
@@ -479,7 +481,7 @@ function mbfl_system_group_gid_to_name_var () {
     mbfl_mandatory_integer_parameter(mbfl_THE_GID,       2, group id)
     local -i mbfl_GROUP_INDEX
     if mbfl_system_group_find_entry_by_gid_var mbfl_GROUP_INDEX $mbfl_THE_GID
-    then mbfl_system_group_get_name_var mbfl_datavar(mbfl_RESULT_VARREF) $mbfl_GROUP_INDEX
+    then mbfl_system_group_get_name_var _(mbfl_RESULT_VARREF) $mbfl_GROUP_INDEX
     else return 1
     fi
 }
@@ -499,7 +501,7 @@ function mbfl_system_group_name_to_gid_var () {
     mbfl_mandatory_parameter(mbfl_THE_NAME,              2, group name)
     local -i GROUP_INDEX
     if mbfl_system_group_find_entry_by_name_var GROUP_INDEX "$mbfl_THE_NAME"
-    then mbfl_system_group_get_gid_var mbfl_datavar(mbfl_RESULT_VARREF) $GROUP_INDEX
+    then mbfl_system_group_get_gid_var _(mbfl_RESULT_VARREF) $GROUP_INDEX
     else return 1
     fi
 }
@@ -572,22 +574,22 @@ function mbfl_system_effective_group_name () { mbfl_system_id '--group' '--name'
 function mbfl_system_effective_user_id_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
     shift
-    mbfl_system_id_var mbfl_datavar(RESULT) '--user' "$@"
+    mbfl_system_id_var _(RESULT) '--user' "$@"
 }
 function mbfl_system_effective_user_name_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
     shift
-    mbfl_system_id_var mbfl_datavar(RESULT) '--user' '--name' "$@"
+    mbfl_system_id_var _(RESULT) '--user' '--name' "$@"
 }
 function mbfl_system_effective_group_id_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
     shift
-    mbfl_system_id_var mbfl_datavar(RESULT) '--group' "$@"
+    mbfl_system_id_var _(RESULT) '--group' "$@"
 }
 function mbfl_system_effective_group_name_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
     shift
-    mbfl_system_id_var mbfl_datavar(RESULT) '--group' '--name' "$@"
+    mbfl_system_id_var _(RESULT) '--group' '--name' "$@"
 }
 
 ### ------------------------------------------------------------------------
@@ -600,22 +602,22 @@ function mbfl_system_real_group_name () { mbfl_system_id '--real' '--group' '--n
 function mbfl_system_real_user_id_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
     shift
-    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--user' "$@"
+    mbfl_system_id_var _(RESULT) '--real' '--user' "$@"
 }
 function mbfl_system_real_user_name_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, username result variable)
     shift
-    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--user' '--name' "$@"
+    mbfl_system_id_var _(RESULT) '--real' '--user' '--name' "$@"
 }
 function mbfl_system_real_group_id_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
     shift
-    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--group' "$@"
+    mbfl_system_id_var _(RESULT) '--real' '--group' "$@"
 }
 function mbfl_system_real_group_name_var () {
     mbfl_mandatory_nameref_parameter(RESULT, 1, groupname result variable)
     shift
-    mbfl_system_id_var mbfl_datavar(RESULT) '--real' '--group' '--name' "$@"
+    mbfl_system_id_var _(RESULT) '--real' '--group' '--name' "$@"
 }
 
 ### end of file

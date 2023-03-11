@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013-2014, 2017-2018, 2020 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013-2014, 2017-2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -25,6 +25,8 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA.
 #
+
+m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 
 #### simple finding of external programs
@@ -64,7 +66,7 @@ function mbfl_program_find_var () {
 	fi
     elif {
 	mbfl_local_varref(DUMMY)
-	mbfl_string_first_var mbfl_datavar(DUMMY) "$mbfl_PROGRAM" '/'
+	mbfl_string_first_var _(DUMMY) "$mbfl_PROGRAM" '/'
     }
     then
 	# The $mbfl_PROGRAM is not an absolute pathname, but it is a relative pathname with at least
@@ -99,7 +101,7 @@ function mbfl_program_find_var () {
 function mbfl_program_find () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
     mbfl_local_varref(RESULT_VARNAME)
-    if mbfl_program_find_var mbfl_datavar(RESULT_VARNAME) "$PROGRAM"
+    if mbfl_program_find_var _(RESULT_VARNAME) "$PROGRAM"
     then echo "$RESULT_VARNAME"
     else return $?
     fi
@@ -691,7 +693,7 @@ function mbfl_p_program_log_5 () {
 	local arg
 	for arg in "$@"
 	do
-	    mbfl_string_quote_var mbfl_datavar(QUOTED_ARG) "$arg"
+	    mbfl_string_quote_var _(QUOTED_ARG) "$arg"
 	    printf " '%s'" "$QUOTED_ARG"
 	done
     }

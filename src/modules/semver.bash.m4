@@ -11,7 +11,7 @@
 #
 #		<https://semver.org/>
 #
-# Copyright (c) 2020 Marco Maggi
+# Copyright (c) 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -29,6 +29,8 @@
 
 
 #### parser configuration
+
+m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 mbfl_declare_symbolic_array(mbfl_semver_CONFIG)
 
@@ -322,17 +324,17 @@ function mbfl_semver_compare_var () {
     mbfl_local_varref(ONE_COMPONENTS,, -A)
     mbfl_local_varref(TWO_COMPONENTS,, -A)
 
-    #echo ${FUNCNAME}: ONE=\""$ONE"\" ONE_INDEX=$ONE_INDEX ONE_COMPONENTS=mbfl_datavar(ONE_COMPONENTS) >&2
-    if ! mbfl_semver_parse mbfl_datavar(ONE_COMPONENTS) "$ONE" mbfl_datavar(ONE_INDEX)
+    #echo ${FUNCNAME}: ONE=\""$ONE"\" ONE_INDEX=$ONE_INDEX ONE_COMPONENTS=_(ONE_COMPONENTS) >&2
+    if ! mbfl_semver_parse _(ONE_COMPONENTS) "$ONE" _(ONE_INDEX)
     then return 1
     fi
 
-    #echo ${FUNCNAME}: TWO=\""$TWO"\" TWO_INDEX=$TWO_INDEX TWO_COMPONENTS=mbfl_datavar(TWO_COMPONENTS) >&2
-    if ! mbfl_semver_parse mbfl_datavar(TWO_COMPONENTS) "$TWO" mbfl_datavar(TWO_INDEX)
+    #echo ${FUNCNAME}: TWO=\""$TWO"\" TWO_INDEX=$TWO_INDEX TWO_COMPONENTS=_(TWO_COMPONENTS) >&2
+    if ! mbfl_semver_parse _(TWO_COMPONENTS) "$TWO" _(TWO_INDEX)
     then return 1
     fi
 
-    mbfl_semver_compare_components_var mbfl_datavar(RV) mbfl_datavar(ONE_COMPONENTS) mbfl_datavar(TWO_COMPONENTS)
+    mbfl_semver_compare_components_var _(RV) _(ONE_COMPONENTS) _(TWO_COMPONENTS)
 }
 
 function mbfl_semver_compare_components_var () {
@@ -369,7 +371,7 @@ function mbfl_semver_compare_components_var () {
     		    # Both have  a non-empty prerelease  version.  Let's compare them  identifier by
     		    # identifier.
     		    mbfl_semver_compare_prerelease_version		\
-    			mbfl_datavar(RV)				\
+    			_(RV)				\
     			"mbfl_slot_ref(ONE_COMPONENTS, PRERELEASE_VERSION)"		\
     			"mbfl_slot_ref(TWO_COMPONENTS, PRERELEASE_VERSION)"
     		    return $?
@@ -387,11 +389,11 @@ function mbfl_semver_compare_prerelease_version () {
     mbfl_local_varref(ONE_IDENTIFIERS,, -a)
     mbfl_local_varref(TWO_IDENTIFIERS,, -a)
 
-    if ! mbfl_semver_split_prerelease_version mbfl_datavar(ONE_IDENTIFIERS) "$ONE_PRERELEASE_VERSION"
+    if ! mbfl_semver_split_prerelease_version _(ONE_IDENTIFIERS) "$ONE_PRERELEASE_VERSION"
     then return 1
     fi
 
-    if ! mbfl_semver_split_prerelease_version mbfl_datavar(TWO_IDENTIFIERS) "$TWO_PRERELEASE_VERSION"
+    if ! mbfl_semver_split_prerelease_version _(TWO_IDENTIFIERS) "$TWO_PRERELEASE_VERSION"
     then return 1
     fi
 

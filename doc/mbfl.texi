@@ -1257,6 +1257,26 @@ $mbfl_a_variable_@var{NAME}
 
 Given the name of a @emph{proxy variable}: expand into code that, executed at run--time, returns the
 name of the @emph{data variable}.
+
+@quotation
+This macro is often used, we may find useful a shortcut like:
+
+@example
+m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
+@end example
+
+@noindent
+with which we write code like:
+
+@example
+mbfl_local_varref(RV)
+
+mbfl_file_extension_var _(RV) /path/to/file.ext
+"$RV"  @result{} ext
+@end example
+
+We must be careful if the source code contains the standalone underscore character.
+@end quotation
 @end deffn
 
 @c page

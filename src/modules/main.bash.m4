@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -26,6 +26,8 @@
 # Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 # USA.
 #
+
+m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 
 #### generic variables
@@ -422,7 +424,7 @@ function mbfl_main_check_mbfl_semantic_version_variable () {
 	{
 	    mbfl_location_handler 'mbfl_semver_reset_config'
 	    mbfl_semver_config[PARSE_LEADING_V]='optional'
-	    mbfl_semver_compare_var mbfl_datavar(RV) "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
+	    mbfl_semver_compare_var _(RV) "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
 	}
 	mbfl_location_leave
     }
