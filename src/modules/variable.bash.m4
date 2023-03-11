@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -29,52 +29,53 @@
 
 
 function mbfl_variable_find_in_array () {
-    mbfl_mandatory_parameter(ELEMENT, 1, element parameter)
-    local -i i ARRAY_DIM=mbfl_slots_number(mbfl_FIELDS)
-    for ((i=0; i < ARRAY_DIM; ++i))
+    mbfl_mandatory_parameter(mbfl_ELEMENT, 1, element parameter)
+    local -i mbfl_I mbfl_ARRAY_DIM=mbfl_slots_number(mbfl_FIELDS)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_ARRAY_DIM; ++mbfl_I))
     do
-	if mbfl_string_equal "mbfl_slot_ref(mbfl_FIELDS, $i)" "$ELEMENT"
+	if mbfl_string_equal "$mbfl_ELEMENT" mbfl_slot_qref(mbfl_FIELDS, $mbfl_I)
 	then
-	    printf '%d\n' $i
-	    return 0
+	    echo $mbfl_I
+	    return_because_success
 	fi
     done
-    return 1
+    return_because_failure
 }
 function mbfl_variable_element_is_in_array () {
-    local pos
-    pos=$(mbfl_variable_find_in_array "$@")
+    local mbfl_POS
+    mbfl_POS=$(mbfl_variable_find_in_array "$@")
 }
 
 function mbfl_variable_colon_variable_to_array () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
     # Here we NEED to save IFS, else it will be left set to ":".
-    local ORGIFS=$IFS
+    local mbfl_ORGIFS=$IFS
     IFS=: mbfl_FIELDS=(${!COLON_VARIABLE})
-    IFS=$ORGIFS
+    IFS=$mbfl_ORGIFS
 
 # The  following is  an  old version.   It  passed the  test
 # suite.  I am keeping it here just in case.
 #
-#     local ORGIFS=${IFS} item count=0
+#     local mbfl_ORGIFS=${IFS} item count=0
 #     IFS=:
 #     for item in ${!COLON_VARIABLE} ; do
-# 	IFS=${ORGIFS}
+# 	IFS=${mbfl_ORGIFS}
 # 	mbfl_FIELDS[${count}]=${item}
 # 	let ++count
 #     done
-#     IFS=${ORGIFS}
+#     IFS=${mbfl_ORGIFS}
     return 0
 }
 function mbfl_variable_array_to_colon_variable () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
-    local -i i dimension=mbfl_slots_number(mbfl_FIELDS)
+    local -i i mbfl_DIMENSION=mbfl_slots_number(mbfl_FIELDS)
 
-    if test $dimension = 0
+    if test $mbfl_DIMENSION = 0
     then eval $COLON_VARIABLE=
     else
 	eval ${COLON_VARIABLE}=\'"mbfl_slot_ref(mbfl_FIELDS, 0)"\'
-	for ((i=1; $i < $dimension; ++i))
+	for ((i=1; $i < $mbfl_DIMENSION; ++i))
         do eval $COLON_VARIABLE=\'"${!COLON_VARIABLE}:mbfl_slot_ref(mbfl_FIELDS, $i)"\'
 	done
     fi
@@ -82,25 +83,25 @@ function mbfl_variable_array_to_colon_variable () {
 }
 function mbfl_variable_colon_variable_drop_duplicate () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
-    local item
+    local mbfl_ITEM
     mbfl_local_numeric_array(mbfl_FIELDS)
     mbfl_local_numeric_array(FIELDS)
-    local -i dimension count i
+    local -i mbfl_DIMENSION mbfl_COUNT i
 
     mbfl_variable_colon_variable_to_array "$COLON_VARIABLE"
-    dimension=mbfl_slots_number(mbfl_FIELDS)
+    mbfl_DIMENSION=mbfl_slots_number(mbfl_FIELDS)
 
     FIELDS=("mbfl_slot_ref(mbfl_FIELDS, @)")
     mbfl_FIELDS=()
 
-    for ((i=0, count=0; i < dimension; ++i))
+    for ((i=0, mbfl_COUNT=0; i < mbfl_DIMENSION; ++i))
     do
-	item=mbfl_slot_ref(FIELDS, $i)
-	if mbfl_variable_element_is_in_array "$item"
+	mbfl_ITEM=mbfl_slot_ref(FIELDS, $i)
+	if mbfl_variable_element_is_in_array "$mbfl_ITEM"
 	then continue
 	fi
-	mbfl_FIELDS[$count]=$item
-	let ++count
+	mbfl_FIELDS[$mbfl_COUNT]=$mbfl_ITEM
+	let ++mbfl_COUNT
     done
 
     mbfl_variable_array_to_colon_variable $COLON_VARIABLE
@@ -132,6 +133,15 @@ function mbfl_variable_alloc () {
     mbfl_RESULT_VARREF=$mbfl_NAME
     return 0
 }
+
+# declare -i MBFL_VARIABLE_COUNTER=0
+
+# function mbfl_variable_alloc () {
+#     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
+#     printf -v mbfl_RESULT_VARREF 'mbfl_u_variable_%d' $MBFL_VARIABLE_COUNTER
+#     printf '%s\n' $mbfl_RESULT_VARREF >&2
+#     let ++MBFL_VARIABLE_COUNTER
+# }
 
 ### end of file
 # Local Variables:

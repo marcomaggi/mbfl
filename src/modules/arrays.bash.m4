@@ -59,6 +59,23 @@ function mbfl_array_contains () {
     test -v mbfl_slot_spec(mbfl_ARRAY_VARREF, $mbfl_KEY)
 }
 
+function mbfl_array_contains_value_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,	1, reference to result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	2, reference to array variable to inspect)
+    mbfl_mandatory_parameter(mbfl_ELEMENT,	3, element parameter)
+    local mbfl_KEY
+
+    for mbfl_KEY in mbfl_slots_qkeys(mbfl_ARRY)
+    do
+	if mbfl_string_equal mbfl_slot_qref(mbfl_ARRY, $mbfl_KEY) "$mbfl_ELEMENT"
+	then
+	    mbfl_RV=$mbfl_KEY
+	    return_because_success
+	fi
+    done
+    return_because_failure
+}
+
 
 #### array manipulation
 

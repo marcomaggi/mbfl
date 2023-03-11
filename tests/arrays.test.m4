@@ -152,6 +152,77 @@ function array-contains-2.4 () {
 }
 
 
+#### array contains value
+
+function array-contains-value-1.1 () {
+    local -a ARRY=([0]=a [1]=b [2]=c)
+    local KEY
+    {
+	mbfl_array_contains_value_var KEY ARRY a &&
+	    dotest-equal 0 "$KEY"
+    } && {
+    	mbfl_array_contains_value_var KEY ARRY b &&
+     	    dotest-equal 1 "$KEY"
+    } && {
+	mbfl_array_contains_value_var KEY ARRY c &&
+   	    dotest-equal 2 "$KEY"
+    } && {
+     	! mbfl_array_contains_value_var KEY ARRY d
+    }
+}
+function array-contains-value-1.2 () {
+    mbfl_local_index_array_varref(ARRY, ([0]=a [1]=b [2]=c))
+    mbfl_local_varref(KEY)
+    {
+	mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) a &&
+	    dotest-equal 0 "$KEY"
+    } && {
+    	mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) b &&
+     	    dotest-equal 1 "$KEY"
+    } && {
+	mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) c &&
+   	    dotest-equal 2 "$KEY"
+    } && {
+     	! mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) d
+    }
+}
+
+### ------------------------------------------------------------------------
+
+function array-contains-value-2.1 () {
+    local -A ARRY=([ALPHA]=a [BETA]=b [GAMMA]=c)
+    local KEY
+    {
+	mbfl_array_contains_value_var KEY ARRY a &&
+	    dotest-equal ALPHA "$KEY"
+    } && {
+    	mbfl_array_contains_value_var KEY ARRY b &&
+     	    dotest-equal BETA "$KEY"
+    } && {
+	mbfl_array_contains_value_var KEY ARRY c &&
+   	    dotest-equal GAMMA "$KEY"
+    } && {
+     	! mbfl_array_contains_value_var KEY ARRY d
+    }
+}
+function array-contains-value-2.2 () {
+    mbfl_local_assoc_array_varref(ARRY, ([ALPHA]=a [BETA]=b [GAMMA]=c))
+    mbfl_local_varref(KEY)
+    {
+	mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) a &&
+	    dotest-equal ALPHA "$KEY"
+    } && {
+    	mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) b &&
+     	    dotest-equal BETA "$KEY"
+    } && {
+	mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) c &&
+   	    dotest-equal GAMMA "$KEY"
+    } && {
+     	! mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) d
+    }
+}
+
+
 #### array copying
 
 function array-copy-assoc-length-1.1 () {

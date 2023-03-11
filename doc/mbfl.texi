@@ -2640,12 +2640,12 @@ declare -a mbfl_FIELDS
 
 mbfl_variable_colon_variable_to_array VAR
 
-echo $@{#mbfl_FIELDS[*]@}       @print{} 5
-echo "$@{mbfl_FIELDS[0]@}"      @print{} a
-echo "$@{mbfl_FIELDS[1]@}"      @print{} b
-echo "$@{mbfl_FIELDS[2]@}"      @print{} c
-echo "$@{mbfl_FIELDS[3]@}"      @print{} d
-echo "$@{mbfl_FIELDS[4]@}"      @print{} e
+echo mbfl_slots_number(mbfl_FIELDS)     @print{} 5
+echo mbfl_slot_ref(mbfl_FIELDS, 0)      @print{} a
+echo mbfl_slot_ref(mbfl_FIELDS, 1)      @print{} b
+echo mbfl_slot_ref(mbfl_FIELDS, 2)      @print{} c
+echo mbfl_slot_ref(mbfl_FIELDS, 3)      @print{} d
+echo mbfl_slot_ref(mbfl_FIELDS, 4)      @print{} e
 @end example
 @end defun
 
@@ -2686,7 +2686,7 @@ should locally initialise the variable to some non--empty value.
 local NAME
 
 mbfl_variable_alloc NAME
-$NAME   @result{} mbfl_a_variable_2323_7652
+$NAME   @result{} mbfl_u_variable_2323
 @end example
 @end defun
 
@@ -2748,11 +2748,19 @@ Search the array @code{mbfl_FIELDS} for a value equal to @var{ELEMENT}.  If it i
 index and return true; else print nothing and return false.
 
 @code{mbfl_FIELDS} must be filled with elements having subsequent indexes starting at zero.
+
+@quotation
+@strong{NOTE} Use of this function is deprecated!  Use @func{mbfl_array_contains_value_var} instead.
+@end quotation
 @end defun
 
 
 @defun mbfl_variable_element_is_in_array @var{ELEMENT}
 A wrapper for @func{mbfl_variable_find_in_array} that does not print anything.
+
+@quotation
+@strong{NOTE} Use of this function is deprecated!  Use @func{mbfl_array_contains_value_var} instead.
+@end quotation
 @end defun
 
 
@@ -2783,6 +2791,21 @@ mbfl_array_contains    ARRY 0 &&
    mbfl_array_contains ARRY 1 &&
    mbfl_array_contains ARRY 2 &&
    ! mbfl_array_contains ARRY 3
+@end example
+@end defun
+
+
+@defun mbfl_array_contains_value_var @var{RV} @var{ARRY_VAR} @var{VALUE}
+Return successfully if @var{VALUE} is a value in the array; store the associated key in the result
+variable @var{RV}.
+
+@example
+mbfl_local_index_array_varref(ARRY, ([0]=a [1]=b [2]=c))
+mbfl_local_varref(KEY)
+
+mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) a
+@result{} 0
+"$KEY"  @result{} 0
 @end example
 @end defun
 

@@ -192,20 +192,7 @@ changes!
     mbfl_program_set_exec_flags
     mbfl_program_reset_exec_flags
 
-* Started arrays module.  Added preprocessor macros for arrays handling:
-
-    mbfl_declare_symbolic_array
-    mbfl_declare_numeric_array
-    mbfl_local_symbolic_array
-    mbfl_local_numeric_array
-    mbfl_slots_number
-    mbfl_slots_values
-    mbfl_slots_qvalues
-    mbfl_slot_ref
-    mbfl_slot_qref
-    mbfl_slot_set
-    mbfl_slot_value_len
-    mbfl_slot_append
+* Started arrays module.  Added preprocessor macros for arrays handling.
 
 * Added  functions  to  the  system   module  to  inspect  entries  from
   /etc/passwd and /etc/group.
