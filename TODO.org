@@ -1,5 +1,6 @@
 ﻿-*- coding: utf-8-with-signature-unix; -*-
 
+* TODO Is there a better way to implement "mbfl_variable_alloc()" in "src/modules/variables.bash"?
 * TODO Libraries infrastructure
 ** TODO Implement some form of library versioning.
 
