@@ -43,63 +43,55 @@ mbfl_load_library("$MBFL_LIBMBFL_TEST")
 m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 
-#### quoted characters
+#### simple tests
 
 function struct-1.1 () {
     mbfl_struct_define_type greek alpha beta gamma
-
-    a=0
-    b=0
-    c=0
     mbfl_struct_declare(stru)
+    local A=0 B=0 C=0
+
     greek_init stru 1 2 3
-    mbfl_array_dump _(stru)
-    echo $a $b $c
-    greek_alpha_ref _(stru) a
-    echo $a $b $c
-    greek_beta_ref  _(stru) b
-    echo $a $b $c
-    greek_gamma_ref _(stru) c
-    echo $a $b $c
-    mbfl_array_dump _(stru)
+    if false
+    then mbfl_array_dump _(stru)
+    fi
+    greek_alpha_ref _(stru) A
+    greek_beta_ref  _(stru) B
+    greek_gamma_ref _(stru) C
 
-    if true
-    then
-	greek_alpha_set _(stru) 11
-	greek_beta_set  _(stru) 22
-	greek_gamma_set _(stru) 33
+    greek? _(stru) &&
+	mbfl_struct_is_a _(stru) greek &&
+	dotest-equal 1 $A &&
+	dotest-equal 2 $B &&
+	dotest-equal 3 $C
+}
 
-	greek_alpha_ref _(stru) a
-	greek_beta_ref  _(stru) b
-	greek_gamma_ref _(stru) c
-	echo $a $b $c
+function struct-1.2 () {
+    mbfl_struct_define_type greek alpha beta gamma
+    mbfl_struct_declare(stru)
+    local A=0 B=0 C=0
+
+    greek_init stru 1 2 3
+    if false
+    then mbfl_array_dump _(stru)
     fi
 
-    mbfl_array_dump _(stru)
+    greek_alpha_set _(stru) 11
+    greek_beta_set  _(stru) 22
+    greek_gamma_set _(stru) 33
 
-    if greek? _(stru)
-    then echo is greek
-    else echo not greek
+    if false
+    then mbfl_array_dump _(stru)
     fi
 
-    if mbfl_struct_is_a _(stru) greek
-    then echo is greek
-    else echo not greek
-    fi
+    greek_alpha_ref _(stru) A
+    greek_beta_ref  _(stru) B
+    greek_gamma_ref _(stru) C
 
-    mbfl_struct_declare(mine)
-    mbfl_struct_make greek mine 4 5 6
-    mbfl_array_dump _(mine)
-
-    if greek? _(mine)
-    then echo is greek
-    else echo not greek
-    fi
-
-    if mbfl_struct_is_a _(mine) greek
-    then echo is greek
-    else echo not greek
-    fi
+    greek? _(stru) &&
+	mbfl_struct_is_a _(stru) greek &&
+	dotest-equal 11 $A &&
+	dotest-equal 22 $B &&
+	dotest-equal 33 $C
 }
 
 
