@@ -284,6 +284,15 @@ function program_replace_[[[]]]$1 () {
 ]]])
 
 
+m4_dnl data structures
+
+m4_define([[[mbfl_struct_declare]]],[[[mbfl_declare_index_array_varref([[[$1]]])]]])
+
+m4_define([[[mbfl_struct_define]]],[[[m4_dnl
+mbfl_struct_declare($1);m4_dnl
+]]])
+
+
 m4_dnl done
 
 m4_dnl end of file

@@ -154,6 +154,7 @@ EXTRA_DIST			+=		\
 	src/modules/shell.bash.m4		\
 	src/modules/signal.bash.m4		\
 	src/modules/string.bash.m4		\
+	src/modules/struct.bash.m4		\
 	src/modules/system.bash.m4		\
 	src/modules/times-and-dates.bash.m4	\
 	src/modules/variable.bash.m4
@@ -181,6 +182,7 @@ MBFL_LIB_MODULES		=		\
 	src/modules/shell.bash			\
 	src/modules/signal.bash			\
 	src/modules/string.bash			\
+	src/modules/struct.bash			\
 	src/modules/system.bash			\
 	src/modules/times-and-dates.bash	\
 	src/modules/variable.bash
@@ -531,6 +533,7 @@ EXTRA_DIST			+=		\
 	tests/semver.test.m4			\
 	tests/signal.test.m4			\
 	tests/strings.test.m4			\
+	tests/struct.test.m4			\
 	tests/system.test.m4			\
 	tests/times-and-dates.test.m4		\
 	tests/variables.test.m4			\
@@ -560,6 +563,7 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/semver.test			\
 	tests/signal.test			\
 	tests/strings.test			\
+	tests/struct.test			\
 	tests/system.test			\
 	tests/times-and-dates.test		\
 	tests/variables.test			\
