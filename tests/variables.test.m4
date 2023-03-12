@@ -310,194 +310,6 @@ function worker-varref-local-array-3.2 () {
 }
 
 
-#### global variable references, simple variables
-
-# Global varref, no init value, no attributes.  Variable set and ref.
-#
-function varref-global-simple-1.1 () {
-    mbfl_global_varref(VAR)
-
-    VAR=123
-    dotest-equal 123 "$VAR"
-}
-
-# Global varref, init value, no attributes.  Variable set and ref.
-#
-function varref-global-simple-1.2 () {
-    mbfl_global_varref(VAR,, -i)
-
-    VAR=123
-    dotest-equal 123 "$VAR"
-}
-
-# Global varref, init value, attributes.  Variable set and ref.
-#
-function varref-global-simple-1.3 () {
-    mbfl_global_varref(VAR, 123, -i)
-
-    dotest-equal 123 "$VAR"
-}
-
-# Global varref, init value, no attributes.  Variable set and ref.
-#
-function varref-global-simple-1.4 () {
-    mbfl_global_varref(VAR, 123)
-
-    dotest-equal 123 "$VAR"
-}
-
-### ------------------------------------------------------------------------
-
-# Global varref, no init value, no attributes.  Variable set and ref in a
-# sub-function.
-#
-function varref-global-simple-2.1 () {
-    mbfl_global_varref(VAR)
-    local RV
-
-    worker-varref-global-simple-2.1 mbfl_datavar(VAR)
-
-    dotest-equal 123 "$RV" && dotest-equal 123 "$VAR"
-}
-function worker-varref-global-simple-2.1 () {
-    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-
-    #dotest-set-debug
-    dotest-debug "VARNAME=$1 VAR=$VAR"
-
-    VAR=123
-    RV="$VAR"
-}
-
-
-#### global variable references, array variables
-
-# Global varref, no init value, no attributes.  Variable set and ref.
-#
-function varref-global-array-1.1 () {
-    mbfl_global_varref(VAR)
-
-    VAR[KEY]=123
-    dotest-equal 123 "${VAR[KEY]}"
-}
-
-# Global varref, init value, no attributes.  Variable set and ref.
-#
-function varref-global-array-1.2 () {
-    mbfl_global_varref(VAR,, -A)
-
-    VAR[KEY]=123
-    dotest-equal 123 "${VAR[KEY]}"
-}
-
-### ------------------------------------------------------------------------
-
-# Global varref, no init value, no attributes.  Variable set and ref in a
-# sub-function.
-#
-function varref-global-array-2.1 () {
-    mbfl_global_varref(VAR)
-    local RV
-
-    worker-varref-global-array-2.1 mbfl_datavar(VAR)
-
-    dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
-}
-function worker-varref-global-array-2.1 () {
-    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-
-    #dotest-set-debug
-    dotest-debug "VARNAME=$1 VAR=$VAR"
-
-    VAR[KEY]=123
-    RV="${VAR[KEY]}"
-}
-
-### ------------------------------------------------------------------------
-
-# Global  varref, no  init value,  no attributes.   Variable set  in the
-# uplevel function, lower level function.
-#
-function varref-global-array-2.2 () {
-    mbfl_global_varref(VAR)
-    local RV
-
-    VAR[KEY]=123
-    worker-varref-global-array-2.2 mbfl_datavar(VAR)
-
-    dotest-equal 123 "$RV" && dotest-equal 123 "${VAR[KEY]}"
-}
-function worker-varref-global-array-2.2 () {
-    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-
-    #dotest-set-debug
-    dotest-debug "VARNAME=$1 VAR=$VAR"
-
-    RV="${VAR[KEY]}"
-}
-
-### ------------------------------------------------------------------------
-
-# Global varref, no init value,  associative array attribute.  A value of
-# the array is itself  a global varref.  Another value of  the array is a
-# simple value.
-#
-function varref-global-array-3.1 () {
-    mbfl_global_varref(ARRY,,-A)
-    mbfl_global_varref(VAR)
-    local RV1 RV2
-
-    ARRY[KEY]=mbfl_datavar(VAR)
-    ARRY[VAL]=456
-    worker-varref-global-array-3.1 mbfl_datavar(ARRY)
-
-    dotest-equal 123 "$VAR" && \
-	dotest-equal 456 "${ARRY[VAL]}" && \
-	dotest-equal 123 "$RV1" && \
-	dotest-equal 456 "$RV2"
-}
-function worker-varref-global-array-3.1 () {
-    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    local -n VAR=${ARRY[KEY]}
-
-    #dotest-set-debug
-    dotest-debug "VARNAME=$1 ARRY[KEY]=${ARRY[KEY]}"
-    VAR=123
-    RV1=$VAR
-    RV2=${ARRY[VAL]}
-}
-
-### ------------------------------------------------------------------------
-
-# Global varref, no init value, array attribute.  A value of the array is
-# itself a global varref.  Another value of the array is a simple value.
-#
-function varref-global-array-3.2 () {
-    mbfl_global_index_array_varref(ARRY)
-    mbfl_global_varref(VAR)
-    local RV1 RV2
-
-    ARRY[1]=mbfl_datavar(VAR)
-    ARRY[2]=456
-    worker-varref-global-array-3.2 mbfl_datavar(ARRY)
-
-    dotest-equal 123 "$VAR" && \
-	dotest-equal 456 "${ARRY[2]}" && \
-	dotest-equal 123 "$RV1" && \
-	dotest-equal 456 "$RV2"
-}
-function worker-varref-global-array-3.2 () {
-    mbfl_mandatory_nameref_parameter(VAR, 1, variable reference)
-    local -n VAR=${ARRY[1]}
-
-    #dotest-set-debug
-    dotest-debug "VARNAME=$1 ARRY[1]=${ARRY[1]}"
-    VAR=123
-    RV1=$VAR
-    RV2=${ARRY[2]}
-}
-
-
 #### unsetting nameref variables
 
 function varref-unset-1.1 () {
@@ -512,7 +324,7 @@ function varref-unset-1.1 () {
 }
 
 function varref-unset-2.1 () {
-    mbfl_global_varref(VAR, 123)
+    mbfl_declare_varref(VAR, 123)
     local VAR_VAL=$VAR
     local VAR_NAM=mbfl_datavar(VAR)
 
@@ -527,7 +339,7 @@ function varref-unset-2.1 () {
 # Unsetting the data variable using locations.
 #
 function varref-unset-3.1 () {
-    mbfl_global_varref(VAR, 123)
+    mbfl_declare_varref(VAR, 123)
     local RV
 
     mbfl_location_enter
@@ -555,7 +367,7 @@ function varref-sub-generation-1.1 () {
 }
 function worker-varref-sub-generation-1.1 () {
     mbfl_mandatory_nameref_parameter(RV, 1, result variable name)
-    mbfl_global_varref(VAR, 123)
+    mbfl_declare_varref(VAR, 123, -g)
 
     RV=mbfl_datavar(VAR)
 }

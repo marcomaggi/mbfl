@@ -77,26 +77,6 @@ changes!
 
      m4_changequote(`[[[', `]]]')
 
-* Added some  "_var" variants  to functions.   For example  two variants
-  exist to extract the filename extension:
-
-    mbfl_file_extension
-    mbfl_file_extension_var
-
-  the first  variant will print the  result to stdout, while  the "_var"
-  variant will store the result in a variable whose name is handed to it
-  as first argument.  Example:
-
-    mbfl_file_extension /path/to/file.ext
-    -| ext
-
-    local RV
-    mbfl_file_extension_var RV /path/to/file.ext
-    "$RV"  => ext
-
-  The "_var" variants are always a bit faster because the output variant
-  is a wrapper for the "_var" variant.
-
 * Added to the preprocessor some  facilities needed to declare variables
   with unique names and use them as target for variable with the NAMEREF
   attribute.  With  these facilities we  can use the "_var"  variants of
@@ -107,7 +87,8 @@ changes!
      mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
      "$RV" => ext
 
-  without risking a variable name collision.
+  without  risking a  variable  name collision.   Many  modules now  use
+  "_var" function variants.
 
 * Added string functions:
 

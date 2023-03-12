@@ -106,13 +106,6 @@ function array-contains-1.2 () {
 	! mbfl_array_contains ARRY 3
 }
 function array-contains-1.3 () {
-    mbfl_global_index_array_varref(ARRY, ([0]=a [1]=b [2]=c))
-    mbfl_array_contains ARRY 0 &&
-	mbfl_array_contains ARRY 1 &&
-	mbfl_array_contains ARRY 2 &&
-	! mbfl_array_contains ARRY 3
-}
-function array-contains-1.4 () {
     mbfl_declare_index_array_varref(array_contains_1_4_ARRY, ([0]=a [1]=b [2]=c))
     mbfl_array_contains array_contains_1_4_ARRY 0 &&
 	mbfl_array_contains array_contains_1_4_ARRY 1 &&
@@ -137,13 +130,6 @@ function array-contains-2.2 () {
 	! mbfl_array_contains ARRY D
 }
 function array-contains-2.3 () {
-    mbfl_global_assoc_array_varref(ARRY, ([A]=a [B]=b [C]=c))
-    mbfl_array_contains ARRY A &&
-	mbfl_array_contains ARRY B &&
-	mbfl_array_contains ARRY C &&
-	! mbfl_array_contains ARRY D
-}
-function array-contains-2.4 () {
     mbfl_declare_assoc_array_varref(array_contains_2_4_ARRY, ([A]=a [B]=b [C]=c))
     mbfl_array_contains array_contains_2_4_ARRY A &&
 	mbfl_array_contains array_contains_2_4_ARRY B &&

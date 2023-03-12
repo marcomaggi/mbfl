@@ -41,6 +41,7 @@ MBFL_PREPROCESSOR	= $(srcdir)/src/lib/libmbfl-preprocessor.m4
 # "MBFLPPFLAGS" on the command line of "make".
 #
 MBFLPP_GENERAL_FLAGS	= --no-prepro --library=$(MBFL_PREPROCESSOR) $(MBFLPPFLAGS)
+# --define=__MBFL_ENABLE_UNDERSCORE_AS_DATAVAR__
 
 EXTRA_DIST		+=			\
 	src/backup/libmbfl.bash			\

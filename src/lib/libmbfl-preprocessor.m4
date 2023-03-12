@@ -35,6 +35,8 @@ m4_changequote(`[[[', `]]]')
 
 m4_define([[[MBFL_SHARP]]],[[[#]]])
 
+m4_define([[[MBFL_P_M4_ERRPRINT]]],[[[m4_errprint(m4___program__:m4___file__:m4___line__:[[[ $1
+]]])]]])
 
 
 m4_dnl function parameters handling
@@ -69,112 +71,10 @@ m4_define([[[mbfl_load_library]]],  [[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INST
 m4_define([[[mbfl_embed_library]]],[[[m4_include(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]])
 
 
-m4_dnl handling of variables with NAMEREF attribute
-
-dnl Synopsis:
-dnl
-dnl   mbfl_local_nameref(NAME, DATA_VARNAME_EXPR)
-dnl
-dnl It expands into:
-dnl
-dnl   local mbfl_a_variable_NAME=DATA_VARNAME_EXPR
-dnl   local -n NAME=$mbfl_a_variable_NAME
-dnl
-dnl Declare a proxy variable NAME aliasing the data variable whose value
-dnl is the result of evaluating DATA_VARNAME_EXPR.
-dnl
-m4_define([[[mbfl_local_nameref]]],[[[m4_dnl
-  local mbfl_a_variable_$1=$2; m4_dnl
-  local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
-]]])
-
-m4_dnl Synopsis:
-m4_dnl
-m4_dnl   mbfl_local_varref(VARNAME, INIT_VALUE, LOCAL_OPTIONS)
-m4_dnl
-m4_dnl It expands into:
-m4_dnl
-m4_dnl   local mbfl_a_variable_VARNAME
-m4_dnl   mbfl_variable_alloc mbfl_a_variable_VARNAME
-m4_dnl   local LOCAL_OPTIONS $mbfl_a_variable_VARNAME
-m4_dnl   local -n VARNAME=$mbfl_a_variable_VARNAME
-m4_dnl
-m4_dnl and when INIT_VALUE is not empty, it finishes with:
-m4_dnl
-m4_dnl   VARNAME=INIT_VALUE
-m4_dnl
-m4_dnl Define a  local "proxy variable"  VARNAME referencing a  local "data
-m4_dnl variable"  with unique  name.  The  data variable  has the  optional
-m4_dnl attributes    LOCAL_OPTIONS.      A    further     local    variable
-m4_dnl mbfl_a_variable_VARNAME holds the name of the data variable.
-m4_dnl
-m4_define([[[mbfl_local_varref]]],[[[m4_dnl
-  local mbfl_a_variable_$1; m4_dnl
-  mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
-  local $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
-  local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
-  m4_ifelse($2,,,; $1=$2)m4_dnl
-]]])
-
-m4_dnl Synopsis:
-m4_dnl
-m4_dnl   mbfl_global_varref(VARNAME, INIT_VALUE, DECLARE_OPTIONS)
-m4_dnl
-m4_dnl Expands into:
-m4_dnl
-m4_dnl   local mbfl_a_variable_VARNAME
-m4_dnl   mbfl_variable_alloc mbfl_a_variable_VARNAME
-m4_dnl   declare -g DECLARE_OPTIONS $mbfl_a_variable_VARNAME
-m4_dnl   local -n VARNAME=$mbfl_a_variable_VARNAME
-m4_dnl
-m4_dnl and when INIT_VALUE is not empty, it finishes with:
-m4_dnl
-m4_dnl   VARNAME=INIT_VALUE
-m4_dnl
-m4_dnl Define a global "proxy variable"  VARNAME referencing a global "data
-m4_dnl variable"  with unique  name.  The  data variable  has the  optional
-m4_dnl attributes    DECLARE_OPTIONS.     A   further    global    variable
-m4_dnl mbfl_a_variable_VARNAME holds the name of the data variable.
-m4_dnl
-m4_define([[[mbfl_global_varref]]],[[[m4_dnl
-  local mbfl_a_variable_$1; m4_dnl
-  mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
-  declare -g $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
-  local   -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
-  m4_ifelse($2,,,; $1=$2)m4_dnl
-]]])
-
-m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
-  declare -g mbfl_a_variable_$1; m4_dnl
-  mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
-  declare -g $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
-  declare -g -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
-  m4_ifelse($2,,,; $1=$2)m4_dnl
-]]])
-
-m4_define([[[mbfl_local_index_array_varref]]],[[[mbfl_local_varref($1,$2,-a $3)]]])
-m4_define([[[mbfl_local_assoc_array_varref]]],[[[mbfl_local_varref($1,$2,-A $3)]]])
-m4_define([[[mbfl_global_index_array_varref]]],[[[mbfl_global_varref($1,$2,-a $3)]]])
-m4_define([[[mbfl_global_assoc_array_varref]]],[[[mbfl_global_varref($1,$2,-A $3)]]])
-m4_define([[[mbfl_declare_index_array_varref]]],[[[mbfl_declare_varref($1,$2,-a $3)]]])
-m4_define([[[mbfl_declare_assoc_array_varref]]],[[[mbfl_declare_varref($1,$2,-A $3)]]])
-
-m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
-m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar($1)]]])
-
-m4_dnl Keep this expansion a single line with semicolons!
-m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
-  unset -v $mbfl_a_variable_$1; m4_dnl
-  unset -v  mbfl_a_variable_$1; m4_dnl
-  unset -v -n $1; m4_dnl
-  unset -v    $1 m4_dnl
-]]])
+#### variables, arrays and slots handling
 
 m4_define([[[mbfl_variable_unset]]],[[[unset -v $1]]])
 m4_define([[[mbfl_unset_variable]]],[[[unset -v $1]]])
-
-
-m4_dnl array slots
 
 m4_define([[[mbfl_declare_numeric_array]]],  [[[declare -a $1[[[]]]m4_ifelse($2,,,=$2)]]])
 m4_define([[[mbfl_declare_symbolic_array]]], [[[declare -A $1[[[]]]m4_ifelse($2,,,=$2)]]])
@@ -200,6 +100,132 @@ m4_define([[[mbfl_slots_qvalues]]],[[["${$1[@]}"]]])
 
 m4_define([[[mbfl_slots_keys]]],  [[[${!$1[@]}]]])
 m4_define([[[mbfl_slots_qkeys]]],[[["${!$1[@]}"]]])
+
+
+#### nameref variables handling
+
+# Synopsis:
+#
+#   mbfl_local_nameref(NAME, DATA_VARNAME_EXPR)
+#
+# It expands into:
+#
+#   local -r mbfl_a_variable_NAME=DATA_VARNAME_EXPR
+#   local -n NAME=$mbfl_a_variable_NAME
+#
+# Declare a proxy variable NAME aliasing the  data variable whose value is the result
+# of evaluating DATA_VARNAME_EXPR.
+#
+m4_define([[[mbfl_local_nameref]]],[[[m4_dnl
+  local -r mbfl_a_variable_$1=$2; m4_dnl
+  local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
+]]])
+
+# Synopsis:
+#
+#   mbfl_declare_nameref(NAME, DATA_VARNAME_EXPR)
+#
+# It expands into:
+#
+#   declare -r mbfl_a_variable_NAME=DATA_VARNAME_EXPR
+#   declare -n NAME=$mbfl_a_variable_NAME
+#
+# Declare a proxy variable NAME aliasing the  data variable whose value is the result
+# of evaluating DATA_VARNAME_EXPR.
+#
+m4_define([[[mbfl_declare_nameref]]],[[[m4_dnl
+  declare -r mbfl_a_variable_$1=$2; m4_dnl
+  declare -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
+]]])
+
+# Synopsis:
+#
+#   mbfl_local_varref(VARNAME, INIT_VALUE, LOCAL_OPTIONS)
+#
+# It expands into:
+#
+#   local mbfl_a_variable_VARNAME
+#   mbfl_variable_alloc mbfl_a_variable_VARNAME
+#   local LOCAL_OPTIONS $mbfl_a_variable_VARNAME
+#   local -n VARNAME=$mbfl_a_variable_VARNAME
+#
+# and when INIT_VALUE is not empty, it finishes with:
+#
+#   VARNAME=INIT_VALUE
+#
+# Define a  local "proxy variable" VARNAME  referencing a local "data  variable" with
+# unique  name.  The  data variable  has  the optional  attributes LOCAL_OPTIONS.   A
+# further local variable mbfl_a_variable_VARNAME holds the name of the data variable.
+#
+m4_define([[[mbfl_local_varref]]],[[[m4_dnl
+  local mbfl_a_variable_$1; m4_dnl
+  mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
+  local $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
+  local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
+  m4_ifelse($2,,,; $1=$2)m4_dnl
+]]])
+
+# Synopsis:
+#
+#   mbfl_declare_varref(VARNAME, INIT_VALUE, DECLARE_OPTIONS)
+#
+# It expands into:
+#
+#   declare mbfl_a_variable_VARNAME
+#   mbfl_variable_alloc mbfl_a_variable_VARNAME
+#   declare DECLARE_OPTIONS $mbfl_a_variable_VARNAME
+#   declare -n VARNAME=$mbfl_a_variable_VARNAME
+#
+# and when INIT_VALUE is not empty, it finishes with:
+#
+#   VARNAME=INIT_VALUE
+#
+# Define a "proxy  variable" VARNAME referencing a "data variable"  with unique name.
+# The data  variable has  the optional attributes  DECLARE_OPTIONS.  A  further local
+# variable mbfl_a_variable_VARNAME holds the name of the data variable.
+#
+# We can use the argument DECLARE_OPTIONS to declare a global data variable:
+#
+#   mbfl_declare_varref(VARNAME, INIT_VALUE, -g)
+#
+m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
+  m4_errprint([[[the macro mbfl_declare_varref is deprecated use mbfl_variable_declare_varref]]])m4_dnl
+  declare mbfl_a_variable_$1; m4_dnl
+  mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
+  declare $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
+  declare -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
+  m4_ifelse($2,,,; $1=$2)m4_dnl
+]]])
+
+# Synopsis:
+#
+#	mbfl_namevar(VARNAME)
+#
+m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
+
+# Synopsis:
+#
+#	mbfl_datavar(VARNAME)
+#
+m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar([[[$1]]])]]])
+
+m4_dnl Keep this expansion a single line with semicolons!
+m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
+  unset -v $mbfl_a_variable_$1; m4_dnl
+  unset -v  mbfl_a_variable_$1; m4_dnl
+  unset -v -n $1; m4_dnl
+  unset -v    $1 m4_dnl
+]]])
+
+m4_ifdef([[[__MBFL_ENABLE_UNDERSCORE_AS_DATAVAR__]]],[[[m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])]]])
+
+
+#### nameref arrays declarations
+
+m4_define([[[mbfl_local_index_array_varref]]],  [[[mbfl_local_varref($1,$2,-a $3)]]])
+m4_define([[[mbfl_local_assoc_array_varref]]],  [[[mbfl_local_varref($1,$2,-A $3)]]])
+m4_define([[[mbfl_declare_index_array_varref]]],[[[mbfl_declare_varref($1,$2,-a $3)]]])
+m4_define([[[mbfl_declare_assoc_array_varref]]],[[[mbfl_declare_varref($1,$2,-A $3)]]])
 
 
 m4_dnl string macros
@@ -287,7 +313,6 @@ function program_replace_[[[]]]$1 () {
 m4_dnl data structures
 
 m4_define([[[mbfl_struct_local_varref]]],  [[[mbfl_local_index_array_varref([[[$1]]])]]])
-m4_define([[[mbfl_struct_global_varref]]], [[[mbfl_global_index_array_varref([[[$1]]])]]])
 m4_define([[[mbfl_struct_declare_varref]]],[[[mbfl_declare_index_array_varref([[[$1]]])]]])
 
 

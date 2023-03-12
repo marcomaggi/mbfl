@@ -120,11 +120,13 @@ function mbfl_variable_alloc () {
 	mbfl_NAME=mbfl_u_variable_${RANDOM}
 	# How do we test if there is a collision  with variable names?  We test the name as a scalar
 	# variable name and verify its string length, then we  test the name as an array name and we
-	# verify its number of slots.  For some reason I cannot make:
+	# verify its number of slots.  Using:
 	#
 	#    test -v $mbfl_NAME
 	#
-	# work (Marco Maggi; Nov 19, 2020).
+	# does not  work because it returns  true only if the  variable has already been  set with a
+	# value; it returns  false if it has been  used as argument to "declare"  or "local" without
+	# initialising it.
 	local -n mbfl_REF=$mbfl_NAME
 	if ((0 == mbfl_string_len(mbfl_REF) && 0 == mbfl_slots_number(mbfl_REF)))
 	then break
