@@ -47,7 +47,7 @@ m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 function struct-1.1 () {
     mbfl_struct_define_type greek alpha beta gamma
-    mbfl_struct_declare(stru)
+    mbfl_struct_local_varref(stru)
     local A=0 B=0 C=0
 
     greek_init stru 1 2 3
@@ -67,7 +67,7 @@ function struct-1.1 () {
 
 function struct-1.2 () {
     mbfl_struct_define_type greek alpha beta gamma
-    mbfl_struct_declare(stru)
+    mbfl_struct_local_varref(stru)
     local A=0 B=0 C=0
 
     greek_init stru 1 2 3

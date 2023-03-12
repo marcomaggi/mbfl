@@ -286,11 +286,9 @@ function program_replace_[[[]]]$1 () {
 
 m4_dnl data structures
 
-m4_define([[[mbfl_struct_declare]]],[[[mbfl_declare_index_array_varref([[[$1]]])]]])
-
-m4_define([[[mbfl_struct_define]]],[[[m4_dnl
-mbfl_struct_declare($1);m4_dnl
-]]])
+m4_define([[[mbfl_struct_local_varref]]],  [[[mbfl_local_index_array_varref([[[$1]]])]]])
+m4_define([[[mbfl_struct_global_varref]]], [[[mbfl_global_index_array_varref([[[$1]]])]]])
+m4_define([[[mbfl_struct_declare_varref]]],[[[mbfl_declare_index_array_varref([[[$1]]])]]])
 
 
 m4_dnl done
