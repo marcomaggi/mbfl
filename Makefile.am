@@ -130,7 +130,7 @@ MAINTAINERCLEANFILES		+= src/bin/mbflpp.bash
 # 	@: > src/bin/$(am__dirstamp)
 
 # src/bin/%.sh: src/bin/%.sh.m4 $(MBFL_SCRIPTS_PREREQUISITES)
-# 	$(MBFL_SCRIPTS_RUN) $(MBFL_SCRIPTS_FLAGS) <$< >$@
+# 	$(MBFL_SCRIPTS_RUN) $(MBFL_SCRIPTS_FLAGS) --output=$@ $<
 
 
 #### libmbfl modules generation
@@ -208,7 +208,7 @@ src/modules/$(am__dirstamp):
 	@: > src/modules/$(am__dirstamp)
 
 src/modules/%.bash: src/modules/%.bash.m4 $(MBFL_MODULES_PREREQUISITES)
-	$(MBFL_MODULES_RUN) $(MBFL_MODULES_FLAGS) <$< >$@
+	$(MBFL_MODULES_RUN) $(MBFL_MODULES_FLAGS) $< >$@
 
 
 #### libmbfl generation
@@ -234,7 +234,7 @@ src/lib/$(am__dirstamp):
 	@: > src/lib/$(am__dirstamp)
 
 src/lib/libmbfl.bash: src/lib/libmbfl.bash.m4 $(MBFL_LIB_MODULES) $(MBFL_LIB_PREREQUISITES)
-	$(MBFL_LIB_RUN) $(MBFL_LIB_FLAGS) <$< >$@
+	$(MBFL_LIB_RUN) $(MBFL_LIB_FLAGS) --output=$@ $<
 
 
 #### libmbfl-utils generation: modules
@@ -266,7 +266,7 @@ src/utils-modules/$(am__dirstamp):
 	@: > src/utils-modules/$(am__dirstamp)
 
 src/utils-modules/%.bash: src/utils-modules/%.bash.m4 $(MBFL_UTILS_MODULES_PREREQUISITES)
-	$(MBFL_UTILS_MODULES_RUN) $(MBFL_UTILS_MODULES_FLAGS) <$< >$@
+	$(MBFL_UTILS_MODULES_RUN) $(MBFL_UTILS_MODULES_FLAGS) --output=$@ $<
 
 
 #### libmbfl-utils generation
@@ -288,7 +288,7 @@ MBFL_LIBUTILS_PREREQUISITES	=		\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfl-utils.bash: src/lib/libmbfl-utils.bash.m4 $(MBFL_LIBUTILS_MODULES) $(MBFL_LIBUTILS_PREREQUISITES)
-	$(MBFL_LIBUTILS_RUN) $(MBFL_LIBUTILS_FLAGS) <$< >$@
+	$(MBFL_LIBUTILS_RUN) $(MBFL_LIBUTILS_FLAGS) --output=$@ $<
 
 
 #### libmbfl-tests generation
@@ -310,7 +310,7 @@ MBFL_LIBTEST_PREREQUISITES	=		\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfl-tests.bash: src/lib/libmbfl-tests.bash.m4 $(MBFL_LIBTEST_PREREQUISITES)
-	$(MBFL_LIBTEST_RUN) $(MBFL_LIBTEST_FLAGS) <$< >$@
+	$(MBFL_LIBTEST_RUN) $(MBFL_LIBTEST_FLAGS) --output=$@ $<
 
 
 #### libmbfl-at generation
@@ -332,7 +332,7 @@ MBFL_LIBAT_PREREQUISITES	=		\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfl-at.bash: src/lib/libmbfl-at.bash.m4 $(MBFL_LIBAT_PREREQUISITES)
-	$(MBFL_LIBAT_RUN) $(MBFL_LIBAT_FLAGS) <$< >$@
+	$(MBFL_LIBAT_RUN) $(MBFL_LIBAT_FLAGS) --output=$@ $<
 
 
 #### libmbfl-arch generation
@@ -354,7 +354,7 @@ MBFL_LIBARCH_PREREQUISITES	=		\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfl-arch.bash: src/lib/libmbfl-arch.bash.m4 $(MBFL_LIBARCH_PREREQUISITES)
-	$(MBFL_LIBARCH_RUN) $(MBFL_LIBARCH_FLAGS) <$< >$@
+	$(MBFL_LIBARCH_RUN) $(MBFL_LIBARCH_FLAGS) --output=$@ $<
 
 
 #### libmbfl-passwords generation
@@ -376,7 +376,7 @@ MBFL_LIBPASSWORDS_PREREQUISITES	=		\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfl-passwords.bash: src/lib/libmbfl-passwords.bash.m4 $(MBFL_LIBPASSWORDS_PREREQUISITES)
-	$(MBFL_LIBPASSWORDS_RUN) $(MBFL_LIBPASSWORDS_FLAGS) <$< >$@
+	$(MBFL_LIBPASSWORDS_RUN) $(MBFL_LIBPASSWORDS_FLAGS) --output=$@ $<
 
 
 #### libmbfl-git generation
@@ -398,7 +398,7 @@ MBFL_LIBGIT_PREREQUISITES	=		\
 	$(MBFL_PREPROCESSOR)
 
 src/lib/libmbfl-git.bash: src/lib/libmbfl-git.bash.m4 $(MBFL_LIBGIT_PREREQUISITES)
-	$(MBFL_LIBGIT_RUN) $(MBFL_LIBGIT_FLAGS) <$< >$@
+	$(MBFL_LIBGIT_RUN) $(MBFL_LIBGIT_FLAGS) --output=$@ $<
 
 
 #### examples
@@ -459,28 +459,28 @@ examples/$(am__dirstamp):
 	@: > examples/$(am__dirstamp)
 
 examples/at.sh: examples/at.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
-	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
 examples/compress.sh: examples/compress.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
-	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
 examples/pwentries.sh: examples/pwentries.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
-	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
 examples/sendmail-mbfl.sh: examples/sendmail-mbfl.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
-	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
 examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
-	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
 examples/template-actions.sh: examples/template-actions.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
-	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
 examples/vc: examples/vc.m4 $(MBFL_EXAMPLES_PREREQUISITES)
-	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
 examples/semver: examples/semver.m4 $(MBFL_EXAMPLES_PREREQUISITES)
-	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
 if WANT_SENDMAIL
 
@@ -660,10 +660,10 @@ $(builddir)/tests/$(am__dirstamp):
 	@: > tests/$(am__dirstamp)
 
 tests/%.test: tests/%.test.m4 $(MBFL_TESTS_PREREQUISITES)
-	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) <$< >$@
+	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) $< >$@
 
 tests/%.sh: tests/%.sh.m4 $(MBFL_TESTS_PREREQUISITES)
-	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) <$< >$@
+	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) $< >$@
 
 tests/signal.test: tests/signaltest.sh
 

@@ -5648,18 +5648,11 @@ function main () {
 	    # If there are  no arguments on the command  line: read input from stdin.   If there are
 	    # arguments on the command line: they must all by files.
             if ((0 == ARGC))
-    	    then program_cat
+    	    then program_m4 -
             elif mbfl_argv_all_files
-    	    then program_cat "${ARGV[@]}"
+    	    then program_m4 "${ARGV[@]}"
 	    else exit_because_wrong_command_line_arguments
 	    fi
-    	} | {
-    	    program_m4									\
-		-D__PACKAGE_VERSION__="$PACKAGE_VERSION"				\
-		-D__PACKAGE_DATADIR__="$pkgdatadir"					\
-		-D__MBFL_LIBRARY__="$script_option_LIBMBFL"				\
-		-D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_LIBMBFL"	\
-		${M4_FLAGS} -
     	} | {
             if test "$script_option_PRESERVE_COMMENTS" = 'yes'
 	    then program_cat
@@ -5705,7 +5698,12 @@ function filter_page_separators () {
 #### program interfaces
 
 function program_m4 () {
-    mbfl_program_exec "@MBFL_PROGRAM_M4@" "$@"
+    mbfl_program_exec "@MBFL_PROGRAM_M4@" \
+		      -D__PACKAGE_VERSION__="$PACKAGE_VERSION"				\
+		      -D__PACKAGE_DATADIR__="$pkgdatadir"				\
+		      -D__MBFL_LIBRARY__="$script_option_LIBMBFL"			\
+		      -D__MBFL_LIBMBFL_INSTALLATION_PATHNAME__="$script_option_LIBMBFL"	\
+		      $M4_FLAGS "$@"
 }
 function program_grep () {
     local GREP
