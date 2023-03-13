@@ -53,6 +53,9 @@ changes!
 * BACKWARDS  INCOMPATIBILITY  The  library "libmbfltest.bash"  has  been
   renamed to "libmbfl-tests.bash".
 
+* BACKWARDS INCOMPATIBILITY The macro "mbfl_command_line_argument()" now
+  uses "declare" rather than "local".
+
 * Added  new  library   "libmbfl-passwords.bash"  to  generate  password
   strings.
 

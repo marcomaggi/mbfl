@@ -1115,9 +1115,9 @@ this assigns the integer attribute to the variable; @bashref{Bash Builtins, Bash
 
 @deffn {Preprocessor Macro} mbfl_command_line_argument (@var{VARNAME}, @var{ARGINDEX})
 @deffnx {Preprocessor Macro} mbfl_command_line_argument (@var{VARNAME}, @var{ARGINDEX}, @var{OPTIONS})
-Define a variable local to a shell function holding an argument to the script.  @var{VARNAME} is the
-variable name; @var{ARGINDEX} is the argument index in the @code{ARGV} array; @var{OPTIONS} are
-options for the shell built--in @code{local} .
+Define a variable holding an argument to the script: store in the variable @var{VARNAME} the value
+at key @var{ARGINDEX} in the index array @var{ARGV}; the first argument has index 0.  The optional
+@var{OPTIONS} are options for the shell built--in @code{declare}.
 
 Example, the following:
 
@@ -1129,7 +1129,7 @@ mbfl_command_line_argument(PATHNAME, 3, -r)
 is expanded to:
 
 @example
-local -r PATHNAME=$@{ARGV[3]@}
+declare -r PATHNAME=$@{ARGV[3]@}
 @end example
 @end deffn
 

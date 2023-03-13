@@ -55,7 +55,14 @@ local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
 
 m4_dnl script's command line arguments handling
 
-m4_define([[[mbfl_command_line_argument]]],[[[local $3 $1="${ARGV[$2]}"]]])
+# Synopsis:
+#
+#    mbfl_command_line_argument(VARNAME, ARGINDEX)
+#
+# Store in the  variable VARNAME the value  at key ARGINDEX in the  index array ARGV.
+# The first argument has index 0.
+#
+m4_define([[[mbfl_command_line_argument]]],[[[declare $3 $1="${ARGV[$2]}"]]])
 
 m4_define([[[mbfl_extract_command_line_argument]]],[[[m4_dnl
 mbfl_command_line_argument($1,$2,$3); m4_dnl
