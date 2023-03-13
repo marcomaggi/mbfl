@@ -196,7 +196,6 @@ m4_define([[[mbfl_local_varref]]],[[[m4_dnl
 #   mbfl_declare_varref(VARNAME, INIT_VALUE, -g)
 #
 m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
-  m4_errprint([[[the macro mbfl_declare_varref is deprecated use mbfl_variable_declare_varref]]])m4_dnl
   declare mbfl_a_variable_$1; m4_dnl
   mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
   declare $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
