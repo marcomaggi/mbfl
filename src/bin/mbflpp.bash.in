@@ -5631,12 +5631,19 @@ function script_option_update_check_version () {
     fi
 }
 
+function script_after_parsing_options () {
+    if mbfl_string_equal "$script_option_OUTPUT" '-'
+    then script_option_OUTPUT=/dev/stdout
+    fi
+}
+
 #page
 #### main functions
 
 function main () {
     local M4_FLAGS='--prefix-builtins'
     local PREPROCESSOR=${pkgdatadir}/libmbfl-preprocessor.m4
+    local OUTPUT
 
     M4_FLAGS+=" ${M4_INCLUDE_OPTIONS} ${M4_SYMBOL_DEFINITIONS}"
     if mbfl_string_equal "$script_option_NO_PREPROCESSOR" 'no' && mbfl_file_is_readable "$PREPROCESSOR"
@@ -5661,16 +5668,14 @@ function main () {
     	} | filter_page_separators | {
 	    # If we  send the output to  a "bash" process: there  is no need to  prepend the shebang
 	    # line.
-            if test "$script_option_EVAL" = 'yes'
+            if mbfl_string_equal "$script_option_EVAL" 'yes'
+	       # Execute bash which will read from stdin.
     	    then exec "$mbfl_PROGRAM_BASH"
             else
-		if test "$script_option_ADD_BASH" = 'yes'
-    		then printf '#!%s\n' "$script_option_BASH_PROGRAM"
+		if mbfl_string_equal "$script_option_ADD_BASH" 'yes'
+    		then printf '#!%s\n' "$script_option_BASH_PROGRAM" >"$script_option_OUTPUT"
 		fi
-    		if test "$script_option_OUTPUT" = '-'
-    		then program_cat
-    		else program_cat >"$script_option_OUTPUT"
-    		fi
+		program_cat >"$script_option_OUTPUT"
             fi
     	}
     then exit $?
