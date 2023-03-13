@@ -12,6 +12,7 @@ prefix=/
     --enable-maintainer-mode                    \
     --prefix="${prefix}"			\
     --with-vc					\
+    --with-semver				\
     "$@"
 
 ### end of file

@@ -410,6 +410,7 @@ EXTRA_DIST			+=		\
 	examples/sendmail-mbfl.sh.m4		\
 	examples/template-actions.sh.m4		\
 	examples/template.sh.m4			\
+	examples/semver.m4			\
 	examples/vc.m4				\
 	\
 	examples/sendmail-connector.sh		\
@@ -425,6 +426,7 @@ MBFL_EXAMPLES_BUILT_FILES	=		\
 	examples/sendmail-mbfl.sh		\
 	examples/template-actions.sh		\
 	examples/template.sh			\
+	examples/semver				\
 	examples/vc
 
 noinst_SCRIPTS			= $(MBFL_EXAMPLES_BUILT_FILES)
@@ -477,6 +479,9 @@ examples/template-actions.sh: examples/template-actions.sh.m4 $(MBFL_EXAMPLES_PR
 examples/vc: examples/vc.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
 
+examples/semver: examples/semver.m4 $(MBFL_EXAMPLES_PREREQUISITES)
+	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) <$< >$@
+
 if WANT_SENDMAIL
 
 dist_lisp_LISP		= examples/sendmail-mbfl.el
@@ -485,22 +490,32 @@ bin_SCRIPTS		+= examples/sendmail-mbfl.sh
 endif
 
 if WANT_VC
-
 bin_SCRIPTS		+= examples/vc
-
+endif
+if WANT_SEMVER
+bin_SCRIPTS		+= examples/semver
 endif
 
 ## ------------------------------------------------------------------------
 
-noinst_SCRIPTS			+= src/etc/bash_completions.d/vc.bash
-completions_PREREQUISITES	= src/etc/bash_completions.d/$(am__dirstamp)
+noinst_SCRIPTS			+= \
+	src/etc/bash_completions.d/semver.bash		\
+	src/etc/bash_completions.d/vc.bash
+
+completions_PREREQUISITES	= \
+	src/etc/bash_completions.d/$(am__dirstamp)
+
 CLEANFILES			+=			\
+	src/etc/bash_completions.d/semver.bash		\
 	src/etc/bash_completions.d/vc.bash		\
 	src/etc/bash_completions.d/$(am__dirstamp)
 
-if WANT_VC
 completionsdir			= $(sysconfdir)/bash_completion.d
+if WANT_VC
 completions_SCRIPTS		= src/etc/bash_completions.d/vc.bash
+endif
+if WANT_SEMVER
+completions_SCRIPTS		= src/etc/bash_completions.d/semver.bash
 endif
 
 src/etc/bash_completions.d/$(am__dirstamp):
@@ -511,6 +526,11 @@ src/etc/bash_completions.d/vc.bash:					\
 		examples/vc						\
 		$(completions_PREREQUISITES)
 	$(MBFL_PROGRAM_BASH) examples/vc help print-completions-script >$(@)
+
+src/etc/bash_completions.d/semver.bash:					\
+		examples/semver						\
+		$(completions_PREREQUISITES)
+	$(MBFL_PROGRAM_BASH) examples/semver help print-completions-script >$(@)
 
 
 #### interface to "make check"

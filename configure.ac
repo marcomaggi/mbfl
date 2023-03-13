@@ -87,6 +87,15 @@ AS_VAR_IF(with_vc,'yes',
   [AC_MSG_RESULT([no])])
 AM_CONDITIONAL([WANT_VC],[test x$with_vc = xyes])
 
+AC_ARG_WITH([semver],
+  AS_HELP_STRING([--with-semver],[enable installation of semver example script]),
+  [true],[with_semver=no])
+AC_MSG_CHECKING([whether semver script will be installed])
+AS_VAR_IF(with_semver,'yes',
+  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([no])])
+AM_CONDITIONAL([WANT_SEMVER],[test x$with_semver = xyes])
+
 
 #### let's go
 
