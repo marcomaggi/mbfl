@@ -55,13 +55,6 @@ mbfl_load_library
 
 #### actions tree
 
-# mbfl_declare_action_set PARSE
-# #                   action-set	keyword		subset		identifier	description
-# mbfl_declare_action PARSE	PARSE_CONFIG	PARSE_CONFIG	config		'Configuration management.'
-# mbfl_declare_action PARSE	PARSE_BRANCH	PARSE_BRANCH	branch		'Branches management.'
-
-## --------------------------------------------------------------------
-
 mbfl_declare_action_set HELP
 #                   action-set	keyword		subset		identifier	description
 mbfl_declare_action HELP	HELP_USAGE	NONE		usage		'Print the help screen and exit.'
@@ -72,6 +65,7 @@ mbfl_declare_action HELP	HELP_PRINT_COMPLETIONS_SCRIPT NONE print-completions-sc
 mbfl_declare_action_set MAIN
 #                   action-set	keyword		subset		identifier	description
 mbfl_declare_action MAIN	PARSE		NONE		parse		'Parse semantic version specifications.'
+mbfl_declare_action MAIN	COMPARE		NONE		compare		'Compare two semantic version specifications.'
 mbfl_declare_action MAIN	HELP		HELP		help		'Help the user of this script.'
 
 
@@ -99,9 +93,9 @@ function script_before_parsing_options_PARSE () {
 function script_action_PARSE () {
     if mbfl_wrong_num_args 1 $ARGC
     then
+	mbfl_command_line_argument(SPEC, 0, -r)
 	mbfl_declare_assoc_array_varref(RV)
 	mbfl_declare_varref(START_INDEX,0,-i)
-	mbfl_command_line_argument(SPEC, 0, -r)
 
 	mbfl_message_verbose_printf 'parsing semantic version specification: "%s"\n' "$SPEC"
 
@@ -116,6 +110,34 @@ function script_action_PARSE () {
 	    #printf '%s\n' mbfl_slot_qref(RV, END_INDEX)
 	else
 	    mbfl_message_error_printf 'parsing semantic version specification: "%s"' "$SPEC"
+	    exit_because_failure
+	fi
+    else exit_because_wrong_num_args
+    fi
+    exit_because_success
+}
+
+
+#### compare two parse semantic version specifications
+
+function script_before_parsing_options_COMPARE () {
+    script_USAGE="usage: ${script_PROGNAME} compare [options] SEMVER1 SEMVER2"
+    script_DESCRIPTION='Compare two semantic version specifications.'
+    script_EXAMPLES="Usage examples:
+\n\
+\t${script_PROGNAME} compare v1.2.3 v1.5.3"
+}
+function script_action_COMPARE () {
+    if mbfl_wrong_num_args 2 $ARGC
+    then
+	mbfl_command_line_argument(SPEC1, 0, -r)
+	mbfl_command_line_argument(SPEC2, 1, -r)
+	mbfl_declare_varref(RV, -i)
+
+	if mbfl_semver_compare_var _(RV) "$SPEC1" "$SPEC2"
+	then printf '%d' $RV
+	else
+	    mbfl_message_error_printf 'parsing semantic version specifications: "%s", "%s"' "$SPEC1" "$SPEC2"
 	    exit_because_failure
 	fi
     else exit_because_wrong_num_args
