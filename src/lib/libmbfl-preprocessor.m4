@@ -33,10 +33,43 @@ m4_dnl initial setup
 
 m4_changequote(`[[[', `]]]')
 
+
+#### helper macros
+
 m4_define([[[MBFL_SHARP]]],[[[#]]])
 
-m4_define([[[MBFL_P_M4_ERRPRINT]]],[[[m4_errprint(m4___program__:m4___file__:m4___line__:[[[ $1
+# Synopsis:
+#
+#    MBFL_P_ERRPRINT([[[this is an error message]]])
+#
+# Print to stderr an error message using the built-in facilities of GNU m4.
+#
+m4_define([[[MBFL_P_ERRPRINT]]],[[[m4_errprint(m4___program__:m4___file__:m4___line__:[[[ $1
 ]]])]]])
+
+# Synopsis:
+#
+#    MBFL_P_WRONG_NUM_ARGS(MACRO_NAME, GIVEN_NUM_ARGS, EXPECTED_NUM_ARGS)
+#
+# Check the number of arguments given to a macro use: if it is wrong. print to stderr
+# an error message using the built-in facilities of GNU m4.
+#
+m4_define([[[MBFL_P_WRONG_NUM_ARGS]]],[[[m4_dnl
+m4_ifelse([[[$2]]],[[[$3]]],[[[MBFL_P_ERRPRINT([[[wrong number of parameter in use of $1: expected $3 got $2]]])]]])m4_dnl
+]]])
+
+# Synopsis:
+#
+#    MBFL_P_REMOVE_COMMA_FROM_ARGLIST(1, 2, 3, 4)
+#    --> 1 2 3 4
+#
+# remove the commas from its arguments list.  To use this with "m4_shift()":
+#
+#    MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))
+#
+m4_define([[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST]]],[[[m4_dnl
+m4_ifelse([[[$1]]],,,[[[$1]]] [[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))]]])m4_dnl
+]]])
 
 
 m4_dnl function parameters handling
@@ -318,8 +351,76 @@ function program_replace_[[[]]]$1 () {
 
 m4_dnl data structures
 
-m4_define([[[mbfl_struct_local_varref]]],  [[[mbfl_local_index_array_varref([[[$1]]])]]])
-m4_define([[[mbfl_struct_declare_varref]]],[[[mbfl_declare_index_array_varref([[[$1]]])]]])
+# Synopsis:
+#
+#   mbfl_p_struct_declare_array(INSTANCE_VAR, DATAVAR_OPTIONS)
+#
+# Declare a variable as holder of a data structure instance.  The DATAVAR_OPTIONS are
+# handed to "declare" and allow us to  declare a global data variable.  This macro is
+# meant to be private.
+#
+m4_define([[[mbfl_p_struct_declare_array]]],[[[m4_dnl
+mbfl_declare_index_array_varref([[[$1]]],,[[[$2]]])m4_dnl
+]]])
+
+# Synopsis:
+#
+#   mbfl_struct_declare(INSTANCE_VAR)
+#
+# Declare a variable as holder of a data structure instance.
+#
+m4_define([[[mbfl_struct_declare]]],[[[m4_dnl
+mbfl_p_struct_declare_array([[[$1]]])m4_dnl
+]]])
+
+# Synopsis:
+#
+#   mbfl_struct_declare_global_varref(INSTANCE_VAR)
+#
+# Declare a  variable as  holder of  a data structure  instance: the  associated data
+# variable is declared as global.
+#
+m4_define([[[mbfl_struct_declare_global]]],[[[m4_dnl
+mbfl_p_struct_declare_array([[[$1]]],[[[-g]]])m4_dnl
+]]])
+
+# Synopsis:
+#
+#   mbfl_struct_define(INSTANCE_VAR, TYPE_NAME, CONSTRUCTOR_ARG, ...)
+#
+# Declare a  variable as holder of  a data structure instance.   Call the constructor
+# for the given TYPE_NAME, passing to it the given CONSTRUCTOR_ARG parameters.
+#
+m4_define([[[mbfl_struct_define]]],[[[m4_dnl
+mbfl_struct_declare([[[$1]]]);m4_dnl
+mbfl_struct_make [[[$2]]] [[[$1]]] MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift(m4_shift($@)))
+]]])
+
+# Synopsis:
+#
+#   mbfl_struct_define(INSTANCE_VAR, TYPE_NAME, CONSTRUCTOR_ARG, ...)
+#
+# Declare a  variable as holder  of a data structure  instance; its data  variable is
+# declared as  global.  Call the constructor  for the given TYPE_NAME,  passing to it
+# the given CONSTRUCTOR_ARG parameters.
+#
+m4_define([[[mbfl_struct_define_global]]],[[[m4_dnl
+mbfl_struct_declare_global([[[$1]]]);m4_dnl
+mbfl_struct_make [[[$2]]] [[[$1]]] MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift(m4_shift($@)))
+]]])
+
+# Synopsis:
+#
+#   mbfl_struct_unset(INSTANCE_VAR)
+#
+# Unset all the  variables associated to the given data  structure instance variable.
+# Example:
+#
+#    mbfl_struct_define_type greek alpha beta gamma
+#    mbfl_struct_define_global(stru, greek, 1, 2, 3)
+#    mbfl_struct_unset(stru)
+#
+m4_define([[[mbfl_struct_unset]]],[[[mbfl_unset_varref([[[$1]]])]]])
 
 
 m4_dnl done

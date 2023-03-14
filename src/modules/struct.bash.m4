@@ -90,6 +90,9 @@ function mbfl_struct_define_type () {
     }
 }
 
+
+#### struct instance handling
+
 function mbfl_struct_make () {
     mbfl_mandatory_parameter(mbfl_TYPE,  1, data structure type descriptor)
     mbfl_mandatory_nameref_parameter(mbfl_STRU, 2, variable referencing a data structure)

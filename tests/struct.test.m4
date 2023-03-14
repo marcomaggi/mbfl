@@ -45,10 +45,12 @@ m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 #### simple tests
 
+# Test for: mbfl_struct_define_type, mbfl_struct_declare, field accessors.
+#
 function struct-1.1 () {
     mbfl_struct_define_type greek alpha beta gamma
-    mbfl_struct_local_varref(stru)
-    local A=0 B=0 C=0
+    mbfl_struct_declare(stru)
+    declare A=0 B=0 C=0
 
     greek_init stru 1 2 3
     if false
@@ -65,10 +67,12 @@ function struct-1.1 () {
 	dotest-equal 3 $C
 }
 
+# Test for: mbfl_struct_define_type, mbfl_struct_declare, field accessors, field mutators.
+#
 function struct-1.2 () {
     mbfl_struct_define_type greek alpha beta gamma
-    mbfl_struct_local_varref(stru)
-    local A=0 B=0 C=0
+    mbfl_struct_declare(stru)
+    declare A=0 B=0 C=0
 
     greek_init stru 1 2 3
     if false
@@ -92,6 +96,54 @@ function struct-1.2 () {
 	dotest-equal 11 $A &&
 	dotest-equal 22 $B &&
 	dotest-equal 33 $C
+}
+
+# Test for: mbfl_struct_define, mbfl_struct_unset.
+#
+function struct-1.3 () {
+    mbfl_struct_define_type greek alpha beta gamma
+    mbfl_struct_define(stru, greek, 1, 2, 3)
+    declare A=0 B=0 C=0
+
+    if false
+    then mbfl_array_dump _(stru)
+    fi
+    greek_alpha_ref _(stru) A
+    greek_beta_ref  _(stru) B
+    greek_gamma_ref _(stru) C
+
+    greek? _(stru) &&
+	mbfl_struct_is_a _(stru) greek &&
+	dotest-equal 1 $A &&
+	dotest-equal 2 $B &&
+	dotest-equal 3 $C
+}
+
+# Test for: mbfl_struct_define_global, mbfl_struct_unset.
+#
+function struct-1.4 () {
+    mbfl_struct_define_type greek alpha beta gamma
+    declare A=0 B=0 C=0
+
+    mbfl_location_enter
+    {
+	mbfl_struct_define_global(stru, greek, 1, 2, 3)
+	mbfl_location_handler "mbfl_struct_unset(stru); echo $FUNCNAME: unset variable _(stru) >&2"
+
+	if false
+	then mbfl_array_dump _(stru)
+	fi
+	greek_alpha_ref _(stru) A
+	greek_beta_ref  _(stru) B
+	greek_gamma_ref _(stru) C
+
+	greek? _(stru) &&
+	    mbfl_struct_is_a _(stru) greek &&
+	    dotest-equal 1 $A &&
+	    dotest-equal 2 $B &&
+	    dotest-equal 3 $C
+    }
+    mbfl_location_leave
 }
 
 
