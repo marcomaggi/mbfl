@@ -386,31 +386,6 @@ mbfl_p_struct_declare_array([[[$1]]],[[[-g]]])m4_dnl
 
 # Synopsis:
 #
-#   mbfl_struct_define(INSTANCE_VAR, TYPE_NAME, CONSTRUCTOR_ARG, ...)
-#
-# Declare a  variable as holder of  a data structure instance.   Call the constructor
-# for the given TYPE_NAME, passing to it the given CONSTRUCTOR_ARG parameters.
-#
-m4_define([[[mbfl_struct_define]]],[[[m4_dnl
-mbfl_struct_declare([[[$1]]]);m4_dnl
-mbfl_struct_make [[[$2]]] [[[$1]]] MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift(m4_shift($@)))
-]]])
-
-# Synopsis:
-#
-#   mbfl_struct_define(INSTANCE_VAR, TYPE_NAME, CONSTRUCTOR_ARG, ...)
-#
-# Declare a  variable as holder  of a data structure  instance; its data  variable is
-# declared as  global.  Call the constructor  for the given TYPE_NAME,  passing to it
-# the given CONSTRUCTOR_ARG parameters.
-#
-m4_define([[[mbfl_struct_define_global]]],[[[m4_dnl
-mbfl_struct_declare_global([[[$1]]]);m4_dnl
-mbfl_struct_make [[[$2]]] [[[$1]]] MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift(m4_shift($@)))
-]]])
-
-# Synopsis:
-#
 #   mbfl_struct_unset(INSTANCE_VAR)
 #
 # Unset all the  variables associated to the given data  structure instance variable.
