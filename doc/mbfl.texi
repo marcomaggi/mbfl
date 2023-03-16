@@ -163,6 +163,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * exit::                        Exit codes and return codes.
 * locations::                   Running location handlers.
 * variables::                   Manipulating variables.
+* structs::                     Data structures.
 * strings::                     Manipulating strings with functions.
 * actions::                     Selecting actions to perform.
 * getopts::                     Parsing command line options.
@@ -2814,6 +2815,103 @@ each key in the array print to @stderr{} a string of the form:
 where @var{KEY} is a key in the array and @var{VALUE} is its value.  If the optional argument
 @var{NAME} is not present: it defaults to @var{ARRY_VAR}.
 @end defun
+
+@c page
+@node structs
+@chapter Data structures
+
+
+@mbfl{} implements basic data structures on top of Bash arrays.  In the implementation of data
+structures: many ideas where stolen from other languages, most notably Scheme implementations.
+
+@menu
+* structs conventions::         Naming and coding conventions.
+* structs descriptors::         Data--structure type--descriptors.
+@end menu
+
+@c page
+@node structs conventions
+@section Naming and coding conventions
+
+
+All the macros, functions and global variables defined by this module have names prefixed with
+@code{mbfl_struct_}.
+
+With @dfn{data--structure type--descriptor} we indicate an object that holds the definition of a
+type, somewhat like a @code{struct} definition in the C language, but it is a first--class object.
+
+With @dfn{data--structure instance} we indicate an object that holds an instance of a type.  A
+data--structure type--descriptor is also a data--structure instance.
+
+With @dfn{data--structure meta type--descriptor} we indicate an object that holds the definition of
+a type; this type itself represents the definition of a type.
+
+With @dfn{field accessor} we indicate a function used to retrieve the value of a data--structure
+field.  With @dfn{field mutator} we indicate a function used to store a new value in a
+data--structure field.
+
+In every code example in this chapter, we assume the following macro has been defined in the
+preamble:
+
+@example
+m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
+@end example
+
+@noindent
+which means the following syntax expansion takes place:
+
+@example
+_(self) @expansion{} mbfl_datavar(self)
+@end example
+
+@noindent
+so to define a new data--structure type--descriptor and a new data--structure instance we can use
+the syntax:
+
+@example
+mbfl_struct_declare(color)
+mbfl_struct_define_type _(color) _(mbfl_struct_top_descriptor) 'color' red green blue
+color_init _(self) 1 2 3
+@end example
+
+@c page
+@node structs descriptors
+@section Data--structure type--descriptors
+
+
+@menu
+* structs descriptors variables::       Predefind type--descriptors.
+* structs descriptors defining::        Defining new type--descriptors.
+@end menu
+
+@c page
+@node structs descriptors variables
+@subsection Predefind type--descriptors
+
+
+@defvr {Struct type--descriptor} mbfl_struct_top_meta_descriptor
+@defvrx {Type descriptor} mbfl_struct_top_meta_descriptor
+Data--structure type--descriptor representing the type of all type--descriptors.  It is the type
+descriptor of itself.
+@end defvr
+
+
+@defvr {Struct type--descriptor} mbfl_struct_top_descriptor
+@defvrx {Type descriptor} mbfl_struct_top_meta_descriptor
+Data--structure type--descriptor topmost parent of all the type--descriptors.  When we define a new
+type--descriptor we specify
+@end defvr
+
+@c page
+@node structs descriptors defining
+@subsection Defining new type--descriptors
+
+
+@defun mbfl_struct_define_type @var{TYPE_DATAVAR} @var{PARENT_TYPE_DATAVAR} @var{TYPE_NAME} @var{FIELD_NAME} @dots{}
+Define a new data--structure type--descriptor whose meta type--descriptor is
+@code{mbfl_struct_top_meta_descriptor}.
+@end defun
+
 
 @c page
 @node strings

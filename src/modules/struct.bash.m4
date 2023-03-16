@@ -337,8 +337,8 @@ function mbfl_struct_define_type () {
 			 mbfl_slot_qref(mbfl_PARENT, MBFL_TYPE_DESCR_FIELD_OFFSET_FIRST_FIELD + mbfl_I))
 	done
 	# Store the new fields.
-	for ((mbfl_I=mbfl_PARENT_FIELDS_NUMBER; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_TYPE, MBFL_TYPE_DESCR_FIELD_OFFSET_FIRST_FIELD + mbfl_I,
+	for ((mbfl_I=0; mbfl_I < mbfl_NEW_FIELDS_NUMBER; ++mbfl_I))
+	do mbfl_slot_set(mbfl_TYPE, mbfl_PARENT_FIELDS_NUMBER +  MBFL_TYPE_DESCR_FIELD_OFFSET_FIRST_FIELD + mbfl_I,
 			 mbfl_slot_qref(mbfl_NEW_FIELD_NAMES, mbfl_I))
 	done
     }

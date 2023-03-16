@@ -280,32 +280,266 @@ function struct-simple-1.4 () {
 }
 
 
-#### define new data structure types and inspect them
+#### single inheritance
 
-# function struct-type-1.1 () {
-#     mbfl_struct_declare(color)
-#     mbfl_struct_define_type _(color) colour red green blue
-#     declare TYPE PARENT NAME
+# Define a type-descriptor with parent, use the accessors.
+#
+function struct-single-inheritance-1.1 () {
+    mbfl_struct_declare(color_red)
+    mbfl_struct_declare(color_red_green)
+    mbfl_struct_declare(self)
+    declare RED GREEN
+    declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
 
-#     mbfl_struct_descriptor_type_ref	_(color) TYPE
-#     mbfl_struct_descriptor_parent_ref	_(color) PARENT
-#     mbfl_struct_descriptor_name_ref	_(color) NAME
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    # echo color_red datavar _(color_red) >&2
+    # mbfl_array_dump _(color_red)
 
-#     #dotest-set-debug
-#     dotest-debug mbfl_top_struct _(mbfl_top_struct)
-#     dotest-debug TYPE $TYPE
-#     dotest-debug PARENT $PARENT
-#     dotest-debug NAME $NAME
+    mbfl_struct_define_type _(color_red_green) _(color_red) 'color_red_green' green
+    # echo color_red_green datavar _(color_red_green) >&2
+    # mbfl_array_dump _(color_red_green)
 
-#     #mbfl_array_dump _(color)
+    mbfl_struct_define _(self) _(color_red_green) 1 2
+    # echo self datavar _(self) >&2
+    # mbfl_array_dump _(self)
 
-#     ! mbfl_top_struct? _(color) &&
-# 	mbfl_struct_descriptor? _(color) &&
-# 	mbfl_struct_is_a _(color) _(mbfl_top_struct) &&
-# 	dotest-equal _(mbfl_top_struct) $TYPE &&
-# 	dotest-equal _(mbfl_top_struct) $PARENT &&
-# 	dotest-equal 'colour' $NAME
-# }
+    color_red_green_red_var   RED   _(self)
+    color_red_green_green_var GREEN _(self)
+
+    color_red? _(self)
+    RED_PREDICATE_RESULT=$?
+
+    color_red_green? _(self)
+    RED_GREEN_PREDICATE_RESULT=$?
+
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
+	dotest-equal 1 $RED 'value of red field' &&
+	dotest-equal 2 $GREEN 'value of green field'
+}
+
+# Define a type-descriptor with parent, use the accessors and the mutators.
+#
+function struct-single-inheritance-1.2 () {
+    mbfl_struct_declare(color_red)
+    mbfl_struct_declare(color_red_green)
+    mbfl_struct_declare(self)
+    declare RED GREEN
+    declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
+
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    # echo color_red datavar _(color_red) >&2
+    # mbfl_array_dump _(color_red)
+
+    mbfl_struct_define_type _(color_red_green) _(color_red) 'color_red_green' green
+    # echo color_red_green datavar _(color_red_green) >&2
+    # mbfl_array_dump _(color_red_green)
+
+    mbfl_struct_define _(self) _(color_red_green) 1 2
+    # echo self datavar _(self) >&2
+    # mbfl_array_dump _(self)
+
+    color_red_green_red_set   _(self) 11
+    color_red_green_green_set _(self) 22
+
+    color_red_green_red_var   RED   _(self)
+    color_red_green_green_var GREEN _(self)
+
+    color_red? _(self)
+    RED_PREDICATE_RESULT=$?
+
+    color_red_green? _(self)
+    RED_GREEN_PREDICATE_RESULT=$?
+
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
+	dotest-equal 11 $RED 'value of red field' &&
+	dotest-equal 22 $GREEN 'value of green field'
+}
+
+# Define a type-descriptor with parent, use the parent accessors and the mutators.
+#
+function struct-single-inheritance-1.3 () {
+    mbfl_struct_declare(color_red)
+    mbfl_struct_declare(color_red_green)
+    mbfl_struct_declare(self)
+    declare RED GREEN
+    declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
+
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    # echo color_red datavar _(color_red) >&2
+    # mbfl_array_dump _(color_red)
+
+    mbfl_struct_define_type _(color_red_green) _(color_red) 'color_red_green' green
+    # echo color_red_green datavar _(color_red_green) >&2
+    # mbfl_array_dump _(color_red_green)
+
+    mbfl_struct_define _(self) _(color_red_green) 1 2
+    # echo self datavar _(self) >&2
+    # mbfl_array_dump _(self)
+
+    color_red_red_set         _(self) 11
+    color_red_green_green_set _(self) 22
+
+    color_red_red_var         RED   _(self)
+    color_red_green_green_var GREEN _(self)
+
+    color_red? _(self)
+    RED_PREDICATE_RESULT=$?
+
+    color_red_green? _(self)
+    RED_GREEN_PREDICATE_RESULT=$?
+
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
+	dotest-equal 11 $RED 'value of red field' &&
+	dotest-equal 22 $GREEN 'value of green field'
+}
+
+### ------------------------------------------------------------------------
+
+# Define a type-descriptor with parent having parent, use the accessors.
+#
+function struct-single-inheritance-2.1 () {
+    mbfl_struct_declare(color_red)
+    mbfl_struct_declare(color_red_green)
+    mbfl_struct_declare(color_red_green_blue)
+    mbfl_struct_declare(self)
+    declare RED GREEN BLUE
+    declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
+
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    # echo color_red datavar _(color_red) >&2
+    # mbfl_array_dump _(color_red)
+
+    mbfl_struct_define_type _(color_red_green) _(color_red) 'color_red_green' green
+    # echo color_red_green datavar _(color_red_green) >&2
+    # mbfl_array_dump _(color_red_green)
+
+    mbfl_struct_define_type _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
+
+    mbfl_struct_define _(self) _(color_red_green_blue) 1 2 3
+    # echo self datavar _(self) >&2
+    # mbfl_array_dump _(self)
+
+    color_red_green_blue_red_var   RED   _(self)
+    color_red_green_blue_green_var GREEN _(self)
+    color_red_green_blue_blue_var  BLUE  _(self)
+
+    color_red? _(self)
+    RED_PREDICATE_RESULT=$?
+
+    color_red_green? _(self)
+    RED_GREEN_PREDICATE_RESULT=$?
+
+    color_red_green_blue? _(self)
+    RED_GREEN_BLUE_PREDICATE_RESULT=$?
+
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
+	dotest-equal 0 $RED_GREEN_BLUE_PREDICATE_RESULT 'result of applying color_red_green_blue?' &&
+	dotest-equal 1 $RED   'value of red field' &&
+	dotest-equal 2 $GREEN 'value of green field' &&
+	dotest-equal 3 $BLUE  'value of blue field'
+}
+
+# Define a type-descriptor with parent having parent, use the accessors and the mutator.
+#
+function struct-single-inheritance-2.2 () {
+    mbfl_struct_declare(color_red)
+    mbfl_struct_declare(color_red_green)
+    mbfl_struct_declare(color_red_green_blue)
+    mbfl_struct_declare(self)
+    declare RED GREEN BLUE
+    declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
+
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    # echo color_red datavar _(color_red) >&2
+    # mbfl_array_dump _(color_red)
+
+    mbfl_struct_define_type _(color_red_green) _(color_red) 'color_red_green' green
+    # echo color_red_green datavar _(color_red_green) >&2
+    # mbfl_array_dump _(color_red_green)
+
+    mbfl_struct_define_type _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
+
+    mbfl_struct_define _(self) _(color_red_green_blue) 1 2 3
+    # echo self datavar _(self) >&2
+    # mbfl_array_dump _(self)
+
+    color_red_green_blue_red_set   _(self) 11
+    color_red_green_blue_green_set _(self) 22
+    color_red_green_blue_blue_set  _(self) 33
+
+    color_red_green_blue_red_var   RED   _(self)
+    color_red_green_blue_green_var GREEN _(self)
+    color_red_green_blue_blue_var  BLUE  _(self)
+
+    color_red? _(self)
+    RED_PREDICATE_RESULT=$?
+
+    color_red_green? _(self)
+    RED_GREEN_PREDICATE_RESULT=$?
+
+    color_red_green_blue? _(self)
+    RED_GREEN_BLUE_PREDICATE_RESULT=$?
+
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
+	dotest-equal 0 $RED_GREEN_BLUE_PREDICATE_RESULT 'result of applying color_red_green_blue?' &&
+	dotest-equal 11 $RED   'value of red field' &&
+	dotest-equal 22 $GREEN 'value of green field' &&
+	dotest-equal 33 $BLUE  'value of blue field'
+}
+
+# Define a type-descriptor with parent having parent, use the parent accessors and mutator.
+#
+function struct-single-inheritance-2.3 () {
+    mbfl_struct_declare(color_red)
+    mbfl_struct_declare(color_red_green)
+    mbfl_struct_declare(color_red_green_blue)
+    mbfl_struct_declare(self)
+    declare RED GREEN BLUE
+    declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
+
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    # echo color_red datavar _(color_red) >&2
+    # mbfl_array_dump _(color_red)
+
+    mbfl_struct_define_type _(color_red_green) _(color_red) 'color_red_green' green
+    # echo color_red_green datavar _(color_red_green) >&2
+    # mbfl_array_dump _(color_red_green)
+
+    mbfl_struct_define_type _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
+
+    mbfl_struct_define _(self) _(color_red_green_blue) 1 2 3
+    # echo self datavar _(self) >&2
+    # mbfl_array_dump _(self)
+
+    color_red_red_set			_(self) 11
+    color_red_green_green_set		_(self) 22
+    color_red_green_blue_blue_set	_(self) 33
+
+    color_red_red_var			RED   _(self)
+    color_red_green_green_var		GREEN _(self)
+    color_red_green_blue_blue_var	BLUE  _(self)
+
+    color_red? _(self)
+    RED_PREDICATE_RESULT=$?
+
+    color_red_green? _(self)
+    RED_GREEN_PREDICATE_RESULT=$?
+
+    color_red_green_blue? _(self)
+    RED_GREEN_BLUE_PREDICATE_RESULT=$?
+
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
+	dotest-equal 0 $RED_GREEN_BLUE_PREDICATE_RESULT 'result of applying color_red_green_blue?' &&
+	dotest-equal 11 $RED   'value of red field' &&
+	dotest-equal 22 $GREEN 'value of green field' &&
+	dotest-equal 33 $BLUE  'value of blue field'
+}
 
 
 #### testing errors regarding data-structure type-descriptors
