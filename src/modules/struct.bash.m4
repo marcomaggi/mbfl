@@ -44,42 +44,44 @@ m4_define([[[MBFL_STRUCT_FUNCNAME_PATTERN_ACCESSOR]]],		[[['%s_%s_var']]])
 m4_define([[[MBFL_STRUCT_FUNCNAME_PATTERN_MUTATOR]]],		[[['%s_%s_set']]])
 
 
-#### data-structure type-descriptor descriptor
+#### data-structure type-descriptor meta descriptor
 #
-# The data structure "mbfl_struct_top"  is the type of all the data structure  types; it is also the
-# type of itself.
+# The   data-structure  instance   "mbfl_struct_top_meta_descriptor"  is   the  type   of  all   the
+# data-structure type-descriptors; it is also the type of itself.
 #
 
 if true ; #mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_struct_declare(mbfl_struct_top)
+    mbfl_struct_declare(mbfl_struct_top_meta_descriptor)
 
-    # Slot  0 of  "mbfl_struct_top"  holds the  data  variable of  "mbfl_struct_top".   The type  of
-    # "mbfl_struct_top" is "mbfl_struct_top" itself.  This is not a field.
-    mbfl_slot_set(mbfl_struct_top, 0, _(mbfl_struct_top))
+    # Slot     0      of     "mbfl_struct_top_meta_descriptor"     holds     the      datavar     of
+    # "mbfl_struct_top_meta_descriptor"  itself: the  type  of "mbfl_struct_top_meta_descriptor"  is
+    # "mbfl_struct_top_meta_descriptor".  This is not a field.
+    mbfl_slot_set(mbfl_struct_top_meta_descriptor, 0, _(mbfl_struct_top_meta_descriptor))
 
-    # Slot 1  is field  0: it is  the data variable  of the  parent type of  "mbfl_struct_top".  The
-    # parent type of "mbfl_struct_top" is void.
+    # Slot 1 is field 0: it is  the datavar of the parent type of "mbfl_struct_top_meta_descriptor".
+    # The parent type of "mbfl_struct_top_meta_descriptor" is void.
     {
-	mbfl_slot_set(mbfl_struct_top,
+	mbfl_slot_set(mbfl_struct_top_meta_descriptor,
 		      m4_eval(MBFL_STRUCT_FIRST_FIELD_OFFSET           + MBFL_TYPE_DESCR_FIELD_OFFSET_PARENT), '')
-	mbfl_slot_set(mbfl_struct_top,
+	mbfl_slot_set(mbfl_struct_top_meta_descriptor,
 		      m4_eval(MBFL_TYPE_DESCR_FIELD_OFFSET_FIRST_FIELD + MBFL_TYPE_DESCR_FIELD_OFFSET_PARENT), 'parent')
     }
 
     # Slot 2 is field 1: it is the name of the data structure type.
     {
-	mbfl_slot_set(mbfl_struct_top,
-		      m4_eval(MBFL_STRUCT_FIRST_FIELD_OFFSET           + MBFL_TYPE_DESCR_FIELD_OFFSET_NAME), 'mbfl_struct_top')
-	mbfl_slot_set(mbfl_struct_top,
+	mbfl_slot_set(mbfl_struct_top_meta_descriptor,
+		      m4_eval(MBFL_STRUCT_FIRST_FIELD_OFFSET           + MBFL_TYPE_DESCR_FIELD_OFFSET_NAME),
+		      'mbfl_struct_top_meta_descriptor')
+	mbfl_slot_set(mbfl_struct_top_meta_descriptor,
 		      m4_eval(MBFL_TYPE_DESCR_FIELD_OFFSET_FIRST_FIELD + MBFL_TYPE_DESCR_FIELD_OFFSET_NAME), 'name')
     }
 
-    # Slot 3 is field 2: it is the number of fields in "mbfl_struct_top".
+    # Slot 3 is field 2: it is the number of fields in "mbfl_struct_top_meta_descriptor".
     {
-	mbfl_slot_set(mbfl_struct_top,
+	mbfl_slot_set(mbfl_struct_top_meta_descriptor,
 		      m4_eval(MBFL_STRUCT_FIRST_FIELD_OFFSET           + MBFL_TYPE_DESCR_FIELD_OFFSET_FIELDS_NUMBER), 3)
-	mbfl_slot_set(mbfl_struct_top,
+	mbfl_slot_set(mbfl_struct_top_meta_descriptor,
 		      m4_eval(MBFL_TYPE_DESCR_FIELD_OFFSET_FIRST_FIELD + MBFL_TYPE_DESCR_FIELD_OFFSET_FIELDS_NUMBER), 'fields_number')
     }
 fi
@@ -97,7 +99,7 @@ then
 
     # Slot 0 of "mbfl_struct_top_descriptor" holds the  data variable of "mbfl_struct_top".  This is
     # not a field.
-    mbfl_slot_set(mbfl_struct_top_descriptor, 0, _(mbfl_struct_top))
+    mbfl_slot_set(mbfl_struct_top_descriptor, 0, _(mbfl_struct_top_meta_descriptor))
 
     # Slot 1 is field 0: it is the data variable of the parent type of "mbfl_struct_top_descriptor".
     # The parent type of "mbfl_struct_top_descriptor" is void.
@@ -120,11 +122,11 @@ fi
 #### data-structure type-descriptor handling functions
 
 # Return  true  if the  parameter  is  a  string representing  the  name  of  the data  variable  of
-# "mbfl_struct_top".
+# "mbfl_struct_top_meta_descriptor".
 #
-function mbfl_struct_top? () {
+function mbfl_struct_top_meta_descriptor? () {
     mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_struct_top), "$mbfl_SELF_DATAVAR")
+    mbfl_string_eq(_(mbfl_struct_top_meta_descriptor), "$mbfl_SELF_DATAVAR")
 }
 
 # Return  true  if the  parameter  is  a  string representing  the  name  of  the data  variable  of
@@ -142,7 +144,7 @@ function mbfl_struct_descriptor? () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to data-structure instance)
     declare mbfl_TYPE
     mbfl_struct_type_var mbfl_TYPE _(mbfl_SELF)
-    mbfl_string_eq(_(mbfl_struct_top), "$mbfl_TYPE")
+    mbfl_string_eq(_(mbfl_struct_top_meta_descriptor), "$mbfl_TYPE")
 }
 
 # Given the  data variable  of a data-structure  type-descriptor: store in  the result  variable the
@@ -327,8 +329,8 @@ function mbfl_struct_define_type () {
 	declare -i mbfl_PARENT_FIELDS_NUMBER
 	mbfl_struct_descriptor_fields_number_var mbfl_PARENT_FIELDS_NUMBER _(mbfl_PARENT)
 	let mbfl_TOTAL_FIELDS_NUMBER=mbfl_PARENT_FIELDS_NUMBER+mbfl_NEW_FIELDS_NUMBER
-	#                               type_descriptor    parent         name         fields_number
-	mbfl_struct_define _(mbfl_TYPE) _(mbfl_struct_top) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER
+	#                               type_descriptor                    parent         name         fields_number
+	mbfl_struct_define _(mbfl_TYPE) _(mbfl_struct_top_meta_descriptor) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER
 	# Copy the fields from the parent
 	for ((mbfl_I=0; mbfl_I < mbfl_PARENT_FIELDS_NUMBER; ++mbfl_I))
 	do mbfl_slot_set(mbfl_TYPE,                  MBFL_TYPE_DESCR_FIELD_OFFSET_FIRST_FIELD + mbfl_I,

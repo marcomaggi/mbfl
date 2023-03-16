@@ -43,37 +43,37 @@ mbfl_load_library("$MBFL_LIBMBFL_TEST")
 m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 
-#### tests for the built-in data structure type "mbfl_struct_top"
+#### tests for the built-in data structure type "mbfl_struct_top_meta_descriptor"
 
-function struct-top-1.1 () {
-    mbfl_struct_top? _(mbfl_struct_top) &&
-	! mbfl_struct_top_descriptor? _(mbfl_struct_top)
+function struct-top-meta-descriptor-1.1 () {
+    mbfl_struct_top_meta_descriptor? _(mbfl_struct_top_meta_descriptor) &&
+	! mbfl_struct_top_descriptor? _(mbfl_struct_top_meta_descriptor)
 }
-function struct-top-1.2 () {
+function struct-top-meta-descriptor-1.2 () {
     declare TYPE
-    mbfl_struct_type_var TYPE _(mbfl_struct_top)
-    dotest-equal _(mbfl_struct_top) $TYPE
+    mbfl_struct_type_var TYPE _(mbfl_struct_top_meta_descriptor)
+    dotest-equal _(mbfl_struct_top_meta_descriptor) $TYPE
 }
-function struct-top-1.3 () {
-    mbfl_struct_descriptor? _(mbfl_struct_top)
+function struct-top-meta-descriptor-1.3 () {
+    mbfl_struct_descriptor? _(mbfl_struct_top_meta_descriptor)
 }
 
 ### ------------------------------------------------------------------------
 ### inspecting the fields
 
-function struct-top-fields-2.1 () {
+function struct-top-meta-descriptor-fields-2.1 () {
     declare NAME
-    mbfl_struct_descriptor_name_var NAME _(mbfl_struct_top)
-    dotest-equal 'mbfl_struct_top' "$NAME"
+    mbfl_struct_descriptor_name_var NAME _(mbfl_struct_top_meta_descriptor)
+    dotest-equal 'mbfl_struct_top_meta_descriptor' "$NAME"
 }
-function struct-top-fields-2.2 () {
+function struct-top-meta-descriptor-fields-2.2 () {
     declare PARENT
-    mbfl_struct_descriptor_parent_var PARENT _(mbfl_struct_top)
+    mbfl_struct_descriptor_parent_var PARENT _(mbfl_struct_top_meta_descriptor)
     dotest-equal '' "$PARENT"
 }
-function struct-top-fields-2.3 () {
+function struct-top-meta-descriptor-fields-2.3 () {
     declare FIELDS_NUMBER
-    mbfl_struct_descriptor_fields_number_var FIELDS_NUMBER _(mbfl_struct_top)
+    mbfl_struct_descriptor_fields_number_var FIELDS_NUMBER _(mbfl_struct_top_meta_descriptor)
     dotest-equal 3 "$FIELDS_NUMBER"
 }
 
@@ -81,13 +81,13 @@ function struct-top-fields-2.3 () {
 #### tests for the built-in data structure type "mbfl_struct_top_descriptor"
 
 function struct-top-descriptor-1.1 () {
-    ! mbfl_struct_top? _(mbfl_struct_top_descriptor) &&
+    ! mbfl_struct_top_meta_descriptor? _(mbfl_struct_top_descriptor) &&
 	mbfl_struct_top_descriptor? _(mbfl_struct_top_descriptor)
 }
 function struct-top-descriptor-1.2 () {
     declare TYPE
     mbfl_struct_type_var TYPE _(mbfl_struct_top_descriptor)
-    dotest-equal _(mbfl_struct_top) $TYPE
+    dotest-equal _(mbfl_struct_top_meta_descriptor) $TYPE
 }
 function struct-top-descriptor-1.3 () {
     mbfl_struct_descriptor? _(mbfl_struct_top_descriptor)
@@ -135,7 +135,7 @@ function struct-simple-1.1 () {
     greek_beta_var  B _(self)
     greek_gamma_var C _(self)
 
-    # echo mbfl_struct_top datavar _(mbfl_struct_top) >&2
+    # echo mbfl_struct_top datavar _(mbfl_struct_top_meta_descriptor) >&2
     # echo mbfl_struct_top_descriptor datavar _(mbfl_struct_top_descriptor) >&2
     # echo greek datavar _(greek) >&2
     # echo self slot 0 ${self[0]} >&2
