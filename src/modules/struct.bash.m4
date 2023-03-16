@@ -40,7 +40,7 @@ m4_define([[[MBFL_TYPE_DESCR_FIELD_OFFSET_FIELDS_NUMBER]]],	[[[2]]])
 
 m4_define([[[MBFL_STRUCT_FUNCNAME_PATTERN_CONSTRUCTOR]]],	[[['%s_init']]])
 m4_define([[[MBFL_STRUCT_FUNCNAME_PATTERN_PREDICATE]]],		[[['%s?']]])
-m4_define([[[MBFL_STRUCT_FUNCNAME_PATTERN_ACCESSOR]]],		[[['%s_%s_ref']]])
+m4_define([[[MBFL_STRUCT_FUNCNAME_PATTERN_ACCESSOR]]],		[[['%s_%s_var']]])
 m4_define([[[MBFL_STRUCT_FUNCNAME_PATTERN_MUTATOR]]],		[[['%s_%s_set']]])
 
 
@@ -123,26 +123,26 @@ fi
 # "mbfl_struct_top".
 #
 function mbfl_struct_top? () {
-    mbfl_mandatory_parameter(mbfl_STRU, 1, data variable)
-    mbfl_string_equal _(mbfl_struct_top) "$mbfl_STRU"
+    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
+    mbfl_string_eq(_(mbfl_struct_top), "$mbfl_SELF_DATAVAR")
 }
 
 # Return  true  if the  parameter  is  a  string representing  the  name  of  the data  variable  of
 # "mbfl_struct_top_descriptor".
 #
 function mbfl_struct_top_descriptor? () {
-    mbfl_mandatory_parameter(mbfl_STRU, 1, data variable)
-    mbfl_string_equal _(mbfl_struct_top_descriptor) "$mbfl_STRU"
+    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
+    mbfl_string_eq(_(mbfl_struct_top_descriptor), "$mbfl_SELF_DATAVAR")
 }
 
 # Return true  if the parameter  is the data  variable of a data  structure and this  data structure
 # represents a structure type descriptor.
 #
 function mbfl_struct_descriptor? () {
-    mbfl_mandatory_nameref_parameter(mbfl_STRU, 1, reference to data structure type variable)
-    declare TYPE
-    mbfl_struct_type_var TYPE _(mbfl_STRU)
-    mbfl_string_equal _(mbfl_struct_top) "$TYPE"
+    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to data-structure instance)
+    declare mbfl_TYPE
+    mbfl_struct_type_var mbfl_TYPE _(mbfl_SELF)
+    mbfl_string_eq(_(mbfl_struct_top), "$mbfl_TYPE")
 }
 
 # Given the  data variable  of a data-structure  type-descriptor: store in  the result  variable the
@@ -150,7 +150,7 @@ function mbfl_struct_descriptor? () {
 #
 function mbfl_struct_descriptor_parent_var () {
     mbfl_mandatory_nameref_parameter(mbfl_VALUE, 1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_TYPE,  2, variable referencing a data structure type descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_TYPE,  2, variable referencing a data-structure type-descriptor)
     mbfl_VALUE=mbfl_slot_ref(mbfl_TYPE, m4_eval(MBFL_STRUCT_FIRST_FIELD_OFFSET + MBFL_TYPE_DESCR_FIELD_OFFSET_PARENT))
 }
 
@@ -159,7 +159,7 @@ function mbfl_struct_descriptor_parent_var () {
 #
 function mbfl_struct_descriptor_name_var () {
     mbfl_mandatory_nameref_parameter(mbfl_VALUE, 1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_TYPE,  2, variable referencing a data structure type descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_TYPE,  2, variable referencing a data-structure type-descriptor)
     mbfl_VALUE=mbfl_slot_ref(mbfl_TYPE, m4_eval(MBFL_STRUCT_FIRST_FIELD_OFFSET + MBFL_TYPE_DESCR_FIELD_OFFSET_NAME))
 }
 
@@ -168,7 +168,7 @@ function mbfl_struct_descriptor_name_var () {
 #
 function mbfl_struct_descriptor_fields_number_var () {
     mbfl_mandatory_nameref_parameter(mbfl_VALUE, 1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_TYPE,  2, variable referencing a data structure type descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_TYPE,  2, variable referencing a data-structure type-descriptor)
     mbfl_VALUE=mbfl_slot_ref(mbfl_TYPE, m4_eval(MBFL_STRUCT_FIRST_FIELD_OFFSET + MBFL_TYPE_DESCR_FIELD_OFFSET_FIELDS_NUMBER))
 }
 
@@ -180,6 +180,18 @@ function mbfl_struct_define () {
     mbfl_mandatory_nameref_parameter(mbfl_TYPE, 2, reference to a data-structure type-descriptor)
     shift 2
     declare -a mbfl_FIELD_INIT_VALUES=("$@")
+
+    # Parameters validation.
+    {
+	# We do not instantiate an abstract data-structure type.
+	if mbfl_string_eq(_(mbfl_TYPE), _(mbfl_struct_top_descriptor))
+	then
+	    declare mbfl_NAME
+	    mbfl_struct_descriptor_name_var mbfl_NAME _(mbfl_TYPE)
+	    mbfl_message_error_printf 'in call to "%s": attempt to instantiate abstract type: "%s"' $FUNCNAME $mbfl_NAME
+	    return_because_failure
+	fi
+    }
 
     mbfl_slot_set(mbfl_SELF, 0, _(mbfl_TYPE))
 
@@ -217,14 +229,14 @@ function mbfl_p_struct_is_a () {
     mbfl_mandatory_nameref_parameter(mbfl_TYPE,       1)
     mbfl_mandatory_nameref_parameter(mbfl_GIVEN_TYPE, 2)
 
-    if mbfl_string_equal _(mbfl_TYPE) _(mbfl_GIVEN_TYPE)
+    if mbfl_string_eq(_(mbfl_TYPE), _(mbfl_GIVEN_TYPE))
     then return_because_success
     else
-	mbfl_declare_varref(mbfl_PARENT)
-	mbfl_struct_descriptor_parent_var _(mbfl_PARENT) _(mbfl_TYPE)
-	if mbfl_string_is_empty "$mbfl_PARENT"
+	declare mbfl_PARENT
+	mbfl_struct_descriptor_parent_var mbfl_PARENT _(mbfl_TYPE)
+	if mbfl_string_is_empty $mbfl_PARENT
 	then return_because_failure
-	else mbfl_p_struct_is_a _(mbfl_PARENT) _(mbfl_GIVEN_TYPE)
+	else mbfl_p_struct_is_a $mbfl_PARENT _(mbfl_GIVEN_TYPE)
 	fi
     fi
 }
@@ -236,6 +248,50 @@ function mbfl_struct_type_var () {
     mbfl_mandatory_nameref_parameter(mbfl_TYPE_RV,	1, the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing a data structure)
     mbfl_TYPE_RV=mbfl_slot_ref(mbfl_SELF, 0)
+}
+
+# This is the implementation of the slot accessor functions.
+#
+function mbfl_p_struct_field_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_VALUE,	1, the result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing a data-structure instance)
+    mbfl_mandatory_nameref_parameter(mbfl_GIVEN_TYPE,	3, variable referencing a data-structure type-descriptor)
+    mbfl_mandatory_parameter(mbfl_FIELD_OFFSET,		4, the field offset in the data-structure instance)
+    mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
+
+    if mbfl_struct_is_a _(mbfl_SELF) _(mbfl_GIVEN_TYPE)
+    then mbfl_VALUE=mbfl_slot_ref(mbfl_SELF, $mbfl_FIELD_OFFSET)
+    else mbfl_p_struct_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_GIVEN_TYPE) "$mbfl_CALLER_FUNCNAME"
+    fi
+}
+
+# This is the implementation of the slot mutator functions.
+#
+function mbfl_p_struct_field_set () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing a data-structure instance)
+    mbfl_mandatory_parameter(mbfl_NEW_VALUE,		2, the new field value)
+    mbfl_mandatory_nameref_parameter(mbfl_GIVEN_TYPE,	3, variable referencing a data-structure type-descriptor)
+    mbfl_mandatory_parameter(mbfl_FIELD_OFFSET,		4, the field offset in the data-structure instance)
+    mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
+
+    if mbfl_struct_is_a _(mbfl_SELF) _(mbfl_GIVEN_TYPE)
+    then mbfl_slot_set(mbfl_SELF, $mbfl_FIELD_OFFSET, "$mbfl_NEW_VALUE")
+    else mbfl_p_struct_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_GIVEN_TYPE) "$mbfl_CALLER_FUNCNAME"
+    fi
+}
+
+function mbfl_p_struct_mismatch_error_self_given_type () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing a data-structure instance)
+    mbfl_mandatory_nameref_parameter(mbfl_GIVEN_TYPE,	2, variable referencing a data-structure type-descriptor)
+    mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	3, the name of the calling function)
+    declare mbfl_SELF_TYPE mbfl_SELF_NAME mbfl_GIVEN_NAME
+
+    mbfl_struct_type_var            mbfl_SELF_TYPE  _(mbfl_SELF)
+    mbfl_struct_descriptor_name_var mbfl_SELF_NAME  $mbfl_SELF_TYPE
+    mbfl_struct_descriptor_name_var mbfl_GIVEN_NAME _(mbfl_GIVEN_TYPE)
+    mbfl_message_error_printf 'in call to "%s": instance parameter "%s" of wrong type, expected "%s" got: "%s"' \
+			      "$mbfl_CALLER_FUNCNAME" _(mbfl_SELF) "$mbfl_GIVEN_NAME" "$mbfl_SELF_NAME"
+    return_because_failure
 }
 
 
@@ -256,6 +312,15 @@ function mbfl_struct_define_type () {
     declare -ir mbfl_NEW_FIELDS_NUMBER=mbfl_slots_number(mbfl_NEW_FIELD_NAMES)
     declare -i  mbfl_TOTAL_FIELDS_NUMBER
     declare -i  mbfl_I
+
+    # Validate parameters.
+    {
+	if ! mbfl_string_is_identifier "$mbfl_NAME"
+	then
+	    mbfl_message_error_printf 'in call to "%s" expected identifier as type name: "%s"' $FUNCNAME "$mbfl_NAME"
+	    return_because_failure
+	fi
+    }
 
     # Initialise the fields of the new data-structure type-descriptor.
     {
@@ -323,8 +388,9 @@ function mbfl_struct_define_type () {
 
 	    printf -v mbfl_MUTATOR_NAME MBFL_STRUCT_FUNCNAME_PATTERN_MUTATOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
 	    mbfl_MUTATOR_BODY='{ '
-	    mbfl_MUTATOR_BODY+="declare -n mbfl_SELF=\${1:?\"missing reference to struct '$mbfl_NAME' parameter to '\$FUNCNAME'\"};"
-	    mbfl_MUTATOR_BODY+="mbfl_SELF[$mbfl_OFFSET]=\${2:?\"missing field value parameter to '\$FUNCNAME'\"};"
+	    mbfl_MUTATOR_BODY+="declare -n mbfl_SELF=\${1:?\"missing reference to struct '${mbfl_NAME}' parameter to '${mbfl_MUTATOR_NAME}'\"};"
+	    mbfl_MUTATOR_BODY+="declare mbfl_NEW_VALUE=\${2:?\"missing new field value parameter to '${mbfl_MUTATOR_NAME}'\"};"
+	    mbfl_MUTATOR_BODY+="mbfl_p_struct_field_set \$1 \$2 ${mbfl_TYPE_DATAVAR} ${mbfl_OFFSET} ${mbfl_MUTATOR_NAME};"
 	    mbfl_MUTATOR_BODY+='}'
 	    mbfl_p_struct_make_function "$mbfl_MUTATOR_NAME" "$mbfl_MUTATOR_BODY"
 	done
@@ -340,9 +406,9 @@ function mbfl_struct_define_type () {
 
 	    printf -v mbfl_ACCESSOR_NAME MBFL_STRUCT_FUNCNAME_PATTERN_ACCESSOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
 	    mbfl_ACCESSOR_BODY='{ '
-	    mbfl_ACCESSOR_BODY+="declare -n mbfl_SELF=\${1:?\"missing reference to struct '$mbfl_NAME' parameter to '\$FUNCNAME'\"};"
-	    mbfl_ACCESSOR_BODY+="declare -n mbfl_RV=\${2:?\"missing result variable parameter to '\$FUNCNAME'\"};"
-	    mbfl_ACCESSOR_BODY+="mbfl_RV=\${mbfl_SELF[$mbfl_OFFSET]};"
+	    mbfl_ACCESSOR_BODY+="declare -n mbfl_RV=\${1:?\"missing result variable parameter to '${mbfl_ACCESSOR_NAME}'\"};"
+	    mbfl_ACCESSOR_BODY+="declare -n mbfl_SELF=\${2:?\"missing reference to struct '$mbfl_NAME' parameter to '${mbfl_ACCESSOR_NAME}'\"};"
+	    mbfl_ACCESSOR_BODY+="mbfl_p_struct_field_var \$1 \$2 ${mbfl_TYPE_DATAVAR} ${mbfl_OFFSET} ${mbfl_ACCESSOR_NAME};"
 	    mbfl_ACCESSOR_BODY+='}'
 	    mbfl_p_struct_make_function "$mbfl_ACCESSOR_NAME" "$mbfl_ACCESSOR_BODY"
 	done

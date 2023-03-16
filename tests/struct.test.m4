@@ -131,9 +131,9 @@ function struct-simple-1.1 () {
     # mbfl_array_dump _(greek)
     # mbfl_array_dump _(self)
 
-    greek_alpha_ref _(self) A
-    greek_beta_ref  _(self) B
-    greek_gamma_ref _(self) C
+    greek_alpha_var A _(self)
+    greek_beta_var  B _(self)
+    greek_gamma_var C _(self)
 
     # echo mbfl_struct_top datavar _(mbfl_struct_top) >&2
     # echo mbfl_struct_top_descriptor datavar _(mbfl_struct_top_descriptor) >&2
@@ -173,9 +173,9 @@ function struct-simple-1.2 () {
     greek_beta_set  _(self) 22
     greek_gamma_set _(self) 33
 
-    greek_alpha_ref _(self) A
-    greek_beta_ref  _(self) B
-    greek_gamma_ref _(self) C
+    greek_alpha_var A _(self)
+    greek_beta_var  B _(self)
+    greek_gamma_var C _(self)
 
     greek? _(self)
     PREDICATE_RESULT=$?
@@ -213,9 +213,9 @@ function struct-simple-1.3 () {
     mbfl_struct_is_a _(self) _(greek)
     IS_A_RESULT=$?
 
-    greek_alpha_ref _(self) A
-    greek_beta_ref  _(self) B
-    greek_gamma_ref _(self) C
+    greek_alpha_var A _(self)
+    greek_beta_var  B _(self)
+    greek_gamma_var C _(self)
 
     dotest-equal 0 $PREDICATE_RESULT 'result of applying the predicate' &&
 	dotest-equal 0 $IS_A_RESULT 'result of applying the is_a function' &&
@@ -247,9 +247,9 @@ function struct-simple-1.4 () {
 	# location.
 	DATAVAR=_(self)
 
-	greek_alpha_ref _(self) A
-	greek_beta_ref  _(self) B
-	greek_gamma_ref _(self) C
+	greek_alpha_var A _(self)
+	greek_beta_var  B _(self)
+	greek_gamma_var C _(self)
 
 	greek? _(self)
 	PREDICATE_RESULT=$?
@@ -266,9 +266,16 @@ function struct-simple-1.4 () {
 	    test -v $DATAVAR
     }
     mbfl_location_leave
+    # After exiting the location: the instance variable should not exist anymore.
     {
-	declare RV=$?
-	! test -v $DATAVAR && return $RV
+	declare BLOCK_RV=$?
+	declare NOT_EXIST
+
+	! test -v $DATAVAR
+	NOT_EXIST=$?
+
+	dotest-equal 0 $NOT_EXIST 'the datavar of the data-structure instance does not exist anymore' &&
+	    return $BLOCK_RV
     }
 }
 
@@ -299,6 +306,53 @@ function struct-simple-1.4 () {
 # 	dotest-equal _(mbfl_top_struct) $PARENT &&
 # 	dotest-equal 'colour' $NAME
 # }
+
+
+#### testing errors regarding data-structure type-descriptors
+
+function struct-error-descriptor-1.1 () {
+    mbfl_struct_declare(self)
+    declare RV
+
+    mbfl_struct_define _(self) _(mbfl_struct_top_descriptor)
+    RV=$?
+    dotest-equal 1 $RV 'attempt to instantiate abstract data type'
+}
+
+
+#### testing errors regarding data-structure instances
+
+function struct-error-instance-1.1 () {
+    mbfl_struct_declare(color)
+    mbfl_struct_declare(greek)
+    mbfl_struct_declare(self)
+    declare RED RV
+
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(color) _(mbfl_struct_top_descriptor) 'color' red green blue
+
+    greek_init _(self) 1 2 3
+    color_red_var RED _(self)
+    RV=$?
+
+    dotest-equal 1 $RV 'applied field accessor to instance of wrong type'
+}
+
+function struct-error-instance-1.2 () {
+    mbfl_struct_declare(color)
+    mbfl_struct_declare(greek)
+    mbfl_struct_declare(self)
+    declare RV
+
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(color) _(mbfl_struct_top_descriptor) 'color' red green blue
+
+    greek_init _(self) 1 2 3
+    color_red_set _(self) 11
+    RV=$?
+
+    dotest-equal 1 $RV 'applied field mutator to instance of wrong type'
+}
 
 
 #### let's go
