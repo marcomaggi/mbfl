@@ -43,19 +43,64 @@ mbfl_load_library("$MBFL_LIBMBFL_TEST")
 m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 
+#### tests for the built-in data structure type "mbfl_struct_top_descriptor"
+
+function struct-top-descriptor-1.1 () {
+    ! mbfl_struct_is_the_top_meta_descriptor _(mbfl_struct_top_descriptor) &&
+	mbfl_struct_is_the_top_descriptor _(mbfl_struct_top_descriptor)
+}
+function struct-top-descriptor-1.2 () {
+    declare TYPE
+    mbfl_struct_type_var TYPE _(mbfl_struct_top_descriptor)
+    dotest-equal _(mbfl_struct_default_meta_descriptor) $TYPE
+}
+function struct-top-descriptor-1.3 () {
+    mbfl_struct_is_a_descriptor _(mbfl_struct_top_descriptor)
+}
+function struct-top-descriptor-1.4 () {
+    ! mbfl_struct_is_a_meta_descriptor _(mbfl_struct_top_descriptor)
+}
+
+### ------------------------------------------------------------------------
+### inspecting the fields
+
+function struct-top-descriptor-2.1 () {
+    declare NAME
+    mbfl_struct_descriptor_name_var NAME _(mbfl_struct_top_descriptor)
+    dotest-equal 'mbfl_struct_top_descriptor' "$NAME"
+}
+function struct-top-descriptor-2.2 () {
+    declare PARENT
+    mbfl_struct_descriptor_parent_var PARENT _(mbfl_struct_top_descriptor)
+    dotest-equal '' "$PARENT" 'parent of mbfl_struct_top_descriptor'
+}
+function struct-top-descriptor-2.3 () {
+    declare FIELDS_NUMBER
+    mbfl_struct_descriptor_fields_number_var FIELDS_NUMBER _(mbfl_struct_top_descriptor)
+    dotest-equal 0 "$FIELDS_NUMBER" 'number of fields in instances of mbfl_struct_top_descriptor'
+}
+
+
 #### tests for the built-in data structure type "mbfl_struct_top_meta_descriptor"
 
 function struct-top-meta-descriptor-1.1 () {
-    mbfl_struct_top_meta_descriptor? _(mbfl_struct_top_meta_descriptor) &&
-	! mbfl_struct_top_descriptor? _(mbfl_struct_top_meta_descriptor)
+    ! mbfl_struct_is_the_top_descriptor _(mbfl_struct_top_meta_descriptor) &&
+	mbfl_struct_is_the_top_meta_descriptor _(mbfl_struct_top_meta_descriptor) &&
+	! mbfl_struct_is_the_default_meta_descriptor _(mbfl_struct_top_meta_descriptor)
 }
 function struct-top-meta-descriptor-1.2 () {
     declare TYPE
     mbfl_struct_type_var TYPE _(mbfl_struct_top_meta_descriptor)
-    dotest-equal _(mbfl_struct_top_meta_descriptor) $TYPE
+    dotest-equal _(mbfl_struct_default_meta_descriptor) $TYPE
 }
 function struct-top-meta-descriptor-1.3 () {
-    mbfl_struct_descriptor? _(mbfl_struct_top_meta_descriptor)
+    mbfl_struct_is_a_descriptor _(mbfl_struct_top_meta_descriptor)
+}
+function struct-top-meta-descriptor-1.3 () {
+    mbfl_struct_is_a_meta_descriptor _(mbfl_struct_top_meta_descriptor)
+}
+function struct-top-meta-descriptor-1.5 () {
+    mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_descriptor) _(mbfl_struct_top_meta_descriptor)
 }
 
 ### ------------------------------------------------------------------------
@@ -69,47 +114,57 @@ function struct-top-meta-descriptor-fields-2.1 () {
 function struct-top-meta-descriptor-fields-2.2 () {
     declare PARENT
     mbfl_struct_descriptor_parent_var PARENT _(mbfl_struct_top_meta_descriptor)
-    dotest-equal '' "$PARENT"
+    dotest-equal _(mbfl_struct_top_descriptor) "$PARENT" 'parent of mbfl_struct_top_meta_descriptor'
 }
 function struct-top-meta-descriptor-fields-2.3 () {
     declare FIELDS_NUMBER
     mbfl_struct_descriptor_fields_number_var FIELDS_NUMBER _(mbfl_struct_top_meta_descriptor)
-    dotest-equal 3 "$FIELDS_NUMBER"
+    dotest-equal 0 "$FIELDS_NUMBER" 'number of fields in instances of mbfl_struct_top_meta_descriptor'
 }
 
 
-#### tests for the built-in data structure type "mbfl_struct_top_descriptor"
+#### tests for the built-in data structure type "mbfl_struct_top_meta_descriptor"
 
-function struct-top-descriptor-1.1 () {
-    ! mbfl_struct_top_meta_descriptor? _(mbfl_struct_top_descriptor) &&
-	mbfl_struct_top_descriptor? _(mbfl_struct_top_descriptor)
+function struct-default-meta-descriptor-1.1 () {
+    ! mbfl_struct_is_the_top_descriptor _(mbfl_struct_default_meta_descriptor) &&
+	! mbfl_struct_is_the_top_meta_descriptor _(mbfl_struct_default_meta_descriptor) &&
+	mbfl_struct_is_the_default_meta_descriptor _(mbfl_struct_default_meta_descriptor)
 }
-function struct-top-descriptor-1.2 () {
+function struct-default-meta-descriptor-1.2 () {
     declare TYPE
-    mbfl_struct_type_var TYPE _(mbfl_struct_top_descriptor)
-    dotest-equal _(mbfl_struct_top_meta_descriptor) $TYPE
+    mbfl_struct_type_var TYPE _(mbfl_struct_default_meta_descriptor)
+    dotest-equal _(mbfl_struct_default_meta_descriptor) $TYPE
 }
-function struct-top-descriptor-1.3 () {
-    mbfl_struct_descriptor? _(mbfl_struct_top_descriptor)
+function struct-default-meta-descriptor-1.3 () {
+    mbfl_struct_is_a_descriptor _(mbfl_struct_default_meta_descriptor)
+}
+function struct-default-meta-descriptor-1.4 () {
+    mbfl_struct_is_a_meta_descriptor _(mbfl_struct_default_meta_descriptor)
+}
+function struct-default-meta-descriptor-1.5 () {
+    mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_descriptor) _(mbfl_struct_default_meta_descriptor)
+}
+function struct-default-meta-descriptor-1.6 () {
+    mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_meta_descriptor) _(mbfl_struct_default_meta_descriptor)
 }
 
 ### ------------------------------------------------------------------------
 ### inspecting the fields
 
-function struct-top-descriptor-fields-2.1 () {
+function struct-default-meta-descriptor-2.1 () {
     declare NAME
-    mbfl_struct_descriptor_name_var NAME _(mbfl_struct_top_descriptor)
-    dotest-equal 'mbfl_struct_top_descriptor' "$NAME"
+    mbfl_struct_descriptor_name_var NAME _(mbfl_struct_default_meta_descriptor)
+    dotest-equal 'mbfl_struct_default_meta_descriptor' "$NAME"
 }
-function struct-top-descriptor-fields-2.2 () {
+function struct-default-meta-descriptor-2.2 () {
     declare PARENT
-    mbfl_struct_descriptor_parent_var PARENT _(mbfl_struct_top_descriptor)
-    dotest-equal '' "$PARENT"
+    mbfl_struct_descriptor_parent_var PARENT _(mbfl_struct_default_meta_descriptor)
+    dotest-equal _(mbfl_struct_top_meta_descriptor) "$PARENT" 'parent of mbfl_struct_default_meta_descriptor'
 }
-function struct-top-descriptor-fields-2.3 () {
+function struct-default-meta-descriptor-2.3 () {
     declare FIELDS_NUMBER
-    mbfl_struct_descriptor_fields_number_var FIELDS_NUMBER _(mbfl_struct_top_descriptor)
-    dotest-equal 0 "$FIELDS_NUMBER"
+    mbfl_struct_descriptor_fields_number_var FIELDS_NUMBER _(mbfl_struct_default_meta_descriptor)
+    dotest-equal 3 "$FIELDS_NUMBER" 'number of fields in instances of mbfl_struct_default_meta_descriptor'
 }
 
 
@@ -140,7 +195,7 @@ function struct-simple-1.1 () {
     # echo greek datavar _(greek) >&2
     # echo self slot 0 ${self[0]} >&2
 
-    greek? _(self)
+    greek_is_a _(self)
     PREDICATE_RESULT=$?
 
     mbfl_struct_is_a _(self) _(greek)
@@ -177,7 +232,7 @@ function struct-simple-1.2 () {
     greek_beta_var  B _(self)
     greek_gamma_var C _(self)
 
-    greek? _(self)
+    greek_is_a _(self)
     PREDICATE_RESULT=$?
 
     mbfl_struct_is_a _(self) _(greek)
@@ -207,7 +262,7 @@ function struct-simple-1.3 () {
     # echo self datavar _(self) >&2
     # mbfl_array_dump _(self)
 
-    greek? _(self)
+    greek_is_a _(self)
     PREDICATE_RESULT=$?
 
     mbfl_struct_is_a _(self) _(greek)
@@ -251,7 +306,7 @@ function struct-simple-1.4 () {
 	greek_beta_var  B _(self)
 	greek_gamma_var C _(self)
 
-	greek? _(self)
+	greek_is_a _(self)
 	PREDICATE_RESULT=$?
 
 	mbfl_struct_is_a _(self) _(greek)
@@ -306,14 +361,14 @@ function struct-single-inheritance-1.1 () {
     color_red_green_red_var   RED   _(self)
     color_red_green_green_var GREEN _(self)
 
-    color_red? _(self)
+    color_red_is_a _(self)
     RED_PREDICATE_RESULT=$?
 
-    color_red_green? _(self)
+    color_red_green_is_a _(self)
     RED_GREEN_PREDICATE_RESULT=$?
 
-    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
-	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red_is_a' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green_is_a' &&
 	dotest-equal 1 $RED 'value of red field' &&
 	dotest-equal 2 $GREEN 'value of green field'
 }
@@ -345,14 +400,14 @@ function struct-single-inheritance-1.2 () {
     color_red_green_red_var   RED   _(self)
     color_red_green_green_var GREEN _(self)
 
-    color_red? _(self)
+    color_red_is_a _(self)
     RED_PREDICATE_RESULT=$?
 
-    color_red_green? _(self)
+    color_red_green_is_a _(self)
     RED_GREEN_PREDICATE_RESULT=$?
 
-    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
-	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red_is_a' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green_is_a' &&
 	dotest-equal 11 $RED 'value of red field' &&
 	dotest-equal 22 $GREEN 'value of green field'
 }
@@ -384,14 +439,14 @@ function struct-single-inheritance-1.3 () {
     color_red_red_var         RED   _(self)
     color_red_green_green_var GREEN _(self)
 
-    color_red? _(self)
+    color_red_is_a _(self)
     RED_PREDICATE_RESULT=$?
 
-    color_red_green? _(self)
+    color_red_green_is_a _(self)
     RED_GREEN_PREDICATE_RESULT=$?
 
-    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
-	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red_is_a' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green_is_a' &&
 	dotest-equal 11 $RED 'value of red field' &&
 	dotest-equal 22 $GREEN 'value of green field'
 }
@@ -426,18 +481,18 @@ function struct-single-inheritance-2.1 () {
     color_red_green_blue_green_var GREEN _(self)
     color_red_green_blue_blue_var  BLUE  _(self)
 
-    color_red? _(self)
+    color_red_is_a _(self)
     RED_PREDICATE_RESULT=$?
 
-    color_red_green? _(self)
+    color_red_green_is_a _(self)
     RED_GREEN_PREDICATE_RESULT=$?
 
-    color_red_green_blue? _(self)
+    color_red_green_blue_is_a _(self)
     RED_GREEN_BLUE_PREDICATE_RESULT=$?
 
-    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
-	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
-	dotest-equal 0 $RED_GREEN_BLUE_PREDICATE_RESULT 'result of applying color_red_green_blue?' &&
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red_is_a' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green_is_a' &&
+	dotest-equal 0 $RED_GREEN_BLUE_PREDICATE_RESULT 'result of applying color_red_green_blue_is_a' &&
 	dotest-equal 1 $RED   'value of red field' &&
 	dotest-equal 2 $GREEN 'value of green field' &&
 	dotest-equal 3 $BLUE  'value of blue field'
@@ -475,18 +530,18 @@ function struct-single-inheritance-2.2 () {
     color_red_green_blue_green_var GREEN _(self)
     color_red_green_blue_blue_var  BLUE  _(self)
 
-    color_red? _(self)
+    color_red_is_a _(self)
     RED_PREDICATE_RESULT=$?
 
-    color_red_green? _(self)
+    color_red_green_is_a _(self)
     RED_GREEN_PREDICATE_RESULT=$?
 
-    color_red_green_blue? _(self)
+    color_red_green_blue_is_a _(self)
     RED_GREEN_BLUE_PREDICATE_RESULT=$?
 
-    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
-	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
-	dotest-equal 0 $RED_GREEN_BLUE_PREDICATE_RESULT 'result of applying color_red_green_blue?' &&
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red_is_a' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green_is_a' &&
+	dotest-equal 0 $RED_GREEN_BLUE_PREDICATE_RESULT 'result of applying color_red_green_blue_is_a' &&
 	dotest-equal 11 $RED   'value of red field' &&
 	dotest-equal 22 $GREEN 'value of green field' &&
 	dotest-equal 33 $BLUE  'value of blue field'
@@ -524,18 +579,18 @@ function struct-single-inheritance-2.3 () {
     color_red_green_green_var		GREEN _(self)
     color_red_green_blue_blue_var	BLUE  _(self)
 
-    color_red? _(self)
+    color_red_is_a _(self)
     RED_PREDICATE_RESULT=$?
 
-    color_red_green? _(self)
+    color_red_green_is_a _(self)
     RED_GREEN_PREDICATE_RESULT=$?
 
-    color_red_green_blue? _(self)
+    color_red_green_blue_is_a _(self)
     RED_GREEN_BLUE_PREDICATE_RESULT=$?
 
-    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red?' &&
-	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green?' &&
-	dotest-equal 0 $RED_GREEN_BLUE_PREDICATE_RESULT 'result of applying color_red_green_blue?' &&
+    dotest-equal 0 $RED_PREDICATE_RESULT 'result of applying color_red_is_a' &&
+	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green_is_a' &&
+	dotest-equal 0 $RED_GREEN_BLUE_PREDICATE_RESULT 'result of applying color_red_green_blue_is_a' &&
 	dotest-equal 11 $RED   'value of red field' &&
 	dotest-equal 22 $GREEN 'value of green field' &&
 	dotest-equal 33 $BLUE  'value of blue field'
