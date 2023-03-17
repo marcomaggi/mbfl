@@ -597,6 +597,67 @@ function struct-single-inheritance-2.3 () {
 }
 
 
+#### inspection of custom type-descriptors
+
+function struct-custom-type-descriptors-1.1 () {
+    mbfl_struct_declare(greek)
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_is_a_descriptor _(greek)
+}
+function struct-custom-type-descriptors-1.2 () {
+    mbfl_struct_declare(greek)
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    ! mbfl_struct_is_a_meta_descriptor _(greek)
+}
+function struct-custom-type-descriptors-1.3 () {
+    mbfl_struct_declare(greek)
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    ! mbfl_struct_is_the_top_descriptor _(greek)
+}
+function struct-custom-type-descriptors-1.4 () {
+    mbfl_struct_declare(greek)
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    ! mbfl_struct_is_the_top_meta_descriptor _(greek)
+}
+function struct-custom-type-descriptors-1.5 () {
+    mbfl_struct_declare(greek)
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    ! mbfl_struct_is_the_default_meta_descriptor _(greek)
+}
+function struct-custom-type-descriptors-1.6 () {
+    mbfl_struct_declare(greek)
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_descriptor) _(greek)
+}
+function struct-custom-type-descriptors-1.7 () {
+    mbfl_struct_declare(greek)
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    ! mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_meta_descriptor) _(greek)
+}
+function struct-custom-type-descriptors-1.8 () {
+    mbfl_struct_declare(greek)
+    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    ! mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_default_meta_descriptor) _(greek)
+}
+
+### ------------------------------------------------------------------------
+
+function struct-custom-type-descriptors-2.1 () {
+    mbfl_struct_declare(one)
+    mbfl_struct_declare(two)
+    mbfl_struct_define_type _(one) _(mbfl_struct_top_descriptor) 'one' a
+    mbfl_struct_define_type _(two) _(one) 'two' b
+    mbfl_struct_is_a_descriptor _(two)
+}
+function struct-custom-type-descriptors-2.2 () {
+    mbfl_struct_declare(one)
+    mbfl_struct_declare(two)
+    mbfl_struct_define_type _(one) _(mbfl_struct_top_descriptor) 'one' a
+    mbfl_struct_define_type _(two) _(one) 'two' b
+    mbfl_struct_descriptors_are_parent_and_child _(one) _(two)
+}
+
+
 #### testing errors regarding data-structure type-descriptors
 
 function struct-error-descriptor-1.1 () {
