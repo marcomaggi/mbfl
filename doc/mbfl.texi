@@ -2822,11 +2822,12 @@ where @var{KEY} is a key in the array and @var{VALUE} is its value.  If the opti
 
 
 @mbfl{} implements basic data structures on top of Bash arrays.  In the implementation of data
-structures: many ideas where stolen from other languages, most notably Scheme implementations.
+structures: many ideas were stolen from other languages, most notably Lisp implementations.
 
 @menu
 * structs conventions::         Naming and coding conventions.
 * structs descriptors::         Data--structure type--descriptors.
+* structs special::             Special predefined types and instances.
 @end menu
 
 @c page
@@ -2838,13 +2839,15 @@ All the macros, functions and global variables defined by this module have names
 @code{mbfl_struct_}.
 
 With @dfn{data--structure type--descriptor} we indicate an object that holds the definition of a
-type, somewhat like a @code{struct} definition in the C language, but it is a first--class object.
+type, somewhat like a @code{struct} definition in the C language, but we can operate on the object
+at run-time.
 
 With @dfn{data--structure instance} we indicate an object that holds an instance of a type.  A
 data--structure type--descriptor is also a data--structure instance.
 
-With @dfn{data--structure meta type--descriptor} we indicate an object that holds the definition of
-a type; this type itself represents the definition of a type.
+With @dfn{data--structure meta type--descriptor} or @dfn{data--structure type--descriptor
+meta--descriptor} we indicate an object that holds the definition of a type; this type itself
+represents the definition of a type.
 
 With @dfn{field accessor} we indicate a function used to retrieve the value of a data--structure
 field.  With @dfn{field mutator} we indicate a function used to store a new value in a
@@ -2870,8 +2873,10 @@ the syntax:
 
 @example
 mbfl_struct_declare(color)
+mbfl_struct_declare(dark_slate_blue)
+
 mbfl_struct_define_type _(color) _(mbfl_struct_top_descriptor) 'color' red green blue
-color_init _(self) 1 2 3
+color_init _(dark_slate_blue) 72 61 139
 @end example
 
 @c page
@@ -2882,6 +2887,7 @@ color_init _(self) 1 2 3
 @menu
 * structs descriptors variables::       Predefind type--descriptors.
 * structs descriptors defining::        Defining new type--descriptors.
+* structs descriptors predicates::      Type--descriptors predicates.
 @end menu
 
 @c page
@@ -2912,6 +2918,124 @@ Define a new data--structure type--descriptor whose meta type--descriptor is
 @code{mbfl_struct_top_meta_descriptor}.
 @end defun
 
+
+@c page
+@node structs descriptors predicates
+@subsection Type--descriptors predicates
+
+
+@defun mbfl_struct_is_a_descriptor @var{STRU}
+Return true if the parameter is the datavar of a data--structure type--descriptor; otherwise return
+false.  The parameter @var{STRU} must be a data--structure instance.
+
+@example
+mbfl_struct_is_a_descriptor _(mbfl_struct_top_descriptor)          @result{} true
+mbfl_struct_is_a_descriptor _(mbfl_struct_default_meta_descriptor) @result{} true
+mbfl_struct_is_a_descriptor _(mbfl_predefined_constant)            @result{} true
+mbfl_struct_is_a_descriptor _(mbfl_unspecified)                    @result{} false
+@end example
+@end defun
+
+
+@defun mbfl_struct_is_a_meta_descriptor @var{STRU}
+Return true if the parameter is the datavar of a data--structure type--descriptor meta--descriptor;
+otherwise return false.  The parameter @var{STRU} must be a data--structure instance.
+
+@example
+mbfl_struct_is_a_meta_descriptor _(mbfl_struct_top_descriptor)          @result{} true
+mbfl_struct_is_a_meta_descriptor _(mbfl_struct_default_meta_descriptor) @result{} true
+mbfl_struct_is_a_meta_descriptor _(mbfl_predefined_constant)            @result{} false
+mbfl_struct_is_a_meta_descriptor _(mbfl_unspecified)                    @result{} false
+@end example
+@end defun
+
+
+@defun mbfl_struct_is_the_top_descriptor @var{STRU}
+Return true if the parameter is the datavar of @code{mbfl_struct_top_descriptor}; otherwise return
+false.  The parameter @var{STRU} must be a data--structure instance.
+
+@example
+mbfl_struct_is_the_top_descriptor _(mbfl_struct_top_descriptor) @result{} true
+mbfl_struct_is_the_top_descriptor _(mbfl_unspecified)           @result{} false
+@end example
+@end defun
+
+
+@defun mbfl_struct_is_the_default_descriptor @var{STRU}
+Return true if the parameter is the datavar of @code{mbfl_struct_default_descriptor}; otherwise
+return false.  The parameter @var{STRU} must be a data--structure instance.
+
+@example
+mbfl_struct_is_the_default_descriptor _(mbfl_struct_default_descriptor) @result{} true
+mbfl_struct_is_the_default_descriptor _(mbfl_unspecified)               @result{} false
+@end example
+@end defun
+
+
+@defun mbfl_struct_is_the_top_meta_descriptor @var{STRU}
+Return true if the parameter is the datavar of @code{mbfl_struct_top_meta_descriptor}; otherwise
+return false.  The parameter @var{STRU} must be a data--structure instance.
+
+@example
+mbfl_struct_is_the_top_meta_descriptor _(mbfl_struct_top_meta_descriptor) @result{} true
+mbfl_struct_is_the_top_meta_descriptor _(mbfl_unspecified)                @result{} false
+@end example
+@end defun
+
+
+@defun mbfl_struct_is_the_default_meta_descriptor @var{STRU}
+Return true if the parameter is the datavar of @code{mbfl_struct_default_meta_descriptor}; otherwise
+return false.  The parameter @var{STRU} must be a data--structure instance.
+
+@example
+mbfl_struct_is_the_meta_default_descriptor _(mbfl_struct_default_meta_descriptor) @result{} true
+mbfl_struct_is_the_meta_default_descriptor _(mbfl_unspecified)                    @result{} false
+@end example
+@end defun
+
+@c page
+@node structs special
+@section Special predefined types and instances
+
+
+@menu
+* structs special constants::   Predefined constants.
+@end menu
+
+@c page
+@node structs special constants
+@subsection Predefined constants
+
+
+@deftp {Struct type descriptor} mbfl_predefined_constant
+@deftpx {Parent descriptor} mbfl_struct_default_descriptor
+Data--structure type--descriptor used to define constant values.
+@end deftp
+
+
+@defun mbfl_predefined_constant_init @var{STRU_DATAVAR}
+Define a new data--structure instance of type @objtype{mbfl_predefined_constant} and store it in the
+data variable @var{STRU_DATAVAR}.
+@end defun
+
+
+@defun mbfl_predefined_constant_is_a @var{STRU}
+Return true if the parameter is the datavar of a data--structure instance of type
+@objtype{mbfl_predefined_constant}; otherwise return false.  The parameter @var{STRU} must be a
+data--structure instance.
+@end defun
+
+
+@defvar mbfl_undefined
+Data--structure instance of type @objtype{mbfl_predefined_constant}; it is meant to be a unique
+value used as variable's value to indicate an undefined value.
+@end defvar
+
+
+@defvar mbfl_unspecified
+Data--structure instance of type @objtype{mbfl_predefined_constant}; it is meant to be used a unique
+value used as function call parameter to indicate an unspecified value.
+@end defvar
 
 @c page
 @node strings

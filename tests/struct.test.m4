@@ -99,24 +99,27 @@ function struct-top-meta-descriptor-1.3 () {
 function struct-top-meta-descriptor-1.3 () {
     mbfl_struct_is_a_meta_descriptor _(mbfl_struct_top_meta_descriptor)
 }
-function struct-top-meta-descriptor-1.5 () {
+function struct-top-meta-descriptor-1.4 () {
     mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_descriptor) _(mbfl_struct_top_meta_descriptor)
+}
+function struct-top-meta-descriptor-1.5 () {
+    mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_default_descriptor) _(mbfl_struct_top_meta_descriptor)
 }
 
 ### ------------------------------------------------------------------------
 ### inspecting the fields
 
-function struct-top-meta-descriptor-fields-2.1 () {
+function struct-top-meta-descriptor-2.1 () {
     declare NAME
     mbfl_struct_descriptor_name_var NAME _(mbfl_struct_top_meta_descriptor)
     dotest-equal 'mbfl_struct_top_meta_descriptor' "$NAME"
 }
-function struct-top-meta-descriptor-fields-2.2 () {
+function struct-top-meta-descriptor-2.2 () {
     declare PARENT
     mbfl_struct_descriptor_parent_var PARENT _(mbfl_struct_top_meta_descriptor)
-    dotest-equal _(mbfl_struct_top_descriptor) "$PARENT" 'parent of mbfl_struct_top_meta_descriptor'
+    dotest-equal _(mbfl_struct_default_descriptor) "$PARENT" 'parent of mbfl_struct_top_meta_descriptor'
 }
-function struct-top-meta-descriptor-fields-2.3 () {
+function struct-top-meta-descriptor-2.3 () {
     declare FIELDS_NUMBER
     mbfl_struct_descriptor_fields_number_var FIELDS_NUMBER _(mbfl_struct_top_meta_descriptor)
     dotest-equal 0 "$FIELDS_NUMBER" 'number of fields in instances of mbfl_struct_top_meta_descriptor'
@@ -145,6 +148,9 @@ function struct-default-meta-descriptor-1.5 () {
     mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_descriptor) _(mbfl_struct_default_meta_descriptor)
 }
 function struct-default-meta-descriptor-1.6 () {
+    mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_default_descriptor) _(mbfl_struct_default_meta_descriptor)
+}
+function struct-default-meta-descriptor-1.7 () {
     mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_meta_descriptor) _(mbfl_struct_default_meta_descriptor)
 }
 
@@ -180,7 +186,7 @@ function struct-simple-1.1 () {
     declare PREDICATE_RESULT
     declare IS_A_RESULT
 
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
 
     greek_init _(self) 1 2 3
     # mbfl_array_dump _(greek)
@@ -191,7 +197,7 @@ function struct-simple-1.1 () {
     greek_gamma_var C _(self)
 
     # echo mbfl_struct_top datavar _(mbfl_struct_top_meta_descriptor) >&2
-    # echo mbfl_struct_top_descriptor datavar _(mbfl_struct_top_descriptor) >&2
+    # echo mbfl_struct_top_descriptor datavar _(mbfl_struct_default_descriptor) >&2
     # echo greek datavar _(greek) >&2
     # echo self slot 0 ${self[0]} >&2
 
@@ -218,7 +224,7 @@ function struct-simple-1.2 () {
     declare PREDICATE_RESULT
     declare IS_A_RESULT
 
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
 
     greek_init _(self) 1 2 3
     # mbfl_array_dump _(greek)
@@ -254,7 +260,7 @@ function struct-simple-1.3 () {
     declare PREDICATE_RESULT
     declare IS_A_RESULT
 
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
     mbfl_struct_define      _(self) _(greek) 1 2 3
 
     # echo greek datavar _(greek) >&2
@@ -288,7 +294,7 @@ function struct-simple-1.4 () {
     declare PREDICATE_RESULT
     declare IS_A_RESULT
 
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
 
     #dotest-set-debug
 
@@ -346,7 +352,7 @@ function struct-single-inheritance-1.1 () {
     declare RED GREEN
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
 
-    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_default_descriptor) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
@@ -382,7 +388,7 @@ function struct-single-inheritance-1.2 () {
     declare RED GREEN
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
 
-    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_default_descriptor) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
@@ -421,7 +427,7 @@ function struct-single-inheritance-1.3 () {
     declare RED GREEN
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
 
-    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_default_descriptor) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
@@ -463,7 +469,7 @@ function struct-single-inheritance-2.1 () {
     declare RED GREEN BLUE
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
 
-    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_default_descriptor) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
@@ -508,7 +514,7 @@ function struct-single-inheritance-2.2 () {
     declare RED GREEN BLUE
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
 
-    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_default_descriptor) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
@@ -557,7 +563,7 @@ function struct-single-inheritance-2.3 () {
     declare RED GREEN BLUE
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
 
-    mbfl_struct_define_type _(color_red) _(mbfl_struct_top_descriptor) 'color_red' red
+    mbfl_struct_define_type _(color_red) _(mbfl_struct_default_descriptor) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
@@ -601,42 +607,42 @@ function struct-single-inheritance-2.3 () {
 
 function struct-custom-type-descriptors-1.1 () {
     mbfl_struct_declare(greek)
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
     mbfl_struct_is_a_descriptor _(greek)
 }
 function struct-custom-type-descriptors-1.2 () {
     mbfl_struct_declare(greek)
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
     ! mbfl_struct_is_a_meta_descriptor _(greek)
 }
 function struct-custom-type-descriptors-1.3 () {
     mbfl_struct_declare(greek)
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
     ! mbfl_struct_is_the_top_descriptor _(greek)
 }
 function struct-custom-type-descriptors-1.4 () {
     mbfl_struct_declare(greek)
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
     ! mbfl_struct_is_the_top_meta_descriptor _(greek)
 }
 function struct-custom-type-descriptors-1.5 () {
     mbfl_struct_declare(greek)
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
     ! mbfl_struct_is_the_default_meta_descriptor _(greek)
 }
 function struct-custom-type-descriptors-1.6 () {
     mbfl_struct_declare(greek)
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
-    mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_descriptor) _(greek)
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_default_descriptor) _(greek)
 }
 function struct-custom-type-descriptors-1.7 () {
     mbfl_struct_declare(greek)
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
     ! mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_top_meta_descriptor) _(greek)
 }
 function struct-custom-type-descriptors-1.8 () {
     mbfl_struct_declare(greek)
-    mbfl_struct_define_type _(greek) _(mbfl_struct_top_descriptor) 'greek' alpha beta gamma
+    mbfl_struct_define_type _(greek) _(mbfl_struct_default_descriptor) 'greek' alpha beta gamma
     ! mbfl_struct_descriptors_are_parent_and_child _(mbfl_struct_default_meta_descriptor) _(greek)
 }
 
@@ -645,14 +651,14 @@ function struct-custom-type-descriptors-1.8 () {
 function struct-custom-type-descriptors-2.1 () {
     mbfl_struct_declare(one)
     mbfl_struct_declare(two)
-    mbfl_struct_define_type _(one) _(mbfl_struct_top_descriptor) 'one' a
+    mbfl_struct_define_type _(one) _(mbfl_struct_default_descriptor) 'one' a
     mbfl_struct_define_type _(two) _(one) 'two' b
     mbfl_struct_is_a_descriptor _(two)
 }
 function struct-custom-type-descriptors-2.2 () {
     mbfl_struct_declare(one)
     mbfl_struct_declare(two)
-    mbfl_struct_define_type _(one) _(mbfl_struct_top_descriptor) 'one' a
+    mbfl_struct_define_type _(one) _(mbfl_struct_default_descriptor) 'one' a
     mbfl_struct_define_type _(two) _(one) 'two' b
     mbfl_struct_descriptors_are_parent_and_child _(one) _(two)
 }
@@ -702,6 +708,31 @@ function struct-error-instance-1.2 () {
     RV=$?
 
     dotest-equal 1 $RV 'applied field mutator to instance of wrong type'
+}
+
+
+#### predefined constants
+
+function struct-predefined-constants-1.1 () {
+    mbfl_is_the_unspecified _(mbfl_unspecified)
+}
+function struct-predefined-constants-1.2 () {
+    ! mbfl_is_the_unspecified _(mbfl_undefined)
+}
+function struct-predefined-constants-1.3 () {
+    mbfl_predefined_constant_is_a _(mbfl_unspecified)
+}
+
+### ------------------------------------------------------------------------
+
+function struct-predefined-constants-2.1 () {
+    mbfl_is_the_undefined _(mbfl_undefined)
+}
+function struct-predefined-constants-2.2 () {
+    ! mbfl_is_the_undefined _(mbfl_unspecified)
+}
+function struct-predefined-constants-1.3 () {
+    mbfl_predefined_constant_is_a _(mbfl_undefined)
 }
 
 

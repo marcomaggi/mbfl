@@ -56,6 +56,7 @@ m4_define([[[MBFL_INSTANCE_FUNCNAME_PATTERN_MUTATOR]]],		[[['%s_%s_set']]])
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
     mbfl_struct_declare(mbfl_struct_top_descriptor)
+    mbfl_struct_declare(mbfl_struct_default_descriptor)
     mbfl_struct_declare(mbfl_struct_top_meta_descriptor)
     mbfl_struct_declare(mbfl_struct_default_meta_descriptor)
 fi
@@ -64,8 +65,7 @@ fi
 #### top data-structure type-descriptor
 #
 # The  data-structure   instance  "mbfl_struct_top_descriptor"  is   ultimate  parent  of   all  the
-# data-structure   type-descriptors.    It   is   itself   a   data-structure   instance   of   type
-# "mbfl_struct_default_meta_descriptor".
+# data-structure type-descriptors.
 #
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -78,8 +78,29 @@ then
     mbfl_slot_set(mbfl_struct_top_descriptor, m4_eval(MBFL_INSTANCE_FIRST_FIELD_INDEX + MBFL_DESCRIPTOR_FIELD_OFFSET_FIELDS_NUMBER),
 		  0)
 
-    # This data-structure  type-descriptor has  adds no  fields to its  instances: we  store nothing
-    # after the number of fields.
+    # This data-structure  type-descriptor adds no fields  to its instances: we  store nothing after
+    # the number of fields.
+fi
+
+
+#### default data-structure type-descriptor
+#
+# The  data-structure  instance  "mbfl_struct_default_descriptor"   is  the  default  data-structure
+# type-descriptor used by the MBFL.
+#
+
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then
+    mbfl_slot_set(mbfl_struct_default_descriptor, MBFL_INSTANCE_TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
+    mbfl_slot_set(mbfl_struct_default_descriptor, m4_eval(MBFL_INSTANCE_FIRST_FIELD_INDEX + MBFL_DESCRIPTOR_FIELD_OFFSET_PARENT),
+		  _(mbfl_struct_top_descriptor))
+    mbfl_slot_set(mbfl_struct_default_descriptor, m4_eval(MBFL_INSTANCE_FIRST_FIELD_INDEX + MBFL_DESCRIPTOR_FIELD_OFFSET_NAME),
+		  'mbfl_struct_default_descriptor')
+    mbfl_slot_set(mbfl_struct_default_descriptor, m4_eval(MBFL_INSTANCE_FIRST_FIELD_INDEX + MBFL_DESCRIPTOR_FIELD_OFFSET_FIELDS_NUMBER),
+		  0)
+
+    # This data-structure  type-descriptor adds no fields  to its instances: we  store nothing after
+    # the number of fields.
 fi
 
 
@@ -93,21 +114,21 @@ if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
     mbfl_slot_set(mbfl_struct_top_meta_descriptor, MBFL_INSTANCE_TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
     mbfl_slot_set(mbfl_struct_top_meta_descriptor, m4_eval(MBFL_INSTANCE_FIRST_FIELD_INDEX + MBFL_DESCRIPTOR_FIELD_OFFSET_PARENT),
-		  _(mbfl_struct_top_descriptor))
+		  _(mbfl_struct_default_descriptor))
     mbfl_slot_set(mbfl_struct_top_meta_descriptor, m4_eval(MBFL_INSTANCE_FIRST_FIELD_INDEX + MBFL_DESCRIPTOR_FIELD_OFFSET_NAME),
 		  'mbfl_struct_top_meta_descriptor')
     mbfl_slot_set(mbfl_struct_top_meta_descriptor, m4_eval(MBFL_INSTANCE_FIRST_FIELD_INDEX + MBFL_DESCRIPTOR_FIELD_OFFSET_FIELDS_NUMBER),
 		  0)
 
-    # This data-structure  type-descriptor has  adds no  fields to its  instances: we  store nothing
-    # after the number of fields.
+    # This data-structure  type-descriptor adds no fields  to its instances: we  store nothing after
+    # the number of fields.
 fi
 
 
 #### data-structure type-descriptor default meta-descriptor
 #
-# The  data-structure  instance  "mbfl_struct_default_meta_descriptor"  is   the  type  of  all  the
-# data-structure type-descriptors; it is also the type of itself.
+# The data-structure  instance "mbfl_struct_default_meta_descriptor"  is the  default data-structure
+# type-descriptors meta-descriptor; it is also the type of itself.
 #
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
@@ -133,36 +154,11 @@ fi
 
 #### data-structure type-descriptor handling functions
 
-# Return true if the parameter is the datavar of "mbfl_struct_top_meta_descriptor".
-#
-function mbfl_struct_is_the_top_meta_descriptor () {
-    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_struct_top_meta_descriptor), "$mbfl_SELF_DATAVAR")
-}
-
-# Return true if the parameter is the datavar of "mbfl_struct_default_meta_descriptor".
-#
-function mbfl_struct_is_the_default_meta_descriptor () {
-    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_struct_default_meta_descriptor), "$mbfl_SELF_DATAVAR")
-}
-
-# Return true if the parameter is the datavar of "mbfl_struct_top_descriptor".
-#
-function mbfl_struct_is_the_top_descriptor () {
-    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_struct_top_descriptor), "$mbfl_SELF_DATAVAR")
-}
-
-# Return true if the parameter is the datavar of a data-structure type-descriptor.
-#
 function mbfl_struct_is_a_descriptor () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to data-structure instance)
     mbfl_struct_is_a _(mbfl_SELF) _(mbfl_struct_top_descriptor)
 }
 
-# Return true if the parameter is the datavar of a data-structure type-descriptor meta-descriptor.
-#
 function mbfl_struct_is_a_meta_descriptor () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to data-structure instance)
     if mbfl_struct_is_a _(mbfl_SELF) _(mbfl_struct_top_meta_descriptor)
@@ -170,6 +166,30 @@ function mbfl_struct_is_a_meta_descriptor () {
     else return_because_failure
     fi
 }
+
+### ------------------------------------------------------------------------
+
+function mbfl_struct_is_the_top_descriptor () {
+    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
+    mbfl_string_eq(_(mbfl_struct_top_descriptor), "$mbfl_SELF_DATAVAR")
+}
+
+function mbfl_struct_is_the_default_descriptor () {
+    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
+    mbfl_string_eq(_(mbfl_struct_default_descriptor), "$mbfl_SELF_DATAVAR")
+}
+
+function mbfl_struct_is_the_top_meta_descriptor () {
+    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
+    mbfl_string_eq(_(mbfl_struct_top_meta_descriptor), "$mbfl_SELF_DATAVAR")
+}
+
+function mbfl_struct_is_the_default_meta_descriptor () {
+    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
+    mbfl_string_eq(_(mbfl_struct_default_meta_descriptor), "$mbfl_SELF_DATAVAR")
+}
+
+### ------------------------------------------------------------------------
 
 # Given the datavar of  a data-structure type-descriptor: store in the  result-variable the value of
 # the field "parent".
@@ -476,6 +496,30 @@ function mbfl_p_struct_make_function () {
     mbfl_mandatory_parameter(mbfl_BODY,     2, function body)
     #echo function "$mbfl_FUNCNAME" '()' "$mbfl_BODY"; echo
     eval function "$mbfl_FUNCNAME" '()' "$mbfl_BODY"
+}
+
+
+#### predefined constants
+
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then
+    mbfl_struct_declare(mbfl_predefined_constant)
+    mbfl_struct_define_type _(mbfl_predefined_constant) _(mbfl_struct_top_descriptor) 'mbfl_predefined_constant'
+
+    mbfl_struct_declare(mbfl_unspecified)
+    mbfl_struct_declare(mbfl_undefined)
+
+    mbfl_predefined_constant_init _(mbfl_unspecified)
+    mbfl_predefined_constant_init _(mbfl_undefined)
+fi
+
+function mbfl_is_the_unspecified () {
+    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
+    mbfl_string_eq(_(mbfl_unspecified),"$mbfl_SELF_DATAVAR")
+}
+function mbfl_is_the_undefined () {
+    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
+    mbfl_string_eq(_(mbfl_undefined),"$mbfl_SELF_DATAVAR")
 }
 
 ### end of file
