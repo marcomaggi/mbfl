@@ -58,10 +58,10 @@ function object-standard-object-1.2 () {
     dotest-equal _(mbfl_standard_class) $TYPE
 }
 function object-standard-object-1.3 () {
-    mbfl_standard_object_is_a_class _(mbfl_standard_object)
+    mbfl_standard_object_is_a _(mbfl_standard_object)
 }
 function object-standard-object-1.4 () {
-    ! mbfl_standard_object_is_a_metaclass _(mbfl_standard_object)
+    mbfl_standard_class_is_a _(mbfl_standard_object)
 }
 
 ### ------------------------------------------------------------------------
@@ -96,10 +96,10 @@ function object-standard-class-1.2 () {
     dotest-equal _(mbfl_standard_class) $TYPE
 }
 function object-standard-class-1.3 () {
-    mbfl_standard_object_is_a_class _(mbfl_standard_class)
+    mbfl_standard_object_is_a _(mbfl_standard_class)
 }
 function object-standard-class-1.4 () {
-    mbfl_standard_object_is_a_metaclass _(mbfl_standard_class)
+    mbfl_standard_class_is_a _(mbfl_standard_class)
 }
 function object-standard-class-1.6 () {
     mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_standard_class)
@@ -155,7 +155,7 @@ function object-simple-1.1 () {
     greek_is_a _(self)
     PREDICATE_RESULT=$?
 
-    mbfl_standard_object_is_a _(self) _(greek)
+    mbfl_standard_object_is_of_class _(self) _(greek)
     IS_A_RESULT=$?
 
     dotest-equal 0 $PREDICATE_RESULT 'result of applying the predicate' &&
@@ -192,7 +192,7 @@ function object-simple-1.2 () {
     greek_is_a _(self)
     PREDICATE_RESULT=$?
 
-    mbfl_standard_object_is_a _(self) _(greek)
+    mbfl_standard_object_is_of_class _(self) _(greek)
     IS_A_RESULT=$?
 
     dotest-equal 0 $PREDICATE_RESULT 'result of applying the predicate' &&
@@ -202,43 +202,9 @@ function object-simple-1.2 () {
 	dotest-equal 33 $C
 }
 
-# Test for: mbfl_standard_object_define.
-#
-function object-simple-1.3 () {
-    mbfl_standard_object_declare(greek)
-    mbfl_standard_object_declare(self)
-    declare A=0 B=0 C=0
-    declare PREDICATE_RESULT
-    declare IS_A_RESULT
-
-    mbfl_standard_class_define  _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    mbfl_standard_object_define _(self) _(greek) 1 2 3
-
-    # echo greek datavar _(greek) >&2
-    # mbfl_array_dump _(greek)
-    # echo self datavar _(self) >&2
-    # mbfl_array_dump _(self)
-
-    greek_is_a _(self)
-    PREDICATE_RESULT=$?
-
-    mbfl_standard_object_is_a _(self) _(greek)
-    IS_A_RESULT=$?
-
-    greek_alpha_var A _(self)
-    greek_beta_var  B _(self)
-    greek_gamma_var C _(self)
-
-    dotest-equal 0 $PREDICATE_RESULT 'result of applying the predicate' &&
-	dotest-equal 0 $IS_A_RESULT 'result of applying the is_a function' &&
-      	dotest-equal 1 $A 'value of field alpha' &&
-      	dotest-equal 2 $B 'value of field beta'  &&
-      	dotest-equal 3 $C 'value of field gamma'
-}
-
 # Test for: mbfl_standard_object_declare_global, mbfl_standard_object_unset.
 #
-function object-simple-1.4 () {
+function object-simple-1.3 () {
     mbfl_standard_object_declare(greek)
     mbfl_standard_object_declare_global(self)
     declare A=0 B=0 C=0 DATAVAR
@@ -266,7 +232,7 @@ function object-simple-1.4 () {
 	greek_is_a _(self)
 	PREDICATE_RESULT=$?
 
-	mbfl_standard_object_is_a _(self) _(greek)
+	mbfl_standard_object_is_of_class _(self) _(greek)
 	IS_A_RESULT=$?
 
 	dotest-equal 0 $PREDICATE_RESULT 'result of applying the predicate' &&
@@ -311,7 +277,7 @@ function object-single-inheritance-1.1 () {
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
-    mbfl_standard_object_define _(self) _(color_red_green) 1 2
+    color_red_green_define _(self) 1 2
     # echo self datavar _(self) >&2
     # mbfl_array_dump _(self)
 
@@ -347,7 +313,7 @@ function object-single-inheritance-1.2 () {
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
-    mbfl_standard_object_define _(self) _(color_red_green) 1 2
+    color_red_green_define _(self) 1 2
     # echo self datavar _(self) >&2
     # mbfl_array_dump _(self)
 
@@ -386,7 +352,7 @@ function object-single-inheritance-1.3 () {
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
-    mbfl_standard_object_define _(self) _(color_red_green) 1 2
+    color_red_green_define _(self) 1 2
     # echo self datavar _(self) >&2
     # mbfl_array_dump _(self)
 
@@ -430,7 +396,7 @@ function object-single-inheritance-2.1 () {
 
     mbfl_standard_class_define _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
 
-    mbfl_standard_object_define _(self) _(color_red_green_blue) 1 2 3
+    color_red_green_blue_define _(self) 1 2 3
     # echo self datavar _(self) >&2
     # mbfl_array_dump _(self)
 
@@ -475,7 +441,7 @@ function object-single-inheritance-2.2 () {
 
     mbfl_standard_class_define _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
 
-    mbfl_standard_object_define _(self) _(color_red_green_blue) 1 2 3
+    color_red_green_blue_define _(self) 1 2 3
     # echo self datavar _(self) >&2
     # mbfl_array_dump _(self)
 
@@ -524,7 +490,7 @@ function object-single-inheritance-2.3 () {
 
     mbfl_standard_class_define _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
 
-    mbfl_standard_object_define _(self) _(color_red_green_blue) 1 2 3
+    color_red_green_blue_define _(self) 1 2 3
     # echo self datavar _(self) >&2
     # mbfl_array_dump _(self)
 
@@ -559,12 +525,17 @@ function object-single-inheritance-2.3 () {
 function object-custom-classes-1.1 () {
     mbfl_standard_object_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    mbfl_standard_object_is_a_class _(greek)
+    mbfl_standard_object_is_a _(greek)
 }
 function object-custom-classes-1.2 () {
     mbfl_standard_object_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    ! mbfl_standard_object_is_a_metaclass _(greek)
+    mbfl_standard_class_is_a _(greek)
+}
+function object-custom-classes-1.2.1 () {
+    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
+    ! mbfl_standard_metaclass_is_a _(greek)
 }
 function object-custom-classes-1.3 () {
     mbfl_standard_object_declare(greek)
@@ -599,7 +570,7 @@ function object-custom-classes-2.1 () {
     mbfl_standard_object_declare(two)
     mbfl_standard_class_define _(one) _(mbfl_standard_object) 'one' a
     mbfl_standard_class_define _(two) _(one) 'two' b
-    mbfl_standard_object_is_a_class _(two)
+    mbfl_standard_object_is_a _(two) && mbfl_standard_class_is_a _(two) && ! mbfl_standard_metaclass_is_a _(two)
 }
 function object-custom-classes-2.2 () {
     mbfl_standard_object_declare(one)

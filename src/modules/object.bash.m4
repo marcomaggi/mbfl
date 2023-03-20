@@ -140,6 +140,24 @@ fi
 
 #### accessor functions for objects of type "mbfl_standard_class"
 
+function mbfl_standard_class_is_a () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to instance of mbfl_standard_object)
+    if test -v _(mbfl_SELF) -a -v mbfl_slot_spec(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
+    then mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
+    else false
+    fi
+}
+
+function mbfl_standard_metaclass_is_a () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to instance of mbfl_standard_object)
+    if mbfl_standard_class_is_a _(mbfl_SELF)
+    then
+	mbfl_string_eq(_(mbfl_standard_class), _(mbfl_SELF)) ||
+	    mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_SELF)
+    else false
+    fi
+}
+
 function mbfl_standard_class_parent_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,   1, the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a data-structure type-descriptor)
@@ -177,7 +195,7 @@ function mbfl_standard_classes_are_parent_and_child () {
 
 #### data-structure instance handling
 
-function mbfl_standard_object_define () {
+function mbfl_p_standard_object_define () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to a data-structure instance)
     mbfl_mandatory_nameref_parameter(mbfl_TYPE, 2, reference to a data-structure type-descriptor)
     shift 2
@@ -185,7 +203,7 @@ function mbfl_standard_object_define () {
 
     # Validate parameters.
     {
-	if ! mbfl_standard_object_is_a_class _(mbfl_TYPE)
+	if ! mbfl_standard_object_is_a _(mbfl_TYPE)
 	then
 	    mbfl_message_error_printf 'in call to "%s" expected type-descriptor as type-descriptor parameter: "%s"' $FUNCNAME "$mbfl_TYPE"
 	    return_because_failure
@@ -212,30 +230,24 @@ function mbfl_standard_object_define () {
     }
 }
 
-# Return true if the  given data-structure instance if of the specified type.   This means the given
-# type is in the linked list of types from the instance.
+# Return true if the given parameter is an instance of "mbfl_standard_object".  We do our best.
 #
 function mbfl_standard_object_is_a () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing a data-structure instance)
-    mbfl_mandatory_nameref_parameter(mbfl_GIVEN_TYPE,	2, variable referencing a data-structure type-descriptor)
-    declare mbfl_TYPE
-    mbfl_standard_object_class_var mbfl_TYPE _(mbfl_SELF)
-    mbfl_p_standard_object_is_a $mbfl_TYPE _(mbfl_GIVEN_TYPE)
-}
-function mbfl_p_standard_object_is_a () {
-    mbfl_mandatory_nameref_parameter(mbfl_TYPE,       1, variable referencing a data-structure instance)
-    mbfl_mandatory_nameref_parameter(mbfl_GIVEN_TYPE, 2, variable referencing a data-structure type-descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, variable referencing a data-structure instance)
 
-    if mbfl_string_eq(_(mbfl_TYPE), _(mbfl_GIVEN_TYPE))
-    then return_because_success
-    else
-	# Here we  do not want  to use  "mbfl_standard_class_parent_var" because this  function uses
-	# "mbfl_standard_object_is_a", resulting in an infinite loop.
-	declare mbfl_PARENT=_(mbfl_TYPE,MBFL_STDCLS__FIELD_INDEX__PARENT)
-	if mbfl_string_is_empty $mbfl_PARENT
-	then return_because_failure
-	else mbfl_p_standard_object_is_a $mbfl_PARENT _(mbfl_GIVEN_TYPE)
-	fi
+    if test -v _(mbfl_SELF) -a -v mbfl_slot_spec(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
+    then mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
+    else false
+    fi
+}
+
+function mbfl_standard_object_is_of_class () {
+    mbfl_mandatory_nameref_parameter(mbfl_OBJECT, 1, variable referencing an object of class mbfl_standard_object)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS,  2, variable referencing a class of class mbfl_standard_object)
+
+    if test -v _(mbfl_OBJECT) -a -v mbfl_slot_spec(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)
+    then mbfl_standard_classes_are_parent_and_child _(mbfl_CLASS) _(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)
+    else false
     fi
 }
 
@@ -258,7 +270,7 @@ function mbfl_standard_class_define () {
 
     # Validate parameters.
     {
-	if ! mbfl_standard_object_is_a_class _(mbfl_PARENT)
+	if ! mbfl_standard_class_is_a _(mbfl_PARENT)
 	then
 	    mbfl_message_error_printf 'in call to "%s" expected type-descriptor as parent parameter: "%s"' $FUNCNAME "$mbfl_PARENT"
 	    return_because_failure
@@ -283,7 +295,7 @@ function mbfl_standard_class_define () {
 	mbfl_standard_class_fields_number_var mbfl_PARENT_FIELDS_NUMBER _(mbfl_PARENT)
 	let mbfl_TOTAL_FIELDS_NUMBER=mbfl_PARENT_FIELDS_NUMBER+mbfl_NEW_FIELDS_NUMBER
 
-	mbfl_standard_object_define _(mbfl_TYPE) _(mbfl_standard_class) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER
+	mbfl_p_standard_object_define _(mbfl_TYPE) _(mbfl_standard_class) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER
 	# Copy the fields from the parent
 	for ((mbfl_I=0; mbfl_I < mbfl_PARENT_FIELDS_NUMBER; ++mbfl_I))
 	do mbfl_slot_set(mbfl_TYPE,                  MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I,
@@ -345,7 +357,7 @@ function mbfl_standard_class_define () {
 
 	printf -v mbfl_PREDICATE_NAME  MBFL_STDOBJ__FUNCNAME_PATTERN__PREDICATE   "$mbfl_NAME"
 	mbfl_PREDICATE_BODY="{ declare mbfl_SELF_DATAVAR=\${1:?\"missing reference to data-structure parameter to '\$FUNCNAME'\"};"
-	mbfl_PREDICATE_BODY+="mbfl_standard_object_is_a \"\$mbfl_SELF_DATAVAR\" '${mbfl_TYPE_DATAVAR}' ; }"
+	mbfl_PREDICATE_BODY+="mbfl_standard_object_is_of_class \"\$mbfl_SELF_DATAVAR\" '${mbfl_TYPE_DATAVAR}' ; }"
 	mbfl_p_struct_make_function "$mbfl_PREDICATE_NAME" "$mbfl_PREDICATE_BODY"
     }
 
@@ -395,7 +407,7 @@ function mbfl_standard_object_slot_accessor () {
     mbfl_mandatory_parameter(mbfl_FIELD_OFFSET,		4, the field offset in the data-structure instance)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
 
-    if mbfl_standard_object_is_a _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
+    if mbfl_standard_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
     then mbfl_VALUE=mbfl_slot_ref(mbfl_SELF, $mbfl_FIELD_OFFSET)
     else mbfl_p_standard_class_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_REQUIRED_TYPE) "$mbfl_CALLER_FUNCNAME"
     fi
@@ -410,7 +422,7 @@ function mbfl_standard_object_slot_mutator () {
     mbfl_mandatory_parameter(mbfl_FIELD_OFFSET,		4, the field offset in the data-structure instance)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
 
-    if mbfl_standard_object_is_a _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
+    if mbfl_standard_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
     then mbfl_slot_set(mbfl_SELF, $mbfl_FIELD_OFFSET, "$mbfl_NEW_VALUE")
     else mbfl_p_standard_class_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_REQUIRED_TYPE) "$mbfl_CALLER_FUNCNAME"
     fi
@@ -432,21 +444,6 @@ function mbfl_p_standard_class_mismatch_error_self_given_type () {
 
 
 #### data-structure type-descriptor handling functions
-
-function mbfl_standard_object_is_a_class () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to data-structure instance)
-    mbfl_standard_object_is_a _(mbfl_SELF) _(mbfl_standard_class)
-}
-
-function mbfl_standard_object_is_a_metaclass () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to data-structure instance)
-    if mbfl_standard_object_is_a _(mbfl_SELF) _(mbfl_standard_class)
-    then mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_SELF)
-    else return_because_failure
-    fi
-}
-
-### ------------------------------------------------------------------------
 
 function mbfl_standard_object_is_the_standard_object () {
     mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
