@@ -81,6 +81,45 @@ function struct-top-descriptor-2.3 () {
 }
 
 
+#### tests for the built-in data structure type "mbfl_struct_default_descriptor"
+
+function struct-default-descriptor-1.1 () {
+    ! mbfl_struct_is_the_top_meta_descriptor _(mbfl_struct_default_descriptor) &&
+	! mbfl_struct_is_the_top_descriptor _(mbfl_struct_default_descriptor) &&
+	mbfl_struct_is_the_default_descriptor _(mbfl_struct_default_descriptor)
+}
+function struct-default-descriptor-1.2 () {
+    declare TYPE
+    mbfl_struct_type_var TYPE _(mbfl_struct_default_descriptor)
+    dotest-equal _(mbfl_struct_default_meta_descriptor) $TYPE
+}
+function struct-default-descriptor-1.3 () {
+    mbfl_struct_is_a_descriptor _(mbfl_struct_default_descriptor)
+}
+function struct-default-descriptor-1.4 () {
+    ! mbfl_struct_is_a_meta_descriptor _(mbfl_struct_default_descriptor)
+}
+
+### ------------------------------------------------------------------------
+### inspecting the fields
+
+function struct-default-descriptor-2.1 () {
+    declare NAME
+    mbfl_struct_descriptor_name_var NAME _(mbfl_struct_default_descriptor)
+    dotest-equal 'mbfl_struct_default_descriptor' "$NAME"
+}
+function struct-default-descriptor-2.2 () {
+    declare PARENT
+    mbfl_struct_descriptor_parent_var PARENT _(mbfl_struct_default_descriptor)
+    dotest-equal _(mbfl_struct_top_descriptor) "$PARENT" 'parent of mbfl_struct_default_descriptor'
+}
+function struct-default-descriptor-2.3 () {
+    declare FIELDS_NUMBER
+    mbfl_struct_descriptor_fields_number_var FIELDS_NUMBER _(mbfl_struct_default_descriptor)
+    dotest-equal 0 "$FIELDS_NUMBER" 'number of fields in instances of mbfl_struct_default_descriptor'
+}
+
+
 #### tests for the built-in data structure type "mbfl_struct_top_meta_descriptor"
 
 function struct-top-meta-descriptor-1.1 () {
