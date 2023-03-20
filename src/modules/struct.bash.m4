@@ -318,17 +318,17 @@ function mbfl_struct_define_type () {
 
     declare -ar mbfl_NEW_FIELD_NAMES=("$@")
     declare -ir mbfl_NEW_FIELDS_NUMBER=mbfl_slots_number(mbfl_NEW_FIELD_NAMES)
-    declare -i  mbfl_INIT_TOTAL_FIELDS_NUMBER
-    declare -i  mbfl_I
+    declare -i  mbfl_TOTAL_FIELDS_NUMBER
+    declare -i  mbfl_I mbfl_J
     declare -r  mbfl_TYPE_DATAVAR=_(mbfl_TYPE)
 
     # Initialise the fields of the new data-structure type-descriptor.
     {
 	declare -i  mbfl_PARENT_FIELDS_NUMBER
 	mbfl_struct_descriptor_fields_number_var mbfl_PARENT_FIELDS_NUMBER _(mbfl_PARENT)
-	let mbfl_INIT_TOTAL_FIELDS_NUMBER=mbfl_PARENT_FIELDS_NUMBER+mbfl_NEW_FIELDS_NUMBER
+	let mbfl_TOTAL_FIELDS_NUMBER=mbfl_PARENT_FIELDS_NUMBER+mbfl_NEW_FIELDS_NUMBER
 
-	mbfl_struct_define _(mbfl_TYPE) _(mbfl_struct_default_meta_descriptor) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_INIT_TOTAL_FIELDS_NUMBER
+	mbfl_struct_define _(mbfl_TYPE) _(mbfl_struct_default_meta_descriptor) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER
 	# Copy the fields from the parent
 	for ((mbfl_I=0; mbfl_I < mbfl_PARENT_FIELDS_NUMBER; ++mbfl_I))
 	do mbfl_slot_set(mbfl_TYPE,                  MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + mbfl_I,
@@ -338,6 +338,24 @@ function mbfl_struct_define_type () {
 	for ((mbfl_I=0; mbfl_I < mbfl_NEW_FIELDS_NUMBER; ++mbfl_I))
 	do mbfl_slot_set(mbfl_TYPE, mbfl_PARENT_FIELDS_NUMBER +  MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + mbfl_I,
 			 mbfl_slot_qref(mbfl_NEW_FIELD_NAMES, mbfl_I))
+	done
+    }
+
+    # Check that the field names are unique.
+    {
+	declare mbfl_FIELD_NAME
+
+	for ((mbfl_I=0; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I))
+	do
+	    mbfl_FIELD_NAME=_(mbfl_TYPE, MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + mbfl_I)
+	    for ((mbfl_J=1+mbfl_I; mbfl_J < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_J))
+	    do
+		if mbfl_string_eq($mbfl_FIELD_NAME, _(mbfl_TYPE, MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + mbfl_J))
+		then
+		    mbfl_message_error_printf 'duplicate field name in the definition of type "%s": "%s"' "$mbfl_NAME" "$mbfl_FIELD_NAME"
+		    return_because_failure
+		fi
+	    done
 	done
     }
 
@@ -355,7 +373,7 @@ function mbfl_struct_define_type () {
 	mbfl_CONSTRUCTOR_BODY+="local -n mbfl_SELF=\${1:"
 	mbfl_CONSTRUCTOR_BODY+="?\"missing reference to struct '${mbfl_NAME}' variable parameter to '\${FUNCNAME}'\"};"
 	mbfl_CONSTRUCTOR_BODY+="mbfl_SELF[0]=${mbfl_TYPE_DATAVAR};"
-	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_INIT_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
+	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
 	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
 	    declare mbfl_OFFSET=$((MBFL_STRU__FIRST_FIELD_INDEX + $mbfl_I))
@@ -378,7 +396,7 @@ function mbfl_struct_define_type () {
 
     # Build the data-structure field-mutator functions.
     {
-	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_INIT_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
+	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
 	    declare mbfl_MUTATOR_NAME mbfl_MUTATOR_BODY
 	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
@@ -396,7 +414,7 @@ function mbfl_struct_define_type () {
 
     # Build the data-structure field-accessor functions.
     {
-	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_INIT_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
+	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
 	    declare mbfl_ACCESSOR_NAME mbfl_ACCESSOR_BODY
 	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + $mbfl_I)

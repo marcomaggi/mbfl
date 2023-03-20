@@ -714,6 +714,18 @@ function struct-error-descriptor-1.1 () {
     dotest-equal 1 $RV 'attempt to instantiate abstract data type'
 }
 
+function struct-error-descriptor-1.2 () {
+    mbfl_struct_declare(one)
+    mbfl_struct_declare(two)
+    declare RV
+
+    mbfl_struct_define_type _(one) _(mbfl_struct_top_descriptor) 'one' a B c
+    mbfl_struct_define_type _(two) _(one) 'two' d B e
+    RV=$?
+
+    dotest-equal 1 $RV 'duplicate field name'
+}
+
 
 #### testing errors regarding data-structure instances
 
