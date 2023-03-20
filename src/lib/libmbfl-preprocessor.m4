@@ -353,49 +353,52 @@ m4_dnl data structures
 
 # Synopsis:
 #
-#   mbfl_p_struct_declare_array(INSTANCE_VAR, DATAVAR_OPTIONS)
+#   mbfl_p_declare_standard_object_array(INSTANCE_VAR, DATAVAR_OPTIONS)
 #
-# Declare a variable as holder of a data structure instance.  The DATAVAR_OPTIONS are
-# handed to "declare" and allow us to  declare a global data variable.  This macro is
-# meant to be private.
+# Declare a  variable as  holder of  an object  of type  "mbfl_standard_object".  The
+# DATAVAR_OPTIONS  are handed  to "declare"  and allow  us to  declare a  global data
+# variable.  This macro is meant to be private.
 #
-m4_define([[[mbfl_p_struct_declare_array]]],[[[m4_dnl
+m4_define([[[mbfl_p_declare_standard_object_array]]],[[[m4_dnl
 mbfl_declare_index_array_varref([[[$1]]],,[[[$2]]])m4_dnl
 ]]])
 
 # Synopsis:
 #
-#   mbfl_struct_declare(INSTANCE_VAR)
+#   mbfl_standard_object_declare(INSTANCE_VAR)
 #
-# Declare a variable as holder of a data structure instance.
+# Declare a variable as holder of an object of type "mbfl_standard_object".
 #
-m4_define([[[mbfl_struct_declare]]],[[[m4_dnl
-mbfl_p_struct_declare_array([[[$1]]])m4_dnl
+m4_define([[[mbfl_standard_object_declare]]],[[[m4_dnl
+mbfl_p_declare_standard_object_array([[[$1]]])m4_dnl
 ]]])
 
 # Synopsis:
 #
-#   mbfl_struct_declare_global_varref(INSTANCE_VAR)
+#   mbfl_standard_object_declare_global_varref(INSTANCE_VAR)
 #
-# Declare a  variable as  holder of  a data structure  instance: the  associated data
-# variable is declared as global.
+# Declare  a variable  as holder  of an  object of  type "mbfl_standard_object":  the
+# associated data variable is declared as global.
 #
-m4_define([[[mbfl_struct_declare_global]]],[[[m4_dnl
-mbfl_p_struct_declare_array([[[$1]]],[[[-g]]])m4_dnl
+m4_define([[[mbfl_standard_object_declare_global]]],[[[m4_dnl
+mbfl_p_declare_standard_object_array([[[$1]]],[[[-g]]])m4_dnl
 ]]])
 
 # Synopsis:
 #
-#   mbfl_struct_unset(INSTANCE_VAR)
+#   mbfl_standard_object_unset(INSTANCE_VAR)
 #
-# Unset all the  variables associated to the given data  structure instance variable.
-# Example:
+# Unset  all  the variables  associated  to  the given  datavar,  which  is meant  to
+# represent an object of type "mbfl_standard_object".  Example:
 #
-#    mbfl_struct_define_type greek alpha beta gamma
-#    mbfl_struct_define_global(stru, greek, 1, 2, 3)
-#    mbfl_struct_unset(stru)
+#    mbfl_standard_object_declare(greek)
+#    mbfl_standard_object_declare(self)
 #
-m4_define([[[mbfl_struct_unset]]],[[[mbfl_unset_varref([[[$1]]])]]])
+#    mbfl_define_class _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
+#    mbfl_define_object_global _(self) _(greek) 1 2 3
+#    mbfl_standard_object_unset(self)
+#
+m4_define([[[mbfl_standard_object_unset]]],[[[mbfl_unset_varref([[[$1]]])]]])
 
 
 m4_dnl done
