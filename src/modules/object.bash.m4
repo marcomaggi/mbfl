@@ -201,15 +201,6 @@ function mbfl_p_standard_object_define () {
     shift 2
     declare -a mbfl_FIELD_INIT_VALUES=("$@")
 
-    # Validate parameters.
-    {
-	if ! mbfl_standard_object_is_a _(mbfl_TYPE)
-	then
-	    mbfl_message_error_printf 'in call to "%s" expected type-descriptor as type-descriptor parameter: "%s"' $FUNCNAME "$mbfl_TYPE"
-	    return_because_failure
-	fi
-    }
-
     mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX, _(mbfl_TYPE))
 
     {
@@ -230,7 +221,8 @@ function mbfl_p_standard_object_define () {
     }
 }
 
-# Return true if the given parameter is an instance of "mbfl_standard_object".  We do our best.
+# Return true  if the  given parameter is  the datavar  of an  object whose class  is a  children of
+# "mbfl_standard_object".  We do our best.
 #
 function mbfl_standard_object_is_a () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, variable referencing a data-structure instance)
@@ -246,17 +238,16 @@ function mbfl_standard_object_is_of_class () {
     mbfl_mandatory_nameref_parameter(mbfl_CLASS,  2, variable referencing a class of class mbfl_standard_object)
 
     if test -v _(mbfl_OBJECT) -a -v mbfl_slot_spec(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)
-    then mbfl_standard_classes_are_parent_and_child _(mbfl_CLASS) _(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)
+    then mbfl_string_eq(_(mbfl_CLASS), _(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)) ||
+	    mbfl_standard_classes_are_parent_and_child _(mbfl_CLASS) _(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)
     else false
     fi
 }
 
-# We can apply this funtion to both data-structure instances and data-structure type-descriptors.
-#
 function mbfl_standard_object_class_var () {
-    mbfl_mandatory_nameref_parameter(mbfl_TYPE_RV,	1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing a data structure)
-    mbfl_TYPE_RV=_(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS_RV,	1, the result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing an object of type mbfl_standard_object)
+    mbfl_CLASS_RV=_(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX)
 }
 
 
