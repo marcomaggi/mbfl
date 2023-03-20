@@ -36,56 +36,56 @@ m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],[[[mbfl_slot_qr
 # layout:
 #
 #  ---------------
-# | type datavar | <-- MBFL_INSTANCE__TYPE_INDEX
+# | type datavar | <-- MBFL_STRU__TYPE_INDEX
 # |--------------|
-# | other slots  | <-- MBFL_INSTANCE__FIRST_FIELD_INDEX
+# | other slots  | <-- MBFL_STRU__FIRST_FIELD_INDEX
 # |     ...      |
 #  --------------
 #
-m4_define([[[MBFL_INSTANCE__TYPE_INDEX]]],			[[[0]]])
-m4_define([[[MBFL_INSTANCE__FIRST_FIELD_INDEX]]],		[[[1]]])
+m4_define([[[MBFL_STRU__TYPE_INDEX]]],			[[[0]]])
+m4_define([[[MBFL_STRU__FIRST_FIELD_INDEX]]],		[[[1]]])
 
 # A  data-structure type-descriptor  whose descriptor  is "mbfl_struct_default_meta_descriptor"  has
 # this layout:
 #
 #  ---------------------
-# | type datavar       | <-- MBFL_INSTANCE__TYPE_INDEX
+# | type datavar       | <-- MBFL_STRU__TYPE_INDEX
 # |--------------------|
-# | parent             | <-- MBFL_DESCRIPTOR__FIELD_INDEX__PARENT
+# | parent             | <-- MBFL_TYPE__FIELD_INDEX__PARENT
 # |--------------------|
-# | name               | <-- MBFL_DESCRIPTOR__FIELD_INDEX__NAME
+# | name               | <-- MBFL_TYPE__FIELD_INDEX__NAME
 # |--------------------|
-# | fields_number      | <-- MBFL_DESCRIPTOR__FIELD_INDEX__FIELDS_NUMBER
+# | fields_number      | <-- MBFL_TYPE__FIELD_INDEX__FIELDS_NUMBER
 # |--------------------|
-# | field 0 spec       | <-- MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX + 0
+# | field 0 spec       | <-- MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + 0
 # |--------------------|
-# | field 1 spec       | <-- MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX + 1
+# | field 1 spec       | <-- MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + 1
 # |--------------------|
 #          ...
 # |--------------------|
-# | field (n-1) spec   | <-- MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX + fields_number - 1
+# | field (n-1) spec   | <-- MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + fields_number - 1
 #  --------------------
 #
 
-m4_define([[[MBFL_DESCRIPTOR__FIELD_OFFSET__PARENT]]],			[[[0]]])
-m4_define([[[MBFL_DESCRIPTOR__FIELD_OFFSET__NAME]]],			[[[1]]])
-m4_define([[[MBFL_DESCRIPTOR__FIELD_OFFSET__FIELDS_NUMBER]]],		[[[2]]])
+m4_define([[[MBFL_TYPE__FIELD_OFFSET__PARENT]]],		[[[0]]])
+m4_define([[[MBFL_TYPE__FIELD_OFFSET__NAME]]],			[[[1]]])
+m4_define([[[MBFL_TYPE__FIELD_OFFSET__FIELDS_NUMBER]]],		[[[2]]])
 
-m4_define([[[MBFL_DESCRIPTOR__FIELD_INDEX__PARENT]]],			[[[1]]])
-m4_define([[[MBFL_DESCRIPTOR__FIELD_INDEX__NAME]]],			[[[2]]])
-m4_define([[[MBFL_DESCRIPTOR__FIELD_INDEX__FIELDS_NUMBER]]],		[[[3]]])
-m4_define([[[MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX]]],		[[[4]]])
+m4_define([[[MBFL_TYPE__FIELD_INDEX__PARENT]]],		m4_eval(MBFL_STRU__FIRST_FIELD_INDEX + MBFL_TYPE__FIELD_OFFSET__PARENT))
+m4_define([[[MBFL_TYPE__FIELD_INDEX__NAME]]],		m4_eval(MBFL_STRU__FIRST_FIELD_INDEX + MBFL_TYPE__FIELD_OFFSET__NAME))
+m4_define([[[MBFL_TYPE__FIELD_INDEX__FIELDS_NUMBER]]],	m4_eval(MBFL_STRU__FIRST_FIELD_INDEX + MBFL_TYPE__FIELD_OFFSET__FIELDS_NUMBER))
+m4_define([[[MBFL_TYPE__FIRST_FIELD_SPEC_INDEX]]],		[[[4]]])
 
-m4_define([[[MBFL_DESCRIPTOR__FIELD_SPEC_INDEX__PARENT]]],		[[[4]]])
-m4_define([[[MBFL_DESCRIPTOR__FIELD_SPEC_INDEX__NAME]]],		[[[5]]])
-m4_define([[[MBFL_DESCRIPTOR__FIELD_SPEC_INDEX__FIELDS_NUMBER]]],	[[[5]]])
+m4_define([[[MBFL_TYPE__FIELD_SPEC_INDEX__PARENT]]],		[[[4]]])
+m4_define([[[MBFL_TYPE__FIELD_SPEC_INDEX__NAME]]],		[[[5]]])
+m4_define([[[MBFL_TYPE__FIELD_SPEC_INDEX__FIELDS_NUMBER]]],	[[[5]]])
 
 # These are printf string patterns to format the names os data-structure instance functions.
 #
-m4_define([[[MBFL_INSTANCE__FUNCNAME_PATTERN__CONSTRUCTOR]]],	[[['%s_init']]])
-m4_define([[[MBFL_INSTANCE__FUNCNAME_PATTERN__PREDICATE]]],	[[['%s_is_a']]])
-m4_define([[[MBFL_INSTANCE__FUNCNAME_PATTERN__ACCESSOR]]],	[[['%s_%s_var']]])
-m4_define([[[MBFL_INSTANCE__FUNCNAME_PATTERN__MUTATOR]]],	[[['%s_%s_set']]])
+m4_define([[[MBFL_STRU__FUNCNAME_PATTERN__CONSTRUCTOR]]],	[[['%s_init']]])
+m4_define([[[MBFL_STRU__FUNCNAME_PATTERN__PREDICATE]]],		[[['%s_is_a']]])
+m4_define([[[MBFL_STRU__FUNCNAME_PATTERN__ACCESSOR]]],		[[['%s_%s_var']]])
+m4_define([[[MBFL_STRU__FUNCNAME_PATTERN__MUTATOR]]],		[[['%s_%s_set']]])
 
 
 #### global variables
@@ -107,10 +107,10 @@ fi
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_slot_set(mbfl_struct_top_descriptor, MBFL_INSTANCE__TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
-    mbfl_slot_set(mbfl_struct_top_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__PARENT,        '')
-    mbfl_slot_set(mbfl_struct_top_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__NAME,          'mbfl_struct_top_descriptor')
-    mbfl_slot_set(mbfl_struct_top_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__FIELDS_NUMBER, 0)
+    mbfl_slot_set(mbfl_struct_top_descriptor, MBFL_STRU__TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
+    mbfl_slot_set(mbfl_struct_top_descriptor, MBFL_TYPE__FIELD_INDEX__PARENT,        '')
+    mbfl_slot_set(mbfl_struct_top_descriptor, MBFL_TYPE__FIELD_INDEX__NAME,          'mbfl_struct_top_descriptor')
+    mbfl_slot_set(mbfl_struct_top_descriptor, MBFL_TYPE__FIELD_INDEX__FIELDS_NUMBER, 0)
 
     # This data-structure  type-descriptor adds no fields  to its instances: we  store nothing after
     # the number of fields.
@@ -125,10 +125,10 @@ fi
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_slot_set(mbfl_struct_default_descriptor, MBFL_INSTANCE__TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
-    mbfl_slot_set(mbfl_struct_default_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__PARENT,       _(mbfl_struct_top_descriptor))
-    mbfl_slot_set(mbfl_struct_default_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__NAME,         'mbfl_struct_default_descriptor')
-    mbfl_slot_set(mbfl_struct_default_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__FIELDS_NUMBER, 0)
+    mbfl_slot_set(mbfl_struct_default_descriptor, MBFL_STRU__TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
+    mbfl_slot_set(mbfl_struct_default_descriptor, MBFL_TYPE__FIELD_INDEX__PARENT,       _(mbfl_struct_top_descriptor))
+    mbfl_slot_set(mbfl_struct_default_descriptor, MBFL_TYPE__FIELD_INDEX__NAME,         'mbfl_struct_default_descriptor')
+    mbfl_slot_set(mbfl_struct_default_descriptor, MBFL_TYPE__FIELD_INDEX__FIELDS_NUMBER, 0)
 
     # This data-structure  type-descriptor adds no fields  to its instances: we  store nothing after
     # the number of fields.
@@ -143,10 +143,10 @@ fi
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_slot_set(mbfl_struct_top_meta_descriptor, MBFL_INSTANCE__TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
-    mbfl_slot_set(mbfl_struct_top_meta_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__PARENT,         _(mbfl_struct_default_descriptor))
-    mbfl_slot_set(mbfl_struct_top_meta_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__NAME,           'mbfl_struct_top_meta_descriptor')
-    mbfl_slot_set(mbfl_struct_top_meta_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__FIELDS_NUMBER,  0)
+    mbfl_slot_set(mbfl_struct_top_meta_descriptor, MBFL_STRU__TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
+    mbfl_slot_set(mbfl_struct_top_meta_descriptor, MBFL_TYPE__FIELD_INDEX__PARENT,         _(mbfl_struct_default_descriptor))
+    mbfl_slot_set(mbfl_struct_top_meta_descriptor, MBFL_TYPE__FIELD_INDEX__NAME,           'mbfl_struct_top_meta_descriptor')
+    mbfl_slot_set(mbfl_struct_top_meta_descriptor, MBFL_TYPE__FIELD_INDEX__FIELDS_NUMBER,  0)
 
     # This data-structure  type-descriptor adds no fields  to its instances: we  store nothing after
     # the number of fields.
@@ -161,16 +161,16 @@ fi
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_INSTANCE__TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
-    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__PARENT, _(mbfl_struct_top_meta_descriptor))
-    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__NAME, 'mbfl_struct_default_meta_descriptor')
-    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_DESCRIPTOR__FIELD_INDEX__FIELDS_NUMBER, 3)
+    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_STRU__TYPE_INDEX, _(mbfl_struct_default_meta_descriptor))
+    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_TYPE__FIELD_INDEX__PARENT, _(mbfl_struct_top_meta_descriptor))
+    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_TYPE__FIELD_INDEX__NAME, 'mbfl_struct_default_meta_descriptor')
+    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_TYPE__FIELD_INDEX__FIELDS_NUMBER, 3)
 
     # This  struct-instance  type-descriptor  adds  fields  to its  instances,  so  we  store  their
     # specifications after the number of fields.
-    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_DESCRIPTOR__FIELD_SPEC_INDEX__PARENT,        'parent')
-    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_DESCRIPTOR__FIELD_SPEC_INDEX__NAME,          'name')
-    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_DESCRIPTOR__FIELD_SPEC_INDEX__FIELDS_NUMBER, 'fields_number')
+    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_TYPE__FIELD_SPEC_INDEX__PARENT,        'parent')
+    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_TYPE__FIELD_SPEC_INDEX__NAME,          'name')
+    mbfl_slot_set(mbfl_struct_default_meta_descriptor, MBFL_TYPE__FIELD_SPEC_INDEX__FIELDS_NUMBER, 'fields_number')
 fi
 
 
@@ -182,7 +182,7 @@ fi
 function mbfl_struct_descriptor_parent_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,   1, the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_TYPE, 2, variable referencing a data-structure type-descriptor)
-    mbfl_RV=mbfl_slot_ref(mbfl_TYPE, MBFL_DESCRIPTOR__FIELD_INDEX__PARENT)
+    mbfl_RV=mbfl_slot_ref(mbfl_TYPE, MBFL_TYPE__FIELD_INDEX__PARENT)
 }
 
 # Given the  data variable  of a data-structure  type-descriptor: store in  the result  variable the
@@ -191,7 +191,7 @@ function mbfl_struct_descriptor_parent_var () {
 function mbfl_struct_descriptor_name_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,   1, the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_TYPE, 2, variable referencing a data-structure type-descriptor)
-    mbfl_RV=mbfl_slot_ref(mbfl_TYPE, MBFL_DESCRIPTOR__FIELD_INDEX__NAME)
+    mbfl_RV=mbfl_slot_ref(mbfl_TYPE, MBFL_TYPE__FIELD_INDEX__NAME)
 }
 
 # Given the  data variable  of a data-structure  type-descriptor: store in  the result  variable the
@@ -200,7 +200,7 @@ function mbfl_struct_descriptor_name_var () {
 function mbfl_struct_descriptor_fields_number_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,   1, the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_TYPE, 2, variable referencing a data-structure type-descriptor)
-    mbfl_RV=mbfl_slot_ref(mbfl_TYPE, MBFL_DESCRIPTOR__FIELD_INDEX__FIELDS_NUMBER)
+    mbfl_RV=mbfl_slot_ref(mbfl_TYPE, MBFL_TYPE__FIELD_INDEX__FIELDS_NUMBER)
 }
 
 function mbfl_struct_descriptors_are_parent_and_child () {
@@ -237,7 +237,7 @@ function mbfl_struct_define () {
 	fi
     }
 
-    mbfl_slot_set(mbfl_SELF, MBFL_INSTANCE__TYPE_INDEX, _(mbfl_TYPE))
+    mbfl_slot_set(mbfl_SELF, MBFL_STRU__TYPE_INDEX, _(mbfl_TYPE))
 
     {
 	declare -i mbfl_FIELDS_NUMBER
@@ -276,7 +276,7 @@ function mbfl_p_struct_is_a () {
     else
 	# Here we do not want to  use "mbfl_struct_descriptor_parent_var" because this function uses
 	# "mbfl_struct_is_a", resulting in an infinite loop.
-	declare mbfl_PARENT=_(mbfl_TYPE,MBFL_DESCRIPTOR__FIELD_INDEX__PARENT)
+	declare mbfl_PARENT=_(mbfl_TYPE,MBFL_TYPE__FIELD_INDEX__PARENT)
 	if mbfl_string_is_empty $mbfl_PARENT
 	then return_because_failure
 	else mbfl_p_struct_is_a $mbfl_PARENT _(mbfl_GIVEN_TYPE)
@@ -289,7 +289,7 @@ function mbfl_p_struct_is_a () {
 function mbfl_struct_type_var () {
     mbfl_mandatory_nameref_parameter(mbfl_TYPE_RV,	1, the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing a data structure)
-    mbfl_TYPE_RV=_(mbfl_SELF, MBFL_INSTANCE__TYPE_INDEX)
+    mbfl_TYPE_RV=_(mbfl_SELF, MBFL_STRU__TYPE_INDEX)
 }
 
 
@@ -331,12 +331,12 @@ function mbfl_struct_define_type () {
 	mbfl_struct_define _(mbfl_TYPE) _(mbfl_struct_default_meta_descriptor) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_INIT_TOTAL_FIELDS_NUMBER
 	# Copy the fields from the parent
 	for ((mbfl_I=0; mbfl_I < mbfl_PARENT_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_TYPE,                  MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX + mbfl_I,
-			 mbfl_slot_qref(mbfl_PARENT, MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX + mbfl_I))
+	do mbfl_slot_set(mbfl_TYPE,                  MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + mbfl_I,
+			 mbfl_slot_qref(mbfl_PARENT, MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + mbfl_I))
 	done
 	# Store the new fields.
 	for ((mbfl_I=0; mbfl_I < mbfl_NEW_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_TYPE, mbfl_PARENT_FIELDS_NUMBER +  MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX + mbfl_I,
+	do mbfl_slot_set(mbfl_TYPE, mbfl_PARENT_FIELDS_NUMBER +  MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + mbfl_I,
 			 mbfl_slot_qref(mbfl_NEW_FIELD_NAMES, mbfl_I))
 	done
     }
@@ -349,7 +349,7 @@ function mbfl_struct_define_type () {
 	declare mbfl_CONSTRUCTOR_NAME mbfl_CONSTRUCTOR_BODY
 	declare mbfl_PARAMETER_COUNT
 
-	printf -v mbfl_CONSTRUCTOR_NAME MBFL_INSTANCE__FUNCNAME_PATTERN__CONSTRUCTOR "$mbfl_NAME"
+	printf -v mbfl_CONSTRUCTOR_NAME MBFL_STRU__FUNCNAME_PATTERN__CONSTRUCTOR "$mbfl_NAME"
 
 	mbfl_CONSTRUCTOR_BODY='{ '
 	mbfl_CONSTRUCTOR_BODY+="local -n mbfl_SELF=\${1:"
@@ -357,8 +357,8 @@ function mbfl_struct_define_type () {
 	mbfl_CONSTRUCTOR_BODY+="mbfl_SELF[0]=${mbfl_TYPE_DATAVAR};"
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_INIT_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
-	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
-	    declare mbfl_OFFSET=$((MBFL_INSTANCE__FIRST_FIELD_INDEX + $mbfl_I))
+	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
+	    declare mbfl_OFFSET=$((MBFL_STRU__FIRST_FIELD_INDEX + $mbfl_I))
 	    mbfl_CONSTRUCTOR_BODY+="mbfl_SELF[$mbfl_OFFSET]=\${$mbfl_PARAMETER_COUNT:?"
 	    mbfl_CONSTRUCTOR_BODY+="\"missing field value parameter '$mbfl_FIELD_NAME' to '\$FUNCNAME'\"};"
 	done
@@ -370,7 +370,7 @@ function mbfl_struct_define_type () {
     {
 	declare mbfl_PREDICATE_NAME mbfl_PREDICATE_BODY
 
-	printf -v mbfl_PREDICATE_NAME  MBFL_INSTANCE__FUNCNAME_PATTERN__PREDICATE   "$mbfl_NAME"
+	printf -v mbfl_PREDICATE_NAME  MBFL_STRU__FUNCNAME_PATTERN__PREDICATE   "$mbfl_NAME"
 	mbfl_PREDICATE_BODY="{ declare mbfl_SELF_DATAVAR=\${1:?\"missing reference to data-structure parameter to '\$FUNCNAME'\"};"
 	mbfl_PREDICATE_BODY+="mbfl_struct_is_a \"\$mbfl_SELF_DATAVAR\" '${mbfl_TYPE_DATAVAR}' ; }"
 	mbfl_p_struct_make_function "$mbfl_PREDICATE_NAME" "$mbfl_PREDICATE_BODY"
@@ -381,10 +381,10 @@ function mbfl_struct_define_type () {
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_INIT_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
 	    declare mbfl_MUTATOR_NAME mbfl_MUTATOR_BODY
-	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
-	    declare mbfl_OFFSET=$((MBFL_INSTANCE__FIRST_FIELD_INDEX + $mbfl_I))
+	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
+	    declare mbfl_OFFSET=$((MBFL_STRU__FIRST_FIELD_INDEX + $mbfl_I))
 
-	    printf -v mbfl_MUTATOR_NAME MBFL_INSTANCE__FUNCNAME_PATTERN__MUTATOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
+	    printf -v mbfl_MUTATOR_NAME MBFL_STRU__FUNCNAME_PATTERN__MUTATOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
 	    mbfl_MUTATOR_BODY='{ '
 	    mbfl_MUTATOR_BODY+="declare -n mbfl_SELF=\${1:?\"missing reference to struct '${mbfl_NAME}' parameter to '${mbfl_MUTATOR_NAME}'\"};"
 	    mbfl_MUTATOR_BODY+="declare mbfl_NEW_VALUE=\${2:?\"missing new field value parameter to '${mbfl_MUTATOR_NAME}'\"};"
@@ -399,10 +399,10 @@ function mbfl_struct_define_type () {
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_INIT_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
 	    declare mbfl_ACCESSOR_NAME mbfl_ACCESSOR_BODY
-	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_DESCRIPTOR__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
-	    declare mbfl_OFFSET=$((MBFL_INSTANCE__FIRST_FIELD_INDEX + $mbfl_I))
+	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_TYPE__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
+	    declare mbfl_OFFSET=$((MBFL_STRU__FIRST_FIELD_INDEX + $mbfl_I))
 
-	    printf -v mbfl_ACCESSOR_NAME MBFL_INSTANCE__FUNCNAME_PATTERN__ACCESSOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
+	    printf -v mbfl_ACCESSOR_NAME MBFL_STRU__FUNCNAME_PATTERN__ACCESSOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
 	    mbfl_ACCESSOR_BODY='{ '
 	    mbfl_ACCESSOR_BODY+="declare -n mbfl_RV=\${1:?\"missing result variable parameter to '${mbfl_ACCESSOR_NAME}'\"};"
 	    mbfl_ACCESSOR_BODY+="declare -n mbfl_SELF=\${2:?\"missing reference to struct '$mbfl_NAME' parameter to '${mbfl_ACCESSOR_NAME}'\"};"
