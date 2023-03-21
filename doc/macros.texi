@@ -552,6 +552,10 @@ The function variant @code{_var} stores the result in the variable @var{_RV}, ra
 @code{\TYPE\}
 @end macro
 
+@macro class{TYPE}
+@objtype{\TYPE\}
+@end macro
+
 
 @c Local Variables:
 @c mode: texinfo

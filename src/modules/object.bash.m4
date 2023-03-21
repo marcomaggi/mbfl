@@ -32,7 +32,7 @@
 #
 m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]])]]])
 
-# An object  whose descriptor is a  child of "mbfl_standard_object" is  a Bash index array  with the
+# An  object whose  class is  a  child of  "mbfl_standard_object" is  a  Bash index  array with  the
 # following layout:
 #
 #  ---------------
@@ -48,7 +48,7 @@ m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],[[[mbfl_slot_qr
 m4_define([[[MBFL_STDOBJ__CLASS_INDEX]]],		[[[0]]])
 m4_define([[[MBFL_STDOBJ__FIRST_FIELD_INDEX]]],		[[[1]]])
 
-# A class whose descriptor is "mbfl_standard_class" is a Bash index array with the following layout,
+# A class  whose class is  "mbfl_standard_class" is  a Bash index  array with the  following layout,
 # where the field specifications are just strings representing the field name:
 #
 #  ---------------------
@@ -100,7 +100,7 @@ then
 fi
 
 
-#### default data-structure type-descriptor
+#### default object class
 #
 # The object "mbfl_standard_object" is the default class of objects created by "mbfl_object_define".
 #
@@ -112,12 +112,11 @@ then
     mbfl_slot_set(mbfl_standard_object, MBFL_STDCLS__FIELD_INDEX__NAME,         'mbfl_standard_object')
     mbfl_slot_set(mbfl_standard_object, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER, 0)
 
-    # This data-structure  type-descriptor adds no fields  to its instances: we  store nothing after
-    # the number of fields.
+    # This class adds no fields to its instances: we store nothing after the number of fields.
 fi
 
 
-#### data-structure type-descriptor default meta-descriptor
+#### standard metaclass
 #
 # The object "mbfl_standard_class"  is the default class of classes  defined by "mbfl_standard_class_define";
 # it is also the class of itself.
@@ -130,8 +129,8 @@ then
     mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_INDEX__NAME,		'mbfl_standard_class')
     mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER,	3)
 
-    # This  struct-instance  type-descriptor  adds  fields  to its  instances,  so  we  store  their
-    # specifications after the number of fields.
+    # This class adds fields to its instances, so  we store their specifications after the number of
+    # fields.
     mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_SPEC_INDEX__PARENT,        'parent')
     mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_SPEC_INDEX__NAME,          'name')
     mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_SPEC_INDEX__FIELDS_NUMBER, 'fields_number')
@@ -143,7 +142,8 @@ fi
 function mbfl_standard_class_is_a () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to instance of mbfl_standard_object)
     if test -v _(mbfl_SELF) -a -v mbfl_slot_spec(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
-    then mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
+    then mbfl_string_eq(_(mbfl_standard_class), _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)) ||
+	    mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
     else false
     fi
 }
@@ -151,34 +151,33 @@ function mbfl_standard_class_is_a () {
 function mbfl_standard_metaclass_is_a () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to instance of mbfl_standard_object)
     if mbfl_standard_class_is_a _(mbfl_SELF)
-    then
-	mbfl_string_eq(_(mbfl_standard_class), _(mbfl_SELF)) ||
+    then mbfl_string_eq(_(mbfl_standard_class), _(mbfl_SELF)) ||
 	    mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_SELF)
     else false
     fi
 }
 
 function mbfl_standard_class_parent_var () {
-    mbfl_mandatory_nameref_parameter(mbfl_RV,   1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a data-structure type-descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_RV,    1, the result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a standard class)
     mbfl_RV=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__PARENT)
 }
 
 function mbfl_standard_class_name_var () {
-    mbfl_mandatory_nameref_parameter(mbfl_RV,   1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a data-structure type-descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_RV,    1, the result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a standard class)
     mbfl_RV=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__NAME)
 }
 
 function mbfl_standard_class_fields_number_var () {
-    mbfl_mandatory_nameref_parameter(mbfl_RV,   1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a data-structure type-descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_RV,    1, the result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a standard class)
     mbfl_RV=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER)
 }
 
 function mbfl_standard_classes_are_parent_and_child () {
-    mbfl_mandatory_nameref_parameter(mbfl_MAYBE_PARENT, 1, variable referencing a data-structure type-descriptor)
-    mbfl_mandatory_nameref_parameter(mbfl_MAYBE_CHILD,  2, variable referencing a data-structure type-descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_MAYBE_PARENT, 1, variable referencing a standard class)
+    mbfl_mandatory_nameref_parameter(mbfl_MAYBE_CHILD,  2, variable referencing a standard class)
 
     if mbfl_string_eq(_(mbfl_MAYBE_PARENT), _(mbfl_MAYBE_CHILD))
     then return_success
@@ -195,17 +194,17 @@ function mbfl_standard_classes_are_parent_and_child () {
 
 #### data-structure instance handling
 
-function mbfl_p_standard_object_define () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to a data-structure instance)
-    mbfl_mandatory_nameref_parameter(mbfl_TYPE, 2, reference to a data-structure type-descriptor)
+function mbfl_standard_object_define () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,  1, reference to a standard object)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, reference to a standard class)
     shift 2
     declare -a mbfl_FIELD_INIT_VALUES=("$@")
 
-    mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX, _(mbfl_TYPE))
+    mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX, _(mbfl_CLASS))
 
     {
 	declare -i mbfl_FIELDS_NUMBER
-	mbfl_standard_class_fields_number_var mbfl_FIELDS_NUMBER _(mbfl_TYPE)
+	mbfl_standard_class_fields_number_var mbfl_FIELDS_NUMBER _(mbfl_CLASS)
 	if ((mbfl_slots_number(mbfl_FIELD_INIT_VALUES) == $mbfl_FIELDS_NUMBER))
 	then
 	    declare -i mbfl_I
@@ -221,7 +220,7 @@ function mbfl_p_standard_object_define () {
     }
 }
 
-# Return true  if the  given parameter is  the datavar  of an  object whose class  is a  children of
+# Return true  if the  given parameter is  the datavar  of an  object whose class  is a  subclass of
 # "mbfl_standard_object".  We do our best.
 #
 function mbfl_standard_object_is_a () {
@@ -251,25 +250,25 @@ function mbfl_standard_object_class_var () {
 }
 
 
-#### API of "mbfl_standard_class": data-structure type-descriptor definition
+#### API of "mbfl_standard_class"
 
 function mbfl_standard_class_define () {
-    mbfl_mandatory_nameref_parameter(mbfl_TYPE,		1, reference to the new data-structure type-descriptor)
-    mbfl_mandatory_nameref_parameter(mbfl_PARENT,	2, reference to the parent data-structure type-descriptor)
-    mbfl_mandatory_parameter(mbfl_NAME,			3, the name of the new data-structure type-descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS,	1, reference to the new standard class)
+    mbfl_mandatory_nameref_parameter(mbfl_PARENT,	2, reference to the parent standard class)
+    mbfl_mandatory_parameter(mbfl_NAME,			3, the name of the new standard class)
     shift 3
 
     # Validate parameters.
     {
 	if ! mbfl_standard_class_is_a _(mbfl_PARENT)
 	then
-	    mbfl_message_error_printf 'in call to "%s" expected type-descriptor as parent parameter: "%s"' $FUNCNAME "$mbfl_PARENT"
+	    mbfl_message_error_printf 'in call to "%s" expected standard class parent class: "%s"' $FUNCNAME "$mbfl_PARENT"
 	    return_because_failure
 	fi
 
 	if ! mbfl_string_is_identifier "$mbfl_NAME"
 	then
-	    mbfl_message_error_printf 'in call to "%s" expected identifier as type name: "%s"' $FUNCNAME "$mbfl_NAME"
+	    mbfl_message_error_printf 'in call to "%s" expected identifier as class name: "%s"' $FUNCNAME "$mbfl_NAME"
 	    return_because_failure
 	fi
     }
@@ -278,23 +277,24 @@ function mbfl_standard_class_define () {
     declare -ir mbfl_NEW_FIELDS_NUMBER=mbfl_slots_number(mbfl_NEW_FIELD_NAMES)
     declare -i  mbfl_TOTAL_FIELDS_NUMBER
     declare -i  mbfl_I mbfl_J
-    declare -r  mbfl_TYPE_DATAVAR=_(mbfl_TYPE)
+    declare -r  mbfl_CLASS_DATAVAR=_(mbfl_CLASS)
 
-    # Initialise the fields of the new data-structure type-descriptor.
+    # Initialise the fields of the new class object.
     {
 	declare -i  mbfl_PARENT_FIELDS_NUMBER
 	mbfl_standard_class_fields_number_var mbfl_PARENT_FIELDS_NUMBER _(mbfl_PARENT)
 	let mbfl_TOTAL_FIELDS_NUMBER=mbfl_PARENT_FIELDS_NUMBER+mbfl_NEW_FIELDS_NUMBER
 
-	mbfl_p_standard_object_define _(mbfl_TYPE) _(mbfl_standard_class) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER
-	# Copy the fields from the parent
+	mbfl_standard_object_define _(mbfl_CLASS) _(mbfl_standard_class) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER
+
+	# Copy the field names from the parent class.
 	for ((mbfl_I=0; mbfl_I < mbfl_PARENT_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_TYPE,                  MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I,
+	do mbfl_slot_set(mbfl_CLASS,                 MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I,
 			 mbfl_slot_qref(mbfl_PARENT, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I))
 	done
-	# Store the new fields.
+	# Store the new field names.
 	for ((mbfl_I=0; mbfl_I < mbfl_NEW_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_TYPE, mbfl_PARENT_FIELDS_NUMBER +  MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I,
+	do mbfl_slot_set(mbfl_CLASS, mbfl_PARENT_FIELDS_NUMBER +  MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I,
 			 mbfl_slot_qref(mbfl_NEW_FIELD_NAMES, mbfl_I))
 	done
     }
@@ -305,10 +305,10 @@ function mbfl_standard_class_define () {
 
 	for ((mbfl_I=0; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I))
 	do
-	    mbfl_FIELD_NAME=_(mbfl_TYPE, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I)
+	    mbfl_FIELD_NAME=_(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I)
 	    for ((mbfl_J=1+mbfl_I; mbfl_J < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_J))
 	    do
-		if mbfl_string_eq($mbfl_FIELD_NAME, _(mbfl_TYPE, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_J))
+		if mbfl_string_eq($mbfl_FIELD_NAME, _(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_J))
 		then
 		    mbfl_message_error_printf 'duplicate field name in the definition of type "%s": "%s"' "$mbfl_NAME" "$mbfl_FIELD_NAME"
 		    return_because_failure
@@ -330,10 +330,10 @@ function mbfl_standard_class_define () {
 	mbfl_CONSTRUCTOR_BODY='{ '
 	mbfl_CONSTRUCTOR_BODY+="local -n mbfl_SELF=\${1:"
 	mbfl_CONSTRUCTOR_BODY+="?\"missing reference to struct '${mbfl_NAME}' variable parameter to '\${FUNCNAME}'\"};"
-	mbfl_CONSTRUCTOR_BODY+="mbfl_SELF[0]=${mbfl_TYPE_DATAVAR};"
+	mbfl_CONSTRUCTOR_BODY+="mbfl_SELF[0]=${mbfl_CLASS_DATAVAR};"
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
-	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
+	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
 	    declare mbfl_OFFSET=$((MBFL_STDOBJ__FIRST_FIELD_INDEX + $mbfl_I))
 	    mbfl_CONSTRUCTOR_BODY+="mbfl_SELF[$mbfl_OFFSET]=\${$mbfl_PARAMETER_COUNT:?"
 	    mbfl_CONSTRUCTOR_BODY+="\"missing field value parameter '$mbfl_FIELD_NAME' to '\$FUNCNAME'\"};"
@@ -348,7 +348,7 @@ function mbfl_standard_class_define () {
 
 	printf -v mbfl_PREDICATE_NAME  MBFL_STDOBJ__FUNCNAME_PATTERN__PREDICATE   "$mbfl_NAME"
 	mbfl_PREDICATE_BODY="{ declare mbfl_SELF_DATAVAR=\${1:?\"missing reference to data-structure parameter to '\$FUNCNAME'\"};"
-	mbfl_PREDICATE_BODY+="mbfl_standard_object_is_of_class \"\$mbfl_SELF_DATAVAR\" '${mbfl_TYPE_DATAVAR}' ; }"
+	mbfl_PREDICATE_BODY+="mbfl_standard_object_is_of_class \"\$mbfl_SELF_DATAVAR\" '${mbfl_CLASS_DATAVAR}' ; }"
 	mbfl_p_struct_make_function "$mbfl_PREDICATE_NAME" "$mbfl_PREDICATE_BODY"
     }
 
@@ -357,14 +357,14 @@ function mbfl_standard_class_define () {
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
 	    declare mbfl_MUTATOR_NAME mbfl_MUTATOR_BODY
-	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
+	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
 	    declare mbfl_OFFSET=$((MBFL_STDOBJ__FIRST_FIELD_INDEX + $mbfl_I))
 
 	    printf -v mbfl_MUTATOR_NAME MBFL_STDOBJ__FUNCNAME_PATTERN__MUTATOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
 	    mbfl_MUTATOR_BODY='{ '
 	    mbfl_MUTATOR_BODY+="declare -n mbfl_SELF=\${1:?\"missing reference to struct '${mbfl_NAME}' parameter to '${mbfl_MUTATOR_NAME}'\"};"
 	    mbfl_MUTATOR_BODY+="declare mbfl_NEW_VALUE=\${2:?\"missing new field value parameter to '${mbfl_MUTATOR_NAME}'\"};"
-	    mbfl_MUTATOR_BODY+="mbfl_standard_object_slot_mutator \$1 \$2 ${mbfl_TYPE_DATAVAR} ${mbfl_OFFSET} ${mbfl_MUTATOR_NAME};"
+	    mbfl_MUTATOR_BODY+="mbfl_standard_object_slot_mutator \$1 \$2 ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_MUTATOR_NAME};"
 	    mbfl_MUTATOR_BODY+='}'
 	    mbfl_p_struct_make_function "$mbfl_MUTATOR_NAME" "$mbfl_MUTATOR_BODY"
 	done
@@ -375,14 +375,14 @@ function mbfl_standard_class_define () {
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
 	    declare mbfl_ACCESSOR_NAME mbfl_ACCESSOR_BODY
-	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_TYPE, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
+	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
 	    declare mbfl_OFFSET=$((MBFL_STDOBJ__FIRST_FIELD_INDEX + $mbfl_I))
 
 	    printf -v mbfl_ACCESSOR_NAME MBFL_STDOBJ__FUNCNAME_PATTERN__ACCESSOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
 	    mbfl_ACCESSOR_BODY='{ '
 	    mbfl_ACCESSOR_BODY+="declare -n mbfl_RV=\${1:?\"missing result variable parameter to '${mbfl_ACCESSOR_NAME}'\"};"
 	    mbfl_ACCESSOR_BODY+="declare -n mbfl_SELF=\${2:?\"missing reference to struct '$mbfl_NAME' parameter to '${mbfl_ACCESSOR_NAME}'\"};"
-	    mbfl_ACCESSOR_BODY+="mbfl_standard_object_slot_accessor \$1 \$2 ${mbfl_TYPE_DATAVAR} ${mbfl_OFFSET} ${mbfl_ACCESSOR_NAME};"
+	    mbfl_ACCESSOR_BODY+="mbfl_standard_object_slot_accessor \$1 \$2 ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_ACCESSOR_NAME};"
 	    mbfl_ACCESSOR_BODY+='}'
 	    mbfl_p_struct_make_function "$mbfl_ACCESSOR_NAME" "$mbfl_ACCESSOR_BODY"
 	done
@@ -393,8 +393,8 @@ function mbfl_standard_class_define () {
 #
 function mbfl_standard_object_slot_accessor () {
     mbfl_mandatory_nameref_parameter(mbfl_VALUE,	1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing the data-structure instance)
-    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the data-structure type-descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing the standard object)
+    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the standard class)
     mbfl_mandatory_parameter(mbfl_FIELD_OFFSET,		4, the field offset in the data-structure instance)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
 
@@ -407,9 +407,9 @@ function mbfl_standard_object_slot_accessor () {
 # This is the implementation of the slot mutator functions.
 #
 function mbfl_standard_object_slot_mutator () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing the data-structure instance)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing the standard object)
     mbfl_mandatory_parameter(mbfl_NEW_VALUE,		2, the new field value)
-    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the data-structure type-descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the standard class)
     mbfl_mandatory_parameter(mbfl_FIELD_OFFSET,		4, the field offset in the data-structure instance)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
 
@@ -420,8 +420,8 @@ function mbfl_standard_object_slot_mutator () {
 }
 
 function mbfl_p_standard_class_mismatch_error_self_given_type () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing a data-structure instance)
-    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,2, variable referencing a data-structure type-descriptor)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing a standard object)
+    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,2, variable referencing a standard class)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	3, the name of the calling function)
     declare mbfl_SELF_TYPE mbfl_SELF_NAME mbfl_GIVEN_NAME
 
@@ -434,7 +434,7 @@ function mbfl_p_standard_class_mismatch_error_self_given_type () {
 }
 
 
-#### data-structure type-descriptor handling functions
+#### predicates
 
 function mbfl_standard_object_is_the_standard_object () {
     mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)

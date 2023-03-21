@@ -349,56 +349,43 @@ function program_replace_[[[]]]$1 () {
 ]]])
 
 
-m4_dnl data structures
-
-# Synopsis:
+#### objects
 #
-#   mbfl_p_declare_standard_object_array(INSTANCE_VAR, DATAVAR_OPTIONS)
+# Usage example:
 #
-# Declare a  variable as  holder of  an object  of type  "mbfl_standard_object".  The
-# DATAVAR_OPTIONS  are handed  to "declare"  and allow  us to  declare a  global data
-# variable.  This macro is meant to be private.
-#
-m4_define([[[mbfl_p_declare_standard_object_array]]],[[[m4_dnl
-mbfl_declare_index_array_varref([[[$1]]],,[[[$2]]])m4_dnl
-]]])
-
-# Synopsis:
-#
-#   mbfl_standard_object_declare(INSTANCE_VAR)
-#
-# Declare a variable as holder of an object of type "mbfl_standard_object".
-#
-m4_define([[[mbfl_standard_object_declare]]],[[[m4_dnl
-mbfl_p_declare_standard_object_array([[[$1]]])m4_dnl
-]]])
-
-# Synopsis:
-#
-#   mbfl_standard_object_declare_global_varref(INSTANCE_VAR)
-#
-# Declare  a variable  as holder  of an  object of  type "mbfl_standard_object":  the
-# associated data variable is declared as global.
-#
-m4_define([[[mbfl_standard_object_declare_global]]],[[[m4_dnl
-mbfl_p_declare_standard_object_array([[[$1]]],[[[-g]]])m4_dnl
-]]])
-
-# Synopsis:
-#
-#   mbfl_standard_object_unset(INSTANCE_VAR)
-#
-# Unset  all  the variables  associated  to  the given  datavar,  which  is meant  to
-# represent an object of type "mbfl_standard_object".  Example:
-#
-#    mbfl_standard_object_declare(greek)
+#    mbfl_standard_class_declare(greek)
 #    mbfl_standard_object_declare(self)
 #
-#    mbfl_define_class _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-#    mbfl_define_object_global _(self) _(greek) 1 2 3
+#    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
+#    mbfl_standard_object_define _(self) _(greek) 1 2 3
 #    mbfl_standard_object_unset(self)
 #
-m4_define([[[mbfl_standard_object_unset]]],[[[mbfl_unset_varref([[[$1]]])]]])
+
+# Synopsis:
+#
+#   mbfl_standard_object_declare(CLASS_NAME)
+#   mbfl_standard_object_declare_global(CLASS_NAME)
+#   mbfl_standard_object_unset(CLASS_NAME)
+#
+# Declare or  unset the variables  required to represent  an instance of  class whose
+# superclass is "mbfl_standard_object".
+#
+m4_define([[[mbfl_standard_object_declare]]],        [[[mbfl_declare_index_array_varref([[[$1]]])]]])
+m4_define([[[mbfl_standard_object_declare_global]]], [[[mbfl_declare_index_array_varref([[[$1]]],,[[[-g]]])]]])
+m4_define([[[mbfl_standard_object_unset]]],          [[[mbfl_unset_varref([[[$1]]])]]])
+
+# Synopsis:
+#
+#   mbfl_standard_class_declare(CLASS_NAME)
+#   mbfl_standard_class_declare_global(CLASS_NAME)
+#   mbfl_standard_class_unset(CLASS_NAME)
+#
+# Declare or unset the variables required to represent an instance of metaclass whose
+# superclass is "mbfl_standard_class".
+#
+m4_define([[[mbfl_standard_class_declare]]],        [[[mbfl_standard_object_declare([[[$1]]])]]])
+m4_define([[[mbfl_standard_class_declare_global]]], [[[mbfl_standard_object_declare_global([[[$1]]])]]])
+m4_define([[[mbfl_standard_class_unset]]],          [[[mbfl_standard_object_unset([[[$1]]])]]])
 
 
 m4_dnl done

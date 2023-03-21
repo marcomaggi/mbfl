@@ -163,7 +163,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * exit::                        Exit codes and return codes.
 * locations::                   Running location handlers.
 * variables::                   Manipulating variables.
-* structs::                     Data structures.
+* objects::                     Object-oriented programming.
 * strings::                     Manipulating strings with functions.
 * actions::                     Selecting actions to perform.
 * getopts::                     Parsing command line options.
@@ -1879,8 +1879,8 @@ mbfl_slots_qkeys(@var{ARRAYNAME})       @expansion{} "$@{!@var{ARRAYNAME}[@@]@}"
 @section Defining program--execution functions
 
 
-@cindex Defining program--execution functions
-@cindex Program--execution functions, definition
+@cindex Defining program-execution functions
+@cindex Program-execution functions, definition
 @cindex Executing external programs, defining executor function
 
 
@@ -2817,46 +2817,43 @@ where @var{KEY} is a key in the array and @var{VALUE} is its value.  If the opti
 @end defun
 
 @c page
-@node structs
-@chapter Data structures
+@node objects
+@chapter Object-oriented programming
 
 
-@mbfl{} implements data structures on top of Bash built--in values; the facilities are: single
-inheritance; instances with the same scope as Bash variables; type--descriptors that allow the
-definition of instances characteristics.
+@mbfl{} implements data structures on top of Bash built--in values, by default index arrays; the
+facilities are: single inheritance; instances with the same scope as Bash variables;
+type--descriptors that allow the definition of instances characteristics.
 
 In the implementation of data structures: many ideas were stolen from other languages, most notably
 Lisp implementations.
 
 @menu
-* structs conventions::         Naming and coding conventions.
-* structs overview::            Overview of data structures.
-* structs descriptors::         Data--structure type--descriptors.
-* structs special::             Special predefined types and instances.
+* objects conventions::         Naming and coding conventions.
+* objects overview::            Overview of data structures.
+* objects standard::            Standard classes.
+* objects special::             Special predefined types and instances.
 @end menu
 
 @c page
-@node structs conventions
+@node objects conventions
 @section Naming and coding conventions
 
 
-All the macros, functions and global variables defined by this module have names prefixed with
-@code{mbfl_struct_}.
+@cindex Object definition
+@cindex Class definition
+@cindex Metaclass definition
+@cindex Definition of object
+@cindex Definition of Class
+@cindex Definition of metaclass
 
-With @dfn{data--structure type--descriptor} we indicate an object that holds the definition of a
-type, somewhat like a @code{struct} definition in the C language, but we can operate on the object
-at run-time.
 
-With @dfn{data--structure instance} we indicate an object that holds an instance of a type.  A
-data--structure type--descriptor is also a data--structure instance.
+With @dfn{object} we indicate a Bash array that represents an instance of a type.  With @dfn{class}
+we indicate an object that represents the definition of a type.  With @dfn{metaclass} we indicate a
+class that represents the definition of another class.
 
-With @dfn{data--structure meta type--descriptor} or @dfn{data--structure type--descriptor
-meta--descriptor} we indicate an object that holds the definition of a type; this type itself
-represents the definition of a type.
-
-With @dfn{field accessor} we indicate a function used to retrieve the value of a data--structure
-field.  With @dfn{field mutator} we indicate a function used to store a new value in a
-data--structure field.
+With @dfn{field accessor} we indicate a function used to retrieve the value of an object field.
+With @dfn{field mutator} we indicate a function used to store a new value in an object field.
 
 In every code example in this chapter, we assume the following macro has been defined in the
 preamble:
@@ -2873,178 +2870,493 @@ _(self) @expansion{} mbfl_datavar(self)
 @end example
 
 @noindent
-so to define a new data--structure type--descriptor and a new data--structure instance we can use
-the syntax:
+so to define a new class and a new instance we can use the syntax:
 
 @example
-mbfl_struct_declare(color)
-mbfl_struct_declare(dark_slate_blue)
+mbfl_standard_class_declare(color)
+mbfl_standard_object(dark_slate_blue)
 
-mbfl_struct_define_type _(color) _(mbfl_struct_top_descriptor) 'color' red green blue
-color_init _(dark_slate_blue) 72 61 139
+mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+color_define _(dark_slate_blue) 72 61 139
 @end example
 
 @c page
-@node structs overview
+@node objects overview
 @section Overview of data structures
 
 @c page
-@node structs descriptors
-@section Data--structure type--descriptors
+@node objects standard
+@chapter Standard classes
 
 
 @menu
-* structs descriptors variables::       Predefind type--descriptors.
-* structs descriptors defining::        Defining new type--descriptors.
-* structs descriptors predicates::      Type--descriptors predicates.
+* objects standard object::     The standard object class.
+* objects standard class::      The standard class metaclass.
+* objects standard predicates:: Standard object predicates.
 @end menu
 
 @c page
-@node structs descriptors variables
-@subsection Predefind type--descriptors
+@node objects standard object
+@section The standard object class
 
 
-@defvr {Struct type--descriptor} mbfl_struct_top_meta_descriptor
-@defvrx {Type descriptor} mbfl_struct_top_meta_descriptor
-Data--structure type--descriptor representing the type of all type--descriptors.  It is the type
-descriptor of itself.
-@end defvr
+A @dfn{standard object} is a ``simple'' object whose @api{} is predefined by @mbfl{} through the
+class @class{mbfl_standard_object}.
 
-
-@defvr {Struct type--descriptor} mbfl_struct_top_descriptor
-@defvrx {Type descriptor} mbfl_struct_top_meta_descriptor
-Data--structure type--descriptor topmost parent of all the type--descriptors.  When we define a new
-type--descriptor we specify
-@end defvr
+@menu
+* objects standard object overview::    Overview of standard objects.
+* objects standard object classes::     Operating on standard object subclasses.
+* objects standard object instances::   Operating on standard object instances.
+@end menu
 
 @c page
-@node structs descriptors defining
-@subsection Defining new type--descriptors
+@node objects standard object overview
+@subsection Overview of standard objects
 
 
-@defun mbfl_struct_define_type @var{TYPE_DATAVAR} @var{PARENT_TYPE_DATAVAR} @var{TYPE_NAME} @var{FIELD_NAME} @dots{}
-Define a new data--structure type--descriptor whose meta type--descriptor is
-@code{mbfl_struct_top_meta_descriptor}.
+The object @class{mbfl_standard_object} is the basic superclass of class types in @mbfl{}; we define
+new classes by subclassing from @class{mbfl_standard_object}.  The object
+@class{mbfl_standard_object} also has a type, called metaclass, it is @class{mbfl_standard_class}.
+
+The object @class{mbfl_standard_object} and every object being a subclass of
+@class{mbfl_standard_object} have the layout specified by @class{mbfl_standard_class}; @ref{objects
+standard class overview, Overview of standard classes}.
+
+Every instance of a subclass of @class{mbfl_standard_object} is a Bash index array with the
+following layout:
+
+@example
+instance[0] @result{} _(subclass_of_mbfl_standard_object)
+instance[1] @result{} 1st field value
+instance[2] @result{} 2nd field value
+...
+@end example
+
+@noindent
+an array element with key @samp{0} is always present and its value is the instance's class.
+
+If we subclass @class{mbfl_standard_object} to define a new class with name @class{color}:
+
+@example
+mbfl_standard_class_declare(color)
+
+mbfl_standard_class_define _(color) _(mbfl_standard_object) \
+    'color' red green blue
+@end example
+
+@noindent
+and then we instantiate @class{color}:
+
+@example
+mbfl_standard_object_declare(dark_slate_blue)
+
+color_define _(dark_slate_blue) 72 61 139
+@end example
+
+@noindent
+the layout of the instance array is:
+
+@example
+instance[0] @result{} _(color)
+instance[1] @result{} 72
+instance[2] @result{} 61
+instance[3] @result{} 139
+@end example
+
+We can subclass @class{color} to add a transparency field:
+
+@example
+mbfl_standard_class_declare(transparent_color)
+
+mbfl_standard_class_define _(transparent_color) _(color) \
+    'transparent_color' transparency
+@end example
+
+@noindent
+and then we instantiate @class{transparent_color}:
+
+@example
+mbfl_standard_object_declare(transparent_dark_slate_blue)
+
+transparent_color_define _(transparent_dark_slate_blue) 72 61 139 50
+@end example
+
+@noindent
+the layout of the instance array is:
+
+@example
+instance[0] @result{} _(transparent_color)
+instance[1] @result{} 72
+instance[2] @result{} 61
+instance[3] @result{} 139
+instance[4] @result{} 50
+@end example
+
+The diagram of instances, classes and metaclasses is as follows:
+
+@example
+ ----------------------  metaclass   ---------------------
+| mbfl_standard_object |----------->| mbfl_standard_class |
+ ----------------------              ---------------------
+          ^
+          | superclass
+          |
+       -------       class        -----------------
+      | color |<-----------------| dark_slate_blue |
+       -------                    -----------------
+          ^
+          | superclass
+          |
+ -------------------   class  -----------------------------
+| transparent_color |<-------| transparent_dark_slate_blue |
+ -------------------          -----------------------------
+@end example
+
+@c page
+@node objects standard object classes
+@subsection Operating on standard object subclasses
+
+
+@deftp {Class} mbfl_standard_object
+@deftpx {Metaclass} mbfl_standard_class
+Standard class of objects used by @mbfl{}.  It has no parent.  It defines no fields aside from a
+reference to the instance's class.
+@end deftp
+
+
+@deffn {Preprocessor Macro} mbfl_standard_object_declare (@var{CLASS_NAME})
+@deffnx {Preprocessor Macro} mbfl_standard_object_declare_global (@var{CLASS_NAME})
+Define the Bash variables needed to handle a new subclass of @class{mbfl_standard_object}.  The data
+variable is declared using, respectively: @code{declare} or @code{declare -g}.
+
+We can think of these macros as working like @func{mbfl_declare_varref}: they declare variables, one
+of which is a data variable whose name we can pass around as parameter to functions.
+@end deffn
+
+@c page
+@node objects standard object instances
+@subsection Operating on standard object instances
+
+
+@defun mbfl_standard_object_class_var @var{CLASS_RV} @var{OBJ}
+Store in the result variable @var{CLASS_RV} the data variable of the class of the standard object
+@var{OBJ}.  If @var{OBJ} is not the data variable of a standard object: the behaviour of this
+function is undefined.
+
+@example
+mbfl_standard_class_declare(gray_color)
+mbfl_standard_object_declare(gray22)
+declare the_class
+
+mbfl_standard_class_define _(gray_color) _(mbfl_standard_object) level
+gray_color_define _(gray22) 22
+
+mbfl_standard_object_class_var the_class _(gray22)
+$the_class @result{} _(gray_color)
+@end example
 @end defun
+
+
+@defun mbfl_standard_object_is_a @var{OBJ}
+Return true if the given parameter is the datavar of an object whose class is a subclass of
+@class{mbfl_standard_object}; otherwise return false.  In any case @var{OBJ} must be the data
+variable of a Bash array, otherwise the behaviour of this function is undefined.
+
+@example
+mbfl_standard_class_declare(gray_color)
+mbfl_standard_object_declare(gray22)
+
+mbfl_standard_class_define _(gray_color) _(mbfl_standard_object) level
+gray_color_define _(gray22) 22
+
+mbfl_standard_object_is_a _(gray22) @result{} true
+@end example
+@end defun
+
+
+@defun mbfl_standard_object_is_of_class @var{OBJ} @var{CLASS}
+Return true if the following conditions are met:
+
+@enumerate
+@item
+@var{OBJ} is a standard object: its class is a subclass of @class{mbfl_standard_object};
+
+@item
+the class of @var{OBJ} is @var{CLASS} or a subclass of @var{CLASS};
+@end enumerate
+
+In any case @var{OBJ} must be the data variable of a Bash array, otherwise the behaviour of this
+function is undefined.
+@end defun
+
+@c page
+@node objects standard class
+@section The standard class metaclass
+
+
+A @dfn{standard class} is a ``simple'' type definition whose @api{} is predefined by @mbfl{} through
+the metaclass @class{mbfl_standard_class}.
+
+@menu
+* objects standard class overview::     Overview of standard classes.
+* objects standard class classes::      Operating on standard class subclasses.
+* objects standard class instances::    Operating on standard class instances.
+@end menu
 
 
 @c page
-@node structs descriptors predicates
-@subsection Type--descriptors predicates
+@node objects standard class overview
+@subsection Overview of standard classes
 
 
-@defun mbfl_struct_is_a_descriptor @var{STRU}
-Return true if the parameter is the datavar of a data--structure type--descriptor; otherwise return
-false.  The parameter @var{STRU} must be a data--structure instance.
+The object @class{mbfl_standard_class} is the basic metaclass of class types in @mbfl{}; we define
+new classes by instantiating @class{mbfl_standard_class}.
+
+An instance of @class{mbfl_standard_class} is a Bash index array with the following layout:
 
 @example
-mbfl_struct_is_a_descriptor _(mbfl_struct_top_descriptor)          @result{} true
-mbfl_struct_is_a_descriptor _(mbfl_struct_default_meta_descriptor) @result{} true
-mbfl_struct_is_a_descriptor _(mbfl_predefined_constant)            @result{} true
-mbfl_struct_is_a_descriptor _(mbfl_unspecified)                    @result{} false
+datavar[0]      @result{} _(metaclass)
+datavar[1]      @result{} _(parent_class)
+datavar[2]      @result{} class name as string
+datavar[3]      @result{} N = fields number
+datavar[4]      @result{} field 0 name as string
+datavar[5]      @result{} field 1 name as string
+...
+datavar[N-1]    @result{} field N-1 name as string
+@end example
+
+@noindent
+being a @class{mbfl_standard_object} an array element with key @samp{0} is always present and its
+value is the instance's class.  We use @class{mbfl_standard_class} by using the constructor of
+@class{mbfl_standard_class} instances, which is the function @func{mbfl_standard_class_define}.
+
+If we define the class @class{color} as follows:
+
+@example
+mbfl_standard_class_declare(color)
+
+mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+@end example
+
+@noindent
+the layout of the @class{color} array is:
+
+@example
+datavar[0]      @result{} _(mbfl_standard_class)
+datavar[1]      @result{} _(mbfl_standard_object)
+datavar[2]      @result{} 'color'
+datavar[3]      @result{} 3
+datavar[4]      @result{} 'red'
+datavar[5]      @result{} 'green'
+datavar[6]      @result{} 'blue'
+@end example
+
+@c page
+@node objects standard class classes
+@subsection Operating on standard class subclasses
+
+
+@deffn {Preprocessor Macro} mbfl_standard_class_declare (@var{CLASS_NAME})
+@deffnx {Preprocessor Macro} mbfl_standard_class_declare_global (@var{CLASS_NAME})
+Define the Bash variables needed to handle a new subclass of @class{mbfl_standard_class}.  The data
+variable is declared using, respectively: @code{declare} or @code{declare -g}.
+@end deffn
+
+
+@deftp {Class} mbfl_standard_class
+@deftpx {Parent} mbfl_standard_object
+@deftpx {Metaclass} mbfl_standard_class
+Standard class of classes derived from @class{mbfl_standard_object}.
+@end deftp
+
+@c page
+@node objects standard class instances
+@subsection Operating on standard class instances
+
+
+@defun mbfl_standard_class_is_a @var{OBJ}
+Return true if the given parameter is the datavar of an object whose class is
+@class{mbfl_standard_class} or a subclass of @class{mbfl_standard_class}; otherwise return false.
+In any case @var{OBJ} must be the data variable of a Bash array, otherwise the behaviour of this
+function is undefined.
+
+@example
+mbfl_standard_class_declare(gray_color)
+
+mbfl_standard_class_define _(gray_color) _(mbfl_standard_object) level
+mbfl_standard_class_is_a _(gray_color) @result{} true
 @end example
 @end defun
 
 
-@defun mbfl_struct_is_a_meta_descriptor @var{STRU}
-Return true if the parameter is the datavar of a data--structure type--descriptor meta--descriptor;
-otherwise return false.  The parameter @var{STRU} must be a data--structure instance.
+@defun mbfl_standard_metaclass_is_a @var{OBJ}
+Return true if the given parameter is the datavar of an object that meets the following
+conditions:
+
+@enumerate
+@item
+the class of @var{OBJ} is @class{mbfl_standard_class} or a subclass of @class{mbfl_standard_class};
+
+@item
+@var{OBJ} itself must be a subclass of @class{mbfl_standard_class}.
+@end enumerate
+
+In any case @var{OBJ} must be the data variable of a Bash array, otherwise the behaviour of this
+function is undefined.
+@end defun
+
+
+@defun mbfl_standard_class_parent_var @var{PARENT_RV} @var{CLASS}
+Store in the result variable @var{PARENT_RV} the data variable of the parent of @var{CLASS}.  The
+parameter @var{CLASS} must be a standard class object.
 
 @example
-mbfl_struct_is_a_meta_descriptor _(mbfl_struct_top_descriptor)          @result{} true
-mbfl_struct_is_a_meta_descriptor _(mbfl_struct_default_meta_descriptor) @result{} true
-mbfl_struct_is_a_meta_descriptor _(mbfl_predefined_constant)            @result{} false
-mbfl_struct_is_a_meta_descriptor _(mbfl_unspecified)                    @result{} false
+mbfl_standard_class_declare(color)
+declare PARENT
+
+mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+mbfl_standard_class_parent_var PARENT _(color)
+$PARENT @result{} _(mbfl_standard_object)
 @end example
 @end defun
 
 
-@defun mbfl_struct_is_the_top_descriptor @var{STRU}
-Return true if the parameter is the datavar of @code{mbfl_struct_top_descriptor}; otherwise return
-false.  The parameter @var{STRU} must be a data--structure instance.
+@defun mbfl_standard_class_name_var @var{NAME_RV} @var{CLASS}
+Store in the result variable @var{NAME_RV} the string representing the name of @var{CLASS}.  The
+parameter @var{CLASS} must be a standard class object.
 
 @example
-mbfl_struct_is_the_top_descriptor _(mbfl_struct_top_descriptor) @result{} true
-mbfl_struct_is_the_top_descriptor _(mbfl_unspecified)           @result{} false
+mbfl_standard_class_declare(color)
+declare NAME
+
+mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+mbfl_standard_class_name_var NAME _(color)
+$NAME @result{} color
 @end example
 @end defun
 
 
-@defun mbfl_struct_is_the_default_descriptor @var{STRU}
-Return true if the parameter is the datavar of @code{mbfl_struct_default_descriptor}; otherwise
-return false.  The parameter @var{STRU} must be a data--structure instance.
+@defun mbfl_standard_class_fields_number_var @var{FIELDS_NUMBER_RV} @var{CLASS}
+Store in the result variable @var{FIELDS_NUMBER_RV} the number of fields in instances of
+@var{CLASS}.  The parameter @var{CLASS} must be a standard class object.
 
 @example
-mbfl_struct_is_the_default_descriptor _(mbfl_struct_default_descriptor) @result{} true
-mbfl_struct_is_the_default_descriptor _(mbfl_unspecified)               @result{} false
+mbfl_standard_class_declare(color)
+declare FIELDS_NUMBER
+
+mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+mbfl_standard_class_fields_number_var FIELDS_NUMBER _(color)
+$FIELDS_NUMBER @result{} 3
 @end example
 @end defun
 
 
-@defun mbfl_struct_is_the_top_meta_descriptor @var{STRU}
-Return true if the parameter is the datavar of @code{mbfl_struct_top_meta_descriptor}; otherwise
-return false.  The parameter @var{STRU} must be a data--structure instance.
+@defun mbfl_standard_classes_are_parent_and_child @var{MAYBE_PARENT} @var{MAYBE_CHILD}
+Return true if @var{MAYBE_PARENT} is the data variable of a class and @var{MAYBE_CHILD} is the data
+variable of a subclass of @var{MAYBE_PARENT}.
 
 @example
-mbfl_struct_is_the_top_meta_descriptor _(mbfl_struct_top_meta_descriptor) @result{} true
-mbfl_struct_is_the_top_meta_descriptor _(mbfl_unspecified)                @result{} false
-@end example
-@end defun
+mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_standard_object)
+@result{} false
 
+mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_standard_class)
+@result{} true
 
-@defun mbfl_struct_is_the_default_meta_descriptor @var{STRU}
-Return true if the parameter is the datavar of @code{mbfl_struct_default_meta_descriptor}; otherwise
-return false.  The parameter @var{STRU} must be a data--structure instance.
+mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_predefined_constant)
+@result{} true
 
-@example
-mbfl_struct_is_the_meta_default_descriptor _(mbfl_struct_default_meta_descriptor) @result{} true
-mbfl_struct_is_the_meta_default_descriptor _(mbfl_unspecified)                    @result{} false
+mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_predefined_constant)
+@result{} false
 @end example
 @end defun
 
 @c page
-@node structs special
+@node objects standard predicates
+@section Standard object predicates
+
+
+@defun mbfl_standard_object_is_the_standard_object @var{OBJ}
+Return true if the parameter is the name of the data variable of @class{mbfl_standard_object};
+otherwise return false.  The parameter must be an object.
+@end defun
+
+
+@defun mbfl_standard_object_is_the_standard_class @var{OBJ}
+Return true if the parameter is the name of the data variable of @class{mbfl_standard_class};
+otherwise return false.  The parameter must be an object.
+@end defun
+
+@c page
+@node objects special
 @section Special predefined types and instances
 
 
 @menu
-* structs special constants::   Predefined constants.
+* objects special constants::   Predefined constants.
 @end menu
 
 @c page
-@node structs special constants
+@node objects special constants
 @subsection Predefined constants
 
 
-@deftp {Struct type descriptor} mbfl_predefined_constant
-@deftpx {Parent descriptor} mbfl_struct_default_descriptor
-Data--structure type--descriptor used to define constant values.
+It is sometimes useful to define special constant values to represent situations in the code;
+@mbfl{} defines the class @class{mbfl_predefined_constant} for this purpose; we can use it to define
+a void value as follows:
+
+@example
+mbfl_standard_object_declare(void)
+
+mbfl_predefind_constant_define _(void)
+
+function is_void () @{
+    mbfl_mandatory_parameter(DATAVAR, 1, a data variable)
+    mbfl_datavar_eq("$DATAVAR",_(void))
+@}
+@end example
+
+@noindent
+code bases are always imperfect.
+
+
+@deftp {Class} mbfl_predefined_constant
+@deftpx {Parent class} mbfl_standard_object
+@deftpx {Metaclass} mbfl_standard_class
+Class representing unique constant values.
 @end deftp
 
 
-@defun mbfl_predefined_constant_init @var{STRU_DATAVAR}
-Define a new data--structure instance of type @objtype{mbfl_predefined_constant} and store it in the
-data variable @var{STRU_DATAVAR}.
+@defun mbfl_predefined_constant_define @var{STRU_DATAVAR}
+Define a new instance of @objtype{mbfl_predefined_constant} and store its fields in the data
+variable @var{STRU_DATAVAR}.
 @end defun
 
 
-@defun mbfl_predefined_constant_is_a @var{STRU}
+@defun mbfl_predefined_constant_is_a @var{OBJ}
 Return true if the parameter is the datavar of a data--structure instance of type
-@objtype{mbfl_predefined_constant}; otherwise return false.  The parameter @var{STRU} must be a
-data--structure instance.
+@objtype{mbfl_predefined_constant}; otherwise return false.  The parameter @var{OBJ} must be an
+object.
 @end defun
 
 
-@defvar mbfl_undefined
-Data--structure instance of type @objtype{mbfl_predefined_constant}; it is meant to be a unique
-value used as variable's value to indicate an undefined value.
-@end defvar
+@deftypevar mbfl_predefined_constant mbfl_undefined
+A unique value used as variable's value to indicate an undefined value.
+@end deftypevar
 
 
-@defvar mbfl_unspecified
-Data--structure instance of type @objtype{mbfl_predefined_constant}; it is meant to be used a unique
-value used as function call parameter to indicate an unspecified value.
-@end defvar
+@deftypevar mbfl_predefined_constant mbfl_unspecified
+A unique value used as function call parameter to indicate an unspecified value.
+@end deftypevar
+
+
+@defun mbfl_is_the_undefined @var{DATAVAR}
+Return true if the parameter is the data variable of @code{mbfl_undefined}.
+@end defun
+
+
+@defun mbfl_is_the_unspecified @var{DATAVAR}
+Return true if the parameter is the data variable of @code{mbfl_unspecified}.
+@end defun
 
 @c page
 @node strings

@@ -101,6 +101,9 @@ function object-standard-class-1.3 () {
 function object-standard-class-1.4 () {
     mbfl_standard_class_is_a _(mbfl_standard_class)
 }
+function object-standard-class-1.5 () {
+    mbfl_standard_metaclass_is_a _(mbfl_standard_class)
+}
 function object-standard-class-1.6 () {
     mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_standard_class)
 }
@@ -131,7 +134,7 @@ function object-standard-class-2.3 () {
 # field accessors.
 #
 function object-simple-1.1 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_object_declare(self)
     declare A=0 B=0 C=0
     declare PREDICATE_RESULT
@@ -169,7 +172,7 @@ function object-simple-1.1 () {
 # field accessors, field mutators.
 #
 function object-simple-1.2 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_object_declare(self)
     declare A=0 B=0 C=0
     declare PREDICATE_RESULT
@@ -205,7 +208,7 @@ function object-simple-1.2 () {
 # Test for: mbfl_standard_object_declare_global, mbfl_standard_object_unset.
 #
 function object-simple-1.3 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_object_declare_global(self)
     declare A=0 B=0 C=0 DATAVAR
     declare PREDICATE_RESULT
@@ -263,8 +266,8 @@ function object-simple-1.3 () {
 # Define a type-descriptor with parent, use the accessors.
 #
 function object-single-inheritance-1.1 () {
-    mbfl_standard_object_declare(color_red)
-    mbfl_standard_object_declare(color_red_green)
+    mbfl_standard_class_declare(color_red)
+    mbfl_standard_class_declare(color_red_green)
     mbfl_standard_object_declare(self)
     declare RED GREEN
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
@@ -299,8 +302,8 @@ function object-single-inheritance-1.1 () {
 # Define a type-descriptor with parent, use the accessors and the mutators.
 #
 function object-single-inheritance-1.2 () {
-    mbfl_standard_object_declare(color_red)
-    mbfl_standard_object_declare(color_red_green)
+    mbfl_standard_class_declare(color_red)
+    mbfl_standard_class_declare(color_red_green)
     mbfl_standard_object_declare(self)
     declare RED GREEN
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
@@ -338,8 +341,8 @@ function object-single-inheritance-1.2 () {
 # Define a type-descriptor with parent, use the parent accessors and the mutators.
 #
 function object-single-inheritance-1.3 () {
-    mbfl_standard_object_declare(color_red)
-    mbfl_standard_object_declare(color_red_green)
+    mbfl_standard_class_declare(color_red)
+    mbfl_standard_class_declare(color_red_green)
     mbfl_standard_object_declare(self)
     declare RED GREEN
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
@@ -379,9 +382,9 @@ function object-single-inheritance-1.3 () {
 # Define a type-descriptor with parent having parent, use the accessors.
 #
 function object-single-inheritance-2.1 () {
-    mbfl_standard_object_declare(color_red)
-    mbfl_standard_object_declare(color_red_green)
-    mbfl_standard_object_declare(color_red_green_blue)
+    mbfl_standard_class_declare(color_red)
+    mbfl_standard_class_declare(color_red_green)
+    mbfl_standard_class_declare(color_red_green_blue)
     mbfl_standard_object_declare(self)
     declare RED GREEN BLUE
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
@@ -424,9 +427,9 @@ function object-single-inheritance-2.1 () {
 # Define a type-descriptor with parent having parent, use the accessors and the mutator.
 #
 function object-single-inheritance-2.2 () {
-    mbfl_standard_object_declare(color_red)
-    mbfl_standard_object_declare(color_red_green)
-    mbfl_standard_object_declare(color_red_green_blue)
+    mbfl_standard_class_declare(color_red)
+    mbfl_standard_class_declare(color_red_green)
+    mbfl_standard_class_declare(color_red_green_blue)
     mbfl_standard_object_declare(self)
     declare RED GREEN BLUE
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
@@ -473,9 +476,9 @@ function object-single-inheritance-2.2 () {
 # Define a type-descriptor with parent having parent, use the parent accessors and mutator.
 #
 function object-single-inheritance-2.3 () {
-    mbfl_standard_object_declare(color_red)
-    mbfl_standard_object_declare(color_red_green)
-    mbfl_standard_object_declare(color_red_green_blue)
+    mbfl_standard_class_declare(color_red)
+    mbfl_standard_class_declare(color_red_green)
+    mbfl_standard_class_declare(color_red_green_blue)
     mbfl_standard_object_declare(self)
     declare RED GREEN BLUE
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
@@ -523,42 +526,42 @@ function object-single-inheritance-2.3 () {
 #### inspection of custom type-descriptors
 
 function object-custom-classes-1.1 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
     mbfl_standard_object_is_a _(greek)
 }
 function object-custom-classes-1.2 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
     mbfl_standard_class_is_a _(greek)
 }
 function object-custom-classes-1.2.1 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
     ! mbfl_standard_metaclass_is_a _(greek)
 }
 function object-custom-classes-1.3 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
     ! mbfl_standard_object_is_the_standard_object _(greek)
 }
 function object-custom-classes-1.4 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
     ! mbfl_standard_object_is_the_standard_class _(greek)
 }
 function object-custom-classes-1.5 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
     ! mbfl_standard_object_is_the_standard_class _(greek)
 }
 function object-custom-classes-1.6 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
     mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(greek)
 }
 function object-custom-classes-1.7 () {
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
     ! mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(greek)
 }
@@ -599,8 +602,8 @@ function object-error-class-1.1 () {
 #### testing errors regarding data-structure instances
 
 function object-error-instance-1.1 () {
-    mbfl_standard_object_declare(color)
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(color)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_object_declare(self)
     declare RED RV
 
@@ -615,8 +618,8 @@ function object-error-instance-1.1 () {
 }
 
 function object-error-instance-1.2 () {
-    mbfl_standard_object_declare(color)
-    mbfl_standard_object_declare(greek)
+    mbfl_standard_class_declare(color)
+    mbfl_standard_class_declare(greek)
     mbfl_standard_object_declare(self)
     declare RV
 
