@@ -1,35 +1,32 @@
-m4_divert(-1)m4_dnl
-m4_dnl preprocessor.m4 --
-m4_dnl
-m4_dnl Part of: Marco's BASH Functions Library
-m4_dnl Contents: macros for the preprocessor
-m4_dnl Date: Sat Apr 19, 2003
-m4_dnl
-m4_dnl Abstract
-m4_dnl
-m4_dnl	Library of macros to preprocess BASH scripts using MBFL.
-m4_dnl
-m4_dnl Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
-m4_dnl <mrc.mgg@gmail.com>
-m4_dnl
-m4_dnl This  is free  software; you  can redistribute  it and/or  modify it
-m4_dnl under  the  terms  of  the  GNU Lesser  General  Public  License  as
-m4_dnl published by the Free Software Foundation; either version 3.0 of the
-m4_dnl License, or (at your option) any later version.
-m4_dnl
-m4_dnl This library is distributed in the  hope that it will be useful, but
-m4_dnl WITHOUT  ANY   WARRANTY;  without  even  the   implied  warranty  of
-m4_dnl MERCHANTABILITY or  FITNESS FOR A  PARTICULAR PURPOSE.  See  the GNU
-m4_dnl Lesser General Public License for more details.
-m4_dnl
-m4_dnl You should  have received a  copy of  the GNU Lesser  General Public
-m4_dnl License along with this library; if  not, write to the Free Software
-m4_dnl Foundation, Inc., 59 Temple Place,  Suite 330, Boston, MA 02111-1307
-m4_dnl USA.
-m4_dnl
+m4_divert(-1)
+# preprocessor.m4 --
+#
+# Part of: Marco's BASH Functions Library
+# Contents: macros for the preprocessor
+# Date: Sat Apr 19, 2003
+#
+# Abstract
+#
+#	Library of macros to preprocess BASH scripts using MBFL.
+#
+# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
+# <mrc.mgg@gmail.com>
+#
+# This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
+# General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
+# License, or (at your option) any later version.
+#
+# This library is distributed in the hope that  it will be useful, but WITHOUT ANY WARRANTY; without
+# even the  implied warranty of MERCHANTABILITY  or FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the  GNU Lesser General Public License along with this library;
+# if not,  write to  the Free  Software Foundation,  Inc., 59  Temple Place,  Suite 330,  Boston, MA
+# 02111-1307 USA.
+#
 
 
-m4_dnl initial setup
+#### initial setup
 
 m4_changequote(`[[[', `]]]')
 
@@ -72,7 +69,7 @@ m4_ifelse([[[$1]]],,,[[[$1]]] [[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))]
 ]]])
 
 
-m4_dnl function parameters handling
+#### function parameters handling
 
 m4_define([[[mbfl_mandatory_parameter]]],[[[local $4 $1=${$2:?"missing $3 parameter to '$FUNCNAME'"}]]])
 m4_define([[[mbfl_mandatory_integer_parameter]]],[[[mbfl_mandatory_parameter($1,$2,$3,-i)]]])
@@ -86,7 +83,7 @@ local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
 ]]])
 
 
-m4_dnl script's command line arguments handling
+#### script's command line arguments handling
 
 # Synopsis:
 #
@@ -103,7 +100,7 @@ mbfl_variable_unset(ARGV[$2]) m4_dnl
 ]]])
 
 
-m4_dnl library loading and embedding
+#### library loading and embedding
 
 m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
 m4_define([[[mbfl_load_library]]],  [[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
@@ -256,7 +253,10 @@ m4_define([[[mbfl_unset_varref]]],[[[m4_dnl
   unset -v    $1 m4_dnl
 ]]])
 
-m4_ifdef([[[__MBFL_ENABLE_UNDERSCORE_AS_DATAVAR__]]],[[[m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])]]])
+# Optionally define  the "_()" macro.   With one parameter is  expands into a  use of
+# "mbfl_datavar()"; with two parameters it expands into a use of "mbfl_slot_qref".
+#
+m4_ifdef([[[__MBFL_DEFINE_UNDERSCORE_MACRO__]]],[[[m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])]]])
 
 
 #### nameref arrays declarations
@@ -267,7 +267,7 @@ m4_define([[[mbfl_declare_index_array_varref]]],[[[mbfl_declare_varref($1,$2,-a 
 m4_define([[[mbfl_declare_assoc_array_varref]]],[[[mbfl_declare_varref($1,$2,-A $3)]]])
 
 
-m4_dnl string macros
+#### string macros
 
 m4_define([[[mbfl_string_len]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
 ${MBFL_SHARP()$1}m4_dnl
@@ -315,7 +315,7 @@ m4_define([[[mbfl_string_neq_true]]],  [[[{ test $1  '!=' 'true'; }]]])
 m4_define([[[mbfl_string_neq_false]]], [[[{ test $1  '!=' 'false'; }]]])
 
 
-m4_dnl defining program execution functions
+#### defining program execution functions
 
 m4_define([[[MBFL_DEFINE_PROGRAM_EXECUTOR_FUNCNAME_PREFIX]]],[[[program_]]])
 m4_define([[[MBFL_DEFINE_PROGRAM_REPLACER_FUNCNAME_PREFIX]]],[[[program_replace_]]])
@@ -388,7 +388,7 @@ m4_define([[[mbfl_standard_class_declare_global]]], [[[mbfl_standard_object_decl
 m4_define([[[mbfl_standard_class_unset]]],          [[[mbfl_standard_object_unset([[[$1]]])]]])
 
 
-m4_dnl done
+#### done
 
-m4_dnl end of file
+### end of file
 m4_divert(0)m4_dnl

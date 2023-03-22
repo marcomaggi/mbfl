@@ -30,7 +30,7 @@
 # With one parameter is expands into a use  of "mbfl_datavar()"; with two parameters it expands into
 # a use of "mbfl_slot_qref".
 #
-m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]])]]])
+m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
 
 # An  object whose  class is  a  child of  "mbfl_standard_object" is  a  Bash index  array with  the
 # following layout:
@@ -195,29 +195,24 @@ function mbfl_standard_classes_are_parent_and_child () {
 #### data-structure instance handling
 
 function mbfl_standard_object_define () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,  1, reference to a standard object)
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, reference to a standard class)
-    shift 2
-    declare -a mbfl_FIELD_INIT_VALUES=("$@")
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,			1, reference to a standard object)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS,		2, reference to a standard class)
+    mbfl_mandatory_nameref_parameter(mbfl_FIELD_INIT_VALUES,	3, reference to index array containing init field values)
+    declare -i mbfl_FIELDS_NUMBER mbfl_I
 
     mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX, _(mbfl_CLASS))
 
-    {
-	declare -i mbfl_FIELDS_NUMBER
-	mbfl_standard_class_fields_number_var mbfl_FIELDS_NUMBER _(mbfl_CLASS)
-	if ((mbfl_slots_number(mbfl_FIELD_INIT_VALUES) == $mbfl_FIELDS_NUMBER))
-	then
-	    declare -i mbfl_I
-	    #echo $FUNCNAME mbfl_FIELDS_NUMBER $mbfl_FIELDS_NUMBER >&2
-	    for ((mbfl_I=0; mbfl_I < mbfl_FIELDS_NUMBER; ++mbfl_I))
-	    do mbfl_slot_set(mbfl_SELF, 1+mbfl_I, mbfl_slot_qref(mbfl_FIELD_INIT_VALUES, mbfl_I))
-	    done
-	else
-	    mbfl_message_error_printf 'wrong number of field initial values in call to "%s", expected %d, got %d' \
-				      $FUNCNAME $mbfl_FIELDS_NUMBER mbfl_slots_number(mbfl_FIELD_INIT_VALUES)
-	    return_because_failure
-	fi
-    }
+    mbfl_standard_class_fields_number_var mbfl_FIELDS_NUMBER _(mbfl_CLASS)
+    if ((mbfl_slots_number(mbfl_FIELD_INIT_VALUES) == $mbfl_FIELDS_NUMBER))
+    then
+	for ((mbfl_I=0; mbfl_I < mbfl_FIELDS_NUMBER; ++mbfl_I))
+	do mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__FIRST_FIELD_INDEX+mbfl_I, mbfl_slot_qref(mbfl_FIELD_INIT_VALUES, mbfl_I))
+	done
+    else
+	mbfl_message_error_printf 'wrong number of field initial values in call to "%s", expected %d, got %d' \
+				  $FUNCNAME $mbfl_FIELDS_NUMBER mbfl_slots_number(mbfl_FIELD_INIT_VALUES)
+	return_because_failure
+    fi
 }
 
 # Return true  if the  given parameter is  the datavar  of an  object whose class  is a  subclass of
@@ -256,7 +251,6 @@ function mbfl_standard_class_define () {
     mbfl_mandatory_nameref_parameter(mbfl_CLASS,	1, reference to the new standard class)
     mbfl_mandatory_nameref_parameter(mbfl_PARENT,	2, reference to the parent standard class)
     mbfl_mandatory_parameter(mbfl_NAME,			3, the name of the new standard class)
-    shift 3
 
     # Validate parameters.
     {
@@ -273,10 +267,11 @@ function mbfl_standard_class_define () {
 	fi
     }
 
+    shift 3
     declare -ar mbfl_NEW_FIELD_NAMES=("$@")
     declare -ir mbfl_NEW_FIELDS_NUMBER=mbfl_slots_number(mbfl_NEW_FIELD_NAMES)
     declare -i  mbfl_TOTAL_FIELDS_NUMBER
-    declare -i  mbfl_I mbfl_J
+    declare -i  mbfl_I
     declare -r  mbfl_CLASS_DATAVAR=_(mbfl_CLASS)
 
     # Initialise the fields of the new class object.
@@ -284,8 +279,9 @@ function mbfl_standard_class_define () {
 	declare -i  mbfl_PARENT_FIELDS_NUMBER
 	mbfl_standard_class_fields_number_var mbfl_PARENT_FIELDS_NUMBER _(mbfl_PARENT)
 	let mbfl_TOTAL_FIELDS_NUMBER=mbfl_PARENT_FIELDS_NUMBER+mbfl_NEW_FIELDS_NUMBER
+	mbfl_declare_index_array_varref(mbfl_CLASS_FIELD_VALUES,(_(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER))
 
-	mbfl_standard_object_define _(mbfl_CLASS) _(mbfl_standard_class) _(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER
+	mbfl_standard_object_define _(mbfl_CLASS) _(mbfl_standard_class) _(mbfl_CLASS_FIELD_VALUES)
 
 	# Copy the field names from the parent class.
 	for ((mbfl_I=0; mbfl_I < mbfl_PARENT_FIELDS_NUMBER; ++mbfl_I))
@@ -302,6 +298,7 @@ function mbfl_standard_class_define () {
     # Check that the field names are unique.
     {
 	declare mbfl_FIELD_NAME
+	declare -i mbfl_J
 
 	for ((mbfl_I=0; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I))
 	do
@@ -317,10 +314,21 @@ function mbfl_standard_class_define () {
 	done
     }
 
-    # We need to iterate over the fields; we could use a single loop statement, but a loop statement
-    # for every purpose makes the code more readable.
-
-    # Build the data-structure instance-constructor function.
+    # Build the data-structure instance-constructor function.  For the class definition:
+    #
+    #   mbfl_standard_class_declare(color)
+    #   mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    #
+    # the constructor should look like:
+    #
+    #   function color_define () {
+    #      declare -n  mbfl_SELF=${1:?"missing reference to instance of 'color' to '$FUNCNAME'"}
+    #      shift
+    #      declare -ar mbfl_FIELD_INIT_VALUES=("$@")
+    #
+    #      mbfl_standard_object_define _(mbfl_SELF) ${mbfl_CLASS_DATAVAR} mbfl_FIELD_INIT_VALUES
+    #   }
+    #
     {
 	declare mbfl_CONSTRUCTOR_NAME mbfl_CONSTRUCTOR_BODY
 	declare mbfl_PARAMETER_COUNT
@@ -328,21 +336,28 @@ function mbfl_standard_class_define () {
 	printf -v mbfl_CONSTRUCTOR_NAME MBFL_STDOBJ__FUNCNAME_PATTERN__CONSTRUCTOR "$mbfl_NAME"
 
 	mbfl_CONSTRUCTOR_BODY='{ '
-	mbfl_CONSTRUCTOR_BODY+="local -n mbfl_SELF=\${1:"
-	mbfl_CONSTRUCTOR_BODY+="?\"missing reference to struct '${mbfl_NAME}' variable parameter to '\${FUNCNAME}'\"};"
-	mbfl_CONSTRUCTOR_BODY+="mbfl_SELF[0]=${mbfl_CLASS_DATAVAR};"
-	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
-	do
-	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
-	    declare mbfl_OFFSET=$((MBFL_STDOBJ__FIRST_FIELD_INDEX + $mbfl_I))
-	    mbfl_CONSTRUCTOR_BODY+="mbfl_SELF[$mbfl_OFFSET]=\${$mbfl_PARAMETER_COUNT:?"
-	    mbfl_CONSTRUCTOR_BODY+="\"missing field value parameter '$mbfl_FIELD_NAME' to '\$FUNCNAME'\"};"
-	done
+	mbfl_CONSTRUCTOR_BODY+="declare -r mbfl_SELF_DATAVAR=\${1:?\"missing reference to instance of 'color' to '\${FUNCNAME}'\"};"
+        mbfl_CONSTRUCTOR_BODY+="shift;"
+        mbfl_CONSTRUCTOR_BODY+="declare -ar mbfl_u_variable_FIELD_INIT_VALUES=(\"\$@\");"
+	mbfl_CONSTRUCTOR_BODY+="mbfl_standard_object_define \$mbfl_SELF_DATAVAR ${mbfl_CLASS_DATAVAR} mbfl_u_variable_FIELD_INIT_VALUES;"
 	mbfl_CONSTRUCTOR_BODY+='}'
+	#echo $FUNCNAME mbfl_CONSTRUCTOR_BODY="$mbfl_CONSTRUCTOR_BODY" >&2
 	mbfl_p_struct_make_function "$mbfl_CONSTRUCTOR_NAME" "$mbfl_CONSTRUCTOR_BODY"
     }
 
-    # Build the data-structure type-predicate function: return true if a struct instance is of type "".
+    # Build the class predicate function: return true if a struct instance is of type "$mbfl_CLASS".
+    # For the class definition:
+    #
+    #   mbfl_standard_class_declare(color)
+    #   mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    #
+    # the predicate function should look like:
+    #
+    #   function color_is_a () {
+    #       declare -r mbfl_SELF_DATAVAR=${1:?"missing reference to instance of 'color' to '${FUNCNAME}'"};
+    #       mbfl_standard_object_is_of_class "$mbfl_SELF_DATAVAR" '${mbfl_CLASS_DATAVAR}'
+    #   }
+    #
     {
 	declare mbfl_PREDICATE_NAME mbfl_PREDICATE_BODY
 
@@ -352,7 +367,22 @@ function mbfl_standard_class_define () {
 	mbfl_p_struct_make_function "$mbfl_PREDICATE_NAME" "$mbfl_PREDICATE_BODY"
     }
 
-    # Build the data-structure field-mutator functions.
+    # We need to iterate over the fields; we could use a single loop statement, but a loop statement
+    # for every purpose makes the code more readable.
+
+    # Build the data-structure field-mutator functions.  For the class definition:
+    #
+    #   mbfl_standard_class_declare(color)
+    #   mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    #
+    # the mutator function should look like:
+    #
+    #    function color_red_set () {
+    #        declare mbfl_SELF_DATAVAR=${1:?"missing reference to struct 'color' parameter to 'color_red_set'"};
+    #        declare mbfl_NEW_VALUE=${2:?"missing new field value parameter to 'color_red_set'"}
+    #        mbfl_p_standard_object_slot_mutator "$mbfl_SELF_DATAVAR" "$mbfl_NEW_VALUE" ${mbfl_CLASS_DATAVAR} 1 color_red_set
+    #    }
+    #
     {
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
@@ -362,15 +392,28 @@ function mbfl_standard_class_define () {
 
 	    printf -v mbfl_MUTATOR_NAME MBFL_STDOBJ__FUNCNAME_PATTERN__MUTATOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
 	    mbfl_MUTATOR_BODY='{ '
-	    mbfl_MUTATOR_BODY+="declare -n mbfl_SELF=\${1:?\"missing reference to struct '${mbfl_NAME}' parameter to '${mbfl_MUTATOR_NAME}'\"};"
+	    mbfl_MUTATOR_BODY+="declare mbfl_SELF_DATAVAR=\${1:?\"missing reference to struct '${mbfl_NAME}' parameter to '${mbfl_MUTATOR_NAME}'\"};"
 	    mbfl_MUTATOR_BODY+="declare mbfl_NEW_VALUE=\${2:?\"missing new field value parameter to '${mbfl_MUTATOR_NAME}'\"};"
-	    mbfl_MUTATOR_BODY+="mbfl_standard_object_slot_mutator \$1 \$2 ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_MUTATOR_NAME};"
+	    mbfl_MUTATOR_BODY+="mbfl_p_standard_object_slot_mutator \"\$mbfl_SELF_DATAVAR\" \"\$mbfl_NEW_VALUE\" ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_MUTATOR_NAME};"
 	    mbfl_MUTATOR_BODY+='}'
+	    #echo $FUNCNAME mbfl_MUTATOR_BODY="$mbfl_MUTATOR_BODY" >&2
 	    mbfl_p_struct_make_function "$mbfl_MUTATOR_NAME" "$mbfl_MUTATOR_BODY"
 	done
     }
 
-    # Build the data-structure field-accessor functions.
+    # Build the data-structure field-accessor functions.  For the class definition:
+    #
+    #   mbfl_standard_class_declare(color)
+    #   mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    #
+    # the accessor function should look like:
+    #
+    #    function color_red_var () {
+    #        declare mbfl_RV_DATAVAR=${1:?"missing result variable parameter to 'color_red_var'"};
+    #        declare mbfl_SELF_DATAVAR=${2:?"missing reference to struct 'color' parameter to 'color_red_var'"};
+    #        mbfl_p_standard_object_slot_accessor "$mbfl_RV_DATAVAR" "$mbfl_SELF_DATAVAR" ${mbfl_CLASS_DATAVAR} 1 color_red_var
+    #    }
+    #
     {
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
@@ -380,9 +423,9 @@ function mbfl_standard_class_define () {
 
 	    printf -v mbfl_ACCESSOR_NAME MBFL_STDOBJ__FUNCNAME_PATTERN__ACCESSOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
 	    mbfl_ACCESSOR_BODY='{ '
-	    mbfl_ACCESSOR_BODY+="declare -n mbfl_RV=\${1:?\"missing result variable parameter to '${mbfl_ACCESSOR_NAME}'\"};"
-	    mbfl_ACCESSOR_BODY+="declare -n mbfl_SELF=\${2:?\"missing reference to struct '$mbfl_NAME' parameter to '${mbfl_ACCESSOR_NAME}'\"};"
-	    mbfl_ACCESSOR_BODY+="mbfl_standard_object_slot_accessor \$1 \$2 ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_ACCESSOR_NAME};"
+	    mbfl_ACCESSOR_BODY+="declare mbfl_RV_DATAVAR=\${1:?\"missing result variable parameter to '${mbfl_ACCESSOR_NAME}'\"};"
+	    mbfl_ACCESSOR_BODY+="declare mbfl_SELF_DATAVAR=\${2:?\"missing reference to struct '$mbfl_NAME' parameter to '${mbfl_ACCESSOR_NAME}'\"};"
+	    mbfl_ACCESSOR_BODY+="mbfl_p_standard_object_slot_accessor \"\$mbfl_RV_DATAVAR\" \"\$mbfl_SELF_DATAVAR\" ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_ACCESSOR_NAME};"
 	    mbfl_ACCESSOR_BODY+='}'
 	    mbfl_p_struct_make_function "$mbfl_ACCESSOR_NAME" "$mbfl_ACCESSOR_BODY"
 	done
@@ -391,7 +434,7 @@ function mbfl_standard_class_define () {
 
 # This is the implementation of the slot accessor functions.
 #
-function mbfl_standard_object_slot_accessor () {
+function mbfl_p_standard_object_slot_accessor () {
     mbfl_mandatory_nameref_parameter(mbfl_VALUE,	1, the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing the standard object)
     mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the standard class)
@@ -406,7 +449,7 @@ function mbfl_standard_object_slot_accessor () {
 
 # This is the implementation of the slot mutator functions.
 #
-function mbfl_standard_object_slot_mutator () {
+function mbfl_p_standard_object_slot_mutator () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing the standard object)
     mbfl_mandatory_parameter(mbfl_NEW_VALUE,		2, the new field value)
     mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the standard class)

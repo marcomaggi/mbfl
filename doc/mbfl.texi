@@ -2889,6 +2889,9 @@ color_define _(dark_slate_blue) 72 61 139
 @chapter Standard classes
 
 
+The predefined objects @class{mbfl_standard_object} and @class{mbfl_standard_class} are the core of
+the object--oriented programming implemented by @mbfl{}.
+
 @menu
 * objects standard object::     The standard object class.
 * objects standard class::      The standard class metaclass.
@@ -3023,19 +3026,20 @@ Standard class of objects used by @mbfl{}.  It has no parent.  It defines no fie
 reference to the instance's class.
 @end deftp
 
+@c page
+@node objects standard object instances
+@subsection Operating on standard object instances
+
 
 @deffn {Preprocessor Macro} mbfl_standard_object_declare (@var{CLASS_NAME})
 @deffnx {Preprocessor Macro} mbfl_standard_object_declare_global (@var{CLASS_NAME})
-Define the Bash variables needed to handle a new subclass of @class{mbfl_standard_object}.  The data
-variable is declared using, respectively: @code{declare} or @code{declare -g}.
+Define the Bash variables needed to handle a new instances of subclasses of
+@class{mbfl_standard_object}.  The data variable is declared using, respectively: @code{declare} or
+@code{declare -g}.
 
 We can think of these macros as working like @func{mbfl_declare_varref}: they declare variables, one
 of which is a data variable whose name we can pass around as parameter to functions.
 @end deffn
-
-@c page
-@node objects standard object instances
-@subsection Operating on standard object instances
 
 
 @defun mbfl_standard_object_class_var @var{CLASS_RV} @var{OBJ}
@@ -3156,13 +3160,6 @@ datavar[6]      @result{} 'blue'
 @subsection Operating on standard class subclasses
 
 
-@deffn {Preprocessor Macro} mbfl_standard_class_declare (@var{CLASS_NAME})
-@deffnx {Preprocessor Macro} mbfl_standard_class_declare_global (@var{CLASS_NAME})
-Define the Bash variables needed to handle a new subclass of @class{mbfl_standard_class}.  The data
-variable is declared using, respectively: @code{declare} or @code{declare -g}.
-@end deffn
-
-
 @deftp {Class} mbfl_standard_class
 @deftpx {Parent} mbfl_standard_object
 @deftpx {Metaclass} mbfl_standard_class
@@ -3172,6 +3169,16 @@ Standard class of classes derived from @class{mbfl_standard_object}.
 @c page
 @node objects standard class instances
 @subsection Operating on standard class instances
+
+
+@deffn {Preprocessor Macro} mbfl_standard_class_declare (@var{CLASS_NAME})
+@deffnx {Preprocessor Macro} mbfl_standard_class_declare_global (@var{CLASS_NAME})
+Define the Bash variables needed to handle a new instance of @class{mbfl_standard_class}.  The data
+variable is declared using, respectively: @code{declare} or @code{declare -g}.
+
+We can think of these macros as working like @func{mbfl_declare_varref}: they declare variables, one
+of which is a data variable whose name we can pass around as parameter to functions.
+@end deffn
 
 
 @defun mbfl_standard_class_is_a @var{OBJ}
