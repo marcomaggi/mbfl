@@ -3398,8 +3398,10 @@ of which is a data variable whose name we can pass around as parameter to functi
 @end deffn
 
 
-@defun mbfl_standard_object_define @var{STDOBJ} @var{STDCLS} @var{FIELD_INIT_VALUES}
-Initialises the standard object @var{STDOBJ} whose class is @var{STDCLS}.
+@defun mbfl_standard_object_define @var{STDOBJ} @var{STDCLS} @var{FIELD_VALUE} @dots{}
+Initialise the standard object @var{STDOBJ} whose class is @var{STDCLS}.  Store the
+@var{FIELD_VALUE} in the fields; the @var{FIELD_VALUE} parameters must be in the same order in which
+the fields were previously defined in the call to @func{mbfl_standard_object_define}.
 @end defun
 
 
