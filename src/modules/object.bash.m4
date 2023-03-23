@@ -73,15 +73,23 @@ m4_define([[[MBFL_STDOBJ__FIRST_FIELD_INDEX]]],		[[[1]]])
 m4_define([[[MBFL_STDCLS__FIELD_OFFSET__PARENT]]],		[[[0]]])
 m4_define([[[MBFL_STDCLS__FIELD_OFFSET__NAME]]],		[[[1]]])
 m4_define([[[MBFL_STDCLS__FIELD_OFFSET__FIELDS_NUMBER]]],	[[[2]]])
+m4_define([[[MBFL_STDCLS__FIELD_OFFSET__FIRST_FIELD_SPEC]]],	[[[3]]])
 
-m4_define([[[MBFL_STDCLS__FIELD_INDEX__PARENT]]],	m4_eval(MBFL_STDOBJ__FIRST_FIELD_INDEX + MBFL_STDCLS__FIELD_OFFSET__PARENT))
-m4_define([[[MBFL_STDCLS__FIELD_INDEX__NAME]]],		m4_eval(MBFL_STDOBJ__FIRST_FIELD_INDEX + MBFL_STDCLS__FIELD_OFFSET__NAME))
-m4_define([[[MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER]]],m4_eval(MBFL_STDOBJ__FIRST_FIELD_INDEX + MBFL_STDCLS__FIELD_OFFSET__FIELDS_NUMBER))
-m4_define([[[MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX]]],	[[[4]]])
+m4_define([[[MBFL_STDCLS__FIELD_INDEX__PARENT]]],
+	  m4_eval(MBFL_STDOBJ__FIRST_FIELD_INDEX + MBFL_STDCLS__FIELD_OFFSET__PARENT))
+m4_define([[[MBFL_STDCLS__FIELD_INDEX__NAME]]],
+	  m4_eval(MBFL_STDOBJ__FIRST_FIELD_INDEX + MBFL_STDCLS__FIELD_OFFSET__NAME))
+m4_define([[[MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER]]],
+	  m4_eval(MBFL_STDOBJ__FIRST_FIELD_INDEX + MBFL_STDCLS__FIELD_OFFSET__FIELDS_NUMBER))
+m4_define([[[MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC]]],
+	  m4_eval(MBFL_STDOBJ__FIRST_FIELD_INDEX + MBFL_STDCLS__FIELD_OFFSET__FIRST_FIELD_SPEC))
 
-m4_define([[[MBFL_STDCLS__FIELD_SPEC_INDEX__PARENT]]],	[[[4]]])
-m4_define([[[MBFL_STDCLS__FIELD_SPEC_INDEX__NAME]]],	[[[5]]])
-m4_define([[[MBFL_STDCLS__FIELD_SPEC_INDEX__FIELDS_NUMBER]]],	[[[5]]])
+m4_define([[[MBFL_STDCLS__FIELD_SPEC_INDEX__PARENT]]],
+	  m4_eval(MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + MBFL_STDCLS__FIELD_OFFSET__PARENT))
+m4_define([[[MBFL_STDCLS__FIELD_SPEC_INDEX__NAME]]],
+	  m4_eval(MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + MBFL_STDCLS__FIELD_OFFSET__NAME))
+m4_define([[[MBFL_STDCLS__FIELD_SPEC_INDEX__FIELDS_NUMBER]]],
+	  m4_eval(MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + MBFL_STDCLS__FIELD_OFFSET__FIELDS_NUMBER))
 
 # These are printf string patterns to format the names os class functions.
 #
@@ -300,12 +308,12 @@ function mbfl_standard_class_define () {
 
 	# Copy the field names from the parent class.
 	for ((mbfl_I=0; mbfl_I < mbfl_PARENT_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_CLASS,                 MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I,
-			 mbfl_slot_qref(mbfl_PARENT, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I))
+	do mbfl_slot_set(mbfl_CLASS,                 MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_I,
+			 mbfl_slot_qref(mbfl_PARENT, MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_I))
 	done
 	# Store the new field names.
 	for ((mbfl_I=0; mbfl_I < mbfl_NEW_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_CLASS, mbfl_PARENT_FIELDS_NUMBER +  MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I,
+	do mbfl_slot_set(mbfl_CLASS, mbfl_PARENT_FIELDS_NUMBER +  MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_I,
 			 mbfl_slot_qref(mbfl_NEW_FIELD_NAMES, mbfl_I))
 	done
     }
@@ -317,10 +325,10 @@ function mbfl_standard_class_define () {
 
 	for ((mbfl_I=0; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I))
 	do
-	    mbfl_FIELD_NAME=_(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_I)
+	    mbfl_FIELD_NAME=_(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_I)
 	    for ((mbfl_J=1+mbfl_I; mbfl_J < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_J))
 	    do
-		if mbfl_string_eq($mbfl_FIELD_NAME, _(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + mbfl_J))
+		if mbfl_string_eq($mbfl_FIELD_NAME, _(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_J))
 		then
 		    mbfl_message_error_printf 'duplicate field name in the definition of type "%s": "%s"' "$mbfl_NAME" "$mbfl_FIELD_NAME"
 		    return_because_failure
@@ -402,7 +410,7 @@ function mbfl_standard_class_define () {
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
 	    declare mbfl_MUTATOR_NAME mbfl_MUTATOR_BODY
-	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
+	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + $mbfl_I)
 	    declare mbfl_OFFSET=$((MBFL_STDOBJ__FIRST_FIELD_INDEX + $mbfl_I))
 
 	    printf -v mbfl_MUTATOR_NAME MBFL_STDOBJ__FUNCNAME_PATTERN__MUTATOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
@@ -433,7 +441,7 @@ function mbfl_standard_class_define () {
 	for ((mbfl_I=0, mbfl_PARAMETER_COUNT=2; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I, ++mbfl_PARAMETER_COUNT))
 	do
 	    declare mbfl_ACCESSOR_NAME mbfl_ACCESSOR_BODY
-	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIRST_FIELD_SPEC_INDEX + $mbfl_I)
+	    declare mbfl_FIELD_NAME=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + $mbfl_I)
 	    declare mbfl_OFFSET=$((MBFL_STDOBJ__FIRST_FIELD_INDEX + $mbfl_I))
 
 	    printf -v mbfl_ACCESSOR_NAME MBFL_STDOBJ__FUNCNAME_PATTERN__ACCESSOR "$mbfl_NAME" "$mbfl_FIELD_NAME"
