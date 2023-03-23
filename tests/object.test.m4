@@ -659,6 +659,92 @@ function object-predefined-constants-1.3 () {
 }
 
 
+#### some examples
+
+function object-example-complex-1.1 () {
+    mbfl_standard_class_declare(complex)
+    mbfl_standard_object_declare(Z)
+    mbfl_declare_varref(REAL)
+    mbfl_declare_varref(IMAG)
+    mbfl_declare_varref(RHO)
+    mbfl_declare_varref(THETA)
+
+    mbfl_standard_class_define _(complex) _(mbfl_standard_object) 'complex' real imag
+    complex_rectangular_constructor _(Z) 1.1 1.2
+
+    complex_real_var  _(REAL)  _(Z)
+    complex_imag_var  _(IMAG)  _(Z)
+    complex_rho_var   _(RHO)   _(Z)
+    complex_theta_var _(THETA) _(Z)
+
+    printf -v _(RHO)   '%.4f' "$RHO"
+    printf -v _(THETA) '%.4f' "$THETA"
+
+    dotest-equal	1.1	"$REAL"  'the real part' &&
+	dotest-equal	1.2	"$IMAG"  'the imag part' &&
+	dotest-equal	1.6279	"$RHO"   'the rho part'  &&
+	dotest-equal	0.8288  "$THETA" 'the theta part'
+}
+
+function object-example-complex-1.2 () {
+    mbfl_standard_class_declare(complex)
+    mbfl_standard_object_declare(Z)
+    mbfl_standard_object_declare(W)
+    mbfl_declare_varref(REAL)
+    mbfl_declare_varref(IMAG)
+
+    mbfl_standard_class_define _(complex) _(mbfl_standard_object) 'complex' real imag
+    complex_polar_constructor _(Z) 1.6279 0.8288
+    complex_real_var _(REAL) _(Z)
+    complex_imag_var _(IMAG) _(Z)
+
+    printf -v _(REAL)   '%.2f' "$REAL"
+    printf -v _(IMAG)   '%.2f' "$IMAG"
+
+    dotest-equal	1.10	"$REAL" 'the real part' &&
+	dotest-equal	1.20	"$IMAG" 'the imag part'
+}
+
+function complex_rectangular_constructor () {
+    mbfl_mandatory_nameref_parameter(Z, 1, reference to standard object)
+    mbfl_mandatory_parameter(REAL,      2, the real part)
+    mbfl_mandatory_parameter(IMAG,      3, the imag part)
+
+    complex_define _(Z) "$REAL" "$IMAG"
+}
+function complex_polar_constructor () {
+    mbfl_mandatory_nameref_parameter(Z, 1, reference to standard object)
+    mbfl_mandatory_parameter(RHO,       2, the radius)
+    mbfl_mandatory_parameter(THETA,     3, the angle)
+    mbfl_declare_varref(REAL)
+    mbfl_declare_varref(IMAG)
+
+    mbfl_math_expr_var _(REAL) "$RHO * cos($THETA)"
+    mbfl_math_expr_var _(IMAG) "$RHO * sin($THETA)"
+    complex_define _(Z) "$REAL" "$IMAG"
+}
+function complex_rho_var () {
+    mbfl_mandatory_nameref_parameter(RHO, 1, rho result variable)
+    mbfl_mandatory_nameref_parameter(Z,   2, reference to standard object)
+    mbfl_declare_varref(REAL)
+    mbfl_declare_varref(IMAG)
+
+    complex_real_var _(REAL) _(Z)
+    complex_imag_var _(IMAG) _(Z)
+    mbfl_math_expr_var RHO "sqrt ($REAL ^ 2 + $IMAG ^ 2)"
+}
+function complex_theta_var () {
+    mbfl_mandatory_nameref_parameter(THETA, 1, theta result variable)
+    mbfl_mandatory_nameref_parameter(Z,     2, reference to standard object)
+    mbfl_declare_varref(REAL)
+    mbfl_declare_varref(IMAG)
+
+    complex_real_var _(REAL) _(Z)
+    complex_imag_var _(IMAG) _(Z)
+    mbfl_math_expr_var THETA "atan2 ($IMAG, $REAL)"
+}
+
+
 #### let's go
 
 dotest object-

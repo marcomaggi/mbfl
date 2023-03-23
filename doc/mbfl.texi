@@ -2975,7 +2975,8 @@ define new classes; all these new classes are subclasses of @class{mbfl_standard
 
 
 The object @class{mbfl_standard_object} is the default superclass of class types in @mbfl{}; we
-define new classes by subclassing from @class{mbfl_standard_object}.
+define new classes by subclassing from @class{mbfl_standard_object}; we create new objects by
+instantiating a subclass of @class{mbfl_standard_object}.
 
 The class @class{mbfl_standard_object} also has a type, called metaclass, it is
 @class{mbfl_standard_class}.
@@ -3076,13 +3077,109 @@ The diagram of instances, classes and metaclasses is as follows:
  -------------------          -----------------------------
 @end example
 
+The class constructor @func{mbfl_standard_class_define} defines functions that we can use to operate
+on class instances; with the class definition:
+
+@example
+mbfl_standard_class_declare(complex)
+
+mbfl_standard_class_define _(complex) _(mbfl_standard_object) 'complex' real imag
+@end example
+
+@noindent
+the class identifier @code{complex} is used to generate an instance constructor:
+
+@example
+mbfl_standard_object_declare(Z)
+
+root_define _(Z) 2 3
+@end example
+
+@noindent
+and field accessors and mutators:
+
+@example
+declare REAL IMAG
+
+complex_real_set _(Z) 8
+complex_imag_set _(Z) 9
+
+complex_real_var REAL _(Z)
+complex_imag_var IMAG _(Z)
+
+$IMAG   @result{} 8
+$REAL   @result{} 9
+@end example
+
+Accessor and mutator functions are defined for every field in a class definition and every field of
+its superclasses.  So if we define @class{color} and its subclass @class{transparent_color}, we have
+all the accessors and mutators for instances of @class{transparent_color}:
+
+@example
+mbfl_standard_class_declare(color)
+mbfl_standard_class_declare(transparent_color)
+mbfl_standard_object_declare(foreground)
+
+mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+mbfl_standard_class_define _(tranparent_color) _(color) 'transparent_color' transparency
+
+transparent_color _(foreground) 11 22 33 50
+
+declare RED GREEN BLUE TRANS
+
+transparent_color_red_var          RED   _(foreground)
+transparent_color_green_var        GREEN _(foreground)
+transparent_color_blue_var         BLUE  _(foreground)
+transparent_color_transparency_var TRANS _(foreground)
+
+$RED    @result{} 11
+$GREEN  @result{} 22
+$BLUE   @result{} 33
+$TRANS  @result{} 50
+@end example
+
+Notes:
+
+@itemize
+@item
+It would be possible to use associative arrays as implementation of objects; we could use a syntax
+like:
+
+@example
+_(dark_slate_blue, red) @result{} 72
+@end example
+
+@noindent
+to access the fields, which is directly usable in Bash expressions; the disadvantage is that such
+solution exposes a value as object's field, which is an implementation detail.
+
+Accessor functions allow us to change the internal representation of an object without changing its
+public @api{}.  So while accessing a @class{complex} object we can do:
+
+@example
+declare REAL IMAG RHO THETA
+
+complex_real_var  REAL  _(Z)
+complex_imag_var  IMAG  _(Z)
+complex_rho_var   RHO   _(Z)
+complex_theta_var THETA _(Z)
+@end example
+
+@noindent
+and nobody knows which values are the fields and which values are computed on demand.
+
+@item
+Standard objects have no custom constructor functions; if we desire them we must define them.
+@end itemize
+
 @c page
 @node objects standard classes
 @subsection Overview of standard classes
 
 
 The object @class{mbfl_standard_class} is the default metaclass of class types in @mbfl{}; we define
-new classes by instantiating @class{mbfl_standard_class}.
+new classes by instantiating @class{mbfl_standard_class}; an instance of @class{mbfl_standard_class}
+can only be a subclass of @class{mbfl_standard_object}.
 
 The class @class{mbfl_standard_class} also has a metaclass: it is @class{mbfl_standard_class}
 itself.  The superclass of @class{mbfl_standard_class} is @class{mbfl_standard_object}.
