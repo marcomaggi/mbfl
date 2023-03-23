@@ -197,22 +197,37 @@ function mbfl_standard_classes_are_parent_and_child () {
 function mbfl_standard_object_define () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF,			1, reference to a standard object)
     mbfl_mandatory_nameref_parameter(mbfl_CLASS,		2, reference to a standard class)
-    mbfl_mandatory_nameref_parameter(mbfl_FIELD_INIT_VALUES,	3, reference to index array containing init field values)
-    declare -i mbfl_FIELDS_NUMBER mbfl_I
+    mbfl_mandatory_nameref_parameter(mbfl_FIELD_INIT_VALUES,	3, reference to an index array containing init field values)
+    declare -i mbfl_TOTAL_FIELDS_NUMBER
 
-    mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX, _(mbfl_CLASS))
+    # Parameters validation.
+    {
+	if ! mbfl_standard_class_is_a _(mbfl_CLASS)
+	then
+	    mbfl_message_error_printf 'in call to "%s": expected standard class as class parameter, got: ""' \
+				      $FUNCNAME _(mbfl_CLASS)
+	    return_because_failure
+	fi
 
-    mbfl_standard_class_fields_number_var mbfl_FIELDS_NUMBER _(mbfl_CLASS)
-    if ((mbfl_slots_number(mbfl_FIELD_INIT_VALUES) == $mbfl_FIELDS_NUMBER))
-    then
-	for ((mbfl_I=0; mbfl_I < mbfl_FIELDS_NUMBER; ++mbfl_I))
+	mbfl_standard_class_fields_number_var mbfl_TOTAL_FIELDS_NUMBER _(mbfl_CLASS)
+	if ((mbfl_slots_number(mbfl_FIELD_INIT_VALUES) != mbfl_TOTAL_FIELDS_NUMBER))
+	then
+	    mbfl_message_error_printf 'in call to "%s": wrong number of field initial values: expected %d, got %d' \
+				      $FUNCNAME $mbfl_TOTAL_FIELDS_NUMBER mbfl_slots_number(mbfl_FIELD_INIT_VALUES)
+	    return_because_failure
+	fi
+
+    }
+    # Slots initialisation.
+    {
+	declare -i mbfl_I
+	mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX, _(mbfl_CLASS))
+
+	for ((mbfl_I=0; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I))
 	do mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__FIRST_FIELD_INDEX+mbfl_I, mbfl_slot_qref(mbfl_FIELD_INIT_VALUES, mbfl_I))
 	done
-    else
-	mbfl_message_error_printf 'wrong number of field initial values in call to "%s", expected %d, got %d' \
-				  $FUNCNAME $mbfl_FIELDS_NUMBER mbfl_slots_number(mbfl_FIELD_INIT_VALUES)
-	return_because_failure
-    fi
+    }
+    return_because_success
 }
 
 # Return true  if the  given parameter is  the datavar  of an  object whose class  is a  subclass of

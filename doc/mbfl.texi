@@ -1199,6 +1199,12 @@ Preprocessor parameters}.
 @subsection Introduction to the NAMEREF mechanism
 
 
+@cindex Data variable, definition
+@cindex Definition of data variable
+@cindex Proxy variable, definition
+@cindex Definition of proxy variable
+
+
 With these facilities we can use the @code{_var} variants of @mbfl{} functions as follows:
 
 @example
@@ -2822,17 +2828,16 @@ where @var{KEY} is a key in the array and @var{VALUE} is its value.  If the opti
 
 
 @mbfl{} implements data structures on top of Bash built--in values, by default index arrays; the
-facilities are: single inheritance; instances with the same scope as Bash variables;
-type--descriptors that allow the definition of instances characteristics.
+facilities are: single inheritance; instances with the same scope as Bash variables; automatically
+generated field accessor and mutator functions.
 
 In the implementation of data structures: many ideas were stolen from other languages, most notably
 Lisp implementations.
 
 @menu
 * objects conventions::         Naming and coding conventions.
-* objects overview::            Overview of data structures.
-* objects standard::            Standard classes.
-* objects special::             Special predefined types and instances.
+* objects standard::            Standard classes and objects.
+* objects special::             Special predefined classes and objects.
 @end menu
 
 @c page
@@ -2848,15 +2853,28 @@ Lisp implementations.
 @cindex Definition of metaclass
 
 
-With @dfn{object} we indicate a Bash array that represents an instance of a type.  With @dfn{class}
-we indicate an object that represents the definition of a type.  With @dfn{metaclass} we indicate a
-class that represents the definition of another class.
+With @dfn{object} we indicate a Bash array that represents an instance of a type.
+
+With @dfn{class} we indicate an object that represents the definition of a type.
+
+With @dfn{metaclass} we indicate a class that represents the definition of another class.
 
 With @dfn{field accessor} we indicate a function used to retrieve the value of an object field.
+
 With @dfn{field mutator} we indicate a function used to store a new value in an object field.
 
-In every code example in this chapter, we assume the following macro has been defined in the
-preamble:
+@menu
+* objects conventions underscore::      The underscore syntax.
+* objects conventions parameters::      Parameters naming conventions.
+@end menu
+
+@c page
+@node objects conventions underscore
+@subsection The underscore syntax
+
+
+Unless otherwise stated, in every code example in this chapter, we assume the following macro has
+been defined in the preamble:
 
 @example
 m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
@@ -2874,19 +2892,54 @@ so to define a new class and a new instance we can use the syntax:
 
 @example
 mbfl_standard_class_declare(color)
-mbfl_standard_object(dark_slate_blue)
+mbfl_standard_object_declare(dark_slate_blue)
 
 mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
 color_define _(dark_slate_blue) 72 61 139
+
+declare RED
+color_red_ref RED _(dark_slate_blue)
 @end example
 
 @c page
-@node objects overview
-@section Overview of data structures
+@node objects conventions parameters
+@subsection Parameters naming conventions
+
+
+In this documentation we use @var{STDOBJ} as function parameter name to indicate that the parameter
+given to a function call must be a string representing the name of data variable: such variable must
+be a Bash array containing a standard object, that is the instance of a standard class.  If the
+function is given a parameter of another type: its behaviour is undefined.
+
+In this documentation we use @var{STDCLS} as function parameter name to indicate that the parameter
+given to a function call must be a string representing the name of data variable: such variable must
+be a Bash array containing a standard class object, that is the instance of a standard metaclass.
+If the function is given a parameter of another type: its behaviour is undefined.
+
+If functions are described as follows:
+
+@example
+my_func @var{STDOBJ}
+my_other_func @var{STDCLS}
+@end example
+
+@noindent
+such functions must be used as follows:
+
+@example
+mbfl_standard_class_declare(color)
+mbfl_standard_object_declare(dark_slate_blue)
+
+mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+color_define _(dark_slate_blue) 72 61 139
+
+my_func _(dark_slate_blue)
+my_other_func _(color)
+@end example
 
 @c page
 @node objects standard
-@chapter Standard classes
+@section Standard classes
 
 
 The predefined objects @class{mbfl_standard_object} and @class{mbfl_standard_class} are the core of
@@ -2900,7 +2953,7 @@ the object--oriented programming implemented by @mbfl{}.
 
 @c page
 @node objects standard object
-@section The standard object class
+@subsection The standard object class
 
 
 A @dfn{standard object} is a ``simple'' object whose @api{} is predefined by @mbfl{} through the
@@ -2914,7 +2967,7 @@ class @class{mbfl_standard_object}.
 
 @c page
 @node objects standard object overview
-@subsection Overview of standard objects
+@subsubsection Overview of standard objects
 
 
 The object @class{mbfl_standard_object} is the basic superclass of class types in @mbfl{}; we define
@@ -3017,7 +3070,7 @@ The diagram of instances, classes and metaclasses is as follows:
 
 @c page
 @node objects standard object classes
-@subsection Operating on standard object subclasses
+@subsubsection Operating on standard object subclasses
 
 
 @deftp {Class} mbfl_standard_object
@@ -3028,7 +3081,7 @@ reference to the instance's class.
 
 @c page
 @node objects standard object instances
-@subsection Operating on standard object instances
+@subsubsection Operating on standard object instances
 
 
 @deffn {Preprocessor Macro} mbfl_standard_object_declare (@var{CLASS_NAME})
@@ -3095,7 +3148,7 @@ function is undefined.
 
 @c page
 @node objects standard class
-@section The standard class metaclass
+@subsection The standard class metaclass
 
 
 A @dfn{standard class} is a ``simple'' type definition whose @api{} is predefined by @mbfl{} through
@@ -3110,7 +3163,7 @@ the metaclass @class{mbfl_standard_class}.
 
 @c page
 @node objects standard class overview
-@subsection Overview of standard classes
+@subsubsection Overview of standard classes
 
 
 The object @class{mbfl_standard_class} is the basic metaclass of class types in @mbfl{}; we define
@@ -3157,7 +3210,7 @@ datavar[6]      @result{} 'blue'
 
 @c page
 @node objects standard class classes
-@subsection Operating on standard class subclasses
+@subsubsection Operating on standard class subclasses
 
 
 @deftp {Class} mbfl_standard_class
@@ -3168,7 +3221,7 @@ Standard class of classes derived from @class{mbfl_standard_object}.
 
 @c page
 @node objects standard class instances
-@subsection Operating on standard class instances
+@subsubsection Operating on standard class instances
 
 
 @deffn {Preprocessor Macro} mbfl_standard_class_declare (@var{CLASS_NAME})
@@ -3295,7 +3348,7 @@ otherwise return false.  The parameter must be an object.
 
 @c page
 @node objects special
-@section Special predefined types and instances
+@section Special predefined classes and objects
 
 
 @menu
@@ -3316,7 +3369,7 @@ mbfl_standard_object_declare(void)
 
 mbfl_predefind_constant_define _(void)
 
-function is_void () @{
+function is_the_void () @{
     mbfl_mandatory_parameter(DATAVAR, 1, a data variable)
     mbfl_datavar_eq("$DATAVAR",_(void))
 @}
@@ -3333,7 +3386,7 @@ Class representing unique constant values.
 @end deftp
 
 
-@defun mbfl_predefined_constant_define @var{STRU_DATAVAR}
+@defun mbfl_predefined_constant_define @var{OBJ}
 Define a new instance of @objtype{mbfl_predefined_constant} and store its fields in the data
 variable @var{STRU_DATAVAR}.
 @end defun
