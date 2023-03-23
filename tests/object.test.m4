@@ -584,6 +584,49 @@ function object-custom-classes-2.2 () {
 }
 
 
+#### deep inheritance
+
+function object-deep-inheritance-1.1 () {
+    mbfl_standard_class_declare(deep1)
+    mbfl_standard_class_declare(deep2)
+    mbfl_standard_class_declare(deep3)
+    mbfl_standard_class_declare(deep4)
+    mbfl_standard_class_declare(deep5)
+    mbfl_standard_class_declare(deep6)
+    mbfl_standard_class_declare(deep7)
+
+    mbfl_standard_class_define _(deep1) _(mbfl_standard_object) 'deep1' field1
+    mbfl_standard_class_define _(deep2) _(deep1) 'deep2' field2
+    mbfl_standard_class_define _(deep3) _(deep2) 'deep3' field3
+    mbfl_standard_class_define _(deep4) _(deep3) 'deep4' field4
+    mbfl_standard_class_define _(deep5) _(deep4) 'deep5' field5
+    mbfl_standard_class_define _(deep6) _(deep5) 'deep6' field6
+    mbfl_standard_class_define _(deep7) _(deep6) 'deep7' field7
+
+    mbfl_standard_object_declare(obj)
+
+    deep7_define _(obj) 1 2 3 4 5 6 7
+
+    declare V1 V2 V3 V4 V5 V6 V7
+
+    deep7_field1_var V1 _(obj)
+    deep7_field2_var V2 _(obj)
+    deep7_field3_var V3 _(obj)
+    deep7_field4_var V4 _(obj)
+    deep7_field5_var V5 _(obj)
+    deep7_field6_var V6 _(obj)
+    deep7_field7_var V7 _(obj)
+
+    dotest-equal	1 "$V1" 'field V1' &&
+	dotest-equal	2 "$V2" 'field V2' &&
+	dotest-equal	3 "$V3" 'field V3' &&
+	dotest-equal	4 "$V4" 'field V4' &&
+	dotest-equal	5 "$V5" 'field V5' &&
+	dotest-equal	6 "$V6" 'field V6' &&
+	dotest-equal	7 "$V7" 'field V7'
+}
+
+
 #### testing errors regarding data-structure type-descriptors
 
 function object-error-class-1.1 () {
