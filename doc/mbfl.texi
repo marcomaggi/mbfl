@@ -2898,7 +2898,7 @@ mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green bl
 color_define _(dark_slate_blue) 72 61 139
 
 declare RED
-color_red_ref RED _(dark_slate_blue)
+color_red_var RED _(dark_slate_blue)
 @end example
 
 @c page
