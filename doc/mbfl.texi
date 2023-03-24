@@ -2826,6 +2826,28 @@ mbfl_array_contains_all_keys mbfl_datavar(ARRY) mbfl_datavar(KEYS)
 @end example
 @end defun
 
+
+@defun mbfl_array_contains_all_keys_and_only @var{ARRY_VARNAME} @var{KEYS_VARNAME}
+Return true if the array @var{ARRY_VARNAME} contains, as keys, all the values in the index array
+@var{KEYS_VARNAME} and only those; otherwise return false.
+
+@example
+mbfl_declare_assoc_array_varref(ARRY, ([alpha]=1 [beta]=2 [gamma]=3))
+
+mbfl_declare_index_array_varref(KEYS, (alpha beta gamma))
+mbfl_array_contains_all_keys_and_only mbfl_datavar(ARRY) mbfl_datavar(KEYS)
+@result{} 0
+
+mbfl_declare_index_array_varref(KEYS, (alpha gamma))
+mbfl_array_contains_all_keys_and_only mbfl_datavar(ARRY) mbfl_datavar(KEYS)
+@result{} 1
+
+mbfl_declare_index_array_varref(KEYS, (alpha beta gamma delta))
+mbfl_array_contains_all_keys_and_only mbfl_datavar(ARRY) mbfl_datavar(KEYS)
+@result{} 1
+@end example
+@end defun
+
 @c page
 @node arrays debug
 @subsection Facilities to debug code using arrays

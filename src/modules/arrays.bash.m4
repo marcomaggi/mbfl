@@ -90,6 +90,43 @@ function mbfl_array_contains_all_keys () {
     return_success
 }
 
+function mbfl_array_contains_all_keys_and_only () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, reference to array variable to inspect)
+    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_KEYS,2, reference to index array holding the keys)
+    declare -i mbfl_I mbfl_REQUIRED_KEYS_NUM=mbfl_slots_number(mbfl_REQUIRED_KEYS)
+
+    # Does ARRY contains all the keys?
+    for ((mbfl_I=0; mbfl_I < mbfl_REQUIRED_KEYS_NUM; ++mbfl_I))
+    do
+	if ! test -v mbfl_slot_spec(mbfl_ARRY, mbfl_slot_ref(mbfl_REQUIRED_KEYS,mbfl_I))
+	then return_because_failure
+	fi
+    done
+
+    # Does ARRY contains only the keys?
+    {
+	mbfl_declare_index_array_varref(mbfl_ARRY_KEYS,(mbfl_slots_qkeys(mbfl_ARRY)))
+	declare -i mbfl_J mbfl_ARRY_KEYS_NUM=mbfl_slots_number(mbfl_ARRY_KEYS)
+	declare mbfl_FOUND
+
+	for ((mbfl_I=0; mbfl_I < mbfl_ARRY_KEYS_NUM; ++mbfl_I))
+	do
+	    mbfl_FOUND=false
+	    for ((mbfl_J=0; mbfl_J < mbfl_REQUIRED_KEYS_NUM; ++mbfl_J))
+	    do
+		if mbfl_string_eq(mbfl_slot_qref(mbfl_ARRY_KEYS,mbfl_I), mbfl_slot_qref(mbfl_REQUIRED_KEYS,mbfl_J))
+		then
+		    mbfl_FOUND=true
+		    break
+		fi
+	    done
+	    $mbfl_FOUND || return_because_failure
+	done
+    }
+
+    return_success
+}
+
 
 #### array manipulation
 
