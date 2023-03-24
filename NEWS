@@ -93,6 +93,8 @@ changes!
   without  risking a  variable  name collision.   Many  modules now  use
   "_var" function variants.
 
+* Added some data structure facilities.
+
 * Added string functions:
 
     mbfl_string_is_empty
