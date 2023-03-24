@@ -2481,6 +2481,10 @@ $NAME   @result{} mbfl_u_variable_2323
 @section Declaring arrays
 
 
+@cindex Declaring arrays
+@cindex Arrays, declaring
+
+
 @deffn {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME})
 @deffnx {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME}, @var{INIT})
 Respectively expand into the statements:
@@ -2527,6 +2531,12 @@ local -a @var{ARRAYNAME}=$@var{INIT}
 @c page
 @node arrays nameref
 @section Declaring arrays as data variables
+
+
+@cindex Arrays, declaring as data variables
+@cindex Declaring arrays as data variables
+@cindex NAMEREF usable arrays
+@cindex Array declarations usable with NAMEREF variables
 
 
 @deffn {Preprocessor Macro} mbfl_declare_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
