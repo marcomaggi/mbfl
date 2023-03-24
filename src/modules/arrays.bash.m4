@@ -76,6 +76,20 @@ function mbfl_array_contains_value_var () {
     return_because_failure
 }
 
+function mbfl_array_contains_all_keys () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to array variable to inspect)
+    mbfl_mandatory_nameref_parameter(mbfl_KEYS,	2, reference to index array holding the keys)
+    declare -i mbfl_I mbfl_NUM=mbfl_slots_number(mbfl_KEYS)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_NUM; ++mbfl_I))
+    do
+	if ! test -v mbfl_slot_spec(mbfl_ARRY, mbfl_slot_ref(mbfl_KEYS,mbfl_I))
+	then return_because_failure
+	fi
+    done
+    return_success
+}
+
 
 #### array manipulation
 

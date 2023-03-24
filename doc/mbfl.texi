@@ -2697,12 +2697,46 @@ In addition to the functions documented here, we can manipulate arrays with some
 macros, @ref{preprocessor arrays, Manipulating arrays with macros}.  We can also define variable
 name references to arrays, @ref{preprocessor nameref special, Special NAMEREF declarations}.
 
+@menu
+* arrays constructors::         Constructing arrays.
+* arrays inspection::           Inspecting arrays.
+* arrays contains::             What arrays contain.
+* arrays debug::                Facilities to debug code using arrays.
+* arrays deprecated::           Deprecated functions.
+@end menu
+
+@c page
+@node arrays constructors
+@subsection Constructing arrays
+
+
+@defun mbfl_array_copy @var{DST} @var{SRC}
+Copy element--by--element the source array @var{SRC} into the destination array @var{DST}; both
+@var{DST} and @var{SRC} should be references to variables.
+
+@example
+mbfl_declare_assoc_array_varref(SRC, ([a]=1 [b]=2 [c]=3))
+mbfl_declare_assoc_array_varref(DST)
+
+mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
+
+mbfl_slot_ref(DST, a)   @result{} 1
+mbfl_slot_ref(DST, b)   @result{} 2
+mbfl_slot_ref(DST, c)   @result{} 3
+@end example
+@end defun
+
+
+@c page
+@node arrays inspection
+@subsection Inspecting arrays
+
 
 @defun mbfl_array_is_empty @var{ARRAY_VARNAME}
 Return successfully if the array is empty.
 
 @example
-local -a ARRY
+declare -a ARRY
 mbfl_array_is_empty ARRY        @result{} 0
 ARRY=(a b c)
 mbfl_array_is_empty ARRY        @result{} 1
@@ -2714,7 +2748,7 @@ mbfl_array_is_empty ARRY        @result{} 1
 Return successfully if the array is not empty.
 
 @example
-local -a ARRY
+declare -a ARRY
 mbfl_array_is_not_empty ARRY    @result{} 1
 ARRY=(a b c)
 mbfl_array_is_not_empty ARRY    @result{} 0
@@ -2729,7 +2763,7 @@ Print the number of pairs in the array.
 @DocVarVariant{}
 
 @example
-local -a ARRY
+declare -a ARRY
 mbfl_array_length ARRY          @print{} 0
 ARRY=(a b c)
 mbfl_array_length ARRY          @print{} 3
@@ -2739,6 +2773,81 @@ mbfl_array_length_var _RV ARRY
 "$_RV"   @print{} 3
 @end example
 @end defun
+
+@c page
+@node arrays contains
+@subsection What arrays contain
+
+
+@defun mbfl_array_contains @var{ARRY_VAR} @var{KEY}
+Return successfully if @var{KEY} is set in the array referenced by @var{ARRAY_VAR}.
+
+@example
+declare -a ARRY=([0]=a [1]=b [2]=c)
+
+mbfl_array_contains    ARRY 0 &&
+   mbfl_array_contains ARRY 1 &&
+   mbfl_array_contains ARRY 2 &&
+   ! mbfl_array_contains ARRY 3
+@end example
+@end defun
+
+
+@defun mbfl_array_contains_value_var @var{RV} @var{ARRY_VAR} @var{VALUE}
+Return successfully if @var{VALUE} is a value in the array; store the associated key in the result
+variable @var{RV}.
+
+@example
+mbfl_declare_index_array_varref(ARRY, ([0]=a [1]=b [2]=c))
+mbfl_declare_varref(KEY)
+
+mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) a
+@result{} 0
+"$KEY"  @result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_array_contains_all_keys @var{ARRY_VARNAME} @var{KEYS_VARNAME}
+Return true if the array @var{ARRY_VARNAME} contains, as keys, all the values in the index array
+@var{KEYS_VARNAME}; otherwise return false.
+
+@example
+mbfl_declare_assoc_array_varref(ARRY, ([alpha]=1 [beta]=2 [gamma]=3))
+mbfl_declare_index_array_varref(KEYS, (alpha gamma))
+
+mbfl_array_contains_all_keys mbfl_datavar(ARRY) mbfl_datavar(KEYS)
+@result{} 1
+
+mbfl_declare_index_array_varref(KEYS, (alpha gamma delta))
+
+mbfl_array_contains_all_keys mbfl_datavar(ARRY) mbfl_datavar(KEYS)
+@result{} 0
+@end example
+@end defun
+
+@c page
+@node arrays debug
+@subsection Facilities to debug code using arrays
+
+
+@defun mbfl_array_dump @var{ARRY_VAR}
+@defunx mbfl_array_dump @var{ARRY_VAR} @var{NAME}
+For debugging purposes.  The argument @var{ARRY_VAR} must be the name of an array variable.  For
+each key in the array print to @stderr{} a string of the form:
+
+@example
+@var{NAME}[@var{KEY}]="@var{VALUE}"
+@end example
+
+@noindent
+where @var{KEY} is a key in the array and @var{VALUE} is its value.  If the optional argument
+@var{NAME} is not present: it defaults to @var{ARRY_VAR}.
+@end defun
+
+@c page
+@node arrays deprecated
+@subsection Deprecated functions
 
 
 @defun mbfl_variable_find_in_array @var{ELEMENT}
@@ -2759,67 +2868,6 @@ A wrapper for @func{mbfl_variable_find_in_array} that does not print anything.
 @quotation
 @strong{NOTE} Use of this function is deprecated!  Use @func{mbfl_array_contains_value_var} instead.
 @end quotation
-@end defun
-
-
-@defun mbfl_array_copy @var{DST} @var{SRC}
-Copy element--by--element the source array @var{SRC} into the destination array @var{DST}; both
-@var{DST} and @var{SRC} should be references to variables.
-
-@example
-mbfl_local_varref(SRC, ([a]=1 [b]=2 [c]=3), -A)
-mbfl_local_varref(DST,, -A)
-
-mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
-
-mbfl_slot_ref(DST, a)   @result{} 1
-mbfl_slot_ref(DST, b)   @result{} 2
-mbfl_slot_ref(DST, c)   @result{} 3
-@end example
-@end defun
-
-
-@defun mbfl_array_contains @var{ARRY_VAR} @var{KEY}
-Return successfully if @var{KEY} is set in the array referenced by @var{ARRAY_VAR}.
-
-@example
-local -a ARRY=([0]=a [1]=b [2]=c)
-
-mbfl_array_contains    ARRY 0 &&
-   mbfl_array_contains ARRY 1 &&
-   mbfl_array_contains ARRY 2 &&
-   ! mbfl_array_contains ARRY 3
-@end example
-@end defun
-
-
-@defun mbfl_array_contains_value_var @var{RV} @var{ARRY_VAR} @var{VALUE}
-Return successfully if @var{VALUE} is a value in the array; store the associated key in the result
-variable @var{RV}.
-
-@example
-mbfl_local_index_array_varref(ARRY, ([0]=a [1]=b [2]=c))
-mbfl_local_varref(KEY)
-
-mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) a
-@result{} 0
-"$KEY"  @result{} 0
-@end example
-@end defun
-
-
-@defun mbfl_array_dump @var{ARRY_VAR}
-@defunx mbfl_array_dump @var{ARRY_VAR} @var{NAME}
-For debugging purposes.  The argument @var{ARRY_VAR} must be the name of an array variable.  For
-each key in the array print to @stderr{} a string of the form:
-
-@example
-@var{NAME}[@var{KEY}]="@var{VALUE}"
-@end example
-
-@noindent
-where @var{KEY} is a key in the array and @var{VALUE} is its value.  If the optional argument
-@var{NAME} is not present: it defaults to @var{ARRY_VAR}.
 @end defun
 
 @c page

@@ -209,6 +209,22 @@ function array-contains-value-2.2 () {
 }
 
 
+#### array contains all keys
+
+function array-contains-all-keys-1.1 () {
+    mbfl_declare_assoc_array_varref(ARRY, ([alpha]=1 [beta]=2 [gamma]=3))
+    mbfl_declare_index_array_varref(KEYS, (alpha gamma))
+
+    mbfl_array_contains_all_keys mbfl_datavar(ARRY) mbfl_datavar(KEYS)
+}
+function array-contains-all-keys-1.2 () {
+    mbfl_declare_assoc_array_varref(ARRY, ([alpha]=1 [beta]=2 [gamma]=3))
+    mbfl_declare_index_array_varref(KEYS, (alpha gamma delta))
+
+    ! mbfl_array_contains_all_keys mbfl_datavar(ARRY) mbfl_datavar(KEYS)
+}
+
+
 #### array copying
 
 function array-copy-assoc-length-1.1 () {
