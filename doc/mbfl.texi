@@ -163,6 +163,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * exit::                        Exit codes and return codes.
 * locations::                   Running location handlers.
 * variables::                   Manipulating variables.
+* arrays::                      Manipulating arrays with functions and macros.
 * objects::                     Object-oriented programming.
 * strings::                     Manipulating strings with functions.
 * actions::                     Selecting actions to perform.
@@ -627,7 +628,6 @@ recommended.
 * preprocessor nameref::        Variable name references.
 * preprocessor strings::        Manipulating strings with macros.
 * preprocessor variables::      Manipulating variables with macros.
-* preprocessor arrays::         Manipulating arrays with macros.
 * preprocessor programs::       Defining program--execution functions.
 @end menu
 
@@ -1190,7 +1190,6 @@ Preprocessor parameters}.
 * preprocessor nameref access::   Variables accessors.
 * preprocessor nameref full::     Full NAMEREF declarations.
 * preprocessor nameref partial::  Partial NAMEREF declarations.
-* preprocessor nameref special::  Special NAMEREF declarations.
 * preprocessor nameref unset::    Unsetting NAMEREF declarations.
 @end menu
 
@@ -1302,8 +1301,8 @@ We must be careful if the source code contains the standalone underscore charact
 The following macros declare local and global variables we can use with the NAMEREF mechanism.  All
 the variables declared with the macros below can be unset using @func{mbfl_unset_varref}; for
 details @ref{mbfl_unset_varref, Unsetting NAMEREF declarations}.  When defining array variables we
-can use specific macros, rather than the ones below; @ref{preprocessor nameref special, Special
-NAMEREF declarations}.
+can use specific macros, rather than the ones below; @ref{arrays nameref, Declaring arrays as
+variable references}.
 
 
 @anchor{mbfl_declare_varref}
@@ -1445,38 +1444,6 @@ local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 
 Declare a proxy variable @var{NAME} aliasing the data variable whose value is the result of
 evaluating @var{DATA_VARNAME_EXPR}.
-@end deffn
-@c page
-@node preprocessor nameref special
-@subsection Special NAMEREF declarations
-
-
-For other preprocessor macros handling arrays, @ref{preprocessor arrays, Manipulating arrays with
-macros}.  For functions handling arrays, @ref{arrays, Manipulating arrays with functions}.
-
-
-@deffn {Preprocessor Macro} mbfl_declare_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
-Like @func{mbfl_declare_varref} but always include the @code{-a} option to the @command{declare}
-definition of the data variable.  This makes the data variable an indexed array.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_declare_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
-Like @func{mbfl_declare_varref} but always include the @code{-A} option to the @command{declare}
-definition of the data variable.  This makes the data variable an associative array.
-@end deffn
-
-@c ------------------------------------------------------------------------
-
-@deffn {Preprocessor Macro} mbfl_local_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
-Like @func{mbfl_local_varref} but always include the @code{-a} option to the @command{local}
-definition of the data variable.  This makes the data variable an indexed array.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_local_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
-Like @func{mbfl_local_varref} but always include the @code{-A} option to the @command{local}
-definition of the data variable.  This makes the data variable an associative array.
 @end deffn
 
 @c page
@@ -1682,201 +1649,6 @@ These macros are synonyms.  Expand into a command that unsets the variable @var{
 
 @example
 unset -v @var{VAR}
-@end example
-@end deffn
-
-@c page
-@node preprocessor arrays
-@section Manipulating arrays with macros
-
-
-@menu
-* preprocessor arrays declare:: Declaring arrays.
-* preprocessor arrays slots::   Accessing slots.
-* preprocessor arrays inspect:: Inspecting arrays.
-@end menu
-
-@c page
-@node preprocessor arrays declare
-@subsection Declaring arrays
-
-
-In addition to the macros documented here, we can manipulate arrays with some functions;
-@ref{arrays, Manipulating arrays with functions}.  We can also define variable name references to
-arrays, @ref{preprocessor nameref special, Special NAMEREF declarations}.
-
-
-@deffn {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME}, @var{INIT})
-Respectively expand into the statements:
-
-@example
-declare -A @var{ARRAYNAME}
-declare -A @var{ARRAYNAME}=$@var{INIT}
-@end example
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_local_symbolic_array (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_local_symbolic_array (@var{ARRAYNAME}, @var{INIT})
-Respectively expand into the statements:
-
-@example
-local -A @var{ARRAYNAME}
-local -A @var{ARRAYNAME}=$@var{INIT}
-@end example
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_declare_numeric_array (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_declare_numeric_array (@var{ARRAYNAME}, @var{INIT})
-Respectively expand into the statements:
-
-@example
-declare -a @var{ARRAYNAME}
-declare -a @var{ARRAYNAME}=$@var{INIT}
-@end example
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_local_numeric_array (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_local_numeric_array (@var{ARRAYNAME}, @var{INIT})
-Respectively expand into the statements:
-
-@example
-local -a @var{ARRAYNAME}
-local -a @var{ARRAYNAME}=$@var{INIT}
-@end example
-@end deffn
-
-@c page
-@node preprocessor arrays slots
-@subsection Accessing slots
-
-
-In addition to the macros documented here, we can manipulate arrays with some functions;
-@ref{arrays, Manipulating arrays with functions}.  We can also define variable name references to
-arrays, @ref{preprocessor nameref special, Special NAMEREF declarations}.
-
-
-@deffn {Preprocessor Macros} mbfl_slot_spec (@var{ARRAYNAME}, @var{KEY})
-Expand as follows:
-
-@example
-mbfl_slot_spec(@var{ARRAYNAME}, @var{KEY}) @expansion{} @var{ARRAYNAME}[@var{KEY}]
-@end example
-
-This is useful both to build other macros and in situations like the argument to the option
-@option{-v} of @command{printf}:
-
-@example
-declare -A ARRY
-printf -v mbfl_slot_spec(ARRY, KEY) 'A%sC' 'B'
-@end example
-@end deffn
-
-
-@deffn {Preprocessor Macros} mbfl_slot_ref (@var{ARRAYNAME}, @var{KEY})
-@deffnx {Preprocessor Macros} mbfl_slot_qref (@var{ARRAYNAME}, @var{KEY})
-Expand as follows:
-
-@example
-mbfl_slot_ref(@var{ARRAYNAME},  @var{KEY}) @expansion{}  $@{@var{ARRAYNAME}[@var{KEY}]@}
-mbfl_slot_qref(@var{ARRAYNAME}, @var{KEY}) @expansion{} "$@{@var{ARRAYNAME}[@var{KEY}]@}"
-@end example
-
-@noindent
-which evaluate to the value of the slot @var{KEY} in the array variable @var{ARRAYNAME}.  These
-macros works with both indexed and associative arrays.
-@end deffn
-
-
-@deffn {Preprocessor Macros} mbfl_slot_set (@var{ARRAYNAME}, @var{KEY}, @var{EXPR})
-Expands into the expression:
-
-@example
-@var{ARRAYNAME}[@var{KEY}]=@var{EXPR}
-@end example
-
-@noindent
-which stores the value of @var{EXPR} in the slot @var{KEY} of the array variable @var{ARRAYNAME}.
-This macro works with both indexed and associative arrays.
-@end deffn
-
-
-@deffn {Preprocessor Macros} mbfl_slot_append (@var{ARRAYNAME}, @var{KEY}, @var{EXPR})
-Expands into the expression:
-
-@example
-@var{ARRAYNAME}[@var{KEY}]+=@var{EXPR}
-@end example
-
-@noindent
-which appends the value of @var{EXPR} in the slot @var{KEY} of the array variable @var{ARRAYNAME}.
-This macro works with both indexed and associative arrays.
-
-Example:
-
-@example
-mbfl_declare_symbolic_array(PAIRS)
-mbfl_slot_set(PAIRS, 'abc', '123')
-mbfl_slot_append(PAIRS, 'abc', ' 456')
-mbfl_slot_qref(PAIRS, 'abc')   @result{} 123\ 456
-@end example
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_slot_value_len (@var{ARRAYNAME}, @var{KEY})
-Expand into the expression:
-
-@example
-$@{#@var{ARRAYNAME}[@var{KEY}]@}
-@end example
-
-@noindent
-which is meant to evaluate to the number of characters in the value of the slot @var{KEY}.
-@end deffn
-
-@c page
-@node preprocessor arrays inspect
-@subsection Inspecting arrays
-
-
-In addition to the macros documented here, we can manipulate arrays with some functions;
-@ref{arrays, Manipulating arrays with functions}.  We can also define variable name references to
-arrays, @ref{preprocessor nameref special, Special NAMEREF declarations}.
-
-
-@deffn {Preprocessor Macro} mbfl_slots_number (@var{ARRAYNAME})
-Expands into the expression:
-
-@example
-$@{#@var{ARRAYNAME}[@@]@}
-@end example
-
-@noindent
-evaluating to the number of pairs in the array variable @var{ARRAYNAME}.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_slots_values (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_slots_qvalues (@var{ARRAYNAME})
-Expand to a ``list'' of array values, respectively:
-
-@example
- mbfl_slots_values(@var{ARRAYNAME})     @expansion{}  $@{@var{ARRAYNAME}[@@]@}
-mbfl_slots_qvalues(@var{ARRAYNAME})     @expansion{} "$@{@var{ARRAYNAME}[@@]@}"
-@end example
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_slots_keys (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_slots_qkeys (@var{ARRAYNAME})
-Expand to a ``list'' of array keys, respectively:
-
-@example
- mbfl_slots_keys(@var{ARRAYNAME})       @expansion{}  $@{!@var{ARRAYNAME}[@@]@}
-mbfl_slots_qkeys(@var{ARRAYNAME})       @expansion{} "$@{!@var{ARRAYNAME}[@@]@}"
 @end example
 @end deffn
 
@@ -2690,14 +2462,13 @@ $NAME   @result{} mbfl_u_variable_2323
 
 @c page
 @node arrays
-@section Manipulating arrays with functions
+@chapter Manipulating arrays with functions and macros
 
-
-In addition to the functions documented here, we can manipulate arrays with some preprocessor
-macros, @ref{preprocessor arrays, Manipulating arrays with macros}.  We can also define variable
-name references to arrays, @ref{preprocessor nameref special, Special NAMEREF declarations}.
 
 @menu
+* arrays declare::              Declaring arrays.
+* arrays nameref::              Declaring arrays as data variables.
+* arrays slots::                Accessing slots.
 * arrays constructors::         Constructing arrays.
 * arrays inspection::           Inspecting arrays.
 * arrays contains::             What arrays contain.
@@ -2706,8 +2477,168 @@ name references to arrays, @ref{preprocessor nameref special, Special NAMEREF de
 @end menu
 
 @c page
+@node arrays declare
+@section Declaring arrays
+
+
+@deffn {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME}, @var{INIT})
+Respectively expand into the statements:
+
+@example
+declare -A @var{ARRAYNAME}
+declare -A @var{ARRAYNAME}=$@var{INIT}
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_local_symbolic_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_local_symbolic_array (@var{ARRAYNAME}, @var{INIT})
+Respectively expand into the statements:
+
+@example
+local -A @var{ARRAYNAME}
+local -A @var{ARRAYNAME}=$@var{INIT}
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_declare_numeric_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_declare_numeric_array (@var{ARRAYNAME}, @var{INIT})
+Respectively expand into the statements:
+
+@example
+declare -a @var{ARRAYNAME}
+declare -a @var{ARRAYNAME}=$@var{INIT}
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_local_numeric_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_local_numeric_array (@var{ARRAYNAME}, @var{INIT})
+Respectively expand into the statements:
+
+@example
+local -a @var{ARRAYNAME}
+local -a @var{ARRAYNAME}=$@var{INIT}
+@end example
+@end deffn
+
+@c page
+@node arrays nameref
+@section Declaring arrays as data variables
+
+
+@deffn {Preprocessor Macro} mbfl_declare_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
+Like @func{mbfl_declare_varref} but always include the @code{-a} option to the @command{declare}
+definition of the data variable.  This makes the data variable an indexed array.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_declare_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
+Like @func{mbfl_declare_varref} but always include the @code{-A} option to the @command{declare}
+definition of the data variable.  This makes the data variable an associative array.
+@end deffn
+
+@c ------------------------------------------------------------------------
+
+@deffn {Preprocessor Macro} mbfl_local_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+Like @func{mbfl_local_varref} but always include the @code{-a} option to the @command{local}
+definition of the data variable.  This makes the data variable an indexed array.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_local_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+Like @func{mbfl_local_varref} but always include the @code{-A} option to the @command{local}
+definition of the data variable.  This makes the data variable an associative array.
+@end deffn
+
+@c page
+@node arrays slots
+@section Accessing slots
+
+
+@deffn {Preprocessor Macros} mbfl_slot_spec (@var{ARRAYNAME}, @var{KEY})
+Expand as follows:
+
+@example
+mbfl_slot_spec(@var{ARRAYNAME}, @var{KEY}) @expansion{} @var{ARRAYNAME}[@var{KEY}]
+@end example
+
+This is useful both to build other macros and in situations like the argument to the option
+@option{-v} of @command{printf}:
+
+@example
+declare -A ARRY
+printf -v mbfl_slot_spec(ARRY, KEY) 'A%sC' 'B'
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macros} mbfl_slot_ref (@var{ARRAYNAME}, @var{KEY})
+@deffnx {Preprocessor Macros} mbfl_slot_qref (@var{ARRAYNAME}, @var{KEY})
+Expand as follows:
+
+@example
+mbfl_slot_ref(@var{ARRAYNAME},  @var{KEY}) @expansion{}  $@{@var{ARRAYNAME}[@var{KEY}]@}
+mbfl_slot_qref(@var{ARRAYNAME}, @var{KEY}) @expansion{} "$@{@var{ARRAYNAME}[@var{KEY}]@}"
+@end example
+
+@noindent
+which evaluate to the value of the slot @var{KEY} in the array variable @var{ARRAYNAME}.  These
+macros works with both indexed and associative arrays.
+@end deffn
+
+
+@deffn {Preprocessor Macros} mbfl_slot_set (@var{ARRAYNAME}, @var{KEY}, @var{EXPR})
+Expands into the expression:
+
+@example
+@var{ARRAYNAME}[@var{KEY}]=@var{EXPR}
+@end example
+
+@noindent
+which stores the value of @var{EXPR} in the slot @var{KEY} of the array variable @var{ARRAYNAME}.
+This macro works with both indexed and associative arrays.
+@end deffn
+
+
+@deffn {Preprocessor Macros} mbfl_slot_append (@var{ARRAYNAME}, @var{KEY}, @var{EXPR})
+Expands into the expression:
+
+@example
+@var{ARRAYNAME}[@var{KEY}]+=@var{EXPR}
+@end example
+
+@noindent
+which appends the value of @var{EXPR} in the slot @var{KEY} of the array variable @var{ARRAYNAME}.
+This macro works with both indexed and associative arrays.
+
+Example:
+
+@example
+mbfl_declare_symbolic_array(PAIRS)
+mbfl_slot_set(PAIRS, 'abc', '123')
+mbfl_slot_append(PAIRS, 'abc', ' 456')
+mbfl_slot_qref(PAIRS, 'abc')   @result{} 123\ 456
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_slot_value_len (@var{ARRAYNAME}, @var{KEY})
+Expand into the expression:
+
+@example
+$@{#@var{ARRAYNAME}[@var{KEY}]@}
+@end example
+
+@noindent
+which is meant to evaluate to the number of characters in the value of the slot @var{KEY}.
+@end deffn
+
+@c page
 @node arrays constructors
-@subsection Constructing arrays
+@section Constructing arrays
 
 
 @defun mbfl_array_copy @var{DST} @var{SRC}
@@ -2729,7 +2660,41 @@ mbfl_slot_ref(DST, c)   @result{} 3
 
 @c page
 @node arrays inspection
-@subsection Inspecting arrays
+@section Inspecting arrays
+
+
+@deffn {Preprocessor Macro} mbfl_slots_number (@var{ARRAYNAME})
+Expands into the expression:
+
+@example
+$@{#@var{ARRAYNAME}[@@]@}
+@end example
+
+@noindent
+evaluating to the number of pairs in the array variable @var{ARRAYNAME}.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_slots_values (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_slots_qvalues (@var{ARRAYNAME})
+Expand to a ``list'' of array values, respectively:
+
+@example
+ mbfl_slots_values(@var{ARRAYNAME})     @expansion{}  $@{@var{ARRAYNAME}[@@]@}
+mbfl_slots_qvalues(@var{ARRAYNAME})     @expansion{} "$@{@var{ARRAYNAME}[@@]@}"
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_slots_keys (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_slots_qkeys (@var{ARRAYNAME})
+Expand to a ``list'' of array keys, respectively:
+
+@example
+ mbfl_slots_keys(@var{ARRAYNAME})       @expansion{}  $@{!@var{ARRAYNAME}[@@]@}
+mbfl_slots_qkeys(@var{ARRAYNAME})       @expansion{} "$@{!@var{ARRAYNAME}[@@]@}"
+@end example
+@end deffn
 
 
 @defun mbfl_array_is_empty @var{ARRAY_VARNAME}
@@ -2776,7 +2741,7 @@ mbfl_array_length_var _RV ARRY
 
 @c page
 @node arrays contains
-@subsection What arrays contain
+@section What arrays contain
 
 
 @defun mbfl_array_contains @var{ARRY_VAR} @var{KEY}
@@ -2850,7 +2815,7 @@ mbfl_array_contains_all_keys_and_only mbfl_datavar(ARRY) mbfl_datavar(KEYS)
 
 @c page
 @node arrays debug
-@subsection Facilities to debug code using arrays
+@section Facilities to debug code using arrays
 
 
 @defun mbfl_array_dump @var{ARRY_VAR}
@@ -2869,7 +2834,7 @@ where @var{KEY} is a key in the array and @var{VALUE} is its value.  If the opti
 
 @c page
 @node arrays deprecated
-@subsection Deprecated functions
+@section Deprecated functions
 
 
 @defun mbfl_variable_find_in_array @var{ELEMENT}
