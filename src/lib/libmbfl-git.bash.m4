@@ -143,6 +143,48 @@ function mbfl_vc_git_branch_current_name_var () {
     BRANCH_NAME=$(mbfl_vc_git_branch_current_name)
 }
 
+### ------------------------------------------------------------------------
+
+function mbfl_vc_git_branch_list_all_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_BRANCHES, 1, reference to result array)
+
+    mbfl_p_vc_git_branch_list_var _(mbfl_BRANCHES) '--all'
+}
+function mbfl_vc_git_branch_list_local_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_BRANCHES, 1, reference to result array)
+
+    mbfl_p_vc_git_branch_list_var _(mbfl_BRANCHES)
+}
+function mbfl_vc_git_branch_list_remote_tracking_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_BRANCHES, 1, reference to result array)
+
+    mbfl_p_vc_git_branch_list_var _(mbfl_BRANCHES) '--remotes'
+}
+
+function mbfl_p_vc_git_branch_list_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_BRANCHES,	1, reference to result array)
+    mbfl_optional_parameter(mbfl_GIT_FLAGS,		2)
+    declare mbfl_BRANCH_NAME
+    declare -i mbfl_I=0
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler_restore_lastpipe
+	# This causes the last process in the pipe to  be executed in this shell rather than a subshell.
+	# This way we can mutate variables in this shell.
+	shopt -s lastpipe
+	mbfl_vc_git_program branch $mbfl_GIT_FLAGS | while read mbfl_BRANCH_NAME
+	do
+	    mbfl_string_strip_prefix_var mbfl_BRANCH_NAME '* ' "$mbfl_BRANCH_NAME"
+	    mbfl_string_strip_prefix_var mbfl_BRANCH_NAME '  ' "$mbfl_BRANCH_NAME"
+	    mbfl_slot_set(mbfl_BRANCHES,mbfl_I,"$mbfl_BRANCH_NAME")
+	    let ++mbfl_I
+	done
+	#mbfl_array_dump _(mbfl_BRANCHES) mbfl_BRANCHES
+    }
+    mbfl_location_leave
+}
+
 
 #### commits management
 

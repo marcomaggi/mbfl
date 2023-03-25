@@ -11154,6 +11154,41 @@ printf '%s' "$CURRENT_BRANCH_NAME"
 @end defun
 
 
+@defun mbfl_vc_git_branch_list_all_var @var{BRANCHES_RV}
+Acquire the list of all the branch names in the current repository and store them in the result
+array variable @var{BRANCHES_RV} (zero--based indexes).
+
+@example
+mbfl_declare_index_array_varref(BRANCHES)
+
+mbfl_vc_git_branch_list_all_var mbfl_datavar(BRANCHES_RV)
+@end example
+@end defun
+
+
+@defun mbfl_vc_git_branch_list_local_var @var{BRANCHES_RV}
+Acquire the list of the local branch names in the current repository and store them in the result
+array variable @var{BRANCHES_RV} (zero--based indexes).
+
+@example
+mbfl_declare_index_array_varref(BRANCHES)
+
+mbfl_vc_git_branch_list_local_var mbfl_datavar(BRANCHES_RV)
+@end example
+@end defun
+
+
+@defun mbfl_vc_git_branch_list_remote_tracking_var @var{BRANCHES_RV}
+Acquire the list of the remote tracking branch names in the current repository and store them in the
+result array variable @var{BRANCHES_RV} (zero--based indexes).
+
+@example
+mbfl_declare_index_array_varref(BRANCHES)
+
+mbfl_vc_git_branch_list_remote_tracking_var mbfl_datavar(BRANCHES_RV)
+@end example
+@end defun
+
 @c page
 @node libmbfl-git program
 @appendixsec Running the program
