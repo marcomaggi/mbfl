@@ -4498,7 +4498,7 @@ the result variable @var{_RV}.  It is fine if @var{LINE} is the empty string.
 @end defun
 
 
-@defun mbfl_string_strip_prefix @var{_RV} @var{PREFIX} @var{STRING}
+@defun mbfl_string_strip_prefix_var @var{_RV} @var{PREFIX} @var{STRING}
 If @var{STRING} begins with @var{PREFIX}: strip @var{PREFIX} from @var{STRING}; store the result in
 the result variable @var{_RV}; return true.
 
@@ -4508,25 +4508,25 @@ If @var{STRING} does not begin with @var{PREFIX}: store @var{STRING} itself in t
 @example
 declare RV
 
-mbfl_string_strip_prefix_var RV 'ciao ' 'ciao mamma'    @result{} 0
-"$RV"                                                   @result{} 'mamma'
+mbfl_string_strip_prefix_var RV 'ciao ' 'ciao mamma'  @result{} 0
+"$RV"                                                 @result{} 'mamma'
 
-mbfl_string_strip_prefix_var RV ''      'ciao mamma'    @result{} 0
-"$RV"                                                   @result{} 'ciao mamma'
+mbfl_string_strip_prefix_var RV ''      'ciao mamma'  @result{} 0
+"$RV"                                                 @result{} 'ciao mamma'
 
-mbfl_string_strip_prefix_var RV ''      ''              @result{} 0
-"$RV"                                                   @result{} ''
+mbfl_string_strip_prefix_var RV ''      ''            @result{} 0
+"$RV"                                                 @result{} ''
 
-mbfl_string_strip_prefix_var RV 'hello' 'ciao mamma'    @result{} 1
-"$RV"                                                   @result{} 'ciao mamma'
+mbfl_string_strip_prefix_var RV 'hello' 'ciao mamma'  @result{} 1
+"$RV"                                                 @result{} 'ciao mamma'
 
-mbfl_string_strip_prefix_var RV 'hello' ''              @result{} 1
-"$RV"                                                   @result{} ''
+mbfl_string_strip_prefix_var RV 'hello' ''            @result{} 1
+"$RV"                                                 @result{} ''
 @end example
 @end defun
 
 
-@defun mbfl_string_strip_suffix @var{_RV} @var{STRING} @var{SUFFIX}
+@defun mbfl_string_strip_suffix_var @var{_RV} @var{STRING} @var{SUFFIX}
 If @var{STRING} ends with @var{SUFFIX}: strip @var{SUFFIX} from @var{STRING}; store the result in
 the result variable @var{_RV}; return true.
 
@@ -4554,7 +4554,7 @@ mbfl_string_strip_suffix_var RV ''           'mom'      @result{} 1
 @end defun
 
 
-@defun mbfl_string_strip_prefix_and_suffix @var{_RV} @var{PREFIX} @var{STRING} @var{SUFFIX}
+@defun mbfl_string_strip_prefix_and_suffix_var @var{_RV} @var{PREFIX} @var{STRING} @var{SUFFIX}
 If @var{STRING} begins with @var{PREFIX} and ends with @var{SUFFIX}: strip @var{PREFIX} and
 @var{SUFFIX} from @var{STRING}; store the result in the result variable @var{_RV}; return 0.
 
