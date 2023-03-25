@@ -123,6 +123,9 @@ changes!
     mbfl_string_has_prefix
     mbfl_string_has_suffix
     mbfl_string_has_prefix_and_suffix
+    mbfl_string_strip_prefix_var
+    mbfl_string_strip_suffix_var
+    mbfl_string_strip_prefix_and_suffix_var
 
 * BACKWARDS   INCOMPATIBILITY    The   definition   of    the   function
   "mbfl_string_is_username()" has been changed  to better conform to the

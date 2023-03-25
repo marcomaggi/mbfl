@@ -3613,6 +3613,7 @@ macros; @ref{preprocessor strings, Manipulating strings with macros}.
 * strings class::               Matching a string with a class.
 * strings comparison::          Comparing strings.
 * strings encoding::            Encoding and decoding strings.
+* strings stripping::           Stripping substrings from strings.
 * strings misc::                Miscellaneous functions.
 @end menu
 
@@ -3810,7 +3811,10 @@ Return true if @var{STRING} begins with @var{PREFIX}; otherwise return false.
 
 @example
 mbfl_string_has_prefix 'ciao'  'ciao mamma'     @result{} 0
+mbfl_string_has_prefix ''      'ciao mamma'     @result{} 0
+
 mbfl_string_has_prefix 'hello' 'ciao mamma'     @result{} 1
+mbfl_string_has_prefix 'hello' ''               @result{} 1
 @end example
 @end defun
 
@@ -3820,7 +3824,10 @@ Return true if @var{STRING} ends with @var{SUFFIX}; otherwise return false.
 
 @example
 mbfl_string_has_suffix 'mamma' 'ciao mamma'     @result{} 0
+mbfl_string_has_suffix ''      'ciao mamma'     @result{} 0
+
 mbfl_string_has_suffix 'mom'   'ciao mamma'     @result{} 1
+mbfl_string_has_suffix 'mom'   ''               @result{} 1
 @end example
 @end defun
 
@@ -3830,8 +3837,16 @@ Return true if @var{STRING} starts with @var{PREFIX} and ends with @var{SUFFIX};
 false.
 
 @example
-mbfl_string_has_prefix_and_suffix 'ciao' 'ciao mamma' 'o mamma' @result{} 0
-mbfl_string_has_prefix_and_suffix 'mom'  'ciao mamma' 'mamma'   @result{} 1
+mbfl_string_has_prefix_and_suffix 'ciao'  'ciao mamma' 'o mamma' @result{} 0
+mbfl_string_has_prefix_and_suffix ''      'ciao mamma' 'mamma'   @result{} 0
+mbfl_string_has_prefix_and_suffix 'ciao'  'ciao mamma' ''        @result{} 0
+mbfl_string_has_prefix_and_suffix ''      ''           ''        @result{} 0
+mbfl_string_has_prefix_and_suffix ''      'ciao mamma' ''        @result{} 0
+
+mbfl_string_has_prefix_and_suffix 'mom'   'ciao mamma' 'mamma'   @result{} 1
+mbfl_string_has_prefix_and_suffix 'hello' ''           'mom'     @result{} 1
+mbfl_string_has_prefix_and_suffix ''      'ciao mamma' 'mom'     @result{} 1
+mbfl_string_has_prefix_and_suffix 'hello' 'ciao mamma' ''        @result{} 1
 @end example
 @end defun
 
@@ -4468,6 +4483,128 @@ mbfl_decode_hex 414243
 @end example
 
 @c page
+@node strings stripping
+@section Stripping substrings from strings
+
+
+@defun mbfl_string_strip_carriage_return_var @var{_RV} @var{LINE}
+When exchanging strings with a remote process through a network socket we, usually, need to end a
+line with a carriage return plus line feed sequence.  If we use the command @command{read} to read a
+line from a socket: we can instruct it to discard the ending line feed, yielding us a line ending
+with a carriage return.
+
+This function strips the ending carriage return from @var{LINE}, if any, and stores the result in
+the result variable @var{_RV}.  It is fine if @var{LINE} is the empty string.
+@end defun
+
+
+@defun mbfl_string_strip_prefix @var{_RV} @var{PREFIX} @var{STRING}
+If @var{STRING} begins with @var{PREFIX}: strip @var{PREFIX} from @var{STRING}; store the result in
+the result variable @var{_RV}; return true.
+
+If @var{STRING} does not begin with @var{PREFIX}: store @var{STRING} itself in the result variable
+@var{_RV}; return false.
+
+@example
+declare RV
+
+mbfl_string_strip_prefix_var RV 'ciao ' 'ciao mamma'    @result{} 0
+"$RV"                                                   @result{} 'mamma'
+
+mbfl_string_strip_prefix_var RV ''      'ciao mamma'    @result{} 0
+"$RV"                                                   @result{} 'ciao mamma'
+
+mbfl_string_strip_prefix_var RV ''      ''              @result{} 0
+"$RV"                                                   @result{} ''
+
+mbfl_string_strip_prefix_var RV 'hello' 'ciao mamma'    @result{} 1
+"$RV"                                                   @result{} 'ciao mamma'
+
+mbfl_string_strip_prefix_var RV 'hello' ''              @result{} 1
+"$RV"                                                   @result{} ''
+@end example
+@end defun
+
+
+@defun mbfl_string_strip_suffix @var{_RV} @var{STRING} @var{SUFFIX}
+If @var{STRING} ends with @var{SUFFIX}: strip @var{SUFFIX} from @var{STRING}; store the result in
+the result variable @var{_RV}; return true.
+
+If @var{STRING} does not end with @var{SUFFIX}: store @var{STRING} itself in the result variable
+@var{_RV}; return false.
+
+@example
+declare RV
+
+mbfl_string_strip_suffix_var RV 'ciao mamma' 'mamma'    @result{} 0
+"$RV"                                                   @result{} 'ciao '
+
+mbfl_string_strip_suffix_var RV 'ciao mamma' ''         @result{} 0
+"$RV"                                                   @result{} 'ciao mamma'
+
+mbfl_string_strip_suffix_var RV ''           ''         @result{} 0
+"$RV"                                                   @result{} ''
+
+mbfl_string_strip_suffix_var RV 'ciao mamma' 'mom'      @result{} 1
+"$RV"                                                   @result{} 'ciao mamma'
+
+mbfl_string_strip_suffix_var RV ''           'mom'      @result{} 1
+"$RV"                                                   @result{} ''
+@end example
+@end defun
+
+
+@defun mbfl_string_strip_prefix_and_suffix @var{_RV} @var{PREFIX} @var{STRING} @var{SUFFIX}
+If @var{STRING} begins with @var{PREFIX} and ends with @var{SUFFIX}: strip @var{PREFIX} and
+@var{SUFFIX} from @var{STRING}; store the result in the result variable @var{_RV}; return 0.
+
+If @var{STRING} begins with @var{PREFIX} and does not end with @var{SUFFIX}: strip @var{PREFIX} from
+@var{STRING}; store the result in the result variable @var{_RV}; return 2.
+
+If @var{STRING} does not begin with @var{PREFIX} and it does end with @var{SUFFIX}: strip
+@var{SUFFIX} from @var{STRING}; store the result in the result variable @var{_RV}; return 3.
+
+Otherwise store @var{STRING} itself in the result variable @var{_RV} and return 1.
+
+@example
+declare RV
+
+mbfl_string_strip_prefix_and_suffix_var RV 'ci'    'ciao mamma'    'ma'    @result{} 0
+"$RV"                                                                      @result{} 'ao mam'
+
+mbfl_string_strip_prefix_and_suffix_var RV 'ciao'  'ciao mamma' 'mamma'    @result{} 0
+"$RV"                                                                      @result{} ' '
+
+mbfl_string_strip_prefix_and_suffix_var RV 'ciao ' 'ciao mamma' 'mamma'    @result{} 0
+"$RV"                                                                      @result{} ''
+
+mbfl_string_strip_prefix_and_suffix_var RV ''      'ciao mamma' ''         @result{} 0
+"$RV"                                                                      @result{} 'ciao mamma'
+
+mbfl_string_strip_prefix_and_suffix_var RV ''      'ciao mamma' 'mamma'    @result{} 0
+"$RV"                                                                      @result{} 'ciao '
+
+mbfl_string_strip_prefix_and_suffix_var RV 'ciao'  'ciao mamma' ''         @result{} 0
+"$RV"                                                                      @result{} ' mamma'
+
+##
+
+mbfl_string_strip_prefix_and_suffix_var RV 'ciao'  'ciao mamma' 'mom'      @result{} 2
+"$RV"                                                                      @result{} ' mamma'
+
+##
+
+mbfl_string_strip_prefix_and_suffix_var RV 'hello' 'ciao mamma' 'mamma'    @result{} 3
+"$RV"                                                                      @result{} 'ciao '
+
+##
+
+mbfl_string_strip_prefix_and_suffix_var RV 'hello' 'ciao mamma' 'mom'      @result{} 1
+"$RV"                                                                      @result{} 'ciao mamma'
+@end example
+@end defun
+
+@c page
 @node strings misc
 @section Miscellaneous functions
 
@@ -4531,17 +4668,6 @@ i=3
 mbfl_string_skip abcccccdefg i c
 $i @result{} 7
 @end example
-@end defun
-
-
-@defun mbfl_string_strip_carriage_return_var @var{_RV} @var{LINE}
-When exchanging strings with a remote process through a network socket we, usually, need to end a
-line with a carriage return plus line feed sequence.  If we use the command @command{read} to read a
-line from a socket: we can instruct it to discard the ending line feed, yielding us a line ending
-with a carriage return.
-
-This function strips the ending carriage return from @var{LINE}, if any, and stores the result in
-the result variable @var{_RV}.  It is fine if @var{LINE} is the empty string.
 @end defun
 
 @c page

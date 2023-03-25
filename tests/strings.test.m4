@@ -460,8 +460,14 @@ function string-range-var-1.5 () {
 function string-has-prefix-1.1 () {
     mbfl_string_has_prefix 'ciao'  'ciao mamma'
 }
+function string-has-prefix-1.2 () {
+    mbfl_string_has_prefix '' 'ciao mamma'
+}
 function string-has-prefix-2.1 () {
     ! mbfl_string_has_prefix 'hello' 'ciao mamma'
+}
+function string-has-prefix-2.1 () {
+    ! mbfl_string_has_prefix 'hello' ''
 }
 
 
@@ -470,8 +476,14 @@ function string-has-prefix-2.1 () {
 function string-has-suffix-1.1 () {
     mbfl_string_has_suffix 'ciao mamma' 'mamma'
 }
+function string-has-suffix-1.2 () {
+    mbfl_string_has_suffix 'ciao mamma' ''
+}
 function string-has-suffix-2.1 () {
     ! mbfl_string_has_suffix 'ciao mamma' 'mom'
+}
+function string-has-suffix-2.2 () {
+    ! mbfl_string_has_suffix '' 'mom'
 }
 
 
@@ -483,11 +495,30 @@ function string-has-prefix-and-suffix-1.1 () {
 function string-has-prefix-and-suffix-1.2 () {
     mbfl_string_has_prefix_and_suffix 'ciao m' 'ciao mamma' 'o mamma'
 }
+function string-has-prefix-and-suffix-1.3 () {
+    mbfl_string_has_prefix_and_suffix '' 'ciao mamma' 'mamma'
+}
+function string-has-prefix-and-suffix-1.4 () {
+    mbfl_string_has_prefix_and_suffix 'ciao' 'ciao mamma' ''
+}
+function string-has-prefix-and-suffix-1.5 () {
+    mbfl_string_has_prefix_and_suffix '' '' ''
+}
+function string-has-prefix-and-suffix-1.6 () {
+    mbfl_string_has_prefix_and_suffix '' 'ciao mamma' ''
+}
+
 function string-has-prefix-and-suffix-2.1 () {
-    ! mbfl_string_has_suffix 'ciao' 'ciao mamma' 'mom'
+    ! mbfl_string_has_prefix_and_suffix 'ciao' 'ciao mamma' 'mom'
 }
 function string-has-prefix-and-suffix-2.2 () {
-    ! mbfl_string_has_suffix 'hello' 'ciao mamma' 'mma'
+    ! mbfl_string_has_prefix_and_suffix 'hello' '' 'mom'
+}
+function string-has-prefix-and-suffix-2.3 () {
+    ! mbfl_string_has_prefix_and_suffix '' 'ciao mamma' 'mom'
+}
+function string-has-prefix-and-suffix-2.4 () {
+    ! mbfl_string_has_prefix_and_suffix 'hello' 'ciao mamma' ''
 }
 
 
@@ -1561,7 +1592,7 @@ function string-macro-last-char-1.3 () {
 }
 
 
-#### miscellaneous
+#### stripping: carriage return
 
 function string-strip-carriage-return-var-1.1 () {
     local RV LINE=$'ciao mamma\r'
@@ -1582,6 +1613,195 @@ function string-strip-carriage-return-var-1.3 () {
 
     mbfl_string_strip_carriage_return_var RV "$LINE"
     dotest-equal '' "$RV"
+}
+
+
+#### stripping prefix
+
+function string-strip-prefix-1.1 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_var RV 'ciao ' 'ciao mamma'
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal 'mamma' "$RV"
+}
+function string-strip-prefix-1.2 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_var RV '' 'ciao mamma'
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal 'ciao mamma' "$RV"
+}
+function string-strip-prefix-1.3 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_var RV '' ''
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal '' "$RV"
+}
+
+function string-strip-prefix-2.1 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_var RV 'hello' 'ciao mamma'
+    RETURN_STATUS=$?
+
+    dotest-equal 1 $RETURN_STATUS &&
+	dotest-equal 'ciao mamma' "$RV"
+}
+function string-strip-prefix-2.2 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_var RV 'hello' ''
+    RETURN_STATUS=$?
+
+    dotest-equal 1 $RETURN_STATUS &&
+	dotest-equal '' "$RV"
+}
+
+
+#### stripping suffix
+
+function string-strip-suffix-1.1 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_suffix_var RV 'ciao mamma' 'mamma'
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal 'ciao ' "$RV"
+}
+function string-strip-suffix-1.2 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_suffix_var RV 'ciao mamma' ''
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal 'ciao mamma' "$RV"
+}
+function string-strip-suffix-1.3 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_suffix_var RV '' ''
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal '' "$RV"
+}
+
+function string-strip-suffix-2.1 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_suffix_var RV 'ciao mamma' 'mom'
+    RETURN_STATUS=$?
+
+    dotest-equal 1 $RETURN_STATUS &&
+	dotest-equal 'ciao mamma' "$RV"
+}
+function string-strip-suffix-2.2 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_suffix_var RV '' 'mamma'
+    RETURN_STATUS=$?
+
+    dotest-equal 1 $RETURN_STATUS &&
+	dotest-equal '' "$RV"
+}
+
+
+#### stripping prefix and suffix
+
+function string-strip-prefix-and-suffix-1.1 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_and_suffix_var RV 'ci' 'ciao mamma' 'ma'
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal 'ao mam' "$RV"
+}
+function string-strip-prefix-and-suffix-1.2 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_and_suffix_var RV '' 'ciao mamma' ''
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal 'ciao mamma' "$RV"
+}
+function string-strip-prefix-and-suffix-1.3 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_and_suffix_var RV 'ciao ' 'ciao mamma' 'mamma'
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal '' "$RV"
+}
+function string-strip-prefix-and-suffix-1.4 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_and_suffix_var RV '' 'ciao mamma' 'mamma'
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal 'ciao ' "$RV"
+}
+function string-strip-prefix-and-suffix-1.5 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_and_suffix_var RV 'ciao' 'ciao mamma' ''
+    RETURN_STATUS=$?
+
+    dotest-equal 0 $RETURN_STATUS &&
+	dotest-equal ' mamma' "$RV"
+}
+
+
+### ------------------------------------------------------------------------
+### strip prefix only
+
+function string-strip-prefix-and-suffix-2.1 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_and_suffix_var RV 'ciao' 'ciao mamma' 'mom'
+    RETURN_STATUS=$?
+
+    dotest-equal 2 $RETURN_STATUS &&
+	dotest-equal ' mamma' "$RV"
+}
+
+### ------------------------------------------------------------------------
+### strip suffix only
+
+function string-strip-prefix-and-suffix-3.1 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_and_suffix_var RV 'hello' 'ciao mamma' 'mamma'
+    RETURN_STATUS=$?
+
+    dotest-equal 3 $RETURN_STATUS &&
+	dotest-equal 'ciao ' "$RV"
+}
+
+### ------------------------------------------------------------------------
+### strip nothing
+
+function string-strip-prefix-and-suffix-4.1 () {
+    declare RV RETURN_STATUS
+
+    mbfl_string_strip_prefix_and_suffix_var RV 'hello' 'ciao mamma' 'mom'
+    RETURN_STATUS=$?
+
+    dotest-equal 1 $RETURN_STATUS &&
+	dotest-equal 'ciao mamma' "$RV"
 }
 
 

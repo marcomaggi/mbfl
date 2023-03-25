@@ -266,31 +266,32 @@ function mbfl_string_is_false () {
 }
 
 function mbfl_string_has_prefix () {
-    mbfl_mandatory_parameter(mbfl_PREFIX, 1, prefix)
-    mbfl_mandatory_parameter(mbfl_STRING, 2, string)
+    mbfl_optional_parameter(mbfl_PREFIX, 1)
+    mbfl_optional_parameter(mbfl_STRING, 2)
     declare -i mbfl_PREFIX_LEN=mbfl_string_len(mbfl_PREFIX)
     declare mbfl_STRING_PREFIX=${mbfl_STRING:0:$mbfl_PREFIX_LEN}
 
+    #echo $FUNCNAME mbfl_PREFIX=\"$mbfl_PREFIX\" mbfl_STRING=\"$mbfl_STRING\" mbfl_STRING_PREFIX=\"$mbfl_STRING_PREFIX\" >&2
     mbfl_string_eq("$mbfl_PREFIX", "$mbfl_STRING_PREFIX")
 }
-
 function mbfl_string_has_suffix () {
-    mbfl_mandatory_parameter(mbfl_STRING, 1, string)
-    mbfl_mandatory_parameter(mbfl_SUFFIX, 2, suffix)
+    mbfl_optional_parameter(mbfl_STRING, 1)
+    mbfl_optional_parameter(mbfl_SUFFIX, 2)
     declare -i mbfl_STRING_LEN=mbfl_string_len(mbfl_STRING)
     declare -i mbfl_SUFFIX_LEN=mbfl_string_len(mbfl_SUFFIX)
     declare -i mbfl_STRING_BEGIN=$(($mbfl_STRING_LEN - $mbfl_SUFFIX_LEN))
     declare mbfl_STRING_SUFFIX=${mbfl_STRING:$mbfl_STRING_BEGIN}
 
-    #echo $funcname mbfl_STRING_LEN=\"$mbfl_STRING_LEN\" mbfl_SUFFIX_LEN=\"$mbfl_SUFFIX_LEN\" mbfl_STRING_BEGIN=\"$mbfl_STRING_BEGIN\" >&2
+    #echo $FUNCNAME mbfl_STRING_LEN=\"$mbfl_STRING_LEN\" mbfl_SUFFIX_LEN=\"$mbfl_SUFFIX_LEN\" mbfl_STRING_BEGIN=\"$mbfl_STRING_BEGIN\" >&2
     #echo $FUNCNAME mbfl_STRING_SUFFIX=\"$mbfl_STRING_SUFFIX\" mbfl_SUFFIX=\"$mbfl_SUFFIX\" >&2
     mbfl_string_eq("$mbfl_STRING_SUFFIX", "$mbfl_SUFFIX")
 }
-
 function mbfl_string_has_prefix_and_suffix () {
-    mbfl_mandatory_parameter(mbfl_PREFIX, 1, prefix)
-    mbfl_mandatory_parameter(mbfl_STRING, 2, string)
-    mbfl_mandatory_parameter(mbfl_SUFFIX, 3, suffix)
+    mbfl_optional_parameter(mbfl_PREFIX, 1)
+    mbfl_optional_parameter(mbfl_STRING, 2)
+    mbfl_optional_parameter(mbfl_SUFFIX, 3)
+
+    #echo $FUNCNAME mbfl_PREFIX=\"$mbfl_PREFIX\" mbfl_STRING=\"$mbfl_STRING\" mbfl_SUFFIX=\"$mbfl_SUFFIX\" >&2
 
     declare -i mbfl_STRING_LEN=mbfl_string_len(mbfl_STRING)
     declare -i mbfl_PREFIX_LEN=mbfl_string_len(mbfl_PREFIX)
@@ -301,6 +302,7 @@ function mbfl_string_has_prefix_and_suffix () {
     declare -i mbfl_STRING_BEGIN=$(($mbfl_STRING_LEN - $mbfl_SUFFIX_LEN))
     declare mbfl_STRING_SUFFIX=${mbfl_STRING:$mbfl_STRING_BEGIN}
 
+    #echo $FUNCNAME mbfl_STRING_PREFIX=\"$mbfl_STRING_PREFIX\" mbfl_STRING_SUFFIX=\"$mbfl_STRING_SUFFIX\" >&2
     mbfl_string_eq("$mbfl_PREFIX", "$mbfl_STRING_PREFIX") && mbfl_string_eq("$mbfl_STRING_SUFFIX", "$mbfl_SUFFIX")
 }
 
@@ -684,6 +686,91 @@ function mbfl_string_tolower_var () {
 }
 
 
+#### stripping from strings
+
+function mbfl_string_strip_carriage_return_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_NAMEREF, 1, result variable name)
+    mbfl_optional_parameter(mbfl_LINE, 2)
+
+    if mbfl_string_is_not_empty "$mbfl_LINE"
+    then
+	mbfl_local_varref(CH)
+
+	mbfl_string_index_var __(CH) "$mbfl_LINE" $((mbfl_string_len(mbfl_LINE) - 1))
+	if mbfl_string_equal "$CH" $'\r'
+	then mbfl_RESULT_NAMEREF=${mbfl_LINE:0:((mbfl_string_len(mbfl_LINE) - 1))}
+	else mbfl_RESULT_NAMEREF=$mbfl_LINE
+	fi
+    fi
+}
+
+function mbfl_string_strip_prefix_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,	1, the result variable)
+    mbfl_optional_parameter(mbfl_PREFIX,	2)
+    mbfl_optional_parameter(mbfl_STRING,	3)
+
+    declare -i mbfl_PREFIX_LEN=mbfl_string_len(mbfl_PREFIX)
+    declare mbfl_STRING_PREFIX=${mbfl_STRING:0:$mbfl_PREFIX_LEN}
+
+    if mbfl_string_eq("$mbfl_PREFIX", "$mbfl_STRING_PREFIX")
+    then
+	mbfl_RV=${mbfl_STRING:$mbfl_PREFIX_LEN}
+	return_because_success
+    else
+	mbfl_RV="$mbfl_STRING"
+	return_because_failure
+    fi
+}
+function mbfl_string_strip_suffix_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,	1, the result variable)
+    mbfl_optional_parameter(mbfl_STRING,	2)
+    mbfl_optional_parameter(mbfl_SUFFIX,	3)
+
+    #echo $FUNCNAME mbfl_STRING=\"$mbfl_STRING\" mbfl_SUFFIX=\"$mbfl_SUFFIX\" >&2
+
+    declare -i mbfl_STRING_LEN=mbfl_string_len(mbfl_STRING)
+    declare -i mbfl_SUFFIX_LEN=mbfl_string_len(mbfl_SUFFIX)
+
+    declare -i mbfl_STRING_BEGIN=$(($mbfl_STRING_LEN - $mbfl_SUFFIX_LEN))
+    declare mbfl_STRING_SUFFIX=${mbfl_STRING:$mbfl_STRING_BEGIN}
+
+    #echo $FUNCNAME mbfl_STRING_LEN=\"$mbfl_STRING_LEN\" mbfl_SUFFIX_LEN=\"$mbfl_SUFFIX_LEN\" mbfl_STRING_BEGIN=\"$mbfl_STRING_BEGIN\" >&2
+    #echo $FUNCNAME mbfl_STRING_SUFFIX=\"$mbfl_STRING_SUFFIX\" >&2
+    if mbfl_string_eq("$mbfl_STRING_SUFFIX", "$mbfl_SUFFIX")
+    then
+	mbfl_RV=${mbfl_STRING:0:$mbfl_STRING_BEGIN}
+	return_because_success
+    else
+	mbfl_RV="$mbfl_STRING"
+	return_because_failure
+    fi
+}
+function mbfl_string_strip_prefix_and_suffix_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,	1, the result variable)
+    mbfl_optional_parameter(mbfl_PREFIX,	2)
+    mbfl_optional_parameter(mbfl_STRING,	3)
+    mbfl_optional_parameter(mbfl_SUFFIX,	4)
+    mbfl_declare_varref(mbfl_TMP_STRING)
+    declare -i X1 x2
+
+    mbfl_string_strip_prefix_var __(mbfl_TMP_STRING) "$mbfl_PREFIX" "$mbfl_STRING"
+    X1=$?
+    mbfl_string_strip_suffix_var __(mbfl_RV)         "$mbfl_TMP_STRING" "$mbfl_SUFFIX"
+    X2=$?
+
+    if   ((0 == X1 && 0 == X2)) ;# both strip
+    then return 0
+    elif ((1 == X1 && 1 == X2)) ;# no strip
+    then return 1
+    elif ((0 == X1 && 1 == X2)) ;# prefix strip
+    then return 2
+    elif ((1 == X1 && 0 == X2)) ;# suffix strip
+    then return 3
+    else return 4 ;# internal error!!! should not be here!
+    fi
+}
+
+
 #### miscellaneous
 
 function mbfl_string_replace () {
@@ -716,22 +803,6 @@ function mbfl_sprintf () {
     shift 2
     printf -v OUTPUT "$FORMAT" "$@"
     eval "$VARNAME"=\'"$OUTPUT"\'
-}
-
-function mbfl_string_strip_carriage_return_var () {
-    mbfl_mandatory_nameref_parameter(RESULT_NAMEREF, 1, result variable name)
-    mbfl_optional_parameter(LINE, 2)
-
-    if mbfl_string_is_not_empty "$LINE"
-    then
-	mbfl_local_varref(CH)
-
-	mbfl_string_index_var __(CH) "$LINE" $((mbfl_string_len(LINE) - 1))
-	if mbfl_string_equal "$CH" $'\r'
-	then RESULT_NAMEREF=${LINE:0:((mbfl_string_len(LINE) - 1))}
-	else RESULT_NAMEREF=$LINE
-	fi
-    fi
 }
 
 ### end of file
