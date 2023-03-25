@@ -23,9 +23,14 @@
 #!
 
 
+#### macros
+
+m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
+
+
 #### global variables
 
-declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.7
+declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.8
 declare -r script_PROGNAME=vc
 declare -r script_VERSION=1.0
 declare -r script_COPYRIGHT_YEARS='2023'
@@ -93,9 +98,18 @@ mbfl_declare_action GIT_BRANCH_CURRENT	GIT_BRANCH_CURRENT_NAME	NONE		name		'Prin
 
 ## --------------------------------------------------------------------
 
+mbfl_declare_action_set GIT_BRANCH_LIST
+#                   action-set		keyword			subset	identifier	description
+mbfl_declare_action GIT_BRANCH_LIST	GIT_BRANCH_LIST_ALL	NONE	all		'List all the branches: local and remote tracking.'
+mbfl_declare_action GIT_BRANCH_LIST	GIT_BRANCH_LIST_LOCAL	NONE	local		'List the local branches.'
+mbfl_declare_action GIT_BRANCH_LIST	GIT_BRANCH_LIST_REMOTE_TRACKING NONE remote-tracking 'List the remote tracking branches.'
+
+## --------------------------------------------------------------------
+
 mbfl_declare_action_set GIT_BRANCH
 #                   action-set	keyword			subset			identifier	description
 mbfl_declare_action GIT_BRANCH	GIT_BRANCH_CURRENT	GIT_BRANCH_CURRENT	current		'Current branch management.'
+mbfl_declare_action GIT_BRANCH	GIT_BRANCH_LIST		GIT_BRANCH_LIST		list		'List the branches.'
 
 ## --------------------------------------------------------------------
 
@@ -290,10 +304,130 @@ function script_before_parsing_options_GIT_BRANCH_CURRENT_NAME () {
     script_EXAMPLES=
 }
 function script_action_GIT_BRANCH_CURRENT_NAME () {
-    mbfl_local_varref(CURRENT_BRANCH_NAME)
+    if mbfl_wrong_num_args 0 $ARGC
+    then
+	mbfl_local_varref(CURRENT_BRANCH_NAME)
 
-    mbfl_vc_git_branch_current_name_var mbfl_datavar(CURRENT_BRANCH_NAME)
-    printf '%s' "$CURRENT_BRANCH_NAME"
+	mbfl_vc_git_branch_current_name_var mbfl_datavar(CURRENT_BRANCH_NAME)
+	printf '%s' "$CURRENT_BRANCH_NAME"
+    else exit_because_wrong_num_args
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function script_before_parsing_options_GIT_BRANCH_LIST () {
+    script_USAGE="usage: ${script_PROGNAME} branch list [action] [options]"
+    script_DESCRIPTION='List branches.'
+    script_EXAMPLES=
+}
+function script_action_GIT_BRANCH_LIST () {
+    mbfl_main_print_usage_screen_brief
+}
+
+### ------------------------------------------------------------------------
+
+function script_before_parsing_options_GIT_BRANCH_LIST_ALL () {
+    script_USAGE="usage: ${script_PROGNAME} branch list all [options]"
+    script_DESCRIPTION='List all the branches: local and remote tracking.'
+    script_EXAMPLES=
+}
+function script_action_GIT_BRANCH_LIST_ALL () {
+    if mbfl_wrong_num_args 0 $ARGC
+    then
+	mbfl_declare_index_array_varref(BRANCHES)
+	declare -i mbfl_I
+
+	mbfl_vc_git_branch_list_all_var _(BRANCHES)
+	for ((mbfl_I=0; mbfl_I < mbfl_slots_number(BRANCHES); ++mbfl_I))
+	do printf '%s\n' mbfl_slot_qref(BRANCHES, mbfl_I)
+	done
+    else exit_because_wrong_num_args
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function script_before_parsing_options_GIT_BRANCH_LIST_LOCAL () {
+    script_USAGE="usage: ${script_PROGNAME} branch list local [options]"
+    script_DESCRIPTION='List the local branches.'
+    script_EXAMPLES=
+}
+function script_action_GIT_BRANCH_LIST_LOCAL () {
+    if mbfl_wrong_num_args 0 $ARGC
+    then
+	mbfl_declare_index_array_varref(BRANCHES)
+	declare -i mbfl_I
+
+	mbfl_vc_git_branch_list_local_var _(BRANCHES)
+	for ((mbfl_I=0; mbfl_I < mbfl_slots_number(BRANCHES); ++mbfl_I))
+	do printf '%s\n' mbfl_slot_qref(BRANCHES, mbfl_I)
+	done
+    else exit_because_wrong_num_args
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function script_before_parsing_options_GIT_BRANCH_LIST_REMOTE_TRACKING () {
+    script_USAGE="usage: ${script_PROGNAME} branch list remote-tracking [options]"
+    script_DESCRIPTION='List the remote tracking branches.'
+    script_EXAMPLES=
+}
+function script_action_GIT_BRANCH_LIST_REMOTE_TRACKING () {
+    if mbfl_wrong_num_args 0 $ARGC
+    then
+	mbfl_declare_index_array_varref(BRANCHES)
+	declare -i mbfl_I mbfl_NUM
+
+	mbfl_vc_git_branch_list_local_var _(BRANCHES)
+	mbfl_NUM=mbfl_slots_number(BRANCHES)
+	for ((mbfl_I=0; mbfl_I < mbfl_NUM; ++mbfl_I))
+	do printf '%s\n' mbfl_slot_qref(BRANCHES, mbfl_I)
+	done
+    else exit_because_wrong_num_args
+    fi
+}
+
+
+function mbfl_vc_git_branch_list_all_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_BRANCHES, 1, reference to result array)
+
+    mbfl_p_vc_git_branch_list_var _(mbfl_BRANCHES) '--all'
+}
+function mbfl_vc_git_branch_list_local_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_BRANCHES, 1, reference to result array)
+
+    mbfl_p_vc_git_branch_list_var _(mbfl_BRANCHES)
+}
+function mbfl_vc_git_branch_list_remote_tracking_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_BRANCHES, 1, reference to result array)
+
+    mbfl_p_vc_git_branch_list_var _(mbfl_BRANCHES) '--remotes'
+}
+
+function mbfl_p_vc_git_branch_list_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_BRANCHES,	1, reference to result array)
+    mbfl_optional_parameter(mbfl_GIT_FLAGS,		2)
+    declare mbfl_BRANCH_NAME
+    declare -i mbfl_I=0
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler_restore_lastpipe
+	# This causes the last process in the pipe to  be executed in this shell rather than a subshell.
+	# This way we can mutate variables in this shell.
+	shopt -s lastpipe
+	mbfl_vc_git_program branch $mbfl_GIT_FLAGS | while read mbfl_BRANCH_NAME
+	do
+	    mbfl_string_strip_prefix_var mbfl_BRANCH_NAME '* ' "$mbfl_BRANCH_NAME"
+	    mbfl_string_strip_prefix_var mbfl_BRANCH_NAME '  ' "$mbfl_BRANCH_NAME"
+	    mbfl_slot_set(mbfl_BRANCHES,mbfl_I,"$mbfl_BRANCH_NAME")
+	    let ++mbfl_I
+	done
+	#mbfl_array_dump _(mbfl_BRANCHES) mbfl_BRANCHES
+    }
+    mbfl_location_leave
 }
 
 

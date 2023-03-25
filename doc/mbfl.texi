@@ -2114,6 +2114,37 @@ Register a new location handler that pops the top from the directories stack (@c
 When successful return true, otherwise return false.
 @end defun
 
+
+@defun mbfl_location_handler_restore_lastpipe
+When called, save the state of the @code{lastpip} option of @code{shopt} using:
+
+@example
+shopt -p lastpipe
+@end example
+
+Upon exiting the location: the handler restores the previous status of @code{lastpipe}.
+@bashref{The Shopt Builtin, The Shopt Builtin}.
+
+Using this handler is helpful when the last command of a pipe is executed in the current shell,
+rather than a subshell, to store the result of a computation in a shell variable.
+
+@example
+declare RESULT
+
+mbfl_location_enter
+@{
+    mbfl_location_handler_restore_lastpipe
+    shopt -s lastpipe
+    output_something | while read
+    do RESULT+=$REPLY
+    done
+@}
+mbfl_location_leave
+
+# use $RESULT
+@end example
+@end defun
+
 @c page
 @node locations examples
 @section Locations usage examples

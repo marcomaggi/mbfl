@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -160,6 +160,11 @@ function mbfl_location_handler_change_directory () {
 	fi
     else return_failure
     fi
+}
+
+function mbfl_location_handler_restore_lastpipe () {
+    # Upon exiting the location: restore the previous status of "lastpipe".
+    mbfl_location_handler "$(shopt -p lastpipe)"
 }
 
 ### end of file
