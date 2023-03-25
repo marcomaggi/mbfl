@@ -265,6 +265,45 @@ function mbfl_string_is_false () {
     test 'false' = "$STRING"
 }
 
+function mbfl_string_has_prefix () {
+    mbfl_mandatory_parameter(mbfl_PREFIX, 1, prefix)
+    mbfl_mandatory_parameter(mbfl_STRING, 2, string)
+    declare -i mbfl_PREFIX_LEN=mbfl_string_len(mbfl_PREFIX)
+    declare mbfl_STRING_PREFIX=${mbfl_STRING:0:$mbfl_PREFIX_LEN}
+
+    mbfl_string_eq("$mbfl_PREFIX", "$mbfl_STRING_PREFIX")
+}
+
+function mbfl_string_has_suffix () {
+    mbfl_mandatory_parameter(mbfl_STRING, 1, string)
+    mbfl_mandatory_parameter(mbfl_SUFFIX, 2, suffix)
+    declare -i mbfl_STRING_LEN=mbfl_string_len(mbfl_STRING)
+    declare -i mbfl_SUFFIX_LEN=mbfl_string_len(mbfl_SUFFIX)
+    declare -i mbfl_STRING_BEGIN=$(($mbfl_STRING_LEN - $mbfl_SUFFIX_LEN))
+    declare mbfl_STRING_SUFFIX=${mbfl_STRING:$mbfl_STRING_BEGIN}
+
+    #echo $funcname mbfl_STRING_LEN=\"$mbfl_STRING_LEN\" mbfl_SUFFIX_LEN=\"$mbfl_SUFFIX_LEN\" mbfl_STRING_BEGIN=\"$mbfl_STRING_BEGIN\" >&2
+    #echo $FUNCNAME mbfl_STRING_SUFFIX=\"$mbfl_STRING_SUFFIX\" mbfl_SUFFIX=\"$mbfl_SUFFIX\" >&2
+    mbfl_string_eq("$mbfl_STRING_SUFFIX", "$mbfl_SUFFIX")
+}
+
+function mbfl_string_has_prefix_and_suffix () {
+    mbfl_mandatory_parameter(mbfl_PREFIX, 1, prefix)
+    mbfl_mandatory_parameter(mbfl_STRING, 2, string)
+    mbfl_mandatory_parameter(mbfl_SUFFIX, 3, suffix)
+
+    declare -i mbfl_STRING_LEN=mbfl_string_len(mbfl_STRING)
+    declare -i mbfl_PREFIX_LEN=mbfl_string_len(mbfl_PREFIX)
+    declare -i mbfl_SUFFIX_LEN=mbfl_string_len(mbfl_SUFFIX)
+
+    declare mbfl_STRING_PREFIX=${mbfl_STRING:0:$mbfl_PREFIX_LEN}
+
+    declare -i mbfl_STRING_BEGIN=$(($mbfl_STRING_LEN - $mbfl_SUFFIX_LEN))
+    declare mbfl_STRING_SUFFIX=${mbfl_STRING:$mbfl_STRING_BEGIN}
+
+    mbfl_string_eq("$mbfl_PREFIX", "$mbfl_STRING_PREFIX") && mbfl_string_eq("$mbfl_STRING_SUFFIX", "$mbfl_SUFFIX")
+}
+
 
 #### splitting
 

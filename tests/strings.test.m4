@@ -455,6 +455,42 @@ function string-range-var-1.5 () {
 }
 
 
+#### string inspection: string has prefix
+
+function string-has-prefix-1.1 () {
+    mbfl_string_has_prefix 'ciao'  'ciao mamma'
+}
+function string-has-prefix-2.1 () {
+    ! mbfl_string_has_prefix 'hello' 'ciao mamma'
+}
+
+
+#### string inspection: string has suffix
+
+function string-has-suffix-1.1 () {
+    mbfl_string_has_suffix 'ciao mamma' 'mamma'
+}
+function string-has-suffix-2.1 () {
+    ! mbfl_string_has_suffix 'ciao mamma' 'mom'
+}
+
+
+#### string inspection: string has prefix and suffix
+
+function string-has-prefix-and-suffix-1.1 () {
+    mbfl_string_has_prefix_and_suffix 'ciao' 'ciao mamma' 'mamma'
+}
+function string-has-prefix-and-suffix-1.2 () {
+    mbfl_string_has_prefix_and_suffix 'ciao m' 'ciao mamma' 'o mamma'
+}
+function string-has-prefix-and-suffix-2.1 () {
+    ! mbfl_string_has_suffix 'ciao' 'ciao mamma' 'mom'
+}
+function string-has-prefix-and-suffix-2.2 () {
+    ! mbfl_string_has_suffix 'hello' 'ciao mamma' 'mma'
+}
+
+
 #### sptlitting a string into characters
 
 function string-chars-1.1 () {

@@ -3804,6 +3804,37 @@ mbfl_string_range_var _RV abcdefghilm 4 end
 @end example
 @end defun
 
+
+@defun mbfl_string_has_prefix @var{PREFIX} @var{STRING}
+Return true if @var{STRING} begins with @var{PREFIX}; otherwise return false.
+
+@example
+mbfl_string_has_prefix 'ciao'  'ciao mamma'     @result{} 0
+mbfl_string_has_prefix 'hello' 'ciao mamma'     @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_has_suffix @var{STRING} @var{SUFFIX}
+Return true if @var{STRING} ends with @var{SUFFIX}; otherwise return false.
+
+@example
+mbfl_string_has_suffix 'mamma' 'ciao mamma'     @result{} 0
+mbfl_string_has_suffix 'mom'   'ciao mamma'     @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_has_prefix_and_suffix @var{PREFIX} @var{STRING} @var{SUFFIX}
+Return true if @var{STRING} starts with @var{PREFIX} and ends with @var{SUFFIX}; otherwise return
+false.
+
+@example
+mbfl_string_has_prefix_and_suffix 'ciao' 'ciao mamma' 'o mamma' @result{} 0
+mbfl_string_has_prefix_and_suffix 'mom'  'ciao mamma' 'mamma'   @result{} 1
+@end example
+@end defun
+
 @c page
 @node strings splitting
 @section Splitting a string
