@@ -113,9 +113,22 @@ mbfl_declare_action GIT_BRANCH	GIT_BRANCH_LIST		GIT_BRANCH_LIST		list		'List the
 
 ## --------------------------------------------------------------------
 
+mbfl_declare_action_set GIT_REPOSITORY_PRINT
+#                   action-set		 keyword                         subset identifier description
+mbfl_declare_action GIT_REPOSITORY_PRINT GIT_REPOSITORY_PRINT_TOP_SRCDIR NONE   top-srcdir 'Print informations about the repositories.'
+
+## --------------------------------------------------------------------
+
+mbfl_declare_action_set GIT_REPOSITORY
+#                   action-set     keyword              subset               identifier description
+mbfl_declare_action GIT_REPOSITORY GIT_REPOSITORY_PRINT GIT_REPOSITORY_PRINT print      'Print informations about the repositories.'
+
+## --------------------------------------------------------------------
+
 mbfl_declare_action_set GIT
 #                   action-set	keyword		subset		identifier	description
 mbfl_declare_action GIT		GIT_CONFIG	GIT_CONFIG	config		'Configuration management.'
+mbfl_declare_action GIT		GIT_REPOSITORY	GIT_REPOSITORY	repository	'Repositories management.'
 mbfl_declare_action GIT		GIT_BRANCH	GIT_BRANCH	branch		'Branches management.'
 
 ## --------------------------------------------------------------------
@@ -271,6 +284,43 @@ function vc_git_config_parse_database () {
 	    exit_because_failure
 	    ;;
     esac
+}
+
+
+#### repositories
+
+function script_before_parsing_options_GIT_REPOSITORY () {
+    script_USAGE="usage: ${script_PROGNAME} repository [action] [options]"
+    script_DESCRIPTION='Repositories management.'
+    script_EXAMPLES=
+}
+function script_action_GIT_REPOSITORY () {
+    mbfl_main_print_usage_screen_brief
+}
+
+### ------------------------------------------------------------------------
+
+function script_before_parsing_options_GIT_REPOSITORY_PRINT () {
+    script_USAGE="usage: ${script_PROGNAME} repository print [action] [options]"
+    script_DESCRIPTION='Print informations about git repositories.'
+    script_EXAMPLES=
+}
+function script_action_GIT_REPOSITORY_PRINT () {
+    mbfl_main_print_usage_screen_brief
+}
+
+### ------------------------------------------------------------------------
+
+function script_before_parsing_options_GIT_REPOSITORY_PRINT_TOP_SRCDIR () {
+    script_USAGE="usage: ${script_PROGNAME} repository print top-srcdir [options]"
+    script_DESCRIPTION='Print the top srcdir pathname of the current git repository.'
+    script_EXAMPLES=
+}
+function script_action_GIT_REPOSITORY_PRINT_TOP_SRCDIR () {
+    if mbfl_wrong_num_args 0 $ARGC
+    then mbfl_vc_git_repository_top_srcdir
+    else exit_because_wrong_num_args
+    fi
 }
 
 

@@ -25,6 +25,24 @@
 #!
 
 
+#### macros
+
+# With one parameter is expands into a use  of "mbfl_datavar()"; with two parameters it expands into
+# a use of "mbfl_slot_qref".
+#
+m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
+
+
+#### global variables
+
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then
+    # Global variable used to cache the result of "mbfl_vc_git_repository_top_srcdir_var()".
+    #
+    declare mbfl_vc_git_REPOSITORY_TOP_SRCDIR=
+fi
+
+
 #### library initialisation
 
 function mbfl_vc_git_enable () {
@@ -133,10 +151,64 @@ function mbfl_vc_git_config_set_value () {
 }
 
 
+#### git repositories
+
+function mbfl_vc_git_repository_top_srcdir_var () {
+    mbfl_mandatory_nameref_parameter(TOP_SRCDIR, 1, result variable)
+    declare TOP_DIR
+
+    TOP_DIR=$(while test ! -d ./.git -a "$(pwd)" != /; do cd .. ; done; pwd)
+    if mbfl_string_eq('/', "$TOP_DIR")
+    then return_because_failure
+    else
+	TOP_SRCDIR=$TOP_DIR
+	return_success
+    fi
+}
+function mbfl_vc_git_repository_top_srcdir () {
+    mbfl_declare_varref(TOP_SRCDIR)
+
+    if mbfl_vc_git_repository_top_srcdir_var _(TOP_SRCDIR)
+    then
+	# Do not append a newline.
+	printf '%s' "$TOP_SRCDIR"
+	return_success
+    else return_failure
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_vc_git_repository_top_srcdir_and_cache_var () {
+    mbfl_mandatory_nameref_parameter(TOP_SRCDIR, 1, result variable)
+
+    if mbfl_string_is_not_empty "$mbfl_vc_git_REPOSITORY_TOP_SRCDIR"
+    then
+	# Use the cached value.
+	TOP_SRCDIR=$mbfl_vc_git_REPOSITORY_TOP_SRCDIR
+	return_success
+    else mbfl_vc_git_repository_top_srcdir_var _(TOP_SRCDIR)
+    fi
+}
+function mbfl_vc_git_repository_top_srcdir_and_cache () {
+    if mbfl_string_is_not_empty "$mbfl_vc_git_REPOSITORY_TOP_SRCDIR"
+    then
+	# Use the cached value.  Do not append a newline.
+	printf '%s' "$mbfl_vc_git_REPOSITORY_TOP_SRCDIR"
+	return_success
+    else mbfl_vc_git_repository_top_srcdir
+    fi
+}
+
+
 #### branches management
 
 function mbfl_vc_git_branch_current_name () {
-    mbfl_vc_git_program rev-parse --abbrev-ref HEAD
+    mbfl_vc_git_program rev-parse --abbrev-ref HEAD 2>/dev/null
+
+    # Alternatively:
+    #
+    # mbfl_vc_git_program symbolic-ref --short HEAD 2>/dev/null
 }
 function mbfl_vc_git_branch_current_name_var () {
     mbfl_mandatory_nameref_parameter(BRANCH_NAME, 1, reference to branch name output variable)
