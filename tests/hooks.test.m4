@@ -49,7 +49,7 @@ m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],[[[mbfl_slot_qr
 #### simple tests
 
 function hooks-simple-1.1 () {
-    mbfl_declare_index_array_varref(HOOKS_SIMPLE_1_1,,-g)
+    mbfl_declare_varref(HOOKS_SIMPLE_1_1,,-g)
     declare FLAG1=false FLAG2=false
 
     mbfl_hook_define _(HOOKS_SIMPLE_1_1)
@@ -63,7 +63,7 @@ function hooks-simple-1.1 () {
 }
 
 function hooks-simple-2.1 () {
-    mbfl_declare_index_array_varref(HOOKS_SIMPLE_2_1,,-g)
+    mbfl_declare_varref(HOOKS_SIMPLE_2_1,,-g)
     declare FLAG1=false FLAG2=false FLAG2=false
 
     mbfl_hook_define _(HOOKS_SIMPLE_2_1)

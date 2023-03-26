@@ -164,6 +164,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * locations::                   Running location handlers.
 * variables::                   Manipulating variables.
 * arrays::                      Manipulating arrays with functions and macros.
+* hooks::                       Executing commands with event hooks.
 * objects::                     Object-oriented programming.
 * strings::                     Manipulating strings with functions.
 * actions::                     Selecting actions to perform.
@@ -1332,6 +1333,17 @@ We can use the argument @var{DECLARE_OPTIONS} to declare a global data variable:
 
 @example
 mbfl_declare_varref(@var{VARNAME}, @var{INIT_VALUE}, -g)
+@end example
+@end deffn
+
+@c ------------------------------------------------------------------------
+
+@deffn {Preprocessor Macro} mbfl_declare_global_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+Like @func{mbfl_declare_varref} but always include the option @option{-g}.  Its expansion is:
+
+@example
+mbfl_declare_global_varref(@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+@expansion{} mbfl_declare_varref(@var{NAME}, @var{INIT_VALUE}, -g @var{LOCAL_OPTIONS})
 @end example
 @end deffn
 
@@ -2896,6 +2908,52 @@ A wrapper for @func{mbfl_variable_find_in_array} that does not print anything.
 @quotation
 @strong{NOTE} Use of this function is deprecated!  Use @func{mbfl_array_contains_value_var} instead.
 @end quotation
+@end defun
+
+@c page
+@node hooks
+@chapter Executing commands with event hooks
+
+
+Sometimes we must execute commands when a certain event happens; @dfn{hooks} provide storage for
+such commands.  Usage of hooks is as follows:
+
+@example
+mbfl_declare_global_varref(MY_HOOK)
+declare FLAG1=false FLAG2=false
+
+mbfl_hook_define mbfl_datavar(MY_HOOK)
+
+mbfl_hook_add mbfl_datavar(MY_HOOK) 'FLAG1=true'
+mbfl_hook_add mbfl_datavar(MY_HOOK) 'FLAG2=true'
+
+mbfl_hook_run mbfl_datavar(MY_HOOK)
+
+$FLAG1 && $FLAG2 ;# true
+@end example
+
+@defun mbfl_hook_define @var{HOOK_VAR}
+Initialise a new hook global variable whose name is @var{HOOK_VAR}.
+@end defun
+
+
+@defun mbfl_hook_add @var{HOOK_VAR} @var{HOOK_COMMAND}
+Add to the hook variable @var{HOOK_VAR} the command @var{HOOK_COMMAND}.  When the hook is run:
+@var{HOOK_COMMAND} is executed with:
+
+@example
+eval @var{HOOK_COMMAND}
+@end example
+@end defun
+
+
+@defun mbfl_hook_run @var{HOOK_VAR}
+Run all the commands in the given hook variable.
+@end defun
+
+
+@defun mbfl_hook_reset @var{HOOK_VAR}
+Reset to empty the given hook variable.
 @end defun
 
 @c page

@@ -233,6 +233,8 @@ m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
   m4_ifelse($2,,,; $1=$2)m4_dnl
 ]]])
 
+m4_define([[[mbfl_declare_global_varref]]],[[[mbfl_declare_varref($1,$2,-g $3)]]])
+
 # Synopsis:
 #
 #	mbfl_namevar(VARNAME)
