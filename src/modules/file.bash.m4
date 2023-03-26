@@ -29,6 +29,14 @@
 #
 
 
+#### local macros
+
+# With one parameter is expands into a use  of "mbfl_datavar()"; with two parameters it expands into
+# a use of "mbfl_slot_qref".
+#
+m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
+
+
 #### helpers
 
 function mbfl_file_p_validate_executable_hard_coded_pathname () {
@@ -91,6 +99,15 @@ function mbfl_p_file_looking_at_component_beginning () {
 
 #### changing directory functions
 
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then
+    # Index array used to  store commands to execute whenever the  current directory changes because
+    # of a call to "mbfl_change_directory()".
+    #
+    mbfl_declare_global_varref(mbfl_CHANGE_DIRECTORY_HOOK)
+    mbfl_hook_define _(mbfl_CHANGE_DIRECTORY_HOOK)
+fi
+
 function mbfl_cd () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory)
     shift 1
@@ -101,7 +118,12 @@ function mbfl_cd () {
 function mbfl_change_directory () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory)
     shift 1
-    cd "$@" "$DIRECTORY" &>/dev/null
+    if cd "$@" "$DIRECTORY" &>/dev/null
+    then
+	mbfl_hook_run _(mbfl_CHANGE_DIRECTORY_HOOK)
+	return_success
+    else return $?
+    fi
 }
 
 

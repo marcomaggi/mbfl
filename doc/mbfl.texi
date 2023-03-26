@@ -6270,7 +6270,7 @@ the password.
 * file owner::                  Setting file owner and group.
 * file testing::                Testing file existence and the like.
 * file read and write::         Reading and writing files with privileges.
-* file misc::                   Miscellaneous commands.
+* file cd::                     Changing directory.
 @end menu
 
 @c page
@@ -7328,8 +7328,8 @@ Read and print @strong{all} the contents of @var{FILENAME}.
 @end defun
 
 @c page
-@node file misc
-@section Miscellaneous commands
+@node file cd
+@section Changing directory
 
 
 @cindex Changing directory
@@ -7337,8 +7337,16 @@ Read and print @strong{all} the contents of @var{FILENAME}.
 @cindex Files, changing directory
 
 
+@defvar mbfl_CHANGE_DIRECTORY_HOOK
+A global hook variable whose commands are evaluated whenever the current process directory is
+successfully changed with a call to @func{mbfl_change_directory}; @ref{hooks, Executing commands
+with event hooks}.
+@end defvar
+
+
 @defun mbfl_change_directory @var{DIRNAME} @var{OPT} @dots{}
-Change directory to @var{DIRNAME}.  Optional flags to @command{cd} may be appended.
+Change directory to @var{DIRNAME}.  Optional flags to @command{cd} may be appended.  If the
+execution of the @code{cd} command is successful: the hook @env{mbfl_CHANGE_DIRECTORY_HOOK} is run.
 @end defun
 
 
