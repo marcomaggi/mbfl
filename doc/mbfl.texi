@@ -11364,20 +11364,12 @@ Search the file system from the process working directory upwards looking for a 
 directory.  When found, respectively: print it to @stdout{} (without appending a newline) or store
 its full pathname into the result variable @var{_RV}, then return true.  When not found: return
 false.
-@end defun
 
+When the search is successful: the resulting pathname is cached internally; subsequent calls will
+use the cached value.
 
-@defvar mbfl_vc_git_REPOSITORY_TOP_SRCDIR
-Global variable used to cache the result of @func{mbfl_vc_git_repository_top_srcdir_var}.
-@end defvar
-
-
-@defun mbfl_vc_git_repository_top_srcdir_and_cache
-@defunx mbfl_vc_git_repository_top_srcdir_and_cache_var @var{_RV}
-Like @func{mbfl_vc_git_repository_top_srcdir} and @func{mbfl_vc_git_repository_top_srcdir_var}, but
-at the first successful call: cache the result in the global variable
-@env{mbfl_vc_git_REPOSITORY_TOP_SRCDIR}.  Subsequent calls will use the cached value, unless
-@env{mbfl_vc_git_REPOSITORY_TOP_SRCDIR} is set to the empty string.
+@strong{NOTE} Calling the functions @func{mbfl_vc_git_enable} and @func{mbfl_change_directory}
+resets the cached value to nothing.
 @end defun
 
 @c page

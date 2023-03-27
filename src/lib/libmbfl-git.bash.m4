@@ -39,7 +39,7 @@ if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
     # Global variable used to cache the result of "mbfl_vc_git_repository_top_srcdir_var()".
     #
-    declare mbfl_vc_git_REPOSITORY_TOP_SRCDIR=
+    declare -g mbfl_vc_git_REPOSITORY_TOP_SRCDIR_CACHED_VALUE=
 fi
 
 
@@ -47,6 +47,9 @@ fi
 
 function mbfl_vc_git_enable () {
     mbfl_declare_program git
+
+    mbfl_p_vc_git_reset_repository_top_srcdir
+    mbfl_hook_add _(mbfl_CHANGE_DIRECTORY_HOOK) mbfl_p_vc_git_reset_repository_top_srcdir
 }
 
 
@@ -153,16 +156,30 @@ function mbfl_vc_git_config_set_value () {
 
 #### git repositories
 
+function mbfl_p_vc_git_reset_repository_top_srcdir () {
+    mbfl_vc_git_REPOSITORY_TOP_SRCDIR_CACHED_VALUE=''
+}
+
 function mbfl_vc_git_repository_top_srcdir_var () {
     mbfl_mandatory_nameref_parameter(TOP_SRCDIR, 1, result variable)
     declare TOP_DIR
 
-    TOP_DIR=$(while test ! -d ./.git -a "$(pwd)" != /; do cd .. ; done; pwd)
-    if mbfl_string_eq('/', "$TOP_DIR")
-    then return_because_failure
-    else
-	TOP_SRCDIR=$TOP_DIR
+    if mbfl_string_is_not_empty "$mbfl_vc_git_REPOSITORY_TOP_SRCDIR_CACHED_VALUE"
+    then
+	# Use the cached value.
+	TOP_SRCDIR=$mbfl_vc_git_REPOSITORY_TOP_SRCDIR_CACHED_VALUE
 	return_success
+    else
+	TOP_DIR=$(while test ! -d ./.git -a "$(pwd)" != /; do cd .. ; done; pwd)
+	if mbfl_string_eq('/', "$TOP_DIR")
+	then return_because_failure
+	else
+	    # Store the result in the result variable.
+	    TOP_SRCDIR=$TOP_DIR
+	    # Cache the result.
+	    mbfl_vc_git_REPOSITORY_TOP_SRCDIR_CACHED_VALUE=$TOP_DIR
+	    return_success
+	fi
     fi
 }
 function mbfl_vc_git_repository_top_srcdir () {
@@ -174,29 +191,6 @@ function mbfl_vc_git_repository_top_srcdir () {
 	printf '%s' "$TOP_SRCDIR"
 	return_success
     else return_failure
-    fi
-}
-
-### ------------------------------------------------------------------------
-
-function mbfl_vc_git_repository_top_srcdir_and_cache_var () {
-    mbfl_mandatory_nameref_parameter(TOP_SRCDIR, 1, result variable)
-
-    if mbfl_string_is_not_empty "$mbfl_vc_git_REPOSITORY_TOP_SRCDIR"
-    then
-	# Use the cached value.
-	TOP_SRCDIR=$mbfl_vc_git_REPOSITORY_TOP_SRCDIR
-	return_success
-    else mbfl_vc_git_repository_top_srcdir_var _(TOP_SRCDIR)
-    fi
-}
-function mbfl_vc_git_repository_top_srcdir_and_cache () {
-    if mbfl_string_is_not_empty "$mbfl_vc_git_REPOSITORY_TOP_SRCDIR"
-    then
-	# Use the cached value.  Do not append a newline.
-	printf '%s' "$mbfl_vc_git_REPOSITORY_TOP_SRCDIR"
-	return_success
-    else mbfl_vc_git_repository_top_srcdir
     fi
 }
 
