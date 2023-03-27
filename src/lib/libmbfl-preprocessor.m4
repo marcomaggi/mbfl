@@ -147,14 +147,17 @@ m4_define([[[mbfl_slots_qkeys]]],[[["${!$1[@]}"]]])
 #
 # It expands into:
 #
-#   local -r mbfl_a_variable_NAME=DATA_VARNAME_EXPR
+#   local    mbfl_a_variable_NAME=DATA_VARNAME_EXPR
 #   local -n NAME=$mbfl_a_variable_NAME
 #
 # Declare a proxy variable NAME aliasing the  data variable whose value is the result
 # of evaluating DATA_VARNAME_EXPR.
 #
+# NOTE We cannot declare "mbfl_a_variable_$1"  read-only because then we cannot unset
+# it.
+#
 m4_define([[[mbfl_local_nameref]]],[[[m4_dnl
-  local -r mbfl_a_variable_$1=$2; m4_dnl
+  local    mbfl_a_variable_$1=$2; m4_dnl
   local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
 ]]])
 
@@ -164,14 +167,17 @@ m4_define([[[mbfl_local_nameref]]],[[[m4_dnl
 #
 # It expands into:
 #
-#   declare -r mbfl_a_variable_NAME=DATA_VARNAME_EXPR
+#   declare    mbfl_a_variable_NAME=DATA_VARNAME_EXPR
 #   declare -n NAME=$mbfl_a_variable_NAME
 #
 # Declare a proxy variable NAME aliasing the  data variable whose value is the result
 # of evaluating DATA_VARNAME_EXPR.
 #
+# NOTE We cannot declare "mbfl_a_variable_$1"  read-only because then we cannot unset
+# it.
+#
 m4_define([[[mbfl_declare_nameref]]],[[[m4_dnl
-  declare -r mbfl_a_variable_$1=$2; m4_dnl
+  declare    mbfl_a_variable_$1=$2; m4_dnl
   declare -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
 ]]])
 

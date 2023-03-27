@@ -356,14 +356,21 @@ function varref-unset-3.1 () {
 
 #### NAMEREF variables, generation in sub-function
 
+# Generate a global variable in  the function "worker-varref-sub-generation-1.1()"; hand its datavar
+# to the caller function "varref-sub-generation-1.1()"; access the global variable in the caller.
+#
 function varref-sub-generation-1.1 () {
-    local VARNAME
+    declare VARNAME VALUE
 
     worker-varref-sub-generation-1.1 VARNAME
     mbfl_local_nameref(VAR, $VARNAME)
 
-    dotest-equal 123 "$VAR"
+    #echo $FUNCNAME VAR="$VAR" BANG_VARNAME="${!VARNAME}" >&2
+
+    VALUE="$VAR"
     mbfl_unset_varref(VAR)
+
+    dotest-equal 123 "$VALUE"
 }
 function worker-varref-sub-generation-1.1 () {
     mbfl_mandatory_nameref_parameter(RV, 1, result variable name)

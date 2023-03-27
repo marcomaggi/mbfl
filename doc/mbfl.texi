@@ -1416,12 +1416,17 @@ declare -rA $mbfl_a_variable_ARRY=([a]=1)
 A use of this macro expands into:
 
 @example
-declare -r mbfl_a_variable_@var{NAME}=@var{DATA_VARNAME_EXPR}
+declare    mbfl_a_variable_@var{NAME}=@var{DATA_VARNAME_EXPR}
 declare -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 @end example
 
 Declare a proxy variable @var{NAME} aliasing the data variable whose value is the result of
 evaluating @var{DATA_VARNAME_EXPR}.
+
+@quotation
+@strong{NOTE} We cannot declare @code{mbfl_a_variable_@var{NAME}} as read--only because the we
+cannot unset it.
+@end quotation
 
 We can use this macro as follows:
 
@@ -1449,12 +1454,17 @@ main
 A use of this macro expands into:
 
 @example
-local -r mbfl_a_variable_@var{NAME}=@var{DATA_VARNAME_EXPR}
+local    mbfl_a_variable_@var{NAME}=@var{DATA_VARNAME_EXPR}
 local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 @end example
 
 Declare a proxy variable @var{NAME} aliasing the data variable whose value is the result of
 evaluating @var{DATA_VARNAME_EXPR}.
+
+@quotation
+@strong{NOTE} We cannot declare @code{mbfl_a_variable_@var{NAME}} as read--only because the we
+cannot unset it.
+@end quotation
 @end deffn
 
 @c page
