@@ -627,7 +627,6 @@ recommended.
 * preprocessor parameters::     Function parameters handling.
 * preprocessor arguments::      Script arguments handling.
 * preprocessor nameref::        Variable name references.
-* preprocessor strings::        Manipulating strings with macros.
 * preprocessor variables::      Manipulating variables with macros.
 * preprocessor programs::       Defining program--execution functions.
 @end menu
@@ -1476,178 +1475,6 @@ unset -v @var{NAME}
 @end example
 
 Unset the @emph{proxy variable} @var{NAME} and all the variables associated to it.
-@end deffn
-
-@c page
-@node preprocessor strings
-@section Manipulating strings with macros
-
-
-In addition to the macros documented here, we can manipulate strings with some functions;
-@ref{strings, Manipulating strings with functions}.
-
-@menu
-* preprocessor strings inspection::     Inspecting strings.
-* preprocessor strings comparison::     Comparing strings.
-@end menu
-
-@c page
-@node preprocessor strings inspection
-@subsection Inspecting strings
-
-
-@deffn {Preprocessor Macros} mbfl_string_len (@var{VAR})
-Expands into the expression:
-
-@example
-$@{#@var{VAR}@}
-@end example
-
-@noindent
-which evaluates to the number of characters in the string in the variable @var{VAR}.
-@end deffn
-
-
-@deffn {Preprocessor Macros} mbfl_string_empty (@var{VAR})
-Expand into the expression:
-
-@example
-@{ test $@{#@var{VAR}@} -eq 0; @}
-@end example
-
-@noindent
-which evaluates to true if the string value in the variable @var{VAR} @strong{is} the empty string.
-@end deffn
-
-
-@deffn {Preprocessor Macros} mbfl_string_not_empty (@var{VAR})
-Expand into the expression:
-
-@example
-@{ test $@{#@var{VAR}@} -ne 0; @}
-@end example
-
-@noindent
-which evaluates to true if the string value in the variable @var{VAR} @strong{is not} the empty
-string.
-@end deffn
-
-
-@deffn {Preprocessor Macros} mbfl_string_idx (@var{VAR}, @var{EXPR})
-Expands into the expression:
-
-@example
-$@{@var{VAR}:@var{EXPR}:1@}
-@end example
-
-@noindent
-which evaluates to the character at index @var{EXPR} in the string in the variable @var{VAR}.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_string_last_char (@var{VAR})
-Expand into the expression:
-
-@example
-$@{$1:$(($@{#$1@} - 1)):1@}
-@end example
-
-@noindent
-which, if it is not empty, evaluates to the last character of the string in the variable @var{VAR};
-if the string empty: the result of the evaluation is the empty string.
-
-Usage examples:
-
-@example
-@{
-  local STR='ciao'
-  test 'o' = mbfl_string_last_char(STR)
-@}
-@result{} 0
-
-@{
-  local STR=$'ciao\n'
-  test $'\n' = "mbfl_string_last_char(STR)"
-@}
-@result{} 0
-
-@{
-  local -r STR=
-  test '' = "mbfl_string_last_char(STR)"
-@}
-@result{} 0
-@end example
-@end deffn
-
-@c page
-@node preprocessor strings comparison
-@subsection Comparing strings
-
-
-The following macros take their arguments as they are, without enclosing them into double or single
-quotes, as follows:
-
-@example
-test $1 '=' $2
-@end example
-
-@noindent
-so we must take care of quoting the arguments appropriately.
-
-
-@deffn {Preprocessor Macro} mbfl_string_eq (@vari{STR}, @varii{STR})
-Return successfully if the arguments are equal when compared when compared lexicographically as
-strings; otherwise return failure.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_string_neq (@vari{STR}, @varii{STR})
-Return successfully if the arguments are different when compared lexicographically as strings;
-otherwise return failure.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_string_lt (@vari{STR}, @varii{STR})
-Return successfully if @vari{STR} is less than @varii{STR} when compared when compared
-lexicographically as strings; otherwise return failure.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_string_gt (@vari{STR}, @varii{STR})
-Return successfully if @vari{STR} is greater than @varii{STR} when compared when compared
-lexicographically as strings; otherwise return failure.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_string_le (@vari{STR}, @varii{STR})
-Return successfully if @vari{STR} is less than or equal to @varii{STR} when compared when compared
-lexicographically as strings; otherwise return failure.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_string_ge (@vari{STR}, @varii{STR})
-Return successfully if @vari{STR} is greater than or equal to @varii{STR} when compared when
-compared lexicographically as strings; otherwise return failure.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_string_eq_yes (@var{STR})
-@deffnx {Preprocessor Macro} mbfl_string_eq_no (@var{STR})
-@deffnx {Preprocessor Macro} mbfl_string_eq_true (@var{STR})
-@deffnx {Preprocessor Macro} mbfl_string_eq_false (@var{STR})
-Return successfully if the argument @var{STR} is equal to, respectively: @samp{yes}, @samp{no},
-@samp{true}, @samp{false} when compared when compared lexicographically as string; otherwise return
-failure.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_string_neq_yes (@var{STR})
-@deffnx {Preprocessor Macro} mbfl_string_neq_no (@var{STR})
-@deffnx {Preprocessor Macro} mbfl_string_neq_true (@var{STR})
-@deffnx {Preprocessor Macro} mbfl_string_neq_false (@var{STR})
-Return successfully if the argument @var{STR} is @strong{not} equal to, respectively: @samp{yes},
-@samp{no}, @samp{true}, @samp{false} when compared when compared lexicographically as string;
-otherwise return failure.
 @end deffn
 
 @c page
@@ -3691,9 +3518,6 @@ false.
 @chapter Manipulating strings with functions
 
 
-In addition to the functions documented here, we can manipulate strings with some preprocessor
-macros; @ref{preprocessor strings, Manipulating strings with macros}.
-
 @menu
 * strings quote::               Quoted characters.
 * strings inspection::          Inspecting a string.
@@ -3762,6 +3586,30 @@ mbfl_string_quote_var _RV \\a\\b\\c
 @section Inspecting a string
 
 
+@menu
+* strings inspection length::   Determining the length of strings.
+* strings inspection empty::    Determining if a string is empty.
+* strings inspection extract::  Extracting characters and ranges from strings.
+* strings inspection search::   Searching characters in strings.
+@end menu
+
+@c page
+@node strings inspection length
+@subsection Determining the length of strings
+
+
+@deffn {Preprocessor Macros} mbfl_string_len (@var{VAR})
+Expands into the expression:
+
+@example
+$@{#@var{VAR}@}
+@end example
+
+@noindent
+which evaluates to the number of characters in the string in the variable @var{VAR}.
+@end deffn
+
+
 @defun mbfl_string_length @var{STRING}
 Print an integer representing the length of @var{STRING}.  The argument @var{STRING} can be an empty
 string.
@@ -3773,6 +3621,35 @@ Return successfully if @var{STRING} has length equal to @var{LENGTH}.  The argum
 must be a non-negative integer; the argument @var{STRING} can be an empty string.
 @end defun
 
+@c page
+@node strings inspection empty
+@subsection Determining if a string is empty
+
+
+@deffn {Preprocessor Macros} mbfl_string_empty (@var{VAR})
+Expand into the expression:
+
+@example
+@{ test $@{#@var{VAR}@} -eq 0; @}
+@end example
+
+@noindent
+which evaluates to true if the string value in the variable @var{VAR} @strong{is} the empty string.
+@end deffn
+
+
+@deffn {Preprocessor Macros} mbfl_string_not_empty (@var{VAR})
+Expand into the expression:
+
+@example
+@{ test $@{#@var{VAR}@} -ne 0; @}
+@end example
+
+@noindent
+which evaluates to true if the string value in the variable @var{VAR} @strong{is not} the empty
+string.
+@end deffn
+
 
 @defun mbfl_string_is_empty @var{STRING}
 Return successfully if @var{STRING} is empty.
@@ -3782,6 +3659,57 @@ Return successfully if @var{STRING} is empty.
 @defun mbfl_string_is_not_empty @var{STRING}
 Return successfully if @var{STRING} is not empty.
 @end defun
+
+@c page
+@node strings inspection extract
+@subsection Extracting characters and ranges from strings
+
+
+@deffn {Preprocessor Macros} mbfl_string_idx (@var{VAR}, @var{EXPR})
+Expands into the expression:
+
+@example
+$@{@var{VAR}:@var{EXPR}:1@}
+@end example
+
+@noindent
+which evaluates to the character at index @var{EXPR} in the string in the variable @var{VAR}.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_last_char (@var{VAR})
+Expand into the expression:
+
+@example
+$@{$1:$(($@{#$1@} - 1)):1@}
+@end example
+
+@noindent
+which, if it is not empty, evaluates to the last character of the string in the variable @var{VAR};
+if the string empty: the result of the evaluation is the empty string.
+
+Usage examples:
+
+@example
+@{
+  local STR='ciao'
+  test 'o' = mbfl_string_last_char(STR)
+@}
+@result{} 0
+
+@{
+  local STR=$'ciao\n'
+  test $'\n' = "mbfl_string_last_char(STR)"
+@}
+@result{} 0
+
+@{
+  local -r STR=
+  test '' = "mbfl_string_last_char(STR)"
+@}
+@result{} 0
+@end example
+@end deffn
 
 
 @defun mbfl_string_index @var{STRING} @var{INDEX}
@@ -3802,6 +3730,38 @@ mbfl_string_index_var _RV abcdefghilm 0
 "$_RV" @result{} a
 @end example
 @end defun
+
+
+@defun mbfl_string_range @var{STRING} @var{BEGIN}
+@defunx mbfl_string_range @var{STRING} @var{BEGIN} @var{END}
+@defunx mbfl_string_range_var @var{_RV} @var{STRING} @var{BEGIN}
+@defunx mbfl_string_range_var @var{_RV} @var{STRING} @var{BEGIN} @var{END}
+Extract a range of characters from a string.  Arguments: @var{STRING}, the source string;
+@var{BEGIN}, the index of the first character in the range; @var{END}, optional, the index of the
+character past the last in the range, this character is not extracted.
+
+@var{END} defaults to the string length; if the parameter @var{END} is set to the lowercase string
+@code{end} or the uppercase string @code{END}: the end index is set to the string length.
+
+Echo to stdout the selected range of characters, which may be the empty string.
+
+@DocVarVariant{}
+
+@example
+mbfl_string_range abcdefghilm 0 end     @print{} abcdefghilm
+mbfl_string_range abcdefghilm 0         @print{} abcdefghilm
+mbfl_string_range abcdefghilm 0 4       @print{} abcd
+mbfl_string_range abcdefghilm 4 end     @print{} efghilm
+
+local _RV
+mbfl_string_range_var _RV abcdefghilm 4 end
+"$_RV" @result{} efghilm
+@end example
+@end defun
+
+@c page
+@node strings inspection search
+@subsection Searching characters in strings
 
 
 @defun mbfl_string_first @var{STRING} @var{CHAR}
@@ -3866,33 +3826,13 @@ mbfl_string_last_var _RV abcdefghilm d
 @end example
 @end defun
 
+@c page
 
-@defun mbfl_string_range @var{STRING} @var{BEGIN}
-@defunx mbfl_string_range @var{STRING} @var{BEGIN} @var{END}
-@defunx mbfl_string_range_var @var{_RV} @var{STRING} @var{BEGIN}
-@defunx mbfl_string_range_var @var{_RV} @var{STRING} @var{BEGIN} @var{END}
-Extract a range of characters from a string.  Arguments: @var{STRING}, the source string;
-@var{BEGIN}, the index of the first character in the range; @var{END}, optional, the index of the
-character past the last in the range, this character is not extracted.
 
-@var{END} defaults to the string length; if the parameter @var{END} is set to the lowercase string
-@code{end} or the uppercase string @code{END}: the end index is set to the string length.
 
-Echo to stdout the selected range of characters, which may be the empty string.
+@c ------------------------------------------------------------------------
 
-@DocVarVariant{}
 
-@example
-mbfl_string_range abcdefghilm 0 end     @print{} abcdefghilm
-mbfl_string_range abcdefghilm 0         @print{} abcdefghilm
-mbfl_string_range abcdefghilm 0 4       @print{} abcd
-mbfl_string_range abcdefghilm 4 end     @print{} efghilm
-
-local _RV
-mbfl_string_range_var _RV abcdefghilm 4 end
-"$_RV" @result{} efghilm
-@end example
-@end defun
 
 
 @defun mbfl_string_has_prefix @var{PREFIX} @var{STRING}
@@ -4418,6 +4358,203 @@ otherwise return false.
 @c page
 @node strings comparison
 @section Comparing strings
+
+
+@menu
+* strings comparison macros::   Comparing strings with macros.
+* strings comparison funcs::    Comparing strings with functions.
+@end menu
+
+@c page
+@node strings comparison macros
+@subsection Comparing strings with macros
+
+
+The following macros take their arguments as they are, without enclosing them into double or single
+quotes, as follows:
+
+@example
+test $1 '=' $2
+@end example
+
+@noindent
+so we must take care of quoting the arguments appropriately.
+
+
+@deffn {Preprocessor Macro} mbfl_string_eq (@vari{STR}, @varii{STR})
+Return successfully if the arguments are equal when compared when compared lexicographically as
+strings; otherwise return failure.
+
+@example
+declare CIAO=ciao HELLO=hello
+
+mbfl_string_eq('ciao', 'ciao')          @result{} 0
+mbfl_string_eq('ciao', 'hello')         @result{} 1
+
+mbfl_string_eq("$CIAO", "$CIAO")        @result{} 0
+mbfl_string_eq("$CIAO", "$HELLO")       @result{} 1
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_neq (@vari{STR}, @varii{STR})
+Return successfully if the arguments are different when compared lexicographically as strings;
+otherwise return failure.
+
+@example
+declare CIAO=ciao HELLO=hello
+
+mbfl_string_neq('ciao', 'ciao')         @result{} 1
+mbfl_string_neq('ciao', 'hello')        @result{} 0
+
+mbfl_string_neq("$CIAO", "$CIAO")       @result{} 1
+mbfl_string_neq("$CIAO", "$HELLO")      @result{} 0
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_lt (@vari{STR}, @varii{STR})
+Return successfully if @vari{STR} is less than @varii{STR} when compared when compared
+lexicographically as strings; otherwise return failure.
+
+@example
+declare CIAO=ciao HELLO=hello SALUT=salut
+
+mbfl_string_lt('ciao',  'ciao')         @result{} 1
+mbfl_string_lt('ciao',  'hello')        @result{} 0
+mbfl_string_lt('salut', 'hello')        @result{} 0
+
+mbfl_string_lt("$CIAO",  "$CIAO")       @result{} 1
+mbfl_string_lt("$CIAO",  "$HELLO")      @result{} 0
+mbfl_string_lt("$SALUT", "$HELLO")      @result{} 1
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_gt (@vari{STR}, @varii{STR})
+Return successfully if @vari{STR} is greater than @varii{STR} when compared when compared
+lexicographically as strings; otherwise return failure.
+
+@example
+declare CIAO=ciao HELLO=hello SALUT=salut
+
+mbfl_string_gt('ciao',  'ciao')         @result{} 1
+mbfl_string_gt('ciao',  'hello')        @result{} 1
+mbfl_string_gt('salut', 'hello')        @result{} 0
+
+mbfl_string_gt("$CIAO",  "$CIAO")       @result{} 1
+mbfl_string_gt("$CIAO",  "$HELLO")      @result{} 1
+mbfl_string_gt("$SALUT", "$HELLO")      @result{} 0
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_le (@vari{STR}, @varii{STR})
+Return successfully if @vari{STR} is less than or equal to @varii{STR} when compared when compared
+lexicographically as strings; otherwise return failure.
+
+@example
+declare CIAO=ciao HELLO=hello SALUT=salut
+
+mbfl_string_le('ciao',  'ciao')         @result{} 0
+mbfl_string_le('ciao',  'hello')        @result{} 0
+mbfl_string_le('salut', 'hello')        @result{} 0
+
+mbfl_string_le("$CIAO",  "$CIAO")       @result{} 0
+mbfl_string_le("$CIAO",  "$HELLO")      @result{} 0
+mbfl_string_le("$SALUT", "$HELLO")      @result{} 1
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_ge (@vari{STR}, @varii{STR})
+Return successfully if @vari{STR} is greater than or equal to @varii{STR} when compared when
+compared lexicographically as strings; otherwise return failure.
+
+@example
+declare CIAO=ciao HELLO=hello SALUT=salut
+
+mbfl_string_ge('ciao',  'ciao')         @result{} 0
+mbfl_string_ge('ciao',  'hello')        @result{} 1
+mbfl_string_ge('salut', 'hello')        @result{} 0
+
+mbfl_string_ge("$CIAO",  "$CIAO")       @result{} 0
+mbfl_string_ge("$CIAO",  "$HELLO")      @result{} 1
+mbfl_string_ge("$SALUT", "$HELLO")      @result{} 0
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_eq_yes (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_eq_no (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_eq_true (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_eq_false (@var{STR})
+Return successfully if the argument @var{STR} is equal to, respectively: @samp{yes}, @samp{no},
+@samp{true}, @samp{false} when compared when compared lexicographically as string; otherwise return
+failure.
+
+@example
+declare YES=yes NO=no TRUE=true FALSE=false
+
+mbfl_string_eq_yes('yes')       @result{} 0
+mbfl_string_eq_yes("$YES")      @result{} 0
+mbfl_string_eq_yes('no')        @result{} 1
+mbfl_string_eq_yes("$NO")       @result{} 1
+
+mbfl_string_eq_no('yes')        @result{} 1
+mbfl_string_eq_no("$YES")       @result{} 1
+mbfl_string_eq_no('no')         @result{} 0
+mbfl_string_eq_no("$NO")        @result{} 0
+
+mbfl_string_eq_true('true')     @result{} 0
+mbfl_string_eq_true("$TRUE")    @result{} 0
+mbfl_string_eq_true('false')    @result{} 1
+mbfl_string_eq_true("$FALSE")   @result{} 1
+
+mbfl_string_eq_false('true')    @result{} 1
+mbfl_string_eq_false("$TRUE")   @result{} 1
+mbfl_string_eq_false('false')   @result{} 0
+mbfl_string_eq_false("$FALSE")  @result{} 0
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_string_neq_yes (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_neq_no (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_neq_true (@var{STR})
+@deffnx {Preprocessor Macro} mbfl_string_neq_false (@var{STR})
+Return successfully if the argument @var{STR} is @strong{not} equal to, respectively: @samp{yes},
+@samp{no}, @samp{true}, @samp{false} when compared when compared lexicographically as string;
+otherwise return failure.
+
+@example
+declare YES=yes NO=no TRUE=true FALSE=false
+
+mbfl_string_neq_yes('yes')      @result{} 1
+mbfl_string_neq_yes("$YES")     @result{} 1
+mbfl_string_neq_yes('no')       @result{} 0
+mbfl_string_neq_yes("$NO")      @result{} 0
+
+mbfl_string_neq_no('yes')       @result{} 0
+mbfl_string_neq_no("$YES")      @result{} 0
+mbfl_string_neq_no('no')        @result{} 1
+mbfl_string_neq_no("$NO")       @result{} 1
+
+mbfl_string_neq_true('true')    @result{} 1
+mbfl_string_neq_true("$TRUE")   @result{} 1
+mbfl_string_neq_true('false')   @result{} 0
+mbfl_string_neq_true("$FALSE")  @result{} 0
+
+mbfl_string_neq_false('true')   @result{} 0
+mbfl_string_neq_false("$TRUE")  @result{} 0
+mbfl_string_neq_false('false')  @result{} 1
+mbfl_string_neq_false("$FALSE") @result{} 1
+@end example
+@end deffn
+
+@c page
+@node strings comparison funcs
+@subsection Comparing strings with functions
 
 
 @defun mbfl_string_equal @vari{str} @varii{str}

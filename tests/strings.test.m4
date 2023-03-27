@@ -1501,6 +1501,14 @@ function string-macro-equal-fixed-1.1 () {
 function string-macro-equal-fixed-1.2 () {
     ! mbfl_string_eq_yes('ciao')
 }
+function string-macro-equal-fixed-1.3 () {
+    declare STR=yes
+    mbfl_string_eq_yes("$STR")
+}
+function string-macro-equal-fixed-1.4 () {
+    declare STR=ciao
+    ! mbfl_string_eq_yes("$STR")
+}
 
 function string-macro-equal-fixed-2.1 () {
     mbfl_string_eq_no('no')
