@@ -45,7 +45,7 @@ declare -r CDPATH=
 
 #### library loading
 
-mbfl_load_library
+mbfl_embed_library
 
 
 #### declare exit codes

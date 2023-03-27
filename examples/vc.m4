@@ -49,8 +49,8 @@ declare -r CDPATH=
 
 #### library loading
 
-mbfl_load_library
-mbfl_load_library(__LIBMBFL_GIT__)
+mbfl_embed_library
+mbfl_embed_library(__LIBMBFL_GIT__)
 
 
 #### declare external programs usage
