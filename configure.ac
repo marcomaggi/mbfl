@@ -100,7 +100,7 @@ AM_CONDITIONAL([WANT_SEMVER],[test x$with_semver = xyes])
 #### let's go
 
 AC_CONFIG_FILES([Makefile]
-  [src/bin/mbflpp.bash]
+  [src/bin/mbflpp.bash.m4]
   [src/modules/config-values.bash.m4])
 MMUX_OUTPUT
 AC_OUTPUT

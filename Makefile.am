@@ -29,21 +29,8 @@ MBFL_LIB_INSTDIR	= $(datadir)/$(PACKAGE)
 
 MBFL_PROGRAM_BASH	= @MBFL_PROGRAM_BASH@
 
-# This  script  is  generated  by  "configure"  after  processing  the
-# template in "$(srcdir)/src/bin/mbflpp.bash.in".
-#
-MBFL_PROGRAM_MBFLPP	= $(builddir)/src/bin/mbflpp.bash
-MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
-
-MBFL_PREPROCESSOR	= $(srcdir)/src/lib/libmbfl-preprocessor.m4
-
-# These flags  are always  used on  the command  line of  "mbflpp.bash".  We  can set
-# "MBFLPPFLAGS" on the command line of "make".
-#
-MBFLPP_GENERAL_FLAGS	= --no-prepro --library=$(MBFL_PREPROCESSOR) $(MBFLPPFLAGS)
-# --define=__MBFL_ENABLE_UNDERSCORE_AS_DATAVAR__
-
 EXTRA_DIST		+=			\
+	src/backup/mbflpp.bash			\
 	src/backup/libmbfl.bash			\
 	src/backup/libmbfl-preprocessor.m4
 
@@ -104,6 +91,7 @@ install-html-local:
 
 #### preprocessor macros file
 
+MBFL_PREPROCESSOR		= $(top_srcdir)/src/lib/libmbfl-preprocessor.m4
 mbflpreprodir			= $(MBFL_LIB_INSTDIR)
 dist_mbflprepro_DATA		= $(MBFL_PREPROCESSOR)
 
@@ -111,26 +99,43 @@ dist_mbflprepro_DATA		= $(MBFL_PREPROCESSOR)
 #### scripts generation
 
 bin_SCRIPTS			= src/bin/mbflpp.bash
-CLEANFILES			+= src/bin/$(am__dirstamp)
-MAINTAINERCLEANFILES		+= src/bin/mbflpp.bash
+CLEANFILES			+= src/bin/$(am__dirstamp) src/bin/mbflpp.bash
 
-## --------------------------------------------------------------------
+# These flags  are always used  on the command line  of "mbflpp.bash".
+# We can set "MBFLPPFLAGS" on the command line of "make".
+#
+MBFLPP_GENERAL_FLAGS	= --no-prepro --library=$(MBFL_PREPROCESSOR) $(MBFLPPFLAGS)
+# --define=__MBFL_ENABLE_UNDERSCORE_AS_DATAVAR__
 
-# MBFL_SCRIPTS_ENV		=
-# MBFL_SCRIPTS_RUN		= $(MBFL_SCRIPTS_ENV) $(MBFL_RUN_MBFLPP)
-# MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash
+## ------------------------------------------------------------------------
 
-# MBFL_SCRIPTS_PREREQUISITES	=		\
-# 	$(MBFL_PREPROCESSOR)			\
-#	$(MBFL_PROGRAM_MBFLPP)			\
-# 	src/bin/$(am__dirstamp)
+# We use the backup preprocessor to generate the new preprocessor scrpt.
+#
+MBFL_BACKUP_PROGRAM_MBFLPP	= $(top_srcdir)/src/backup/mbflpp.bash
+MBFL_BACKUP_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_BACKUP_PROGRAM_MBFLPP)
 
-# src/bin/$(am__dirstamp):
-# 	@$(MKDIR_P) src/bin
-# 	@: > src/bin/$(am__dirstamp)
+MBFL_SCRIPTS_ENV		=
+MBFL_SCRIPTS_RUN		= $(MBFL_SCRIPTS_ENV) $(MBFL_BACKUP_RUN_MBFLPP)
+MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash
 
-# src/bin/%.sh: src/bin/%.sh.m4 $(MBFL_SCRIPTS_PREREQUISITES)
-# 	$(MBFL_SCRIPTS_RUN) $(MBFL_SCRIPTS_FLAGS) --output=$@ $<
+MBFL_SCRIPTS_PREREQUISITES	=		\
+	$(MBFL_PREPROCESSOR)			\
+	$(MBFL_BACKUP_PROGRAM_MBFLPP)		\
+	src/bin/$(am__dirstamp)
+
+src/bin/$(am__dirstamp):
+	@$(MKDIR_P) src/bin
+	@: > src/bin/$(am__dirstamp)
+
+src/bin/%.bash: src/bin/%.bash.m4 $(MBFL_SCRIPTS_PREREQUISITES)
+	$(MBFL_SCRIPTS_RUN) $(MBFL_SCRIPTS_FLAGS) --output=$@ $<
+
+## ------------------------------------------------------------------------
+
+# We use these variables in this Makefile.
+#
+MBFL_PROGRAM_MBFLPP	= $(builddir)/src/bin/mbflpp.bash
+MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 
 
 #### libmbfl modules generation
@@ -635,7 +640,7 @@ MBFL_TESTS_ENV		+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_TESTS_ENV		+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_TESTS_ENV		+= TESTMATCH=$(TESTMATCH); export TESTMATCH;
 MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS) --add-bash
+MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
 MBFL_TESTS_PREREQUISITES=				\
 	tests/$(am__dirstamp)				\

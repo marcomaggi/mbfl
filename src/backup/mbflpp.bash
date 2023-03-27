@@ -26,7 +26,7 @@
 #### MBFL's related options and variables
 
 declare -r script_PROGNAME='mbflpp.bash'
-declare -r script_VERSION='@PACKAGE_VERSION@'
+declare -r script_VERSION='3.0.0-devel.8'
 declare -r script_COPYRIGHT_YEARS='2005, 2009, 2018, 2020'
 declare -r script_AUTHOR='Marco Maggi'
 declare -r script_LICENSE=GPL3
@@ -5434,17 +5434,17 @@ return 0
 #page
 #### global variables
 
-declare -r prefix="@prefix@"
-declare -r exec_prefix="@exec_prefix@"
-declare -r bindir="@bindir@"
-declare -r datarootdir="@datarootdir@"
-declare -r datadir="@datadir@"
-declare -r pkgdatadir="@datadir@/@PACKAGE@"
+declare -r prefix="/"
+declare -r exec_prefix="${prefix}"
+declare -r bindir="${exec_prefix}/bin"
+declare -r datarootdir="${prefix}/share"
+declare -r datadir="${datarootdir}"
+declare -r pkgdatadir="${datarootdir}/mbfl"
 
-declare -r PACKAGE='@PACKAGE@'
-declare -r PACKAGE_VERSION='@PACKAGE_VERSION@'
-declare -r CORE_VERSION='@MBFL_CORE_VERSION@'
-declare -r SEMANTIC_VERSION='@MBFL_SEMANTIC_VERSION@'
+declare -r PACKAGE='mbfl'
+declare -r PACKAGE_VERSION='3.0.0-devel.8'
+declare -r CORE_VERSION='3.0.0'
+declare -r SEMANTIC_VERSION='v3.0.0-devel.8+noarch'
 
 declare -r MBFL_INSTALLDIR=$pkgdatadir
 
@@ -5491,7 +5491,7 @@ mbfl_declare_option NO_PREPROCESSOR   no '' no-prepro         noarg "do not load
 
 mbfl_declare_option LIBMBFL "$DEFAULT_LIBMBFL" '' libmbfl witharg 'pathname of the MBFL library "libmbfl.bash"'
 
-mbfl_declare_option BASH_PROGRAM "@MBFL_PROGRAM_BASH@" \
+mbfl_declare_option BASH_PROGRAM "/bin/bash" \
 		    '' bash-program witharg "absolute pathname of the Bash program to use with --add-bash"
 
 mbfl_declare_option CHECK_VERSION '' '' check-version witharg 'check the given version against the one of MBFL'
@@ -5661,7 +5661,7 @@ function main () {
 	    else exit_because_wrong_command_line_arguments
 	    fi
     	} | {
-            if test "$script_option_PRESERVE_COMMENTS" = 'yes'
+            if mbfl_string_equal "$script_option_PRESERVE_COMMENTS" 'yes'
 	    then program_cat
 	    else filter_drop_comments
 	    fi
@@ -5672,10 +5672,15 @@ function main () {
 	       # Execute bash which will read from stdin.
     	    then exec "$mbfl_PROGRAM_BASH"
             else
-		if mbfl_string_equal "$script_option_ADD_BASH" 'yes'
-    		then printf '#!%s\n' "$script_option_BASH_PROGRAM" >"$script_option_OUTPUT"
-		fi
-		program_cat >"$script_option_OUTPUT"
+		{
+		    if mbfl_string_equal "$script_option_ADD_BASH" 'yes'
+    		    then
+			mbfl_message_verbose_printf 'adding bash shebang.\n'
+			printf '#!%s\n' "$script_option_BASH_PROGRAM" >"$script_option_OUTPUT"
+		    else printf ''
+		    fi
+		} >"$script_option_OUTPUT"
+		program_cat >>"$script_option_OUTPUT"
             fi
     	}
     then exit $?
@@ -5703,7 +5708,7 @@ function filter_page_separators () {
 #### program interfaces
 
 function program_m4 () {
-    mbfl_program_exec "@MBFL_PROGRAM_M4@" \
+    mbfl_program_exec "/usr/bin/m4" \
 		      -D__PACKAGE_VERSION__="$PACKAGE_VERSION"				\
 		      -D__PACKAGE_DATADIR__="$pkgdatadir"				\
 		      -D__MBFL_LIBRARY__="$script_option_LIBMBFL"			\
