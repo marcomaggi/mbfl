@@ -87,9 +87,9 @@
 
 @copying
 This document describes version @value{VERSION} of @value{PACKAGE}, a collection of libraries of
-functions for the @gnu{} Bash shell.  It requires Bash at least version
-@value{REQUIRED_BASH_VERSION}.  The package is distributed under the terms of the @gnu{} Lesser
-General Public License (@lgpl{}).
+functions for the @gnu{} Bash shell.  It requires @gnu{} Bash at least version
+@value{REQUIRED_BASH_VERSION}; it require @gnu{} m4 (other m4 implementations will not do).  The
+package is distributed under the terms of the @gnu{} Lesser General Public License (@lgpl{}).
 
 The latest release can be downloaded from:
 
@@ -211,10 +211,13 @@ Indexes
 
 
 This document describes version @value{VERSION} of @value{PACKAGE}, a collection of libraries of
-functions for the @gnu{} Bash shell.  This package is an attempt to make @gnu{} Bash a viable
-solution for medium sized scripts; it needs at least Bash version @value{REQUIRED_BASH_VERSION}.  A
-set of modules implementing common operations and script templates are offered by this package and
-the author has used them with success in implementing non--small scripts.
+functions for the @gnu{} Bash shell.  It requires @gnu{} Bash at least version
+@value{REQUIRED_BASH_VERSION}; it require @gnu{} m4 (other m4 implementations will not do).  The
+package is distributed under the terms of the @gnu{} Lesser General Public License (@lgpl{}).
+
+This package is an attempt to make @gnu{} Bash a viable solution for medium sized scripts; a set of
+modules implementing common operations and script templates are offered by this package and the
+author has used them with success in implementing non--small scripts.
 
 The philosophy of @mbfl{} is to do the work as much as possible without external commands.  For
 example: string manipulation is implemented using the special variable substitution provided by
@@ -890,15 +893,16 @@ as file system pathname of a library to embed in the source file.  Does not matt
 either a @value{LIBMBFLFILE} implementation or some other library.
 @end itemize
 
-The macro expands into a use of the M4 built--in @func{m4_include}:
+The macro expands into a use of the m4 built--in @func{m4_undivert}:
 
 @example
-m4_include(@var{LIBRARY_FILE_PATHNAME})
+m4_undivert(@var{LIBRARY_FILE_PATHNAME})
 @end example
 
 @noindent
-so the argument @var{LIBRARY_FILE_PATHNAME} must be a M4 expression expanding into a file system
-pathname, @mfourref{Include, Including named files}.
+so the argument @var{LIBRARY_FILE_PATHNAME} must be a m4 expression expanding into a file system
+pathname.  @mfourref{Include, Including named files}, for details on including files.
+@mfourref{Undivert, Undiverting output}, for details on undiverting named files.
 
 As example, we could preprocess a script with the following command line:
 

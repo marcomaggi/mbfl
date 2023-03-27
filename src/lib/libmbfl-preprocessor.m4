@@ -105,7 +105,7 @@ mbfl_variable_unset(ARGV[$2]) m4_dnl
 m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
 m4_define([[[mbfl_load_library]]],  [[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
 
-m4_define([[[mbfl_embed_library]]],[[[m4_include(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]])
+m4_define([[[mbfl_embed_library]]],[[[m4_undivert(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]])
 
 
 #### variables, arrays and slots handling
