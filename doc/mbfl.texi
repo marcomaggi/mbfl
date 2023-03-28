@@ -630,8 +630,6 @@ recommended.
 * preprocessor parameters::     Function parameters handling.
 * preprocessor arguments::      Script arguments handling.
 * preprocessor nameref::        Variable name references.
-* preprocessor variables::      Manipulating variables with macros.
-* preprocessor programs::       Defining program--execution functions.
 @end menu
 
 @c page
@@ -1492,106 +1490,6 @@ Unset the @emph{proxy variable} @var{NAME} and all the variables associated to i
 @end deffn
 
 @c page
-@node preprocessor variables
-@section Manipulating variables with macros
-
-
-@deffn {Preprocessor Macro} mbfl_variable_unset (@var{VAR})
-@deffnx {Preprocessor Macro} mbfl_unset_variable (@var{VAR})
-These macros are synonyms.  Expand into a command that unsets the variable @var{VAR}:
-
-@example
-unset -v @var{VAR}
-@end example
-@end deffn
-
-@c page
-@node preprocessor programs
-@section Defining program--execution functions
-
-
-@cindex Defining program-execution functions
-@cindex Program-execution functions, definition
-@cindex Executing external programs, defining executor function
-
-
-It happens often that we want to execute an external program; it is useful to wrap into a function
-the machinery needed to use program declaration and execution with @mbfl{}'s facilities.  Some
-preprocessor macros automate this function definition.
-
-Let's say we want to define a function to execute @command{pamixer}, PulseAudio's mixer program; we
-can use the macro @func{MBFL_DEFINE_PROGRAM_EXECUTOR}:
-
-@example
-mbfl_declare_program pamixer
-
-MBFL_DEFINE_PROGRAM_EXECUTOR([[[pamixer]]], [[[pamixer]]])
-@end example
-
-@noindent
-the macro use will expand into:
-
-@example
-function program_pamixer () @{
-    mbfl_local_varref(PROGRAM)
-    mbfl_program_found_var mbfl_datavar(PROGRAM) pamixer || exit $?
-    mbfl_program_exec "$PROGRAM"  "$@@"
-@}
-@end example
-
-@noindent
-we can use the function as:
-
-@example
-if ! program_pamixer --increase 2
-then
-    # handle the error
-fi
-@end example
-
-@noindent
-the function will return with status equal to the exit status of the program.
-
-
-@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_EXECUTOR (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
-Define a function we can call to execute an external program previously declared with
-@func{mbfl_declare_program} and similar functions; @ref{program declaring, Declaring the intention
-to use a program}.  The program is executed with @func{mbfl_program_exec}; @ref{mbfl_program_exec,
-Core @api{} for Program execution}.
-
-@table @var
-@item STEM
-A string used to compose the function name, which will be: @code{program_@var{STEM}}.
-
-@item EXECUTABLE_PATHNAME
-The executable specification of the program; it must be the same string used as argument to
-@func{mbfl_declare_program}.
-
-@item OPTIONAL_DEFAULT_FLAGS
-Optional sequence of strings that will be inserted on the command line of the program.
-@end table
-
-With this preprocessor version the expansion of a macro use looks like this:
-
-@example
-function program_@var{STEM} () @{
-    mbfl_local_varref(PROGRAM)
-    mbfl_program_found_var mbfl_datavar(PROGRAM) @var{EXECUTABLE_PATHNAME} || exit $?
-    mbfl_program_exec "$PROGRAM" @var{OPTIONAL_DEFAULT_FLAGS} "$@@"
-@}
-@end example
-@end deffn
-
-
-@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_REPLACER (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
-Like @func{MBFL_DEFINE_PROGRAM_REPLACER}, but uses @func{mbfl_program_replace} rather than
-@func{mbfl_program_exec}; @ref{mbfl_program_replace, Core @api{} for program execution with
-replacement}.
-
-The generated function name is @code{program_replace_@var{STEM}}.
-@end deffn
-
-@c page
 @node base
 @chapter Some base functions and variables
 
@@ -2136,7 +2034,7 @@ func
 @menu
 * variables service::           Required user defined variables.
 * variables colon::             Manipulating colon variables.
-* variables misc::              Miscellaneous variable functions.
+* variables misc::              Miscellaneous variable facilities.
 @end menu
 
 @c page
@@ -2326,7 +2224,7 @@ Take @var{VARNAME}'s value, a colon separated list of string, and remove duplica
 
 @c page
 @node variables misc
-@section Miscellaneous variable functions.
+@section Miscellaneous variable facilities
 
 
 @defun mbfl_variable_alloc @var{_RV}
@@ -2343,6 +2241,16 @@ mbfl_variable_alloc NAME
 $NAME   @result{} mbfl_u_variable_2323
 @end example
 @end defun
+
+
+@deffn {Preprocessor Macro} mbfl_variable_unset (@var{VAR})
+@deffnx {Preprocessor Macro} mbfl_unset_variable (@var{VAR})
+These macros are synonyms.  Expand into a command that unsets the variable @var{VAR}:
+
+@example
+unset -v @var{VAR}
+@end example
+@end deffn
 
 @c page
 @node arrays
@@ -7983,6 +7891,7 @@ Exit or return with code @code{99}.
 * program executing bash::      Executing a @command{bash} process.
 * program executing channels::  Redirecting channels when executing a program.
 * program executing testing::   Testing a script and running programs.
+* program executing defining::  Defining program--execution functions.
 @end menu
 
 @c page
@@ -8448,6 +8357,92 @@ if @{
 then handle_the_error
 fi
 @end example
+
+@c page
+@node program executing defining
+@subsection Defining program--execution functions
+
+
+@cindex Defining program-execution functions
+@cindex Program-execution functions, definition
+@cindex Executing external programs, defining executor function
+
+
+It happens often that we want to execute an external program; it is useful to wrap into a function
+the machinery needed to use program declaration and execution with @mbfl{}'s facilities.  Some
+preprocessor macros automate this function definition.
+
+Let's say we want to define a function to execute @command{pamixer}, PulseAudio's mixer program; we
+can use the macro @func{MBFL_DEFINE_PROGRAM_EXECUTOR}:
+
+@example
+mbfl_declare_program pamixer
+
+MBFL_DEFINE_PROGRAM_EXECUTOR([[[pamixer]]], [[[pamixer]]])
+@end example
+
+@noindent
+the macro use will expand into:
+
+@example
+function program_pamixer () @{
+    mbfl_local_varref(PROGRAM)
+    mbfl_program_found_var mbfl_datavar(PROGRAM) pamixer || exit $?
+    mbfl_program_exec "$PROGRAM"  "$@@"
+@}
+@end example
+
+@noindent
+we can use the function as:
+
+@example
+if ! program_pamixer --increase 2
+then
+    # handle the error
+fi
+@end example
+
+@noindent
+the function will return with status equal to the exit status of the program.
+
+
+@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_EXECUTOR (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
+Define a function we can call to execute an external program previously declared with
+@func{mbfl_declare_program} and similar functions; @ref{program declaring, Declaring the intention
+to use a program}.  The program is executed with @func{mbfl_program_exec}; @ref{mbfl_program_exec,
+Core @api{} for Program execution}.
+
+@table @var
+@item STEM
+A string used to compose the function name, which will be: @code{program_@var{STEM}}.
+
+@item EXECUTABLE_PATHNAME
+The executable specification of the program; it must be the same string used as argument to
+@func{mbfl_declare_program}.
+
+@item OPTIONAL_DEFAULT_FLAGS
+Optional sequence of strings that will be inserted on the command line of the program.
+@end table
+
+With this preprocessor version the expansion of a macro use looks like this:
+
+@example
+function program_@var{STEM} () @{
+    mbfl_local_varref(PROGRAM)
+    mbfl_program_found_var mbfl_datavar(PROGRAM) @var{EXECUTABLE_PATHNAME} || exit $?
+    mbfl_program_exec "$PROGRAM" @var{OPTIONAL_DEFAULT_FLAGS} "$@@"
+@}
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_REPLACER (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
+Like @func{MBFL_DEFINE_PROGRAM_REPLACER}, but uses @func{mbfl_program_replace} rather than
+@func{mbfl_program_exec}; @ref{mbfl_program_replace, Core @api{} for program execution with
+replacement}.
+
+The generated function name is @code{program_replace_@var{STEM}}.
+@end deffn
 
 @c page
 @node program preselected
