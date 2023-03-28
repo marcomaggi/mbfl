@@ -32,7 +32,7 @@
 #
 m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
 
-# An  object whose  class is  a  child of  "mbfl_standard_object" is  a  Bash index  array with  the
+# An  object whose  class is  a  child of  "mbfl_default_object" is  a  Bash index  array with  the
 # following layout:
 #
 #  ---------------
@@ -48,7 +48,7 @@ m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_sl
 m4_define([[[MBFL_STDOBJ__CLASS_INDEX]]],		[[[0]]])
 m4_define([[[MBFL_STDOBJ__FIRST_FIELD_INDEX]]],		[[[1]]])
 
-# A class  whose class is  "mbfl_standard_class" is  a Bash index  array with the  following layout,
+# A class  whose class is  "mbfl_default_class" is  a Bash index  array with the  following layout,
 # where the field specifications are just strings representing the field name:
 #
 #  ---------------------
@@ -103,98 +103,98 @@ m4_define([[[MBFL_STDOBJ__FUNCNAME_PATTERN__MUTATOR]]],		[[['%s_%s_set']]])
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_standard_object_declare(mbfl_standard_object)
-    mbfl_standard_object_declare(mbfl_standard_class)
+    mbfl_default_object_declare(mbfl_default_object)
+    mbfl_default_object_declare(mbfl_default_class)
 fi
 
 
 #### default object class
 #
-# The object "mbfl_standard_object" is the default class of objects created by "mbfl_object_define".
+# The object "mbfl_default_object" is the default class of objects created by "mbfl_object_define".
 #
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_slot_set(mbfl_standard_object, MBFL_STDOBJ__CLASS_INDEX,		_(mbfl_standard_class))
-    mbfl_slot_set(mbfl_standard_object, MBFL_STDCLS__FIELD_INDEX__PARENT,       '')
-    mbfl_slot_set(mbfl_standard_object, MBFL_STDCLS__FIELD_INDEX__NAME,         'mbfl_standard_object')
-    mbfl_slot_set(mbfl_standard_object, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER, 0)
+    mbfl_slot_set(mbfl_default_object, MBFL_STDOBJ__CLASS_INDEX,		_(mbfl_default_class))
+    mbfl_slot_set(mbfl_default_object, MBFL_STDCLS__FIELD_INDEX__PARENT,       '')
+    mbfl_slot_set(mbfl_default_object, MBFL_STDCLS__FIELD_INDEX__NAME,         'mbfl_default_object')
+    mbfl_slot_set(mbfl_default_object, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER, 0)
 
     # This class adds no fields to its instances: we store nothing after the number of fields.
 fi
 
 
-#### standard metaclass
+#### default metaclass
 #
-# The object "mbfl_standard_class"  is the default class of classes  defined by "mbfl_standard_class_define";
+# The object "mbfl_default_class"  is the default class of classes  defined by "mbfl_default_class_define";
 # it is also the class of itself.
 #
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_slot_set(mbfl_standard_class, MBFL_STDOBJ__CLASS_INDEX,		_(mbfl_standard_class))
-    mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_INDEX__PARENT,	_(mbfl_standard_object))
-    mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_INDEX__NAME,		'mbfl_standard_class')
-    mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER,	3)
+    mbfl_slot_set(mbfl_default_class, MBFL_STDOBJ__CLASS_INDEX,		_(mbfl_default_class))
+    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__PARENT,	_(mbfl_default_object))
+    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__NAME,		'mbfl_default_class')
+    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER,	3)
 
     # This class adds fields to its instances, so  we store their specifications after the number of
     # fields.
-    mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_SPEC_INDEX__PARENT,        'parent')
-    mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_SPEC_INDEX__NAME,          'name')
-    mbfl_slot_set(mbfl_standard_class, MBFL_STDCLS__FIELD_SPEC_INDEX__FIELDS_NUMBER, 'fields_number')
+    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_SPEC_INDEX__PARENT,        'parent')
+    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_SPEC_INDEX__NAME,          'name')
+    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_SPEC_INDEX__FIELDS_NUMBER, 'fields_number')
 fi
 
 
-#### accessor functions for objects of type "mbfl_standard_class"
+#### accessor functions for objects of type "mbfl_default_class"
 
-function mbfl_standard_class_is_a () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to instance of mbfl_standard_object)
+function mbfl_default_class_is_a () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to instance of mbfl_default_object)
     if test -v _(mbfl_SELF) -a -v mbfl_slot_spec(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
-    then mbfl_string_eq(_(mbfl_standard_class), _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)) ||
-	    mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
+    then mbfl_string_eq(_(mbfl_default_class), _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)) ||
+	    mbfl_default_classes_are_parent_and_child _(mbfl_default_class) _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
     else false
     fi
 }
 
-function mbfl_standard_metaclass_is_a () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to instance of mbfl_standard_object)
-    if mbfl_standard_class_is_a _(mbfl_SELF)
-    then mbfl_string_eq(_(mbfl_standard_class), _(mbfl_SELF)) ||
-	    mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_SELF)
+function mbfl_default_metaclass_is_a () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to instance of mbfl_default_object)
+    if mbfl_default_class_is_a _(mbfl_SELF)
+    then mbfl_string_eq(_(mbfl_default_class), _(mbfl_SELF)) ||
+	    mbfl_default_classes_are_parent_and_child _(mbfl_default_class) _(mbfl_SELF)
     else false
     fi
 }
 
-function mbfl_standard_class_parent_var () {
+function mbfl_default_class_parent_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,    1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a standard class)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a default class)
     mbfl_RV=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__PARENT)
 }
 
-function mbfl_standard_class_name_var () {
+function mbfl_default_class_name_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,    1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a standard class)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a default class)
     mbfl_RV=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__NAME)
 }
 
-function mbfl_standard_class_fields_number_var () {
+function mbfl_default_class_fields_number_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,    1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a standard class)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS, 2, variable referencing a default class)
     mbfl_RV=mbfl_slot_ref(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER)
 }
 
-function mbfl_standard_classes_are_parent_and_child () {
-    mbfl_mandatory_nameref_parameter(mbfl_MAYBE_PARENT, 1, variable referencing a standard class)
-    mbfl_mandatory_nameref_parameter(mbfl_MAYBE_CHILD,  2, variable referencing a standard class)
+function mbfl_default_classes_are_parent_and_child () {
+    mbfl_mandatory_nameref_parameter(mbfl_MAYBE_PARENT, 1, variable referencing a default class)
+    mbfl_mandatory_nameref_parameter(mbfl_MAYBE_CHILD,  2, variable referencing a default class)
 
     if mbfl_string_eq(_(mbfl_MAYBE_PARENT), _(mbfl_MAYBE_CHILD))
     then return_success
     else
 	declare mbfl_CHILD_PARENT
-	mbfl_standard_class_parent_var mbfl_CHILD_PARENT _(mbfl_MAYBE_CHILD)
+	mbfl_default_class_parent_var mbfl_CHILD_PARENT _(mbfl_MAYBE_CHILD)
 	if mbfl_string_is_empty "$mbfl_CHILD_PARENT"
 	then return_failure
-	else mbfl_standard_classes_are_parent_and_child _(mbfl_MAYBE_PARENT) "$mbfl_CHILD_PARENT"
+	else mbfl_default_classes_are_parent_and_child _(mbfl_MAYBE_PARENT) "$mbfl_CHILD_PARENT"
 	fi
     fi
 }
@@ -202,22 +202,22 @@ function mbfl_standard_classes_are_parent_and_child () {
 
 #### data-structure instance handling
 
-function mbfl_standard_object_define () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,			1, reference to a standard object)
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS,		2, reference to a standard class)
+function mbfl_default_object_define () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,			1, reference to a default object)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS,		2, reference to a default class)
     mbfl_mandatory_nameref_parameter(mbfl_FIELD_INIT_VALUES,	3, reference to an index array containing init field values)
     declare -i mbfl_TOTAL_FIELDS_NUMBER
 
     # Parameters validation.
     {
-	if ! mbfl_standard_class_is_a _(mbfl_CLASS)
+	if ! mbfl_default_class_is_a _(mbfl_CLASS)
 	then
-	    mbfl_message_error_printf 'in call to "%s": expected standard class as class parameter, got: ""' \
+	    mbfl_message_error_printf 'in call to "%s": expected default class as class parameter, got: ""' \
 				      $FUNCNAME _(mbfl_CLASS)
 	    return_because_failure
 	fi
 
-	mbfl_standard_class_fields_number_var mbfl_TOTAL_FIELDS_NUMBER _(mbfl_CLASS)
+	mbfl_default_class_fields_number_var mbfl_TOTAL_FIELDS_NUMBER _(mbfl_CLASS)
 	if ((mbfl_slots_number(mbfl_FIELD_INIT_VALUES) != mbfl_TOTAL_FIELDS_NUMBER))
 	then
 	    mbfl_message_error_printf 'in call to "%s": wrong number of field initial values: expected %d, got %d' \
@@ -239,47 +239,47 @@ function mbfl_standard_object_define () {
 }
 
 # Return true  if the  given parameter is  the datavar  of an  object whose class  is a  subclass of
-# "mbfl_standard_object".  We do our best.
+# "mbfl_default_object".  We do our best.
 #
-function mbfl_standard_object_is_a () {
+function mbfl_default_object_is_a () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, variable referencing a data-structure instance)
 
     if test -v _(mbfl_SELF) -a -v mbfl_slot_spec(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
-    then mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
+    then mbfl_default_classes_are_parent_and_child _(mbfl_default_object) _(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
     else false
     fi
 }
 
-function mbfl_standard_object_is_of_class () {
-    mbfl_mandatory_nameref_parameter(mbfl_OBJECT, 1, variable referencing an object of class mbfl_standard_object)
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS,  2, variable referencing a class of class mbfl_standard_object)
+function mbfl_default_object_is_of_class () {
+    mbfl_mandatory_nameref_parameter(mbfl_OBJECT, 1, variable referencing an object of class mbfl_default_object)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS,  2, variable referencing a class of class mbfl_default_object)
 
     if test -v _(mbfl_OBJECT) -a -v mbfl_slot_spec(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)
     then mbfl_string_eq(_(mbfl_CLASS), _(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)) ||
-	    mbfl_standard_classes_are_parent_and_child _(mbfl_CLASS) _(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)
+	    mbfl_default_classes_are_parent_and_child _(mbfl_CLASS) _(mbfl_OBJECT,MBFL_STDOBJ__CLASS_INDEX)
     else false
     fi
 }
 
-function mbfl_standard_object_class_var () {
+function mbfl_default_object_class_var () {
     mbfl_mandatory_nameref_parameter(mbfl_CLASS_RV,	1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing an object of type mbfl_standard_object)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing an object of type mbfl_default_object)
     mbfl_CLASS_RV=_(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX)
 }
 
 
-#### API of "mbfl_standard_class"
+#### API of "mbfl_default_class"
 
-function mbfl_standard_class_define () {
-    mbfl_mandatory_nameref_parameter(mbfl_CLASS,	1, reference to the new standard class)
-    mbfl_mandatory_nameref_parameter(mbfl_PARENT,	2, reference to the parent standard class)
-    mbfl_mandatory_parameter(mbfl_NAME,			3, the name of the new standard class)
+function mbfl_default_class_define () {
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS,	1, reference to the new default class)
+    mbfl_mandatory_nameref_parameter(mbfl_PARENT,	2, reference to the parent default class)
+    mbfl_mandatory_parameter(mbfl_NAME,			3, the name of the new default class)
 
     # Validate parameters.
     {
-	if ! mbfl_standard_class_is_a _(mbfl_PARENT)
+	if ! mbfl_default_class_is_a _(mbfl_PARENT)
 	then
-	    mbfl_message_error_printf 'in call to "%s" expected standard class parent class: "%s"' $FUNCNAME "$mbfl_PARENT"
+	    mbfl_message_error_printf 'in call to "%s" expected default class parent class: "%s"' $FUNCNAME "$mbfl_PARENT"
 	    return_because_failure
 	fi
 
@@ -300,11 +300,11 @@ function mbfl_standard_class_define () {
     # Initialise the fields of the new class object.
     {
 	declare -i  mbfl_PARENT_FIELDS_NUMBER
-	mbfl_standard_class_fields_number_var mbfl_PARENT_FIELDS_NUMBER _(mbfl_PARENT)
+	mbfl_default_class_fields_number_var mbfl_PARENT_FIELDS_NUMBER _(mbfl_PARENT)
 	let mbfl_TOTAL_FIELDS_NUMBER=mbfl_PARENT_FIELDS_NUMBER+mbfl_NEW_FIELDS_NUMBER
 	mbfl_declare_index_array_varref(mbfl_CLASS_FIELD_VALUES,(_(mbfl_PARENT) "$mbfl_NAME" $mbfl_TOTAL_FIELDS_NUMBER))
 
-	mbfl_standard_object_define _(mbfl_CLASS) _(mbfl_standard_class) _(mbfl_CLASS_FIELD_VALUES)
+	mbfl_default_object_define _(mbfl_CLASS) _(mbfl_default_class) _(mbfl_CLASS_FIELD_VALUES)
 
 	# Copy the field names from the parent class.
 	for ((mbfl_I=0; mbfl_I < mbfl_PARENT_FIELDS_NUMBER; ++mbfl_I))
@@ -339,8 +339,8 @@ function mbfl_standard_class_define () {
 
     # Build the data-structure instance-constructor function.  For the class definition:
     #
-    #   mbfl_standard_class_declare(color)
-    #   mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    #   mbfl_default_class_declare(color)
+    #   mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
     #
     # the constructor should look like:
     #
@@ -349,7 +349,7 @@ function mbfl_standard_class_define () {
     #      shift
     #      declare -ar mbfl_FIELD_INIT_VALUES=("$@")
     #
-    #      mbfl_standard_object_define _(mbfl_SELF) ${mbfl_CLASS_DATAVAR} mbfl_FIELD_INIT_VALUES
+    #      mbfl_default_object_define _(mbfl_SELF) ${mbfl_CLASS_DATAVAR} mbfl_FIELD_INIT_VALUES
     #   }
     #
     {
@@ -362,7 +362,7 @@ function mbfl_standard_class_define () {
 	mbfl_CONSTRUCTOR_BODY+="declare -r mbfl_SELF_DATAVAR=\${1:?\"missing reference to instance of 'color' to '\${FUNCNAME}'\"};"
         mbfl_CONSTRUCTOR_BODY+="shift;"
         mbfl_CONSTRUCTOR_BODY+="declare -ar mbfl_u_variable_FIELD_INIT_VALUES=(\"\$@\");"
-	mbfl_CONSTRUCTOR_BODY+="mbfl_standard_object_define \$mbfl_SELF_DATAVAR ${mbfl_CLASS_DATAVAR} mbfl_u_variable_FIELD_INIT_VALUES;"
+	mbfl_CONSTRUCTOR_BODY+="mbfl_default_object_define \$mbfl_SELF_DATAVAR ${mbfl_CLASS_DATAVAR} mbfl_u_variable_FIELD_INIT_VALUES;"
 	mbfl_CONSTRUCTOR_BODY+='}'
 	#echo $FUNCNAME mbfl_CONSTRUCTOR_BODY="$mbfl_CONSTRUCTOR_BODY" >&2
 	mbfl_p_struct_make_function "$mbfl_CONSTRUCTOR_NAME" "$mbfl_CONSTRUCTOR_BODY"
@@ -371,14 +371,14 @@ function mbfl_standard_class_define () {
     # Build the class predicate function: return true if a struct instance is of type "$mbfl_CLASS".
     # For the class definition:
     #
-    #   mbfl_standard_class_declare(color)
-    #   mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    #   mbfl_default_class_declare(color)
+    #   mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
     #
     # the predicate function should look like:
     #
     #   function color_is_a () {
     #       declare -r mbfl_SELF_DATAVAR=${1:?"missing reference to instance of 'color' to '${FUNCNAME}'"};
-    #       mbfl_standard_object_is_of_class "$mbfl_SELF_DATAVAR" '${mbfl_CLASS_DATAVAR}'
+    #       mbfl_default_object_is_of_class "$mbfl_SELF_DATAVAR" '${mbfl_CLASS_DATAVAR}'
     #   }
     #
     {
@@ -386,7 +386,7 @@ function mbfl_standard_class_define () {
 
 	printf -v mbfl_PREDICATE_NAME  MBFL_STDOBJ__FUNCNAME_PATTERN__PREDICATE   "$mbfl_NAME"
 	mbfl_PREDICATE_BODY="{ declare mbfl_SELF_DATAVAR=\${1:?\"missing reference to data-structure parameter to '\$FUNCNAME'\"};"
-	mbfl_PREDICATE_BODY+="mbfl_standard_object_is_of_class \"\$mbfl_SELF_DATAVAR\" '${mbfl_CLASS_DATAVAR}' ; }"
+	mbfl_PREDICATE_BODY+="mbfl_default_object_is_of_class \"\$mbfl_SELF_DATAVAR\" '${mbfl_CLASS_DATAVAR}' ; }"
 	mbfl_p_struct_make_function "$mbfl_PREDICATE_NAME" "$mbfl_PREDICATE_BODY"
     }
 
@@ -395,15 +395,15 @@ function mbfl_standard_class_define () {
 
     # Build the data-structure field-mutator functions.  For the class definition:
     #
-    #   mbfl_standard_class_declare(color)
-    #   mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    #   mbfl_default_class_declare(color)
+    #   mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
     #
     # the mutator function should look like:
     #
     #    function color_red_set () {
     #        declare mbfl_SELF_DATAVAR=${1:?"missing reference to struct 'color' parameter to 'color_red_set'"};
     #        declare mbfl_NEW_VALUE=${2:?"missing new field value parameter to 'color_red_set'"}
-    #        mbfl_p_standard_object_slot_mutator "$mbfl_SELF_DATAVAR" "$mbfl_NEW_VALUE" ${mbfl_CLASS_DATAVAR} 1 color_red_set
+    #        mbfl_p_default_object_slot_mutator "$mbfl_SELF_DATAVAR" "$mbfl_NEW_VALUE" ${mbfl_CLASS_DATAVAR} 1 color_red_set
     #    }
     #
     {
@@ -417,7 +417,7 @@ function mbfl_standard_class_define () {
 	    mbfl_MUTATOR_BODY='{ '
 	    mbfl_MUTATOR_BODY+="declare mbfl_SELF_DATAVAR=\${1:?\"missing reference to struct '${mbfl_NAME}' parameter to '${mbfl_MUTATOR_NAME}'\"};"
 	    mbfl_MUTATOR_BODY+="declare mbfl_NEW_VALUE=\${2:?\"missing new field value parameter to '${mbfl_MUTATOR_NAME}'\"};"
-	    mbfl_MUTATOR_BODY+="mbfl_p_standard_object_slot_mutator \"\$mbfl_SELF_DATAVAR\" \"\$mbfl_NEW_VALUE\" ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_MUTATOR_NAME};"
+	    mbfl_MUTATOR_BODY+="mbfl_p_default_object_slot_mutator \"\$mbfl_SELF_DATAVAR\" \"\$mbfl_NEW_VALUE\" ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_MUTATOR_NAME};"
 	    mbfl_MUTATOR_BODY+='}'
 	    #echo $FUNCNAME mbfl_MUTATOR_BODY="$mbfl_MUTATOR_BODY" >&2
 	    mbfl_p_struct_make_function "$mbfl_MUTATOR_NAME" "$mbfl_MUTATOR_BODY"
@@ -426,15 +426,15 @@ function mbfl_standard_class_define () {
 
     # Build the data-structure field-accessor functions.  For the class definition:
     #
-    #   mbfl_standard_class_declare(color)
-    #   mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    #   mbfl_default_class_declare(color)
+    #   mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
     #
     # the accessor function should look like:
     #
     #    function color_red_var () {
     #        declare mbfl_RV_DATAVAR=${1:?"missing result variable parameter to 'color_red_var'"};
     #        declare mbfl_SELF_DATAVAR=${2:?"missing reference to struct 'color' parameter to 'color_red_var'"};
-    #        mbfl_p_standard_object_slot_accessor "$mbfl_RV_DATAVAR" "$mbfl_SELF_DATAVAR" ${mbfl_CLASS_DATAVAR} 1 color_red_var
+    #        mbfl_p_default_object_slot_accessor "$mbfl_RV_DATAVAR" "$mbfl_SELF_DATAVAR" ${mbfl_CLASS_DATAVAR} 1 color_red_var
     #    }
     #
     {
@@ -448,7 +448,7 @@ function mbfl_standard_class_define () {
 	    mbfl_ACCESSOR_BODY='{ '
 	    mbfl_ACCESSOR_BODY+="declare mbfl_RV_DATAVAR=\${1:?\"missing result variable parameter to '${mbfl_ACCESSOR_NAME}'\"};"
 	    mbfl_ACCESSOR_BODY+="declare mbfl_SELF_DATAVAR=\${2:?\"missing reference to struct '$mbfl_NAME' parameter to '${mbfl_ACCESSOR_NAME}'\"};"
-	    mbfl_ACCESSOR_BODY+="mbfl_p_standard_object_slot_accessor \"\$mbfl_RV_DATAVAR\" \"\$mbfl_SELF_DATAVAR\" ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_ACCESSOR_NAME};"
+	    mbfl_ACCESSOR_BODY+="mbfl_p_default_object_slot_accessor \"\$mbfl_RV_DATAVAR\" \"\$mbfl_SELF_DATAVAR\" ${mbfl_CLASS_DATAVAR} ${mbfl_OFFSET} ${mbfl_ACCESSOR_NAME};"
 	    mbfl_ACCESSOR_BODY+='}'
 	    mbfl_p_struct_make_function "$mbfl_ACCESSOR_NAME" "$mbfl_ACCESSOR_BODY"
 	done
@@ -457,43 +457,43 @@ function mbfl_standard_class_define () {
 
 # This is the implementation of the slot accessor functions.
 #
-function mbfl_p_standard_object_slot_accessor () {
+function mbfl_p_default_object_slot_accessor () {
     mbfl_mandatory_nameref_parameter(mbfl_VALUE,	1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing the standard object)
-    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the standard class)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing the default object)
+    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the default class)
     mbfl_mandatory_parameter(mbfl_FIELD_OFFSET,		4, the field offset in the data-structure instance)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
 
-    if mbfl_standard_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
+    if mbfl_default_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
     then mbfl_VALUE=mbfl_slot_ref(mbfl_SELF, $mbfl_FIELD_OFFSET)
-    else mbfl_p_standard_class_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_REQUIRED_TYPE) "$mbfl_CALLER_FUNCNAME"
+    else mbfl_p_default_class_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_REQUIRED_TYPE) "$mbfl_CALLER_FUNCNAME"
     fi
 }
 
 # This is the implementation of the slot mutator functions.
 #
-function mbfl_p_standard_object_slot_mutator () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing the standard object)
+function mbfl_p_default_object_slot_mutator () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing the default object)
     mbfl_mandatory_parameter(mbfl_NEW_VALUE,		2, the new field value)
-    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the standard class)
+    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the default class)
     mbfl_mandatory_parameter(mbfl_FIELD_OFFSET,		4, the field offset in the data-structure instance)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
 
-    if mbfl_standard_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
+    if mbfl_default_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
     then mbfl_slot_set(mbfl_SELF, $mbfl_FIELD_OFFSET, "$mbfl_NEW_VALUE")
-    else mbfl_p_standard_class_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_REQUIRED_TYPE) "$mbfl_CALLER_FUNCNAME"
+    else mbfl_p_default_class_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_REQUIRED_TYPE) "$mbfl_CALLER_FUNCNAME"
     fi
 }
 
-function mbfl_p_standard_class_mismatch_error_self_given_type () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing a standard object)
-    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,2, variable referencing a standard class)
+function mbfl_p_default_class_mismatch_error_self_given_type () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing a default object)
+    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,2, variable referencing a default class)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	3, the name of the calling function)
     declare mbfl_SELF_TYPE mbfl_SELF_NAME mbfl_GIVEN_NAME
 
-    mbfl_standard_object_class_var mbfl_SELF_TYPE  _(mbfl_SELF)
-    mbfl_standard_class_name_var mbfl_SELF_NAME  $mbfl_SELF_TYPE
-    mbfl_standard_class_name_var mbfl_GIVEN_NAME _(mbfl_REQUIRED_TYPE)
+    mbfl_default_object_class_var mbfl_SELF_TYPE  _(mbfl_SELF)
+    mbfl_default_class_name_var mbfl_SELF_NAME  $mbfl_SELF_TYPE
+    mbfl_default_class_name_var mbfl_GIVEN_NAME _(mbfl_REQUIRED_TYPE)
     mbfl_message_error_printf 'in call to "%s": instance parameter "%s" of wrong type, expected "%s" got: "%s"' \
 			      "$mbfl_CALLER_FUNCNAME" _(mbfl_SELF) "$mbfl_GIVEN_NAME" "$mbfl_SELF_NAME"
     return_because_failure
@@ -502,14 +502,14 @@ function mbfl_p_standard_class_mismatch_error_self_given_type () {
 
 #### predicates
 
-function mbfl_standard_object_is_the_standard_object () {
+function mbfl_default_object_is_the_default_object () {
     mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_standard_object), "$mbfl_SELF_DATAVAR")
+    mbfl_string_eq(_(mbfl_default_object), "$mbfl_SELF_DATAVAR")
 }
 
-function mbfl_standard_object_is_the_standard_class () {
+function mbfl_default_object_is_the_default_class () {
     mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_standard_class), "$mbfl_SELF_DATAVAR")
+    mbfl_string_eq(_(mbfl_default_class), "$mbfl_SELF_DATAVAR")
 }
 
 
@@ -527,11 +527,11 @@ function mbfl_p_struct_make_function () {
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_standard_object_declare(mbfl_predefined_constant)
-    mbfl_standard_class_define _(mbfl_predefined_constant) _(mbfl_standard_object) 'mbfl_predefined_constant'
+    mbfl_default_object_declare(mbfl_predefined_constant)
+    mbfl_default_class_define _(mbfl_predefined_constant) _(mbfl_default_object) 'mbfl_predefined_constant'
 
-    mbfl_standard_object_declare(mbfl_unspecified)
-    mbfl_standard_object_declare(mbfl_undefined)
+    mbfl_default_object_declare(mbfl_unspecified)
+    mbfl_default_object_declare(mbfl_undefined)
 
     mbfl_predefined_constant_define _(mbfl_unspecified)
     mbfl_predefined_constant_define _(mbfl_undefined)

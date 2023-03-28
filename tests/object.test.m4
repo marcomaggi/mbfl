@@ -46,101 +46,101 @@ mbfl_load_library("$MBFL_LIBMBFL_TEST")
 m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]])]]])
 
 
-#### tests for the built-in data structure type "mbfl_standard_object"
+#### tests for the built-in data structure type "mbfl_default_object"
 
-function object-standard-object-1.1 () {
-    ! mbfl_standard_object_is_the_standard_class _(mbfl_standard_object) &&
-	mbfl_standard_object_is_the_standard_object _(mbfl_standard_object)
+function object-default-object-1.1 () {
+    ! mbfl_default_object_is_the_default_class _(mbfl_default_object) &&
+	mbfl_default_object_is_the_default_object _(mbfl_default_object)
 }
-function object-standard-object-1.2 () {
+function object-default-object-1.2 () {
     declare TYPE
-    mbfl_standard_object_class_var TYPE _(mbfl_standard_object)
-    dotest-equal _(mbfl_standard_class) $TYPE
+    mbfl_default_object_class_var TYPE _(mbfl_default_object)
+    dotest-equal _(mbfl_default_class) $TYPE
 }
-function object-standard-object-1.3 () {
-    mbfl_standard_object_is_a _(mbfl_standard_object)
+function object-default-object-1.3 () {
+    mbfl_default_object_is_a _(mbfl_default_object)
 }
-function object-standard-object-1.4 () {
-    mbfl_standard_class_is_a _(mbfl_standard_object)
+function object-default-object-1.4 () {
+    mbfl_default_class_is_a _(mbfl_default_object)
 }
 
 ### ------------------------------------------------------------------------
 ### inspecting the fields
 
-function object-standard-object-2.1 () {
+function object-default-object-2.1 () {
     declare NAME
-    mbfl_standard_class_name_var NAME _(mbfl_standard_object)
-    dotest-equal 'mbfl_standard_object' "$NAME"
+    mbfl_default_class_name_var NAME _(mbfl_default_object)
+    dotest-equal 'mbfl_default_object' "$NAME"
 }
-function object-standard-object-2.2 () {
+function object-default-object-2.2 () {
     mbfl_declare_varref(PARENT)
-    mbfl_standard_class_parent_var _(PARENT) _(mbfl_standard_object)
-    dotest-equal '' "$PARENT" 'parent of mbfl_standard_object'
+    mbfl_default_class_parent_var _(PARENT) _(mbfl_default_object)
+    dotest-equal '' "$PARENT" 'parent of mbfl_default_object'
 }
-function object-standard-object-2.3 () {
+function object-default-object-2.3 () {
     declare FIELDS_NUMBER
-    mbfl_standard_class_fields_number_var FIELDS_NUMBER _(mbfl_standard_object)
-    dotest-equal 0 "$FIELDS_NUMBER" 'number of fields in instances of mbfl_standard_object'
+    mbfl_default_class_fields_number_var FIELDS_NUMBER _(mbfl_default_object)
+    dotest-equal 0 "$FIELDS_NUMBER" 'number of fields in instances of mbfl_default_object'
 }
 
 
-#### tests for the built-in data structure type "mbfl_standard_class"
+#### tests for the built-in data structure type "mbfl_default_class"
 
-function object-standard-class-1.1 () {
-    ! mbfl_standard_object_is_the_standard_object _(mbfl_standard_class) &&
-	mbfl_standard_object_is_the_standard_class _(mbfl_standard_class)
+function object-default-class-1.1 () {
+    ! mbfl_default_object_is_the_default_object _(mbfl_default_class) &&
+	mbfl_default_object_is_the_default_class _(mbfl_default_class)
 }
-function object-standard-class-1.2 () {
+function object-default-class-1.2 () {
     declare TYPE
-    mbfl_standard_object_class_var TYPE _(mbfl_standard_class)
-    dotest-equal _(mbfl_standard_class) $TYPE
+    mbfl_default_object_class_var TYPE _(mbfl_default_class)
+    dotest-equal _(mbfl_default_class) $TYPE
 }
-function object-standard-class-1.3 () {
-    mbfl_standard_object_is_a _(mbfl_standard_class)
+function object-default-class-1.3 () {
+    mbfl_default_object_is_a _(mbfl_default_class)
 }
-function object-standard-class-1.4 () {
-    mbfl_standard_class_is_a _(mbfl_standard_class)
+function object-default-class-1.4 () {
+    mbfl_default_class_is_a _(mbfl_default_class)
 }
-function object-standard-class-1.5 () {
-    mbfl_standard_metaclass_is_a _(mbfl_standard_class)
+function object-default-class-1.5 () {
+    mbfl_default_metaclass_is_a _(mbfl_default_class)
 }
-function object-standard-class-1.6 () {
-    mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_standard_class)
+function object-default-class-1.6 () {
+    mbfl_default_classes_are_parent_and_child _(mbfl_default_object) _(mbfl_default_class)
 }
 
 ### ------------------------------------------------------------------------
 ### inspecting the fields
 
-function object-standard-class-2.1 () {
+function object-default-class-2.1 () {
     declare NAME
-    mbfl_standard_class_name_var NAME _(mbfl_standard_class)
-    dotest-equal 'mbfl_standard_class' "$NAME"
+    mbfl_default_class_name_var NAME _(mbfl_default_class)
+    dotest-equal 'mbfl_default_class' "$NAME"
 }
-function object-standard-class-2.2 () {
+function object-default-class-2.2 () {
     declare PARENT
-    mbfl_standard_class_parent_var PARENT _(mbfl_standard_class)
-    dotest-equal _(mbfl_standard_object) "$PARENT" 'parent of mbfl_standard_class'
+    mbfl_default_class_parent_var PARENT _(mbfl_default_class)
+    dotest-equal _(mbfl_default_object) "$PARENT" 'parent of mbfl_default_class'
 }
-function object-standard-class-2.3 () {
+function object-default-class-2.3 () {
     declare FIELDS_NUMBER
-    mbfl_standard_class_fields_number_var FIELDS_NUMBER _(mbfl_standard_class)
-    dotest-equal 3 "$FIELDS_NUMBER" 'number of fields in instances of mbfl_standard_class'
+    mbfl_default_class_fields_number_var FIELDS_NUMBER _(mbfl_default_class)
+    dotest-equal 3 "$FIELDS_NUMBER" 'number of fields in instances of mbfl_default_class'
 }
 
 
 #### simple tests
 
-# Test  for: mbfl_standard_object_declare,  mbfl_standard_class_define,  struct  constructor, struct  predicate,
+# Test  for: mbfl_default_object_declare,  mbfl_default_class_define,  struct  constructor, struct  predicate,
 # field accessors.
 #
 function object-simple-1.1 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(greek)
+    mbfl_default_object_declare(self)
     declare A=0 B=0 C=0
     declare PREDICATE_RESULT
     declare IS_A_RESULT
 
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
 
     greek_define _(self) 1 2 3
     # mbfl_array_dump _(greek)
@@ -151,14 +151,14 @@ function object-simple-1.1 () {
     greek_gamma_var C _(self)
 
     # echo mbfl_struct_top datavar _(mbfl_class) >&2
-    # echo mbfl_object datavar _(mbfl_standard_object) >&2
+    # echo mbfl_object datavar _(mbfl_default_object) >&2
     # echo greek datavar _(greek) >&2
     # echo self slot 0 ${self[0]} >&2
 
     greek_is_a _(self)
     PREDICATE_RESULT=$?
 
-    mbfl_standard_object_is_of_class _(self) _(greek)
+    mbfl_default_object_is_of_class _(self) _(greek)
     IS_A_RESULT=$?
 
     dotest-equal 0 $PREDICATE_RESULT 'result of applying the predicate' &&
@@ -168,17 +168,17 @@ function object-simple-1.1 () {
       	dotest-equal 3 $C 'value of field gamma'
 }
 
-# Test  for: mbfl_standard_object_declare,  mbfl_standard_class_define,  struct  constructor, struct  predicate,
+# Test  for: mbfl_default_object_declare,  mbfl_default_class_define,  struct  constructor, struct  predicate,
 # field accessors, field mutators.
 #
 function object-simple-1.2 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(greek)
+    mbfl_default_object_declare(self)
     declare A=0 B=0 C=0
     declare PREDICATE_RESULT
     declare IS_A_RESULT
 
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
 
     greek_define _(self) 1 2 3
     # mbfl_array_dump _(greek)
@@ -195,7 +195,7 @@ function object-simple-1.2 () {
     greek_is_a _(self)
     PREDICATE_RESULT=$?
 
-    mbfl_standard_object_is_of_class _(self) _(greek)
+    mbfl_default_object_is_of_class _(self) _(greek)
     IS_A_RESULT=$?
 
     dotest-equal 0 $PREDICATE_RESULT 'result of applying the predicate' &&
@@ -205,23 +205,23 @@ function object-simple-1.2 () {
 	dotest-equal 33 $C
 }
 
-# Test for: mbfl_standard_object_declare_global, mbfl_standard_object_unset.
+# Test for: mbfl_default_object_declare_global, mbfl_default_object_unset.
 #
 function object-simple-1.3 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_object_declare_global(self)
+    mbfl_default_class_declare(greek)
+    mbfl_default_object_declare_global(self)
     declare A=0 B=0 C=0 DATAVAR
     declare PREDICATE_RESULT
     declare IS_A_RESULT
 
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
 
     #dotest-set-debug
 
     mbfl_location_enter
     {
 	greek_define _(self) 1 2 3
-	mbfl_location_handler "mbfl_standard_object_unset(self)"
+	mbfl_location_handler "mbfl_default_object_unset(self)"
 	mbfl_location_handler "dotest-debug $FUNCNAME: unset variable _(self)"
 
 	# We store  the datavar  to check later  that it  does not exist  anymore after  exiting the
@@ -235,7 +235,7 @@ function object-simple-1.3 () {
 	greek_is_a _(self)
 	PREDICATE_RESULT=$?
 
-	mbfl_standard_object_is_of_class _(self) _(greek)
+	mbfl_default_object_is_of_class _(self) _(greek)
 	IS_A_RESULT=$?
 
 	dotest-equal 0 $PREDICATE_RESULT 'result of applying the predicate' &&
@@ -266,17 +266,17 @@ function object-simple-1.3 () {
 # Define a type-descriptor with parent, use the accessors.
 #
 function object-single-inheritance-1.1 () {
-    mbfl_standard_class_declare(color_red)
-    mbfl_standard_class_declare(color_red_green)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(color_red)
+    mbfl_default_class_declare(color_red_green)
+    mbfl_default_object_declare(self)
     declare RED GREEN
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
 
-    mbfl_standard_class_define _(color_red) _(mbfl_standard_object) 'color_red' red
+    mbfl_default_class_define _(color_red) _(mbfl_default_object) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
-    mbfl_standard_class_define _(color_red_green) _(color_red) 'color_red_green' green
+    mbfl_default_class_define _(color_red_green) _(color_red) 'color_red_green' green
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
@@ -302,17 +302,17 @@ function object-single-inheritance-1.1 () {
 # Define a type-descriptor with parent, use the accessors and the mutators.
 #
 function object-single-inheritance-1.2 () {
-    mbfl_standard_class_declare(color_red)
-    mbfl_standard_class_declare(color_red_green)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(color_red)
+    mbfl_default_class_declare(color_red_green)
+    mbfl_default_object_declare(self)
     declare RED GREEN
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
 
-    mbfl_standard_class_define _(color_red) _(mbfl_standard_object) 'color_red' red
+    mbfl_default_class_define _(color_red) _(mbfl_default_object) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
-    mbfl_standard_class_define _(color_red_green) _(color_red) 'color_red_green' green
+    mbfl_default_class_define _(color_red_green) _(color_red) 'color_red_green' green
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
@@ -341,17 +341,17 @@ function object-single-inheritance-1.2 () {
 # Define a type-descriptor with parent, use the parent accessors and the mutators.
 #
 function object-single-inheritance-1.3 () {
-    mbfl_standard_class_declare(color_red)
-    mbfl_standard_class_declare(color_red_green)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(color_red)
+    mbfl_default_class_declare(color_red_green)
+    mbfl_default_object_declare(self)
     declare RED GREEN
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT
 
-    mbfl_standard_class_define _(color_red) _(mbfl_standard_object) 'color_red' red
+    mbfl_default_class_define _(color_red) _(mbfl_default_object) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
-    mbfl_standard_class_define _(color_red_green) _(color_red) 'color_red_green' green
+    mbfl_default_class_define _(color_red_green) _(color_red) 'color_red_green' green
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
@@ -382,22 +382,22 @@ function object-single-inheritance-1.3 () {
 # Define a type-descriptor with parent having parent, use the accessors.
 #
 function object-single-inheritance-2.1 () {
-    mbfl_standard_class_declare(color_red)
-    mbfl_standard_class_declare(color_red_green)
-    mbfl_standard_class_declare(color_red_green_blue)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(color_red)
+    mbfl_default_class_declare(color_red_green)
+    mbfl_default_class_declare(color_red_green_blue)
+    mbfl_default_object_declare(self)
     declare RED GREEN BLUE
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
 
-    mbfl_standard_class_define _(color_red) _(mbfl_standard_object) 'color_red' red
+    mbfl_default_class_define _(color_red) _(mbfl_default_object) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
-    mbfl_standard_class_define _(color_red_green) _(color_red) 'color_red_green' green
+    mbfl_default_class_define _(color_red_green) _(color_red) 'color_red_green' green
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
-    mbfl_standard_class_define _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
+    mbfl_default_class_define _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
 
     color_red_green_blue_define _(self) 1 2 3
     # echo self datavar _(self) >&2
@@ -427,22 +427,22 @@ function object-single-inheritance-2.1 () {
 # Define a type-descriptor with parent having parent, use the accessors and the mutator.
 #
 function object-single-inheritance-2.2 () {
-    mbfl_standard_class_declare(color_red)
-    mbfl_standard_class_declare(color_red_green)
-    mbfl_standard_class_declare(color_red_green_blue)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(color_red)
+    mbfl_default_class_declare(color_red_green)
+    mbfl_default_class_declare(color_red_green_blue)
+    mbfl_default_object_declare(self)
     declare RED GREEN BLUE
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
 
-    mbfl_standard_class_define _(color_red) _(mbfl_standard_object) 'color_red' red
+    mbfl_default_class_define _(color_red) _(mbfl_default_object) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
-    mbfl_standard_class_define _(color_red_green) _(color_red) 'color_red_green' green
+    mbfl_default_class_define _(color_red_green) _(color_red) 'color_red_green' green
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
-    mbfl_standard_class_define _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
+    mbfl_default_class_define _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
 
     color_red_green_blue_define _(self) 1 2 3
     # echo self datavar _(self) >&2
@@ -476,22 +476,22 @@ function object-single-inheritance-2.2 () {
 # Define a type-descriptor with parent having parent, use the parent accessors and mutator.
 #
 function object-single-inheritance-2.3 () {
-    mbfl_standard_class_declare(color_red)
-    mbfl_standard_class_declare(color_red_green)
-    mbfl_standard_class_declare(color_red_green_blue)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(color_red)
+    mbfl_default_class_declare(color_red_green)
+    mbfl_default_class_declare(color_red_green_blue)
+    mbfl_default_object_declare(self)
     declare RED GREEN BLUE
     declare RED_PREDICATE_RESULT RED_GREEN_PREDICATE_RESULT RED_GREEN_BLUE_PREDICATE_RESULT
 
-    mbfl_standard_class_define _(color_red) _(mbfl_standard_object) 'color_red' red
+    mbfl_default_class_define _(color_red) _(mbfl_default_object) 'color_red' red
     # echo color_red datavar _(color_red) >&2
     # mbfl_array_dump _(color_red)
 
-    mbfl_standard_class_define _(color_red_green) _(color_red) 'color_red_green' green
+    mbfl_default_class_define _(color_red_green) _(color_red) 'color_red_green' green
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
-    mbfl_standard_class_define _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
+    mbfl_default_class_define _(color_red_green_blue) _(color_red_green) 'color_red_green_blue' blue
 
     color_red_green_blue_define _(self) 1 2 3
     # echo self datavar _(self) >&2
@@ -526,84 +526,84 @@ function object-single-inheritance-2.3 () {
 #### inspection of custom type-descriptors
 
 function object-custom-classes-1.1 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    mbfl_standard_object_is_a _(greek)
+    mbfl_default_class_declare(greek)
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    mbfl_default_object_is_a _(greek)
 }
 function object-custom-classes-1.2 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    mbfl_standard_class_is_a _(greek)
+    mbfl_default_class_declare(greek)
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    mbfl_default_class_is_a _(greek)
 }
 function object-custom-classes-1.2.1 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    ! mbfl_standard_metaclass_is_a _(greek)
+    mbfl_default_class_declare(greek)
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    ! mbfl_default_metaclass_is_a _(greek)
 }
 function object-custom-classes-1.3 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    ! mbfl_standard_object_is_the_standard_object _(greek)
+    mbfl_default_class_declare(greek)
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    ! mbfl_default_object_is_the_default_object _(greek)
 }
 function object-custom-classes-1.4 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    ! mbfl_standard_object_is_the_standard_class _(greek)
+    mbfl_default_class_declare(greek)
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    ! mbfl_default_object_is_the_default_class _(greek)
 }
 function object-custom-classes-1.5 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    ! mbfl_standard_object_is_the_standard_class _(greek)
+    mbfl_default_class_declare(greek)
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    ! mbfl_default_object_is_the_default_class _(greek)
 }
 function object-custom-classes-1.6 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(greek)
+    mbfl_default_class_declare(greek)
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    mbfl_default_classes_are_parent_and_child _(mbfl_default_object) _(greek)
 }
 function object-custom-classes-1.7 () {
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    ! mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(greek)
+    mbfl_default_class_declare(greek)
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    ! mbfl_default_classes_are_parent_and_child _(mbfl_default_class) _(greek)
 }
 
 ### ------------------------------------------------------------------------
 
 function object-custom-classes-2.1 () {
-    mbfl_standard_object_declare(one)
-    mbfl_standard_object_declare(two)
-    mbfl_standard_class_define _(one) _(mbfl_standard_object) 'one' a
-    mbfl_standard_class_define _(two) _(one) 'two' b
-    mbfl_standard_object_is_a _(two) && mbfl_standard_class_is_a _(two) && ! mbfl_standard_metaclass_is_a _(two)
+    mbfl_default_object_declare(one)
+    mbfl_default_object_declare(two)
+    mbfl_default_class_define _(one) _(mbfl_default_object) 'one' a
+    mbfl_default_class_define _(two) _(one) 'two' b
+    mbfl_default_object_is_a _(two) && mbfl_default_class_is_a _(two) && ! mbfl_default_metaclass_is_a _(two)
 }
 function object-custom-classes-2.2 () {
-    mbfl_standard_object_declare(one)
-    mbfl_standard_object_declare(two)
-    mbfl_standard_class_define _(one) _(mbfl_standard_object) 'one' a
-    mbfl_standard_class_define _(two) _(one) 'two' b
-    mbfl_standard_classes_are_parent_and_child _(one) _(two)
+    mbfl_default_object_declare(one)
+    mbfl_default_object_declare(two)
+    mbfl_default_class_define _(one) _(mbfl_default_object) 'one' a
+    mbfl_default_class_define _(two) _(one) 'two' b
+    mbfl_default_classes_are_parent_and_child _(one) _(two)
 }
 
 
 #### deep inheritance
 
 function object-deep-inheritance-1.1 () {
-    mbfl_standard_class_declare(deep1)
-    mbfl_standard_class_declare(deep2)
-    mbfl_standard_class_declare(deep3)
-    mbfl_standard_class_declare(deep4)
-    mbfl_standard_class_declare(deep5)
-    mbfl_standard_class_declare(deep6)
-    mbfl_standard_class_declare(deep7)
+    mbfl_default_class_declare(deep1)
+    mbfl_default_class_declare(deep2)
+    mbfl_default_class_declare(deep3)
+    mbfl_default_class_declare(deep4)
+    mbfl_default_class_declare(deep5)
+    mbfl_default_class_declare(deep6)
+    mbfl_default_class_declare(deep7)
 
-    mbfl_standard_class_define _(deep1) _(mbfl_standard_object) 'deep1' field1
-    mbfl_standard_class_define _(deep2) _(deep1) 'deep2' field2
-    mbfl_standard_class_define _(deep3) _(deep2) 'deep3' field3
-    mbfl_standard_class_define _(deep4) _(deep3) 'deep4' field4
-    mbfl_standard_class_define _(deep5) _(deep4) 'deep5' field5
-    mbfl_standard_class_define _(deep6) _(deep5) 'deep6' field6
-    mbfl_standard_class_define _(deep7) _(deep6) 'deep7' field7
+    mbfl_default_class_define _(deep1) _(mbfl_default_object) 'deep1' field1
+    mbfl_default_class_define _(deep2) _(deep1) 'deep2' field2
+    mbfl_default_class_define _(deep3) _(deep2) 'deep3' field3
+    mbfl_default_class_define _(deep4) _(deep3) 'deep4' field4
+    mbfl_default_class_define _(deep5) _(deep4) 'deep5' field5
+    mbfl_default_class_define _(deep6) _(deep5) 'deep6' field6
+    mbfl_default_class_define _(deep7) _(deep6) 'deep7' field7
 
-    mbfl_standard_object_declare(obj)
+    mbfl_default_object_declare(obj)
 
     deep7_define _(obj) 1 2 3 4 5 6 7
 
@@ -630,12 +630,12 @@ function object-deep-inheritance-1.1 () {
 #### testing errors regarding data-structure type-descriptors
 
 function object-error-class-1.1 () {
-    mbfl_standard_object_declare(one)
-    mbfl_standard_object_declare(two)
+    mbfl_default_object_declare(one)
+    mbfl_default_object_declare(two)
     declare RV
 
-    mbfl_standard_class_define _(one) _(mbfl_standard_object) 'one' a B c
-    mbfl_standard_class_define _(two) _(one) 'two' d B e
+    mbfl_default_class_define _(one) _(mbfl_default_object) 'one' a B c
+    mbfl_default_class_define _(two) _(one) 'two' d B e
     RV=$?
 
     dotest-equal 1 $RV 'duplicate field name'
@@ -645,13 +645,13 @@ function object-error-class-1.1 () {
 #### testing errors regarding data-structure instances
 
 function object-error-instance-1.1 () {
-    mbfl_standard_class_declare(color)
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(color)
+    mbfl_default_class_declare(greek)
+    mbfl_default_object_declare(self)
     declare RED RV
 
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
 
     greek_define _(self) 1 2 3
     color_red_var RED _(self)
@@ -661,13 +661,13 @@ function object-error-instance-1.1 () {
 }
 
 function object-error-instance-1.2 () {
-    mbfl_standard_class_declare(color)
-    mbfl_standard_class_declare(greek)
-    mbfl_standard_object_declare(self)
+    mbfl_default_class_declare(color)
+    mbfl_default_class_declare(greek)
+    mbfl_default_object_declare(self)
     declare RV
 
-    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-    mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+    mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
 
     greek_define _(self) 1 2 3
     color_red_set _(self) 11
@@ -705,14 +705,14 @@ function object-predefined-constants-1.3 () {
 #### some examples
 
 function object-example-complex-1.1 () {
-    mbfl_standard_class_declare(complex)
-    mbfl_standard_object_declare(Z)
+    mbfl_default_class_declare(complex)
+    mbfl_default_object_declare(Z)
     mbfl_declare_varref(REAL)
     mbfl_declare_varref(IMAG)
     mbfl_declare_varref(RHO)
     mbfl_declare_varref(THETA)
 
-    mbfl_standard_class_define _(complex) _(mbfl_standard_object) 'complex' real imag
+    mbfl_default_class_define _(complex) _(mbfl_default_object) 'complex' real imag
     complex_rectangular_constructor _(Z) 1.1 1.2
 
     complex_real_var  _(REAL)  _(Z)
@@ -730,13 +730,13 @@ function object-example-complex-1.1 () {
 }
 
 function object-example-complex-1.2 () {
-    mbfl_standard_class_declare(complex)
-    mbfl_standard_object_declare(Z)
-    mbfl_standard_object_declare(W)
+    mbfl_default_class_declare(complex)
+    mbfl_default_object_declare(Z)
+    mbfl_default_object_declare(W)
     mbfl_declare_varref(REAL)
     mbfl_declare_varref(IMAG)
 
-    mbfl_standard_class_define _(complex) _(mbfl_standard_object) 'complex' real imag
+    mbfl_default_class_define _(complex) _(mbfl_default_object) 'complex' real imag
     complex_polar_constructor _(Z) 1.6279 0.8288
     complex_real_var _(REAL) _(Z)
     complex_imag_var _(IMAG) _(Z)
@@ -749,14 +749,14 @@ function object-example-complex-1.2 () {
 }
 
 function complex_rectangular_constructor () {
-    mbfl_mandatory_nameref_parameter(Z, 1, reference to standard object)
+    mbfl_mandatory_nameref_parameter(Z, 1, reference to default object)
     mbfl_mandatory_parameter(REAL,      2, the real part)
     mbfl_mandatory_parameter(IMAG,      3, the imag part)
 
     complex_define _(Z) "$REAL" "$IMAG"
 }
 function complex_polar_constructor () {
-    mbfl_mandatory_nameref_parameter(Z, 1, reference to standard object)
+    mbfl_mandatory_nameref_parameter(Z, 1, reference to default object)
     mbfl_mandatory_parameter(RHO,       2, the radius)
     mbfl_mandatory_parameter(THETA,     3, the angle)
     mbfl_declare_varref(REAL)
@@ -768,7 +768,7 @@ function complex_polar_constructor () {
 }
 function complex_rho_var () {
     mbfl_mandatory_nameref_parameter(RHO, 1, rho result variable)
-    mbfl_mandatory_nameref_parameter(Z,   2, reference to standard object)
+    mbfl_mandatory_nameref_parameter(Z,   2, reference to default object)
     mbfl_declare_varref(REAL)
     mbfl_declare_varref(IMAG)
 
@@ -778,7 +778,7 @@ function complex_rho_var () {
 }
 function complex_theta_var () {
     mbfl_mandatory_nameref_parameter(THETA, 1, theta result variable)
-    mbfl_mandatory_nameref_parameter(Z,     2, reference to standard object)
+    mbfl_mandatory_nameref_parameter(Z,     2, reference to default object)
     mbfl_declare_varref(REAL)
     mbfl_declare_varref(IMAG)
 

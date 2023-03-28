@@ -2719,7 +2719,7 @@ Lisp implementations.
 
 @menu
 * objects conventions::         Naming and coding conventions.
-* objects standard::            Standard classes and objects.
+* objects default::             Default classes and objects.
 * objects special::             Special predefined classes and objects.
 @end menu
 
@@ -2774,10 +2774,10 @@ _(self) @expansion{} mbfl_datavar(self)
 so to define a new class and a new instance we can use the syntax:
 
 @example
-mbfl_standard_class_declare(color)
-mbfl_standard_object_declare(dark_slate_blue)
+mbfl_default_class_declare(color)
+mbfl_default_object_declare(dark_slate_blue)
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
 color_define _(dark_slate_blue) 72 61 139
 
 declare RED
@@ -2799,18 +2799,18 @@ color_red_var RED _(dark_slate_blue)
 
 In this documentation we use @var{STDOBJ} as function parameter name to indicate that the parameter
 given to a function call must be a string representing the name of data variable: such variable must
-be a Bash array containing a standard object, that is the instance of a standard class.  If the
+be a Bash array containing a default object, that is the instance of a default class.  If the
 function is given a parameter of another type: its behaviour is undefined.
 
 In this documentation we use @var{STDCLS} as function parameter name to indicate that the parameter
 given to a function call must be a string representing the name of data variable: such variable must
-be a Bash array containing a standard class object, that is the instance of a standard metaclass.
+be a Bash array containing a default class object, that is the instance of a default metaclass.
 If the function is given a parameter of another type: its behaviour is undefined.
 
 In this documentation we use @var{STDMETACLS} as function parameter name to indicate that the
 parameter given to a function call must be a string representing the name of data variable: such
-variable must be a Bash array containing a standard metaclass object, that is the instance of a
-standard metaclass itself representing a metaclass.  If the function is given a parameter of another
+variable must be a Bash array containing a default metaclass object, that is the instance of a
+default metaclass itself representing a metaclass.  If the function is given a parameter of another
 type: its behaviour is undefined.
 
 If functions are described as follows:
@@ -2824,10 +2824,10 @@ my_other_func @var{STDCLS}
 such functions must be used as follows:
 
 @example
-mbfl_standard_class_declare(color)
-mbfl_standard_object_declare(dark_slate_blue)
+mbfl_default_class_declare(color)
+mbfl_default_object_declare(dark_slate_blue)
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
 color_define _(dark_slate_blue) 72 61 139
 
 my_func _(dark_slate_blue)
@@ -2835,46 +2835,46 @@ my_other_func _(color)
 @end example
 
 @c page
-@node objects standard
-@section Standard classes
+@node objects default
+@section Default classes
 
 
-The predefined objects @class{mbfl_standard_object} and @class{mbfl_standard_class} are the core of
-the object--oriented programming implemented by @mbfl{}.  We use @class{mbfl_standard_class} to
-define new classes; all these new classes are subclasses of @class{mbfl_standard_object}.
+The predefined objects @class{mbfl_default_object} and @class{mbfl_default_class} are the core of
+the object--oriented programming implemented by @mbfl{}.  We use @class{mbfl_default_class} to
+define new classes; all these new classes are subclasses of @class{mbfl_default_object}.
 
 @menu
-* objects standard objects::            Overview of standard objects.
-* objects standard classes::            Overview of standard classes.
-* objects standard api metaclasses::    Operating on standard metaclasses.
-* objects standard api classes::        Operating on standard classes.
-* objects standard api objects::        Operating on standard objects.
-* objects standard predicates::         Standard object predicates.
+* objects default objects::            Overview of default objects.
+* objects default classes::            Overview of default classes.
+* objects default api metaclasses::    Operating on default metaclasses.
+* objects default api classes::        Operating on default classes.
+* objects default api objects::        Operating on default objects.
+* objects default predicates::         Default object predicates.
 @end menu
 
 @c page
-@node objects standard objects
-@subsection Overview of standard objects
+@node objects default objects
+@subsection Overview of default objects
 
 
-The object @class{mbfl_standard_object} is the default superclass of class types in @mbfl{}; we
-define new classes by subclassing from @class{mbfl_standard_object}; we create new objects by
-instantiating a subclass of @class{mbfl_standard_object}.
+The object @class{mbfl_default_object} is the default superclass of class types in @mbfl{}; we
+define new classes by subclassing from @class{mbfl_default_object}; we create new objects by
+instantiating a subclass of @class{mbfl_default_object}.
 
-The class @class{mbfl_standard_object} also has a type, called metaclass, it is
-@class{mbfl_standard_class}.
+The class @class{mbfl_default_object} also has a type, called metaclass, it is
+@class{mbfl_default_class}.
 
-The class @class{mbfl_standard_object} has no superclass.
+The class @class{mbfl_default_object} has no superclass.
 
-The class @class{mbfl_standard_object} and every class being a subclass of
-@class{mbfl_standard_object} have the layout specified by @class{mbfl_standard_class}; @ref{objects
-standard classes, Overview of standard classes}.
+The class @class{mbfl_default_object} and every class being a subclass of
+@class{mbfl_default_object} have the layout specified by @class{mbfl_default_class}; @ref{objects
+default classes, Overview of default classes}.
 
-Every instance of a subclass of @class{mbfl_standard_object} is a Bash index array with the
+Every instance of a subclass of @class{mbfl_default_object} is a Bash index array with the
 following layout:
 
 @example
-instance[0] @result{} _(subclass_of_mbfl_standard_object)
+instance[0] @result{} _(subclass_of_mbfl_default_object)
 instance[1] @result{} 1st field value
 instance[2] @result{} 2nd field value
 ...
@@ -2883,12 +2883,12 @@ instance[2] @result{} 2nd field value
 @noindent
 an array element with key @samp{0} is always present and its value is the instance's class.
 
-If we subclass @class{mbfl_standard_object} to define a new class with name @class{color}:
+If we subclass @class{mbfl_default_object} to define a new class with name @class{color}:
 
 @example
-mbfl_standard_class_declare(color)
+mbfl_default_class_declare(color)
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) \
+mbfl_default_class_define _(color) _(mbfl_default_object) \
     'color' red green blue
 @end example
 
@@ -2896,7 +2896,7 @@ mbfl_standard_class_define _(color) _(mbfl_standard_object) \
 and then we instantiate @class{color}:
 
 @example
-mbfl_standard_object_declare(dark_slate_blue)
+mbfl_default_object_declare(dark_slate_blue)
 
 color_define _(dark_slate_blue) 72 61 139
 @end example
@@ -2914,9 +2914,9 @@ instance[3] @result{} 139
 We can subclass @class{color} to add a transparency field:
 
 @example
-mbfl_standard_class_declare(transparent_color)
+mbfl_default_class_declare(transparent_color)
 
-mbfl_standard_class_define _(transparent_color) _(color) \
+mbfl_default_class_define _(transparent_color) _(color) \
     'transparent_color' transparency
 @end example
 
@@ -2924,7 +2924,7 @@ mbfl_standard_class_define _(transparent_color) _(color) \
 then we can instantiate @class{transparent_color}:
 
 @example
-mbfl_standard_object_declare(transparent_dark_slate_blue)
+mbfl_default_object_declare(transparent_dark_slate_blue)
 
 transparent_color_define _(transparent_dark_slate_blue) 72 61 139 50
 @end example
@@ -2944,7 +2944,7 @@ The diagram of instances, classes and metaclasses is as follows:
 
 @example
  ----------------------  metaclass   ---------------------
-| mbfl_standard_object |----------->| mbfl_standard_class |
+| mbfl_default_object |----------->| mbfl_default_class |
  ----------------------              ---------------------
           ^
           | superclass
@@ -2960,20 +2960,20 @@ The diagram of instances, classes and metaclasses is as follows:
  -------------------          -----------------------------
 @end example
 
-The class constructor @func{mbfl_standard_class_define} defines functions that we can use to operate
+The class constructor @func{mbfl_default_class_define} defines functions that we can use to operate
 on class instances; with the class definition:
 
 @example
-mbfl_standard_class_declare(complex)
+mbfl_default_class_declare(complex)
 
-mbfl_standard_class_define _(complex) _(mbfl_standard_object) 'complex' real imag
+mbfl_default_class_define _(complex) _(mbfl_default_object) 'complex' real imag
 @end example
 
 @noindent
 the class identifier @code{complex} is used to generate an instance constructor:
 
 @example
-mbfl_standard_object_declare(Z)
+mbfl_default_object_declare(Z)
 
 root_define _(Z) 2 3
 @end example
@@ -2999,12 +2999,12 @@ its superclasses.  So if we define @class{color} and its subclass @class{transpa
 all the accessors and mutators for instances of @class{transparent_color}:
 
 @example
-mbfl_standard_class_declare(color)
-mbfl_standard_class_declare(transparent_color)
-mbfl_standard_object_declare(foreground)
+mbfl_default_class_declare(color)
+mbfl_default_class_declare(transparent_color)
+mbfl_default_object_declare(foreground)
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
-mbfl_standard_class_define _(tranparent_color) _(color) 'transparent_color' transparency
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
+mbfl_default_class_define _(tranparent_color) _(color) 'transparent_color' transparency
 
 transparent_color _(foreground) 11 22 33 50
 
@@ -3052,22 +3052,22 @@ complex_theta_var THETA _(Z)
 and nobody knows which values are the fields and which values are computed on demand.
 
 @item
-Standard objects have no custom constructor functions; if we desire them we must define them.
+Default objects have no custom constructor functions; if we desire them we must define them.
 @end itemize
 
 @c page
-@node objects standard classes
-@subsection Overview of standard classes
+@node objects default classes
+@subsection Overview of default classes
 
 
-The object @class{mbfl_standard_class} is the default metaclass of class types in @mbfl{}; we define
-new classes by instantiating @class{mbfl_standard_class}; an instance of @class{mbfl_standard_class}
-can only be a subclass of @class{mbfl_standard_object}.
+The object @class{mbfl_default_class} is the default metaclass of class types in @mbfl{}; we define
+new classes by instantiating @class{mbfl_default_class}; an instance of @class{mbfl_default_class}
+can only be a subclass of @class{mbfl_default_object}.
 
-The class @class{mbfl_standard_class} also has a metaclass: it is @class{mbfl_standard_class}
-itself.  The superclass of @class{mbfl_standard_class} is @class{mbfl_standard_object}.
+The class @class{mbfl_default_class} also has a metaclass: it is @class{mbfl_default_class}
+itself.  The superclass of @class{mbfl_default_class} is @class{mbfl_default_object}.
 
-An instance of @class{mbfl_standard_class} is a Bash index array with the following layout:
+An instance of @class{mbfl_default_class} is a Bash index array with the following layout:
 
 @example
 datavar[0]      @result{} _(metaclass)
@@ -3081,24 +3081,24 @@ datavar[4+N-1]  @result{} field N-1 name as string
 @end example
 
 @noindent
-being a @class{mbfl_standard_object} an array element with key @samp{0} is always present and its
-value is the instance's class.  We use @class{mbfl_standard_class} by using the constructor of
-@class{mbfl_standard_class} instances, which is the function @func{mbfl_standard_class_define}.
+being a @class{mbfl_default_object} an array element with key @samp{0} is always present and its
+value is the instance's class.  We use @class{mbfl_default_class} by using the constructor of
+@class{mbfl_default_class} instances, which is the function @func{mbfl_default_class_define}.
 
 If we define the class @class{color} as follows:
 
 @example
-mbfl_standard_class_declare(color)
+mbfl_default_class_declare(color)
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
 @end example
 
 @noindent
 the layout of the @class{color} array is:
 
 @example
-datavar[0]      @result{} _(mbfl_standard_class)
-datavar[1]      @result{} _(mbfl_standard_object)
+datavar[0]      @result{} _(mbfl_default_class)
+datavar[1]      @result{} _(mbfl_default_object)
 datavar[2]      @result{} 'color'
 datavar[3]      @result{} 3
 datavar[4]      @result{} 'red'
@@ -3107,32 +3107,32 @@ datavar[6]      @result{} 'blue'
 @end example
 
 @c page
-@node objects standard api metaclasses
-@subsection Operating on standard metaclasses
+@node objects default api metaclasses
+@subsection Operating on default metaclasses
 
 
-@deftp {Class} mbfl_standard_class
-@deftpx {Parent} mbfl_standard_object
-@deftpx {Metaclass} mbfl_standard_class
-The metaclass of @class{mbfl_standard_object}.  It is also the metaclass of all the subclasses of
-@class{mbfl_standard_object}, including @class{mbfl_standard_class} itself.
+@deftp {Class} mbfl_default_class
+@deftpx {Parent} mbfl_default_object
+@deftpx {Metaclass} mbfl_default_class
+The metaclass of @class{mbfl_default_object}.  It is also the metaclass of all the subclasses of
+@class{mbfl_default_object}, including @class{mbfl_default_class} itself.
 @end deftp
 
 @c page
-@node objects standard api classes
-@subsection Operating on standard classes
+@node objects default api classes
+@subsection Operating on default classes
 
 
-@deftp {Class} mbfl_standard_object
-@deftpx {Metaclass} mbfl_standard_class
-Standard class of objects used by @mbfl{}.  It has no parent.  It defines no fields aside from a
+@deftp {Class} mbfl_default_object
+@deftpx {Metaclass} mbfl_default_class
+Default class of objects used by @mbfl{}.  It has no parent.  It defines no fields aside from a
 reference to the instance's class.
 @end deftp
 
 
-@deffn {Preprocessor Macro} mbfl_standard_class_declare (@var{VARNAME})
-@deffnx {Preprocessor Macro} mbfl_standard_class_declare_global (@var{VARNAME})
-Define the Bash variables needed to handle a new instance of @class{mbfl_standard_class}.  The data
+@deffn {Preprocessor Macro} mbfl_default_class_declare (@var{VARNAME})
+@deffnx {Preprocessor Macro} mbfl_default_class_declare_global (@var{VARNAME})
+Define the Bash variables needed to handle a new instance of @class{mbfl_default_class}.  The data
 variable is declared using, respectively: @code{declare} or @code{declare -g}.
 
 We can think of these macros as working like @func{mbfl_declare_varref}: they declare variables, one
@@ -3140,12 +3140,12 @@ of which is a data variable whose name we can pass around as parameter to functi
 @end deffn
 
 
-@defun mbfl_standard_class_define @var{STDCLS} @var{STDMETACLS} @var{CLASS_NAME} @var{FIELD_SPECS}
-Define a new standard class @var{STDCLS} whose metaclass is @var{STDMETACLS}.
+@defun mbfl_default_class_define @var{STDCLS} @var{STDMETACLS} @var{CLASS_NAME} @var{FIELD_SPECS}
+Define a new default class @var{STDCLS} whose metaclass is @var{STDMETACLS}.
 
-If we want to subclass @class{mbfl_standard_object}, then the parameter @var{STDMETACLS} must be the
-datavar of @class{mbfl_standard_object}; otherwise it must be the datavar of a subclass of
-@class{mbfl_standard_object}.
+If we want to subclass @class{mbfl_default_object}, then the parameter @var{STDMETACLS} must be the
+datavar of @class{mbfl_default_object}; otherwise it must be the datavar of a subclass of
+@class{mbfl_default_object}.
 
 The name of the new class is the identifier @var{CLASS_NAME}, which must be a string satisfying
 @func{mbfl_string_is_identifier}.
@@ -3169,111 +3169,111 @@ Field mutator: store in the field the new value @var{NEW_FIELD_VALUE}.
 @end defun
 
 
-@defun mbfl_standard_class_is_a @var{STDOBJ}
-Return true if @var{STDOBJ} is an instance of @class{mbfl_standard_class} or of a subclass of
-@class{mbfl_standard_class}; otherwise return false.
+@defun mbfl_default_class_is_a @var{STDOBJ}
+Return true if @var{STDOBJ} is an instance of @class{mbfl_default_class} or of a subclass of
+@class{mbfl_default_class}; otherwise return false.
 
 @example
-mbfl_standard_class_is_a _(mbfl_standard_class)  @result{} true
-mbfl_standard_class_is_a _(mbfl_standard_object) @result{} true
+mbfl_default_class_is_a _(mbfl_default_class)  @result{} true
+mbfl_default_class_is_a _(mbfl_default_object) @result{} true
 
-mbfl_standard_class_declare(color)
-mbfl_standard_class_define _(color) _(mbfl_standard_object) r g b
-mbfl_standard_class_is_a _(color) @result{} true
+mbfl_default_class_declare(color)
+mbfl_default_class_define _(color) _(mbfl_default_object) r g b
+mbfl_default_class_is_a _(color) @result{} true
 @end example
 @end defun
 
 
-@defun mbfl_standard_metaclass_is_a @var{STDOBJ}
+@defun mbfl_default_metaclass_is_a @var{STDOBJ}
 Return true if @var{STDOBJ} is an object that meets the following criteria:
 
 @enumerate
 @item
-the class of @var{STDOBJ} is @class{mbfl_standard_class} or a subclass of
-@class{mbfl_standard_class};
+the class of @var{STDOBJ} is @class{mbfl_default_class} or a subclass of
+@class{mbfl_default_class};
 
 @item
-@var{STDOBJ} itself must be a subclass of @class{mbfl_standard_class}.
+@var{STDOBJ} itself must be a subclass of @class{mbfl_default_class}.
 @end enumerate
 
 @example
-mbfl_standard_metaclass_is_a _(mbfl_standard_object) @result{} false
-mbfl_standard_metaclass_is_a _(mbfl_standard_class)  @result{} true
+mbfl_default_metaclass_is_a _(mbfl_default_object) @result{} false
+mbfl_default_metaclass_is_a _(mbfl_default_class)  @result{} true
 @end example
 @end defun
 
 
-@defun mbfl_standard_class_parent_var @var{PARENT_RV} @var{STDCLS}
+@defun mbfl_default_class_parent_var @var{PARENT_RV} @var{STDCLS}
 Store in the result variable @var{PARENT_RV} the data variable of the parent of @var{STDCLS}.
 
 @example
-mbfl_standard_class_declare(color)
+mbfl_default_class_declare(color)
 declare PARENT
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
-mbfl_standard_class_parent_var PARENT _(color)
-$PARENT @result{} _(mbfl_standard_object)
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
+mbfl_default_class_parent_var PARENT _(color)
+$PARENT @result{} _(mbfl_default_object)
 @end example
 @end defun
 
 
-@defun mbfl_standard_class_name_var @var{NAME_RV} @var{STDCLS}
+@defun mbfl_default_class_name_var @var{NAME_RV} @var{STDCLS}
 Store in the result variable @var{NAME_RV} the string representing the name of @var{STDCLS}.
 
 @example
-mbfl_standard_class_declare(color)
+mbfl_default_class_declare(color)
 declare NAME
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
-mbfl_standard_class_name_var NAME _(color)
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
+mbfl_default_class_name_var NAME _(color)
 $NAME @result{} color
 @end example
 @end defun
 
 
-@defun mbfl_standard_class_fields_number_var @var{FIELDS_NUMBER_RV} @var{STDCLS}
+@defun mbfl_default_class_fields_number_var @var{FIELDS_NUMBER_RV} @var{STDCLS}
 Store in the result variable @var{FIELDS_NUMBER_RV} the number of fields in instances of
 @var{STDCLS}.
 
 @example
-mbfl_standard_class_declare(color)
+mbfl_default_class_declare(color)
 declare FIELDS_NUMBER
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) 'color' red green blue
-mbfl_standard_class_fields_number_var FIELDS_NUMBER _(color)
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
+mbfl_default_class_fields_number_var FIELDS_NUMBER _(color)
 $FIELDS_NUMBER @result{} 3
 @end example
 @end defun
 
 
-@defun mbfl_standard_classes_are_parent_and_child @var{MAYBE_PARENT_STDCLS} @var{MAYBE_CHILD_STDCLS}
+@defun mbfl_default_classes_are_parent_and_child @var{MAYBE_PARENT_STDCLS} @var{MAYBE_CHILD_STDCLS}
 Return true if @var{MAYBE_PARENT_STDCLS} is a class and @var{MAYBE_CHILD_STDCLS} is a subclass of
 @var{MAYBE_PARENT_STDCLS}; otherwise return false.
 
 @example
-mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_standard_object)
+mbfl_default_classes_are_parent_and_child _(mbfl_default_object) _(mbfl_default_object)
 @result{} false
 
-mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_standard_class)
+mbfl_default_classes_are_parent_and_child _(mbfl_default_object) _(mbfl_default_class)
 @result{} true
 
-mbfl_standard_classes_are_parent_and_child _(mbfl_standard_object) _(mbfl_predefined_constant)
+mbfl_default_classes_are_parent_and_child _(mbfl_default_object) _(mbfl_predefined_constant)
 @result{} true
 
-mbfl_standard_classes_are_parent_and_child _(mbfl_standard_class) _(mbfl_predefined_constant)
+mbfl_default_classes_are_parent_and_child _(mbfl_default_class) _(mbfl_predefined_constant)
 @result{} false
 @end example
 @end defun
 
 @c page
-@node objects standard api objects
-@subsection Operating on standard objects
+@node objects default api objects
+@subsection Operating on default objects
 
 
-@deffn {Preprocessor Macro} mbfl_standard_object_declare (@var{OBJECT_NAME})
-@deffnx {Preprocessor Macro} mbfl_standard_object_declare_global (@var{OBJECT_NAME})
+@deffn {Preprocessor Macro} mbfl_default_object_declare (@var{OBJECT_NAME})
+@deffnx {Preprocessor Macro} mbfl_default_object_declare_global (@var{OBJECT_NAME})
 Define the Bash variables needed to handle a new instances of subclasses of
-@class{mbfl_standard_object}.  The data variable is declared using, respectively: @code{declare} or
+@class{mbfl_default_object}.  The data variable is declared using, respectively: @code{declare} or
 @code{declare -g}.
 
 We can think of these macros as working like @func{mbfl_declare_varref}: they declare variables, one
@@ -3281,85 +3281,85 @@ of which is a data variable whose name we can pass around as parameter to functi
 @end deffn
 
 
-@defun mbfl_standard_object_define @var{STDOBJ} @var{STDCLS} @var{FIELD_VALUE} @dots{}
-Initialise the standard object @var{STDOBJ} whose class is @var{STDCLS}.  Store the
+@defun mbfl_default_object_define @var{STDOBJ} @var{STDCLS} @var{FIELD_VALUE} @dots{}
+Initialise the default object @var{STDOBJ} whose class is @var{STDCLS}.  Store the
 @var{FIELD_VALUE} in the fields; the @var{FIELD_VALUE} parameters must be in the same order in which
-the fields were previously defined in the call to @func{mbfl_standard_object_define}.
+the fields were previously defined in the call to @func{mbfl_default_object_define}.
 @end defun
 
 
-@defun mbfl_standard_object_class_var @var{CLASS_RV} @var{STDOBJ}
+@defun mbfl_default_object_class_var @var{CLASS_RV} @var{STDOBJ}
 Store in the result variable @var{CLASS_RV} the data variable of the class of @var{STDOBJ}.
 
 @example
-mbfl_standard_class_declare(color)
-mbfl_standard_object_declare(dark_slate_blue)
+mbfl_default_class_declare(color)
+mbfl_default_object_declare(dark_slate_blue)
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) r g b
+mbfl_default_class_define _(color) _(mbfl_default_object) r g b
 color_define _(dark_slate_blue) 72 61 139
 
 declare METACLASS CLASS
 
-mbfl_standard_object_class_var METACLASS _(color)
-mbfl_standard_object_class_var CLASS     _(dark_slate_blue)
+mbfl_default_object_class_var METACLASS _(color)
+mbfl_default_object_class_var CLASS     _(dark_slate_blue)
 
-$METACLASS      @result{} _(mbfl_standard_class)
+$METACLASS      @result{} _(mbfl_default_class)
 $CLASS          @result{} _(color)
 @end example
 @end defun
 
 
-@defun mbfl_standard_object_is_a @var{STDOBJ}
+@defun mbfl_default_object_is_a @var{STDOBJ}
 Return true if the given parameter is the datavar of an object whose class is a subclass of
-@class{mbfl_standard_object}; otherwise return false.
+@class{mbfl_default_object}; otherwise return false.
 
 @example
-mbfl_standard_class_declare(color)
-mbfl_standard_object_declare(dark_slate_blue)
+mbfl_default_class_declare(color)
+mbfl_default_object_declare(dark_slate_blue)
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) r g b
+mbfl_default_class_define _(color) _(mbfl_default_object) r g b
 color_define _(dark_slate_blue) 72 61 139
 
-mbfl_standard_object_is_a _(dark_slate_blue) @result{} true
+mbfl_default_object_is_a _(dark_slate_blue) @result{} true
 @end example
 @end defun
 
 
-@defun mbfl_standard_object_is_of_class @var{STDOBJ} @var{STDCLS}
+@defun mbfl_default_object_is_of_class @var{STDOBJ} @var{STDCLS}
 Return true if the following criteria are met:
 
 @enumerate
 @item
-@var{STDOBJ} is a standard object: its class is a subclass of @class{mbfl_standard_object};
+@var{STDOBJ} is a default object: its class is a subclass of @class{mbfl_default_object};
 
 @item
 the class of @var{STDOBJ} is @var{STDCLS} or a subclass of @var{STDCLS};
 @end enumerate
 
 @example
-mbfl_standard_class_declare(color)
-mbfl_standard_object_declare(dark_slate_blue)
+mbfl_default_class_declare(color)
+mbfl_default_object_declare(dark_slate_blue)
 
-mbfl_standard_class_define _(color) _(mbfl_standard_object) r g b
+mbfl_default_class_define _(color) _(mbfl_default_object) r g b
 color_define _(dark_slate_blue) 72 61 139
 
-mbfl_standard_object_is_of_class _(dark_slate_blue) _(color)
+mbfl_default_object_is_of_class _(dark_slate_blue) _(color)
 @result{} true
 @end example
 @end defun
 
 @c page
-@node objects standard predicates
-@section Standard object predicates
+@node objects default predicates
+@section Default object predicates
 
 
-@defun mbfl_standard_object_is_the_standard_object @var{STDOBJ}
-Return true if the parameter is the datavar of @class{mbfl_standard_object}; otherwise return false.
+@defun mbfl_default_object_is_the_default_object @var{STDOBJ}
+Return true if the parameter is the datavar of @class{mbfl_default_object}; otherwise return false.
 @end defun
 
 
-@defun mbfl_standard_object_is_the_standard_class @var{STDOBJ}
-Return true if the parameter is the datavar of @class{mbfl_standard_class}; otherwise return false.
+@defun mbfl_default_object_is_the_default_class @var{STDOBJ}
+Return true if the parameter is the datavar of @class{mbfl_default_class}; otherwise return false.
 @end defun
 
 @c page
@@ -3381,7 +3381,7 @@ It is sometimes useful to define special constant values to represent situations
 a void value as follows:
 
 @example
-mbfl_standard_object_declare(void)
+mbfl_default_object_declare(void)
 
 mbfl_predefind_constant_define _(void)
 
@@ -3396,8 +3396,8 @@ code bases are always imperfect.
 
 
 @deftp {Class} mbfl_predefined_constant
-@deftpx {Parent class} mbfl_standard_object
-@deftpx {Metaclass} mbfl_standard_class
+@deftpx {Parent class} mbfl_default_object
+@deftpx {Metaclass} mbfl_default_class
 Class representing unique constant values.
 @end deftp
 

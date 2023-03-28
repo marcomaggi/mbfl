@@ -361,39 +361,39 @@ function program_replace_[[[]]]$1 () {
 #
 # Usage example:
 #
-#    mbfl_standard_class_declare(greek)
-#    mbfl_standard_object_declare(self)
+#    mbfl_default_class_declare(greek)
+#    mbfl_default_object_declare(self)
 #
-#    mbfl_standard_class_define _(greek) _(mbfl_standard_object) 'greek' alpha beta gamma
-#    mbfl_standard_object_define _(self) _(greek) 1 2 3
-#    mbfl_standard_object_unset(self)
+#    mbfl_default_class_define _(greek) _(mbfl_default_object) 'greek' alpha beta gamma
+#    mbfl_default_object_define _(self) _(greek) 1 2 3
+#    mbfl_default_object_unset(self)
 #
 
 # Synopsis:
 #
-#   mbfl_standard_object_declare(CLASS_NAME)
-#   mbfl_standard_object_declare_global(CLASS_NAME)
-#   mbfl_standard_object_unset(CLASS_NAME)
+#   mbfl_default_object_declare(CLASS_NAME)
+#   mbfl_default_object_declare_global(CLASS_NAME)
+#   mbfl_default_object_unset(CLASS_NAME)
 #
 # Declare or  unset the variables  required to represent  an instance of  class whose
-# superclass is "mbfl_standard_object".
+# superclass is "mbfl_default_object".
 #
-m4_define([[[mbfl_standard_object_declare]]],        [[[mbfl_declare_index_array_varref([[[$1]]])]]])
-m4_define([[[mbfl_standard_object_declare_global]]], [[[mbfl_declare_index_array_varref([[[$1]]],,[[[-g]]])]]])
-m4_define([[[mbfl_standard_object_unset]]],          [[[mbfl_unset_varref([[[$1]]])]]])
+m4_define([[[mbfl_default_object_declare]]],        [[[mbfl_declare_index_array_varref([[[$1]]])]]])
+m4_define([[[mbfl_default_object_declare_global]]], [[[mbfl_declare_index_array_varref([[[$1]]],,[[[-g]]])]]])
+m4_define([[[mbfl_default_object_unset]]],          [[[mbfl_unset_varref([[[$1]]])]]])
 
 # Synopsis:
 #
-#   mbfl_standard_class_declare(CLASS_NAME)
-#   mbfl_standard_class_declare_global(CLASS_NAME)
-#   mbfl_standard_class_unset(CLASS_NAME)
+#   mbfl_default_class_declare(CLASS_NAME)
+#   mbfl_default_class_declare_global(CLASS_NAME)
+#   mbfl_default_class_unset(CLASS_NAME)
 #
 # Declare or unset the variables required to represent an instance of metaclass whose
-# superclass is "mbfl_standard_class".
+# superclass is "mbfl_default_class".
 #
-m4_define([[[mbfl_standard_class_declare]]],        [[[mbfl_standard_object_declare([[[$1]]])]]])
-m4_define([[[mbfl_standard_class_declare_global]]], [[[mbfl_standard_object_declare_global([[[$1]]])]]])
-m4_define([[[mbfl_standard_class_unset]]],          [[[mbfl_standard_object_unset([[[$1]]])]]])
+m4_define([[[mbfl_default_class_declare]]],        [[[mbfl_default_object_declare([[[$1]]])]]])
+m4_define([[[mbfl_default_class_declare_global]]], [[[mbfl_default_object_declare_global([[[$1]]])]]])
+m4_define([[[mbfl_default_class_unset]]],          [[[mbfl_default_object_unset([[[$1]]])]]])
 
 
 #### done
