@@ -164,6 +164,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * locations::                   Running location handlers.
 * variables::                   Manipulating variables.
 * arrays::                      Manipulating arrays with functions and macros.
+* functions::                   Manipulating functions.
 * hooks::                       Executing commands with event hooks.
 * objects::                     Object-oriented programming.
 * strings::                     Manipulating strings with functions.
@@ -2657,6 +2658,22 @@ A wrapper for @func{mbfl_variable_find_in_array} that does not print anything.
 @quotation
 @strong{NOTE} Use of this function is deprecated!  Use @func{mbfl_array_contains_value_var} instead.
 @end quotation
+@end defun
+
+@c page
+@node functions
+@chapter Manipulating functions
+
+
+@defun mbfl_function_copy @var{SRC_FUNCNAME} @var{DST_FUNCNAME}
+Copy the function @var{SRC_FUNCNAME} to a new function with name @var{DST_FUNCNAME}; return true if
+successful; return false otherwise.
+@end defun
+
+
+@defun mbfl_function_rename @var{SRC_FUNCNAME} @var{DST_FUNCNAME}
+Rename the function @var{SRC_FUNCNAME} to @var{DST_FUNCNAME}; return true if successful; return
+false otherwise.
 @end defun
 
 @c page
