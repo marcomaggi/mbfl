@@ -11245,12 +11245,20 @@ library, @ref{--print-libmbfl-git, Invoking the preprocessor}.
 @center @url{https://git-scm.com/}
 
 @menu
+* libmbfl-git conventions::     Conventions.
 * libmbfl-git enable::          Library initialisation.
 * libmbfl-git config::          Configuration management.
 * libmbfl-git repository::      Repository management.
 * libmbfl-git branch::          Branches management.
 * libmbfl-git program::         Running the program.
 @end menu
+
+@c page
+@node libmbfl-git conventions
+@appendixsec Conventions
+
+In this documentation we assume the underscore is defined as macro as described in @ref{objects
+conventions underscore, The underscore syntax}.
 
 @c page
 @node libmbfl-git enable
