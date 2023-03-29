@@ -232,7 +232,7 @@ function mbfl_default_object_define () {
 	mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX, _(mbfl_CLASS))
 
 	for ((mbfl_I=0; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_SELF, MBFL_STDOBJ__FIRST_FIELD_INDEX+mbfl_I, mbfl_slot_qref(mbfl_FIELD_INIT_VALUES, mbfl_I))
+	do mbfl_slot_set(mbfl_SELF, $((MBFL_STDOBJ__FIRST_FIELD_INDEX + $mbfl_I)), mbfl_slot_qref(mbfl_FIELD_INIT_VALUES, $mbfl_I))
 	done
     }
     return_because_success
@@ -308,13 +308,13 @@ function mbfl_default_class_define () {
 
 	# Copy the field names from the parent class.
 	for ((mbfl_I=0; mbfl_I < mbfl_PARENT_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_CLASS,                 MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_I,
-			 mbfl_slot_qref(mbfl_PARENT, MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_I))
+	do mbfl_slot_set(mbfl_CLASS,                 $((MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + $mbfl_I)),
+			 mbfl_slot_qref(mbfl_PARENT, $((MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + $mbfl_I))))
 	done
 	# Store the new field names.
 	for ((mbfl_I=0; mbfl_I < mbfl_NEW_FIELDS_NUMBER; ++mbfl_I))
-	do mbfl_slot_set(mbfl_CLASS, mbfl_PARENT_FIELDS_NUMBER +  MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_I,
-			 mbfl_slot_qref(mbfl_NEW_FIELD_NAMES, mbfl_I))
+	do mbfl_slot_set(mbfl_CLASS, $((mbfl_PARENT_FIELDS_NUMBER + MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + $mbfl_I)),
+			 mbfl_slot_qref(mbfl_NEW_FIELD_NAMES, $mbfl_I))
 	done
     }
 
@@ -325,10 +325,10 @@ function mbfl_default_class_define () {
 
 	for ((mbfl_I=0; mbfl_I < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_I))
 	do
-	    mbfl_FIELD_NAME=_(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_I)
-	    for ((mbfl_J=1+mbfl_I; mbfl_J < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_J))
+	    mbfl_FIELD_NAME=_(mbfl_CLASS, $((MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + $mbfl_I)))
+	    for ((mbfl_J=1+$mbfl_I; mbfl_J < mbfl_TOTAL_FIELDS_NUMBER; ++mbfl_J))
 	    do
-		if mbfl_string_eq($mbfl_FIELD_NAME, _(mbfl_CLASS, MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + mbfl_J))
+		if mbfl_string_eq($mbfl_FIELD_NAME, _(mbfl_CLASS, $((MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC + $mbfl_J))))
 		then
 		    mbfl_message_error_printf 'duplicate field name in the definition of type "%s": "%s"' "$mbfl_NAME" "$mbfl_FIELD_NAME"
 		    return_because_failure
