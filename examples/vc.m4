@@ -243,12 +243,18 @@ function vc_git_config_get_value () {
 	mbfl_mandatory_parameter(DATABASE, 1, the database specification)
 	mbfl_command_line_argument(KEY, 0)
 	mbfl_command_line_argument(DEFAULT, 1)
-	mbfl_local_assoc_array_varref(CONFIG_VALUE)
+	mbfl_local_assoc_array_varref(CFGOPT)
 	mbfl_local_varref(VALUE)
 
-	mbfl_vc_git_config_init_value_struct mbfl_datavar(CONFIG_VALUE) "$KEY" "$DEFAULT"
-	vc_git_config_parse_database  mbfl_datavar(CONFIG_VALUE) "$DATABASE"
-	mbfl_vc_git_config_get_value_var mbfl_datavar(VALUE) mbfl_datavar(CONFIG_VALUE)
+	if ! mbfl_vc_git_config_option_define _(CFGOPT) "$KEY" "$DEFAULT"
+	then exit_because_failure
+	fi
+	if ! vc_git_config_parse_database  _(CFGOPT) "$DATABASE"
+	then exit_because_failure
+	fi
+	if ! mbfl_vc_git_config_option_value_var _(VALUE) _(CFGOPT)
+	then exit_because_failure
+	fi
 	printf '%s' "$VALUE"
     else
 	mbfl_main_print_usage_screen_brief
@@ -261,29 +267,40 @@ function vc_git_config_set_value () {
 	mbfl_mandatory_parameter(DATABASE, 1, the database specification)
 	mbfl_command_line_argument(KEY, 0)
 	mbfl_command_line_argument(NEW_VALUE, 1)
-	mbfl_local_assoc_array_varref(CONFIG_VALUE)
+	mbfl_local_assoc_array_varref(CFGOPT)
 	mbfl_local_varref(VALUE)
 
-	mbfl_vc_git_config_init_value_struct mbfl_datavar(CONFIG_VALUE) "$KEY"
-	vc_git_config_parse_database  mbfl_datavar(CONFIG_VALUE) "$DATABASE"
-	mbfl_vc_git_config_set_value mbfl_datavar(CONFIG_VALUE) "$NEW_VALUE"
+	if ! mbfl_vc_git_config_option_define _(CFGOPT) "$KEY"
+	then exit_because_failure
+	fi
+	if ! vc_git_config_parse_database _(CFGOPT) "$DATABASE"
+	then exit_because_failure
+	fi
+	if ! mbfl_vc_git_config_option_value_set _(CFGOPT) "$NEW_VALUE"
+	then exit_because_failure
+	fi
     else
 	mbfl_main_print_usage_screen_brief
 	exit_because_wrong_num_args
     fi
 }
+
+# Validate  the command  line argument  DATABASE  and store  it in  CFGOPT  as value  for the  field
+# "database".
+#
 function vc_git_config_parse_database () {
-    mbfl_mandatory_nameref_parameter(CONFIG_VALUE, 1, config value data structure)
-    mbfl_mandatory_parameter(DATABASE,             2, the database specification)
+    mbfl_mandatory_nameref_parameter(CFGOPT,	1, reference to object of class mbfl_vc_git_config_option)
+    mbfl_mandatory_parameter(DATABASE,		2, the database specification)
 
     case "$DATABASE" in
-	'local')	mbfl_slot_set(CONFIG_VALUE,DATABASE,'local')  ;;
-	'global')	mbfl_slot_set(CONFIG_VALUE,DATABASE,'global') ;;
+	'local')	: ;;
+	'global')	: ;;
 	*)
 	    mbfl_message_error_printf 'internal error, invalid database specification: "%s"' "$DATABASE"
-	    exit_because_failure
+	    return_because_failure
 	    ;;
     esac
+    mbfl_vc_git_config_option_database_set _(CFGOPT) "$DATABASE"
 }
 
 

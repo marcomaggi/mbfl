@@ -485,7 +485,7 @@ examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 examples/template-actions.sh: examples/template-actions.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
-examples/vc: examples/vc.m4 $(MBFL_EXAMPLES_PREREQUISITES)
+examples/vc: examples/vc.m4 src/lib/libmbfl-git.bash $(MBFL_EXAMPLES_PREREQUISITES)
 	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
 examples/semver: examples/semver.m4 $(MBFL_EXAMPLES_PREREQUISITES)
@@ -572,6 +572,7 @@ EXTRA_DIST			+=		\
 	\
 	tests/mbflutils-files.test.m4		\
 	tests/mbfl-passwords.test.m4		\
+	tests/mbfl-git.test.m4			\
 	\
 	tests/script-atexit.sh.m4		\
 	tests/signaltest.sh.m4
@@ -603,7 +604,8 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/variables.test			\
 	\
 	tests/mbflutils-files.test		\
-	tests/mbfl-passwords.test
+	tests/mbfl-passwords.test		\
+	tests/mbfl-git.test
 
 MBFL_CHECK_BUILT_EXAMPLES		=	\
 	examples/compress.sh			\
@@ -635,6 +637,7 @@ MBFL_TESTS_ENV		+= MBFL_LIBMBFL_TEST=$(builddir)/src/lib/libmbfl-tests.bash; exp
 MBFL_TESTS_ENV		+= MBFL_LIBMBFL_ARCH=$(builddir)/src/lib/libmbfl-arch.bash; export MBFL_LIBMBFL_ARCH;
 MBFL_TESTS_ENV		+= MBFL_LIBMBFL_UTILS=$(builddir)/src/lib/libmbfl-utils.bash; export MBFL_LIBMBFL_UTILS;
 MBFL_TESTS_ENV		+= MBFL_LIBMBFL_PASSWORDS=$(builddir)/src/lib/libmbfl-passwords.bash; export MBFL_LIBMBFL_PASSWORDS;
+MBFL_TESTS_ENV		+= MBFL_LIBMBFL_GIT=$(builddir)/src/lib/libmbfl-git.bash; export MBFL_LIBMBFL_GIT;
 # We set TMPDIR  because if the "/tmp"  directory is mounted on  a separate partition
 # with  "noexec"  attribute: tests  for  executability  of  files  will fail  if  the
 # temporary test files are created under "/tmp".
@@ -654,6 +657,7 @@ MBFL_TESTS_PREREQUISITES=				\
 	$(builddir)/src/lib/libmbfl-at.bash		\
 	$(builddir)/src/lib/libmbfl-utils.bash		\
 	$(builddir)/src/lib/libmbfl-passwords.bash	\
+	$(builddir)/src/lib/libmbfl-git.bash		\
 	$(MBFL_PROGRAM_MBFLPP)				\
 	$(MBFL_PREPROCESSOR)
 

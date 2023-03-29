@@ -37,6 +37,31 @@ m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_sl
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
+    mbfl_default_class_declare(mbfl_vc_git_config_option)
+
+    mbfl_default_class_define _(mbfl_vc_git_config_option) _(mbfl_default_object) 'mbfl_vc_git_config_option' \
+			      database key default_value type terminator
+
+    # Rename the constructor  and mutator functions of the class  "mbfl_vc_git_config_option", so that they
+    # can be reimplemented with functions validating the new field value.  The field "default_value"
+    # needs no validation.
+    #
+    # I do not like this, but with the current class implementation that's the way it is.  Maybe, in
+    # some future, it will be possible to specify  the identifiers of a field's accessor and mutator
+    # at class defintion time.  (Marco Maggi; Mar 29, 2023)
+    #
+    {
+	declare mbfl_FIELD_NAME mbfl_SRC_FUNCNAME mbfl_DST_FUNCNAME
+
+	mbfl_function_rename 'mbfl_vc_git_config_option_define' 'mbfl_p_vc_git_config_option_define'
+	for mbfl_FIELD_NAME in database key type terminator
+	do
+	    printf -v mbfl_SRC_FUNCNAME 'mbfl_vc_git_config_option_%s_set'   "$mbfl_FIELD_NAME"
+	    printf -v mbfl_DST_FUNCNAME 'mbfl_p_vc_git_config_option_%s_set' "$mbfl_FIELD_NAME"
+	    mbfl_function_rename "$mbfl_SRC_FUNCNAME" "$mbfl_DST_FUNCNAME"
+	done
+    }
+
     # Global variable used to cache the result of "mbfl_vc_git_repository_top_srcdir_var()".
     #
     declare -g mbfl_vc_git_REPOSITORY_TOP_SRCDIR_CACHED_VALUE=
@@ -53,104 +78,191 @@ function mbfl_vc_git_enable () {
 }
 
 
-#### data structures: CONFIG_VALUE
+#### configuration management: the class "mbfl_vc_git_config_option"
 
-function mbfl_vc_git_config_init_value_struct () {
-    mbfl_mandatory_nameref_parameter(CONFIG_VALUE, 1, struct array)
+function mbfl_vc_git_config_option_define () {
+    mbfl_mandatory_nameref_parameter(CFGOPT,	1, reference to uninitialised object of type mbfl_vc_git_config_option)
     mbfl_mandatory_parameter(KEY,		2, key string)
     mbfl_optional_parameter(DEFAULT_VALUE,	3)
 
-    mbfl_slot_set(CONFIG_VALUE,MBFL_STRUCT_TYPE,'MBFL_VC_GIT_CONFIG_VALUE')
-    mbfl_slot_set(CONFIG_VALUE,DATABASE,	'unspecified')
-    mbfl_slot_set(CONFIG_VALUE,KEY,		"$KEY")
-    mbfl_slot_set(CONFIG_VALUE,DEFAULT_VALUE,	"$DEFAULT_VALUE")
-    mbfl_slot_set(CONFIG_VALUE,TYPE,		'no-type')
-    mbfl_slot_set(CONFIG_VALUE,TERMINATOR,	'newline')
-}
-
-function mbfl_vc_git_config_validate_value_struct () {
-    mbfl_mandatory_nameref_parameter(CONFIG_VALUE, 1, reference to config value struct)
-    mbfl_local_varref(FLAGS)
-    # We execute  this in a subshell  so that the  call to "exit_because_failure" are  equivalent to
-    # calls to "return_because_failure".
-    (mbfl_vc_git_config_parse_config_value_flags mbfl_datavar(CONFIG_VALUE) mbfl_datavar(FLAGS))
-}
-
-function mbfl_vc_git_config_parse_config_value_flags () {
-    mbfl_mandatory_nameref_parameter(CONFIG_VALUE,	1, reference to config value struct)
-    mbfl_mandatory_nameref_parameter(FLAGS,		2, reference to flags variable)
-
-    if ! mbfl_string_eq('MBFL_VC_GIT_CONFIG_VALUE', mbfl_slot_qref(CONFIG_VALUE,MBFL_STRUCT_TYPE))
+    if ! mbfl_string_is_git_config_option_key "$KEY"
     then
-	mbfl_message_error_printf 'invalid data structure type, expected "MBFL_VC_GIT_CONFIG_VALUE": "%s"' \
-				  mbfl_slot_qref(CONFIG_VALUE,MBFL_STRUCT_TYPE)
-	exit_because_failure
+	mbfl_message_error_printf 'in call to %s expected identifier as key got: "%s"' $FUNCNAME "$KEY"
+	return_because_failure
     fi
 
-    if ! mbfl_string_is_extended_identifier mbfl_slot_qref(CONFIG_VALUE,KEY)
-    then
-	mbfl_message_error_printf 'invalid field value "CONFIG_VALUE[KEY]": "%s"' mbfl_slot_qref(CONFIG_VALUE,KEY)
-	exit_because_failure
-    fi
-
-    case mbfl_slot_qref(CONFIG_VALUE,DATABASE) in
-	'local')	FLAGS+=' --local'	;;
-	'global')	FLAGS+=' --global'	;;
-	'system')	FLAGS+=' --system'	;;
-	'worktree')	FLAGS+=' --worktree'	;;
-        'unspecified')				;;
-	*)
-	    mbfl_message_error_printf 'invalid field value "CONFIG_VALUE[DATABASE]": "%s"' mbfl_slot_qref(CONFIG_VALUE,DATABASE)
-	    exit_because_failure
-    esac
-
-    case mbfl_slot_qref(CONFIG_VALUE,TYPE) in
-	'bool')		FLAGS+=' --type=bool'		;;
-	'int')		FLAGS+=' --type=int'		;;
-	'bool-or-int')	FLAGS+=' --type=bool-or-int'	;;
-	'path')		FLAGS+=' --type=path'		;;
-	'expiry-date')	FLAGS+=' --type=expiry-date'	;;
-	'color')	FLAGS+=' --type=color'		;;
-	'no-type')	FLAGS+=' --no-type'		;;
-	*)
-	    mbfl_message_error_printf 'invalid field value "CONFIG_VALUE[TYPE]": "%s"' mbfl_slot_qref(CONFIG_VALUE,TYPE)
-	    exit_because_failure
-    esac
-
-    case mbfl_slot_qref(CONFIG_VALUE,TERMINATOR) in
-	'null')		FLAGS+=' --null'	;;
-	'newline')				;;
-	*)
-	    mbfl_message_error_printf 'invalid field value "CONFIG_VALUE[TERMINATOR]": "%s"' mbfl_slot_qref(CONFIG_VALUE,TERMINATOR)
-	    exit_because_failure
-    esac
+    #                                            database      key    default_value    type      terminator
+    mbfl_p_vc_git_config_option_define _(CFGOPT) 'unspecified' "$KEY" "$DEFAULT_VALUE" 'no-type' 'newline'
 }
 
-
-#### configuration management
+### ------------------------------------------------------------------------
 
-function mbfl_vc_git_config_get_value () {
-    mbfl_mandatory_nameref_parameter(CONFIG_VALUE, 1, reference to config value struct)
-    mbfl_local_varref(FLAGS)
+function mbfl_vc_git_config_option_database_set () {
+    mbfl_mandatory_nameref_parameter(CFGOPT,	1, reference to object of class mbfl_vc_git_config_option)
+    mbfl_mandatory_parameter(NEW_VALUE,		2, new field value)
 
-    mbfl_vc_git_config_parse_config_value_flags mbfl_datavar(CONFIG_VALUE) mbfl_datavar(FLAGS)
+    case "$NEW_VALUE" in
+	'local')	: ;;
+	'global')	: ;;
+	'system')	: ;;
+	'worktree')	: ;;
+        'unspecified')	: ;;
+	*)
+	    mbfl_message_error_printf 'invalid value for field "database" in object of class "mbfl_vc_git_config_option": "%s"' \
+				      "$NEW_VALUE"
+	    exit_because_failure
+    esac
+    mbfl_p_vc_git_config_option_database_set _(CFGOPT) "$NEW_VALUE"
+}
+function mbfl_vc_git_config_option_key_set () {
+    mbfl_mandatory_nameref_parameter(CFGOPT,	1, reference to object of class mbfl_vc_git_config_option)
+    mbfl_mandatory_parameter(NEW_VALUE,		2, new field value)
+
+    if ! mbfl_string_is_git_config_option_key "$NEW_VALUE"
+    then
+	mbfl_message_error_printf 'in call to %s expected identifier as key got: "%s"' $FUNCNAME "$NEW_VALUE"
+	return_because_failure
+    fi
+
+    mbfl_p_vc_git_config_option_key_set _(CFGOPT) "$NEW_VALUE"
+}
+function mbfl_vc_git_config_option_type_set () {
+    mbfl_mandatory_nameref_parameter(CFGOPT,	1, reference to object of class mbfl_vc_git_config_option)
+    mbfl_mandatory_parameter(NEW_VALUE,		2, new field value)
+
+    case "$NEW_VALUE" in
+	'bool')		: ;;
+	'int')		: ;;
+	'bool-or-int')	: ;;
+	'path')		: ;;
+	'expiry-date')	: ;;
+	'color')	: ;;
+	'no-type')	: ;;
+	*)
+	    mbfl_message_error_printf 'invalid value for field "type" of class "mbfl_vc_git_config_option": "%s"' "$NEW_VALUE"
+	    exit_because_failure
+    esac
+    mbfl_p_vc_git_config_option_type_set _(CFGOPT) "$NEW_VALUE"
+}
+function mbfl_vc_git_config_option_terminator_set () {
+    mbfl_mandatory_nameref_parameter(CFGOPT,	1, reference to object of class mbfl_vc_git_config_option)
+    mbfl_mandatory_parameter(NEW_VALUE,		2, new field value)
+
+    case "$NEW_VALUE" in
+	'null')		: ;;
+	'newline')	: ;;
+	*)
+	    mbfl_message_error_printf 'invalid value for field "terminator" of class "mbfl_vc_git_config_option": "%s"' "$NEW_VALUE"
+	    exit_because_failure
+    esac
+    mbfl_p_vc_git_config_option_terminator_set _(CFGOPT) "$NEW_VALUE"
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_vc_git_config_option_value_var () {
+    mbfl_mandatory_nameref_parameter(VALUE,	1, reference to result variable)
+    mbfl_mandatory_nameref_parameter(CFGOPT,	2, reference to object of class mbfl_vc_git_config_option)
+    mbfl_declare_varref(KEY)
+    mbfl_declare_varref(DEFAULT_VALUE)
+    mbfl_declare_varref(FLAGS)
+
+    mbfl_vc_git_config_option_key_var           _(KEY)           _(CFGOPT)
+    mbfl_vc_git_config_option_default_value_var _(DEFAULT_VALUE) _(CFGOPT)
+    mbfl_vc_git_config_option_flags_var         _(FLAGS)         _(CFGOPT)
+
     # NOTE The option "--default" and the other options must come BEFORE the option "--get"!!!
-    mbfl_vc_git_program config $FLAGS							\
-			--default	mbfl_slot_qref(CONFIG_VALUE,DEFAULT_VALUE)	\
-			--get		mbfl_slot_qref(CONFIG_VALUE,KEY)
+    VALUE=$(mbfl_vc_git_program config $FLAGS				\
+				--default	"$DEFAULT_VALUE"	\
+				--get		"$KEY")
 }
-function mbfl_vc_git_config_get_value_var () {
-    mbfl_mandatory_nameref_parameter(VALUE,		1, reference to result variable)
-    mbfl_mandatory_nameref_parameter(CONFIG_VALUE,	2, reference to config value struct)
-    VALUE=$(mbfl_vc_git_config_get_value mbfl_datavar(CONFIG_VALUE))
-}
-function mbfl_vc_git_config_set_value () {
-    mbfl_mandatory_nameref_parameter(CONFIG_VALUE,	1, reference to config value struct)
-    mbfl_mandatory_parameter(NEW_VALUE,			2, new value string)
-    mbfl_local_varref(FLAGS)
+function mbfl_vc_git_config_option_value_set () {
+    mbfl_mandatory_nameref_parameter(CFGOPT,	1, reference to config value struct)
+    mbfl_mandatory_parameter(NEW_VALUE,		2, new value string)
+    mbfl_declare_varref(KEY)
+    mbfl_declare_varref(FLAGS)
 
-    mbfl_vc_git_config_parse_config_value_flags mbfl_datavar(CONFIG_VALUE) mbfl_datavar(FLAGS)
-    mbfl_vc_git_program config $FLAGS --add mbfl_slot_qref(CONFIG_VALUE,KEY) "$NEW_VALUE"
+    mbfl_vc_git_config_option_key_var   _(KEY)   _(CFGOPT)
+    mbfl_vc_git_config_option_flags_var _(FLAGS) _(CFGOPT)
+    mbfl_vc_git_program config $FLAGS --add "$KEY" "$NEW_VALUE"
+}
+
+# Whenever we execute "git config --get" or "git config  --add" we need to put on the command line a
+# set of  flags to  configure the  operation.  The  function "mbfl_vc_git_config_option_flags_var()"
+# inspects the state of CFGOPT and stores in the result variable FLAGS an appropriate list of flags.
+#
+function mbfl_vc_git_config_option_flags_var () {
+    mbfl_mandatory_nameref_parameter(FLAGS,	1, reference to output variable)
+    mbfl_mandatory_nameref_parameter(CFGOPT,	2, reference to config value struct)
+
+    if ! mbfl_vc_git_config_option_is_a _(CFGOPT)
+    then
+	mbfl_message_error_printf 'in call to %s expected object of class mbfl_vc_git_config_option got datavar: "%s"' \
+				  $FUNCNAME _(CFGOPT)
+	return_because_failure
+    fi
+
+    {
+	mbfl_declare_varref(DATABASE)
+
+	mbfl_vc_git_config_option_database_var _(DATABASE) _(CFGOPT)
+	case "$DATABASE" in
+	    'local')		FLAGS+=' --local'	;;
+	    'global')		FLAGS+=' --global'	;;
+	    'system')		FLAGS+=' --system'	;;
+	    'worktree')		FLAGS+=' --worktree'	;;
+            'unspecified')				;;
+	    *)
+		mbfl_message_error_printf 'in call to %s invalid database value: "%s"' $FUNCNAME "$DATABASE"
+		return_because_failure
+		;;
+	esac
+    }
+
+    {
+	mbfl_declare_varref(TYPE)
+
+	mbfl_vc_git_config_option_type_var _(TYPE) _(CFGOPT)
+	case "$TYPE" in
+	    'bool')		FLAGS+=' --type=bool'		;;
+	    'int')		FLAGS+=' --type=int'		;;
+	    'bool-or-int')	FLAGS+=' --type=bool-or-int'	;;
+	    'path')		FLAGS+=' --type=path'		;;
+	    'expiry-date')	FLAGS+=' --type=expiry-date'	;;
+	    'color')		FLAGS+=' --type=color'		;;
+	    'no-type')		FLAGS+=' --no-type'		;;
+	    *)
+		mbfl_message_error_printf 'in call to %s invalid type value: "%s"' $FUNCNAME "$TYPE"
+		return_because_failure
+		;;
+	esac
+    }
+
+    {
+	mbfl_declare_varref(TERMINATOR)
+
+	mbfl_vc_git_config_option_terminator_var _(TERMINATOR) _(CFGOPT)
+	case "$TERMINATOR" in
+	    'null')		FLAGS+=' --null'	;;
+	    'newline')					;;
+	    *)
+		mbfl_message_error_printf 'in call to %s invalid terminator value: "%s"' $FUNCNAME "$TERMINATOR"
+		return_because_failure
+		;;
+	esac
+    }
+}
+
+function mbfl_string_is_git_config_option_key () {
+    mbfl_optional_parameter(STRING, 1)
+    declare -r REX='^[a-zA-Z_][a-zA-Z0-9_\.\-]+$'
+
+    if mbfl_string_is_empty "$STRING"
+    then return_failure
+    elif [[ "$STRING" =~ $REX ]]
+    then return_success
+    else return_failure
+    fi
 }
 
 
@@ -267,7 +379,7 @@ function mbfl_vc_git_commit_staged () {
 function mbfl_vc_git_program () {
     mbfl_local_varref(GIT_COMMAND)
 
-    mbfl_program_found_var mbfl_datavar(GIT_COMMAND) git || exit $?
+    mbfl_program_found_var _(GIT_COMMAND) git || exit $?
     mbfl_program_exec "$GIT_COMMAND" "$@"
 }
 

@@ -3415,14 +3415,14 @@ object.
 @end defun
 
 
-@deftypevar mbfl_predefined_constant mbfl_undefined
+@defivar mbfl_predefined_constant mbfl_undefined
 A unique value used as variable's value to indicate an undefined value.
-@end deftypevar
+@end defivar
 
 
-@deftypevar mbfl_predefined_constant mbfl_unspecified
+@defivar mbfl_predefined_constant mbfl_unspecified
 A unique value used as function call parameter to indicate an unspecified value.
-@end deftypevar
+@end defivar
 
 
 @defun mbfl_is_the_undefined @var{STDOBJ}
@@ -11267,12 +11267,13 @@ the facilities of this library.
 @appendixsec Configuration management
 
 
-@deftp {Data Structure} MBFL_VC_GIT_CONFIG_VALUE
-The ``type'' of associative arrays initialised by @func{mbfl_vc_git_config_init_value_struct}; its
-fields are:
+@deftp {Class} mbfl_vc_git_config_option
+@deftpx {Parent class} mbfl_default_object
+@deftpx {Metaclass} mbfl_default_class
+Class representing @git{} configuration options; its fields are:
 
 @table @code
-@item DATABASE
+@item database
 A string among: @samp{local}, @samp{global}, @samp{system}, @samp{worktree}, @samp{unspecified}; it
 is initialised to @samp{unspecified}.  Notice that @samp{unspecified} is @strong{not} equivalent to
 @samp{local}.
@@ -11281,72 +11282,90 @@ This value is used to establish which @git{} option to use among @option{--local
 @option{--global}, @option{--system}, @option{--worktree}; if the field value is @samp{unspecified}
 non of these @git{} options is used.
 
-@item KEY
+@item key
 The configuration value key.
 
-@item DEFAULT_VALUE
+@item default_value
 A default value.  It is used as argument to @git{} option @option{--default}.
 
-@item TYPE
+@item type
 A string among: @samp{bool}, @samp{int}, @samp{bool-or-int}, @samp{path}, @samp{expiry-date},
 @samp{color}, @samp{no-type}; it is initialised to @samp{no-type}.  It is used to establish the
 argument of the @git{} option @option{--type} or if @option{--no-type} must be used.
 
-@item TERMINATOR
+@item terminator
 A string among: @samp{newline}, @samp{null}; it is initialised to @samp{newline}.  It is used to
 establish whether to use @git{} option @option{--null}.
 @end table
 
-@cindex @var{CONFIG_VALUE}, argument reference to data structures of type @objtype{MBFL_VC_GIT_CONFIG_VALUE}
-In this documentation function arguments that are references to associative arrays of this type are
-named @var{CONFIG_VALUE}.
+@cindex @var{CFGOPT}, function parameter, reference to object of class @class{mbfl_vc_git_config_option}
+In this documentation function arguments that are references to objects of this class are named
+@var{CFGOPT}.
 @end deftp
 
 
-@defun mbfl_vc_git_config_init_value_struct @var{CONFIG_VALUE} @var{KEY} @var{DEFAULT_VALUE}
-Initialise the associative array referenced by @var{CONFIG_VALUE} as a
-@objtype{MBFL_VC_GIT_CONFIG_VALUE} data structure.  The mandatory argument @var{KEY} is used to
-intialise the field @code{KEY}.  The optional argument @var{DEFAULT_VALUE} is used to initialise the
-field @var{DEFAULT_VALUE}.
+@defop Constructor mbfl_vc_git_config_option  mbfl_vc_git_config_option_define @var{CFGOPT} @var{KEY}
+@defopx Constructor mbfl_vc_git_config_option  mbfl_vc_git_config_option_define @var{CFGOPT} @var{KEY} @var{DEFAULT_VALUE}
+Initialise a new instance of @class{mbfl_vc_git_config_option} representing a configuration option
+with @var{KEY}.
 
+The optional @var{DEFAULT_VALUE} represents the default value.
 
 @example
-mbfl_local_assoc_array_varref(CONFIG_VALUE)
+mbfl_default_object_declare(CFGOPT)
 
-mbfl_vc_git_config_init_value_struct mbfl_datavar(CONFIG_VALUE) 'marcomaggi.package-name' 'noname'
+mbfl_vc_git_config_option_define _(CFGOPT) 'marcomaggi.package-name' 'noname'
 @end example
-@end defun
+@end defop
 
 
-@defun mbfl_vc_git_config_get_value @var{CONFIG_VALUE}
-@defunx mbfl_vc_git_config_get_value_var @var{RV} @var{CONFIG_VALUE}
-Extract a value from GIT's configuration database; print the result to @stdout{} or store it in the
-result variable @var{RV}; return the exit status of the @git{} invocation.  The value to
-extract is specified by the data structure @var{CONFIG_VALUE}.
+@defop Accessor mbfl_vc_git_config_option mbfl_vc_git_config_option_value_var @var{CUR_VALUE} @var{CFGOPT}
+@defopx Mutator mbfl_vc_git_config_option mbfl_vc_git_config_option_value_set @var{CFGOPT} @var{NEW_VALUE}
+Accessor and mutator for the value of the configuration option.
 
 @example
-mbfl_local_assoc_array_varref(CONFIG_VALUE)
-mbfl_local_varref(PKGNAME)
+mbfl_default_object_declare(CFGOPT)
+mbfl_declare_varref(PKGNAME)
 
-mbfl_vc_git_config_init_value_struct mbfl_datavar(CONFIG_VALUE) 'marcomaggi.package-name' 'noname'
-mbfl_vc_git_config_get_value_var mbfl_datavar(PKGNAME) mbfl_datavar(CONFIG_VALUE)
+mbfl_vc_git_config_option_define _(CFGOPT) 'marcomaggi.package-name' 'noname'
+
+mbfl_vc_git_config_option_value_var _(PKGNAME) _(CFGOPT)
 print '%s' "$PKGNAME"
+
+mbfl_vc_git_config_option_value_set _(CFGOPT) 'my-great-package'
 @end example
-@end defun
+@end defop
 
 
-@defun mbfl_vc_git_config_set_value @var{CONFIG_VALUE} @var{NEW_VALUE}
-Set a new value for the configuration value described by @var{CONFIG_VALUE}; return the exit status
-of the @git{} invocation.
+@defop Accessor mbfl_vc_git_config_option mbfl_vc_git_config_option_database_var @var{CUR_VALUE} @var{CFGOPT}
+@defopx Mutator mbfl_vc_git_config_option mbfl_vc_git_config_option_database_set @var{CFGOPT} @var{NEW_VALUE}
+Accessor and mutator for the field @code{database} of @class{mbfl_vc_git_config_option}.
+@end defop
 
-@example
-mbfl_local_assoc_array_varref(CONFIG_VALUE)
-mbfl_local_varref(PKGNAME)
 
-mbfl_vc_git_config_init_value_struct mbfl_datavar(CONFIG_VALUE) 'marcomaggi.package-name' 'noname'
-mbfl_vc_git_config_set_var mbfl_datavar(CONFIG_VALUE) 'my-great-package'
-@end example
-@end defun
+@defop Accessor mbfl_vc_git_config_option mbfl_vc_git_config_option_key_var @var{CUR_VALUE} @var{CFGOPT}
+@defopx Mutator mbfl_vc_git_config_option mbfl_vc_git_config_option_key_set @var{CFGOPT} @var{NEW_VALUE}
+Accessor and mutator for the field @code{key} of @class{mbfl_vc_git_config_option}.
+@end defop
+
+
+@defop Accessor mbfl_vc_git_config_option mbfl_vc_git_config_option_default_value_var @var{CUR_VALUE} @var{CFGOPT}
+@defopx Mutator mbfl_vc_git_config_option mbfl_vc_git_config_option_default_value_set @var{CFGOPT} @var{NEW_VALUE}
+Accessor and mutator for the field @code{default_value} of @class{mbfl_vc_git_config_option}.
+@end defop
+
+
+@defop Accessor mbfl_vc_git_config_option mbfl_vc_git_config_option_type_var @var{CUR_VALUE} @var{CFGOPT}
+@defopx Mutator mbfl_vc_git_config_option mbfl_vc_git_config_option_type_set @var{CFGOPT} @var{NEW_VALUE}
+Accessor and mutator for the field @code{type} of @class{mbfl_vc_git_config_option}.
+@end defop
+
+
+@defop Accessor mbfl_vc_git_config_option mbfl_vc_git_config_option_terminator_var @var{CUR_VALUE} @var{CFGOPT}
+@defopx Mutator mbfl_vc_git_config_option mbfl_vc_git_config_option_terminator_set @var{CFGOPT} @var{NEW_VALUE}
+Accessor and mutator for the field @code{terminator} of @class{mbfl_vc_git_config_option}.
+@end defop
+
 
 @c page
 @node libmbfl-git repository
