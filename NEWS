@@ -321,6 +321,8 @@ changes!
     MBFL_DEFINE_PROGRAM_EXECUTOR
     MBFL_DEFINE_PROGRAM_REPLACER
 
+* Added the module "function".
+
 
 Notes for revision 2.2.0
 ------------------------
