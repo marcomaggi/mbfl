@@ -86,11 +86,11 @@ function mbfl_function_rename () {
 #
 #    "$(declare -f ${mbfl_SRC_FUNCNAME})"
 #
-# which is a string representing the full function definition.  Then we use the pattern expansion:
+# which is a string representing the full function definition.  Then we use the parameter expansion:
 #
 #    "${_/${mbfl_SRC_FUNCNAME}/${mbfl_DST_FUNCNAME}}"
 #
-# to replace the occurrences of the function name in its definition string.
+# to replace the fist occurrence of the function name in its definition string.
 #
 function mbfl_p_function_copy () {
     mbfl_mandatory_parameter(mbfl_SRC_FUNCNAME, 1, source function name)
