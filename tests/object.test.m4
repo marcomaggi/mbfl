@@ -280,6 +280,13 @@ function object-single-inheritance-1.1 () {
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
+    if true
+    then
+	mbfl_array_dump _(mbfl_default_class) mbfl_default_class
+	mbfl_array_dump _(color_red) color_red
+	mbfl_array_dump _(color_red_green) color_red_green
+    fi
+
     color_red_green_define _(self) 1 2
     # echo self datavar _(self) >&2
     # mbfl_array_dump _(self)
@@ -375,6 +382,59 @@ function object-single-inheritance-1.3 () {
 	dotest-equal 0 $RED_GREEN_PREDICATE_RESULT 'result of applying color_red_green_is_a' &&
 	dotest-equal 11 $RED 'value of red field' &&
 	dotest-equal 22 $GREEN 'value of green field'
+}
+
+function object-single-inheritance-1.4 () {
+    mbfl_default_class_declare(mammal)
+    mbfl_default_class_declare(pig)
+    mbfl_default_object_declare(peppa)
+    declare MAMMAL_COLOR PIG_COLOR PIG_NICKNAME
+    declare MAMMAL_PREDICATE_RESULT PIG_PREDICATE_RESULT
+
+    mbfl_default_class_define _(mammal) _(mbfl_default_object) 'mammal' color
+    mbfl_default_class_define _(pig)    _(mammal)              'pig'    nickname
+    if false
+    then
+	mbfl_array_dump _(mbfl_default_class) mbfl_default_class
+	mbfl_array_dump _(mammal) mammal
+	mbfl_array_dump _(pig) pig
+    fi
+
+    if false
+    then
+	declare -f mammal_define
+	declare -f pig_define
+	declare -f mammal_is_a
+	declare -f pig_is_a
+	declare -f mammal_color_var
+	declare -f mammal_color_set
+	declare -f pig_color_var
+	declare -f pig_color_set
+	declare -f pig_nickname_var
+	declare -f pig_nickname_set
+    fi
+
+    pig_define _(peppa) 'pink' 'peppa'
+    if false
+    then mbfl_array_dump _(peppa) peppa
+    fi
+
+    mammal_color_var MAMMAL_COLOR _(peppa)
+
+    pig_color_var    PIG_COLOR    _(peppa)
+    pig_nickname_var PIG_NICKNAME _(peppa)
+
+    mammal_is_a _(peppa)
+    COLOR_PREDICATE_RESULT=$?
+
+    pig_is_a _(peppa)
+    PIG_PREDICATE_RESULT=$?
+
+    dotest-equal	0	$COLOR_PREDICATE_RESULT	'result of applying mammal_is_a'	&&
+	dotest-equal	0	$PIG_PREDICATE_RESULT	'result of applying pig_is_a'		&&
+	dotest-equal	'pink'	"$MAMMAL_COLOR"		'value of color field'			&&
+	dotest-equal	'pink'	"$PIG_COLOR"		'value of color field'			&&
+	dotest-equal	'peppa'	"$PIG_NICKNAME"		'value of nickname field'
 }
 
 ### ------------------------------------------------------------------------
