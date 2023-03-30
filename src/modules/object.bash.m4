@@ -278,7 +278,7 @@ function mbfl_default_class_define () {
     mbfl_mandatory_nameref_parameter(mbfl_PARENT_CLASS,	2, reference to the parent default class)
     mbfl_mandatory_parameter(mbfl_NEW_CLASS_NAME,	3, the name of the new default class)
     shift 3
-    declare -ar mbfl_NEW_FIELD_NAMES=("$@")
+    mbfl_declare_index_array_varref(mbfl_NEW_FIELD_NAMES, ("$@"))
 
     # Validate parameters.
     {
@@ -295,58 +295,19 @@ function mbfl_default_class_define () {
 	fi
     }
 
-    declare -ir mbfl_NEW_FIELDS_NUMBER=mbfl_slots_number(mbfl_NEW_FIELD_NAMES)
-    declare -i  mbfl_TOTAL_FIELDS_NUMBER
-    declare -i  mbfl_I mbfl_FIELD_INDEX
-    declare -r  mbfl_NEW_CLASS_DATAVAR=_(mbfl_NEW_CLASS)
-
-    # Initialise  the fields  of  the new  class  object.  The  layout  of a  class  object of  type
-    # "mbfl_default_class" is as follows:
-    #
-    #  -----------------------
-    # | _(mbfl_default_class) |
-    # |-----------------------|
-    # | parent datavar        |
-    # |-----------------------|
-    # | this class name       |
-    # |-----------------------|
-    # | total fields number   |
-    # |-----------------------|
-    # | parent field 0 name   |
-    # |-----------------------|
-    # | parent field 1 name   |
-    # |-----------------------|
-    # | new field 0 name      |
-    # |-----------------------|
-    # | new field 1 name      |
-    #  -----------------------
-    #
+    # Initialise the new class object as a subclass of "mbfl_default_object".
     {
 	declare -ir mbfl_PARENT_CLASS_FIELDS_NUMBER=_(mbfl_PARENT_CLASS,MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER)
-	# There must be no blanks in a "let" expression.
-	let mbfl_TOTAL_FIELDS_NUMBER=mbfl_PARENT_CLASS_FIELDS_NUMBER+mbfl_NEW_FIELDS_NUMBER
-	mbfl_declare_index_array_varref(mbfl_NEW_CLASS_FIELD_VALUES,
-					(_(mbfl_PARENT_CLASS) "$mbfl_NEW_CLASS_NAME" $mbfl_TOTAL_FIELDS_NUMBER))
+	declare -ir mbfl_NEW_FIELDS_NUMBER=mbfl_slots_number(mbfl_NEW_FIELD_NAMES)
+	declare -i  mbfl_TOTAL_FIELDS_NUMBER=mbfl_PARENT_CLASS_FIELDS_NUMBER+mbfl_NEW_FIELDS_NUMBER
 
+	mbfl_declare_index_array_varref(mbfl_NEW_CLASS_FIELD_VALUES, (_(mbfl_PARENT_CLASS) "$mbfl_NEW_CLASS_NAME" $mbfl_TOTAL_FIELDS_NUMBER))
 	mbfl_default_object_define _(mbfl_NEW_CLASS) _(mbfl_default_class) _(mbfl_NEW_CLASS_FIELD_VALUES)
-
-	# After the fields we copy the field names from the parent class.
-	for ((mbfl_I=0; mbfl_I<mbfl_PARENT_CLASS_FIELDS_NUMBER; ++mbfl_I))
-	do
-	    # There must be no blanks in a "let" expression.
-	    let mbfl_FIELD_INDEX=MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC+mbfl_I
-	    mbfl_slot_set(mbfl_NEW_CLASS,                   $mbfl_FIELD_INDEX,
-			  mbfl_slot_qref(mbfl_PARENT_CLASS, $mbfl_FIELD_INDEX))
-	done
-	# AFter those, we store the field names of this class.
-	for ((mbfl_I=0; mbfl_I<mbfl_NEW_FIELDS_NUMBER; ++mbfl_I))
-	do
-	    # There must be no blanks in a "let" expression.
-	    let mbfl_FIELD_INDEX=mbfl_PARENT_CLASS_FIELDS_NUMBER+MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC+mbfl_I
-	    mbfl_slot_set(mbfl_NEW_CLASS, $mbfl_FIELD_INDEX,
-			  mbfl_slot_qref(mbfl_NEW_FIELD_NAMES, $mbfl_I))
-	done
     }
+
+    if ! mbfl_default_class_define__store_field_specifications _(mbfl_NEW_CLASS) _(mbfl_NEW_FIELD_NAMES)
+    then return_because_failure
+    fi
 
     if ! mbfl_default_class_define__check_field_name_uniqueness _(mbfl_NEW_CLASS)
     then return_because_failure
@@ -363,6 +324,53 @@ function mbfl_default_class_define () {
     if ! mbfl_default_class_define__build_accessors_and_mutators _(mbfl_NEW_CLASS)
     then return_because_failure
     fi
+}
+
+# STore the field  specifications of the new class  object; for class objects that  are instances of
+# "mbfl_default_class" a field specification is just the string representing its name.
+#
+# The layout of a class object of type "mbfl_default_class" is as follows:
+#
+#  -----------------------
+# | _(mbfl_default_class) |
+# |-----------------------|
+# | parent datavar        |
+# |-----------------------|
+# | this class name       |
+# |-----------------------|
+# | total fields number   |
+# |-----------------------|
+# | parent field 0 name   |
+# |-----------------------|
+# | parent field 1 name   |
+# |-----------------------|
+# | new field 0 name      |
+# |-----------------------|
+# | new field 1 name      |
+#  -----------------------
+#
+function mbfl_default_class_define__store_field_specifications () {
+    mbfl_mandatory_nameref_parameter(mbfl_NEW_CLASS,       1, reference to object of type mbfl_default_class)
+    mbfl_mandatory_nameref_parameter(mbfl_NEW_FIELD_NAMES, 2, reference to index array holding the field names)
+    mbfl_declare_nameref(mbfl_PARENT_CLASS,_(mbfl_NEW_CLASS, MBFL_STDCLS__FIELD_INDEX__PARENT))
+    declare -ir mbfl_PARENT_CLASS_FIELDS_NUMBER=_(mbfl_PARENT_CLASS,MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER)
+    declare -ir mbfl_NEW_FIELDS_NUMBER=mbfl_slots_number(mbfl_NEW_FIELD_NAMES)
+    declare -i  mbfl_I mbfl_FIELD_INDEX
+
+    # Copy the field names from the parent class to the new class.
+    for ((mbfl_I=0; mbfl_I<mbfl_PARENT_CLASS_FIELDS_NUMBER; ++mbfl_I))
+    do
+	# There must be no blanks in a "let" expression.
+	let mbfl_FIELD_INDEX=MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC+mbfl_I
+	mbfl_slot_set(mbfl_NEW_CLASS, $mbfl_FIELD_INDEX, _(mbfl_PARENT_CLASS, $mbfl_FIELD_INDEX))
+    done
+    # AFter those, copy the field names of the new class.
+    for ((mbfl_I=0; mbfl_I<mbfl_NEW_FIELDS_NUMBER; ++mbfl_I))
+    do
+	# There must be no blanks in a "let" expression.
+	let mbfl_FIELD_INDEX=mbfl_PARENT_CLASS_FIELDS_NUMBER+MBFL_STDCLS__FIELD_INDEX__FIRST_FIELD_SPEC+mbfl_I
+	mbfl_slot_set(mbfl_NEW_CLASS, $mbfl_FIELD_INDEX, _(mbfl_NEW_FIELD_NAMES, $mbfl_I))
+    done
 }
 
 # Here we expect a fully initialised default class object:
