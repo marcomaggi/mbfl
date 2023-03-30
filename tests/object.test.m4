@@ -280,7 +280,7 @@ function object-single-inheritance-1.1 () {
     # echo color_red_green datavar _(color_red_green) >&2
     # mbfl_array_dump _(color_red_green)
 
-    if true
+    if false
     then
 	mbfl_array_dump _(mbfl_default_class) mbfl_default_class
 	mbfl_array_dump _(color_red) color_red
