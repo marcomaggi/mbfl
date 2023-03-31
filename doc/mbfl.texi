@@ -2676,6 +2676,11 @@ Rename the function @var{SRC_FUNCNAME} to @var{DST_FUNCNAME}; return true if suc
 false otherwise.
 @end defun
 
+
+@defun mbfl_function_exists @var{FUNCNAME}
+Return true if a function named @var{FUNCNAME} exists; otherwise return false.
+@end defun
+
 @c page
 @node hooks
 @chapter Executing commands with event hooks

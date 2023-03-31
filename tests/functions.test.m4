@@ -66,6 +66,17 @@ function functions-rename-1.1 () {
 }
 
 
+#### renaming functions
+
+function testee_functions_exists_1_1 () { : ; }
+function functions-exists-1.1 () {
+    mbfl_function_exists 'testee_functions_exists_1_1'
+}
+function functions-exists-1.2 () {
+    ! mbfl_function_exists 'testee_functions_does_not_exist_1_1'
+}
+
+
 #### let's go
 
 dotest functions-

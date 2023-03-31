@@ -105,6 +105,13 @@ function mbfl_p_function_copy () {
     fi
 }
 
+function mbfl_function_exists () {
+    mbfl_mandatory_parameter(mbfl_FUNCNAME, 1, function name)
+    declare JUNK
+
+    JUNK=$(declare -fp "$mbfl_FUNCNAME" 2>&1)
+}
+
 ### end of file
 # Local Variables:
 # mode: sh
