@@ -848,6 +848,33 @@ function complex_theta_var () {
 }
 
 
+#### usage of initialisation function
+
+function object_initialiser_1_1_init () {
+    mbfl_mandatory_nameref_parameter(self, 1, reference to object of class object_initialiser_1_1_class)
+
+    object_initialiser_1_1_alpha_set _(self) 11
+    object_initialiser_1_1_beta_set  _(self) 22
+    object_initialiser_1_1_gamma_set _(self) 33
+}
+function object-initialiser-1.1 () {
+    mbfl_default_class_declare(object_initialiser_1_1_class)
+    mbfl_default_object_declare(object_initialiser_1_1_object)
+    declare ALPHA BETA GAMMA
+
+    mbfl_default_class_define _(object_initialiser_1_1_class) _(mbfl_default_object) 'object_initialiser_1_1' alpha beta gamma
+    object_initialiser_1_1_define _(object_initialiser_1_1_object) a b c
+
+    object_initialiser_1_1_alpha_var ALPHA _(object_initialiser_1_1_object)
+    object_initialiser_1_1_beta_var  BETA  _(object_initialiser_1_1_object)
+    object_initialiser_1_1_gamma_var GAMMA _(object_initialiser_1_1_object)
+
+    dotest-equal	11	"$ALPHA"	'value of alpha field'	&&
+	dotest-equal	22	"$BETA"		'value of beta field'	&&
+	dotest-equal	33	"$GAMMA"	'value of gamma field'
+}
+
+
 #### let's go
 
 dotest object-

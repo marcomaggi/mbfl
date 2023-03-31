@@ -97,6 +97,7 @@ m4_define([[[MBFL_STDOBJ__FUNCNAME_PATTERN__CONSTRUCTOR]]],	[[['%s_define']]])
 m4_define([[[MBFL_STDOBJ__FUNCNAME_PATTERN__PREDICATE]]],	[[['%s_is_a']]])
 m4_define([[[MBFL_STDOBJ__FUNCNAME_PATTERN__ACCESSOR]]],	[[['%s_%s_var']]])
 m4_define([[[MBFL_STDOBJ__FUNCNAME_PATTERN__MUTATOR]]],		[[['%s_%s_set']]])
+m4_define([[[MBFL_STDOBJ__FUNCNAME_PATTERN__INITIALISER]]],	[[['%s_init']]])
 
 
 #### global variables
@@ -239,6 +240,21 @@ function mbfl_default_object_define () {
 	done
     }
     return_because_success
+}
+
+function mbfl_default_object_define_and_init () {
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,			1, reference to a default object)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS,		2, reference to a default class)
+    mbfl_mandatory_nameref_parameter(mbfl_FIELD_INIT_VALUES,	3, reference to an index array containing init field values)
+    mbfl_mandatory_parameter(mbfl_INITIALISER_NAME,		4, name of class initialisation function)
+
+    if mbfl_default_object_define _(mbfl_SELF) _(mbfl_CLASS) _(mbfl_FIELD_INIT_VALUES);
+    then
+	if mbfl_function_exists "$mbfl_INITIALISER_NAME"
+	then "$mbfl_INITIALISER_NAME" _(mbfl_SELF)
+	fi
+    else return $?
+    fi
 }
 
 # Return true  if the  given parameter is  the datavar  of an  object whose class  is a  subclass of
@@ -430,22 +446,24 @@ function mbfl_default_class_define__check_field_name_uniqueness () {
 #      shift
 #      declare -ar mbfl_FIELD_INIT_VALUES=("$@")
 #
-#      mbfl_default_object_define _(mbfl_SELF) ${mbfl_NEW_CLASS_DATAVAR} mbfl_FIELD_INIT_VALUES
+#      mbfl_default_object_define_and_init _(mbfl_SELF) ${mbfl_NEW_CLASS_DATAVAR} mbfl_FIELD_INIT_VALUES 'color_init'
 #   }
 #
 function mbfl_default_class_define__build_instance_constructor () {
     mbfl_mandatory_nameref_parameter(mbfl_NEW_CLASS, 1, reference to object of type mbfl_default_class)
     declare -r mbfl_NEW_CLASS_DATAVAR=_(mbfl_NEW_CLASS)
     declare -r mbfl_NEW_CLASS_NAME=_(mbfl_NEW_CLASS, MBFL_STDCLS__FIELD_INDEX__NAME)
-    declare mbfl_CONSTRUCTOR_NAME mbfl_CONSTRUCTOR_BODY
+    declare mbfl_CONSTRUCTOR_NAME mbfl_CONSTRUCTOR_BODY mbfl_INITIALISER_NAME
 
     printf -v mbfl_CONSTRUCTOR_NAME MBFL_STDOBJ__FUNCNAME_PATTERN__CONSTRUCTOR "$mbfl_NEW_CLASS_NAME"
+    printf -v mbfl_INITIALISER_NAME MBFL_STDOBJ__FUNCNAME_PATTERN__INITIALISER "$mbfl_NEW_CLASS_NAME"
 
     mbfl_CONSTRUCTOR_BODY='{ '
     mbfl_CONSTRUCTOR_BODY+="declare -r mbfl_SELF_DATAVAR=\${1:?\"missing reference to instance of 'color' to '${mbfl_CONSTRUCTOR_NAME}'\"};"
     mbfl_CONSTRUCTOR_BODY+="shift;"
     mbfl_CONSTRUCTOR_BODY+="declare -ar mbfl_u_variable_FIELD_INIT_VALUES=(\"\$@\");"
-    mbfl_CONSTRUCTOR_BODY+="mbfl_default_object_define \$mbfl_SELF_DATAVAR ${mbfl_NEW_CLASS_DATAVAR} mbfl_u_variable_FIELD_INIT_VALUES;"
+    mbfl_CONSTRUCTOR_BODY+="mbfl_default_object_define_and_init "
+    mbfl_CONSTRUCTOR_BODY+="\$mbfl_SELF_DATAVAR '${mbfl_NEW_CLASS_DATAVAR}' 'mbfl_u_variable_FIELD_INIT_VALUES' '${mbfl_INITIALISER_NAME}';"
     mbfl_CONSTRUCTOR_BODY+='}'
 
     #echo $FUNCNAME mbfl_CONSTRUCTOR_BODY="$mbfl_CONSTRUCTOR_BODY" >&2
@@ -748,6 +766,7 @@ then
     mbfl_default_object_declare(mbfl_unspecified)
     mbfl_default_object_declare(mbfl_undefined)
 
+    #declare -f -p mbfl_predefined_constant_define >&2
     mbfl_predefined_constant_define _(mbfl_unspecified)
     mbfl_predefined_constant_define _(mbfl_undefined)
 fi
