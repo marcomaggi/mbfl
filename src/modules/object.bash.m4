@@ -103,8 +103,8 @@ m4_define([[[MBFL_STDOBJ__FUNCNAME_PATTERN__MUTATOR]]],		[[['%s_%s_set']]])
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_default_object_declare(mbfl_default_object)
-    mbfl_default_object_declare(mbfl_default_class)
+    mbfl_default_class_declare(mbfl_default_object)
+    mbfl_default_class_declare(mbfl_default_class)
 fi
 
 
