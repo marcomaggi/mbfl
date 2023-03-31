@@ -13,6 +13,7 @@ prefix=/
     --prefix="${prefix}"			\
     --with-vc					\
     --with-semver				\
+    --with-emacs				\
     "$@"
 
 ### end of file

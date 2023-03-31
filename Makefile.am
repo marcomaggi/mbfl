@@ -89,6 +89,14 @@ install-html-local:
 	$(INSTALL) -m 0444 $(builddir)/doc/mbfl.html/mbfl.css "$(DESTDIR)$(htmldir)/mbfl.html/"
 
 
+#### support for GNU Emacs
+
+if WANT_EMACS
+sharelispdir		= $(datadir)/emacs/site-lisp
+dist_sharelisp_LISP	= src/emacs/mbfl.el
+endif
+
+
 #### preprocessor macros file
 
 MBFL_PREPROCESSOR		= $(top_srcdir)/src/lib/libmbfl-preprocessor.m4

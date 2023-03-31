@@ -56,6 +56,9 @@ changes!
 * BACKWARDS INCOMPATIBILITY The macro "mbfl_command_line_argument()" now
   uses "declare" rather than "local".
 
+* Added GNU Emacs  module that adds support for MBFL  to shell mode; its
+  installation is enabled with the configuration option "--with-emacs".
+
 * Added  new  library   "libmbfl-passwords.bash"  to  generate  password
   strings.
 

@@ -96,6 +96,15 @@ AS_VAR_IF(with_semver,'yes',
   [AC_MSG_RESULT([no])])
 AM_CONDITIONAL([WANT_SEMVER],[test x$with_semver = xyes])
 
+AC_ARG_WITH([emacs],
+  AS_HELP_STRING([--with-emacs],[enable installation of GNU Emacs module]),
+  [true],[with_emacs=no])
+AC_MSG_CHECKING([whether GNU Emacs module will be installed])
+AS_VAR_IF(with_emacs,'yes',
+  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([no])])
+AM_CONDITIONAL([WANT_EMACS],[test x$with_emacs = xyes])
+
 
 #### let's go
 
