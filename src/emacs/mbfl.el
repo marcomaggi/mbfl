@@ -757,6 +757,9 @@
        "mbfl_is_the_undefined"
        "mbfl_is_the_unspecified"
        ;;
+       "mbfl_function_copy"
+       "mbfl_function_rename"
+       ;;
        "mbflutils_file_init_file_struct"
        "mbflutils_file_init_directory_struct"
        "mbflutils_file_stat"
