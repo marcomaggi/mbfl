@@ -282,6 +282,7 @@ ${MBFL_SHARP()$1}m4_dnl
 m4_changecom([[[MBFL_SHARP()]]])]]])
 
 m4_define([[[mbfl_string_idx]]],[[[${$1:$2:1}]]])
+m4_define([[[mbfl_string_qidx]]],[[["${$1:$2:1}"]]])
 
 m4_define([[[mbfl_string_empty]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
 { test ${MBFL_SHARP()$1} -eq 0; }m4_dnl

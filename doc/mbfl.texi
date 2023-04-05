@@ -3605,10 +3605,12 @@ Return successfully if @var{STRING} is not empty.
 
 
 @deffn {Preprocessor Macros} mbfl_string_idx (@var{VAR}, @var{EXPR})
-Expands into the expression:
+@deffnx {Preprocessor Macros} mbfl_string_qidx (@var{VAR}, @var{EXPR})
+Rexpectively expand into the expressions:
 
 @example
-$@{@var{VAR}:@var{EXPR}:1@}
+mbfl_string_idx(@var{VAR}, @var{EXPR})  @expansion{} $@{@var{VAR}:@var{EXPR}:1@}
+mbfl_string_qidx(@var{VAR}, @var{EXPR}) @expansion{} "$@{@var{VAR}:@var{EXPR}:1@}"
 @end example
 
 @noindent
