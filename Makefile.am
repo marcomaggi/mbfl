@@ -418,6 +418,28 @@ src/lib/libmbfl-git.bash: src/lib/libmbfl-git.bash.m4 $(MBFL_LIBGIT_PREREQUISITE
 	$(MBFL_LIBGIT_RUN) $(MBFL_LIBGIT_FLAGS) --output=$@ $<
 
 
+#### libmbfl-containers generation
+
+EXTRA_DIST			+= src/lib/libmbfl-containers.bash.m4
+mbfllibcontainersdir		= $(MBFL_LIB_INSTDIR)
+mbfllibcontainers_DATA		= src/lib/libmbfl-containers.bash
+CLEANFILES			+=		\
+	src/lib/libmbfl-containers.bash		\
+	src/lib/$(am__dirstamp)
+
+MBFL_LIBCONTAINERS_ENV		=
+MBFL_LIBCONTAINERS_RUN		= $(MBFL_LIBCONTAINERS_ENV) $(MBFL_RUN_MBFLPP)
+MBFL_LIBCONTAINERS_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
+
+MBFL_LIBCONTAINERS_PREREQUISITES=		\
+	src/lib/$(am__dirstamp)			\
+	$(MBFL_PROGRAM_MBFLPP)			\
+	$(MBFL_PREPROCESSOR)
+
+src/lib/libmbfl-containers.bash: src/lib/libmbfl-containers.bash.m4 $(MBFL_LIBCONTAINERS_PREREQUISITES)
+	$(MBFL_LIBCONTAINERS_RUN) $(MBFL_LIBCONTAINERS_FLAGS) --output=$@ $<
+
+
 #### examples
 
 EXTRA_DIST			+=		\
@@ -460,15 +482,17 @@ MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_AT__="$(builddir)/src/lib/libmbfl-at.
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_ARCH__="$(builddir)/src/lib/libmbfl-arch.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_UTILS__="$(builddir)/src/lib/libmbfl-utils.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_GIT__="$(builddir)/src/lib/libmbfl-git.bash"
+MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_CONTAINERS__="$(builddir)/src/lib/libmbfl-containers.bash"
 
-MBFL_EXAMPLES_PREREQUISITES	=		\
-	examples/$(am__dirstamp)		\
-	$(builddir)/src/lib/libmbfl.bash	\
-	$(builddir)/src/lib/libmbfl-at.bash	\
-	$(builddir)/src/lib/libmbfl-arch.bash	\
-	$(builddir)/src/lib/libmbfl-utils.bash	\
-	$(builddir)/src/lib/libmbfl-git.bash	\
-	$(MBFL_PROGRAM_MBFLPP)			\
+MBFL_EXAMPLES_PREREQUISITES	=			\
+	examples/$(am__dirstamp)			\
+	$(builddir)/src/lib/libmbfl.bash		\
+	$(builddir)/src/lib/libmbfl-at.bash		\
+	$(builddir)/src/lib/libmbfl-arch.bash		\
+	$(builddir)/src/lib/libmbfl-utils.bash		\
+	$(builddir)/src/lib/libmbfl-git.bash		\
+	$(builddir)/src/lib/libmbfl-containers.bash	\
+	$(MBFL_PROGRAM_MBFLPP)				\
 	$(MBFL_PREPROCESSOR)
 
 examples/$(am__dirstamp):
@@ -581,6 +605,7 @@ EXTRA_DIST			+=		\
 	tests/mbflutils-files.test.m4		\
 	tests/mbfl-passwords.test.m4		\
 	tests/mbfl-git.test.m4			\
+	tests/mbfl-containers.test.m4			\
 	\
 	tests/script-atexit.sh.m4		\
 	tests/signaltest.sh.m4
@@ -613,7 +638,8 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	\
 	tests/mbflutils-files.test		\
 	tests/mbfl-passwords.test		\
-	tests/mbfl-git.test
+	tests/mbfl-git.test			\
+	tests/mbfl-containers.test
 
 MBFL_CHECK_BUILT_EXAMPLES		=	\
 	examples/compress.sh			\
@@ -646,6 +672,7 @@ MBFL_TESTS_ENV		+= MBFL_LIBMBFL_ARCH=$(builddir)/src/lib/libmbfl-arch.bash; expo
 MBFL_TESTS_ENV		+= MBFL_LIBMBFL_UTILS=$(builddir)/src/lib/libmbfl-utils.bash; export MBFL_LIBMBFL_UTILS;
 MBFL_TESTS_ENV		+= MBFL_LIBMBFL_PASSWORDS=$(builddir)/src/lib/libmbfl-passwords.bash; export MBFL_LIBMBFL_PASSWORDS;
 MBFL_TESTS_ENV		+= MBFL_LIBMBFL_GIT=$(builddir)/src/lib/libmbfl-git.bash; export MBFL_LIBMBFL_GIT;
+MBFL_TESTS_ENV		+= MBFL_LIBMBFL_CONTAINERS=$(builddir)/src/lib/libmbfl-containers.bash; export MBFL_LIBMBFL_CONTAINERS;
 # We set TMPDIR  because if the "/tmp"  directory is mounted on  a separate partition
 # with  "noexec"  attribute: tests  for  executability  of  files  will fail  if  the
 # temporary test files are created under "/tmp".
@@ -666,6 +693,7 @@ MBFL_TESTS_PREREQUISITES=				\
 	$(builddir)/src/lib/libmbfl-utils.bash		\
 	$(builddir)/src/lib/libmbfl-passwords.bash	\
 	$(builddir)/src/lib/libmbfl-git.bash		\
+	$(builddir)/src/lib/libmbfl-containers.bash	\
 	$(MBFL_PROGRAM_MBFLPP)				\
 	$(MBFL_PREPROCESSOR)
 
@@ -739,6 +767,8 @@ MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_ARCH="$$MBFL_TESTS_LIBDIR/libmbfl-arch.bash"; ex
 MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_AT="$$MBFL_TESTS_LIBDIR/libmbfl-at.bash"; export MBFL_LIBMBFL_AT;
 MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_UTILS="$$MBFL_TESTS_LIBDIR/libmbfl-utils.bash"; export MBFL_LIBMBFL_UTILS;
 MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_PASSWORDS="$$MBFL_TESTS_LIBDIR/libmbfl-passwords.bash"; export MBFL_LIBMBFL_PASSWORDS;
+MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_GIT="$$MBFL_TESTS_LIBDIR/libmbfl-git.bash"; export MBFL_LIBMBFL_GIT;
+MBFL_ICHECK_ENV	+= MBFL_LIBMBFL_CONTAINERS="$$MBFL_TESTS_LIBDIR/libmbfl-containers.bash"; export MBFL_LIBMBFL_CONTAINERS;
 MBFL_ICHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_ICHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
 MBFL_ICHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;
