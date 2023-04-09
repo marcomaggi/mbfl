@@ -1,4 +1,4 @@
-y# program.test --
+# program.test --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: tests for the program.sh functions
