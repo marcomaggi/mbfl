@@ -2789,7 +2789,7 @@ m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 which means the following syntax expansion takes place:
 
 @example
-_(self) @expansion{} mbfl_datavar(self)
+_(SELF) @expansion{} mbfl_datavar(SELF)
 @end example
 
 @noindent
@@ -2806,6 +2806,16 @@ declare RED
 color_red_var RED _(dark_slate_blue)
 @end example
 
+Notice that @gnu{} Bash already uses the identifier @samp{_} to implement a built--in shell
+variable, @bashref{Bash Variables, Bash Variables}.  To avoid unwanted expansion of the underscore
+identifier as a macro, we must quote the uses of @samp{_} that are meant to reference the Bash
+variable:
+
+@example
+[[[$_]]]
+@end example
+
+
 @c page
 @node objects conventions parameters
 @subsection Parameters naming conventions
@@ -2817,6 +2827,9 @@ color_red_var RED _(dark_slate_blue)
 @cindex Function parameter @var{STDOBJ}
 @cindex function parameter @var{STDCLS}
 @cindex function parameter @var{STDMETACLS}
+@cindex Parameter @var{STDOBJ}
+@cindex Parameter @var{STDCLS}
+@cindex Parameter @var{STDMETACLS}
 
 
 In this documentation we use @var{STDOBJ} as function parameter name to indicate that the parameter
@@ -9490,32 +9503,8 @@ mbfl_semver_spec_build_metadata_var _(BUILD_METADATA) _(SEMVER_PARSER)
 @subsection The underscore syntax
 
 
-Unless otherwise stated, in every code example in this chapter, we assume the following macro has
-been defined in the preamble:
-
-@example
-m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
-@end example
-
-@noindent
-which means the following syntax expansion takes place:
-
-@example
-_(self) @expansion{} mbfl_datavar(self)
-@end example
-
-@noindent
-so to define and use a new semantic--version specification object we can use the syntax:
-
-@example
-mbfl_default_object_declare(semver_spec)
-mbfl_declare_varref(MAJOR)
-
-mbfl_semver_spec_make_from_string _(semver_spec) "1.2.3-devel.0+x86-64"
-
-mbfl_semver_spec_major_number_var MAJOR _(semver_spec)
-"$MAJOR" @result{} 1
-@end example
+In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
+underscore syntax}.
 
 @c page
 @node semver spec
