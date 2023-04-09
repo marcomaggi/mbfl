@@ -111,37 +111,27 @@ function mbfl_variable_colon_variable_drop_duplicate () {
 
 #### variables allocation
 
+# FIXME DAMMIT!!!  This  is "wrong": "test -v" will  return true only if the variable  has been set,
+# not if  the variable has just  been declared.  This makes  it improbably possible to  generate two
+# equal identifiers.
+#
 function mbfl_variable_alloc () {
-    mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
-    local mbfl_NAME
+    mbfl_mandatory_nameref_parameter(mbfl_RV, 1, result variable)
 
-    while true
-    do
-	mbfl_NAME=mbfl_u_variable_${RANDOM}
-	# How do we test if there is a collision  with variable names?  We test the name as a scalar
-	# variable name and verify its string length, then we  test the name as an array name and we
-	# verify its number of slots.  Using:
-	#
-	#    test -v $mbfl_NAME
-	#
-	# does not  work because it returns  true only if the  variable has already been  set with a
-	# value; it returns  false if it has been  used as argument to "declare"  or "local" without
-	# initialising it.
-	local -n mbfl_REF=$mbfl_NAME
-	if ((0 == mbfl_string_len(mbfl_REF) && 0 == mbfl_slots_number(mbfl_REF)))
-	then break
-	fi
+    mbfl_RV=mbfl_u_variable_${1}_${RANDOM}
+    while test -v $mbfl_RV
+    do mbfl_RV=mbfl_u_variable_${1}_${RANDOM}
     done
-    mbfl_RESULT_VARREF=$mbfl_NAME
+    #echo $FUNCNAME $mbfl_RV >&2
     return 0
 }
 
 # declare -i MBFL_VARIABLE_COUNTER=0
 
 # function mbfl_variable_alloc () {
-#     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
-#     printf -v mbfl_RESULT_VARREF 'mbfl_u_variable_%d' $MBFL_VARIABLE_COUNTER
-#     printf '%s\n' $mbfl_RESULT_VARREF >&2
+#     mbfl_mandatory_nameref_parameter(mbfl_RV, 1, result variable)
+#     printf -v mbfl_RV 'mbfl_u_variable_%d' $MBFL_VARIABLE_COUNTER
+#     printf '%s\n' $mbfl_RV >&2
 #     let ++MBFL_VARIABLE_COUNTER
 # }
 
