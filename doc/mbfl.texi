@@ -180,7 +180,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * times::                       Times and dates.
 * math::                        Evaluating mathematical expressions.
 * system::                      Interfacing with the system.
-* semver::                      Semantic version specifications
+* semver::                      Semantic-version specifications
 * main::                        Main function.
 * testing::                     Building test suites.
 
@@ -3134,7 +3134,7 @@ datavar[6]      @result{} 'blue'
 
 
 @deftp {Class} mbfl_default_class
-@deftpx {Parent} mbfl_default_object
+@deftpx {Superclass} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_class
 The metaclass of @class{mbfl_default_object}.  It is also the metaclass of all the subclasses of
 @class{mbfl_default_object}, including @class{mbfl_default_class} itself.
@@ -3147,7 +3147,7 @@ The metaclass of @class{mbfl_default_object}.  It is also the metaclass of all t
 
 @deftp {Class} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_class
-Default class of objects used by @mbfl{}.  It has no parent.  It defines no fields aside from a
+Default class of objects used by @mbfl{}.  It has no superclass.  It defines no fields aside from a
 reference to the instance's class.
 @end deftp
 
@@ -3418,9 +3418,9 @@ code bases are always imperfect.
 
 
 @deftp {Class} mbfl_predefined_constant
-@deftpx {Parent class} mbfl_default_object
+@deftpx {Superclass} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_class
-Class representing unique constant values.
+Class of objects representing unique constant values.
 @end deftp
 
 
@@ -9440,16 +9440,82 @@ group name.
 
 @c page
 @node semver
-@chapter Semantic version specifications
+@chapter Semantic--version specifications
 
 
-This module implements a parser for semantic version strings.
+This module implements a parser for semantic--version string representations.  The basic usage is as
+follows:
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_default_object_declare(SEMVER_PARSER)
+mbfl_default_object_declare(PARSER_INPUT)
+declare -i START_INDEX=0
+
+mbfl_semver_parser_input_make    _(PARSER_INPUT) '1.2.3-alpha.1+x86-64' $START_INDEX
+mbfl_semver_parser_make_default  _(SEMVER_PARSER)
+mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+
+mbfl_declare_varref(MAJOR_NUMBER)
+mbfl_declare_varref(BUILD_METADATA)
+
+mbfl_semver_spec_major_number_var   _(MAJOR_NUMBER)   _(SEMVER_PARSER)
+mbfl_semver_spec_build_metadata_var _(BUILD_METADATA) _(SEMVER_PARSER)
+
+"$MAJOR_NUMBER"         @result{} 1
+"$BUILD_METADATA"       @result{} x86-64
+@end example
 
 @menu
+* semver conventions::          Naming and operations conventions.
 * semver spec::                 @emph{Semantic Versioning} specification.
+* semver classes::              Object classes representing semantic--version
+                                handling.
 * semver parser::               Parsing semantic version specifications.
 * semver compar::               Comparing semantic version specifications.
+* semver predicates::           String predicates.
 @end menu
+
+@c page
+@node semver conventions
+@section Naming and operations conventions
+
+
+@menu
+* semver conventions underscore::       The underscore syntax.
+@end menu
+
+@c page
+@node semver conventions underscore
+@subsection The underscore syntax
+
+
+Unless otherwise stated, in every code example in this chapter, we assume the following macro has
+been defined in the preamble:
+
+@example
+m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
+@end example
+
+@noindent
+which means the following syntax expansion takes place:
+
+@example
+_(self) @expansion{} mbfl_datavar(self)
+@end example
+
+@noindent
+so to define and use a new semantic--version specification object we can use the syntax:
+
+@example
+mbfl_default_object_declare(semver_spec)
+mbfl_declare_varref(MAJOR)
+
+mbfl_semver_spec_make_from_string _(semver_spec) "1.2.3-devel.0+x86-64"
+
+mbfl_semver_spec_major_number_var MAJOR _(semver_spec)
+"$MAJOR" @result{} 1
+@end example
 
 @c page
 @node semver spec
@@ -9746,138 +9812,450 @@ Also, specific systems may impose their own limits on the size of the string.
 @end enumerate
 
 @c page
+@node semver classes
+@section Object classes representing semantic--version handling
+
+
+The semantic--version specification facilities in this library use data structures as defined by the
+objects module, @ref{objects, Object--oriented programming}.
+
+@menu
+* semver classes spec::         Object classes representing semantic--version
+                                specifications.
+* semver classes parser::       Object classes representing semantic--version
+                                parsers.
+* semver classes input::        Object classes representing semantic--version
+                                parsers input strings.
+@end menu
+
+@c page
+@node semver classes spec
+@subsection Object classes representing semantic--version specifications
+
+
+We can use objects of class @class{mbfl_semver_spec_t} to build semantic--version representations
+from strings as follows:
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_declare_varref(MAJOR)
+
+mbfl_semver_spec_make_from_string _(SEMVER_SPEC) "1.2.3-devel.0+x86-64"
+
+mbfl_semver_spec_major_number_var _(MAJOR) _(SEMVER_SPEC)
+"$MAJOR" @result{} 1
+@end example
+
+@noindent
+and from components as follows:
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_declare_varref(STRREP)
+
+mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.0 x86-64
+
+mbfl_semver_spec_string_var _(STRREP) _(SEMVER_SPEC)
+"$STRREP" @result{} "1.2.3-devel.0+x86-64"
+@end example
+
+
+@deftp {Class} mbfl_semver_spec_t
+@deftpx {Superclass} mbfl_default_object
+@deftpx {Metaclass} mbfl_default_class
+Class of objects representing semantic--version specifications.  It is used both to build new string
+representations of semantic--version specifications and to represent the result of parsing a
+semantic--version specification string.
+
+@cindex @var{SEMVER_SPEC} parameter
+@cindex Parameter @var{SEMVER_SPEC}
+@cindex Function parameter @var{SEMVER_SPEC}
+When the data variable of an object of this class is used as parameter to function: in this
+documentation that parameter is named @var{SEMVER_SPEC}.
+@end deftp
+
+
+@defop {Constructor} {mbfl_semver_spec_t} mbfl_semver_spec_make_from_string @var{SEMVER_SPEC} @var{INPUT_STRING}
+Initialise a previously declared object of class @class{mbfl_semver_spec_t} using the string
+representation @var{INPUT_STRING}.  The string might optionally contain the leading @samp{v}.  When
+successful return true; otherwise return false.
+
+If @var{SEMVER_SPEC} has already been initialised by a previous call to a constructor: the old
+semantic--version specification is deleted.
+@end defop
+
+
+@defop {Constructor} {mbfl_semver_spec_t} mbfl_semver_spec_make_from_components @var{SEMVER_SPEC} @var{MAJOR} @var{MINOR} @var{PATCH_LEVEL}
+@defopx {Constructor} {mbfl_semver_spec_t} mbfl_semver_spec_make_from_components @var{SEMVER_SPEC} @var{MAJOR} @var{MINOR} @var{PATCH_LEVEL} @var{PRERELEASE_VERSION} @var{BUILD_METADATA}
+Initialise a previously declared object of class @class{mbfl_semver_spec_t} using the given
+parameters.  When successful return true; otherwise return false.
+
+The parameters @var{PRERELEASE_VERSION} and @var{BUILD_METADATA} are optional: when not given, the
+corresponding component is set to the empty string.
+
+If @var{SEMVER_SPEC} has already been initialised by a previous call to a constructor: the old
+semantic--version specification is deleted.
+@end defop
+
+
+@defop {Predicate} {mbfl_semver_spec_t} mbfl_semver_spec_is_a @var{OBJ}
+Return true if @var{OBJ} is the data variable of an object of class @class{mbfl_semver_spec_t};
+otherwise return false.
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+
+mbfl_semver_spec_make_from_string _(SEMVER_SPEC) "1.2.3-devel.0+x86-64"
+
+mbfl_semver_spec_is_a _(SEMVER_SPEC)    @result{} 0
+mbfl_semver_spec_is_a 'ciao'            @result{} 1
+@end example
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_spec_t} mbfl_semver_spec_major_number_var @var{_RV} @var{SEMVER_SPEC}
+@defopx {Mutator} {mbfl_semver_spec_t} mbfl_semver_spec_major_number_set @var{SEMVER_SPEC} @var{MAJOR_NUMBER}
+Accessor and mutator for the major number specification.  When successful return true; otherwise
+return false.
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_declare_varref(MAJOR)
+
+mbfl_semver_spec_make_from_string _(SEMVER_SPEC) "1.2.3-devel.0+x86-64"
+mbfl_semver_spec_major_number_var _(MAJOR) _(SEMVER_SPEC)
+"$MAJOR" @result{} 1
+@end example
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_spec_t} mbfl_semver_spec_minor_version_var @var{_RV} @var{SEMVER_SPEC}
+@defopx {Mutator} {mbfl_semver_spec_t} mbfl_semver_spec_minor_version_set @var{SEMVER_SPEC} @var{MINOR_VERSION}
+Accessor and mutator for the minor number specification.  When successful return true; otherwise
+return false.
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_declare_varref(MINOR)
+
+mbfl_semver_spec_make_from_string _(SEMVER_SPEC) "1.2.3-devel.0+x86-64"
+mbfl_semver_spec_minor_number_var _(MINOR) _(SEMVER_SPEC)
+"$MINOR" @result{} 2
+@end example
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_spec_t} mbfl_semver_spec_patch_level_var @var{_RV} @var{SEMVER_SPEC}
+@defopx {Mutator} {mbfl_semver_spec_t} mbfl_semver_spec_patch_level_set @var{SEMVER_SPEC} @var{PATCH_LEVEL}
+Accessor and mutator for the patch level specification.  When successful return true; otherwise
+return false.
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_declare_varref(PATCH_LEVEL)
+
+mbfl_semver_spec_make_from_string _(SEMVER_SPEC) "1.2.3-devel.0+x86-64"
+mbfl_semver_spec_patch_level_var _(PATCH_LEVEL) _(SEMVER_SPEC)
+"$PATCH_LEVEL" @result{} 3
+@end example
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_spec_t} mbfl_semver_spec_prerelease_version_var @var{_RV} @var{SEMVER_SPEC}
+@defopx {Mutator} {mbfl_semver_spec_t} mbfl_semver_spec_prerelease_version_set @var{SEMVER_SPEC} @var{PRERELEASE_VERSION}
+Accessor and mutator for the prerelease version specification; this value @strong{does not} contain
+the leading hyphen character @samp{-}.  When successful return true; otherwise return false.
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_declare_varref(PRERELEASE_VERSION)
+
+mbfl_semver_spec_make_from_string _(SEMVER_SPEC) "1.2.3-devel.0+x86-64"
+mbfl_semver_spec_prerelease_version_var _(PRERELEASE_VERSION) _(SEMVER_SPEC)
+"$PRERELEASE_VERSION" @result{} devel.0
+@end example
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_spec_t} mbfl_semver_spec_build_metadata_var @var{_RV} @var{SEMVER_SPEC}
+@defopx {Mutator} {mbfl_semver_spec_t} mbfl_semver_spec_build_metadata_set @var{SEMVER_SPEC} @var{BUILD_METADATA}
+Accessor and mutator for the build metadata; it @strong{does not} contain the leading plus character
+@samp{+}.  When successful return true; otherwise return false.
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_declare_varref(BUILD_METADATA)
+
+mbfl_semver_spec_make_from_string _(SEMVER_SPEC) "1.2.3-devel.0+x86-64"
+mbfl_semver_spec_build_metadata_var _(BUILD_METADATA) _(SEMVER_SPEC)
+"$BUILD_METADATA" @result{} x86-64
+@end example
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_spec_t} mbfl_semver_spec_string_var @var{_RV} @var{SEMVER_SPEC}
+Accessor for the string representation of a semantic--version; the resulting string does not contain
+the leading @samp{v} character.  When successful return true; otherwise return false.
+
+@example
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_declare_varref(STRING)
+
+mbfl_semver_spec_make_from_string _(SEMVER_SPEC) "1.2.3-devel.0+x86-64"
+mbfl_semver_spec_string_var _(STRING) _(SEMVER_SPEC)
+"$STRING" @result{} 1.2.3-devel.0+x86-64
+@end example
+@end defop
+
+@c page
+@node semver classes parser
+@subsection Object classes representing semantic--version parsers
+
+
+Objects of class @class{mbfl_semver_parser_t} represent the configuration and state of the parser
+used to decompose semantic--version specification string--representations into their components.
+
+@example
+mbfl_default_object_declare(SEMVER_PARSER)
+
+mbfl_semver_parser_make_default _(SEMVER_PARSER)
+
+mbfl_declare_varref(PLV)
+mbfl_declare_varref(AUIBM)
+
+mbfl_semver_parser_parse_leading_v_var                     _(PLV)   _(SEMVER_PARSER)
+mbfl_semver_parser_accept_underscore_in_build_metadata_var _(AUIBM) _(SEMVER_PARSER)
+
+"$PLV"          @result{} optional
+"$AUIBM"        @result{} false
+@end example
+
+
+@deftp {Class} mbfl_semver_parser_t
+@deftpx {Superclass} mbfl_default_object
+@deftpx {Metaclass} mbfl_default_class
+Class of objects representing parsers for semantic--version specification string-representations.
+
+When the data variable of an object of this class is used as parameter to function: in this
+documentation that parameter is named @var{SEMVER_PARSER}.
+@end deftp
+
+
+@defop {Constructor} {mbfl_semver_parser_t} mbfl_semver_parser_make_default @var{SEMVER_PARSER}
+Initialise an already declared object of class @class{mbfl_semver_parser_t} with the default values
+for the supported options.
+
+The option @samp{parse_leading_v} is set to @samp{optional}.
+
+The option @samp{accept_underscore_in_build_metadata} is set to @samp{false}.
+
+@cindex @var{SEMVER_PARSER} parameter
+@cindex Parameter @var{SEMVER_PARSER}
+@cindex Function parameter @var{SEMVER_PARSER}
+If @var{SEMVER_PARSER} has already been initialised by a previous call to a constructor: the old
+options profile is deleted.
+@end defop
+
+
+@defop {Predicate} {mbfl_semver_parser_t} mbfl_semver_parser_is_a @var{OBJ}
+Return true if @var{OBJ} is the data variable of an object of class @class{mbfl_semver_parser_t};
+otherwise return false.
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_parser_t} mbfl_semver_parser_parse_leading_v_var @var{_RV} @var{SEMVER_PARSER}
+@defopx {Mutator} {mbfl_semver_parser_t} mbfl_semver_parser_parse_leading_v_set @var{SEMVER_PARSER} @var{OPTION_VALUE}
+Accessor and mutator for the configuration option: accept a leading @samp{v} character in the
+semantic--version specification to parse.  Possible values for @var{OPTION_VALUE} are:
+@samp{mandatory}, @samp{missing}, @samp{optional}.  When successful return true; otherwise return
+false.
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_parser_t} mbfl_semver_parser_accept_underscore_in_build_metadata_var @var{_RV} @var{SEMVER_PARSER}
+@defopx {Mutator} {mbfl_semver_parser_t} mbfl_semver_parser_accept_underscore_in_build_metadata_set @var{SEMVER_PARSER} @var{OPTION_VALUE}
+Accessor and mutator for the configuration option: accept underscore characters @samp{_} in the
+build metadata of the semantic--version specification to parse.  Possible values for
+@var{OPTION_VALUE} are: @samp{true}, @samp{false}.  When successful return true; otherwise return
+false.
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_parser_t} mbfl_semver_parser_error_message_var @var{_RV} @var{SEMVER_PARSER}
+@defopx {Mutator} {mbfl_semver_parser_t} mbfl_semver_parser_error_message_set @var{SEMVER_PARSER} @var{MESSAGE_STRING}
+Accessor and mutator for the error message string: if @func{mbfl_semver_parse} returns failure, this
+value is non--empty.  When successful return true; otherwise return false.
+@end defop
+
+@c page
+@node semver classes input
+@subsection Object classes representing semantic--version parsers input strings
+
+
+Objects of class @class{mbfl_semver_parser_input_t} are used as ``cursors'' to traverse the
+characters of a string while parsing semantic--version specification string-representations.  We
+create objects of this class and then hand them as parameter to @func{mbfl_semver_parse}:
+
+@example
+mbfl_default_object_declare(PARSER_INPUT)
+declare START_INDEX=0
+
+mbfl_semver_parser_input_make _(PARSER_INPUT) "1.2.3-alpha.1" $START_INDEX
+mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+@end example
+
+
+@deftp {Class} mbfl_semver_parser_input_t
+@deftpx {Superclass} mbfl_default_object
+@deftpx {Metaclass} mbfl_default_class
+Class of objects representing input strings to be used in parsing semantic--version specifications
+string-representations.
+
+@cindex @var{PARSER_INPUT} parameter
+@cindex Parameter @var{PARSER_INPUT}
+@cindex Function parameter @var{PARSER_INPUT}
+When the data variable of an object of this class is used as parameter to function: in this
+documentation that parameter is named @var{PARSER_INPUT}.
+@end deftp
+
+
+@defop {Constructor} {mbfl_semver_parser_input_t} mbfl_semver_parser_input_make @var{PARSER_INPUT} @var{INPUT_STRING} @var{START_INDEX}
+Initialise an already declared object of class @class{mbfl_semver_parser_input_t} so that parsing of
+@var{INPUT_STRING} will start at @var{START_INDEX}.  It must be:
+
+@example
+0 <= @var{STARTX_INDEX} <= mbfl_string_len(@var{INPUT_STRING})
+@end example
+
+If @var{PARSER_INPUT} has already been initialised by a previous call to a constructor: the old
+state of the object is deleted.
+@end defop
+
+
+@defop {Predicate} {mbfl_semver_parser_input_t} mbfl_semver_parser_input_is_a @var{OBJ}
+Return true if @var{OBJ} is the data variable of an object of class @class{mbfl_semver_parser_t};
+otherwise return false.
+
+@example
+mbfl_default_object_declare(PARSER_INPUT)
+
+mbfl_semver_parser_input_make _(PARSER_INPUT) "1.2.3-alpha.1" 0
+mbfl_semver_parser_input_is_a _(PARSER_INPUT)   @result{} 0
+mbfl_semver_parser_input_is_a 'ciao'            @result{} 1
+@end example
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_parser_input_t} mbfl_semver_parser_input_string_var @var{_RV} @var{PARSER_INPUT}
+Accessor for the input string which is meant to contain a semantic--version specification.  When
+successful return true; otherwise return false.
+
+@example
+mbfl_default_object_declare(PARSER_INPUT)
+mbfl_declare_varref(STR)
+
+mbfl_semver_parser_input_make _(PARSER_INPUT) "1.2.3-alpha.1" 0
+mbfl_semver_parser_input_string_var _(STR) _(PARSER_INPUT)
+"$STR"  @result{} 1.2.3-alpha.1
+@end example
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_parser_input_t} mbfl_semver_parser_start_index_var @var{_RV} @var{PARSER_INPUT}
+Accessor for the index of the first character of the semantic--version specification in the input
+string.  When successful return true; otherwise return false.
+
+@example
+mbfl_default_object_declare(PARSER_INPUT)
+mbfl_declare_varref(IDX)
+
+mbfl_semver_parser_input_make _(PARSER_INPUT) "frobnicator-1.2.3-alpha.1" 12
+mbfl_semver_parser_input_start_index_var _(IDX) _(PARSER_INPUT)
+"$IDX"  @result{} 12
+@end example
+@end defop
+
+
+@defop {Accessor} {mbfl_semver_parser_input_t} mbfl_semver_parser_end_index_var @var{_RV} @var{PARSER_INPUT}
+@defopx {Mutator} {mbfl_semver_parser_input_t} mbfl_semver_parser_end_index_set @var{PARSER_INPUT} @var{END_INDEX}
+Accessor and mutator for index of the first character @strong{after} the end of the
+semantic--version specification in the input string.  If the input string holds further text after
+the semantic--version specification: we can start parsing it at this index.  This value is
+meaningful only after a successful call to @func{mbfl_semver_parse} applied to @var{PARSER_INPUT}.
+When successful return true; otherwise return false.
+
+@example
+mbfl_default_object_declare(PARSER_INPUT)
+mbfl_declare_varref(IDX)
+
+mbfl_semver_parser_input_make _(PARSER_INPUT) "frobnicator-1.2.3-alpha.1" 12
+mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+
+mbfl_semver_parser_input_end_index_var _(IDX) _(PARSER_INPUT)
+"$IDX"  @result{} 25
+@end example
+@end defop
+
+@c page
 @node semver parser
 @section Parsing semantic version specifications
 
 
-@defun mbfl_semver_parse @var{_RV} @var{INPUT_STRING} @var{START_INDEX_VAR}
-Parse the semantic version specification in a substring of @var{INPUT_STRING} according to the
-current values in the global configuration array @env{mbfl_semver_CONFIG}; when successful return 0,
-otherwise return 1.
+@defun mbfl_semver_parse @var{SEMVER_SPEC} @var{SEMVER_PARSER} @var{PARSER_INPUT}
+Parse the semantic version specification in @var{PARSER_INPUT} using the configuration in
+@var{SEMVER_PARSER} and store the result in @var{SEMVER_SPEC}.  When successful return true;
+otherwise return false.
 
-Parsing starts at the zero--based numeric index stored in the variable named @var{START_INDEX_VAR}.
-
-When successful: store the parsing results in the array whose name is @var{_RV} and mutate the
-variable whose name is @var{START_INDEX_VAR} to the numeric index of the next character in
-@var{INPUT_STRING} to be parsed.
-
-The associative array @var{_RV} is filled with the result of the parsing operation.  When parsing is
-successful, it will hold the following keys:
-
-@table @code
-@item MAJOR_NUMBER
-The major version number.
-
-@item MINOR_NUMBER
-The minor version number.
-
-@item PATCH_LEVEL
-The patch level number
-
-@item PRERELEASE_VERSION
-The prerelease version specification; it @strong{does not} contain the leading hyphen character
-@samp{-}.
-
-@item BUILD_METADATA
-The build metadata specification; it @strong{does not} contain the leading plus character @samp{+}.
-
-@item START_INDEX
-An integer representing the index of the first character in @var{INPUT_STRING} containing the
-semantic version specification.  It is the same value in the data variable whose name is
-@var{START_INDEX_VAR}.
-
-@item END_INDEX
-An integer representing the index of the first character in @var{INPUT_STRING} @strong{after} the
-last parsed character.  If the string holds further text after the semantic version specification:
-we can start parsing it at this index.
-@end table
-
-In addition, if an error occurred while parsing: a pair with  key @code{PARSING_ERROR_MESSAGE} is
-added to the array; its value is a string describing the parsing error.
+If an error occurs while parsing: an error message string is stored in @var{SEMVER_PARSER}.
 
 In the following example we parse a correct semantic version specification; with prerelease version;
 with build metadata.
 
 @example
-local -r INPUT_STRING='1.2.3-alpha.1+x86-64'
-mbfl_local_varref(START_INDEX, 0, -i)
-mbfl_local_varref(RV,,-A)
+mbfl_default_object_declare(SEMVER_SPEC)
+mbfl_default_object_declare(SEMVER_PARSER)
+mbfl_default_object_declare(PARSER_INPUT)
+declare -i START_INDEX=0
 
-mbfl_semver_parse mbfl_datavar(RV) "$INPUT_STRING" mbfl_datavar(START_INDEX)
+mbfl_semver_parser_input_make    _(PARSER_INPUT) '1.2.3-alpha.1+x86-64' $START_INDEX
+mbfl_semver_parser_make_default  _(SEMVER_PARSER)
+mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
 
-$?                                      @result{} 0
-"$@{RV[PARSING_ERROR_MESSAGE]@}"          @result{} ''
-"$@{RV[MAJOR_NUMBER]@}"                   @result{} 1
-"$@{RV[MINOR_NUMBER]@}"                   @result{} 2
-"$@{RV[PATCH_LEVEL]@}"                    @result{} 3
-"$@{RV[PRERELEASE_VERSION]@}"             @result{} alpha.1
-"$@{RV[BUILD_METADATA]@}"                 @result{} x86-64
-"$@{RV[START_INDEX]@}"                    @result{} 0
-"$@{RV[END_INDEX]@}"                      @result{} $@{#INPUT_STRING@}
-"$START_INDEX"                          @result{} $@{#INPUT_STRING@}
+mbfl_declare_varref(MAJOR_NUMBER)
+mbfl_declare_varref(BUILD_METADATA)
+
+mbfl_semver_spec_major_number_var   _(MAJOR_NUMBER)   _(SEMVER_PARSER)
+mbfl_semver_spec_build_metadata_var _(BUILD_METADATA) _(SEMVER_PARSER)
+
+"$MAJOR_NUMBER"         @result{} 1
+"$BUILD_METADATA"       @result{} x86-64
 @end example
 @end defun
-
-
-@defun mbfl_semver_reset_config
-Reset the parser configuration array @env{mbfl_semver_CONFIG} to its default values.
-@end defun
-
-
-@defvr {Array Variable} mbfl_semver_CONFIG
-Global associative array variable holding the configuration of the semantic version specification
-parser.  It has the following keys:
-
-@table @code
-@item PARSE_LEADING_V
-Establish whether the semantic version specification must begin with a @samp{v} character.  Accepted
-values:
-
-@table @code
-@item mandatory
-The leading @samp{v} is mandatory; if it is missing: an error is returned.
-
-@item missing
-The leading @samp{v} is invalid; if it is present: an error is returned.
-
-@item optional
-The leading @samp{v} is optional: if it is present, it is parsed; otherwise nothing happens.  This
-is the defult.
-@end table
-
-@noindent
-Any other value is equivalent to @code{optional}.
-
-@item ACCEPT_UNDERSCORE_IN_BUILD_METADATA
-When @code{true}: accept underscore characters @samp{_} in the identifiers of the build metadata;
-this is an extension of the standard; the default is @code{false}.
-@end table
-@end defvr
 
 
 @defun mbfl_semver_split_prerelease_version @var{_RV} @var{PRERELEASE_VERSION_SPEC}
 Split a @var{PRERELEASE_VERSION_SPEC} into its component identifiers and store them in the indexed
 array whose name is @var{_RV}.  If successful return 0; otherwise return 1.
 
-The string @var{PRERELEASE_VERSION_SPEC} must be correct prerelease version specification, without
+The string @var{PRERELEASE_VERSION_SPEC} must be a correct prerelease version specification, without
 the leading hyphen character, like the one produced by calling @func{mbfl_semver_parse}.  If the
 string has an incorrect format: the behaviour of this function is undefined.
 
 In the following exmample we split a prerelease version specification:
 
 @example
-mbfl_local_varref(RV,, -A)
+mbfl_declare_index_array_varref(RV)
 
 mbfl_semver_split_prerelease_version mbfl_datavar(RV) 'alpha.12.beta.34.gamma.56'
 
-$?            @result{} 0
-$@{#RV[@@]@}     @result{} 6
-$@{RV[0]@}      @result{} 'alpha'
-$@{RV[1]@}      @result{} '12'
-$@{RV[2]@}      @result{} 'beta'
-$@{RV[3]@}      @result{} '34'
-$@{RV[4]@}      @result{} 'gamma'
-$@{RV[5]@}      @result{} '56'
+$?                      @result{} 0
+mbfl_slots_number(RV)   @result{} 6
+mbfl_slot_qref(RV, 0)   @result{} alpha
+mbfl_slot_qref(RV, 1)   @result{} 12
+mbfl_slot_qref(RV, 2)   @result{} beta
+mbfl_slot_qref(RV, 3)   @result{} 34
+mbfl_slot_qref(RV, 4)   @result{} gamma
+mbfl_slot_qref(RV, 5)   @result{} 56
 @end example
 @end defun
 
@@ -9886,42 +10264,43 @@ $@{RV[5]@}      @result{} '56'
 @section Comparing semantic version specifications
 
 
-@defun mbfl_semver_compare_var @var{_RV} @vari{SPEC} @varii{SPEC}
+@defun mbfl_semver_compare_var @var{_RV} @vari{STRING_REP} @varii{STRING_REP}
 Store in the data variable whose name is @var{_RV} the result of comparing the semantic version
-specifications @vari{SPEC} and  @varii{SPEC}; when successful return 0, otherwise return 1.
+specifications @vari{STRING_REP} and @varii{STRING_REP}; when successful return 0, otherwise return
+1.
 
 The value stored in the result variable is the classic ternary comparison result:
 
 @table @code
 @item -1
-If @vari{spec} < @varii{SPEC}.
+if @vari{STRING_REP} < @varii{STRING_REP}.
 
 @item 0
-If @vari{spec} = @varii{SPEC}.
+If @vari{STRING_REP} = @varii{STRING_REP}.
 
 @item +1
-If @vari{spec} > @varii{SPEC}.
+If @vari{STRING_REP} > @varii{STRING_REP}.
 @end table
 
 Usage examples:
 
 @example
 @{
-  mbfl_local_varref(RV)
+  mbfl_declare_varref(RV)
   mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3' '1.2.3'
   $?            @result{} 0
   $RV           @result{} 0
 @}
 
 @{
-  mbfl_local_varref(RV)
+  mbfl_declare_varref(RV)
   mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3' '1.9.3'
   $?            @result{}  0
   $RV           @result{} -1
 @}
 
 @{
-  mbfl_local_varref(RV)
+  mbfl_declare_varref(RV)
   mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3-alpha.1' '1.2.3-alpha.0'
   $?            @result{}  0
   $RV           @result{} +1
@@ -9930,31 +10309,151 @@ Usage examples:
 @end defun
 
 
-@defun mbfl_semver_compare_components_var @var{_RV} @vari{COMP} @varii{COMP}
-Like @func{mbfl_semver_compare_var} but compare already parsed semantic version specifications whose
-components are stored in two associative arrays whose variable names are @vari{COMP} and
-@varii{COMP}.  The arrays should be the ones set by @func{mbfl_semver_parse}.
-
+@defun mbfl_semver_compare_components_var @var{_RV} @vari{SEMVER_SPEC} @varii{SEMVER_SPEC}
+Like @func{mbfl_semver_compare_var} but compare already parsed semantic version specifications.
 Examples:
 
 @example
-local -r SPEC1='1.2.3-alpha.3+x86-64'
-mbfl_local_varref(COMPONENTS1,, -A)
-mbfl_local_varref(INDEX1, 0, -i)
+mbfl_default_object_declare(PARSER)
 
-local -r SPEC2='1.2.9-devel.2+x86-64'
-mbfl_local_varref(COMPONENTS2,, -A)
-mbfl_local_varref(INDEX2, 0, -i)
+mbfl_default_object_declare(SPEC1)
+mbfl_default_object_declare(INPUT1)
 
-mbfl_semver_parse mbfl_datavar(COMPONENTS1) "$SPEC1" mbfl_datavar(INDEX1)
-mbfl_semver_parse mbfl_datavar(COMPONENTS2) "$SPEC2" mbfl_datavar(INDEX2)
+mbfl_default_object_declare(SPEC2)
+mbfl_default_object_declare(INPUT2)
 
-mbfl_local_varref(RV)
-mbfl_semver_compare_components_var \
-  mbfl_datavar(RV) mbfl_datavar(COMPONENTS1) mbfl_datavar(COMPONENTS2)
+mbfl_semver_parser_make_default _(PARSER)
+
+mbfl_semver_parser_input_make _(INPUT1) '1.2.3-alpha.3+x86-64' 0
+mbfl_semver_parser_input_make _(INPUT2) '1.2.9-devel.2+x86-64' 0
+
+mbfl_semver_parse _(SPEC1) _(PARSER) _(INPUT1)
+mbfl_semver_parse _(SPEC2) _(PARSER) _(INPUT2)
+
+mbfl_declare_varref(RV)
+
+mbfl_semver_compare_components_var _(RV) _(SPEC1) _(SPEC2)
+
 $?      @result{}  0
 $RV     @result{} -1
 @end example
+@end defun
+
+@c page
+@node semver predicates
+@section String predicates
+
+
+The following predicate function accept as arguments simple strings representing components of
+semantic--version specifications.
+
+
+@defun mbfl_string_is_semver_major_number @var{STR}
+Return true if @var{STR} is a valid representation of a major number specification; otherwise return
+false.
+
+@example
+mbfl_string_is_semver_major_number '0'          @result{} 0
+mbfl_string_is_semver_major_number '12'         @result{} 0
+
+mbfl_string_is_semver_major_number '012'        @result{} 1
+mbfl_string_is_semver_major_number 'ciao'       @result{} 1
+mbfl_string_is_semver_major_number '1.2'        @result{} 1
+mbfl_string_is_semver_major_number '1 2'        @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_is_semver_minor_number @var{STR}
+Return true if @var{STR} is a valid representation of a minor number specification; otherwise return
+false.
+
+@example
+mbfl_string_is_semver_minor_number '0'          @result{} 0
+mbfl_string_is_semver_minor_number '12'         @result{} 0
+
+mbfl_string_is_semver_minor_number '012'        @result{} 1
+mbfl_string_is_semver_minor_number 'ciao'       @result{} 1
+mbfl_string_is_semver_minor_number '1.2'        @result{} 1
+mbfl_string_is_semver_minor_number '1 2'        @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_is_semver_patch_level @var{STR}
+Return true if @var{STR} is a valid representation of a patch level specification; otherwise return
+false.
+
+@example
+mbfl_string_is_semver_patch_level '0'           @result{} 0
+mbfl_string_is_semver_patch_level '12'          @result{} 0
+
+mbfl_string_is_semver_patch_level '012'         @result{} 1
+mbfl_string_is_semver_patch_level 'ciao'        @result{} 1
+mbfl_string_is_semver_patch_level '1.2'         @result{} 1
+mbfl_string_is_semver_patch_level '1 2'         @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_is_semver_prerelease_version @var{STR}
+Return true if @var{STR} is a valid representation of a prerelease version specification, without
+the leading dash @samp{-}; otherwise return false.
+
+@example
+mbfl_string_is_semver_prerelease_version '0'            @result{} 0
+mbfl_string_is_semver_prerelease_version '123'          @result{} 0
+mbfl_string_is_semver_prerelease_version 'ciao'         @result{} 0
+mbfl_string_is_semver_prerelease_version 'ciao-mamma'   @result{} 0
+mbfl_string_is_semver_prerelease_version '-'            @result{} 0
+mbfl_string_is_semver_prerelease_version '-----'        @result{} 0
+
+mbfl_string_is_semver_prerelease_version '010'          @result{} 1
+mbfl_string_is_semver_prerelease_version 'ciao_mamma'   @result{} 1
+mbfl_string_is_semver_prerelease_version '_'            @result{} 1
+mbfl_string_is_semver_prerelease_version '____'         @result{} 1
+
+mbfl_string_is_semver_prerelease_version 'ciao.0.mamma.1'       @result{} 0
+mbfl_string_is_semver_prerelease_version '0.ciao.1.mamma'       @result{} 0
+mbfl_string_is_semver_prerelease_version 'ciao.mamma.0.1'       @result{} 0
+mbfl_string_is_semver_prerelease_version 'ciao.-----.0.1'       @result{} 0
+
+mbfl_string_is_semver_prerelease_version 'ciao mamma.0.1'       @result{} 1
+mbfl_string_is_semver_prerelease_version 'ciao,mamma.0.1'       @result{} 1
+mbfl_string_is_semver_prerelease_version 'ciao mamma.0.1'       @result{} 1
+mbfl_string_is_semver_prerelease_version 'ciao_mamma.0.1'       @result{} 1
+mbfl_string_is_semver_prerelease_version 'ciao;mamma.0.1'       @result{} 1
+mbfl_string_is_semver_prerelease_version 'ciao.01'              @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_is_semver_build_metadata @var{STR}
+Return true if @var{STR} is a valid representation of a build metadata specification, without the
+leading plus @samp{+}; otherwise return false.
+
+@example
+mbfl_string_is_semver_build_metadata '0'        @result{} 0
+mbfl_string_is_semver_build_metadata '123'      @result{} 0
+mbfl_string_is_semver_build_metadata 'ciao'     @result{} 0
+mbfl_string_is_semver_build_metadata '0123'     @result{} 0
+
+mbfl_string_is_semver_build_metadata '01_23'    @result{} 1
+mbfl_string_is_semver_build_metadata '01,23'    @result{} 1
+mbfl_string_is_semver_build_metadata '01 23'    @result{} 1
+
+mbfl_string_is_semver_build_metadata '0.1.2'            @result{} 0
+mbfl_string_is_semver_build_metadata 'ciao.mamma.hey'   @result{} 0
+mbfl_string_is_semver_build_metadata 'ciao.0.mamma.1'   @result{} 0
+mbfl_string_is_semver_build_metadata '0.ciao.1.mamma'   @result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_string_is_semver_build_metadata_with_underscore @var{STR}
+Return true if @var{STR} is a valid representation of a build metadata specification, without the
+leading plus @samp{+}; otherwise return false.  Accept underscore characters @samp{_} as valid,
+which is outside the specification.
 @end defun
 
 @c page
@@ -11300,9 +11799,9 @@ the facilities of this library.
 
 
 @deftp {Class} mbfl_vc_git_config_option
-@deftpx {Parent class} mbfl_default_object
+@deftpx {Superclass} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_class
-Class representing @git{} configuration options; its fields are:
+Class of objects representing @git{} configuration options; its fields are:
 
 @table @code
 @item database

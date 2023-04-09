@@ -97,6 +97,7 @@
        "mbfl_local_nameref"
        "mbfl_declare_varref"
        "mbfl_declare_global_varref"
+       "mbfl_declare_integer_varref"
        "mbfl_declare_nameref"
        "mbfl_local_index_array_varref"
        "mbfl_local_assoc_array_varref"
@@ -146,6 +147,7 @@
        ;;
        "mbfl_string_len"
        "mbfl_string_idx"
+       "mbfl_string_qidx"
        ;;
        "mbfl_set_maybe"
        "mbfl_read_maybe_null"
@@ -759,6 +761,7 @@
        ;;
        "mbfl_function_copy"
        "mbfl_function_rename"
+       "mbfl_function_exists"
        ;;
        "mbflutils_file_init_file_struct"
        "mbflutils_file_init_directory_struct"
@@ -839,6 +842,13 @@
 
     ;;MBFL known types.
     (,mbfl-known-types 1 font-lock-type-face keep)
+
+    (,(eval-when-compile
+	(concat "\\<\\("
+		"[a-zA-Z_-][a-zA-Z0-9_-]*_t"
+		"\\)\\>"))
+     1 font-lock-type-face)
+
     )
 
   ;;This  true value  as HOW  argument causes  this specification  to be  appended to  the value  of

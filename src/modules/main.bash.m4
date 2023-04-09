@@ -419,15 +419,7 @@ function mbfl_main_check_mbfl_semantic_version_variable () {
 
     mbfl_message_debug_printf 'library version "%s", version required by the script "%s"' \
 			      "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
-    if {
-	mbfl_location_enter
-	{
-	    mbfl_location_handler 'mbfl_semver_reset_config'
-	    mbfl_semver_config[PARSE_LEADING_V]='optional'
-	    mbfl_semver_compare_var _(RV) "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
-	}
-	mbfl_location_leave
-    }
+    if mbfl_semver_compare_var _(RV) "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"
     then
 	if (( RV >= 0 ))
 	then return 0

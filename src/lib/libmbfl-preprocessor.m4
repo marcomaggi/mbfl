@@ -240,6 +240,7 @@ m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
 ]]])
 
 m4_define([[[mbfl_declare_global_varref]]],[[[mbfl_declare_varref($1,$2,-g $3)]]])
+m4_define([[[mbfl_declare_integer_varref]]],[[[mbfl_declare_varref($1,$2,-i $3)]]])
 
 # Synopsis:
 #
