@@ -994,8 +994,8 @@ function script_action_THREE_RED_GAS () {
 #### required MBFL's version
 
 function script_check_mbfl_semantic_version () {
-    local -r REQUIRED_MBFL_VERSION=v3.0.0-devel.4
-    mbfl_local_varref(RV)
+    mbfl_declare_varref(REQUIRED_MBFL_VERSION, v3.0.0-devel.4)
+    mbfl_declare_varref(RV)
 
     mbfl_message_debug_printf 'library version "%s", version required by the script "%s"' \
 			      "$mbfl_SEMANTIC_VERSION" "$REQUIRED_MBFL_VERSION"
