@@ -27,12 +27,6 @@
 
 #### local macros
 
-#MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS()
-
-# With one parameter is expands into a use  of "mbfl_datavar()"; with two parameters it expands into
-# a use of "mbfl_slot_qref".
-#
-#m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS()
 
 # An  object whose  class is  a  child of  "mbfl_default_object" is  a  Bash index  array with  the
@@ -287,6 +281,26 @@ function mbfl_default_object_class_var () {
     mbfl_mandatory_nameref_parameter(mbfl_CLASS_RV,	1, the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing an object of type mbfl_default_object)
     mbfl_CLASS_RV=_(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX)
+}
+
+function mbfl_default_object_call_method () {
+    mbfl_mandatory_nameref_parameter(SELF, 1, reference to color object)
+    mbfl_mandatory_parameter(METHOD,       2, method name)
+    shift 2
+    mbfl_declare_varref(CLASS)
+    mbfl_declare_varref(NAME)
+    declare METHOD_FUNC
+
+    mbfl_default_object_class_var _(CLASS) _(SELF)
+    mbfl_default_class_name_var   _(NAME)  "$CLASS"
+
+    if mbfl_function_exists "${METHOD_FUNC:=${NAME}_method_${METHOD}}"
+    then "$METHOD_FUNC" _(SELF) "$@"
+    else mbfl_default_object_unknown_method "$METHOD_FUNC" _(SELF) "$@"
+    fi
+}
+function mbfl_default_object_unknown_method () {
+    echo $FUNCNAME unknown method call: "$@" >&2
 }
 
 

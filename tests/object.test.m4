@@ -40,10 +40,7 @@
 mbfl_load_library("$MBFL_LIBMBFL_CORE")
 mbfl_load_library("$MBFL_LIBMBFL_TEST")
 
-# With one parameter is expands into a use  of "mbfl_datavar()"; with two parameters it expands into
-# a use of "mbfl_slot_qref".
-#
-m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]])]]])
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
 
 
 #### tests for the built-in data structure type "mbfl_default_object"
@@ -849,6 +846,10 @@ function complex_theta_var () {
 
 
 #### usage of initialisation function
+#
+# At the  time of  this writing  this feature  is undocumented.   It is  not a  great idea.   I will
+# probably remove it.  (Marco Maggi; Apr 10, 2023)
+#
 
 function object_initialiser_1_1_init () {
     mbfl_mandatory_nameref_parameter(self, 1, reference to object of class object_initialiser_1_1_class)
@@ -872,6 +873,41 @@ function object-initialiser-1.1 () {
     dotest-equal	11	"$ALPHA"	'value of alpha field'	&&
 	dotest-equal	22	"$BETA"		'value of beta field'	&&
 	dotest-equal	33	"$GAMMA"	'value of gamma field'
+}
+
+
+#### method functions
+#
+# At the time of this writing this feature is undocumented.  (Marco Maggi; Apr 10, 2023)
+#
+
+function object-methods-1.1 () {
+    mbfl_default_class_declare(object_method_class_1_1)
+    mbfl_default_object_declare(object_method_object_1_1)
+    mbfl_declare_varref(ALPHA)
+    mbfl_declare_varref(BETA)
+
+    mbfl_default_class_define _(object_method_class_1_1) _(mbfl_default_object) 'object_method_class_1_1' alpha beta
+    object_method_class_1_1_define _(object_method_object_1_1) 123 456
+
+    _(object_method_object_1_1, alpha) _(ALPHA)
+    _(object_method_object_1_1, beta)  _(BETA)
+
+    dotest-equal 123 "$ALPHA" &&
+	dotest-equal 456 "$BETA"
+}
+
+function object_method_class_1_1_method_alpha () {
+    mbfl_mandatory_nameref_parameter(SELF, 1, reference to object of class object_method_class_1_1)
+    mbfl_mandatory_nameref_parameter(RV,   2, reference to result variable)
+
+    object_method_class_1_1_alpha_var _(RV) _(SELF)
+}
+function object_method_class_1_1_method_beta () {
+    mbfl_mandatory_nameref_parameter(SELF, 1, reference to object of class object_method_class_1_1)
+    mbfl_mandatory_nameref_parameter(RV,   2, reference to result variable)
+
+    object_method_class_1_1_beta_var _(RV) _(SELF)
 }
 
 
