@@ -483,6 +483,7 @@ MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_ARCH__="$(builddir)/src/lib/libmbfl-a
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_UTILS__="$(builddir)/src/lib/libmbfl-utils.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_GIT__="$(builddir)/src/lib/libmbfl-git.bash"
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_CONTAINERS__="$(builddir)/src/lib/libmbfl-containers.bash"
+MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_PASSWORDS__="$(builddir)/src/lib/libmbfl-passwords.bash"
 
 MBFL_EXAMPLES_PREREQUISITES	=			\
 	examples/$(am__dirstamp)			\
@@ -492,6 +493,7 @@ MBFL_EXAMPLES_PREREQUISITES	=			\
 	$(builddir)/src/lib/libmbfl-utils.bash		\
 	$(builddir)/src/lib/libmbfl-git.bash		\
 	$(builddir)/src/lib/libmbfl-containers.bash	\
+	$(builddir)/src/lib/libmbfl-passwords.bash	\
 	$(MBFL_PROGRAM_MBFLPP)				\
 	$(MBFL_PREPROCESSOR)
 

@@ -28,9 +28,8 @@
 # USA.
 #
 
-m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
+MBFL_DEFINE_UNDERSCORE_MACRO()
 
-
 function mbfl_dialog_enable_programs () {
     mbfl_declare_program stty
 }

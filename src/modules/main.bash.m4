@@ -27,7 +27,10 @@
 # USA.
 #
 
-m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
+
+#### macros
+
+MBFL_DEFINE_UNDERSCORE_MACRO()
 
 
 #### generic variables
@@ -415,7 +418,7 @@ function mbfl_main_check_mbfl_semantic_version () {
     fi
 }
 function mbfl_main_check_mbfl_semantic_version_variable () {
-    mbfl_declare_varref(RV)
+    mbfl_declare_integer_varref(RV)
 
     mbfl_message_debug_printf 'library version "%s", version required by the script "%s"' \
 			      "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"

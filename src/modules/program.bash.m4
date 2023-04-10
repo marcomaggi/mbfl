@@ -26,7 +26,7 @@
 # USA.
 #
 
-m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
+MBFL_DEFINE_UNDERSCORE_MACRO()
 
 
 #### simple finding of external programs

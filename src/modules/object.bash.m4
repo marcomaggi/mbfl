@@ -27,10 +27,13 @@
 
 #### local macros
 
+#MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS()
+
 # With one parameter is expands into a use  of "mbfl_datavar()"; with two parameters it expands into
 # a use of "mbfl_slot_qref".
 #
-m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
+#m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS()
 
 # An  object whose  class is  a  child of  "mbfl_default_object" is  a  Bash index  array with  the
 # following layout:

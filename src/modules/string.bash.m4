@@ -27,10 +27,11 @@
 # 02111-1307 USA.
 #
 
+m4_define([[[__]]],[[[mbfl_datavar($1)]]])
+#MBFL_DEFINE_UNDERSCORE_MACRO()
+
 
 #### global variables, known character ranges
-
-m4_define([[[__]]],[[[mbfl_datavar([[[$1]]])]]])
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
@@ -42,7 +43,7 @@ then
 #    "'"
 #    '`'
 #
-declare -r MBFL_ASCII_RANGE_ASCII_SYMBOLS='.,:;{[()]}_=<>~+-*/%&$!?"^|#@'"'"'`'
+declare -r MBFL_ASCII_RANGE_ASCII_SYMBOLS=[[['.,:;{[()]}_=<>~+-*/%&$!?"^|#@'"'"'`']]]
 
 declare -r MBFL_ASCII_RANGE_DIGITS='0123456789'
 

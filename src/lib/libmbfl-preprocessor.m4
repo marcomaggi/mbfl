@@ -1,5 +1,5 @@
 m4_divert(-1)
-# preprocessor.m4 --
+# libmbfl-preprocessor.m4 --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: macros for the preprocessor
@@ -71,15 +71,15 @@ m4_ifelse([[[$1]]],,,[[[$1]]] [[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))]
 
 #### function parameters handling
 
-m4_define([[[mbfl_mandatory_parameter]]],[[[local $4 $1=${$2:?"missing $3 parameter to '$FUNCNAME'"}]]])
+m4_define([[[mbfl_mandatory_parameter]]],[[[declare $4 $1=${$2:?"missing $3 parameter to '$FUNCNAME'"}]]])
 m4_define([[[mbfl_mandatory_integer_parameter]]],[[[mbfl_mandatory_parameter($1,$2,$3,-i)]]])
 
-m4_define([[[mbfl_optional_parameter]]],[[[local $4 $1="${$2:-$3}"]]])
+m4_define([[[mbfl_optional_parameter]]],[[[declare $4 $1="${$2:-$3}"]]])
 m4_define([[[mbfl_optional_integer_parameter]]],[[[mbfl_optional_parameter($1,$2,$3,-i)]]])
 
 m4_define([[[mbfl_mandatory_nameref_parameter]]],[[[m4_dnl
-local mbfl_a_variable_$1=${$2:?"missing $3 parameter to '$FUNCNAME'"}; m4_dnl
-local -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
+declare mbfl_a_variable_$1=${$2:?"missing $3 parameter to '$FUNCNAME'"}; m4_dnl
+declare -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
 ]]])
 
 
@@ -106,6 +106,55 @@ m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INST
 m4_define([[[mbfl_load_library]]],  [[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
 
 m4_define([[[mbfl_embed_library]]],[[[m4_undivert(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]])
+
+
+#### string macros
+
+m4_define([[[mbfl_string_len]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+${MBFL_SHARP()$1}m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
+m4_define([[[mbfl_string_idx]]],[[[${$1:$2:1}]]])
+m4_define([[[mbfl_string_qidx]]],[[["${$1:$2:1}"]]])
+
+m4_define([[[mbfl_string_empty]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+{ test ${MBFL_SHARP()$1} -eq 0; }m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])
+]]])
+
+m4_define([[[mbfl_string_not_empty]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+{ test ${MBFL_SHARP()$1} -ne 0; }m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
+m4_define([[[mbfl_string_last_char]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+${$1:$((${MBFL_SHARP()$1} - 1)):1}m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
+# We protect  the expansion  of these  macros by wrapping  the expression  into curly
+# braces.
+#
+m4_define([[[mbfl_string_eq]]], [[[{ test $1  '=' $2; }]]])
+m4_define([[[mbfl_string_neq]]],[[[{ test $1 '!=' $2; }]]])
+m4_define([[[mbfl_string_lt]]], [[[{ test $1  '<' $2; }]]])
+m4_define([[[mbfl_string_gt]]], [[[{ test $1  '>' $2; }]]])
+
+# These implementations are wrong because they evaluate the arguments twice!!!
+#
+# m4_define([[[mbfl_string_le]]], [[[{ test $1  '<' $2 -o $1 '=' $2; }]]])
+# m4_define([[[mbfl_string_ge]]], [[[{ test $1  '>' $2 -o $1 '=' $2; }]]])
+
+m4_define([[[mbfl_string_le]]], [[[{ mbfl_string_less_or_equal    $1 $2; }]]])
+m4_define([[[mbfl_string_ge]]], [[[{ mbfl_string_greater_or_equal $1 $2; }]]])
+
+m4_define([[[mbfl_string_eq_yes]]],   [[[{ test $1  '=' 'yes'; }]]])
+m4_define([[[mbfl_string_eq_no]]],    [[[{ test $1  '=' 'no'; }]]])
+m4_define([[[mbfl_string_eq_true]]],  [[[{ test $1  '=' 'true'; }]]])
+m4_define([[[mbfl_string_eq_false]]], [[[{ test $1  '=' 'false'; }]]])
+
+m4_define([[[mbfl_string_neq_yes]]],   [[[{ test $1  '!=' 'yes'; }]]])
+m4_define([[[mbfl_string_neq_no]]],    [[[{ test $1  '!=' 'no'; }]]])
+m4_define([[[mbfl_string_neq_true]]],  [[[{ test $1  '!=' 'true'; }]]])
+m4_define([[[mbfl_string_neq_false]]], [[[{ test $1  '!=' 'false'; }]]])
 
 
 #### variables, arrays and slots handling
@@ -139,56 +188,11 @@ m4_define([[[mbfl_slots_qkeys]]],[[["${!$1[@]}"]]])
 
 #### nameref variables handling
 
-# Synopsis:
-#
-#   mbfl_declare_nameref(NAME, DATA_VARNAME_EXPR)
-#
-# It expands into:
-#
-#   declare    mbfl_a_variable_NAME=DATA_VARNAME_EXPR
-#   declare -n NAME=$mbfl_a_variable_NAME
-#
-# Declare a proxy variable NAME aliasing the  data variable whose value is the result
-# of evaluating DATA_VARNAME_EXPR.
-#
-# NOTE We cannot declare "mbfl_a_variable_$1"  read-only because then we cannot unset
-# it.
-#
 m4_define([[[mbfl_declare_nameref]]],[[[m4_dnl
   declare    mbfl_a_variable_$1=$2; m4_dnl
   declare -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
 ]]])
 
-# Synopsis:
-#
-#   mbfl_declare_varref(VARNAME, INIT_VALUE, DECLARE_OPTIONS)
-#
-# It expands into:
-#
-#   declare mbfl_a_variable_VARNAME
-#   mbfl_variable_alloc mbfl_a_variable_VARNAME
-#   declare DECLARE_OPTIONS $mbfl_a_variable_VARNAME
-#   declare -n VARNAME=$mbfl_a_variable_VARNAME
-#
-# When INIT_VALUE is empty, it finishes with:
-#
-#   VARNAME=
-#
-# which defines  the variable and causes  "test -v VARNAME" to  return true; defining
-# the variable this way works with both scalar and array variables.
-#
-# When INIT_VALUE is not empty, it finishes with:
-#
-#   VARNAME=INIT_VALUE
-#
-# Define a "proxy  variable" VARNAME referencing a "data variable"  with unique name.
-# The data  variable has  the optional attributes  DECLARE_OPTIONS.  A  further local
-# variable mbfl_a_variable_VARNAME holds the name of the data variable.
-#
-# We can use the argument DECLARE_OPTIONS to declare a global data variable:
-#
-#   mbfl_declare_varref(VARNAME, INIT_VALUE, -g)
-#
 m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
   declare mbfl_a_variable_$1; m4_dnl
   mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
@@ -198,91 +202,34 @@ m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
 ]]])
 
 m4_define([[[mbfl_declare_global_varref]]], [[[mbfl_declare_varref($1,$2,-g $3)]]])
-m4_define([[[mbfl_declare_integer_varref]]],[[[mbfl_declare_varref($1,m4_ifelse([[[$2]]],,0,[[[$2]]]),-i $3)]]])
+m4_define([[[mbfl_declare_integer_varref]]],[[[mbfl_declare_varref($1,m4_ifelse([[[$2]]],,0, [[[$2]]]),-i $3)]]])
 
 m4_define([[[mbfl_declare_index_array_varref]]],[[[mbfl_declare_varref($1,m4_ifelse([[[$2]]],,[[[()]]],[[[$2]]]),-a $3)]]])
 m4_define([[[mbfl_declare_assoc_array_varref]]],[[[mbfl_declare_varref($1,m4_ifelse([[[$2]]],,[[[()]]],[[[$2]]]),-A $3)]]])
 
-# Synopsis:
-#
-#	mbfl_namevar(VARNAME)
-#
 m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
-
-# Synopsis:
-#
-#	mbfl_datavar(VARNAME)
-#
 m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar([[[$1]]])]]])
 
-# Synopsis:
-#
-#	mbfl_undeclare_varref(VARNAME)
-#
-# Keep this expansion a single line with semicolons!
 m4_define([[[mbfl_undeclare_varref]]],[[[m4_dnl
   unset -v $mbfl_a_variable_$1; m4_dnl
   unset -v  mbfl_a_variable_$1; m4_dnl
   unset -v -n $1; m4_dnl
   unset -v    $1 m4_dnl
 ]]])
-
 m4_define([[[mbfl_unset_varref]]],[[[mbfl_undeclare_varref($1)]]])
 
+m4_define([[[mbfl_p_underscore_macro]]],[[[mbfl_datavar($1)]]])
+m4_define([[[mbfl_p_default_object_underscore_macro_for_methods]]],[[[m4_ifelse($#,1, [[[mbfl_datavar([[[$1]]])]]], [[[mbfl_default_object_call_method mbfl_datavar($1) $2]]]) ]]])
+m4_define([[[mbfl_p_default_object_underscore_macro_for_slots]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
 
-# Optionally define  the "_()" macro.   With one parameter is  expands into a  use of
-# "mbfl_datavar()"; with two parameters it expands into a use of "mbfl_slot_qref".
-#
-m4_ifdef([[[__MBFL_DEFINE_UNDERSCORE_MACRO__]]],[[[m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])]]])
+m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO]]],m4_dnl
+[[[m4_define([[[_]]],[[[mbfl_p_underscore_macro($]]]@[[[)]]])]]])
 
-
-#### string macros
+m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS]]],m4_dnl
+[[[m4_define([[[_]]],[[[mbfl_p_default_object_underscore_macro_for_slots($]]]@[[[)]]])]]])
 
-m4_define([[[mbfl_string_len]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-${MBFL_SHARP()$1}m4_dnl
-m4_changecom([[[MBFL_SHARP()]]])]]])
-
-m4_define([[[mbfl_string_idx]]],[[[${$1:$2:1}]]])
-m4_define([[[mbfl_string_qidx]]],[[["${$1:$2:1}"]]])
-
-m4_define([[[mbfl_string_empty]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-{ test ${MBFL_SHARP()$1} -eq 0; }m4_dnl
-m4_changecom([[[MBFL_SHARP()]]])
-]]])
-
-m4_define([[[mbfl_string_not_empty]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-{ test ${MBFL_SHARP()$1} -ne 0; }m4_dnl
-m4_changecom([[[MBFL_SHARP()]]])]]])
-
-m4_define([[[mbfl_string_last_char]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-${$1:$((${MBFL_SHARP()$1} - 1)):1}m4_dnl
-m4_changecom([[[MBFL_SHARP()]]])]]])
-
-
-m4_dnl We  protect  the  expansion  of these  macros  by  wrapping  the
-m4_dnl expression into curly braces.
-m4_define([[[mbfl_string_eq]]], [[[{ test $1  '=' $2; }]]])
-m4_define([[[mbfl_string_neq]]],[[[{ test $1 '!=' $2; }]]])
-m4_define([[[mbfl_string_lt]]], [[[{ test $1  '<' $2; }]]])
-m4_define([[[mbfl_string_gt]]], [[[{ test $1  '>' $2; }]]])
-
-m4_dnl These implementations are wrong because they evaluate the arguments twice!!!
-m4_dnl
-m4_dnl m4_define([[[mbfl_string_le]]], [[[{ test $1  '<' $2 -o $1 '=' $2; }]]])
-m4_dnl m4_define([[[mbfl_string_ge]]], [[[{ test $1  '>' $2 -o $1 '=' $2; }]]])
-
-m4_define([[[mbfl_string_le]]], [[[{ mbfl_string_less_or_equal    $1 $2; }]]])
-m4_define([[[mbfl_string_ge]]], [[[{ mbfl_string_greater_or_equal $1 $2; }]]])
-
-m4_define([[[mbfl_string_eq_yes]]],   [[[{ test $1  '=' 'yes'; }]]])
-m4_define([[[mbfl_string_eq_no]]],    [[[{ test $1  '=' 'no'; }]]])
-m4_define([[[mbfl_string_eq_true]]],  [[[{ test $1  '=' 'true'; }]]])
-m4_define([[[mbfl_string_eq_false]]], [[[{ test $1  '=' 'false'; }]]])
-
-m4_define([[[mbfl_string_neq_yes]]],   [[[{ test $1  '!=' 'yes'; }]]])
-m4_define([[[mbfl_string_neq_no]]],    [[[{ test $1  '!=' 'no'; }]]])
-m4_define([[[mbfl_string_neq_true]]],  [[[{ test $1  '!=' 'true'; }]]])
-m4_define([[[mbfl_string_neq_false]]], [[[{ test $1  '!=' 'false'; }]]])
+m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS]]],m4_dnl
+[[[m4_define([[[_]]],[[[mbfl_p_default_object_underscore_macro_for_methods($]]]@[[[)]]])]]])
 
 
 #### defining program execution functions

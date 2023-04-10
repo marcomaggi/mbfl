@@ -27,10 +27,10 @@
 # USA.
 #
 
+MBFL_DEFINE_UNDERSCORE_MACRO()
+
 
 #### module initialisation
-
-m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 # This exists, but does nothing, for backwards compatibility.
 #
