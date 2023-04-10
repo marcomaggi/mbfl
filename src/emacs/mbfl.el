@@ -168,7 +168,10 @@
        "mbfl_default_class_declare"
        "mbfl_default_class_declare_global"
        "mbfl_default_class_unset"
-       "_")
+       "_"
+       "MBFL_DEFINE_UNDERSCORE_MACRO"
+       "MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS"
+       "MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS")
      'symbols)))
 
 (defconst mbfl-known-functions
