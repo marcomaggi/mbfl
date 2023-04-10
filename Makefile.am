@@ -602,10 +602,11 @@ EXTRA_DIST			+=		\
 	tests/times-and-dates.test.m4		\
 	tests/variables.test.m4			\
 	\
-	tests/mbflutils-files.test.m4		\
-	tests/mbfl-passwords.test.m4		\
+	tests/mbfl-arch.test.m4			\
+	tests/mbfl-containers.test.m4		\
 	tests/mbfl-git.test.m4			\
-	tests/mbfl-containers.test.m4			\
+	tests/mbfl-passwords.test.m4		\
+	tests/mbflutils-files.test.m4		\
 	\
 	tests/script-atexit.sh.m4		\
 	tests/signaltest.sh.m4
@@ -636,10 +637,11 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/times-and-dates.test		\
 	tests/variables.test			\
 	\
-	tests/mbflutils-files.test		\
-	tests/mbfl-passwords.test		\
+	tests/mbfl-arch.test			\
+	tests/mbfl-containers.test		\
 	tests/mbfl-git.test			\
-	tests/mbfl-containers.test
+	tests/mbfl-passwords.test		\
+	tests/mbflutils-files.test
 
 MBFL_CHECK_BUILT_EXAMPLES		=	\
 	examples/compress.sh			\
@@ -688,12 +690,6 @@ MBFL_TESTS_PREREQUISITES=				\
 	tests/$(am__dirstamp)				\
 	$(builddir)/src/lib/libmbfl.bash		\
 	$(builddir)/src/lib/libmbfl-tests.bash		\
-	$(builddir)/src/lib/libmbfl-arch.bash		\
-	$(builddir)/src/lib/libmbfl-at.bash		\
-	$(builddir)/src/lib/libmbfl-utils.bash		\
-	$(builddir)/src/lib/libmbfl-passwords.bash	\
-	$(builddir)/src/lib/libmbfl-git.bash		\
-	$(builddir)/src/lib/libmbfl-containers.bash	\
 	$(MBFL_PROGRAM_MBFLPP)				\
 	$(MBFL_PREPROCESSOR)
 
@@ -719,6 +715,12 @@ tests/%.sh: tests/%.sh.m4 $(MBFL_TESTS_PREREQUISITES)
 	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) $< >$@
 
 tests/signal.test: tests/signaltest.sh
+
+tests/mbfl-arch.test:		$(builddir)/src/lib/libmbfl-arch.bash
+tests/mbfl-containers.test.m4:	$(builddir)/src/lib/libmbfl-containers.bash
+tests/mbfl-git.test.m4:		$(builddir)/src/lib/libmbfl-git.bash
+tests/mbfl-passwords.test:	$(builddir)/src/lib/libmbfl-passwords.bash
+tests/mbflutils-files.test.m4:	$(builddir)/src/lib/libmbfl-utils.bash
 
 
 #### additional test rules
