@@ -88,7 +88,7 @@ changes!
   attribute.  With  these facilities we  can use the "_var"  variants of
   MBFL functions as follows:
 
-     mbfl_local_varref(RV)
+     mbfl_declare_varref(RV)
 
      mbfl_file_extension_var mbfl_varname(RV) /path/to/file.ext
      "$RV" => ext

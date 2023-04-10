@@ -31,7 +31,7 @@ then
     # string represents  the name of an  action set: it  is a key in  this array.  If a  string does
     # *not* represent the name of an action set: it is not a key in this array.
     #
-    mbfl_declare_symbolic_array(mbfl_action_sets_EXISTS)
+    mbfl_declare_assoc_array(mbfl_action_sets_EXISTS)
 
     # Associative array: the keys are strings like:
     #
@@ -47,7 +47,7 @@ then
     # * If the pair  $ACTION_SET, $ACTION_IDENTIFIER is a leaf  node in the actions tree:  it has no
     #   action subset, and the value in this this array is the special name "NONE".
     #
-    mbfl_declare_symbolic_array(mbfl_action_sets_SUBSETS)
+    mbfl_declare_assoc_array(mbfl_action_sets_SUBSETS)
 
     # Associative array: the keys are strings like:
     #
@@ -63,7 +63,7 @@ then
     #   script_after_parsing_options_$KEYWORD
     #   script_action_$KEYWORD
     #
-    mbfl_declare_symbolic_array(mbfl_action_sets_KEYWORDS)
+    mbfl_declare_assoc_array(mbfl_action_sets_KEYWORDS)
 
     # Associative array: the keys are strings like:
     #
@@ -72,12 +72,12 @@ then
     # the  values are  strings representing  a description  of the  associated script  action.  Such
     # descriptions are used when composing the help screen.
     #
-    mbfl_declare_symbolic_array(mbfl_action_sets_DESCRIPTIONS)
+    mbfl_declare_assoc_array(mbfl_action_sets_DESCRIPTIONS)
 
     # Associative array:  the keys are  the ${ACTION_SET}, the  values are strings  representing the
     # action command line arguments.
     #
-    mbfl_declare_symbolic_array(mbfl_action_sets_IDENTIFIERS)
+    mbfl_declare_assoc_array(mbfl_action_sets_IDENTIFIERS)
 
     # If "mbfl_actions_dispatch()" selects an action set: its name is stored here.  This variable is
     # used when composing the help screen.
@@ -344,7 +344,7 @@ END
     #
     # NOTE I  hate how we are  handling the "ITERATOR" array;  but with the limited  features of the
     # shell language: I do not know how else we could do it.  (Marco Maggi; Sep 19, 2020)
-    mbfl_local_symbolic_array(ITERATOR)
+    mbfl_declare_assoc_array(ITERATOR)
     mbfl_slot_set(ITERATOR, ACTION_SET,       'MAIN')
     mbfl_slot_set(ITERATOR, COMMANDS_LIST,    "$PROGNAME")
     mbfl_slot_set(ITERATOR, FUNCTIONS_SUFFIX, "$PROGNAME")
@@ -354,7 +354,7 @@ END
 
 function mbfl_p_actions_completion_visit_node () {
     local ACTION_IDENTIFIER KEY
-    mbfl_local_symbolic_array(TMP)
+    mbfl_declare_assoc_array(TMP)
 
     mbfl_actions_completion_print_dispatcher
     KEY=mbfl_slot_ref(ITERATOR, ACTION_SET)

@@ -405,7 +405,7 @@ function getopts-10.3 () {
 # Gather MBFL options: empty FLAGS, no options.
 #
 function getopts-11.0 () {
-    mbfl_local_varref(FLAGS)
+    mbfl_declare_varref(FLAGS)
 
     mbfl_getopts_reset
     local -a ARGV1=()
@@ -419,7 +419,7 @@ function getopts-11.0 () {
 # Gather MBFL options: non-empty FLAGS, no options.
 #
 function getopts-11.1 () {
-    mbfl_local_varref(FLAGS)
+    mbfl_declare_varref(FLAGS)
 
     mbfl_getopts_reset
     local -a ARGV1=()
@@ -434,7 +434,7 @@ function getopts-11.1 () {
 # Gather MBFL options: non-empty FLAGS, some options.
 #
 function getopts-11.2 () {
-    mbfl_local_varref(FLAGS)
+    mbfl_declare_varref(FLAGS)
 
     mbfl_getopts_reset
     mbfl_unset_option_verbose
@@ -458,7 +458,7 @@ function getopts-11.2 () {
 # Gather MBFL options: non-empty FLAGS, some options.
 #
 function getopts-11.3 () {
-    mbfl_local_varref(FLAGS)
+    mbfl_declare_varref(FLAGS)
 
     mbfl_getopts_reset
     mbfl_unset_option_verbose
@@ -480,7 +480,7 @@ function getopts-11.3 () {
 # Gather MBFL options: empty FLAGS_ARRY, no options.
 #
 function getopts-12.0 () {
-    mbfl_local_index_array_varref(FLAGS_ARRY)
+    mbfl_declare_index_array_varref(FLAGS_ARRY)
 
     mbfl_getopts_reset
     local -a ARGV1=()
@@ -494,7 +494,7 @@ function getopts-12.0 () {
 # Gather MBFL options: non-empty FLAGS_ARRY, no options.
 #
 function getopts-12.1 () {
-    mbfl_local_index_array_varref(FLAGS_ARRY, ('-a' '-b' '-c'))
+    mbfl_declare_index_array_varref(FLAGS_ARRY, ('-a' '-b' '-c'))
 
     mbfl_getopts_reset
     local -a ARGV1=()
@@ -511,7 +511,7 @@ function getopts-12.1 () {
 # Gather MBFL options: non-empty FLAGS_ARRY, some options.
 #
 function getopts-12.2 () {
-    mbfl_local_index_array_varref(FLAGS_ARRY, ('-a' '-b' '-c'))
+    mbfl_declare_index_array_varref(FLAGS_ARRY, ('-a' '-b' '-c'))
 
     mbfl_getopts_reset
     mbfl_unset_option_verbose
@@ -538,7 +538,7 @@ function getopts-12.2 () {
 # Gather MBFL options: non-empty FLAGS_ARRY, some options.
 #
 function getopts-12.3 () {
-    mbfl_local_index_array_varref(FLAGS_ARRY, ([0]='-a' [1]='-b' [2]='-c'))
+    mbfl_declare_index_array_varref(FLAGS_ARRY, ([0]='-a' [1]='-b' [2]='-c'))
 
     mbfl_getopts_reset
     mbfl_unset_option_verbose

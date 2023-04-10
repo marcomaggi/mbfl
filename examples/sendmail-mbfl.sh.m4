@@ -8,7 +8,7 @@
 #!	plain  connections  and  encrypted  connections  using  external
 #!	programs.
 #!
-#! Copyright (c) 2009, 2010, 2015, 2018, 2020 Marco Maggi
+#! Copyright (c) 2009, 2010, 2015, 2018, 2020, 2023 Marco Maggi
 #! <mrc.mgg@gmail.com>
 #!
 #! The author hereby grants  permission to use, copy, modify, distribute,
@@ -316,16 +316,16 @@ function main () {
     # subprocess.  This  script reads from  INFD to acquire  output from
     # the connector.   This script writes to  OUFD to send input  to the
     # connector.
-    mbfl_local_varref(INFD, 3, -i)
-    mbfl_local_varref(OUFD, 4, -i)
+    mbfl_declare_varref(INFD, 3, -i)
+    mbfl_declare_varref(OUFD, 4, -i)
     # Pathnames  of the  FIFOs used  to  talk to  the connector's  child
     # process.
-    mbfl_local_varref(INFIFO)
-    mbfl_local_varref(OUFIFO)
+    mbfl_declare_varref(INFIFO)
+    mbfl_declare_varref(OUFIFO)
     # The  PID of  the  connector external  program,  executed as  child
     # process.  If set to zero: it  means this process uses no connector
     # process.
-    mbfl_local_varref(CONNECTOR_PID, 0, -i)
+    mbfl_declare_varref(CONNECTOR_PID, 0, -i)
 
     validate_and_normalise_configuration
 

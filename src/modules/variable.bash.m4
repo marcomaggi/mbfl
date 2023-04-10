@@ -84,8 +84,8 @@ function mbfl_variable_array_to_colon_variable () {
 function mbfl_variable_colon_variable_drop_duplicate () {
     mbfl_mandatory_parameter(COLON_VARIABLE, 1, colon variable)
     local mbfl_ITEM
-    mbfl_local_numeric_array(mbfl_FIELDS)
-    mbfl_local_numeric_array(FIELDS)
+    mbfl_declare_index_array(mbfl_FIELDS)
+    mbfl_declare_index_array(FIELDS)
     local -i mbfl_DIMENSION mbfl_COUNT i
 
     mbfl_variable_colon_variable_to_array "$COLON_VARIABLE"

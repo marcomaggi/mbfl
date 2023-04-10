@@ -117,7 +117,7 @@ function program-3.5 () {
 
 function program-3.6 () {
     mbfl_declare_program /woppa/dippa/puppa/unexistent
-    (mbfl_local_varref(PROG)
+    (mbfl_declare_varref(PROG)
      mbfl_program_found_var mbfl_datavar(PROG) /woppa/dippa/puppa/unexistent)
     dotest-equal 99 $?
 }
@@ -356,7 +356,7 @@ function program-find-1.2 () {
 
 function program-find-2.1 () {
     (PATH=/bin
-     mbfl_local_varref(RESULT)
+     mbfl_declare_varref(RESULT)
      mbfl_program_find_var mbfl_datavar(RESULT) ls
      dotest-equal /bin/ls "$RESULT")
 }

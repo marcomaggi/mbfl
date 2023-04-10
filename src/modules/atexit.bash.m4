@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (C) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -28,7 +28,7 @@
 
 #### global variables
 
-mbfl_declare_numeric_array(mbfl_atexit_HANDLERS)
+mbfl_declare_index_array(mbfl_atexit_HANDLERS)
 declare -i mbfl_atexit_NEXT=0
 
 function mbfl_atexit_enable () {

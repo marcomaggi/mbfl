@@ -127,7 +127,7 @@ function variable-alloc-1.1 () {
 # Local varref, no init value, no attributes.  Variable set and ref.
 #
 function varref-local-simple-1.1 () {
-    mbfl_local_varref(VAR)
+    mbfl_declare_varref(VAR)
 
     VAR=123
     dotest-equal 123 "$VAR"
@@ -136,7 +136,7 @@ function varref-local-simple-1.1 () {
 # Local varref, init value, no attributes.  Variable set and ref.
 #
 function varref-local-simple-1.2 () {
-    mbfl_local_varref(VAR,, -i)
+    mbfl_declare_varref(VAR,, -i)
 
     VAR=123
     dotest-equal 123 "$VAR"
@@ -145,7 +145,7 @@ function varref-local-simple-1.2 () {
 # Local varref, init value, attributes.  Variable set and ref.
 #
 function varref-local-simple-1.3 () {
-    mbfl_local_varref(VAR, 123, -i)
+    mbfl_declare_varref(VAR, 123, -i)
 
     dotest-equal 123 "$VAR"
 }
@@ -153,7 +153,7 @@ function varref-local-simple-1.3 () {
 # Local varref, init value, no attributes.  Variable set and ref.
 #
 function varref-local-simple-1.4 () {
-    mbfl_local_varref(VAR, 123)
+    mbfl_declare_varref(VAR, 123)
 
     dotest-equal 123 "$VAR"
 }
@@ -164,7 +164,7 @@ function varref-local-simple-1.4 () {
 # sub-function.
 #
 function varref-local-simple-2.1 () {
-    mbfl_local_varref(VAR)
+    mbfl_declare_varref(VAR)
     local RV
 
     worker-varref-local-simple-2.1 mbfl_datavar(VAR)
@@ -187,7 +187,7 @@ function worker-varref-local-simple-2.1 () {
 # Local varref, no init value, no attributes.  Variable set and ref.
 #
 function varref-local-array-1.1 () {
-    mbfl_local_varref(VAR)
+    mbfl_declare_varref(VAR)
 
     VAR[KEY]=123
     dotest-equal 123 "${VAR[KEY]}"
@@ -196,7 +196,7 @@ function varref-local-array-1.1 () {
 # Local varref, init value, no attributes.  Variable set and ref.
 #
 function varref-local-array-1.2 () {
-    mbfl_local_varref(VAR,, -A)
+    mbfl_declare_varref(VAR,, -A)
 
     VAR[KEY]=123
     dotest-equal 123 "${VAR[KEY]}"
@@ -208,7 +208,7 @@ function varref-local-array-1.2 () {
 # sub-function.
 #
 function varref-local-array-2.1 () {
-    mbfl_local_varref(VAR)
+    mbfl_declare_varref(VAR)
     local RV
 
     worker-varref-local-array-2.1 mbfl_datavar(VAR)
@@ -231,7 +231,7 @@ function worker-varref-local-array-2.1 () {
 # uplevel function, lower level function.
 #
 function varref-local-array-2.2 () {
-    mbfl_local_varref(VAR)
+    mbfl_declare_varref(VAR)
     local RV
 
     VAR[KEY]=123
@@ -255,8 +255,8 @@ function worker-varref-local-array-2.2 () {
 # simple value.
 #
 function varref-local-array-3.1 () {
-    mbfl_local_varref(ARRY,,-A)
-    mbfl_local_varref(VAR)
+    mbfl_declare_varref(ARRY,,-A)
+    mbfl_declare_varref(VAR)
     local RV1 RV2
 
     ARRY[KEY]=mbfl_datavar(VAR)
@@ -285,8 +285,8 @@ function worker-varref-local-array-3.1 () {
 # itself a local varref.  Another value of the array is a simple value.
 #
 function varref-local-array-3.2 () {
-    mbfl_local_index_array_varref(ARRY)
-    mbfl_local_varref(VAR)
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_declare_varref(VAR)
     local RV1 RV2
 
     ARRY[1]=mbfl_datavar(VAR)
@@ -313,7 +313,7 @@ function worker-varref-local-array-3.2 () {
 #### unsetting nameref variables
 
 function varref-unset-1.1 () {
-    mbfl_local_varref(VAR, 123)
+    mbfl_declare_varref(VAR, 123)
     local VAR_VAL=$VAR
     local VAR_NAM=mbfl_datavar(VAR)
 
@@ -363,7 +363,7 @@ function varref-sub-generation-1.1 () {
     declare VARNAME VALUE
 
     worker-varref-sub-generation-1.1 VARNAME
-    mbfl_local_nameref(VAR, $VARNAME)
+    mbfl_declare_nameref(VAR, $VARNAME)
 
     #echo $FUNCNAME VAR="$VAR" BANG_VARNAME="${!VARNAME}" >&2
 

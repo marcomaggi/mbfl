@@ -43,7 +43,7 @@ function math-1.1 () {
 }
 
 function math-1.2 () {
-    mbfl_local_varref(RV)
+    mbfl_declare_varref(RV)
 
     mbfl_math_expr_var mbfl_datavar(RV) '1.2 + 3.4'
     dotest-equal 4.6 $RV

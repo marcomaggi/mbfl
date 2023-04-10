@@ -31,12 +31,12 @@ m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
 
 #### simple finding of external programs
 
-mbfl_declare_numeric_array(mbfl_split_PATH)
+mbfl_declare_index_array(mbfl_split_PATH)
 
 function mbfl_program_split_path () {
     if ((0 == mbfl_slots_number(mbfl_split_PATH)))
     then
-	mbfl_local_numeric_array(SPLITFIELD)
+	mbfl_declare_index_array(SPLITFIELD)
 	local -i SPLITCOUNT i
 
 	mbfl_string_split "$PATH" :
@@ -65,7 +65,7 @@ function mbfl_program_find_var () {
 	else return_because_program_not_found
 	fi
     elif {
-	mbfl_local_varref(DUMMY)
+	mbfl_declare_varref(DUMMY)
 	mbfl_string_first_var _(DUMMY) "$mbfl_PROGRAM" '/'
     }
     then
@@ -100,7 +100,7 @@ function mbfl_program_find_var () {
 
 function mbfl_program_find () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
-    mbfl_local_varref(RESULT_VARNAME)
+    mbfl_declare_varref(RESULT_VARNAME)
     if mbfl_program_find_var _(RESULT_VARNAME) "$PROGRAM"
     then echo "$RESULT_VARNAME"
     else return $?
@@ -111,7 +111,7 @@ function mbfl_program_find () {
 #### program finding functions
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then mbfl_declare_symbolic_array(mbfl_program_PATHNAMES)
+then mbfl_declare_assoc_array(mbfl_program_PATHNAMES)
 fi
 
 function mbfl_declare_program () {
@@ -689,7 +689,7 @@ function mbfl_p_program_log_5 () {
     fi
 
     {
-	mbfl_local_varref(QUOTED_ARG)
+	mbfl_declare_varref(QUOTED_ARG)
 	local arg
 	for arg in "$@"
 	do

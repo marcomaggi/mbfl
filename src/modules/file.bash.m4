@@ -455,9 +455,9 @@ function mbfl_file_normalise () {
 function mbfl_p_file_remove_dots_from_pathname_var () {
     mbfl_mandatory_nameref_parameter(RESULT_VARREF1, 1, result variable)
     mbfl_mandatory_parameter(mbfl_PATHNAME, 2, pathname)
-    mbfl_local_numeric_array(SPLITPATH)
+    mbfl_declare_index_array(SPLITPATH)
     local -i SPLITCOUNT
-    mbfl_local_numeric_array(mbfl_output)
+    mbfl_declare_index_array(mbfl_output)
     local -i mbfl_output_counter mbfl_input_counter
 
     mbfl_file_split "$mbfl_PATHNAME"
@@ -1204,7 +1204,7 @@ function mbfl_file_get_permissions_var () {
 
 #### file permissions conversions
 
-mbfl_declare_numeric_array(mbfl_SYMBOLIC_PERMISSIONS)
+mbfl_declare_index_array(mbfl_SYMBOLIC_PERMISSIONS)
 mbfl_SYMBOLIC_PERMISSIONS[0]='---'
 mbfl_SYMBOLIC_PERMISSIONS[1]='--x'
 mbfl_SYMBOLIC_PERMISSIONS[2]='-w-'

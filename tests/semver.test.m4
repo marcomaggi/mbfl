@@ -1323,19 +1323,19 @@ function p-semver-compare () {
 ### ------------------------------------------------------------------------
 
 function semver-compare-example-1.0 () {
-    mbfl_local_varref(RV)
+    mbfl_declare_varref(RV)
     mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3' '1.2.3'
     dotest-equal 0 $? 'return status' && dotest-equal 0 $RV 'comparison result'
 }
 
 function semver-compare-example-1.1 () {
-    mbfl_local_varref(RV)
+    mbfl_declare_varref(RV)
     mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3' '1.9.3'
     dotest-equal 0 $? 'return status' && dotest-equal -1 $RV 'comparison result'
 }
 
 function semver-compare-example-1.2 () {
-    mbfl_local_varref(RV)
+    mbfl_declare_varref(RV)
     mbfl_semver_compare_var mbfl_datavar(RV) '1.2.3-alpha.1' '1.2.3-alpha.0'
     dotest-equal 0 $? 'return status' && dotest-equal +1 $RV 'comparison result'
 }

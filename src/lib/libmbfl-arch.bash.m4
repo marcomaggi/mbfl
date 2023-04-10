@@ -30,7 +30,7 @@ function mbfl_file_enable_tar () {
     mbfl_declare_program tar
 }
 function mbfl_exec_tar () {
-    mbfl_local_varref(TAR)
+    mbfl_declare_varref(TAR)
     local FLAGS
     mbfl_program_found_var mbfl_datavar(TAR) tar || exit_because_program_not_found
     mbfl_option_verbose_program && FLAGS+=' --verbose'
@@ -145,7 +145,7 @@ function mbfl_p_file_compress_gzip () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, source file)
     shift 2
-    mbfl_local_varref(COMPRESSOR)
+    mbfl_declare_varref(COMPRESSOR)
     local FLAGS='--force' DEST
 
     mbfl_program_found_var mbfl_datavar(COMPRESSOR) gzip || exit_because_program_not_found
@@ -190,7 +190,7 @@ function mbfl_p_file_compress_bzip2 () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, target file)
     shift 2
-    mbfl_local_varref(COMPRESSOR)
+    mbfl_declare_varref(COMPRESSOR)
     local FLAGS='--force' DEST
 
     mbfl_program_found_var mbfl_datavar(COMPRESSOR) bzip2 || exit_because_program_not_found
@@ -236,7 +236,7 @@ function mbfl_p_file_compress_lzip () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, source file)
     shift 2
-    mbfl_local_varref(COMPRESSOR)
+    mbfl_declare_varref(COMPRESSOR)
     local FLAGS='--force' DEST
 
     mbfl_program_found_var mbfl_datavar(COMPRESSOR) lzip || exit_because_program_not_found
@@ -281,7 +281,7 @@ function mbfl_p_file_compress_xz () {
     mbfl_mandatory_parameter(COMPRESS, 1, compress/decompress mode)
     mbfl_mandatory_parameter(SOURCE, 2, source file)
     shift 2
-    mbfl_local_varref(COMPRESSOR)
+    mbfl_declare_varref(COMPRESSOR)
     local FLAGS='--force' DEST
 
     mbfl_program_found_var mbfl_datavar(COMPRESSOR) xz || exit_because_program_not_found

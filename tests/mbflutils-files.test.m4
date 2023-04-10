@@ -50,7 +50,7 @@ mbfl_system_enable_programs
 # Stat a file: the file exists.
 #
 function mbflutils-file-stat-1.1 () {
-    mbfl_local_assoc_array_varref(THE_STRU)
+    mbfl_declare_assoc_array_varref(THE_STRU)
     local -i RV=0
 
     #dotest-set-debug
@@ -94,7 +94,7 @@ function mbflutils-file-stat-1.1 () {
 # Stat a directory: the directory exists.
 #
 function mbflutils-file-stat-2.1 () {
-    mbfl_local_assoc_array_varref(THE_STRU)
+    mbfl_declare_assoc_array_varref(THE_STRU)
     local -i RV=0
 
     dotest-set-debug

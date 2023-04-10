@@ -424,7 +424,7 @@ mbfl_file_extension_var _RV /path/to/file.ext
 read below to understand why we should use the preprocessor and write the code like this:
 
 @example
-mbfl_local_varref(RV)
+mbfl_declare_varref(RV)
 mbfl_file_extension_var mbfl_datavar(RV) /path/to/file.ext
 "$RV"   @result{} ext
 @end example
@@ -510,7 +510,7 @@ safely use as argument to functions, @ref{preprocessor, Using the script preproc
 With these facilities, the first example should be written as:
 
 @example
-mbfl_local_varref(RV)
+mbfl_declare_varref(RV)
 
 mbfl_file_extension_var mbfl_datavar(RV) /path/to/file.ext
 "$RV"  @result{} ext
@@ -521,7 +521,7 @@ and the demo script as:
 
 @example
 function main () @{
-    mbfl_local_varref(X, 0, -i)
+    mbfl_declare_integer_varref(X, 0)
     mbfl_func mbfl_datavar(X)
     echo X=$X >&2
 @}
@@ -1189,11 +1189,10 @@ declarations}.  For details on accessing the variable @ref{mbfl_mandatory_namere
 Preprocessor parameters}.
 
 @menu
-* preprocessor nameref intro::    Introduction to the NAMEREF mechanism.
-* preprocessor nameref access::   Variables accessors.
-* preprocessor nameref full::     Full NAMEREF declarations.
-* preprocessor nameref partial::  Partial NAMEREF declarations.
-* preprocessor nameref unset::    Unsetting NAMEREF declarations.
+* preprocessor nameref intro::          Introduction to the NAMEREF mechanism.
+* preprocessor nameref access::         Variables accessors.
+* preprocessor nameref declaring::      Full NAMEREF declarations.
+* preprocessor nameref unset::          Unsetting NAMEREF declarations.
 @end menu
 
 @c page
@@ -1297,7 +1296,7 @@ We must be careful if the source code contains the standalone underscore charact
 @end deffn
 
 @c page
-@node preprocessor nameref full
+@node preprocessor nameref declaring
 @subsection Full NAMEREF declarations
 
 
@@ -1319,8 +1318,17 @@ declare @var{DECLARE_OPTIONS} $mbfl_a_variable_@var{NAME}
 declare -n @var{NAME}=$mbfl_a_variable_@var{NAME}
 @end example
 
+When @var{INIT_VALUE} is empty, it finishes with:
+
+@example
+@var{NAME}=
+@end example
+
 @noindent
-and when @var{INIT_VALUE} is @strong{not} empty, it finishes with:
+which defines the variable and causes @code{test -v @var{VARNAME}} to return true; defining the
+variable this way works with both scalar and array variables.
+
+When @var{INIT_VALUE} is @strong{not} empty, it finishes with:
 
 @example
 @var{NAME}=@var{INIT_VALUE}
@@ -1340,58 +1348,31 @@ mbfl_declare_varref(@var{VARNAME}, @var{INIT_VALUE}, -g)
 
 @c ------------------------------------------------------------------------
 
-@deffn {Preprocessor Macro} mbfl_declare_global_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
+@deffn {Preprocessor Macro} mbfl_declare_global_varref (@var{NAME}, @var{INIT_VALUE}, @var{OPTIONS})
 Like @func{mbfl_declare_varref} but always include the option @option{-g}.  Its expansion is:
 
 @example
-mbfl_declare_global_varref(@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
-@expansion{} mbfl_declare_varref(@var{NAME}, @var{INIT_VALUE}, -g @var{LOCAL_OPTIONS})
+mbfl_declare_global_varref(@var{NAME}, @var{INIT_VALUE}, @var{OPTIONS})
+@expansion{} mbfl_declare_varref(@var{NAME}, @var{INIT_VALUE}, -g @var{OPTIONS})
 @end example
 @end deffn
-
-@c ------------------------------------------------------------------------
-
-@anchor{mbfl_local_varref}
-@deffn {Preprocessor Macro} mbfl_local_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
-A use of this macro expands into:
-
-@example
-local mbfl_a_variable_@var{NAME}
-mbfl_variable_alloc mbfl_a_variable_@var{NAME}
-local @var{LOCAL_OPTIONS} $mbfl_a_variable_@var{NAME}
-local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
-@end example
-
-@noindent
-and when @var{INIT_VALUE} is @strong{not} empty, it finishes with:
-
-@example
-@var{NAME}=@var{INIT_VALUE}
-@end example
-
-A local @dfn{name variable} @code{mbfl_a_variable_@var{NAME}} is declared and filled with a unique
-@dfn{data variable} name by @func{mbfl_variable_alloc}; then the @dfn{data variable} is declared as
-local; finally a @dfn{proxy variable} @var{NAME} is defined as alias for the @dfn{data variable}.
-@end deffn
-
-@c ------------------------------------------------------------------------
 
 @cindex Declaring read--only arrays
 
 With these macros it is not possible to declare a read--only array; the macro use:
 
 @example
-mbfl_local_varref(ARRY, ([a]=1), -rA)
+mbfl_declare_varref(ARRY, ([a]=1), -rA)
 @end example
 
 @noindent
 expands into:
 
 @example
-local mbfl_a_variable_ARRY
+declare mbfl_a_variable_ARRY
 mbfl_variable_alloc mbfl_a_variable_ARRY
-local -rA $mbfl_a_variable_ARRY
-local -n ARRY=$mbfl_a_variable_ARRY
+declare -rA $mbfl_a_variable_ARRY
+declare -n ARRY=$mbfl_a_variable_ARRY
 ARRY=([a]=1)
 @end example
 
@@ -1409,10 +1390,6 @@ the following is invalid according to Bash:
 @example
 declare -rA $mbfl_a_variable_ARRY=([a]=1)
 @end example
-
-@c page
-@node preprocessor nameref partial
-@subsection Partial NAMEREF declarations
 
 
 @deffn {Preprocessor Macro} mbfl_declare_nameref (@var{NAME}, @var{DATA_VARNAME_EXPR})
@@ -1435,7 +1412,7 @@ We can use this macro as follows:
 
 @example
 function main () @{
-    local VARNAME
+    declare VARNAME
     worker VARNAME
     mbfl_declare_nameref(VAR, $VARNAME)
     ...
@@ -1451,34 +1428,17 @@ main
 @end example
 @end deffn
 
-@c ------------------------------------------------------------------------
-
-@deffn {Preprocessor Macro} mbfl_local_nameref (@var{NAME}, @var{DATA_VARNAME_EXPR})
-A use of this macro expands into:
-
-@example
-local    mbfl_a_variable_@var{NAME}=@var{DATA_VARNAME_EXPR}
-local -n @var{NAME}=$mbfl_a_variable_@var{NAME}
-@end example
-
-Declare a proxy variable @var{NAME} aliasing the data variable whose value is the result of
-evaluating @var{DATA_VARNAME_EXPR}.
-
-@quotation
-@strong{NOTE} We cannot declare @code{mbfl_a_variable_@var{NAME}} as read--only because the we
-cannot unset it.
-@end quotation
-@end deffn
-
 @c page
 @node preprocessor nameref unset
 @subsection Unsetting NAMEREF declarations
 
 
+@anchor{mbfl_undeclare_varref}
 @anchor{mbfl_unset_varref}
-@deffn {Preprocessor Macro} mbfl_unset_varref (@var{NAME})
-The argument @var{NAME} must be the first argument to a previous call to @func{mbfl_local_varref} or
-@func{mbfl_declare_varref}.  A use of this macro expands into:
+@deffn {Preprocessor Macro} mbfl_undeclare_varref (@var{NAME})
+@deffnx {Preprocessor Macro} mbfl_unset_varref (@var{NAME})
+The argument @var{NAME} must be the first argument to a previous call to @func{mbfl_declare_varref}.
+A use of this macro expands into:
 
 @example
 unset -v $mbfl_a_variable_@var{NAME}
@@ -2278,8 +2238,8 @@ unset -v @var{VAR}
 @cindex Arrays, declaring
 
 
-@deffn {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_declare_symbolic_array (@var{ARRAYNAME}, @var{INIT})
+@deffn {Preprocessor Macro} mbfl_declare_assoc_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_declare_assoc_array (@var{ARRAYNAME}, @var{INIT})
 Respectively expand into the statements:
 
 @example
@@ -2289,35 +2249,13 @@ declare -A @var{ARRAYNAME}=$@var{INIT}
 @end deffn
 
 
-@deffn {Preprocessor Macro} mbfl_local_symbolic_array (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_local_symbolic_array (@var{ARRAYNAME}, @var{INIT})
-Respectively expand into the statements:
-
-@example
-local -A @var{ARRAYNAME}
-local -A @var{ARRAYNAME}=$@var{INIT}
-@end example
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_declare_numeric_array (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_declare_numeric_array (@var{ARRAYNAME}, @var{INIT})
+@deffn {Preprocessor Macro} mbfl_declare_index_array (@var{ARRAYNAME})
+@deffnx {Preprocessor Macro} mbfl_declare_index_array (@var{ARRAYNAME}, @var{INIT})
 Respectively expand into the statements:
 
 @example
 declare -a @var{ARRAYNAME}
 declare -a @var{ARRAYNAME}=$@var{INIT}
-@end example
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_local_numeric_array (@var{ARRAYNAME})
-@deffnx {Preprocessor Macro} mbfl_local_numeric_array (@var{ARRAYNAME}, @var{INIT})
-Respectively expand into the statements:
-
-@example
-local -a @var{ARRAYNAME}
-local -a @var{ARRAYNAME}=$@var{INIT}
 @end example
 @end deffn
 
@@ -2340,19 +2278,6 @@ definition of the data variable.  This makes the data variable an indexed array.
 
 @deffn {Preprocessor Macro} mbfl_declare_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{DECLARE_OPTIONS})
 Like @func{mbfl_declare_varref} but always include the @code{-A} option to the @command{declare}
-definition of the data variable.  This makes the data variable an associative array.
-@end deffn
-
-@c ------------------------------------------------------------------------
-
-@deffn {Preprocessor Macro} mbfl_local_index_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
-Like @func{mbfl_local_varref} but always include the @code{-a} option to the @command{local}
-definition of the data variable.  This makes the data variable an indexed array.
-@end deffn
-
-
-@deffn {Preprocessor Macro} mbfl_local_assoc_array_varref (@var{NAME}, @var{INIT_VALUE}, @var{LOCAL_OPTIONS})
-Like @func{mbfl_local_varref} but always include the @code{-A} option to the @command{local}
 definition of the data variable.  This makes the data variable an associative array.
 @end deffn
 
@@ -2420,7 +2345,7 @@ This macro works with both indexed and associative arrays.
 Example:
 
 @example
-mbfl_declare_symbolic_array(PAIRS)
+mbfl_declare_assoc_array(PAIRS)
 mbfl_slot_set(PAIRS, 'abc', '123')
 mbfl_slot_append(PAIRS, 'abc', ' 456')
 mbfl_slot_qref(PAIRS, 'abc')   @result{} 123\ 456
@@ -6069,7 +5994,7 @@ reflecting the current @mbfl{} options state.  Assuming no predefined options we
 command line:
 
 @example
-mbfl_local_varref(FLAGS)
+mbfl_declare_varref(FLAGS)
 
 mbfl_set_option_verbose
 mbfl_set_option_test
@@ -6081,7 +6006,7 @@ We can test how this works with:
 
 @example
 @{
-   mbfl_local_varref(FLAGS)
+   mbfl_declare_varref(FLAGS)
    local -a ARGV1=('--show-program' '--verbose-program')
    local -i ARGC1=mbfl_slots_number(ARGV1)
    local -i ARG1ST=0
@@ -6106,7 +6031,7 @@ command--line options reflecting the current @mbfl{} options state.  Assuming no
 were given on the command line:
 
 @example
-mbfl_local_index_array_varref(FLAGS_ARRY)
+mbfl_declare_index_array_varref(FLAGS_ARRY)
 
 mbfl_set_option_verbose
 mbfl_set_option_test
@@ -6119,7 +6044,7 @@ We can test how this works with:
 
 @example
 @{
-   mbfl_local_index_array_varref(FLAGS_ARRY, ('-a' '-b' '-c'))
+   mbfl_declare_index_array_varref(FLAGS_ARRY, ('-a' '-b' '-c'))
    local -a ARGV1=('--show-program' '--verbose-program')
    local -i ARGC1=mbfl_slots_number(ARGV1)
    local -i ARG1ST=0
@@ -7110,7 +7035,7 @@ Print the access permissions for @var{PATHNAME}, in octal format.
 @example
 mbfl_file_get_permissions /bin/ls       @print{} 0755
 
-mbfl_local_varref(PERMS)
+mbfl_declare_varref(PERMS)
 mbfl_file_get_permissions_var mbfl_datavar(PERMS) /bin/ls
 "$PERMS" @result{} 0755
 @end example
@@ -7770,7 +7695,7 @@ it.
 
 @example
 PATH=/bin
-mbfl_local_varref(RESULT)
+mbfl_declare_varref(RESULT)
 mbfl_program_find_var mbfl_datavar(RESULT) ls
 "$RESULT"       @result{} /bin/ls
 @end example
@@ -7896,7 +7821,7 @@ The function variant @code{_var} will store the result in @var{_RV} rather than 
 function program_wrapper () @{
     mbfl_mandatory_parameter(PATHNAME, 1, argument)
     shift
-    mbfl_local_varref(PROGNAME)
+    mbfl_declare_varref(PROGNAME)
     local FLAGS
 
     mbfl_program_found_var mbfl_datavar(PROGNAME) myprog || exit_because_program_not_found
@@ -8423,7 +8348,7 @@ the macro use will expand into:
 
 @example
 function program_pamixer () @{
-    mbfl_local_varref(PROGRAM)
+    mbfl_declare_varref(PROGRAM)
     mbfl_program_found_var mbfl_datavar(PROGRAM) pamixer || exit $?
     mbfl_program_exec "$PROGRAM"  "$@@"
 @}
@@ -8465,7 +8390,7 @@ With this preprocessor version the expansion of a macro use looks like this:
 
 @example
 function program_@var{STEM} () @{
-    mbfl_local_varref(PROGRAM)
+    mbfl_declare_varref(PROGRAM)
     mbfl_program_found_var mbfl_datavar(PROGRAM) @var{EXECUTABLE_PATHNAME} || exit $?
     mbfl_program_exec "$PROGRAM" @var{OPTIONAL_DEFAULT_FLAGS} "$@@"
 @}
@@ -8789,7 +8714,7 @@ variable @var{RV}.  If an error occurs: return with the same status of GAWK; @va
 untouched.
 
 @example
-mbfl_local_varref(RV)
+mbfl_declare_varref(RV)
 
 mbfl_math_expr_var mbfl_datavar(RV) '1.2 + 3.4'
 $RV @result{} 4.6
@@ -9363,7 +9288,7 @@ and hard--coded in the @mbfl{} file; @ref{system users, Gathering users data}.
 mbfl_system_whoami      @print{} marco
 
 @{
-  mbfl_local_varref(USERNAME)
+  mbfl_declare_varref(USERNAME)
   mbfl_system_whoami_var mbfl_datavar(USERNAME)
   "$USERNAME"
 @} @result{} marco
@@ -9389,7 +9314,7 @@ mbfl_system_id '--user' '--name'
 @print{} marco
 
 @{
-  mbfl_local_varref(USERNAME)
+  mbfl_declare_varref(USERNAME)
   mbfl_system_id_var mbfl_datavar(USERNAME) '--user' '--name'
   "$USERNAME"
 @} @result{} marco
@@ -11209,7 +11134,7 @@ another example:
 
 @example
 function caller () @{
-  mbfl_local_assoc_array_varref(LOGFILE)
+  mbfl_declare_assoc_array_varref(LOGFILE)
 
   callee mbfl_datavar(LOGFILE)
   ...
@@ -11682,7 +11607,7 @@ Usually we want to use the passwords--generating functions as follows:
 
 @example
 @{
-    mbfl_local_varref(PASSWD_STRING)
+    mbfl_declare_varref(PASSWD_STRING)
     mbfl_passwords_printable_ascii_noblank mbfl_datavar(PASSWD_STRING) 8
     echo "$PASSWORD_STRING"
 @}
@@ -11917,7 +11842,7 @@ Print, or store in the result variable referenced by  @var{CURRENT_BRANCH_NAME_R
 current branch.
 
 @example
-mbfl_local_varref(CURRENT_BRANCH_NAME)
+mbfl_declare_varref(CURRENT_BRANCH_NAME)
 
 mbfl_vc_git_branch_current_name_var mbfl_datavar(CURRENT_BRANCH_NAME)
 printf '%s' "$CURRENT_BRANCH_NAME"

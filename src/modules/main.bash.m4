@@ -38,7 +38,7 @@ then
     declare -r mbfl_ORG_PWD=$PWD
 
     declare -i ARGC=0 ARGC1=0 ARG1ST=0
-    mbfl_declare_numeric_array(ARGV) ARGV1
+    mbfl_declare_index_array(ARGV) ARGV1
 
     for ((ARGC1=0; $# > 0; ++ARGC1))
     do
@@ -415,7 +415,7 @@ function mbfl_main_check_mbfl_semantic_version () {
     fi
 }
 function mbfl_main_check_mbfl_semantic_version_variable () {
-    mbfl_local_varref(RV)
+    mbfl_declare_varref(RV)
 
     mbfl_message_debug_printf 'library version "%s", version required by the script "%s"' \
 			      "$mbfl_SEMANTIC_VERSION" "$script_REQUIRED_MBFL_VERSION"

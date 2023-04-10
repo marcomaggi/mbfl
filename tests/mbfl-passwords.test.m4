@@ -65,7 +65,7 @@ function $1 () {
 #
 m4_define([[[MBFL_DEFINE_TEST_VAR_FUNCTION]]],[[[
 function $1 () {
-    mbfl_local_varref(PASSWD)
+    mbfl_declare_varref(PASSWD)
     $2 mbfl_datavar(PASSWD) $3
     dotest-printf 'generated password: "%s"\n' "$PASSWD" >&2
     dotest-equal $3 mbfl_string_len(PASSWD) && $4 "$PASSWD"
@@ -122,7 +122,7 @@ MBFL_DEFINE_TESTS_GROUP(ascii_noblank,		mbfl_passwords_printable_ascii_noblank, 
 #
 function mbfl_passwords_mine_var () {
     mbfl_mandatory_nameref_parameter(PWD, 1, result variable)
-    mbfl_local_varref(BLOCK)
+    mbfl_declare_varref(BLOCK)
 
     mbfl_passwords_lower_case_consonants_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
     mbfl_passwords_lower_case_vowels_var	mbfl_datavar(BLOCK) 1; PWD+="$BLOCK"
@@ -143,7 +143,7 @@ function mbfl_passwords_mine_var () {
 }
 
 function mbfl_passwords_mine () {
-    mbfl_local_varref(RV)
+    mbfl_declare_varref(RV)
     mbfl_passwords_mine_var mbfl_datavar(RV)
     printf '%s' "$RV"
 }

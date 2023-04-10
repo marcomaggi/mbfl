@@ -37,7 +37,7 @@ fi
 m4_define([[[MBFL_PASSWORDS_PRINTING_FUNCTION]]],[[[
 function $1 () {
     mbfl_mandatory_parameter(NUM, 1, number of characters, -i)
-    mbfl_local_varref(RV)
+    mbfl_declare_varref(RV)
     if $1[[[]]]_var mbfl_datavar(RV) $NUM
     then printf '%s' "$RV"
     else return_failure
@@ -51,7 +51,7 @@ m4_define([[[MBFL_PASSWORDS_VAR_FUNCTION]]],[[[
 function $1[[[]]]_var () {
     mbfl_mandatory_nameref_parameter(RV, 1, result variable)
     mbfl_mandatory_parameter(NUM, 2, number of characters, -i)
-    mbfl_local_varref(RANDOM_INTEGER)
+    mbfl_declare_varref(RANDOM_INTEGER)
     local -i i INTEGER_LIMIT=mbfl_string_len($2)
     local RESULT
     if (($NUM >= 0))

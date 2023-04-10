@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (C) 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
 # General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
@@ -33,10 +33,10 @@ mbfl_file_enable_permissions
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_declare_symbolic_array(MBFLUTILS_FILE_FUNCTIONS)
+    mbfl_declare_assoc_array(MBFLUTILS_FILE_FUNCTIONS)
     mbfl_slot_set(MBFLUTILS_FILE_FUNCTIONS, IS_TYPE, 'mbflutils_p_file_is_file')
 
-    mbfl_declare_symbolic_array(MBFLUTILS_DIRECTORY_FUNCTIONS)
+    mbfl_declare_assoc_array(MBFLUTILS_DIRECTORY_FUNCTIONS)
     mbfl_slot_set(MBFLUTILS_DIRECTORY_FUNCTIONS, IS_TYPE, 'mbflutils_p_file_is_directory')
 fi
 
@@ -119,9 +119,9 @@ function mbflutils_file_stat () {
 	return_failure
     else
 	# We modify the struct only if the values acquisitions are successful.
-	mbfl_local_varref(OWNER)
-	mbfl_local_varref(GROUP)
-	mbfl_local_varref(MODE)
+	mbfl_declare_varref(OWNER)
+	mbfl_declare_varref(GROUP)
+	mbfl_declare_varref(MODE)
 
 	if ! mbfl_file_get_owner_var mbfl_datavar(OWNER) "mbfl_slot_ref(SELF, PATHNAME)"
 	then

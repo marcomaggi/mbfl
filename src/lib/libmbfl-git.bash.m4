@@ -377,7 +377,7 @@ function mbfl_vc_git_commit_staged () {
 #### program interface
 
 function mbfl_vc_git_program () {
-    mbfl_local_varref(GIT_COMMAND)
+    mbfl_declare_varref(GIT_COMMAND)
 
     mbfl_program_found_var _(GIT_COMMAND) git || exit $?
     mbfl_program_exec "$GIT_COMMAND" "$@"

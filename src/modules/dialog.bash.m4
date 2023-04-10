@@ -52,7 +52,7 @@ function mbfl_dialog_ask_password_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_VARREF, 1, result variable)
     mbfl_mandatory_parameter(mbfl_PROMPT, 2, prompt)
     local mbfl_PASSWORD
-    mbfl_local_varref(mbfl_STTY)
+    mbfl_declare_varref(mbfl_STTY)
 
     mbfl_program_found_var _(mbfl_STTY) stty || exit_because_program_not_found
     printf '%s: ' "mbfl_PROMPT" >&2

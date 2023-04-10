@@ -133,8 +133,8 @@ fi
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_slot_set(mbfl_default_class, MBFL_STDOBJ__CLASS_INDEX,		_(mbfl_default_class))
-    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__PARENT,	_(mbfl_default_object))
+    mbfl_slot_set(mbfl_default_class, MBFL_STDOBJ__CLASS_INDEX,			_(mbfl_default_class))
+    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__PARENT,		_(mbfl_default_object))
     mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__NAME,		'mbfl_default_class')
     mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER,	3)
 

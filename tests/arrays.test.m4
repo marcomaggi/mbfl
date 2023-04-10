@@ -99,7 +99,7 @@ function array-contains-1.1 () {
 	! mbfl_array_contains ARRY 3
 }
 function array-contains-1.2 () {
-    mbfl_local_index_array_varref(ARRY, ([0]=a [1]=b [2]=c))
+    mbfl_declare_index_array_varref(ARRY, ([0]=a [1]=b [2]=c))
     mbfl_array_contains ARRY 0 &&
 	mbfl_array_contains ARRY 1 &&
 	mbfl_array_contains ARRY 2 &&
@@ -123,7 +123,7 @@ function array-contains-2.1 () {
 	! mbfl_array_contains ARRY D
 }
 function array-contains-2.2 () {
-    mbfl_local_assoc_array_varref(ARRY, ([A]=a [B]=b [C]=c))
+    mbfl_declare_assoc_array_varref(ARRY, ([A]=a [B]=b [C]=c))
     mbfl_array_contains ARRY A &&
 	mbfl_array_contains ARRY B &&
 	mbfl_array_contains ARRY C &&
@@ -157,8 +157,8 @@ function array-contains-value-1.1 () {
     }
 }
 function array-contains-value-1.2 () {
-    mbfl_local_index_array_varref(ARRY, ([0]=a [1]=b [2]=c))
-    mbfl_local_varref(KEY)
+    mbfl_declare_index_array_varref(ARRY, ([0]=a [1]=b [2]=c))
+    mbfl_declare_varref(KEY)
     {
 	mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) a &&
 	    dotest-equal 0 "$KEY"
@@ -192,8 +192,8 @@ function array-contains-value-2.1 () {
     }
 }
 function array-contains-value-2.2 () {
-    mbfl_local_assoc_array_varref(ARRY, ([ALPHA]=a [BETA]=b [GAMMA]=c))
-    mbfl_local_varref(KEY)
+    mbfl_declare_assoc_array_varref(ARRY, ([ALPHA]=a [BETA]=b [GAMMA]=c))
+    mbfl_declare_varref(KEY)
     {
 	mbfl_array_contains_value_var mbfl_datavar(KEY) mbfl_datavar(ARRY) a &&
 	    dotest-equal ALPHA "$KEY"
@@ -257,48 +257,52 @@ function array-contains-all-keys-and-only-2.3 () {
 #### array copying
 
 function array-copy-assoc-length-1.1 () {
-    mbfl_local_varref(SRC,([a]=1 [b]=2 [c]=3), -A)
-    mbfl_local_varref(DST,, -A)
-
+    mbfl_declare_assoc_array_varref(SRC,([a]=1 [b]=2 [c]=3))
+    mbfl_declare_assoc_array_varref(DST)
 
     mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
     mbfl_array_length DST | dotest-output 3
 }
-function array-copy-numeric-length-1.2 () {
-    mbfl_local_varref(SRC,([a]=1 [b]=2 [c]=3), -A)
-    mbfl_local_varref(DST,, -A)
 
+function array-copy-index-length-1.1 () {
+    mbfl_declare_index_array_varref(SRC,([1]=1 [2]=2 [3]=3))
+    mbfl_declare_index_array_varref(DST)
 
     mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
+
+    # mbfl_array_dump mbfl_datavar(SRC) SRC
+    # mbfl_array_dump mbfl_datavar(DST) DST
+
     mbfl_array_length DST | dotest-output 3
 }
 
 function array-copy-assoc-elms-1.1 () {
-    mbfl_local_varref(SRC,([a]=1 [b]=2 [c]=3), -A)
-    mbfl_local_varref(DST,, -A)
-
+    mbfl_declare_assoc_array_varref(SRC,([a]=1 [b]=2 [c]=3))
+    mbfl_declare_assoc_array_varref(DST)
 
     mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
-    dotest-equal 1 mbfl_slot_ref(DST, a) && \
-	dotest-equal 2 mbfl_slot_ref(DST, b) && \
+
+    dotest-equal 1 mbfl_slot_ref(DST, a) &&
+	dotest-equal 2 mbfl_slot_ref(DST, b) &&
 	dotest-equal 3 mbfl_slot_ref(DST, c)
 }
-function array-copy-numeric-elms-1.2 () {
-    mbfl_local_varref(SRC,([a]=1 [b]=2 [c]=3), -A)
-    mbfl_local_varref(DST,, -A)
-
+function array-copy-index-elms-1.1 () {
+    mbfl_declare_index_array_varref(SRC,([1]=1 [2]=2 [3]=3))
+    mbfl_declare_index_array_varref(DST)
 
     mbfl_array_copy mbfl_datavar(DST) mbfl_datavar(SRC)
-    dotest-equal 1 mbfl_slot_ref(DST, a) && \
-	dotest-equal 2 mbfl_slot_ref(DST, b) && \
-	dotest-equal 3 mbfl_slot_ref(DST, c)
+    # mbfl_array_dump mbfl_datavar(SRC) SRC
+    # mbfl_array_dump mbfl_datavar(DST) DST
+    dotest-equal 1 mbfl_slot_ref(DST, 1) &&
+	dotest-equal 2 mbfl_slot_ref(DST, 2) &&
+	dotest-equal 3 mbfl_slot_ref(DST, 3)
 }
 
 
 #### miscellaneous
 
 function array-dump-1.1 () {
-    mbfl_local_assoc_array_varref(SPIFFY)
+    mbfl_declare_assoc_array_varref(SPIFFY)
     mbfl_slot_set(SPIFFY,ALPHA,11)
     mbfl_slot_set(SPIFFY,BETA,22)
     mbfl_slot_set(SPIFFY,gamma,33)
@@ -316,13 +320,13 @@ function array-dump-1.2 () {
 #### preprocessor macros
 
 function array-macro-slot-set-ref-1.1 () {
-    mbfl_declare_numeric_array(ARRY)
+    mbfl_declare_index_array(ARRY)
     mbfl_slot_set(ARRY, 0, 'abc')
     dotest-equal 'abc' mbfl_slot_ref(ARRY, 0)
 }
 
 function array-macro-slot-set-ref-1.2 () {
-    mbfl_declare_symbolic_array(ARRY)
+    mbfl_declare_assoc_array(ARRY)
     mbfl_slot_set(ARRY, 'key', 'abc')
     dotest-equal 'abc' mbfl_slot_ref(ARRY, 'key')
 }
@@ -330,7 +334,7 @@ function array-macro-slot-set-ref-1.2 () {
 ### ------------------------------------------------------------------------
 
 function array-macro-slot-value-len-1.1 () {
-    mbfl_declare_numeric_array(ARRY)
+    mbfl_declare_index_array(ARRY)
     mbfl_slot_set(ARRY, 0, 'abc')
     dotest-equal 3 mbfl_slot_value_len(ARRY, 0)
 }
@@ -338,27 +342,27 @@ function array-macro-slot-value-len-1.1 () {
 ### ------------------------------------------------------------------------
 
 function array-macro-slot-append-1.1 () {
-    mbfl_declare_symbolic_array(PAIRS)
+    mbfl_declare_assoc_array(PAIRS)
     mbfl_slot_set(PAIRS, 'abc', '123')
     mbfl_slot_append(PAIRS, 'abc', '+456')
     dotest-equal '123+456' mbfl_slot_ref(PAIRS, 'abc')
 }
 
 function array-macro-slot-append-1.2 () {
-    mbfl_declare_symbolic_array(PAIRS)
+    mbfl_declare_assoc_array(PAIRS)
     mbfl_slot_append(PAIRS, 'abc', '+456')
     dotest-equal '+456' mbfl_slot_ref(PAIRS, 'abc')
 }
 
 function array-macro-slot-append-1.3 () {
-    mbfl_declare_symbolic_array(PAIRS)
+    mbfl_declare_assoc_array(PAIRS)
     mbfl_slot_set(PAIRS, 'abc', '123')
     mbfl_slot_append(PAIRS, 'abc', ' 456')
     dotest-equal '123 456' "mbfl_slot_ref(PAIRS, 'abc')"
 }
 
 function array-macro-slot-append-1.4 () {
-    mbfl_declare_symbolic_array(PAIRS)
+    mbfl_declare_assoc_array(PAIRS)
     mbfl_slot_append(PAIRS, 'abc', ' 456')
     dotest-equal ' 456' "mbfl_slot_ref(PAIRS, 'abc')"
 }
@@ -369,8 +373,8 @@ function array-macro-slot-append-1.4 () {
 # sharp sign is interpreted as a comment delimiter (wrong) or not (right).
 #
 function array-macro-misc-1.1 () {
-    mbfl_declare_numeric_array(ARRY1, (a b c d))
-    mbfl_declare_numeric_array(ARRY2, (e f g))
+    mbfl_declare_index_array(ARRY1, (a b c d))
+    mbfl_declare_index_array(ARRY2, (e f g))
     local RV
 
     if ((mbfl_slots_number(ARRY1) == mbfl_slots_number(ARRY2)))
@@ -384,8 +388,8 @@ function array-macro-misc-1.1 () {
 # sharp sign is interpreted as a comment delimiter (wrong) or not (right).
 #
 function array-macro-misc-1.2 () {
-    mbfl_declare_numeric_array(ARRY1, (a b c d))
-    mbfl_declare_numeric_array(ARRY2, (e f g))
+    mbfl_declare_index_array(ARRY1, (a b c d))
+    mbfl_declare_index_array(ARRY2, (e f g))
     local RV
 
     if ((2 < mbfl_slots_number(ARRY1) || 3 == mbfl_slots_number(ARRY2)))

@@ -243,8 +243,8 @@ function vc_git_config_get_value () {
 	mbfl_mandatory_parameter(DATABASE, 1, the database specification)
 	mbfl_command_line_argument(KEY, 0)
 	mbfl_command_line_argument(DEFAULT, 1)
-	mbfl_local_assoc_array_varref(CFGOPT)
-	mbfl_local_varref(VALUE)
+	mbfl_declare_assoc_array_varref(CFGOPT)
+	mbfl_declare_varref(VALUE)
 
 	if ! mbfl_vc_git_config_option_define _(CFGOPT) "$KEY" "$DEFAULT"
 	then exit_because_failure
@@ -267,8 +267,8 @@ function vc_git_config_set_value () {
 	mbfl_mandatory_parameter(DATABASE, 1, the database specification)
 	mbfl_command_line_argument(KEY, 0)
 	mbfl_command_line_argument(NEW_VALUE, 1)
-	mbfl_local_assoc_array_varref(CFGOPT)
-	mbfl_local_varref(VALUE)
+	mbfl_declare_assoc_array_varref(CFGOPT)
+	mbfl_declare_varref(VALUE)
 
 	if ! mbfl_vc_git_config_option_define _(CFGOPT) "$KEY"
 	then exit_because_failure
@@ -373,7 +373,7 @@ function script_before_parsing_options_GIT_BRANCH_CURRENT_NAME () {
 function script_action_GIT_BRANCH_CURRENT_NAME () {
     if mbfl_wrong_num_args 0 $ARGC
     then
-	mbfl_local_varref(CURRENT_BRANCH_NAME)
+	mbfl_declare_varref(CURRENT_BRANCH_NAME)
 
 	mbfl_vc_git_branch_current_name_var mbfl_datavar(CURRENT_BRANCH_NAME)
 	printf '%s' "$CURRENT_BRANCH_NAME"

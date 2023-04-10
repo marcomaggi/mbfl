@@ -37,12 +37,12 @@
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
     declare -i mbfl_getopts_INDEX=0
-    mbfl_declare_numeric_array(mbfl_getopts_KEYWORDS)
-    mbfl_declare_numeric_array(mbfl_getopts_DEFAULTS)
-    mbfl_declare_numeric_array(mbfl_getopts_BRIEFS)
-    mbfl_declare_numeric_array(mbfl_getopts_LONGS)
-    mbfl_declare_numeric_array(mbfl_getopts_HASARG)
-    mbfl_declare_numeric_array(mbfl_getopts_DESCRIPTION)
+    mbfl_declare_index_array(mbfl_getopts_KEYWORDS)
+    mbfl_declare_index_array(mbfl_getopts_DEFAULTS)
+    mbfl_declare_index_array(mbfl_getopts_BRIEFS)
+    mbfl_declare_index_array(mbfl_getopts_LONGS)
+    mbfl_declare_index_array(mbfl_getopts_HASARG)
+    mbfl_declare_index_array(mbfl_getopts_DESCRIPTION)
 fi
 
 function mbfl_getopts_reset () {
@@ -54,12 +54,12 @@ function mbfl_getopts_reset () {
     unset mbfl_getopts_DESCRIPTION
 
     mbfl_getopts_INDEX=0
-    mbfl_declare_numeric_array(mbfl_getopts_KEYWORDS)
-    mbfl_declare_numeric_array(mbfl_getopts_DEFAULTS)
-    mbfl_declare_numeric_array(mbfl_getopts_BRIEFS)
-    mbfl_declare_numeric_array(mbfl_getopts_LONGS)
-    mbfl_declare_numeric_array(mbfl_getopts_HASARG)
-    mbfl_declare_numeric_array(mbfl_getopts_DESCRIPTION)
+    mbfl_declare_index_array(mbfl_getopts_KEYWORDS)
+    mbfl_declare_index_array(mbfl_getopts_DEFAULTS)
+    mbfl_declare_index_array(mbfl_getopts_BRIEFS)
+    mbfl_declare_index_array(mbfl_getopts_LONGS)
+    mbfl_declare_index_array(mbfl_getopts_HASARG)
+    mbfl_declare_index_array(mbfl_getopts_DESCRIPTION)
 }
 
 

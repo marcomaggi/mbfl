@@ -38,8 +38,8 @@ mbfl_load_library("$MBFL_LIBMBFL_TEST")
 #### searching entries in /etc/passwd: by name
 
 function system-passwd-find-entry-by-name-var-1.1 () {
-    mbfl_local_varref(IDX)
-    mbfl_local_varref(NAME)
+    mbfl_declare_varref(IDX)
+    mbfl_declare_varref(NAME)
 
     mbfl_system_passwd_read
     if mbfl_system_passwd_find_entry_by_name_var mbfl_datavar(IDX) root
@@ -71,8 +71,8 @@ function system-passwd-find-entry-by-name-1.1 () {
 #### searching entries in /etc/passwd: by uid
 
 function system-passwd-find-entry-by-uid-var-1.1 () {
-    mbfl_local_varref(IDX)
-    mbfl_local_varref(NAME)
+    mbfl_declare_varref(IDX)
+    mbfl_declare_varref(NAME)
 
     mbfl_system_passwd_read
     if mbfl_system_passwd_find_entry_by_uid_var mbfl_datavar(IDX) 0
@@ -104,7 +104,7 @@ function system-passwd-find-entry-by-uid-1.1 () {
 #### /etc/passwd: conversion between names and UIDs
 
 function system-passwd-uid-to-name-var-1.1 () {
-    mbfl_local_varref(USER_NAME)
+    mbfl_declare_varref(USER_NAME)
 
     if mbfl_system_passwd_read
     then
@@ -128,7 +128,7 @@ function system-passwd-uid-to-name-1.1 () {
 ### ------------------------------------------------------------------------
 
 function system-passwd-name-to-uid-var-1.1 () {
-    mbfl_local_varref(USER_ID)
+    mbfl_declare_varref(USER_ID)
 
     if mbfl_system_passwd_read
     then
@@ -186,8 +186,8 @@ function system-passwd-print-entries-xml-3.1 () {
 #### searching entries in /etc/group: by name
 
 function system-group-find-entry-by-name-var-1.1 () {
-    mbfl_local_varref(IDX)
-    mbfl_local_varref(NAME)
+    mbfl_declare_varref(IDX)
+    mbfl_declare_varref(NAME)
 
     mbfl_system_group_read
     if mbfl_system_group_find_entry_by_name_var mbfl_datavar(IDX) root
@@ -219,8 +219,8 @@ function system-group-find-entry-by-name-1.1 () {
 #### searching entries in /etc/group: by gid
 
 function system-group-find-entry-by-gid-var-1.1 () {
-    mbfl_local_varref(IDX)
-    mbfl_local_varref(NAME)
+    mbfl_declare_varref(IDX)
+    mbfl_declare_varref(NAME)
 
     mbfl_system_group_read
     if mbfl_system_group_find_entry_by_gid_var mbfl_datavar(IDX) 0
@@ -273,9 +273,9 @@ function system-group-print-entries-xml-3.1 () {
 #### retrieving users from /etc/group
 
 function system-group-get-user-in-group-var-1.1 () {
-    mbfl_local_varref(GROUP_IDX,,  -i)
-    mbfl_local_varref(USER_COUNT,, -i)
-    mbfl_local_varref(USER_NAME)
+    mbfl_declare_varref(GROUP_IDX,,  -i)
+    mbfl_declare_varref(USER_COUNT,, -i)
+    mbfl_declare_varref(USER_NAME)
     local -i USER_IDX
 
     if mbfl_system_group_read
@@ -316,7 +316,7 @@ function system-group-get-user-in-group-1.1 () {
 #### /etc/group: conversion between names and GIDs
 
 function system-group-gid-to-name-var-1.1 () {
-    mbfl_local_varref(GROUP_NAME)
+    mbfl_declare_varref(GROUP_NAME)
 
     if mbfl_system_group_read
     then
@@ -340,7 +340,7 @@ function system-group-gid-to-name-1.1 () {
 ### ------------------------------------------------------------------------
 
 function system-group-name-to-gid-var-1.1 () {
-    mbfl_local_varref(GROUP_ID)
+    mbfl_declare_varref(GROUP_ID)
 
     if mbfl_system_group_read
     then
@@ -377,7 +377,7 @@ function system-group-numerical-gid-to-name-1.1 () {
 #### tests for "whoami" from GNU Coreutils
 
 function system-users-whoami-1.0 () {
-    mbfl_local_varref(USERNAME)
+    mbfl_declare_varref(USERNAME)
     local RV1 RV2
 
     mbfl_system_whoami_var mbfl_datavar(USERNAME)
@@ -408,7 +408,7 @@ function system-users-whoami-1.1 () {
 #### tests for "id" from GNU Coreutils
 
 function system-users-id-1.0 () {
-    mbfl_local_varref(OUTPUT)
+    mbfl_declare_varref(OUTPUT)
     local RV1 RV2
 
     mbfl_system_id_var mbfl_datavar(OUTPUT)
@@ -438,7 +438,7 @@ function system-users-id-1.1 () {
 ### ------------------------------------------------------------------------
 
 function system-users-id-2.0.1 () {
-    mbfl_local_varref(USERID)
+    mbfl_declare_varref(USERID)
     local RV1 RV2
 
     mbfl_system_effective_user_id_var mbfl_datavar(USERID)
@@ -467,7 +467,7 @@ function system-users-id-2.0.2 () {
 ### ------------------------------------------------------------------------
 
 function system-users-id-2.1.1 () {
-    mbfl_local_varref(GROUPID)
+    mbfl_declare_varref(GROUPID)
     local RV1 RV2
 
     mbfl_system_effective_group_id_var mbfl_datavar(GROUPID)
@@ -496,7 +496,7 @@ function system-users-id-2.1.2 () {
 ### ------------------------------------------------------------------------
 
 function system-users-id-2.2.1 () {
-    mbfl_local_varref(USERNAME)
+    mbfl_declare_varref(USERNAME)
     local RV1 RV2
 
     mbfl_system_effective_user_name_var mbfl_datavar(USERNAME)
@@ -525,7 +525,7 @@ function system-users-id-2.2.2 () {
 ### ------------------------------------------------------------------------
 
 function system-users-id-2.3.1 () {
-    mbfl_local_varref(GROUPNAME)
+    mbfl_declare_varref(GROUPNAME)
     local RV1 RV2
 
     mbfl_system_effective_group_name_var mbfl_datavar(GROUPNAME)
@@ -554,7 +554,7 @@ function system-users-id-2.3.2 () {
 ### ------------------------------------------------------------------------
 
 function system-users-id-2.4.1 () {
-    mbfl_local_varref(USERID)
+    mbfl_declare_varref(USERID)
     local RV1 RV2
 
     mbfl_system_real_user_id_var mbfl_datavar(USERID)
@@ -583,7 +583,7 @@ function system-users-id-2.4.2 () {
 ### ------------------------------------------------------------------------
 
 function system-users-id-2.5.1 () {
-    mbfl_local_varref(GROUPID)
+    mbfl_declare_varref(GROUPID)
     local RV1 RV2
 
     mbfl_system_real_group_id_var mbfl_datavar(GROUPID)
@@ -612,7 +612,7 @@ function system-users-id-2.5.2 () {
 ### ------------------------------------------------------------------------
 
 function system-users-id-2.6.1 () {
-    mbfl_local_varref(USERNAME)
+    mbfl_declare_varref(USERNAME)
     local RV1 RV2
 
     mbfl_system_real_user_name_var mbfl_datavar(USERNAME)
@@ -641,7 +641,7 @@ function system-users-id-2.6.2 () {
 ### ------------------------------------------------------------------------
 
 function system-users-id-2.7.1 () {
-    mbfl_local_varref(GROUPNAME)
+    mbfl_declare_varref(GROUPNAME)
     local RV1 RV2
 
     mbfl_system_real_group_name_var mbfl_datavar(GROUPNAME)

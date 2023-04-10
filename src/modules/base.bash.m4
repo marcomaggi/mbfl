@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
+# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -101,9 +101,9 @@ MBFL_CREATE_OPTION_PROCEDURES([[[verbose_program]]])
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_declare_numeric_array(mbfl_EXIT_CODES)
-    mbfl_declare_numeric_array(mbfl_EXIT_NAMES)
-    mbfl_declare_symbolic_array(mbfl_EXIT_CODES_BY_NAME)
+    mbfl_declare_index_array(mbfl_EXIT_CODES)
+    mbfl_declare_index_array(mbfl_EXIT_NAMES)
+    mbfl_declare_assoc_array(mbfl_EXIT_CODES_BY_NAME)
     mbfl_EXIT_CODES[0]=0
     mbfl_EXIT_NAMES[0]=success
     mbfl_EXIT_CODES_BY_NAME[success]=0

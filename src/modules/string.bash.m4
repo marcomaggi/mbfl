@@ -183,7 +183,7 @@ function mbfl_string_first () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(CHAR, 2, char)
     mbfl_optional_parameter(BEGIN, 3)
-    mbfl_local_varref(RESULT_VARNAME)
+    mbfl_declare_varref(RESULT_VARNAME)
     # Be  careful  to  return  the  same exit  status  of  the  call  to
     # "mbfl_string_first_var".
     if mbfl_string_first_var __(RESULT_VARNAME) "$STRING" "$CHAR" "$BEGIN"
@@ -214,7 +214,7 @@ function mbfl_string_last () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(CHAR, 2, char)
     mbfl_optional_parameter(BEGIN, 3)
-    mbfl_local_varref(RESULT_VARNAME)
+    mbfl_declare_varref(RESULT_VARNAME)
     # Be  careful  to  return  the  same exit  status  of  the  call  to
     # "mbfl_string_last_var".
     if mbfl_string_last_var __(RESULT_VARNAME) "$STRING" "$CHAR" "$BEGIN"
@@ -249,7 +249,7 @@ function mbfl_string_range () {
     mbfl_mandatory_parameter(STRING, 1, string)
     mbfl_mandatory_parameter(BEGIN, 2, begin)
     mbfl_optional_parameter(END, 3)
-    mbfl_local_varref(RESULT_VARNAME)
+    mbfl_declare_varref(RESULT_VARNAME)
     if mbfl_string_range_var __(RESULT_VARNAME) "$STRING" "$BEGIN" "$END"
     then printf '%s\n' "$RESULT_VARNAME"
     else return $?
@@ -495,7 +495,7 @@ function mbfl_string_is_noblank_char () {
 m4_define([[[MBFL_DEFINE_FUNCTION_STRING_PREDICATE_FROM_RANGE]]],[[[
 function $1 () {
     mbfl_mandatory_parameter(CHAR, 1, char)
-    mbfl_local_varref(RV)
+    mbfl_declare_varref(RV)
     mbfl_string_first_var __(RV) "$[[[]]]$2[[[]]]" "$CHAR"
 }
 ]]])
@@ -694,7 +694,7 @@ function mbfl_string_strip_carriage_return_var () {
 
     if mbfl_string_is_not_empty "$mbfl_LINE"
     then
-	mbfl_local_varref(CH)
+	mbfl_declare_varref(CH)
 
 	mbfl_string_index_var __(CH) "$mbfl_LINE" $((mbfl_string_len(mbfl_LINE) - 1))
 	if mbfl_string_equal "$CH" $'\r'
