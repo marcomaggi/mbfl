@@ -29,7 +29,7 @@ if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then declare -r mbfl_LOADED_MBFLUTILS='yes'
 fi
 
-m4_include(utils-file.bash)
+m4_undivert(utils-file.bash)
 
 #!# end of file
 # Local Variables:
