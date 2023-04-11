@@ -45,28 +45,42 @@ mbfl_load_library("$MBFL_LIBMBFL_TEST")
 
 #### macros
 
-m4_define([[[_]]],[[[mbfl_datavar($1)]]])
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
 
 
 #### stacks
 
 function mbfl-containers-stack-1.1 () {
-    mbfl_declare_index_array_varref(STK)
-    mbfl_declare_varref(A)
-    mbfl_declare_varref(B)
+    mbfl_default_object_declare(STK)
+    mbfl_declare_varref(TOP_A)
+    mbfl_declare_varref(POP_A)
+    mbfl_declare_varref(POP_B)
+    mbfl_declare_integer_varref(SIZE)
 
-    mbfl_stack_push _(STK) 'ciao'
-    mbfl_stack_push _(STK) 'mamma'
+    mbfl_location_enter
+    {
+	mbfl_stack_make _(STK)
+	mbfl_location_handler "mbfl_stack_unmake _(STK)"
 
-    #mbfl_array_dump _(STK) STK
-    mbfl_stack_pop _(A) _(STK)
-    #mbfl_array_dump _(STK) STK
-    mbfl_stack_pop _(B) _(STK)
+	mbfl_stack_push _(STK) 'ciao'
+	mbfl_stack_push _(STK) 'mamma'
 
-    #mbfl_array_dump _(STK) STK
+	mbfl_stack_size _(SIZE) _(STK)
 
-    dotest-equal 'mamma' "$A" &&
-	dotest-equal 'ciao' "$B"
+	mbfl_stack_top _(TOP_A) _(STK)
+	# #mbfl_array_dump _(STK) STK
+	mbfl_stack_pop _(POP_A) _(STK)
+	# #mbfl_array_dump _(STK) STK
+	mbfl_stack_pop _(POP_B) _(STK)
+
+	#mbfl_array_dump _(STK) STK
+
+	dotest-equal	 2	 "$SIZE"  'stack size'	&&
+	    dotest-equal 'mamma' "$TOP_A" 'top A'	&&
+	    dotest-equal 'mamma' "$POP_A" 'pop A'	&&
+	    dotest-equal 'ciao'	 "$POP_B" 'pop B'
+    }
+    mbfl_location_leave
 }
 
 
