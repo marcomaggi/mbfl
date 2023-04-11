@@ -55,28 +55,36 @@ function mbfl-containers-stack-example-1.1 () {
     mbfl_declare_varref(TOP_A)
     mbfl_declare_varref(POP_A)
     mbfl_declare_varref(POP_B)
-    mbfl_declare_integer_varref(SIZE)
+    mbfl_declare_integer_varref(BEG_SIZE)
+    mbfl_declare_integer_varref(MID_SIZE)
+    mbfl_declare_integer_varref(END_SIZE)
 
     mbfl_location_enter
     {
 	mbfl_stack_make _(STK)
 	mbfl_location_handler "mbfl_stack_unmake _(STK)"
 
+	mbfl_stack_size_var _(BEG_SIZE) _(STK)
+
 	mbfl_stack_push _(STK) 'ciao'
 	mbfl_stack_push _(STK) 'mamma'
 
-	mbfl_stack_size_var _(SIZE) _(STK)
+	mbfl_stack_size_var _(MID_SIZE) _(STK)
 
 	mbfl_stack_top_var _(TOP_A) _(STK)
 	mbfl_stack_pop_var _(POP_A) _(STK)
 	mbfl_stack_pop_var _(POP_B) _(STK)
 
+	mbfl_stack_size_var _(END_SIZE) _(STK)
+
 	# mbfl_stack_dump _(STK) STK
 
-	dotest-equal	 2	 "$SIZE"  'stack size'	&&
-	    dotest-equal 'mamma' "$TOP_A" 'top A'	&&
-	    dotest-equal 'mamma' "$POP_A" 'pop A'	&&
-	    dotest-equal 'ciao'	 "$POP_B" 'pop B'
+	dotest-equal	 2	 "$MID_SIZE"	'stack size'	&&
+	    dotest-equal 0	 "$BEG_SIZE"	'stack size'	&&
+	    dotest-equal 0	 "$END_SIZE"	'stack size'	&&
+	    dotest-equal 'mamma' "$TOP_A"	'top A'		&&
+	    dotest-equal 'mamma' "$POP_A"	'pop A'		&&
+	    dotest-equal 'ciao'	 "$POP_B"	'pop B'
     }
     mbfl_location_leave
 }
