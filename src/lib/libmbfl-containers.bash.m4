@@ -70,7 +70,7 @@ function mbfl_stack_unmake () {
     mbfl_stack_array_var _(mbfl_ARRAY_DATAVAR) _(mbfl_STACK)
     unset -v $mbfl_ARRAY_DATAVAR
 }
-function mbfl_stack_size () {
+function mbfl_stack_size_var () {
     mbfl_mandatory_nameref_parameter(mbfl_SIZE,  1, reference to result variable)
     mbfl_mandatory_nameref_parameter(mbfl_STACK, 2, reference to object of class mbfl_stack_t)
 
@@ -87,7 +87,7 @@ function mbfl_stack_push () {
     mbfl_slot_set(mbfl_ARRAY, mbfl_slots_number(mbfl_ARRAY), "$mbfl_OBJ")
     return_success
 }
-function mbfl_stack_pop () {
+function mbfl_stack_pop_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,    1, reference to the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_STACK, 2, reference to object of class mbfl_stack_t)
 
@@ -103,7 +103,7 @@ function mbfl_stack_pop () {
 	return_failure
     fi
 }
-function mbfl_stack_top () {
+function mbfl_stack_top_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,    1, reference to the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_STACK, 2, reference to object of class mbfl_stack_t)
 
@@ -161,6 +161,34 @@ function mbfl_stack_equal () {
 	done
     }
     return_success
+}
+
+function mbfl_stack_dump () {
+    mbfl_mandatory_nameref_parameter(mbfl_STACK, 1, reference to object of class mbfl_stack_t)
+    mbfl_optional_parameter(mbfl_LABEL, 2)
+
+    MBFL_STACK_VALIDATE_PARAMETER(mbfl_STACK)
+    MBFL_STACK_ACCESS_ARRAY(mbfl_STACK, mbfl_ARRAY)
+    mbfl_array_dump _(mbfl_ARRAY) "$mbfl_LABEL"
+}
+
+### ------------------------------------------------------------------------
+### the following are wrappers for methods
+
+function mbfl_stack_pop () {
+    mbfl_mandatory_nameref_parameter(mbfl_STACK, 1, reference to object of class mbfl_stack_t)
+    mbfl_mandatory_nameref_parameter(mbfl_RV,    2, reference to the result variable)
+    mbfl_stack_pop_var _(mbfl_RV) _(mbfl_STACK)
+}
+function mbfl_stack_top () {
+    mbfl_mandatory_nameref_parameter(mbfl_STACK, 1, reference to object of class mbfl_stack_t)
+    mbfl_mandatory_nameref_parameter(mbfl_RV,    2, reference to the result variable)
+    mbfl_stack_top_var _(mbfl_RV) _(mbfl_STACK)
+}
+function mbfl_stack_size () {
+    mbfl_mandatory_nameref_parameter(mbfl_STACK, 1, reference to object of class mbfl_stack_t)
+    mbfl_mandatory_nameref_parameter(mbfl_RV,    2, reference to the result variable)
+    mbfl_stack_size_var _(mbfl_RV) _(mbfl_STACK)
 }
 
 #!# end of file

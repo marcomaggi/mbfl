@@ -50,7 +50,7 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
 
 #### stacks
 
-function mbfl-containers-stack-1.1 () {
+function mbfl-containers-stack-example-1.1 () {
     mbfl_default_object_declare(STK)
     mbfl_declare_varref(TOP_A)
     mbfl_declare_varref(POP_A)
@@ -65,15 +65,99 @@ function mbfl-containers-stack-1.1 () {
 	mbfl_stack_push _(STK) 'ciao'
 	mbfl_stack_push _(STK) 'mamma'
 
-	mbfl_stack_size _(SIZE) _(STK)
+	mbfl_stack_size_var _(SIZE) _(STK)
 
-	mbfl_stack_top _(TOP_A) _(STK)
-	# #mbfl_array_dump _(STK) STK
-	mbfl_stack_pop _(POP_A) _(STK)
-	# #mbfl_array_dump _(STK) STK
-	mbfl_stack_pop _(POP_B) _(STK)
+	mbfl_stack_top_var _(TOP_A) _(STK)
+	mbfl_stack_pop_var _(POP_A) _(STK)
+	mbfl_stack_pop_var _(POP_B) _(STK)
 
-	#mbfl_array_dump _(STK) STK
+	# mbfl_stack_dump _(STK) STK
+
+	dotest-equal	 2	 "$SIZE"  'stack size'	&&
+	    dotest-equal 'mamma' "$TOP_A" 'top A'	&&
+	    dotest-equal 'mamma' "$POP_A" 'pop A'	&&
+	    dotest-equal 'ciao'	 "$POP_B" 'pop B'
+    }
+    mbfl_location_leave
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-stack-equal-1.1 () {
+    mbfl_default_object_declare(STK1)
+    mbfl_default_object_declare(STK2)
+
+    mbfl_location_enter
+    {
+	mbfl_stack_make _(STK1)
+	mbfl_location_handler "mbfl_stack_unmake _(STK1)"
+
+	mbfl_stack_make _(STK2)
+	mbfl_location_handler "mbfl_stack_unmake _(STK2)"
+
+	mbfl_stack_push _(STK1) 'uno'
+	mbfl_stack_push _(STK1) 'due'
+	mbfl_stack_push _(STK1) 'tre'
+
+	mbfl_stack_copy _(STK2) _(STK1)
+
+	# mbfl_stack_dump _(STK1) STK1
+	# mbfl_stack_dump _(STK2) STK2
+	mbfl_stack_equal _(STK2) _(STK1)
+    }
+    mbfl_location_leave
+}
+function mbfl-containers-stack-equal-2.1 () {
+    mbfl_default_object_declare(STK1)
+    mbfl_default_object_declare(STK2)
+
+    mbfl_location_enter
+    {
+	mbfl_stack_make _(STK1)
+	mbfl_location_handler "mbfl_stack_unmake _(STK1)"
+
+	mbfl_stack_make _(STK2)
+	mbfl_location_handler "mbfl_stack_unmake _(STK2)"
+
+	mbfl_stack_push _(STK1) 'uno'
+	mbfl_stack_push _(STK1) 'due'
+	mbfl_stack_push _(STK1) 'tre'
+
+	mbfl_stack_push _(STK1) 'uno'
+	mbfl_stack_push _(STK1) 'two'
+	mbfl_stack_push _(STK1) 'tre'
+
+	# mbfl_stack_dump _(STK1) STK1
+	# mbfl_stack_dump _(STK2) STK2
+	! mbfl_stack_equal _(STK2) _(STK1)
+    }
+    mbfl_location_leave
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-stack-methods-1.1 () {
+    mbfl_default_object_declare(STK)
+    mbfl_declare_varref(TOP_A)
+    mbfl_declare_varref(POP_A)
+    mbfl_declare_varref(POP_B)
+    mbfl_declare_integer_varref(SIZE)
+
+    mbfl_location_enter
+    {
+	mbfl_stack_make _(STK)
+	mbfl_location_handler "mbfl_stack_unmake _(STK)"
+
+	_(STK, push) 'ciao'
+	_(STK, push) 'mamma'
+
+	_(STK, size) _(SIZE)
+
+	_(STK, top) _(TOP_A)
+	_(STK, pop) _(POP_A)
+	_(STK, pop) _(POP_B)
+
+	# mbfl_stack_dump _(STK) STK
 
 	dotest-equal	 2	 "$SIZE"  'stack size'	&&
 	    dotest-equal 'mamma' "$TOP_A" 'top A'	&&
