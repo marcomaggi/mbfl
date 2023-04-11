@@ -897,13 +897,13 @@ function object-methods-1.1 () {
 	dotest-equal 456 "$BETA"
 }
 
-function object_method_class_1_1_method_alpha () {
+function object_method_class_1_1_alpha () {
     mbfl_mandatory_nameref_parameter(SELF, 1, reference to object of class object_method_class_1_1)
     mbfl_mandatory_nameref_parameter(RV,   2, reference to result variable)
 
     object_method_class_1_1_alpha_var _(RV) _(SELF)
 }
-function object_method_class_1_1_method_beta () {
+function object_method_class_1_1_beta () {
     mbfl_mandatory_nameref_parameter(SELF, 1, reference to object of class object_method_class_1_1)
     mbfl_mandatory_nameref_parameter(RV,   2, reference to result variable)
 

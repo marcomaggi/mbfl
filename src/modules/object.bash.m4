@@ -284,19 +284,19 @@ function mbfl_default_object_class_var () {
 }
 
 function mbfl_default_object_call_method () {
-    mbfl_mandatory_nameref_parameter(SELF, 1, reference to color object)
-    mbfl_mandatory_parameter(METHOD,       2, method name)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to object of class mbfl_default_object)
+    mbfl_mandatory_parameter(mbfl_METHOD,       2, method name)
     shift 2
-    mbfl_declare_varref(CLASS)
-    mbfl_declare_varref(NAME)
-    declare METHOD_FUNC
+    mbfl_declare_varref(mbfl_CLASS)
+    mbfl_declare_varref(mbfl_NAME)
+    declare mbfl_METHOD_FUNC
 
-    mbfl_default_object_class_var _(CLASS) _(SELF)
-    mbfl_default_class_name_var   _(NAME)  "$CLASS"
+    mbfl_default_object_class_var _(mbfl_CLASS) _(mbfl_SELF)
+    mbfl_default_class_name_var   _(mbfl_NAME)  "$mbfl_CLASS"
 
-    if mbfl_function_exists "${METHOD_FUNC:=${NAME}_method_${METHOD}}"
-    then "$METHOD_FUNC" _(SELF) "$@"
-    else mbfl_default_object_unknown_method "$METHOD_FUNC" _(SELF) "$@"
+    if mbfl_function_exists [[["${mbfl_METHOD_FUNC:=${mbfl_NAME}_${mbfl_METHOD}}"]]]
+    then "$mbfl_METHOD_FUNC" _(mbfl_SELF) "$@"
+    else mbfl_default_object_unknown_method "$mbfl_METHOD_FUNC" _(mbfl_SELF) "$@"
     fi
 }
 function mbfl_default_object_unknown_method () {
