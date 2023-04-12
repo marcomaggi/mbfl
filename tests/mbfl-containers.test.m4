@@ -197,6 +197,30 @@ function mbfl-containers-index-array-fold-right-1.1 () {
     dotest-equal "$EXPECTED_RESULT" "$NIL"
 }
 
+### ------------------------------------------------------------------------
+
+declare var_mbfl_containers_index_array_multi_for_each_1_1
+function func_mbfl_containers_index_array_multi_for_each_1_1 () {
+    mbfl_mandatory_nameref_parameter(ITEMS, 1, reference to index array of items)
+    declare -i I VALUE=0
+
+    for ((I=0; I < mbfl_slots_number(ITEMS); ++I))
+    do let VALUE+=mbfl_slot_ref(ITEMS, $I)
+    done
+    var_mbfl_containers_index_array_multi_for_each_1_1+=$VALUE
+}
+function mbfl-containers-index-array-multi-for-each-1.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (1   2   3   4))
+    mbfl_declare_index_array_varref(ARRY2, (10  20  30  40))
+    mbfl_declare_index_array_varref(ARRY3, (100 200 300 400))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+    declare EXPECTED_RESULT='111222333444'
+
+    var_mbfl_containers_index_array_multi_for_each_1_1=
+    mbfl_array_multi_for_each func_mbfl_containers_index_array_multi_for_each_1_1 _(ARRYS)
+    dotest-equal "$EXPECTED_RESULT" "$var_mbfl_containers_index_array_multi_for_each_1_1"
+}
+
 
 #### stacks
 
@@ -335,6 +359,6 @@ dotest mbfl-containers-
 dotest-final-report
 
 ### end of file
-# Local Variables:
-# mode: sh
-# End:
+#!# Local Variables:
+#!# mode: sh
+#!# End:
