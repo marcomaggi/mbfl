@@ -83,36 +83,59 @@ function mbfl_array_range_copy () {
     fi
 }
 
-function mbfl_array_map () {
-    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
-    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
-    mbfl_mandatory_parameter(mbfl_FUNC,			3, function to map)
-    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_DST_ARRY)
-    mbfl_declare_varref(mbfl_ITEM)
+
+#### arrays: iterating, mapping, folding
 
-    if ((mbfl_DST_DIM == mbfl_slots_number(mbfl_SRC_ARRY)))
-    then
-	for ((mbfl_I=0; mbfl_I < mbfl_DST_DIM; ++mbfl_I))
-	do
-	    if "$mbfl_FUNC" _(mbfl_ITEM) mbfl_slot_qref(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I)))
-	    then mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), "$mbfl_ITEM")
-	    else return_because_failure
-	    fi
-	done
-    else
-	mbfl_message_error_printf 'source and destination arrays have different length: %d, %d' \
-				  $mbfl_DST_DIM mbfl_slots_number(mbfl_SRC_ARRY)
-    fi
-}
-function mbfl_array_for_each () {
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to destination index array)
-    mbfl_mandatory_parameter(mbfl_FUNC,		2, function to apply)
-    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+function mbfl_array_map () {
+    mbfl_mandatory_parameter(mbfl_FUNC,			1, function to map)
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	2, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	3, reference to source index array)
+    declare -i mbfl_I mbfl_DST_DIM=mbfl_slots_number(mbfl_DST_ARRY)
     mbfl_declare_varref(mbfl_ITEM)
 
     for ((mbfl_I=0; mbfl_I < mbfl_DST_DIM; ++mbfl_I))
     do
-	if ! "$mbfl_FUNC" _(mbfl_ITEM) mbfl_slot_qref(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I)))
+	if "$mbfl_FUNC" _(mbfl_ITEM) mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
+	then mbfl_slot_set(mbfl_DST_ARRY, $mbfl_I, "$mbfl_ITEM")
+	else return_because_failure
+	fi
+    done
+}
+function mbfl_array_for_each () {
+    mbfl_mandatory_parameter(mbfl_FUNC,		1, function to apply)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	2, reference to index array)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
+    do
+	if ! "$mbfl_FUNC" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	then return_because_failure
+	fi
+    done
+}
+
+function mbfl_array_fold_left () {
+    mbfl_mandatory_parameter(mbfl_NIL,		1, the nil value)
+    mbfl_mandatory_parameter(mbfl_FUNC,		2, function to apply)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	3, reference to the index array)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
+    do
+	if ! "$mbfl_FUNC" "$mbfl_NIL" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	then return_because_failure
+	fi
+    done
+}
+function mbfl_array_fold_right () {
+    mbfl_mandatory_parameter(mbfl_NIL,		1, the nil value)
+    mbfl_mandatory_parameter(mbfl_FUNC,		2, function to apply)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	3, reference to the index array)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
+    do
+	if ! "$mbfl_FUNC" "$mbfl_NIL" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
 	then return_because_failure
 	fi
     done

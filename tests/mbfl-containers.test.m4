@@ -127,6 +127,76 @@ function mbfl-containers-index-array-range-copy-2.2 () {
     mbfl_array_equal _(RSLT) _(DST)
 }
 
+### ------------------------------------------------------------------------
+
+function mbfl-containers-index-array-map-1.1 () {
+    #                                      0 1 2 3 4
+    mbfl_declare_index_array_varref(RSLT, (A B C D E))
+    mbfl_declare_index_array_varref(DST,  (. . . . .))
+    mbfl_declare_index_array_varref(SRC,  (a b c d e))
+
+    mbfl_array_map mbfl_string_toupper_var _(DST) _(SRC)
+    #mbfl_array_dump _(DST)  DST
+    #mbfl_array_dump _(RSLT) RSLT
+    mbfl_array_equal _(RSLT) _(DST)
+}
+
+### ------------------------------------------------------------------------
+
+declare var_mbfl_containers_index_array_for_each_1_1
+function func_mbfl_containers_index_array_for_each_1_1 () {
+    mbfl_mandatory_parameter(VALUE, 1, value from the array)
+    var_mbfl_containers_index_array_for_each_1_1+=$VALUE
+}
+function mbfl-containers-index-array-for-each-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e))
+    declare EXPECTED_RESULT='abcde'
+
+    var_mbfl_containers_index_array_for_each_1_1=
+    mbfl_array_for_each func_mbfl_containers_index_array_for_each_1_1 _(ARRY)
+    dotest-equal "$EXPECTED_RESULT" "$var_mbfl_containers_index_array_for_each_1_1"
+}
+function mbfl-containers-index-array-for-each-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e))
+    declare EXPECTED_RESULT=$'a\nb\nc\nd\ne'
+    declare RESULT
+
+    RESULT=$(mbfl_array_for_each echo _(ARRY))
+    dotest-equal "$EXPECTED_RESULT" "$RESULT"
+}
+
+### ------------------------------------------------------------------------
+
+function func_mbfl_containers_index_array_fold_left_1_1 () {
+    mbfl_mandatory_nameref_parameter(NIL, 1, the left value)
+    mbfl_mandatory_parameter(VALUE, 2, the array value)
+    NIL+=$VALUE
+}
+function mbfl-containers-index-array-fold-left-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e))
+    mbfl_declare_varref(NIL, '0')
+    declare EXPECTED_RESULT='0abcde'
+
+    mbfl_array_fold_left _(NIL) func_mbfl_containers_index_array_fold_left_1_1 _(ARRY)
+    dotest-equal "$EXPECTED_RESULT" "$NIL"
+}
+
+### ------------------------------------------------------------------------
+
+function func_mbfl_containers_index_array_fold_right_1_1 () {
+    mbfl_mandatory_nameref_parameter(NIL, 1, the right value)
+    mbfl_mandatory_parameter(VALUE, 2, the array value)
+    NIL+=$VALUE
+}
+function mbfl-containers-index-array-fold-right-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e))
+    mbfl_declare_varref(NIL, '0')
+    declare EXPECTED_RESULT='0edcba'
+
+    mbfl_array_fold_right _(NIL) func_mbfl_containers_index_array_fold_right_1_1 _(ARRY)
+    dotest-equal "$EXPECTED_RESULT" "$NIL"
+}
+
 
 #### stacks
 

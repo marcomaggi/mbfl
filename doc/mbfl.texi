@@ -11961,9 +11961,28 @@ All the functions documented here operate on Bash indexed arrays, @bashref{Array
 functions are ``unsafe'' and low--level: there is no parameters validation.  If we need validated
 parameters we should use the vector container, @ref{libmbfl-containers vectors, Vectors}.
 
-In the functions documentation every parameter named @var{ARRY} represents the data variable of an
-array; we should declare arrays with @func{mbfl_declare_index_array_varref}, @ref{arrays nameref,
-Declaring arrays as data variables}.
+In the functions documentation:
+
+@itemize
+@item
+Every parameter named @var{ARRY} represents the data variable of an array; we should declare arrays
+with @func{mbfl_declare_index_array_varref}, @ref{arrays nameref, Declaring arrays as data
+variables}.
+
+@item
+Every parameter named @var{IDX} represents an index into an array; we should declare indexes using
+@code{declare -i @var{IDX}}.
+@end itemize
+
+@menu
+* libmbfl-containers arrays compar::    Comparing values.
+* libmbfl-containers arrays iter::      Iterating, mapping, folding.
+* libmbfl-containers arrays copy::      Copying values.
+@end menu
+
+@c page
+@node libmbfl-containers arrays compar
+@appendixsubsec Comparing values
 
 
 @defun mbfl_array_equal @vari{ARRY} @vari{ARRY}
@@ -11979,10 +11998,138 @@ mbfl_array_equal _(ARRY1) _(ARRY2)
 @end example
 @end defun
 
+@c page
+@node libmbfl-containers arrays iter
+@appendixsubsec Iterating, mapping, folding
+
+
+@defun mbfl_array_map @var{FUNC} @var{DST_ARRY} @var{SRC_ARRY}
+Map the function @var{FUNC} over all the values from @var{SRC_ARRY} and store the results in
+@var{DST_ARRY}.  @var{FUNC} should be an identifier, bound to a shell function, accepting the
+following parameters:
+
+@example
+@var{FUNC} @var{RESULT_VARIABLE} @var{VALUE}
+@end example
+
+@noindent
+for example @func{mbfl_string_toupper_var}.  If the function returns false: the iteration stops and
+@func{mbfl_array_map} returns immediately.
+
+@example
+mbfl_declare_index_array_varref(DST)
+mbfl_declare_index_array_varref(SRC, (a b c))
+
+mbfl_array_map mbfl_string_toupper_var _(DST) _(SRC)
+
+mbfl_slot_ref(DST, 0)   @result{} A
+mbfl_slot_ref(DST, 1)   @result{} B
+mbfl_slot_ref(DST, 2)   @result{} C
+@end example
+@end defun
+
+
+@defun mbfl_array_for_each @var{FUNC} @var{ARRY}
+Apply the function @var{FUNC} to all the values from @var{ARRY}.  @var{FUNC} should be an
+identifier, bound to a shell function or command, accepting the following parameters:
+
+@example
+@var{FUNC} @var{VALUE}
+@end example
+
+@noindent
+for example @code{echo}.  If the function returns false: the iteration stops and
+@func{mbfl_array_for_each} returns immediately.
+
+@example
+mbfl_declare_index_array_varref(ARRY, (a b c))
+
+mbfl_array_for_each echo _(ARRY)
+@print{} a
+@print{} b
+@print{} c
+@end example
+@end defun
+
+
+@defun mbfl_array_fold_left @var{NIL} @var{FUNC} @var{ARRY}
+Iterate over @var{ARRY} starting from the left and apply the function @var{FUNC} to @var{NIL} and
+the value from @var{ARRY}.  @var{FUNC} should be an identifier, bound to a shell function or
+command, accepting the following parameters:
+
+@example
+@var{FUNC} @var{NIL} @var{VALUE}
+@end example
+
+@noindent
+@var{NIL} might be a data variable in which case @var{FUNC} might store a result in it.
+
+@example
+function doit () @{
+    mbfl_mandatory_nameref_parameter(NIL, 1, reference to result variable)
+    mbfl_mandatory_parameter(VALUE,       2, the array value)
+    NIL+=$VALUE
+@}
+
+mbfl_declare_index_array_varref(ARRY, (a b c d e))
+mbfl_declare_varref(NIL, '0')
+
+mbfl_array_fold_left _(NIL) doit _(ARRY)
+
+"$NIL"  @result{} 0abcde
+@end example
+@end defun
+
+
+@defun mbfl_array_fold_right @var{NIL} @var{FUNC} @var{ARRY}
+Iterate over @var{ARRY} starting from the right and apply the function @var{FUNC} to @var{NIL} and
+the value from @var{ARRY}.  @var{FUNC} should be an identifier, bound to a shell function or
+command, accepting the following parameters:
+
+@example
+@var{FUNC} @var{NIL} @var{VALUE}
+@end example
+
+@noindent
+@var{NIL} might be a data variable in which case @var{FUNC} might store a result in it.
+
+@example
+function doit () @{
+    mbfl_mandatory_nameref_parameter(NIL, 1, reference to result variable)
+    mbfl_mandatory_parameter(VALUE,       2, the array value)
+    NIL+=$VALUE
+@}
+
+mbfl_declare_index_array_varref(ARRY, (a b c d e))
+mbfl_declare_varref(NIL, '0')
+
+mbfl_array_fold_right _(NIL) doit _(ARRY)
+
+"$NIL"  @result{} 0edcba
+@end example
+@end defun
+
+@c page
+@node libmbfl-containers arrays copy
+@appendixsubsec Copying values
+
 
 @defun mbfl_array_range_copy @var{DST_ARRY} @var{DST_IDX} @var{SRC_ARRY} @var{SRC_IDX} @var{NUMBER_OF_SLOTS}
 Copy @var{NUMBER_OF_SLOTS} slots from @var{SRC_ARRY} starting at @var{SRC_IDX} to @var{DST_ARRY}
 starting at @var{DST_IDX}.
+
+@example
+mbfl_declare_index_array_varref(DST, (. . . .))
+mbfl_declare_index_array_varref(SRC, (a b c d))
+#                                     0 1 2 3
+
+mbfl_array_range_copy _(DST) 1 _(SRC) 2 2
+
+mbfl_slot_ref(DST, 0)   @result{} .
+mbfl_slot_ref(DST, 1)   @result{} c
+mbfl_slot_ref(DST, 2)   @result{} d
+mbfl_slot_ref(DST, 3)   @result{} .
+@end example
 @end defun
 
 @c page
