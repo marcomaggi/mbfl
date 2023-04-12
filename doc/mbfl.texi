@@ -78,7 +78,8 @@
 @set LIBMBFLATFILE              @file{libmbfl-at.bash}
 @set LIBMBFLARCHFILE            @file{libmbfl-arch.bash}
 @set LIBMBFLPASSWORDSFILE       @file{libmbfl-passwords.bash}
-@set LIBMBFLGITFILE             @file{libmbfl-git.bash}
+@set LIBMBFLGIT                 @file{libmbfl-git.bash}
+@set LIBMBFLCONTAINERS          @file{libmbfl-containers.bash}
 
 @c page
 @c ------------------------------------------------------------
@@ -191,6 +192,7 @@ Appendices
 * libmbfl-arch::                Archiving and compressing files.
 * libmbfl-passwords::           Generating somewhat random passwords.
 * libmbfl-git::                 Version control with @command{git}.
+* libmbfl-containers::          Data containers library.
 * sendmail::                    Examples for sending email.
 * Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
@@ -257,6 +259,9 @@ Password strings generation; @ref{libmbfl-passwords, Generating somewhat random 
 @item @file{libmbfl-git.bash}
 Basic interface to the version control program @command{git}; @ref{libmbfl-git, Version control with
 @command{git}}.
+
+@item @file{libmbfl-containers.bash}
+Data containers library; @ref{libmbfl-containers, Data containers library}.
 @end table
 
 Starting with version 3: this package installs files under directories @strong{without} the version
@@ -349,6 +354,7 @@ MBFL_LIBMBFL_AT         = @@MBFL_LIBMBFL_AT@@
 MBFL_LIBMBFL_ARCH       = @@MBFL_LIBMBFL_ARCH@@
 MBFL_LIBMBFL_PASSWORDS  = @@MBFL_LIBMBFL_PASSWORDS@@
 MBFL_LIBMBFL_GIT        = @@MBFL_LIBMBFL_GIT@@
+MBFL_LIBMBFL_CONTAINRES = @@MBFL_LIBMBFL_CONTAINERS
 @end example
 
 @noindent
@@ -736,7 +742,7 @@ selected pathname overrides the library installed on the system.
 @anchor{--print-libdir}
 @cindex @option{--print-libdir}, preprocessor option
 @cindex Preprocessor option @option{--print-libdir}
-Print on @stdout{} the file system absolute pathname of the libraries installation directory, then
+Print to @stdout{} the file system absolute pathname of the libraries installation directory, then
 exit successfully.  The installation directory is selected with the option @option{--datadir} of
 @command{configure} at package--configuration time.
 
@@ -744,50 +750,57 @@ exit successfully.  The installation directory is selected with the option @opti
 @anchor{--print-libmbfl}
 @cindex @option{--print-libmbfl}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl}
-Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLFILE},
+Print to @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLFILE},
 then exit successfully.
 
 @item --print-libmbfl-tests
 @anchor{--print-libmbfl-tests}
 @cindex @option{--print-libmbfl-tests}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-tests}
-Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLTESTSFILE},
+Print to @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLTESTSFILE},
 then exit successfully.
 
 @item --print-libmbfl-utils
 @anchor{--print-libmbfl-utils}
 @cindex @option{--print-libmbfl-utils}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-utils}
-Print on @stdout{} the file system absolute pathname of the installed library
+Print to @stdout{} the file system absolute pathname of the installed library
 @value{LIBMBFLUTILSFILE}, then exit successfully.
 
 @item --print-libmbfl-arch
 @anchor{--print-libmbfl-arch}
 @cindex @option{--print-libmbfl-arch}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-arch}
-Print on @stdout{} the file system absolute pathname of the installed library
+Print to @stdout{} the file system absolute pathname of the installed library
 @value{LIBMBFLARCHFILE}, then exit successfully.
 
 @item --print-libmbfl-at
 @anchor{--print-libmbfl-at}
 @cindex @option{--print-libmbfl-at}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-at}
-Print on @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLATFILE},
+Print to @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLATFILE},
 then exit successfully.
 
 @item --print-libmbfl-passwords
 @anchor{--print-libmbfl-passwords}
 @cindex @option{--print-libmbfl-passwords}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-passwords}
-Print on @stdout{} the file system absolute pathname of the installed library
+Print to @stdout{} the file system absolute pathname of the installed library
 @value{LIBMBFLPASSWORDSFILE}, then exit successfully.
 
 @item --print-libmbfl-git
 @anchor{--print-libmbfl-git}
 @cindex @option{--print-libmbfl-git}, preprocessor option
 @cindex Preprocessor option @option{--print-libmbfl-git}
-Print on @stdout{} the file system absolute pathname of the installed library
-@value{LIBMBFLGITFILE}, then exit successfully.
+Print to @stdout{} the file system absolute pathname of the installed library
+@value{LIBMBFLGIT}, then exit successfully.
+
+@item --print-libmbfl-containers
+@anchor{--print-libmbfl-containers}
+@cindex @option{--print-libmbfl-containers}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfl-containers}
+Print to @stdout{} the file system absolute pathname of the installed library
+@value{LIBMBFLCONTAINERS}, then exit successfully.
 
 @item --check-version=@var{MINIMUM_REQUIRED_SEMANTIC_VERSION}
 @anchor{--check-version}
@@ -11660,17 +11673,17 @@ Generate a password string; either print it to @stdout{} or store it in the resu
 @appendix Version control with @command{git}
 
 
-@cindex @value{LIBMBFLGITFILE}, basic interface to @command{git}
-@cindex Basic interface to @command{git}, @value{LIBMBFLGITFILE}
+@cindex @value{LIBMBFLGIT}, basic interface to @command{git}
+@cindex Basic interface to @command{git}, @value{LIBMBFLGIT}
 @cindex Version control with @command{git}
 @cindex @command{git}, version control
 
 
 This section documents a library interfacing with the external program @git{}; the library file is
-@value{LIBMBFLGITFILE}.  We can load this library at run--time with:
+@value{LIBMBFLGIT}.  We can load this library at run--time with:
 
 @example
-mbfl_load_library(/path/to/@value{LIBMBFLGITFILE})
+mbfl_load_library(/path/to/@value{LIBMBFLGIT})
 @end example
 
 @noindent
@@ -11894,6 +11907,87 @@ mbfl_vc_git_branch_list_remote_tracking_var mbfl_datavar(BRANCHES_RV)
 @defun mbfl_vc_git_program @var{ARG} @dots{}
 Run the program @git{} with the given arguments; return the exit status of executing @git{}.
 @end defun
+
+@c page
+@node libmbfl-containers
+@appendix Data containers library
+
+
+@cindex @value{LIBMBFLCONTAINERS}, containers library
+@cindex Containers library, @value{LIBMBFLCONTAINERS}
+
+
+This section documents a data containers library; the library file is @value{LIBMBFLCONTAINERS}.  We
+can load this library at run--time with:
+
+@example
+mbfl_load_library(/path/to/@value{LIBMBFLCONTAINERS})
+@end example
+
+@noindent
+for details @ref{preprocessor loading, Libraries loading and embedding}.  Notice that the
+preprocessor option @option{--print-libmbfl-containers} will print the file pathname of the
+installed library, @ref{--print-libmbfl-containers, Invoking the preprocessor}.
+
+@menu
+* libmbfl-containers conventions::      Conventions.
+* libmbfl-containers arrays::           Arrays.
+* libmbfl-containers vectors::          Vectors.
+@end menu
+
+@c page
+@node libmbfl-containers conventions
+@appendixsec Conventions
+
+
+@menu
+* libmbfl-containers conventions underscore::   The underscore syntax.
+@end menu
+
+@c page
+@node libmbfl-containers conventions underscore
+@appendixsubsec The underscore syntax
+
+
+In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
+underscore syntax}.
+
+@c page
+@node libmbfl-containers arrays
+@appendixsec Arrays
+
+
+All the functions documented here operate on Bash indexed arrays, @bashref{Arrays, Arrays}.  All the
+functions are ``unsafe'' and low--level: there is no parameters validation.  If we need validated
+parameters we should use the vector container, @ref{libmbfl-containers vectors, Vectors}.
+
+In the functions documentation every parameter named @var{ARRY} represents the data variable of an
+array; we should declare arrays with @func{mbfl_declare_index_array_varref}, @ref{arrays nameref,
+Declaring arrays as data variables}.
+
+
+@defun mbfl_array_equal @vari{ARRY} @vari{ARRY}
+Compare the arrays and return true if the elements are equal, slot by slot, according to
+@func{mbfl_string_equal}; otherwise return false.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c))
+mbfl_declare_index_array_varref(ARRY2, (8 9 0))
+
+mbfl_array_equal _(ARRY1) _(ARRY2)
+@result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_array_range_copy @var{DST_ARRY} @var{DST_IDX} @var{SRC_ARRY} @var{SRC_IDX} @var{NUMBER_OF_SLOTS}
+Copy @var{NUMBER_OF_SLOTS} slots from @var{SRC_ARRY} starting at @var{SRC_IDX} to @var{DST_ARRY}
+starting at @var{DST_IDX}.
+@end defun
+
+@c page
+@node libmbfl-containers vectors
+@appendixsec Vectors
 
 @c page
 @node sendmail

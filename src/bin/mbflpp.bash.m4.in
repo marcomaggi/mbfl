@@ -5512,6 +5512,8 @@ mbfl_declare_option PRINT_LIBMBFL_PASSWORDS	no '' print-libmbfl-passwords    noa
 		    'print the full installation pathname of the library "libmbfl-passwords.bash"'
 mbfl_declare_option PRINT_LIBMBFL_GIT		no '' print-libmbfl-git    noarg \
 		    'print the full installation pathname of the library "libmbfl-git.bash"'
+mbfl_declare_option PRINT_LIBMBFL_CONTAINERS	no '' print-libmbfl-containers    noarg \
+		    'print the full installation pathname of the library "libmbfl-containers.bash"'
 
 #page
 #### external programs declarations
@@ -5605,6 +5607,10 @@ function script_option_update_print_libmbfl_passwords () {
 }
 function script_option_update_print_libmbfl_git () {
     printf '%s/libmbfl-git.bash\n' "$MBFL_INSTALLDIR"
+    exit_success
+}
+function script_option_update_print_libmbfl_containers () {
+    printf '%s/libmbfl-containers.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
 

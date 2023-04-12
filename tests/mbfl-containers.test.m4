@@ -48,6 +48,86 @@ mbfl_load_library("$MBFL_LIBMBFL_TEST")
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
 
 
+#### index arrays
+
+function mbfl-containers-index-array-equal-1.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i l))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g h i l))
+
+    mbfl_array_equal _(ARRY1) _(ARRY2)
+}
+function mbfl-containers-index-array-equal-1.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i l))
+    mbfl_declare_index_array_varref(ARRY2, (a b c D E F g h i l))
+
+    ! mbfl_array_equal _(ARRY1) _(ARRY2)
+}
+function mbfl-containers-index-array-equal-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i l))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g))
+
+    ! mbfl_array_equal _(ARRY1) _(ARRY2)
+}
+function mbfl-containers-index-array-equal-1.4 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g h i l))
+
+    ! mbfl_array_equal _(ARRY1) _(ARRY2)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-index-array-range-copy-1.1 () {
+    #                                          ---------
+    mbfl_declare_index_array_varref(RSLT, (a b e f g h i h i l))
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i l))
+    #                                      0 1 2 3 4 5 6 7 8 9
+    #                                              ---------
+
+    mbfl_array_range_copy _(ARRY) 2 _(ARRY) 4 5
+    # mbfl_array_dump _(ARRY) ARRY
+    # mbfl_array_dump _(RSLT) RSLT
+    mbfl_array_equal _(RSLT) _(ARRY)
+}
+function mbfl-containers-index-array-range-copy-1.2 () {
+    #                                              ---------
+    mbfl_declare_index_array_varref(RSLT, (a b c d c d e f g l))
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i l))
+    #                                      0 1 2 3 4 5 6 7 8 9
+    #                                          ---------
+
+    mbfl_array_range_copy _(ARRY) 4 _(ARRY) 2 5
+    # mbfl_array_dump _(ARRY) ARRY
+    # mbfl_array_dump _(RSLT) RSLT
+    mbfl_array_equal _(RSLT) _(ARRY)
+}
+
+function mbfl-containers-index-array-range-copy-2.1 () {
+    #                                      0 1 2 3 4 5 6 7 8 9
+    mbfl_declare_index_array_varref(RSLT, (0 0 0 a b c d 0 0 0))
+    mbfl_declare_index_array_varref(DST,  (0 0 0 0 0 0 0 0 0 0))
+    mbfl_declare_index_array_varref(SRC,  (9 a b c d 9 9 9 9 9))
+    declare -i DST_IDX=3 SRC_IDX=1 DIM=4
+
+    mbfl_array_range_copy _(DST) $DST_IDX _(SRC) $SRC_IDX $DIM
+    #mbfl_array_dump _(DST)  DST
+    #mbfl_array_dump _(RSLT) RSLT
+    mbfl_array_equal _(RSLT) _(DST)
+}
+function mbfl-containers-index-array-range-copy-2.2 () {
+    #                                      0 1 2 3 4 5 6 7 8 9
+    mbfl_declare_index_array_varref(RSLT, (0 0 0 a b c d 0 0 0))
+    mbfl_declare_index_array_varref(DST,  (0 0 0 0 0 0 0 0 0 0))
+    mbfl_declare_index_array_varref(SRC,  (9 9 9 9 9 9 a b c d))
+    declare -i DST_IDX=3 SRC_IDX=6 DIM=4
+
+    mbfl_array_range_copy _(DST) $DST_IDX _(SRC) $SRC_IDX $DIM
+    #mbfl_array_dump _(DST)  DST
+    #mbfl_array_dump _(RSLT) RSLT
+    mbfl_array_equal _(RSLT) _(DST)
+}
+
+
 #### stacks
 
 function mbfl-containers-stack-example-1.1 () {
