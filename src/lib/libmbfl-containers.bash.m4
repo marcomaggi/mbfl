@@ -42,7 +42,7 @@ then
 fi
 
 
-#### arrays
+#### arrays: comparison
 
 function mbfl_array_equal () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY1, 1, reference to index array)
@@ -60,27 +60,6 @@ function mbfl_array_equal () {
 	fi
     done
     return_success
-}
-
-function mbfl_array_range_copy () {
-    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,  1, reference to destination index array)
-    mbfl_mandatory_integer_parameter(mbfl_DST_IDX,   2, dst index)
-    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,  3, reference to source index array)
-    mbfl_mandatory_integer_parameter(mbfl_SRC_IDX,   4, src index)
-    mbfl_mandatory_integer_parameter(mbfl_DIM,       5, range dimension)
-    declare -i mbfl_I
-
-    # In case DST == SRC.
-    if ((mbfl_DST_IDX < mbfl_SRC_IDX))
-    then
-	for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
-	do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), mbfl_slot_qref(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I))))
-	done
-    else
-	for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
-	do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), mbfl_slot_qref(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I))))
-	done
-    fi
 }
 
 
@@ -142,6 +121,30 @@ function mbfl_array_fold_right () {
 }
 
 
+#### arrays: copying
+
+function mbfl_array_range_copy () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,  1, reference to destination index array)
+    mbfl_mandatory_integer_parameter(mbfl_DST_IDX,   2, dst index)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,  3, reference to source index array)
+    mbfl_mandatory_integer_parameter(mbfl_SRC_IDX,   4, src index)
+    mbfl_mandatory_integer_parameter(mbfl_DIM,       5, range dimension)
+    declare -i mbfl_I
+
+    # In case DST == SRC.
+    if ((mbfl_DST_IDX < mbfl_SRC_IDX))
+    then
+	for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
+	do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), mbfl_slot_qref(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I))))
+	done
+    else
+	for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
+	do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), mbfl_slot_qref(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I))))
+	done
+    fi
+}
+
+
 #### stacks
 
 m4_define([[[MBFL_STACK_ACCESS_ARRAY]]],[[[
@@ -182,11 +185,14 @@ function mbfl_stack_size_var () {
 }
 function mbfl_stack_push () {
     mbfl_mandatory_nameref_parameter(mbfl_STACK, 1, reference to object of class mbfl_stack_t)
-    mbfl_mandatory_parameter(mbfl_OBJ,           2, the object to push on the stack)
+    shift
+    declare mbfl_ITEM
 
     MBFL_STACK_VALIDATE_PARAMETER(mbfl_STACK)
     MBFL_STACK_ACCESS_ARRAY(mbfl_STACK, mbfl_ARRAY)
-    mbfl_slot_set(mbfl_ARRAY, mbfl_slots_number(mbfl_ARRAY), "$mbfl_OBJ")
+    for mbfl_ITEM in "$@"
+    do mbfl_slot_set(mbfl_ARRAY, mbfl_slots_number(mbfl_ARRAY), "$mbfl_ITEM")
+    done
     return_success
 }
 function mbfl_stack_pop_var () {

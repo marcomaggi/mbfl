@@ -11933,6 +11933,7 @@ installed library, @ref{--print-libmbfl-containers, Invoking the preprocessor}.
 * libmbfl-containers conventions::      Conventions.
 * libmbfl-containers arrays::           Arrays.
 * libmbfl-containers vectors::          Vectors.
+* libmbfl-containers stacks::           Stacks.
 @end menu
 
 @c page
@@ -11965,6 +11966,9 @@ In the functions documentation:
 
 @itemize
 @item
+@cindex @var{ARRY} parameter
+@cindex Parameter @var{ARRY}
+@cindex Function parameter @var{ARRY}
 Every parameter named @var{ARRY} represents the data variable of an array; we should declare arrays
 with @func{mbfl_declare_index_array_varref}, @ref{arrays nameref, Declaring arrays as data
 variables}.
@@ -12135,6 +12139,171 @@ mbfl_slot_ref(DST, 3)   @result{} .
 @c page
 @node libmbfl-containers vectors
 @appendixsec Vectors
+
+@c page
+@node libmbfl-containers stacks
+@appendixsec Stacks
+
+
+The library @value{LIBMBFLCONTAINERS} implements the traditional stack container with basic
+operations.  Stacks are wrappers for Bash indexed arrays, @bashref{Arrays, Arrays}.
+
+
+@deftp {Class} mbfl_stack_t
+@deftpx {Superclass} mbfl_default_object
+@deftpx {Metaclass} mbfl_default_class
+Class of objects representing stacks.
+
+@cindex @var{STK} parameter
+@cindex Parameter @var{STK}
+@cindex Function parameter @var{STK}
+In this documentation: whenever a parameter to function is the data variable of an object of this
+class, the parameter is named @var{STK}.
+@end deftp
+
+
+@defop {Constructor} {mbfl_stack_t} mbfl_stack_make @var{STK}
+Build a new object of class @class{mbfl_stack_t} and store it in the already declared variable
+@var{STK}.  Some resources are allocated, so when we do not need @var{STK} anymore: we must apply a
+destructor to it.
+@end defop
+
+
+@defop {Destructor} {mbfl_stack_t} mbfl_stack_unmake @var{STK}
+Destroy an object of class @class{mbfl_stack_t}, releasing its resources.  The variable @var{STK}
+itself is @strong{not} unset.
+
+@example
+mbfl_location_enter
+@{
+    mbfl_default_object_declare(STK)
+    mbfl_location_handler "mbfl_undeclare_varref(_(STK))"
+
+    mbfl_stack_make _(STK)
+    mbfl_location_handler "mbfl_stack_unmake _(STK)"
+
+    mbfl_stack_push _(STK) 123
+@}
+mbfl_location_leave
+@end example
+@end defop
+
+
+@defop {Predicate} {mbfl_stack_t} mbfl_stack_is_a @var{OBJ}
+Return true if @var{OBJ} is an object of class @class{mbfl_stack_t}; otherwise return false.
+@end defop
+
+
+@defun mbfl_stack_size_var @var{SIZE_RV} @var{STK}
+Retrieve the current number of elements on the stack @var{STK} and store it in the variable
+@var{SIZE_RV}.
+
+@example
+mbfl_default_object_declare(STK)
+mbfl_declare_varref(SIZE)
+
+mbfl_stack_make _(STK)
+mbfl_stack_push _(STK) 1
+mbfl_stack_push _(STK) 2
+
+mbfl_stack_size_var _(SIZE) _(STK)
+$SIZE   @result{} 2
+@end example
+@end defun
+
+
+@defun mbfl_stack_push @var{STK} @var{ITEM} @dots{}
+Push all the optional parameters @var{ITEM} on the stack @var{STK}.
+
+@example
+mbfl_default_object_declare(STK)
+
+mbfl_stack_make _(STK)
+mbfl_stack_push _(STK) 1 2
+mbfl_stack_push _(STK) 3
+@end example
+@end defun
+
+
+@defun mbfl_stack_top_var @var{OBJ_RV} @var{STK}
+Retrieve the top element from the stack @var{STK} and store it in the variable @var{OBJ_RV}.
+
+@example
+mbfl_default_object_declare(STK)
+mbfl_declare_varref(OBJ)
+
+mbfl_stack_make _(STK)
+mbfl_stack_push _(STK) 1
+mbfl_stack_push _(STK) 2
+
+mbfl_stack_top_var _(OBJ) _(STK)
+"$OBJ"  @result{} 2
+@end example
+@end defun
+
+
+@defun mbfl_stack_pop_var @var{OBJ_RV} @var{STK}
+Retrieve and remove the top element from the stack @var{STK} and store it in the variable
+@var{OBJ_RV}.
+
+@example
+mbfl_default_object_declare(STK)
+mbfl_declare_varref(OBJ)
+
+mbfl_stack_make _(STK)
+mbfl_stack_push _(STK) 1
+mbfl_stack_push _(STK) 2
+
+mbfl_stack_pop_var _(OBJ) _(STK)
+"$OBJ"  @result{} 2
+
+mbfl_stack_pop_var _(OBJ) _(STK)
+"$OBJ"  @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_stack_copy @var{DST_STK} @var{SRC_STK}
+Copy the elements from @var{SRC_STK} to @var{DST_STK} by directly copying them from the underlying
+arrays.  The old contents of @var{DST_STK} are overwritten.
+
+@example
+mbfl_default_object_declare(STK1)
+mbfl_default_object_declare(STK2)
+
+mbfl_stack_make _(STK1)
+mbfl_stack_make _(STK2)
+
+mbfl_stack_push  _(STK1) 'uno' 'due' 'tre'
+mbfl_stack_copy  _(STK2) _(STK1)
+mbfl_stack_equal _(STK2) _(STK1)
+@result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_stack_equal @vari{STK} @varii{STK}
+@defunx mbfl_stack_equal @vari{STK} @varii{STK} @var{COMPAR}
+Compare the elements from @vari{STK} and @varii{STK} using the function @var{COMPAR}: return true if
+the elements are equal; return false otherwise.
+
+The optional argument @var{COMPAR} must be an identifier, bound to a shell function or command,
+accepting the parameters:
+
+@example
+@var{COMPAR} @vari{ELEMENT} @varii{ELEMENT}
+@end example
+
+@noindent
+when not given, it defaults to @func{mbfl_string_equal}.
+@end defun
+
+
+@defun mbfl_stack_dump @var{STK}
+@defunx mbfl_stack_dump @var{STK} @var{LABEL}
+Print to @stderr{} the elements of the array underlying @var{STK}, using the function
+@func{mbfl_array_dump}.
+@end defun
 
 @c page
 @node sendmail

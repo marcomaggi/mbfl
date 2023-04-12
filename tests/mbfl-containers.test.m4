@@ -266,11 +266,14 @@ function mbfl-containers-stack-equal-1.1 () {
     mbfl_location_leave
 }
 function mbfl-containers-stack-equal-2.1 () {
-    mbfl_default_object_declare(STK1)
-    mbfl_default_object_declare(STK2)
-
     mbfl_location_enter
     {
+	mbfl_default_object_declare(STK1)
+	mbfl_location_handler "mbfl_undeclare_varref(_(STK1))"
+
+	mbfl_default_object_declare(STK2)
+	mbfl_location_handler "mbfl_undeclare_varref(_(STK2))"
+
 	mbfl_stack_make _(STK1)
 	mbfl_location_handler "mbfl_stack_unmake _(STK1)"
 
