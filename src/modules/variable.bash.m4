@@ -117,10 +117,11 @@ function mbfl_variable_colon_variable_drop_duplicate () {
 #
 function mbfl_variable_alloc () {
     mbfl_mandatory_nameref_parameter(mbfl_RV, 1, result variable)
+    mbfl_optional_parameter(mbfl_STEM, 2)
 
-    mbfl_RV=mbfl_u_variable_${1}_${RANDOM}
+    mbfl_RV=mbfl_u_variable_${mbfl_STEM}${RANDOM}
     while test -v $mbfl_RV
-    do mbfl_RV=mbfl_u_variable_${1}_${RANDOM}
+    do mbfl_RV=mbfl_u_variable_${mbfl_STEM}${RANDOM}
     done
     #echo $FUNCNAME $mbfl_RV >&2
     return 0

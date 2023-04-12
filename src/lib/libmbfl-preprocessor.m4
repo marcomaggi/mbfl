@@ -195,7 +195,7 @@ m4_define([[[mbfl_declare_nameref]]],[[[m4_dnl
 
 m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
   declare mbfl_a_variable_$1; m4_dnl
-  mbfl_variable_alloc mbfl_a_variable_$1; m4_dnl
+  mbfl_variable_alloc mbfl_a_variable_$1 $1; m4_dnl
   declare $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
   declare -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
   m4_ifelse([[[$2]]],,[[[$1=]]],[[[$1=$2]]])m4_dnl
