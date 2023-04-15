@@ -11962,69 +11962,515 @@ All the functions documented here operate on Bash indexed arrays, @bashref{Array
 functions are ``unsafe'' and low--level: there is no parameters validation.  If we need validated
 parameters we should use the vector container, @ref{libmbfl-containers vectors, Vectors}.
 
-In the functions documentation:
+@menu
+* libmbfl-containers arrays conventions::  Conventions.
+* libmbfl-containers arrays inspection::   Inspecting arrays.
+* libmbfl-containers arrays compar::       Comparing values.
+* libmbfl-containers arrays fold::         Folding values in indexed arrays.
+* libmbfl-containers arrays foreach::      Iterating over values in indexed arrays.
+* libmbfl-containers arrays map::          Mapping values in indexed arrays.
+* libmbfl-containers arrays copy::         Copying values.
+@end menu
 
-@itemize
-@item
+@c page
+@node libmbfl-containers arrays conventions
+@appendixsubsec Conventions of the arrays @api{}
+
+
+@menu
+* libmbfl-containers arrays conventions iterations::    Supported iterations over arrays.
+* libmbfl-containers arrays conventions parameters::    Naming conventions for function parameters.
+@end menu
+
+@c ------------------------------------------------------------------------
+
+@macro ParameterSemanticsARRY{}
+For the semantics of the parameter @var{ARRY} see @ref{@var{ARRY} parameter, Conventions of the
+arrays @api{}}.
+@end macro
+
+@macro ParameterSemanticsARRYS{}
+For the semantics of the parameter @var{ARRYS} see @ref{@var{ARRYS} parameter, Conventions of the
+arrays @api{}}.
+@end macro
+
+@macro ParameterSemanticsCOMPAR{}
+For the semantics of the parameter @var{COMPAR} see @ref{@var{COMPAR} parameter, Conventions of the
+arrays @api{}}.
+@end macro
+
+@macro ParameterSemanticsOPERATOR{}
+For the semantics of the parameter @var{OPERATOR} see @ref{@var{OPERATOR} parameter, Conventions of
+the arrays @api{}}.
+@end macro
+
+@macro SemanticsLeftIteration{}
+For the semantics of a ``left iteration'' see @ref{Arrays left iteration, Conventions of the arrays
+@api{}}.
+@end macro
+
+@macro SemanticsRightIteration{}
+For the semantics of a ``right iteration'' see @ref{Arrays right iteration, Conventions of the
+arrays @api{}}.
+@end macro
+
+@macro SemanticsMultiIteration{}
+For the semantics of a ``multi iteration'' see @ref{Arrays multi iteration, Conventions of the
+arrays @api{}}.
+@end macro
+
+@macro SemanticsFoldIteration{}
+For the semantics of a ``fold iteration'' see @ref{Arrays fold iteration, Conventions of the arrays
+@api{}}.
+@end macro
+
+@macro SemanticsForeachIteration{}
+For the semantics of a ``foreach iteration'' see @ref{Arrays foreach iteration, Conventions of the
+arrays @api{}}.
+@end macro
+
+@macro SemanticsMapIteration{}
+For the semantics of a ``map iteration'' see @ref{Arrays map iteration, Conventions of the arrays
+@api{}}.
+@end macro
+
+@c page
+@node libmbfl-containers arrays conventions iterations
+@appendixsubsubsec Supported iterations over arrays
+
+
+@value{LIBMBFLCONTAINERS} implements multiple variations of iterations over a single array or
+multiple arrays.
+
+@table @dfn
+@item Left iteration
+@anchor{Arrays left iteration}
+@cindex Arrays left iteration
+An operator is applied slot--by--slot to values from one or more arrays, left--to--right: first
+values from slots @samp{0}, then values from slots @samp{1}, and so on.
+
+@item Right iteration
+@anchor{Arrays right iteration}
+@cindex Arrays right iteration
+An operator is applied slot--by--slot to values from one or more arrays, right--to--left: first
+values from the ultimate slots, then values from the penultimate slots, and so on.
+
+@item Multi iteration
+@anchor{Arrays multi iteration}
+@cindex Arrays multi iteration
+An operator is applied slot--by--slot to values from the homologous slots of indexed arrays
+themselves stored in an indexed array, which is usually named @var{ARRYS}.
+
+@item Foreach iteration
+@anchor{Arrays foreach iteration}
+@cindex Arrays foreach iteration
+An operator is applied slot--by--slot to every value from one or more source arrays; the purpose of
+the application is to generate some side effects.
+
+@item Map iteration
+@anchor{Arrays map iteration}
+@cindex Arrays map iteration
+An operator is applied slot--by--slot to every value from one or more source arrays; the purpose of
+the application is to compute values which are stored in a result array.
+
+@item Fold iteration
+@anchor{Arrays fold iteration}
+@cindex Arrays fold iteration
+An operator is applied slot--by--slot to every value from one or more source arrays in such a way
+that a result value is ``accumulated''; the purpose of the application is to compute the accumulated
+value.  The accumulator has an initial value, which is composed with values from the slots.
+@end table
+
+@c page
+@node libmbfl-containers arrays conventions parameters
+@appendixsubsubsec Naming conventions for function parameters
+
+
+In the functions documentation some parameters have established meaning:
+
+@table @var
+@item ARRY
+@anchor{@var{ARRY} parameter}
 @cindex @var{ARRY} parameter
 @cindex Parameter @var{ARRY}
 @cindex Function parameter @var{ARRY}
-Every parameter named @var{ARRY} represents the data variable of an array; we should declare arrays
-with @func{mbfl_declare_index_array_varref}, @ref{arrays nameref, Declaring arrays as data
+Every parameter named @var{ARRY} represents the data variable of an indexed array; we should declare
+arrays with @func{mbfl_declare_index_array_varref}, @ref{arrays nameref, Declaring arrays as data
 variables}.
 
-@item
-Every parameter named @var{IDX} represents an index into an array; we should declare indexes using
-@code{declare -i @var{IDX}}.
-@end itemize
+@example
+mbfl_declare_index_array_varref(ARRY, (a b c))
 
-@menu
-* libmbfl-containers arrays compar::    Comparing values.
-* libmbfl-containers arrays iter::      Iterating, mapping, folding.
-* libmbfl-containers arrays copy::      Copying values.
-@end menu
+array_func _(ARRY)
+@end example
+
+@item ARRYS
+@anchor{@var{ARRYS} parameter}
+@cindex @var{ARRYS} parameter
+@cindex Parameter @var{ARRYS}
+@cindex Function parameter @var{ARRYS}
+Every parameter named @var{ARRYS} represents the data variable of an indexed array whose values are
+themselves data variables of indexed arrays.  When such parameter is used in an iteration, mapping
+or folding function: all the referenced indexed arrays @strong{must} have the same number of slots,
+all starting with slot @samp{0}; otherwise the function's behaviour is undefined.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c))
+mbfl_declare_index_array_varref(ARRY2, (d e f))
+mbfl_declare_index_array_varref(ARRY3, (g h i))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+multi_array_func _(ARRYS)
+@end example
+
+@item IDX
+Every parameter named @var{IDX} represents a zero--based index into an indexed array; we should
+declare indexes using @code{declare -i @var{IDX}}.
+
+@item OPERATOR
+@anchor{@var{OPERATOR} parameter}
+@cindex @var{OPERATOR} parameter for arrays @api{}
+@cindex Parameter @var{OPERATOR} for arrays @api{}
+@cindex Function parameter @var{OPERATOR} for arrays @api{}
+Every parameter named @var{OPERATOR} must be an ``applicable identifier'', bound to a function or
+command or alias, accepting some number of parameters.  It is used in command lines like:
+
+@example
+@var{OPERATOR} @varo{PARAMETER} ...
+@end example
+
+Unless otherwise stated: if the return status of @var{OPERATOR} is false, the ongoing iteration is
+stopped and its function returns with the same status of @var{OPERATOR}.
+
+@item COMPAR
+@anchor{@var{COMPAR} parameter}
+@cindex @var{COMPAR} parameter for arrays @api{}
+@cindex Parameter @var{COMPAR} for arrays @api{}
+@cindex Function parameter @var{COMPAR} for arrays @api{}
+Every parameter named @var{COMPAR} must be an ``applicable identifier'', bound to a function or
+command or alias, accepting the following parameters:
+
+@example
+@var{COMPAR} @vari{VALUE} @varii{VALUE}
+@end example
+
+@noindent
+where @vari{VALUE} and @varii{VALUE} are values from arrays; @var{COMPAR} must return true if
+@vari{VALUE} and @varii{VALUE} are ``equal'' according to some definition of equality, otherwise it
+must return false.  @var{COMPAR} is usually an optional parameter, when not given: @var{COMPAR}
+defaults to @func{mbfl_string_equal}.
+@end table
+
+@c page
+@node libmbfl-containers arrays inspection
+@appendixsubsec Inspecting arrays
+
+
+@ParameterSemanticsARRY{}  @ParameterSemanticsARRYS{}
+
+
+@defun mbfl_multi_array_equal_size_var @var{SIZE_RV} @var{ARRYS}
+Return true if all the index arrays in @var{ARRYS} have the same number of slots; otherwise return
+false.  If @var{ARRYS} is empty or contains a single array: return true.  When successful: store the
+number of slots in the result variable @var{SIZE_RV}; otherwise leave @var{SIZE_RV} untouched.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2, (A B C D E))
+mbfl_declare_index_array_varref(ARRY3, (. . . . .))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+mbfl_declare_integer_varref(SIZE)
+
+mbfl_multi_array_equal_size_var _(SIZE) _(ARRYS)  @result{} 0
+"$SIZE"                                           @result{} 5
+@end example
+@end defun
+
+
+@defun mbfl_multi_array_homologous_slots_var @var{HOMOLOGOUS_VALUES_ARRY} @var{ARRYS} @var{IDX}
+Store in the result variable @var{HOMOLOGOUS_VALUES_ARRY} the homologous slot values from
+@var{ARRYS} at index @var{IDX}.  This function assumes @var{IDX} is a valid slot index for all the
+index arrays in @var{ARRY}.
+
+If @var{ARRYS} is empty: do nothing, leave @var{HOMOLOGOUS_VALUES_ARRY} untouched.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2, (f g h i l))
+mbfl_declare_index_array_varref(ARRY3, (m n o p q))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+mbfl_declare_index_array_varref(HOMOLOGOUS_VALUES_ARRY)
+
+mbfl_multi_array_homologous_slots_var _(HOMOLOGOUS_VALUES_ARRY) _(ARRYS) 2
+mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 0)        @result{} c
+mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 1)        @result{} h
+mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 2)        @result{} o
+
+mbfl_multi_array_homologous_slots_var _(HOMOLOGOUS_VALUES_ARRY) _(ARRYS) 4
+mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 0)        @result{} e
+mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 1)        @result{} l
+mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 2)        @result{} q
+@end example
+@end defun
 
 @c page
 @node libmbfl-containers arrays compar
 @appendixsubsec Comparing values
 
 
+@ParameterSemanticsARRY{}  @ParameterSemanticsARRYS{}  @ParameterSemanticsCOMPAR{}
+
+
+@defun mbfl_array_equal_values @var{ARRY}
+@defunx mbfl_array_equal_values @var{ARRY} @var{COMPAR}
+Return true if all the values in @var{ARRY} are equal according to the comparison operator
+@var{COMPAR}; otherwise return false.
+
+@example
+mbfl_declare_index_array_varref(ARRY, (0 0 0 0 0 0))
+
+mbfl_array_equal_values _(ARRY)         @result{} 0
+@end example
+@end defun
+
+
 @defun mbfl_array_equal @vari{ARRY} @vari{ARRY}
+@defunx mbfl_array_equal @vari{ARRY} @vari{ARRY} @var{COMPAR}
 Compare the arrays and return true if the elements are equal, slot by slot, according to
-@func{mbfl_string_equal}; otherwise return false.
+@var{COMPAR}; otherwise return false.
 
 @example
 mbfl_declare_index_array_varref(ARRY1, (a b c))
 mbfl_declare_index_array_varref(ARRY2, (8 9 0))
+
+mbfl_array_equal _(ARRY1) _(ARRY1)
+@result{} 0
 
 mbfl_array_equal _(ARRY1) _(ARRY2)
 @result{} 1
 @end example
 @end defun
 
-@c page
-@node libmbfl-containers arrays iter
-@appendixsubsec Iterating, mapping, folding
 
+@defun mbfl_multi_array_equal @var{ARRYS}
+@defunx mbfl_multi_array_equal @var{ARRYS} @var{COMPAR}
+Compare the index arrays in @var{ARRYS}, slot by slot, and return true if the values are equal
+according to @var{COMPAR}; otherwise return false.
 
-@defun mbfl_array_map @var{FUNC} @var{DST_ARRY} @var{SRC_ARRY}
-Map the function @var{FUNC} over all the values from @var{SRC_ARRY} and store the results in
-@var{DST_ARRY}.  @var{FUNC} should be an identifier, bound to a shell function, accepting the
-following parameters:
+If @var{ARRYS} is empty or contains a single array: return true.
 
 @example
-@var{FUNC} @var{RESULT_VARIABLE} @var{VALUE}
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+mbfl_multi_array_equal _(ARRYS)         @result{} 0
+@end example
+@end defun
+
+@c page
+@node libmbfl-containers arrays fold
+@appendixsubsec Folding values in indexed arrays
+
+
+@SemanticsFoldIteration{}
+@SemanticsMultiIteration{}
+@SemanticsLeftIteration{}
+@SemanticsRightIteration{}
+
+@ParameterSemanticsOPERATOR{}
+@ParameterSemanticsARRY{}
+@ParameterSemanticsARRYS{}
+
+
+@defun mbfl_array_left_fold @var{ACCUM} @var{OPERATOR} @var{ARRY}
+@defunx mbfl_array_right_fold @var{ACCUM} @var{OPERATOR} @var{ARRY}
+Iterate over @var{ARRY} and apply @var{OPERATOR} to @var{ACCUM} and a value from @var{ARRY}.
+@var{OPERATOR} is used in a command line as follows:
+
+@example
+@var{OPERATOR} @var{ACCUM} @var{VALUE}
 @end example
 
 @noindent
-for example @func{mbfl_string_toupper_var}.  If the function returns false: the iteration stops and
-@func{mbfl_array_map} returns immediately.
+@var{ACCUM} might be a data variable in which case @var{OPERATOR} might store a result in it.
+
+@example
+function operator () @{
+    mbfl_mandatory_nameref_parameter(ACCUM, 1, accumulator)
+    mbfl_mandatory_parameter(VALUE,         2, value from arry)
+    ACCUM+=$VALUE
+@}
+
+mbfl_declare_index_array_varref(ARRY, (a b c d e))
+mbfl_declare_varref(LACCUM, '0')
+mbfl_declare_varref(RACCUM, '0')
+
+mbfl_array_left_fold  _(LACCUM) operator _(ARRY)
+"$LACCUM"  @result{} 0abcde
+
+mbfl_array_right_fold _(RACCUM) operator _(ARRY)
+"$RACCUM"  @result{} 0edcba
+@end example
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_multi_array_left_fold @var{ACCUM} @var{OPERATOR} @var{ARRYS}
+@defunx mbfl_multi_array_right_fold @var{ACCUM} @var{OPERATOR} @var{ARRYS}
+Iterate over @var{ARRYS} and apply @var{OPERATOR} to @var{ACCUM} and the homologous values from
+@var{ARRY}'s slots.  @var{OPERATOR} is used in a command line as follows:
+
+@example
+@var{OPERATOR} @var{ACCUM} @var{VALUES}
+@end example
+
+@noindent
+@var{ACCUM} might be a data variable in which case @var{OPERATOR} might store a result in it;
+@var{VALUES} is an index array holding @var{ARRYS}'s homologous slots' values.
+
+@example
+function operator () @{
+    mbfl_mandatory_nameref_parameter(ACCUM,  1, accumulator)
+    mbfl_mandatory_nameref_parameter(VALUES, 2, values from arrys)
+    declare -i I
+    declare STR
+
+    for ((I=0; I < mbfl_slots_number(VALUES); ++I))
+    do STR+=mbfl_slot_qref(VALUES, $I)
+    done
+    ACCUM+=" $STR"
+@}
+
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2, (A B C D E))
+mbfl_declare_index_array_varref(ARRY3, (q w e r t))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+mbfl_declare_varref(L_ACCUM, '0')
+mbfl_declare_varref(R_ACCUM, '0')
+
+mbfl_multi_array_left_fold  _(L_ACCUM) 'operator' _(ARRYS)
+mbfl_multi_array_right_fold _(R_ACCUM) 'operator' _(ARRYS)
+
+"$L_ACCUM"      @result{} '0 aAq bBw cCe dDr eEt'
+"$R_ACCUM"      @result{} '0 eEt dDr cCe bBw aAq'
+@end example
+@end defun
+
+@c page
+@node libmbfl-containers arrays foreach
+@appendixsubsec Iterating over values in indexed arrays
+
+
+@SemanticsForeachIteration{}
+@SemanticsMultiIteration{}
+@SemanticsLeftIteration{}
+@SemanticsRightIteration{}
+
+@ParameterSemanticsOPERATOR{}
+@ParameterSemanticsARRY{}
+@ParameterSemanticsARRYS{}
+
+
+@defun mbfl_array_left_foreach @var{OPERATOR} @var{ARRY}
+@defunx mbfl_array_right_foreach @var{OPERATOR} @var{ARRY}
+Apply @var{OPERATOR} to all the values from @var{ARRY} for the purpose of generating some side
+effects.  @var{OPERATOR} is used in a command line as follows:
+
+@example
+@var{OPERATOR} @var{VALUE}
+@end example
+
+@noindent
+where @var{VALUE} is a value from the array.
+
+@example
+mbfl_declare_index_array_varref(ARRY, (a b c))
+
+mbfl_array_left_foreach echo _(ARRY)
+@print{} a
+@print{} b
+@print{} c
+@end example
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_array_multi_left_foreach @var{OPERATOR} @var{ARRYS}
+@defunx mbfl_array_multi_right_foreach @var{OPERATOR} @var{ARRYS}
+Apply the @var{OPERATOR} to the tuple of homologous values from @var{ARRYS} for the purpose of
+generating some side effect.  @var{OPERATOR} is used in a command line as follows:
+
+@example
+@var{OPERATOR} @var{HOMOLOGOUS_VALUES}
+@end example
+
+@noindent
+where @var{HOMOLOGOUS_VALUES} is an indexed array containing values from the homologous slots of
+@var{ARRYS}.
+
+@example
+function OPERATOR () @{
+    mbfl_mandatory_nameref_parameter(ITEMS, 1, reference to index array of homologous values)
+    declare -i I VALUE=0
+
+    for ((I=0; I < mbfl_slots_number(ITEMS); ++I))
+    do let VALUE+=mbfl_slot_ref(ITEMS, $I)
+    done
+    echo "$VALUE"
+@}
+
+mbfl_declare_index_array_varref(ARRY1, (1   2   3   4))
+mbfl_declare_index_array_varref(ARRY2, (10  20  30  40))
+mbfl_declare_index_array_varref(ARRY3, (100 200 300 400))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+mbfl_array_multi_left_foreach OPERATOR _(ARRYS)
+@print{} 111
+@print{} 222
+@print{} 333
+@print{} 444
+@end example
+@end defun
+
+@c page
+@node libmbfl-containers arrays map
+@appendixsubsec Mapping values in indexed arrays
+
+
+@SemanticsMapIteration{}
+@SemanticsMultiIteration{}
+@SemanticsLeftIteration{}
+@SemanticsRightIteration{}
+
+@ParameterSemanticsOPERATOR{}
+@ParameterSemanticsARRY{}
+@ParameterSemanticsARRYS{}
+
+
+@defun mbfl_array_left_map @var{DST_ARRY} @var{OPERATOR} @var{SRC_ARRY}
+@defunx mbfl_array_right_map @var{DST_ARRY} @var{OPERATOR} @var{SRC_ARRY}
+Apply @var{OPERATOR} to all the values from @var{SRC_ARRY} for the purpose of generating a value to
+be stored in the homologous slot of @var{DST_ARRY}.  @var{OPERATOR} is used in a command line as
+follows:
+
+@example
+@var{OPERATOR} @var{RV} @var{VALUE}
+@end example
+
+@noindent
+where: @var{VALUE} is a value from @var{ARRY}; @var{RV} is the variable in which to store the result
+of @var{OPERATOR}'s application.  The function @func{mbfl_string_toupper_var} is a valid example of
+@var{OPERATOR}.
 
 @example
 mbfl_declare_index_array_varref(DST)
 mbfl_declare_index_array_varref(SRC, (a b c))
 
-mbfl_array_map mbfl_string_toupper_var _(DST) _(SRC)
+mbfl_array_left_map mbfl_string_toupper_var _(DST) _(SRC)
 
 mbfl_slot_ref(DST, 0)   @result{} A
 mbfl_slot_ref(DST, 1)   @result{} B
@@ -12033,114 +12479,30 @@ mbfl_slot_ref(DST, 2)   @result{} C
 @end defun
 
 
-@defun mbfl_array_for_each @var{FUNC} @var{ARRY}
-Apply the function @var{FUNC} to all the values from @var{ARRY}.  @var{FUNC} should be an
-identifier, bound to a shell function or command, accepting the following parameters:
+@defun mbfl_multi_array_left_map @var{DST_ARRY} @var{OPERATOR} @var{SRC_ARRYS}
+@defunx mbfl_multi_array_right_map @var{DST_ARRY} @var{OPERATOR} @var{SRC_ARRYS}
+Apply the @var{OPERATOR} to the tuple of homologous values from @var{SRC_ARRYS} for the purpose of
+generating result values that are stored in the homologous slots of @var{DST_ARRY}.  @var{OPERATOR}
+is used in a command line as follows:
 
 @example
-@var{FUNC} @var{VALUE}
+@var{OPERATOR} @var{RV} @var{VALUES}
 @end example
 
 @noindent
-for example @code{echo}.  If the function returns false: the iteration stops and
-@func{mbfl_array_for_each} returns immediately.
+where: @var{VALUES} is an index array holding the homologous values from @var{SRC_ARRYS}; @var{RV}
+is the variable in which to store the result of @var{OPERATOR}'s application.
 
 @example
-mbfl_declare_index_array_varref(ARRY, (a b c))
-
-mbfl_array_for_each echo _(ARRY)
-@print{} a
-@print{} b
-@print{} c
-@end example
-@end defun
-
-
-@defun mbfl_array_fold_left @var{NIL} @var{FUNC} @var{ARRY}
-Iterate over @var{ARRY} starting from the left and apply the function @var{FUNC} to @var{NIL} and
-the value from @var{ARRY}.  @var{FUNC} should be an identifier, bound to a shell function or
-command, accepting the following parameters:
-
-@example
-@var{FUNC} @var{NIL} @var{VALUE}
-@end example
-
-@noindent
-@var{NIL} might be a data variable in which case @var{FUNC} might store a result in it.
-
-@example
-function doit () @{
-    mbfl_mandatory_nameref_parameter(NIL, 1, reference to result variable)
-    mbfl_mandatory_parameter(VALUE,       2, the array value)
-    NIL+=$VALUE
-@}
-
-mbfl_declare_index_array_varref(ARRY, (a b c d e))
-mbfl_declare_varref(NIL, '0')
-
-mbfl_array_fold_left _(NIL) doit _(ARRY)
-
-"$NIL"  @result{} 0abcde
-@end example
-@end defun
-
-
-@defun mbfl_array_fold_right @var{NIL} @var{FUNC} @var{ARRY}
-Iterate over @var{ARRY} starting from the right and apply the function @var{FUNC} to @var{NIL} and
-the value from @var{ARRY}.  @var{FUNC} should be an identifier, bound to a shell function or
-command, accepting the following parameters:
-
-@example
-@var{FUNC} @var{NIL} @var{VALUE}
-@end example
-
-@noindent
-@var{NIL} might be a data variable in which case @var{FUNC} might store a result in it.
-
-@example
-function doit () @{
-    mbfl_mandatory_nameref_parameter(NIL, 1, reference to result variable)
-    mbfl_mandatory_parameter(VALUE,       2, the array value)
-    NIL+=$VALUE
-@}
-
-mbfl_declare_index_array_varref(ARRY, (a b c d e))
-mbfl_declare_varref(NIL, '0')
-
-mbfl_array_fold_right _(NIL) doit _(ARRY)
-
-"$NIL"  @result{} 0edcba
-@end example
-@end defun
-
-@c ------------------------------------------------------------------------
-
-@defun mbfl_array_multi_for_each @var{FUNC} @var{ARRYS}
-The parameter @var{ARRYS} is an index array of index arrays; the index arrays must be of the same
-length; this function applies @var{FUNC} to values from the index arrays: values from all the slots
-@samp{0}, values from all the slots @samp{1}, and so on.  @var{FUNC} should be an identifier, bound
-to a shell function or command, accepting the following parameters:
-
-@example
-@var{FUNC} @var{ITEMS}
-@end example
-
-@noindent
-where @var{ITEMS} is an index array containing values from the slots of the arrays in @var{ARRYS}.
-If @var{FUNC} returns false: the iteration stops and @func{mbfl_array_multi_for_each} returns
-immediately.
-
-@example
-declare VAR
-
-function FUNC () @{
-    mbfl_mandatory_nameref_parameter(ITEMS, 1, reference to index array of items)
+function operator () @{
+    mbfl_mandatory_nameref_parameter(RV,    1, reference to result variable)
+    mbfl_mandatory_nameref_parameter(VALUES, 2, reference to index array of values)
     declare -i I VALUE=0
 
-    for ((I=0; I < mbfl_slots_number(ITEMS); ++I))
-    do let VALUE+=mbfl_slot_ref(ITEMS, $I)
+    for ((I=0; I < mbfl_slots_number(VALUES); ++I))
+    do let VALUE+=mbfl_slot_qref(VALUES, $I)
     done
-    VAR+=$VALUE
+    RV+=$VALUE
 @}
 
 mbfl_declare_index_array_varref(ARRY1, (1   2   3   4))
@@ -12148,15 +12510,20 @@ mbfl_declare_index_array_varref(ARRY2, (10  20  30  40))
 mbfl_declare_index_array_varref(ARRY3, (100 200 300 400))
 mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
 
-mbfl_array_multi_for_each FUNC _(ARRYS)
+mbfl_multi_array_left_map  _(L_RESULT) 'operator' _(ARRYS)
+mbfl_multi_array_right_map _(R_RESULT) 'operator' _(ARRYS)
 
-"$VAR"  @result{} 111222333444
+"$@{L_RESULT[@@]@}"     @result{} 111 222 333 444
+"$@{R_RESULT[@@]@}"     @result{} 111 222 333 444
 @end example
 @end defun
 
 @c page
 @node libmbfl-containers arrays copy
 @appendixsubsec Copying values
+
+
+@ParameterSemanticsARRY{}
 
 
 @defun mbfl_array_range_copy @var{DST_ARRY} @var{DST_IDX} @var{SRC_ARRY} @var{SRC_IDX} @var{NUMBER_OF_SLOTS}

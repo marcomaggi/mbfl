@@ -42,11 +42,93 @@ then
 fi
 
 
+#### arrays: subroutines for multi arrays handling
+
+# Given the  index array of  index arrays "mbfl_ARRYS"  store in the  result variable the  number of
+# slots in the first subarray.
+#
+function mbfl_p_multi_array_number_of_slots_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_SLOTS_NUMBER, 1, reference to result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,        2, reference to index array of index arrays)
+    mbfl_declare_nameref(mbfl_ARRY, mbfl_slot_ref(mbfl_ARRYS, 0))
+    mbfl_SLOTS_NUMBER=mbfl_slots_number(mbfl_ARRY)
+}
+
+
+#### arrays: inspection
+
+function mbfl_multi_array_equal_size_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_SIZE_RV, 1, reference to result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,   2, reference to index array of index arrays)
+    declare -i mbfl_NUM_OF_ARRYS=mbfl_slots_number(mbfl_ARRYS)
+
+    if   ((0 == mbfl_NUM_OF_ARRYS))
+    then mbfl_SIZE_RV=0
+    else
+	mbfl_declare_nameref(mbfl_ARRY0, mbfl_slot_ref(mbfl_ARRYS, 0))
+	declare -i mbfl_I mbfl_NUM_OF_SLOTS0=mbfl_slots_number(mbfl_ARRY0)
+
+	for ((mbfl_I=1; mbfl_I < mbfl_NUM_OF_ARRYS; ++mbfl_I))
+	do
+	    mbfl_declare_nameref(mbfl_ARRY, mbfl_slot_ref(mbfl_ARRYS, $mbfl_I))
+	    if ((mbfl_NUM_OF_SLOTS0 != mbfl_slots_number(mbfl_ARRY)))
+	    then return_failure
+	    fi
+	done
+	mbfl_SIZE_RV=$mbfl_NUM_OF_SLOTS0
+    fi
+    return_success
+}
+
+function mbfl_multi_array_homologous_slots_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOMOLOGOUS_VALUES,	1, reference to result index array variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,		2, reference to index array of index arrays)
+    mbfl_mandatory_parameter(mbfl_INDEX,			3, slot index)
+
+    declare -i mbfl_NUM_OF_ARRYS=mbfl_slots_number(mbfl_ARRYS)
+
+    if ((0 == mbfl_NUM_OF_ARRYS))
+    then return_success
+    else
+	declare -i mbfl_I mbfl_J
+
+	for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_ARRYS; ++mbfl_I))
+	do
+	    mbfl_declare_nameref(mbfl_ARRY, mbfl_slot_qref(mbfl_ARRYS, $mbfl_I))
+	    mbfl_slot_set(mbfl_HOMOLOGOUS_VALUES, $mbfl_I, mbfl_slot_qref(mbfl_ARRY, $mbfl_INDEX))
+	done
+    fi
+}
+
+
 #### arrays: comparison
 
+function mbfl_array_equal_values () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
+    mbfl_optional_parameter(mbfl_COMPAR,	2, mbfl_string_equal)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    #mbfl_array_dump _(mbfl_ARRY) mbfl_ARRY
+
+    if ((0 != mbfl_DIM && 1 != mbfl_DIM))
+    then
+	declare -i mbfl_I
+	declare mbfl_VALUE0=mbfl_slot_qref(mbfl_ARRY, 0)
+
+	for ((mbfl_I=1; mbfl_I < mbfl_DIM; ++mbfl_I))
+	do
+	    #echo $FUNCNAME $mbfl_I VALUE0="$mbfl_VALUE0" VALUE${mbfl_I}=mbfl_slot_qref(mbfl_ARRY, $mbfl_I) >&2
+	    if ! "$mbfl_COMPAR" "$mbfl_VALUE0" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	    then return_failure
+	    fi
+	done
+    fi
+    return_success
+}
 function mbfl_array_equal () {
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY1, 1, reference to index array)
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY2, 2, reference to index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	1, reference to index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	2, reference to index array)
+    mbfl_optional_parameter(mbfl_COMPAR,		3, mbfl_string_equal)
     declare -i mbfl_I mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
 
     if (( mbfl_DIM1 != mbfl_DIM2 ))
@@ -55,108 +137,189 @@ function mbfl_array_equal () {
     for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
     do
 	#echo $FUNCNAME mbfl_slot_qref(mbfl_ARRY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRY2, $mbfl_I) >&2
-	if ! mbfl_string_equal mbfl_slot_qref(mbfl_ARRY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRY2, $mbfl_I)
+	if ! "$mbfl_COMPAR" mbfl_slot_qref(mbfl_ARRY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRY2, $mbfl_I)
 	then return_failure
 	fi
     done
     return_success
 }
+function mbfl_multi_array_equal () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
+    mbfl_optional_parameter(mbfl_COMPAR,		2, mbfl_string_equal)
 
-
-#### arrays: iterating, mapping, folding
+    if ((0 != mbfl_slots_number(mbfl_ARRYS)))
+    then
+	mbfl_declare_integer_varref(mbfl_NUM_OF_SLOTS)
 
-function mbfl_array_for_each () {
-    mbfl_mandatory_parameter(mbfl_FUNC,		1, function to apply)
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	2, reference to index array)
-    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+	if mbfl_multi_array_equal_size_var _(mbfl_NUM_OF_SLOTS) _(mbfl_ARRYS)
+	then
+	    mbfl_declare_index_array_varref(mbfl_HOMOLOGOUS_VALUES)
+	    declare -i mbfl_I
 
-    for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
-    do
-	if ! "$mbfl_FUNC" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
-	then return_because_failure
+	    #echo $FUNCNAME mbfl_NUM_OF_SLOTS=$mbfl_NUM_OF_SLOTS >&2
+	    for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+	    do
+		mbfl_multi_array_homologous_slots_var _(mbfl_HOMOLOGOUS_VALUES) _(mbfl_ARRYS) $mbfl_I
+		#mbfl_array_dump _(mbfl_HOMOLOGOUS_VALUES) mbfl_HOMOLOGOUS_VALUES$mbfl_I
+		if ! mbfl_array_equal_values _(mbfl_HOMOLOGOUS_VALUES) "$mbfl_COMPAR"
+		then return_failure
+		fi
+	    done
+	else return_failure
 	fi
-    done
-}
-
-function mbfl_array_map () {
-    mbfl_mandatory_parameter(mbfl_FUNC,			1, function to map)
-    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	2, reference to destination index array)
-    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	3, reference to source index array)
-    declare -i mbfl_I mbfl_DST_DIM=mbfl_slots_number(mbfl_DST_ARRY)
-    mbfl_declare_varref(mbfl_ITEM)
-
-    for ((mbfl_I=0; mbfl_I < mbfl_DST_DIM; ++mbfl_I))
-    do
-	if "$mbfl_FUNC" _(mbfl_ITEM) mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
-	then mbfl_slot_set(mbfl_DST_ARRY, $mbfl_I, "$mbfl_ITEM")
-	else return_because_failure
-	fi
-    done
-}
-function mbfl_array_fold_left () {
-    mbfl_mandatory_parameter(mbfl_NIL,		1, the nil value)
-    mbfl_mandatory_parameter(mbfl_FUNC,		2, function to apply)
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	3, reference to the index array)
-    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
-
-    for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
-    do
-	if ! "$mbfl_FUNC" "$mbfl_NIL" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
-	then return_because_failure
-	fi
-    done
-}
-function mbfl_array_fold_right () {
-    mbfl_mandatory_parameter(mbfl_NIL,		1, the nil value)
-    mbfl_mandatory_parameter(mbfl_FUNC,		2, function to apply)
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	3, reference to the index array)
-    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
-
-    for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
-    do
-	if ! "$mbfl_FUNC" "$mbfl_NIL" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
-	then return_because_failure
-	fi
-    done
+    fi
+    return_success
 }
 
 
-#### arrays: multi iterating, multi mapping, multi folding
+#### arrays: folding
 
-function mbfl_array_multi_for_each () {
-    mbfl_mandatory_parameter(mbfl_FUNC,		 1, function to apply)
-    mbfl_mandatory_nameref_parameter(mbfl_ARRYS, 2, reference to index array of index arrays)
+m4_define([[[MBFL_DEFINE_ARRAY_FOLD_FUNC]]],[[[
+function $1 () {
+    mbfl_mandatory_parameter(mbfl_ACCUM,	1, the nil value)
+    mbfl_mandatory_parameter(mbfl_OPERATOR,	2, operator to apply)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	3, reference to the index array)
+    declare -i mbfl_I mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_ARRY) mbfl_RETURN_STATUS
 
-    declare -i mbfl_NUM_OF_ARRYS=mbfl_slots_number(mbfl_ARRYS)
-    declare -i mbfl_I mbfl_J
-
-    mbfl_declare_integer_varref(mbfl_NUM_OF_SLOTS)
-    mbfl_p_array_multi_number_of_slots _(mbfl_NUM_OF_SLOTS) _(mbfl_ARRYS)
-
-    for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+    for $2
     do
-	mbfl_declare_index_array_varref(mbfl_ITEMS)
+	"$mbfl_OPERATOR" "$mbfl_ACCUM" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	mbfl_RETURN_STATUS=$?
+	if ((0 != mbfl_RETURN_STATUS))
+	then return $mbfl_RETURN_STATUS
+	fi
+    done
+}
+]]])
+MBFL_DEFINE_ARRAY_FOLD_FUNC([[[mbfl_array_left_fold]]], [[[((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))]]])
+MBFL_DEFINE_ARRAY_FOLD_FUNC([[[mbfl_array_right_fold]]],[[[((mbfl_I=mbfl_NUM_OF_SLOTS-1; mbfl_I >= 0; --mbfl_I))]]])
 
-	for ((mbfl_J=0; mbfl_J < mbfl_NUM_OF_ARRYS; ++mbfl_J))
+m4_define([[[MBFL_DEFINE_MULTI_ARRAY_FOLD_FUNC]]],[[[
+function $1 () {
+    mbfl_mandatory_parameter(mbfl_ACCUM,		1, the nil value)
+    mbfl_mandatory_parameter(mbfl_OPERATOR,		2, operator to apply)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	3, reference to the index array of index arrays)
+
+    if ((0 != mbfl_slots_number(mbfl_ARRYS)))
+    then
+	mbfl_declare_integer_varref(mbfl_NUM_OF_SLOTS)
+	mbfl_p_multi_array_number_of_slots_var _(mbfl_NUM_OF_SLOTS) _(mbfl_ARRYS)
+
+	mbfl_declare_index_array_varref(mbfl_HOMOLOGOUS_VALUES)
+	declare -i mbfl_I
+
+	for $2
 	do
-	    mbfl_declare_nameref(mbfl_ARRY, mbfl_slot_ref(mbfl_ARRYS, $mbfl_J))
-	    mbfl_slot_set(mbfl_ITEMS, $mbfl_J, mbfl_slot_qref(mbfl_ARRY, $mbfl_I))
+	    mbfl_multi_array_homologous_slots_var _(mbfl_HOMOLOGOUS_VALUES) _(mbfl_ARRYS) $mbfl_I
+	    "$mbfl_OPERATOR" "$mbfl_ACCUM" _(mbfl_HOMOLOGOUS_VALUES)
+	    mbfl_RETURN_STATUS=$?
+	    if ((0 != mbfl_RETURN_STATUS))
+	    then return $mbfl_RETURN_STATUS
+	    fi
 	done
+    fi
+    return_success
+}
+]]])
+MBFL_DEFINE_MULTI_ARRAY_FOLD_FUNC([[[mbfl_multi_array_left_fold]]], [[[((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))]]])
+MBFL_DEFINE_MULTI_ARRAY_FOLD_FUNC([[[mbfl_multi_array_right_fold]]],[[[((mbfl_I=mbfl_NUM_OF_SLOTS-1; mbfl_I >= 0; --mbfl_I))]]])
 
-	if ! "$mbfl_FUNC" _(mbfl_ITEMS)
-	then return_because_failure
-	fi
-    done
+
+#### arrays: for-each iterations
+
+m4_define([[[MBFL_DEFINE_ARRAY_FOREACH_FUNC]]],[[[
+function $1 () {
+    mbfl_declare_index_array_varref(mbfl_ACCUM, ${1:?"missing parameter operator in call to '$FUNCNAME'"})
+    $2 _(mbfl_ACCUM) \
+       'mbfl_p_array_fold_operator_foreach' \
+       ${2:?"missing parameter reference to index array in call to '$FUNCNAME'"}
+}
+]]])
+MBFL_DEFINE_ARRAY_FOREACH_FUNC([[[mbfl_array_left_foreach]]], [[[mbfl_array_left_fold]]])
+MBFL_DEFINE_ARRAY_FOREACH_FUNC([[[mbfl_array_right_foreach]]],[[[mbfl_array_right_fold]]])
+function mbfl_p_array_fold_operator_foreach () {
+    mbfl_mandatory_nameref_parameter(mbfl_ACCUM,1, the accumulator)
+    mbfl_mandatory_parameter(mbfl_VALUE,	2, the value from the array)
+    "$mbfl_ACCUM" "$mbfl_VALUE"
 }
 
 ### ------------------------------------------------------------------------
 
-function mbfl_p_array_multi_number_of_slots () {
-    mbfl_mandatory_nameref_parameter(mbfl_SLOTS_NUMBER, 1, reference to result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,        2, reference to index array of index arrays)
-    mbfl_declare_nameref(mbfl_ARRY, mbfl_slot_ref(mbfl_ARRYS, 0))
-    mbfl_SLOTS_NUMBER=mbfl_slots_number(mbfl_ARRY)
+m4_define([[[MBFL_DEFINE_MULTI_ARRAY_FOREACH_FUNC]]],[[[
+function $1 () {
+    mbfl_declare_index_array_varref(mbfl_ACCUM, ${1:?"missing parameter operator in call to '$FUNCNAME'"})
+    $2 _(mbfl_ACCUM) \
+       'mbfl_p_multi_array_fold_operator_foreach' \
+       ${2:?"missing parameter reference to index array of index arrays in call to '$FUNCNAME'"}
 }
+]]])
+MBFL_DEFINE_MULTI_ARRAY_FOREACH_FUNC([[[mbfl_multi_array_left_foreach]]], [[[mbfl_multi_array_left_fold]]])
+MBFL_DEFINE_MULTI_ARRAY_FOREACH_FUNC([[[mbfl_multi_array_right_foreach]]],[[[mbfl_multi_array_right_fold]]])
+function mbfl_p_multi_array_fold_operator_foreach () {
+    mbfl_mandatory_nameref_parameter(mbfl_ACCUM,1, the accumulator)
+    mbfl_mandatory_parameter(mbfl_VALUE,	2, the value from the array)
+    "$mbfl_ACCUM" "$mbfl_VALUE"
+}
+
+
+#### arrays: map iterations
+
+m4_define([[[MBFL_DEFINE_ARRAY_MAP_FUNC]]],[[[
+function $1 () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_parameter(mbfl_OPERATOR,		2, operator to map)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	3, reference to source index array)
+    declare -i mbfl_I mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRY) mbfl_RETURN_STATUS
+    mbfl_declare_varref(mbfl_DST_VALUE)
+
+    for $2
+    do
+	"$mbfl_OPERATOR" _(mbfl_DST_VALUE) mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
+	mbfl_RETURN_STATUS=$?
+	if ((0 == mbfl_RETURN_STATUS))
+	then mbfl_slot_set(mbfl_DST_ARRY, $mbfl_I, "$mbfl_DST_VALUE")
+	else return $mbfl_RETURN_STATUS
+	fi
+    done
+}
+]]])
+MBFL_DEFINE_ARRAY_MAP_FUNC([[[mbfl_array_left_map]]], [[[((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))]]])
+MBFL_DEFINE_ARRAY_MAP_FUNC([[[mbfl_array_right_map]]],[[[((mbfl_I=mbfl_NUM_OF_SLOTS-1; mbfl_I >= 0; --mbfl_I))]]])
+
+### ------------------------------------------------------------------------
+
+m4_define([[[MBFL_DEFINE_MULTI_ARRAY_MAP_FUNC]]],[[[
+function $1 () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,  1, reference to index array of index arrays)
+    mbfl_mandatory_parameter(mbfl_OPERATOR,	     2, operator to apply)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRYS, 3, reference to index array of index arrays)
+
+    if ((0 != mbfl_slots_number(mbfl_SRC_ARRYS)))
+    then
+	declare -i mbfl_I
+
+	mbfl_declare_integer_varref(mbfl_NUM_OF_SLOTS)
+	mbfl_p_multi_array_number_of_slots_var _(mbfl_NUM_OF_SLOTS) _(mbfl_SRC_ARRYS)
+
+	for $2
+	do
+	    mbfl_declare_index_array_varref(mbfl_HOMOLOGOUS_VALUES)
+	    mbfl_declare_varref(mbfl_NEW_VAL)
+
+	    mbfl_multi_array_homologous_slots_var _(mbfl_HOMOLOGOUS_VALUES) _(mbfl_SRC_ARRYS) $mbfl_I
+
+	    "$mbfl_OPERATOR" _(mbfl_NEW_VAL) _(mbfl_HOMOLOGOUS_VALUES)
+	    declare -i mbfl_RETURN_STATUS=$?
+	    if ((0 == mbfl_RETURN_STATUS))
+	    then mbfl_slot_set(mbfl_DST_ARRY, $mbfl_I, "$mbfl_NEW_VAL")
+	    else return $mbfl_RETURN_STATUS
+	    fi
+	done
+    fi
+}
+]]])
+MBFL_DEFINE_MULTI_ARRAY_MAP_FUNC([[[mbfl_multi_array_left_map]]], [[[((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))]]])
+MBFL_DEFINE_MULTI_ARRAY_MAP_FUNC([[[mbfl_multi_array_right_map]]],[[[((mbfl_I=mbfl_NUM_OF_SLOTS-1; mbfl_I >= 0; --mbfl_I))]]])
 
 
 #### arrays: copying
@@ -224,12 +387,12 @@ function mbfl_stack_size_var () {
 function mbfl_stack_push () {
     mbfl_mandatory_nameref_parameter(mbfl_STACK, 1, reference to object of class mbfl_stack_t)
     shift
-    declare mbfl_ITEM
+    declare mbfl_VALUE
 
     MBFL_STACK_VALIDATE_PARAMETER(mbfl_STACK)
     MBFL_STACK_ACCESS_ARRAY(mbfl_STACK, mbfl_ARRAY)
-    for mbfl_ITEM in "$@"
-    do mbfl_slot_set(mbfl_ARRAY, mbfl_slots_number(mbfl_ARRAY), "$mbfl_ITEM")
+    for mbfl_VALUE in "$@"
+    do mbfl_slot_set(mbfl_ARRAY, mbfl_slots_number(mbfl_ARRAY), "$mbfl_VALUE")
     done
     return_success
 }
