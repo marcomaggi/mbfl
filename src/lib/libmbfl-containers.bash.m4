@@ -69,14 +69,14 @@ function mbfl_array_tabulate () {
 	do mbfl_slot_set(mbfl_ARRY, $mbfl_I, $mbfl_I)
 	done
     else
-	mbfl_declare_varref(mbfl_RETVAL)
+	mbfl_declare_varref(mbfl_RV)
 
 	for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
 	do
-	    "$mbfl_INITIALISER" _(mbfl_RETVAL) $mbfl_I
+	    "$mbfl_INITIALISER" _(mbfl_RV) $mbfl_I
 	    mbfl_RETURN_STATUS=$?
 	    if ((0 == $mbfl_RETURN_STATUS))
-	    then mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_RETVAL")
+	    then mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_RV")
 	    else return $mbfl_RETURN_STATUS
 	    fi
 	done

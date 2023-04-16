@@ -116,23 +116,23 @@ function mbfl_variable_colon_variable_drop_duplicate () {
 # equal identifiers.
 #
 function mbfl_variable_alloc () {
-    mbfl_mandatory_nameref_parameter(mbfl_RV, 1, result variable)
-    mbfl_optional_parameter(mbfl_STEM, 2)
+    mbfl_mandatory_nameref_parameter(_mbfl___RV, 1, result variable)
+    mbfl_optional_parameter(_mbfl___STEM, 2)
 
-    mbfl_RV=mbfl_u_variable_${mbfl_STEM}${RANDOM}
-    while test -v $mbfl_RV
-    do mbfl_RV=mbfl_u_variable_${mbfl_STEM}${RANDOM}
+    _mbfl___RV=mbfl_u_variable_${_mbfl___STEM}${RANDOM}
+    while test -v $_mbfl___RV
+    do _mbfl___RV=mbfl_u_variable_${_mbfl___STEM}${RANDOM}
     done
-    #echo $FUNCNAME $mbfl_RV >&2
+    #echo $FUNCNAME $_mbfl___RV >&2
     return 0
 }
 
 # declare -i MBFL_VARIABLE_COUNTER=0
 
 # function mbfl_variable_alloc () {
-#     mbfl_mandatory_nameref_parameter(mbfl_RV, 1, result variable)
-#     printf -v mbfl_RV 'mbfl_u_variable_%d' $MBFL_VARIABLE_COUNTER
-#     printf '%s\n' $mbfl_RV >&2
+#     mbfl_mandatory_nameref_parameter(_mbfl___RV, 1, result variable)
+#     printf -v _mbfl___RV 'mbfl_u_variable_%d' $MBFL_VARIABLE_COUNTER
+#     printf '%s\n' $_mbfl___RV >&2
 #     let ++MBFL_VARIABLE_COUNTER
 # }
 
