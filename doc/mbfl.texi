@@ -12481,9 +12481,9 @@ mbfl_slot_ref(DST, 2)   @result{} C
 
 @defun mbfl_multi_array_left_map @var{DST_ARRY} @var{OPERATOR} @var{SRC_ARRYS}
 @defunx mbfl_multi_array_right_map @var{DST_ARRY} @var{OPERATOR} @var{SRC_ARRYS}
-Apply the @var{OPERATOR} to the tuple of homologous values from @var{SRC_ARRYS} for the purpose of
-generating result values that are stored in the homologous slots of @var{DST_ARRY}.  @var{OPERATOR}
-is used in a command line as follows:
+Apply the @var{OPERATOR} to every tuple of values in homologous slots from @var{SRC_ARRYS} for the
+purpose of generating result values that are stored in the homologous slot of @var{DST_ARRY}.
+@var{OPERATOR} is used in a command line as follows:
 
 @example
 @var{OPERATOR} @var{RV} @var{VALUES}
@@ -12495,7 +12495,7 @@ is the variable in which to store the result of @var{OPERATOR}'s application.
 
 @example
 function operator () @{
-    mbfl_mandatory_nameref_parameter(RV,    1, reference to result variable)
+    mbfl_mandatory_nameref_parameter(RV,     1, reference to result variable)
     mbfl_mandatory_nameref_parameter(VALUES, 2, reference to index array of values)
     declare -i I VALUE=0
 
