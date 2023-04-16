@@ -12320,8 +12320,8 @@ mbfl_array_right_fold _(RACCUM) operator _(ARRY)
 
 @defun mbfl_multi_array_left_fold @var{ACCUM} @var{OPERATOR} @var{ARRYS}
 @defunx mbfl_multi_array_right_fold @var{ACCUM} @var{OPERATOR} @var{ARRYS}
-Iterate over @var{ARRYS} and apply @var{OPERATOR} to @var{ACCUM} and the homologous values from
-@var{ARRY}'s slots.  @var{OPERATOR} is used in a command line as follows:
+Iterate over @var{ARRYS} and apply @var{OPERATOR} to @var{ACCUM} and a tuple of values in homologous
+slots from @var{ARRY}.  @var{OPERATOR} is used in a command line as follows:
 
 @example
 @var{OPERATOR} @var{ACCUM} @var{VALUES}
@@ -12401,8 +12401,8 @@ mbfl_array_left_foreach echo _(ARRY)
 
 @defun mbfl_array_multi_left_foreach @var{OPERATOR} @var{ARRYS}
 @defunx mbfl_array_multi_right_foreach @var{OPERATOR} @var{ARRYS}
-Apply the @var{OPERATOR} to the tuple of homologous values from @var{ARRYS} for the purpose of
-generating some side effect.  @var{OPERATOR} is used in a command line as follows:
+Apply the @var{OPERATOR} to every tuple of values in homologous slots from @var{ARRYS} for the
+purpose of generating some side effect.  @var{OPERATOR} is used in a command line as follows:
 
 @example
 @var{OPERATOR} @var{HOMOLOGOUS_VALUES}
