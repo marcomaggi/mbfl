@@ -461,6 +461,35 @@ function mbfl_multi_array_append () {
 }
 
 
+#### arrays: miscellaneous
+
+function mbfl_array_reverse () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,  1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,  2, reference to source index array)
+    declare -i mbfl_DST_NUM_OF_SLOTS=mbfl_slots_number(mbfl_DST_ARRY)
+    declare -i mbfl_SRC_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRY)
+    declare -i mbfl_I
+
+    for ((mbfl_I=0; mbfl_I < mbfl_SRC_NUM_OF_SLOTS; ++mbfl_I))
+    do mbfl_slot_set(mbfl_DST_ARRY, $mbfl_I, mbfl_slot_qref(mbfl_SRC_ARRY,$((mbfl_SRC_NUM_OF_SLOTS-mbfl_I-1))))
+    done
+}
+function mbfl_array_zip () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,  1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,     2, reference to source index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,     3, reference to source index array)
+    declare -i mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_ARRY1)
+    declare -i mbfl_I mbfl_J
+
+    for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I, ++mbfl_J))
+    do
+	mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, mbfl_slot_qref(mbfl_ARRY1,$mbfl_I))
+	let ++mbfl_J
+	mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, mbfl_slot_qref(mbfl_ARRY2,$mbfl_I))
+    done
+}
+
+
 #### stacks
 
 m4_define([[[MBFL_STACK_ACCESS_ARRAY]]],[[[

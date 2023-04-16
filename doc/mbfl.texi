@@ -11973,6 +11973,7 @@ parameters we should use the vector container, @ref{libmbfl-containers vectors, 
 * libmbfl-containers arrays map::          Mapping values in indexed arrays.
 * libmbfl-containers arrays copy::         Copying values.
 * libmbfl-containers arrays append::       Appending values to arrays.
+* libmbfl-containers arrays misc::         Miscellaneous array operations.
 @end menu
 
 @c page
@@ -12721,6 +12722,44 @@ mbfl_multi_array_append _(DST_ARRY) _(SRC_ARRYS)
 mbfl_slots_qvalues(DST_ARRY)    @result{} a b c d e A B C D E F G H I
 @end example
 @end defun
+
+@c page
+@node libmbfl-containers arrays misc
+@appendixsubsec Miscellaneous array operations
+
+
+@ParameterSemanticsARRY{}
+
+
+@defun mbfl_array_reverse @var{DST_ARRY} @var{SRC_ARRY}
+Copy values from @var{SRC_ARRY} to @var{DST_ARRY} in reverse order.
+
+@example
+mbfl_declare_index_array_varref(DST_ARRY)
+mbfl_declare_index_array_varref(SRC_ARRY, (a b c d e))
+
+mbfl_array_reverse _(DST_ARRY) _(SRC_ARRY)
+
+mbfl_slots_qvalues(DST_ARRY)    @result{} e d c b a
+@end example
+@end defun
+
+
+@defun mbfl_array_zip @var{DST_ARRY} @vari{ARRY} @varii{ARRY}
+Zip values from @vari{ARRY} and @varii{ARRY} into @var{DST_ARRY}.  @vari{ARRY} and @varii{ARRY} must
+have the same size.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2, (A B C D E))
+mbfl_declare_index_array_varref(DST_ARRY)
+
+mbfl_array_zip _(DST_ARRY) _(ARRY1) _(ARRY2)
+
+mbfl_slots_qvalues(DST_ARRY)    @result{} a A b B c C d D e E
+@end example
+@end defun
+
 
 @c page
 @node libmbfl-containers vectors

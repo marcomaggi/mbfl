@@ -824,6 +824,8 @@
        "mbfl_array_right_take"
        "mbfl_array_right_drop"
        "mbfl_array_split_at"
+       "mbfl_array_reverse"
+       "mbfl_array_zip"
        "mbfl_multi_array_append"
        "mbfl_multi_array_equal"
        "mbfl_multi_array_equal_size_var"
