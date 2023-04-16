@@ -11966,6 +11966,7 @@ parameters we should use the vector container, @ref{libmbfl-containers vectors, 
 * libmbfl-containers arrays conventions::  Conventions.
 * libmbfl-containers arrays makers::       Array constructors.
 * libmbfl-containers arrays inspection::   Inspecting arrays.
+* libmbfl-containers arrays selectors::    Selecting values from arrays.
 * libmbfl-containers arrays compar::       Comparing values.
 * libmbfl-containers arrays fold::         Folding values in indexed arrays.
 * libmbfl-containers arrays foreach::      Iterating over values in indexed arrays.
@@ -12286,6 +12287,75 @@ mbfl_multi_array_homologous_slots_var _(HOMOLOGOUS_VALUES_ARRY) _(ARRYS) 4
 mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 0)        @result{} e
 mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 1)        @result{} l
 mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 2)        @result{} q
+@end example
+@end defun
+
+@c page
+@node libmbfl-containers arrays selectors
+@appendixsubsec Selecting values from arrays
+
+
+@ParameterSemanticsARRY{}
+
+
+@defun mbfl_array_left_take @var{DST_ARRY} @var{SRC_ARRY} @var{NUM_OF_SLOTS}
+@defunx mbfl_array_right_take @var{DST_ARRY} @var{SRC_ARRY} @var{NUM_OF_SLOTS}
+Take the leftmost or rightmost @var{NUM_OF_SLOTS} values from @var{SRC_ARRY} and store them in the
+leftmost @var{NUM_OF_SLOTS} of @var{DST_ARRY}.
+
+@example
+mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+mbfl_declare_index_array_varref(L_RESULT)
+mbfl_declare_index_array_varref(R_RESULT)
+
+mbfl_array_left_take  _(L_RESULT) _(ARRY) 3
+mbfl_array_right_take _(R_RESULT) _(ARRY) 3
+
+mbfl_slots_qvalues(L_RESULT)    @result{} a b c
+mbfl_slots_qvalues(R_RESULT)    @result{} g h i
+@end example
+@end defun
+
+
+@defun mbfl_array_left_drop @var{DST_ARRY} @var{SRC_ARRY} @var{NUM_OF_SLOTS}
+@defunx mbfl_array_right_drop @var{DST_ARRY} @var{SRC_ARRY} @var{NUM_OF_SLOTS}
+Drop the leftmost or rightmost @var{NUM_OF_SLOTS} values from @var{SRC_ARRY} and store the remaining
+values in the leftmost @var{NUM_OF_SLOTS} of @var{DST_ARRY}.
+
+@example
+mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+mbfl_declare_index_array_varref(L_RESULT)
+mbfl_declare_index_array_varref(R_RESULT)
+
+mbfl_array_left_drop  _(L_RESULT) _(ARRY) 3
+mbfl_array_right_drop _(R_RESULT) _(ARRY) 3
+
+mbfl_slots_qvalues(L_RESULT)    @result{} d e f g h i
+mbfl_slots_qvalues(R_RESULT)    @result{} a b c d e f
+@end example
+@end defun
+
+
+@defun mbfl_array_split_at @var{PREFIX_ARRY} @var{SUFFIX_ARRY} @var{ARRY} @var{IDX}
+Copy values from @var{ARRY} to @var{PREFIX_ARRY} and @var{SUFFIX_ARRY}:
+
+@itemize
+@item
+values from the range @samp{0} included, @var{IDX} excluded are copied to @var{PREFIX_ARRY};
+
+@item
+values from the range @samp{IDX} included, end are copied to @var{SUFFIX_ARRY}.
+@end itemize
+
+@example
+mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+mbfl_declare_index_array_varref(PREFIX)
+mbfl_declare_index_array_varref(SUFFIX)
+
+mbfl_array_split_at _(PREFIX) _(SUFFIX) _(ARRY) 4
+
+mbfl_slots_qvalues(PREFIX)      @result{} a b c d
+mbfl_slots_qvalues(SUFFIX)      @result{} e f g h i
 @end example
 @end defun
 

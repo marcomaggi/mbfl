@@ -144,6 +144,54 @@ function mbfl_multi_array_homologous_slots_var () {
 }
 
 
+#### arrays: selectors
+
+function mbfl_array_left_take () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
+    mbfl_mandatory_integer_parameter(mbfl_NUM_OF_SLOTS,	3, number of slots)
+
+    mbfl_array_range_copy _(mbfl_DST_ARRY) 0 _(mbfl_SRC_ARRY) 0 $mbfl_NUM_OF_SLOTS
+}
+function mbfl_array_right_take () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
+    mbfl_mandatory_integer_parameter(mbfl_NUM_OF_SLOTS,	3, number of slots)
+
+    declare -i mbfl_START=mbfl_slots_number(mbfl_SRC_ARRY)-mbfl_NUM_OF_SLOTS
+    declare -i mbfl_COUNT=mbfl_NUM_OF_SLOTS
+    mbfl_array_range_copy _(mbfl_DST_ARRY) 0 _(mbfl_SRC_ARRY) $mbfl_START $mbfl_COUNT
+}
+function mbfl_array_left_drop () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
+    mbfl_mandatory_integer_parameter(mbfl_NUM_OF_SLOTS,	3, number of slots)
+
+    declare -i mbfl_START=mbfl_NUM_OF_SLOTS
+    declare -i mbfl_COUNT=mbfl_slots_number(mbfl_SRC_ARRY)-mbfl_NUM_OF_SLOTS
+    mbfl_array_range_copy _(mbfl_DST_ARRY) 0 _(mbfl_SRC_ARRY) $mbfl_START $mbfl_COUNT
+}
+function mbfl_array_right_drop () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
+    mbfl_mandatory_integer_parameter(mbfl_NUM_OF_SLOTS,	3, number of slots)
+
+    declare -i mbfl_START=0
+    declare -i mbfl_COUNT=mbfl_slots_number(mbfl_SRC_ARRY)-mbfl_NUM_OF_SLOTS
+    mbfl_array_range_copy _(mbfl_DST_ARRY) 0 _(mbfl_SRC_ARRY) $mbfl_START $mbfl_COUNT
+}
+function mbfl_array_split_at () {
+    mbfl_mandatory_nameref_parameter(mbfl_PREFIX_ARRY,	1, reference to prefix index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SUFFIX_ARRY,	2, reference to suffix index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		3, reference to source index array)
+    mbfl_mandatory_integer_parameter(mbfl_IDX,		4, index)
+
+    declare -i mbfl_COUNT=mbfl_slots_number(mbfl_ARRY)-mbfl_IDX
+    mbfl_array_range_copy _(mbfl_PREFIX_ARRY) 0 _(mbfl_ARRY) 0 $mbfl_IDX
+    mbfl_array_range_copy _(mbfl_SUFFIX_ARRY) 0 _(mbfl_ARRY) $mbfl_IDX $mbfl_COUNT
+}
+
+
 #### arrays: comparison
 
 function mbfl_array_equal_values () {
