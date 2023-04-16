@@ -55,6 +55,35 @@ function mbfl_p_multi_array_number_of_slots_var () {
 }
 
 
+#### arrays: makers
+
+function mbfl_array_tabulate () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, destination index array)
+    mbfl_mandatory_integer_parameter(mbfl_NUM_OF_SLOTS,	2, number of slots to initialise)
+    mbfl_optional_parameter(mbfl_INITIALISER,		3)
+    declare -i mbfl_I
+
+    if mbfl_string_empty(mbfl_INITIALISER)
+    then
+	for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+	do mbfl_slot_set(mbfl_ARRY, $mbfl_I, $mbfl_I)
+	done
+    else
+	mbfl_declare_varref(mbfl_RETVAL)
+
+	for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+	do
+	    "$mbfl_INITIALISER" _(mbfl_RETVAL) $mbfl_I
+	    mbfl_RETURN_STATUS=$?
+	    if ((0 == $mbfl_RETURN_STATUS))
+	    then mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_RETVAL")
+	    else return $mbfl_RETURN_STATUS
+	    fi
+	done
+    fi
+}
+
+
 #### arrays: inspection
 
 function mbfl_multi_array_equal_size_var () {
@@ -343,6 +372,30 @@ function mbfl_array_range_copy () {
 	do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), mbfl_slot_qref(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I))))
 	done
     fi
+}
+
+
+#### arrays: appending
+
+function mbfl_array_append () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,  1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,  2, reference to source index array)
+    declare -i mbfl_DST_NUM_OF_SLOTS=mbfl_slots_number(mbfl_DST_ARRY)
+    declare -i mbfl_SRC_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRY)
+    declare -i mbfl_I
+
+    for ((mbfl_I=0; mbfl_I < mbfl_SRC_NUM_OF_SLOTS; ++mbfl_I))
+    do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_NUM_OF_SLOTS+mbfl_I)), mbfl_slot_qref(mbfl_SRC_ARRY,$mbfl_I))
+    done
+}
+function mbfl_multi_array_append () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,  1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRYS, 2, reference to index array of source index arrays)
+    declare -i mbfl_I mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRYS)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+    do mbfl_array_append _(mbfl_DST_ARRY) mbfl_slot_qref(mbfl_SRC_ARRYS,$mbfl_I)
+    done
 }
 
 

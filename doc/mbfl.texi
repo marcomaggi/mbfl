@@ -11964,12 +11964,14 @@ parameters we should use the vector container, @ref{libmbfl-containers vectors, 
 
 @menu
 * libmbfl-containers arrays conventions::  Conventions.
+* libmbfl-containers arrays makers::       Array constructors.
 * libmbfl-containers arrays inspection::   Inspecting arrays.
 * libmbfl-containers arrays compar::       Comparing values.
 * libmbfl-containers arrays fold::         Folding values in indexed arrays.
 * libmbfl-containers arrays foreach::      Iterating over values in indexed arrays.
 * libmbfl-containers arrays map::          Mapping values in indexed arrays.
 * libmbfl-containers arrays copy::         Copying values.
+* libmbfl-containers arrays append::       Appending values to arrays.
 @end menu
 
 @c page
@@ -12110,9 +12112,9 @@ array_func _(ARRY)
 @cindex Parameter @var{ARRYS}
 @cindex Function parameter @var{ARRYS}
 Every parameter named @var{ARRYS} represents the data variable of an indexed array whose values are
-themselves data variables of indexed arrays.  When such parameter is used in an iteration, mapping
-or folding function: all the referenced indexed arrays @strong{must} have the same number of slots,
-all starting with slot @samp{0}; otherwise the function's behaviour is undefined.
+themselves data variables of indexed arrays.  When such parameter is used in an iteration: all the
+referenced indexed arrays @strong{must} have the same number of slots, all starting with slot
+@samp{0}; otherwise the function's behaviour is undefined.
 
 @example
 mbfl_declare_index_array_varref(ARRY1, (a b c))
@@ -12160,6 +12162,53 @@ where @vari{VALUE} and @varii{VALUE} are values from arrays; @var{COMPAR} must r
 must return false.  @var{COMPAR} is usually an optional parameter, when not given: @var{COMPAR}
 defaults to @func{mbfl_string_equal}.
 @end table
+
+@c page
+@node libmbfl-containers arrays makers
+@appendixsubsec Array constructors
+
+
+@defun mbfl_array_tabulate @var{ARRY} @var{NUM_OF_SLOTS}
+@defunx mbfl_array_tabulate @var{ARRY} @var{NUM_OF_SLOTS} @var{INITIALISER}
+Given the already declared index array @var{ARRY} fill the slots from index @samp{0} included to
+index @var{NUM_OF_SLOTS} excluded.
+
+When the parameter @var{INITIALISER} is not given: each slot's value is its index itself.
+
+@example
+mbfl_declare_index_array_varref(ARRY)
+
+mbfl_array_tabulate _(ARRY) 5
+mbfl_slots_qvalues(ARRY)        @result{} 0 1 2 3 4
+@end example
+
+When the parameter @var{INITIALISER} is given: each slot's value is generated with the command line:
+
+@example
+@var{INITIALISER} @var{RV} @var{IDX}
+@end example
+
+@noindent
+where: @var{IDX} is the index of the slot to fill; @var{RV} is the result variable to be set to the
+new slot's value.  If @var{INITIALISER} returns false: the function returns immediately with return
+status equal to the return status of @var{INITIALISER}.
+
+@example
+function initialiser () @{
+    mbfl_mandatory_nameref_parameter(RV, 1, result variable)
+    mbfl_mandatory_parameter(IDX,        2, slot index)
+
+    let RV=100*IDX
+    return_success
+@}
+
+mbfl_declare_index_array_varref(ARRY)
+
+mbfl_array_tabulate _(ARRY) 5 initialiser
+mbfl_slots_qvalues(ARRY)        @result{} 0 100 200 300 400
+@end example
+@end defun
+
 
 @c page
 @node libmbfl-containers arrays inspection
@@ -12472,9 +12521,7 @@ mbfl_declare_index_array_varref(SRC, (a b c))
 
 mbfl_array_left_map mbfl_string_toupper_var _(DST) _(SRC)
 
-mbfl_slot_ref(DST, 0)   @result{} A
-mbfl_slot_ref(DST, 1)   @result{} B
-mbfl_slot_ref(DST, 2)   @result{} C
+mbfl_slots_qvalues(DST) @result{} A B C
 @end example
 @end defun
 
@@ -12513,8 +12560,8 @@ mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
 mbfl_multi_array_left_map  _(L_RESULT) 'operator' _(ARRYS)
 mbfl_multi_array_right_map _(R_RESULT) 'operator' _(ARRYS)
 
-"$@{L_RESULT[@@]@}"     @result{} 111 222 333 444
-"$@{R_RESULT[@@]@}"     @result{} 111 222 333 444
+mbfl_slots_qvalues(L_RESULT)    @result{} 111 222 333 444
+mbfl_slots_qvalues(R_RESULT)    @result{} 111 222 333 444
 @end example
 @end defun
 
@@ -12537,10 +12584,45 @@ mbfl_declare_index_array_varref(SRC, (a b c d))
 
 mbfl_array_range_copy _(DST) 1 _(SRC) 2 2
 
-mbfl_slot_ref(DST, 0)   @result{} .
-mbfl_slot_ref(DST, 1)   @result{} c
-mbfl_slot_ref(DST, 2)   @result{} d
-mbfl_slot_ref(DST, 3)   @result{} .
+mbfl_slots_qvalues(DST) @result{} . c d .
+@end example
+@end defun
+
+@c page
+@node libmbfl-containers arrays append
+@appendixsubsec Appending values to arrays
+
+
+@ParameterSemanticsARRY{}
+@ParameterSemanticsARRYS{}
+
+
+@defun mbfl_array_append @var{DST_ARRY} @var{SRC_ARRY}
+Append the values from @var{SRC_ARRY} to @var{DST_ARRY}.
+
+@example
+mbfl_declare_index_array_varref(DST_ARRY, (a b c d e))
+mbfl_declare_index_array_varref(SRC_ARRY, (A B C D E))
+
+mbfl_array_append _(DST_ARRY) _(SRC_ARRY)
+mbfl_slots_qvalues(DST_ARRY)    @result{} a b c d e A B C D E
+@end example
+@end defun
+
+
+@defun mbfl_multi_array_append @var{DST_ARRY} @var{SRC_ARRYS}
+Append the values from @var{SRC_ARRYS} to @var{DST_ARRY}.  The indexed arrays in @var{SRC_ARRYS} can
+be of any size.
+
+@example
+mbfl_declare_index_array_varref(DST_ARRY,  (a b c d e))
+mbfl_declare_index_array_varref(SRC_ARRY1, (A B C))
+mbfl_declare_index_array_varref(SRC_ARRY2, (D E))
+mbfl_declare_index_array_varref(SRC_ARRY3, (F G H I))
+mbfl_declare_index_array_varref(SRC_ARRYS, (_(SRC_ARRY1) _(SRC_ARRY2) _(SRC_ARRY3)))
+
+mbfl_multi_array_append _(DST_ARRY) _(SRC_ARRYS)
+mbfl_slots_qvalues(DST_ARRY)    @result{} a b c d e A B C D E F G H I
 @end example
 @end defun
 
