@@ -82,6 +82,20 @@ function mbfl_array_tabulate () {
 	done
     fi
 }
+function mbfl_array_iota () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, destination index array)
+    mbfl_mandatory_parameter(mbfl_NUM_OF_SLOTS,	2, number of slots to initialise)
+    mbfl_optional_parameter(mbfl_START,		3, 0)
+    mbfl_optional_parameter(mbfl_STEP,		4, 1)
+    declare -i mbfl_I
+    mbfl_declare_varref(mbfl_VALUE)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+    do
+	mbfl_math_expr_var _(mbfl_VALUE) "${mbfl_START}+${mbfl_STEP}*${mbfl_I}"
+	mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_VALUE")
+    done
+}
 
 
 #### arrays: inspection

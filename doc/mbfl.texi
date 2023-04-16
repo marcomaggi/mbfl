@@ -12210,6 +12210,32 @@ mbfl_slots_qvalues(ARRY)        @result{} 0 100 200 300 400
 @end defun
 
 
+@defun mbfl_array_iota @var{ARRY} @var{NUM_OF_SLOTS}
+@defunx mbfl_array_iota @var{ARRY} @var{NUM_OF_SLOTS} @var{START} @var{STEP}
+Given the already declared index array @var{ARRY} fill the slots from index @samp{0} included to
+index @var{NUM_OF_SLOTS} excluded.  The slots' values are computed with an equivalent of:
+
+@example
+mbfl_math_expr "$START+$STEP*$IDX"
+@end example
+
+@noindent
+where the optional parameters @var{START} and @var{STEP} default to @samp{0} and @samp{1}.
+
+@example
+mbfl_declare_index_array_varref(ARRY)
+
+mbfl_array_iota _(ARRY) 5
+mbfl_slots_qvalues(ARRY)        @result{} 0 1 2 3 4
+
+mbfl_array_iota _(ARRY) 5 10 5
+mbfl_slots_qvalues(ARRY)        @result{} 10 15 20 25 30
+
+mbfl_array_iota _(ARRY) 5 1.0 0.1
+mbfl_slots_qvalues(ARRY)        @result{} 1 1.1 1.2 1.3 1.4
+@end example
+@end defun
+
 @c page
 @node libmbfl-containers arrays inspection
 @appendixsubsec Inspecting arrays

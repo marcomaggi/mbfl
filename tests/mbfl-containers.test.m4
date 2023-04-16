@@ -90,6 +90,33 @@ function mbfl-containers-array-tabulate-2.1 () {
     mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
 }
 
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-iota-1.1 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (0 1 2 3 4))
+
+    mbfl_array_iota _(ARRY) 5
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-iota-1.2 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (10 15 20 25 30))
+
+    mbfl_array_iota _(ARRY) 5 10 5
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-iota-1.3 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (1 1.1 1.2 1.3 1.4))
+
+    mbfl_array_iota _(ARRY) 5 1.0 0.1
+    #mbfl_array_dump _(ARRY) ARRY
+    #mbfl_array_dump _(EXPECTED_RESULT) EXPECTED_RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
 
 #### index arrays: multi inspection
 

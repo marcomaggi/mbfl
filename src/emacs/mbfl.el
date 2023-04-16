@@ -807,6 +807,7 @@
        "mbflutils_file_install"
        ;;
        "mbfl_array_append"
+       "mbfl_array_dump"
        "mbfl_array_equal"
        "mbfl_array_equal_values"
        "mbfl_array_left_fold"
@@ -817,6 +818,7 @@
        "mbfl_array_right_foreach"
        "mbfl_array_right_map"
        "mbfl_array_tabulate"
+       "mbfl_array_iota"
        "mbfl_multi_array_append"
        "mbfl_multi_array_equal"
        "mbfl_multi_array_equal_size_var"
