@@ -835,6 +835,7 @@
        "mbfl_array_swap_bang"
        "mbfl_array_set_union"
        "mbfl_array_set_intersection"
+       "mbfl_array_set_xor"
        "mbfl_array_set_difference"
        "mbfl_multi_array_set_union"
        "mbfl_multi_array_set_intersection"
