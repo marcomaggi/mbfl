@@ -263,6 +263,162 @@ function mbfl_multi_array_equal () {
 }
 
 
+#### index arrays: searching
+
+m4_define([[[MBFL_CONTAINERS_DEFINE_ARRAY_FIND_CONTAINING_FUNC]]],[[[
+function $1 () {
+    mbfl_mandatory_nameref_parameter(mbfl_IDX_RV,	1, result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		2, source array)
+    mbfl_mandatory_parameter(mbfl_VALUE,		3, target value)
+    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    declare -i mbfl_I mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_ARRY)
+
+    for $2
+    do
+	if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	then
+	    mbfl_IDX_RV=$mbfl_I
+	    return_success
+	fi
+    done
+    return_failure
+}
+]]])
+
+MBFL_CONTAINERS_DEFINE_ARRAY_FIND_CONTAINING_FUNC([[[mbfl_array_find_left_slot_containing_value_var]]],
+						  [[[((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))]]])
+MBFL_CONTAINERS_DEFINE_ARRAY_FIND_CONTAINING_FUNC([[[mbfl_array_find_right_slot_containing_value_var]]],
+						  [[[((mbfl_I=mbfl_NUM_OF_SLOTS-1; mbfl_I >= 0; --mbfl_I))]]])
+
+### ------------------------------------------------------------------------
+
+function mbfl_array_find_left_slot_containing_value () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, source array)
+    mbfl_mandatory_parameter(mbfl_VALUE,		2, target value)
+    mbfl_optional_parameter(mbfl_COMPAR,		3, mbfl_string_equal)
+    mbfl_declare_integer_varref(mbfl_IDX_RV)
+    mbfl_array_find_left_slot_containing_value_var _(mbfl_IDX_RV) _(mbfl_ARRY) "$mbfl_VALUE" "$mbfl_COMPAR"
+}
+function mbfl_array_find_right_slot_containing_value () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, source array)
+    mbfl_mandatory_parameter(mbfl_VALUE,		2, target value)
+    mbfl_optional_parameter(mbfl_COMPAR,		3, mbfl_string_equal)
+    mbfl_declare_integer_varref(mbfl_IDX_RV)
+    mbfl_array_find_left_slot_containing_value_var _(mbfl_IDX_RV) _(mbfl_ARRY) "$mbfl_VALUE" "$mbfl_COMPAR"
+}
+
+### ------------------------------------------------------------------------
+
+m4_define([[[MBFL_CONTAINERS_DEFINE_ARRAY_FIND_SATISFYING_FUNC]]],[[[
+function $1 () {
+    mbfl_mandatory_nameref_parameter(mbfl_IDX_RV,	1, result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		2, source array)
+    mbfl_mandatory_parameter(mbfl_PRED,			3, predicate)
+    declare -i mbfl_I mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_ARRY)
+
+    for $2
+    do
+	if "$mbfl_PRED" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	then
+	    mbfl_IDX_RV=$mbfl_I
+	    return_success
+	fi
+    done
+    return_failure
+}
+]]])
+
+MBFL_CONTAINERS_DEFINE_ARRAY_FIND_SATISFYING_FUNC([[[mbfl_array_find_left_slot_satisfying_pred_var]]],
+						  [[[((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))]]])
+MBFL_CONTAINERS_DEFINE_ARRAY_FIND_SATISFYING_FUNC([[[mbfl_array_find_right_slot_satisfying_pred_var]]],
+						  [[[((mbfl_I=mbfl_NUM_OF_SLOTS-1; mbfl_I >= 0; --mbfl_I))]]])
+
+### ------------------------------------------------------------------------
+
+function mbfl_array_find_left_slot_satisfying_pred () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, source array)
+    mbfl_mandatory_parameter(mbfl_PRED,			2, predicate)
+    mbfl_declare_integer_varref(mbfl_IDX_RV)
+    mbfl_array_find_left_slot_satisfying_pred_var _(mbfl_IDX_RV) _(mbfl_ARRY) "$mbfl_PRED"
+}
+function mbfl_array_find_right_slot_satisfying_pred () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, source array)
+    mbfl_mandatory_parameter(mbfl_PRED,			2, predicate)
+    mbfl_declare_integer_varref(mbfl_IDX_RV)
+    mbfl_array_find_left_slot_satisfying_pred_var _(mbfl_IDX_RV) _(mbfl_ARRY) "$mbfl_PRED"
+}
+
+
+#### arrays: removal and deletion
+
+function mbfl_array_remove () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
+    mbfl_mandatory_integer_parameter(mbfl_IDX,		3, index of value to remove)
+    declare -i mbfl_I mbfl_J mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRY)
+
+    for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+    do
+	if (( mbfl_I != mbfl_IDX ))
+	then
+	    mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I))
+	    let ++mbfl_J
+	fi
+    done
+}
+function mbfl_array_delete () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
+    mbfl_mandatory_parameter(mbfl_VALUE,		3, value to remove)
+    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    declare -i mbfl_I mbfl_J mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRY)
+
+    for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+    do
+	declare mbfl_SRC_VALUE=mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
+	if ! "$mbfl_COMPAR" "$mbfl_SRC_VALUE" "$mbfl_VALUE"
+	then
+	    mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, "$mbfl_SRC_VALUE")
+	    let ++mbfl_J
+	fi
+    done
+}
+function mbfl_array_delete_duplicates () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
+    mbfl_optional_parameter(mbfl_COMPAR,		3, mbfl_string_equal)
+    declare -i mbfl_SRC_IDX mbfl_DST_IDX
+
+    # Iterate over  mbfl_SRC_ARRY right-to-left: we  have to keep the  original values order  in the
+    # result, so we remove the rightmost duplicates.
+    #
+    for ((mbfl_SRC_IDX=mbfl_slots_number(mbfl_SRC_ARRY)-1, mbfl_DST_IDX=0; mbfl_SRC_IDX >=0; --mbfl_SRC_IDX))
+    do
+	declare mbfl_SRC_VALUE=mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_SRC_IDX)
+	declare mbfl_THERE_IS_NO_DUPLICATE=true
+	declare -i mbfl_I
+
+	# Search for a duplicate right-to-left.
+	#
+	for ((mbfl_I=mbfl_SRC_IDX-1; mbfl_I >= 0; --mbfl_I))
+	do
+	    if "$mbfl_COMPAR" "$mbfl_SRC_VALUE" mbfl_slot_qref(mbfl_SRC_ARRY,$mbfl_I)
+	    then
+		mbfl_THERE_IS_NO_DUPLICATE=false
+		break
+	    fi
+	done
+	if $mbfl_THERE_IS_NO_DUPLICATE
+	then
+	    # Store the unique value left-to-right.
+	    mbfl_slot_set(mbfl_DST_ARRY, $mbfl_DST_IDX, "$mbfl_SRC_VALUE")
+	    let ++mbfl_DST_IDX
+	fi
+    done
+    mbfl_array_reverse_bang _(mbfl_DST_ARRY)
+}
+
+
 #### arrays: folding
 
 m4_define([[[MBFL_DEFINE_ARRAY_FOLD_FUNC]]],[[[
@@ -473,6 +629,34 @@ function mbfl_array_reverse () {
     for ((mbfl_I=0; mbfl_I < mbfl_SRC_NUM_OF_SLOTS; ++mbfl_I))
     do mbfl_slot_set(mbfl_DST_ARRY, $mbfl_I, mbfl_slot_qref(mbfl_SRC_ARRY,$((mbfl_SRC_NUM_OF_SLOTS-mbfl_I-1))))
     done
+}
+function mbfl_array_reverse_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY, 1, index array)
+    declare -i mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_ARRY)
+
+    if (( 0 != mbfl_NUM_OF_SLOTS && 1 != mbfl_NUM_OF_SLOTS ))
+    then
+	declare -i mbfl_I mbfl_J
+	declare mbfl_VALUE
+	for ((mbfl_I=0, mbfl_J=mbfl_NUM_OF_SLOTS-1; mbfl_I < mbfl_J; ++mbfl_I, --mbfl_J))
+	do
+	    mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY, $mbfl_J)
+	    mbfl_slot_set(mbfl_ARRY, $mbfl_J, mbfl_slot_qref(mbfl_ARRY, $mbfl_I))
+	    mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_VALUE")
+	done
+    fi
+}
+function mbfl_array_swap_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY, 1, reference to index array)
+    mbfl_mandatory_integer_parameter(mbfl_IDX1, 2, slot index one)
+    mbfl_mandatory_integer_parameter(mbfl_IDX2, 3, slot index two)
+
+    if (( mbfl_IDX1 != mbfl_IDX2 ))
+    then
+	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY, $mbfl_IDX1)
+	mbfl_slot_set(mbfl_ARRY, $mbfl_IDX1, mbfl_slot_qref(mbfl_ARRY, $mbfl_IDX2))
+	mbfl_slot_set(mbfl_ARRY, $mbfl_IDX2, "$mbfl_VALUE")
+    fi
 }
 function mbfl_array_zip () {
     mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,  1, reference to destination index array)

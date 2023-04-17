@@ -418,6 +418,200 @@ function mbfl-containers-array-multi-equal-2.1 () {
 
     ! mbfl_multi_array_equal _(ARRYS)
 }
+
+
+#### index arrays: removal and deletion
+
+function mbfl-containers-array-remove-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c D e f g h i))
+    mbfl_declare_index_array_varref(RESULT)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c e f g h i))
+
+    mbfl_array_remove _(RESULT) _(ARRY) 3
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(RESULT)
+}
+function mbfl-containers-array-remove-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (A b c d e f g h i))
+    mbfl_declare_index_array_varref(RESULT)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (b c d e f g h i))
+
+    mbfl_array_remove _(RESULT) _(ARRY) 0
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(RESULT)
+}
+function mbfl-containers-array-remove-1.3 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h I))
+    mbfl_declare_index_array_varref(RESULT)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h))
+
+    mbfl_array_remove _(RESULT) _(ARRY) 8
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(RESULT)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-delete-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c D e f g h i))
+    mbfl_declare_index_array_varref(RESULT)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c e f g h i))
+
+    mbfl_array_delete _(RESULT) _(ARRY) D
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(RESULT)
+}
+function mbfl-containers-array-delete-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a b D c D e D f D g D h D i))
+    mbfl_declare_index_array_varref(RESULT)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c e f g h i))
+
+    mbfl_array_delete _(RESULT) _(ARRY) D
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(RESULT)
+}
+function mbfl-containers-array-delete-1.3 () {
+    mbfl_declare_index_array_varref(ARRY, (D D D D D D))
+    mbfl_declare_index_array_varref(RESULT)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT)
+
+    mbfl_array_delete _(RESULT) _(ARRY) D
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(RESULT)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-delete-duplicates-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c D e D f D g D h i))
+    mbfl_declare_index_array_varref(RESULT)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c D e f g h i))
+
+    mbfl_array_delete_duplicates _(RESULT) _(ARRY)
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(RESULT)
+}
+function mbfl-containers-array-delete-duplicates-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+    mbfl_declare_index_array_varref(RESULT)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h i))
+
+    mbfl_array_delete_duplicates _(RESULT) _(ARRY)
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(RESULT)
+}
+
+
+#### index arrays: searching
+
+function mbfl-containers-array-find-slot-containing-value-var-1.1 () {
+    #                                      0 1 2  3 4 5 6  7 8 9
+    mbfl_declare_index_array_varref(ARRY, (a b c 99 d e f 99 g h))
+    mbfl_declare_integer_varref(L_IDX)
+    mbfl_declare_integer_varref(R_IDX)
+
+    mbfl_array_find_left_slot_containing_value_var _(L_IDX) _(ARRY) 99
+    declare -i L_RETURN_STATUS=$?
+
+    mbfl_array_find_right_slot_containing_value_var _(R_IDX) _(ARRY) 99
+    declare -i R_RETURN_STATUS=$?
+
+    dotest-equal	0	$L_RETURN_STATUS &&
+	dotest-equal	3	$L_IDX &&
+	dotest-equal	0	$R_RETURN_STATUS &&
+	dotest-equal	7	$R_IDX
+}
+function mbfl-containers-array-find-slot-containing-value-var-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h))
+    mbfl_declare_integer_varref(L_IDX)
+    mbfl_declare_integer_varref(R_IDX)
+
+    ! mbfl_array_find_left_slot_containing_value_var _(L_IDX) _(ARRY) 99 &&
+	! mbfl_array_find_right_slot_containing_value_var _(R_IDX) _(ARRY) 99
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-find-slot-containing-value-1.1 () {
+    #                                      0 1 2  3 4 5 6  7 8 9
+    mbfl_declare_index_array_varref(ARRY, (a b c 99 d e f 99 g h))
+
+    mbfl_array_find_left_slot_containing_value _(ARRY) 99
+    declare -i L_RETURN_STATUS=$?
+
+    mbfl_array_find_right_slot_containing_value _(ARRY) 99
+    declare -i R_RETURN_STATUS=$?
+
+    dotest-equal	0	$L_RETURN_STATUS &&
+	dotest-equal	0	$R_RETURN_STATUS
+}
+function mbfl-containers-array-find-slot-containing-value-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h))
+
+    mbfl_array_find_left_slot_containing_value _(ARRY) 99
+    declare -i L_RETURN_STATUS=$?
+
+    mbfl_array_find_right_slot_containing_value _(ARRY) 99
+    declare -i R_RETURN_STATUS=$?
+
+    dotest-equal	1	$L_RETURN_STATUS &&
+	dotest-equal	1	$R_RETURN_STATUS
+}
+
+### ------------------------------------------------------------------------
+
+function pred_mbfl_containers_array_find_slot_satisfying_pred_1_1 () {
+    mbfl_mandatory_parameter(VALUE, 1, value)
+    mbfl_string_equal "$VALUE" '99'
+}
+function mbfl-containers-array-find-slot-satisfying-pred-var-1.1 () {
+    #                                      0 1 2  3 4 5 6  7 8 9
+    mbfl_declare_index_array_varref(ARRY, (a b c 99 d e f 99 g h))
+    mbfl_declare_integer_varref(L_IDX)
+    mbfl_declare_integer_varref(R_IDX)
+
+    mbfl_array_find_left_slot_satisfying_pred_var _(L_IDX) _(ARRY) pred_mbfl_containers_array_find_slot_satisfying_pred_1_1
+    declare -i L_RETURN_STATUS=$?
+
+    mbfl_array_find_right_slot_satisfying_pred_var _(R_IDX) _(ARRY) pred_mbfl_containers_array_find_slot_satisfying_pred_1_1
+    declare -i R_RETURN_STATUS=$?
+
+    dotest-equal	0	$L_RETURN_STATUS &&
+	dotest-equal	3	$L_IDX &&
+	dotest-equal	0	$R_RETURN_STATUS &&
+	dotest-equal	7	$R_IDX
+}
+function mbfl-containers-array-find-slot-satisfying-pred-var-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h))
+    mbfl_declare_integer_varref(L_IDX)
+    mbfl_declare_integer_varref(R_IDX)
+
+    ! mbfl_array_find_left_slot_satisfying_pred_var _(L_IDX) _(ARRY) pred_mbfl_containers_array_find_slot_satisfying_pred_1_1 &&
+	! mbfl_array_find_right_slot_satisfying_pred_var _(R_IDX) _(ARRY) pred_mbfl_containers_array_find_slot_satisfying_pred_1_1
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-find-slot-satisfying-pred-1.1 () {
+    #                                      0 1 2  3 4 5 6  7 8 9
+    mbfl_declare_index_array_varref(ARRY, (a b c 99 d e f 99 g h))
+
+    mbfl_array_find_left_slot_satisfying_pred _(ARRY) pred_mbfl_containers_array_find_slot_satisfying_pred_1_1
+    declare -i L_RETURN_STATUS=$?
+
+    mbfl_array_find_right_slot_satisfying_pred _(ARRY) pred_mbfl_containers_array_find_slot_satisfying_pred_1_1
+    declare -i R_RETURN_STATUS=$?
+
+    dotest-equal	0	$L_RETURN_STATUS &&
+	dotest-equal	0	$R_RETURN_STATUS
+}
+function mbfl-containers-array-find-slot-satisfying-pred-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h))
+
+    ! mbfl_array_find_left_slot_satisfying_pred _(ARRY) pred_mbfl_containers_array_find_slot_satisfying_pred_1_1 &&
+	! mbfl_array_find_right_slot_satisfying_pred _(ARRY) pred_mbfl_containers_array_find_slot_satisfying_pred_1_1
+}
+
 
 #### index arrays: copying
 
@@ -911,6 +1105,60 @@ function mbfl-containers-array-reverse-1.3 () {
 
     mbfl_array_reverse _(DST_ARRY) _(SRC_ARRY)
     mbfl_array_equal _(EXPECTED_RESULT) _(DST_ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-reverse-bang-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (i h g f e d c b a))
+
+    mbfl_array_reverse_bang _(ARRY)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-reverse-bang-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f g h))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (h g f e d c b a))
+
+    mbfl_array_reverse_bang _(ARRY)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-reverse-bang-1.3 () {
+    mbfl_declare_index_array_varref(ARRY, (a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a))
+
+    mbfl_array_reverse_bang _(ARRY)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-reverse-bang-1.4 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT)
+
+    mbfl_array_reverse_bang _(ARRY)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-swap-bang-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,            (a b c D e F g h i))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c F e D g h i))
+
+    mbfl_array_swap_bang _(ARRY) 3 5
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-swap-bang-1.2 () {
+    mbfl_declare_index_array_varref(ARRY,            (a b c d e f g h i))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h i))
+
+    mbfl_array_swap_bang _(ARRY) 4 4
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
 }
 
 ### ------------------------------------------------------------------------
