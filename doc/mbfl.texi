@@ -11969,6 +11969,7 @@ parameters we should use the vector container, @ref{libmbfl-containers vectors, 
 * libmbfl-containers arrays selectors::    Selecting values from arrays.
 * libmbfl-containers arrays compar::       Comparing values.
 * libmbfl-containers arrays search::       Searching values.
+* libmbfl-containers arrays insert::       Inserting values.
 * libmbfl-containers arrays filter::       Filter values.
 * libmbfl-containers arrays delete::       Removing and deleting values.
 * libmbfl-containers arrays fold::         Folding values in indexed arrays.
@@ -11976,6 +11977,7 @@ parameters we should use the vector container, @ref{libmbfl-containers vectors, 
 * libmbfl-containers arrays map::          Mapping values in indexed arrays.
 * libmbfl-containers arrays copy::         Copying values.
 * libmbfl-containers arrays append::       Appending values to arrays.
+* libmbfl-containers arrays set::          Set operations.
 * libmbfl-containers arrays misc::         Miscellaneous array operations.
 @end menu
 
@@ -12439,6 +12441,74 @@ mbfl_declare_index_array_varref(ARRY3, (a b c d e))
 mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
 
 mbfl_multi_array_equal _(ARRYS)         @result{} 0
+@end example
+@end defun
+
+@c page
+@node libmbfl-containers arrays insert
+@appendixsubsec Inserting values
+
+
+@ParameterSemanticsARRY{}
+
+
+@defun mbfl_array_insert_slot_bang @var{ARRY} @var{IDX}
+Open a slot in @var{ARRY} at @var{IDX} by shifting the values to the right; this function mutates
+@var{ARRY} itself.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+
+  mbfl_array_insert_slot_bang _(ARRY) 3
+  mbfl_slot_set(ARRY, 3, 99)
+  mbfl_slots_qvalues(ARRY)
+@} @result{} a b c 99 d e f g h i
+
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c))
+
+  mbfl_array_insert_slot_bang _(ARRY) 3
+  mbfl_slot_set(ARRY, 3, 99)
+  mbfl_slots_qvalues(ARRY)
+@} @result{} a b c 99
+
+@{
+  mbfl_declare_index_array_varref(ARRY)
+
+  mbfl_array_insert_slot_bang _(ARRY) 0
+  mbfl_slot_set(ARRY, 0, 99)
+  mbfl_slots_qvalues(ARRY)
+@} @result{} 99
+@end example
+@end defun
+
+
+@defun mbfl_array_insert_value_bang @var{ARRY} @var{IDX} @var{VALUE}
+Open a slot in @var{ARRY} at @var{IDX} by shifting the values to the right, then store @var{VALUE}
+in the slot; this function mutates @var{ARRY} itself.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+
+  mbfl_array_insert_value_bang _(ARRY) 3 99
+  mbfl_slots_qvalues(ARRY)
+@} @result{} a b c 99 d e f g h i
+
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c))
+
+  mbfl_array_insert_value_bang _(ARRY) 3 99
+  mbfl_slots_qvalues(ARRY)
+@} @result{} a b c 99
+
+@{
+  mbfl_declare_index_array_varref(ARRY)
+
+  mbfl_array_insert_value_bang _(ARRY) 0 99
+  mbfl_slots_qvalues(ARRY)
+@} @result{} 99
 @end example
 @end defun
 
@@ -12931,6 +13001,83 @@ mbfl_declare_index_array_varref(SRC_ARRYS, (_(SRC_ARRY1) _(SRC_ARRY2) _(SRC_ARRY
 
 mbfl_multi_array_append _(DST_ARRY) _(SRC_ARRYS)
 mbfl_slots_qvalues(DST_ARRY)    @result{} a b c d e A B C D E F G H I
+@end example
+@end defun
+
+@c page
+@node libmbfl-containers arrays set
+@appendixsubsec Set operations
+
+
+The following functions implements operations on sets, @strong{not} multisets; this means we must
+make sure that there are no duplicates in the arrays.  Also there is no need to sort arrays: while
+it is more efficient to keep sets sorted, when possible, these functions do not require that.
+
+@ParameterSemanticsARRY{}
+@ParameterSemanticsARRYS{}
+@ParameterSemanticsCOMPAR{}
+
+
+@defun mbfl_array_set_union @var{UNION_ARRY} @vari{ARRY} @varii{ARRY}
+@defunx mbfl_array_set_union @var{UNION_ARRY} @vari{ARRY} @varii{ARRY} @var{COMPAR}
+Copy values from @vari{ARRY} and @varii{ARRY} to @var{UNION_ARRY}; use @var{COMPAR} to include only
+unique values.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2,     (c d e f g h i))
+mbfl_declare_index_array_varref(UNION)
+
+mbfl_array_set_union _(UNION) _(ARRY1) _(ARRY2)
+mbfl_slots_qvalues(UNION)               @result{} a b c d e f g h i
+@end example
+@end defun
+
+
+@defun mbfl_array_set_intersection @var{INTERSECTION_ARRY} @vari{ARRY} @varii{ARRY}
+@defunx mbfl_array_set_intersection @var{INTERSECTION_ARRY} @vari{ARRY} @varii{ARRY} @var{COMPAR}
+Copy values from @vari{ARRY} and @varii{ARRY} to @var{INTERSECTION_ARRY}; use @var{COMPAR} to
+include only values present in both @vari{ARRY} and @varii{ARRY}.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2,     (c d e f g h i))
+mbfl_declare_index_array_varref(INTERSECTION)
+
+mbfl_array_set_intersection _(INTERSECTION) _(ARRY1) _(ARRY2)
+mbfl_slots_qvalues(INTERSECTION)        @result{} c d e
+@end example
+@end defun
+
+
+@defun mbfl_array_set_xor @var{XOR_ARRY} @vari{ARRY} @varii{ARRY}
+@defunx mbfl_array_set_xor @var{XOR_ARRY} @vari{ARRY} @varii{ARRY} @var{COMPAR}
+Copy values from @vari{ARRY} and @varii{ARRY} to @var{XOR_ARRY}; use @var{COMPAR} to include
+only values exclusively present in either @vari{ARRY} or @varii{ARRY}.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2,     (c d e f g h i))
+mbfl_declare_index_array_varref(XOR)
+
+mbfl_array_set_xor _(XOR) _(ARRY1) _(ARRY2)
+mbfl_slots_qvalues(XOR)                 @result{} a b f g h i
+@end example
+@end defun
+
+
+@defun mbfl_array_set_difference @var{DIFFERENCE_ARRY} @vari{ARRY} @varii{ARRY}
+@defunx mbfl_array_set_difference @var{DIFFERENCE_ARRY} @vari{ARRY} @varii{ARRY} @var{COMPAR}
+Copy values from @vari{ARRY} to @var{DIFFERENCE_ARRY}; use @var{COMPAR} to include only values
+exclusively present in @vari{ARRY} and not in @varii{ARRY}.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2,     (c d e f g h i))
+mbfl_declare_index_array_varref(DIFFERENCE)
+
+mbfl_array_set_difference _(DIFFERENCE) _(ARRY1) _(ARRY2)
+mbfl_slots_qvalues(DIFFERENCE)          @result{} a b
 @end example
 @end defun
 

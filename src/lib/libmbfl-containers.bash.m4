@@ -390,6 +390,29 @@ function mbfl_array_partition () {
 }
 
 
+#### array: insertions
+
+function mbfl_array_insert_slot_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY, 1, index array)
+    mbfl_mandatory_integer_parameter(mbfl_IDX,  2, slot index)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    for ((mbfl_I=mbfl_DIM; mbfl_I > mbfl_IDX; --mbfl_I))
+    do
+	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY, $((mbfl_I-1)))
+	mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_VALUE")
+    done
+}
+function mbfl_array_insert_value_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, index array)
+    mbfl_mandatory_integer_parameter(mbfl_IDX,	2, slot index)
+    mbfl_mandatory_parameter(mbfl_VALUE,	3, new value)
+
+    mbfl_array_insert_slot_bang _(mbfl_ARRY) $mbfl_IDX
+    mbfl_slot_set(mbfl_ARRY, $mbfl_IDX, "$mbfl_VALUE")
+}
+
+
 #### arrays: removal and deletion
 
 function mbfl_array_remove () {
@@ -654,6 +677,155 @@ function mbfl_multi_array_append () {
 
     for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
     do mbfl_array_append _(mbfl_DST_ARRY) mbfl_slot_qref(mbfl_SRC_ARRYS,$mbfl_I)
+    done
+}
+
+
+#### arrays: set operations
+
+function mbfl_array_set_union () {
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_ARRY,	1, reference to union index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	2, reference to source index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	3, reference to source index array)
+    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    declare -i mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
+    declare -i mbfl_I mbfl_J mbfl_K=mbfl_DIM1
+
+    mbfl_array_copy _(mbfl_RESULT_ARRY) _(mbfl_ARRY1)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM2; ++mbfl_I))
+    do
+	declare mbfl_UNIQUE=true
+	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY2, $mbfl_I)
+
+	for ((mbfl_J=0; mbfl_J < mbfl_DIM1; ++mbfl_J))
+	do
+	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY1, $mbfl_J)
+	    then
+		mbfl_UNIQUE=false
+		break
+	    fi
+	done
+
+	if $mbfl_UNIQUE
+	then
+	    mbfl_slot_set(mbfl_RESULT_ARRY, $mbfl_K, "$mbfl_VALUE")
+	    let ++mbfl_K
+	fi
+    done
+}
+function mbfl_array_set_intersection () {
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_ARRY,	1, reference to union index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	2, reference to source index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	3, reference to source index array)
+    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    declare -i mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
+    declare -i mbfl_I mbfl_J mbfl_K=0
+
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
+    do
+	declare mbfl_UNIQUE=true
+	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY1, $mbfl_I)
+
+	for ((mbfl_J=0; mbfl_J < mbfl_DIM2; ++mbfl_J))
+	do
+	    declare mbfl_VALUE2=
+
+	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
+	    then
+		mbfl_UNIQUE=false
+		break
+	    fi
+	done
+
+	if ! $mbfl_UNIQUE
+	then
+	    mbfl_slot_set(mbfl_RESULT_ARRY, $mbfl_K, "$mbfl_VALUE")
+	    let ++mbfl_K
+	fi
+    done
+}
+function mbfl_array_set_xor () {
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_ARRY,	1, reference to union index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	2, reference to source index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	3, reference to source index array)
+    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    declare -i mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
+    declare -i mbfl_I mbfl_J mbfl_K=0
+
+    # Store in RESULT all the values from ARRY1 that are not in ARRY2.
+    #
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
+    do
+	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY1, $mbfl_I)
+	declare mbfl_UNIQUE=true
+
+	for ((mbfl_J=0; mbfl_J < mbfl_DIM2; ++mbfl_J))
+	do
+	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
+	    then
+		mbfl_UNIQUE=false
+		break
+	    fi
+	done
+
+	if $mbfl_UNIQUE
+	then
+	    mbfl_slot_set(mbfl_RESULT_ARRY, $mbfl_K, "$mbfl_VALUE")
+	    let ++mbfl_K
+	fi
+    done
+
+    # Store in RESULT all the values from ARRY2 that are not in ARRY1.
+    #
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM2; ++mbfl_I))
+    do
+	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY2, $mbfl_I)
+	declare mbfl_UNIQUE=true
+
+	for ((mbfl_J=0; mbfl_J < mbfl_DIM1; ++mbfl_J))
+	do
+	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY1, $mbfl_J)
+	    then
+		mbfl_UNIQUE=false
+		break
+	    fi
+	done
+
+	if $mbfl_UNIQUE
+	then
+	    mbfl_slot_set(mbfl_RESULT_ARRY, $mbfl_K, "$mbfl_VALUE")
+	    let ++mbfl_K
+	fi
+    done
+}
+function mbfl_array_set_difference () {
+    mbfl_mandatory_nameref_parameter(mbfl_RESULT_ARRY,	1, reference to union index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	2, reference to source index array)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	3, reference to source index array)
+    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    declare -i mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
+    declare -i mbfl_I mbfl_J mbfl_K=0
+
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
+    do
+	declare mbfl_UNIQUE=true
+	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY1, $mbfl_I)
+
+	for ((mbfl_J=0; mbfl_J < mbfl_DIM2; ++mbfl_J))
+	do
+	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
+	    then
+		mbfl_UNIQUE=false
+		break
+	    fi
+	done
+
+	if $mbfl_UNIQUE
+	then
+	    mbfl_slot_set(mbfl_RESULT_ARRY, $mbfl_K, "$mbfl_VALUE")
+	    let ++mbfl_K
+	fi
     done
 }
 
