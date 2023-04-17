@@ -420,6 +420,48 @@ function mbfl-containers-array-multi-equal-2.1 () {
 }
 
 
+#### arrays: filtering
+
+function pred_mbfl_containers_array_filter_1_1 () {
+    mbfl_mandatory_parameter(X, 1, value)
+    mbfl_declare_varref(Y)
+
+    mbfl_math_expr_var _(Y) "$X % 2"
+    if (( 0 == Y ))
+    then return_success
+    else return_failure
+    fi
+}
+function mbfl-containers-array-filter-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (0 1 2 3 4 5 6 7 8 9))
+    mbfl_declare_index_array_varref(RESULT)
+
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (0 2 4 6 8))
+
+    mbfl_array_filter _(RESULT) 'pred_mbfl_containers_array_filter_1_1' _(ARRY)
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal	_(EXPECTED_RESULT) _(RESULT)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-partition-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (0 1 2 3 4 5 6 7 8 9))
+    mbfl_declare_index_array_varref(GOOD_ARRY)
+    mbfl_declare_index_array_varref(BAD_ARRY)
+
+    mbfl_declare_index_array_varref(EXPECTED_GOOD_ARRY, (0 2 4 6 8))
+    mbfl_declare_index_array_varref(EXPECTED_BAD_ARRY,  (1 3 5 7 9))
+
+    mbfl_array_partition _(GOOD_ARRY) _(BAD_ARRY) 'pred_mbfl_containers_array_filter_1_1' _(ARRY)
+    #mbfl_array_dump _(GOOD_ARRY) GOOD_ARRY
+    #mbfl_array_dump _(BAD_ARRY) BAD_ARRY
+
+    mbfl_array_equal		_(EXPECTED_GOOD_ARRY)	_(GOOD_ARRY) &&
+	mbfl_array_equal	_(EXPECTED_BAD_ARRY)	_(BAD_ARRY)
+}
+
+
 #### index arrays: removal and deletion
 
 function mbfl-containers-array-remove-1.1 () {

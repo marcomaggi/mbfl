@@ -349,6 +349,47 @@ function mbfl_array_find_right_slot_satisfying_pred () {
 }
 
 
+#### arrays: filtering
+
+function mbfl_array_filter () {
+    mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_parameter(mbfl_PRED,			2, predicate)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	3, reference to source index array)
+    declare -i mbfl_I mbfl_J mbfl_SRC_DIM=mbfl_slots_number(mbfl_SRC_ARRY)
+
+    for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_SRC_DIM; ++mbfl_I))
+    do
+	declare mbfl_SRC_VALUE=mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
+
+	if "$mbfl_PRED" "$mbfl_SRC_VALUE"
+	then
+	    mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, "$mbfl_SRC_VALUE")
+	    let ++mbfl_J
+	fi
+    done
+}
+function mbfl_array_partition () {
+    mbfl_mandatory_nameref_parameter(mbfl_GOOD_ARRY,	1, reference to destination index array)
+    mbfl_mandatory_nameref_parameter(mbfl_BAD_ARRY,	2, reference to destination index array)
+    mbfl_mandatory_parameter(mbfl_PRED,			3, predicate)
+    mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	4, reference to source index array)
+    declare -i mbfl_I mbfl_J mbfl_K mbfl_SRC_DIM=mbfl_slots_number(mbfl_SRC_ARRY)
+
+    for ((mbfl_I=0, mbfl_J=0, mbfl_K=0; mbfl_I < mbfl_SRC_DIM; ++mbfl_I))
+    do
+	declare mbfl_SRC_VALUE=mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
+	if "$mbfl_PRED" "$mbfl_SRC_VALUE"
+	then
+	    mbfl_slot_set(mbfl_GOOD_ARRY, $mbfl_J, "$mbfl_SRC_VALUE")
+	    let ++mbfl_J
+	else
+	    mbfl_slot_set(mbfl_BAD_ARRY,  $mbfl_K, "$mbfl_SRC_VALUE")
+	    let ++mbfl_K
+	fi
+    done
+}
+
+
 #### arrays: removal and deletion
 
 function mbfl_array_remove () {

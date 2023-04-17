@@ -11969,6 +11969,7 @@ parameters we should use the vector container, @ref{libmbfl-containers vectors, 
 * libmbfl-containers arrays selectors::    Selecting values from arrays.
 * libmbfl-containers arrays compar::       Comparing values.
 * libmbfl-containers arrays search::       Searching values.
+* libmbfl-containers arrays filter::       Filter values.
 * libmbfl-containers arrays delete::       Removing and deleting values.
 * libmbfl-containers arrays fold::         Folding values in indexed arrays.
 * libmbfl-containers arrays foreach::      Iterating over values in indexed arrays.
@@ -12508,6 +12509,66 @@ $IDX    @result{} 7
 @defun mbfl_array_find_left_slot_satisfying_pred @var{ARRY} @var{VALUE} @var{PRED}
 @defunx mbfl_array_find_right_slot_satisfying_pred @var{ARRY} @var{VALUE} @var{PRED}
 Like the functions above, but do not retrieve slot's index.
+@end defun
+
+@c page
+@node libmbfl-containers arrays filter
+@appendixsubsec Filter values
+
+
+@ParameterSemanticsARRY{}
+@ParameterSemanticsPRED{}
+@ParameterSemanticsCOMPAR{}
+
+
+@defun mbfl_array_filter @var{DST_ARRY} @var{PRED} @var{SRC_ARRY}
+Copy values from @var{SRC_ARRY} to @var{DST_ARRY} including only those satisfying @var{PRED}.
+
+@example
+function pred () @{
+    mbfl_mandatory_parameter(X, 1, value)
+    mbfl_declare_varref(Y)
+
+    mbfl_math_expr_var _(Y) "$X % 2"
+    if (( 0 == Y ))
+    then return_success
+    else return_failure
+    fi
+@}
+
+mbfl_declare_index_array_varref(ARRY, (0 1 2 3 4 5 6 7 8 9))
+mbfl_declare_index_array_varref(RESULT)
+
+mbfl_array_filter _(RESULT) 'pred' _(ARRY)
+mbfl_slots_qvalues(RESULT)      @result{} 0 2 4 6 8
+@end example
+@end defun
+
+
+@defun mbfl_array_partition @var{GOOD_ARRY} @var{BAD_ARRY} @var{PRED} @var{SRC_ARRY}
+Copy values from @var{SRC_ARRY} to @var{GOOD_ARRY} and @var{BAD_ARRY}; those satisfying @var{PRED}
+go into @var{GOOD_ARRY}, the others go into @var{BAD_ARRY}.
+
+@example
+function pred () @{
+    mbfl_mandatory_parameter(X, 1, value)
+    mbfl_declare_varref(Y)
+
+    mbfl_math_expr_var _(Y) "$X % 2"
+    if (( 0 == Y ))
+    then return_success
+    else return_failure
+    fi
+@}
+
+mbfl_declare_index_array_varref(ARRY, (0 1 2 3 4 5 6 7 8 9))
+mbfl_declare_index_array_varref(GOOD_ARRY)
+mbfl_declare_index_array_varref(BAD_ARRY)
+
+mbfl_array_partition _(GOOD_ARRY) _(BAD_ARRY) 'pred' _(ARRY)
+mbfl_slots_qvalues(GOOD_ARRY)   @result{} 0 2 4 6 8
+mbfl_slots_qvalues(BAD_ARRY)    @result{} 1 3 5 7 9
+@end example
 @end defun
 
 @c page
