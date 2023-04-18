@@ -156,6 +156,13 @@ m4_define([[[mbfl_string_neq_no]]],    [[[{ test $1  '!=' 'no'; }]]])
 m4_define([[[mbfl_string_neq_true]]],  [[[{ test $1  '!=' 'true'; }]]])
 m4_define([[[mbfl_string_neq_false]]], [[[{ test $1  '!=' 'false'; }]]])
 
+m4_define([[[mbfl_integer_eq]]], [[[{ test $1 -eq $2; }]]])
+m4_define([[[mbfl_integer_neq]]],[[[{ test $1 -ne $2; }]]])
+m4_define([[[mbfl_integer_lt]]], [[[{ test $1 -lt $2; }]]])
+m4_define([[[mbfl_integer_gt]]], [[[{ test $1 -gt $2; }]]])
+m4_define([[[mbfl_integer_le]]], [[[{ test $1 -le $2; }]]])
+m4_define([[[mbfl_integer_ge]]], [[[{ test $1 -ge $2; }]]])
+
 
 #### variables, arrays and slots handling
 

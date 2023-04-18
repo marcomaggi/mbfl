@@ -169,6 +169,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * hooks::                       Executing commands with event hooks.
 * objects::                     Object-oriented programming.
 * strings::                     Manipulating strings with functions.
+* integers::                    Manipulating integers.
 * actions::                     Selecting actions to perform.
 * getopts::                     Parsing command line options.
 * message::                     Printing messages to the console.
@@ -4817,6 +4818,76 @@ i=3
 mbfl_string_skip abcccccdefg i c
 $i @result{} 7
 @end example
+@end defun
+
+@c page
+@node integers
+@chapter Manipulating integers
+
+
+@menu
+* integers compar::             Comparing strings as integers.
+@end menu
+
+@c page
+@node integers compar
+@section Comparing strings as integers
+
+
+@deffn {Preprocessor Macro} mbfl_integer_eq (@vari{INT}, @varii{INT})
+@deffnx {Function}x {Function} mbfl_integer_equal @vari{INT} @varii{INT}
+Return true if the arguments are equal when compared as integers; otherwise return false.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_integer_neq (@vari{INT}, @varii{INT})
+@deffnx {Function} mbfl_integer_not_equal @vari{INT} @varii{INT}
+Return true if the arguments are @strong{not} equal when lexicographically compared as integers;
+otherwise return false.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_integer_lt (@vari{INT}, @varii{INT})
+@deffnx {Function} mbfl_integer_less @vari{INT} @varii{INT}
+Return true if @vari{INT} is less than @varii{INT} when compared as integers; otherwise return
+false.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_integer_gt (@vari{INT}, @varii{INT})
+@deffnx {Function} mbfl_integer_greater @vari{INT} @varii{INT}
+Return true if @vari{INT} is greater than @varii{INT} when compared as integers; otherwise return
+false.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_integer_le (@vari{INT}, @varii{INT})
+@deffnx {Function} mbfl_integer_less_or_equal @vari{INT} @varii{INT}
+Return true if @vari{INT} is less than, or equal to, @varii{INT} when compared as integers;
+otherwise return false.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_integer_ge (@vari{INT}, @varii{INT})
+@deffnx {Function} mbfl_integer_greater_or_equal @vari{INT} @varii{INT}
+Return true if @vari{INT} is greater than, or equal to, @varii{INT} when compared as integers;
+otherwise return false.
+@end deffn
+
+
+@defun mbfl_integer_compare @vari{INT} @varii{INT}
+Compare @vari{INT} and @varii{INT}:
+
+@itemize
+@item
+if @vari{INT} = @varii{INT} return 0;
+
+@item
+if @vari{INT} < @varii{INT} return 1;
+
+@item
+if @vari{INT} > @varii{INT} return 2.
+@end itemize
 @end defun
 
 @c page

@@ -128,6 +128,13 @@
        "mbfl_string_not_empty"
        "mbfl_string_last_char"
        ;;
+       "mbfl_integer_eq"
+       "mbfl_integer_neq"
+       "mbfl_integer_lt"
+       "mbfl_integer_gt"
+       "mbfl_integer_le"
+       "mbfl_integer_ge"
+       ;;
        "mbfl_slots_number"
        "mbfl_slots_values"
        "mbfl_slots_qvalues"
@@ -292,6 +299,13 @@
        "mbfl_string_strip_prefix_var"
        "mbfl_string_strip_suffix_var"
        "mbfl_string_strip_prefix_and_suffix_var"
+       ;;
+       "mbfl_integer_equal"
+       "mbfl_integer_not_equal"
+       "mbfl_integer_less"
+       "mbfl_integer_less_or_equal"
+       "mbfl_integer_greater"
+       "mbfl_integer_greater_or_equal"
        ;;
        "mbfl_fd_open_input"
        "mbfl_fd_open_output"

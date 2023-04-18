@@ -160,6 +160,7 @@ EXTRA_DIST			+=		\
 	src/modules/getopts.bash.m4		\
 	src/modules/hooks.bash.m4		\
 	src/modules/functions.bash.m4		\
+	src/modules/integers.bash.m4		\
 	src/modules/locations.bash.m4		\
 	src/modules/main.bash.m4		\
 	src/modules/math.bash.m4		\
@@ -190,6 +191,7 @@ MBFL_LIB_MODULES		=		\
 	src/modules/getopts.bash		\
 	src/modules/hooks.bash			\
 	src/modules/functions.bash		\
+	src/modules/integers.bash		\
 	src/modules/locations.bash		\
 	src/modules/main.bash			\
 	src/modules/math.bash			\
@@ -590,6 +592,7 @@ EXTRA_DIST			+=		\
 	tests/getopts.test.m4			\
 	tests/functions.test.m4			\
 	tests/hooks.test.m4			\
+	tests/integers.test.m4			\
 	tests/locations.test.m4			\
 	tests/math.test.m4			\
 	tests/message.test.m4			\
@@ -624,6 +627,7 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/file.test				\
 	tests/getopts.test			\
 	tests/hooks.test			\
+	tests/integers.test			\
 	tests/functions.test			\
 	tests/locations.test			\
 	tests/math.test				\
