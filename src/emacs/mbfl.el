@@ -306,6 +306,7 @@
        "mbfl_integer_less_or_equal"
        "mbfl_integer_greater"
        "mbfl_integer_greater_or_equal"
+       "mbfl_integer_compare"
        ;;
        "mbfl_fd_open_input"
        "mbfl_fd_open_output"
