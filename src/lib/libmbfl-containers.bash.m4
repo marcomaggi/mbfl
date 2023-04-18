@@ -681,6 +681,104 @@ function mbfl_multi_array_append () {
 }
 
 
+#### arrays: sorting
+
+function mbfl_array_is_sorted () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
+    mbfl_optional_parameter(mbfl_ISGREATER,	2, mbfl_string_greater)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    for ((mbfl_I=0, mbfl_J=1; mbfl_J < mbfl_DIM; ++mbfl_I, ++mbfl_J))
+    do
+	if "$mbfl_ISGREATER" mbfl_slot_qref(mbfl_ARRY, $mbfl_I) mbfl_slot_qref(mbfl_ARRY, $mbfl_J)
+	then return_failure
+	fi
+    done
+    return_success
+}
+
+function mbfl_array_quicksort_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,   1, reference to index array)
+    mbfl_optional_parameter(mbfl_COMPAR, 2, mbfl_string_compare)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    if ((1 < mbfl_DIM))
+    then mbfl_p_array_quicksort_bang _(mbfl_ARRY) 0 $((mbfl_DIM-1)) "$mbfl_COMPAR"
+    else return_success
+    fi
+}
+function mbfl_p_array_quicksort_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, reference to index array)
+    mbfl_mandatory_integer_parameter(mbfl_LEFT,		2, leftmost index of range to be partitioned)
+    mbfl_mandatory_integer_parameter(mbfl_RIGHT,	3, rightmost index of range to be partitioned)
+    mbfl_mandatory_parameter(mbfl_COMPAR,		4, less-than comparison function)
+
+    echo $FUNCNAME enter mbfl_LEFT=$mbfl_LEFT mbfl_RIGHT=$mbfl_RIGHT >&2
+
+    if (( mbfl_LEFT >= mbfl_RIGHT ))
+    then return_success
+    fi
+
+    # Let's pick the slot in the middle as pivot; it does not really matter which slot we choose, we
+    # hope to be lucky about the value it holds; and that is quicksort for everybody.
+    #
+    # The partitioning  function will  move the  pivot value  around in  the slots;  at the  end the
+    # partitioning function will set this variable to the new pivot's slot index.
+    #
+    declare -i mbfl_PIVOT_IDX=(mbfl_RIGHT-mbfl_LEFT)/2
+    declare -i mbfl_PLEFT=$mbfl_LEFT mbfl_PRIGHT=$mbfl_RIGHT
+    {
+	mbfl_p_array_quicksort_partition
+    }
+    mbfl_PIVOT_IDX=$mbfl_PLEFT
+
+    # If we are here we know that:  mbfl_LEFT >= mbfl_RIGHT
+    # if (( mbfl_LEFT > mbfl_RIGHT))
+    # then return
+    # fi
+
+    mbfl_p_array_quicksort_bang _(mbfl_ARRY) $mbfl_LEFT             $((mbfl_PIVOT_IDX-1)) "$mbfl_COMPAR"
+    mbfl_p_array_quicksort_bang _(mbfl_ARRY) $(($mbfl_PIVOT_IDX+1)) $mbfl_RIGHT           "$mbfl_COMPAR"
+}
+function mbfl_p_array_quicksort_partition () {
+    declare mbfl_PIVOT_VALUE=mbfl_slot_qref(mbfl_ARRY, $mbfl_PIVOT_IDX)
+    echo $FUNCNAME enter mbfl_PIVOT_IDX=$mbfl_PIVOT_IDX mbfl_PIVOT_VALUE="$mbfl_PIVOT_VALUE" mbfl_PLEFT=$mbfl_PLEFT mbfl_PRIGHT=$mbfl_PRIGHT >&2
+
+    while (( mbfl_PLEFT < mbfl_PRIGHT ))
+    do
+	while true
+	do
+	    #echo $FUNCNAME mbfl_PLEFT=$mbfl_PLEFT "$mbfl_COMPAR" mbfl_slot_qref(mbfl_ARRY, $mbfl_PLEFT) "$mbfl_PIVOT_VALUE" >&2
+	    "$mbfl_COMPAR" mbfl_slot_qref(mbfl_ARRY, $mbfl_PLEFT) "$mbfl_PIVOT_VALUE"
+	    if (( 1 == $? ))		;# arry[left] < pivot
+	    then let ++mbfl_PLEFT	;# leave this alone, go to the next
+	    else break			;# we need to swap this
+	    fi
+	done
+	while true
+	do
+	    #echo $FUNCNAME mbfl_PRIGHT=$mbfl_PRIGHT "$mbfl_COMPAR" "$mbfl_PIVOT_VALUE" mbfl_slot_qref(mbfl_ARRY, $mbfl_PRIGHT) >&2
+	    "$mbfl_COMPAR" "$mbfl_PIVOT_VALUE" mbfl_slot_qref(mbfl_ARRY, $mbfl_PRIGHT)
+	    if (( 1 == $? ))		;# pivot < arry[right]
+	    then let --mbfl_PRIGHT	;# leave this alone, go to the next
+	    else break			;# we need to swap this
+	    fi
+	done
+	if (( mbfl_PLEFT < mbfl_PRIGHT ))
+	then
+	    # Swap.
+	    echo $FUNCNAME swap mbfl_PLEFT=$mbfl_PLEFT mbfl_PRIGHT=$mbfl_PRIGHT >&2
+	    declare mbfl_PLEFT_VALUE=mbfl_slot_qref(mbfl_ARRY, $mbfl_PLEFT)
+	    mbfl_slot_set(mbfl_ARRY, $mbfl_PLEFT,  mbfl_slot_qref(mbfl_ARRY, $mbfl_PRIGHT))
+	    mbfl_slot_set(mbfl_ARRY, $mbfl_PRIGHT, "$mbfl_PLEFT_VALUE")
+	else
+	    echo $FUNCNAME break mbfl_PLEFT=$mbfl_PLEFT mbfl_PRIGHT=$mbfl_PRIGHT >&2
+	    break
+	fi
+    done
+}
+
+
 #### arrays: set operations
 
 function mbfl_array_set_union () {
@@ -986,7 +1084,7 @@ function mbfl_stack_copy () {
 function mbfl_stack_equal () {
     mbfl_mandatory_nameref_parameter(mbfl_STACK1, 1, reference to object of class mbfl_stack_t)
     mbfl_mandatory_nameref_parameter(mbfl_STACK2, 2, reference to object of class mbfl_stack_t)
-    mbfl_optional_parameter(mbfl_COMPAR,          3)
+    mbfl_optional_parameter(mbfl_COMPAR,          3, mbfl_string_equal)
 
     MBFL_STACK_VALIDATE_PARAMETER(mbfl_STACK1)
     MBFL_STACK_VALIDATE_PARAMETER(mbfl_STACK2)
@@ -995,10 +1093,6 @@ function mbfl_stack_equal () {
 
     if (( mbfl_slots_number(mbfl_ARRAY2) != mbfl_slots_number(mbfl_ARRAY1) ))
     then return_failure
-    fi
-
-    if mbfl_string_empty(mbfl_COMPAR)
-    then mbfl_COMPAR='mbfl_string_equal'
     fi
 
     {
@@ -1144,7 +1238,7 @@ function mbfl_vector_copy () {
 function mbfl_vector_equal () {
     mbfl_mandatory_nameref_parameter(mbfl_VECTOR1, 1, reference to object of class mbfl_vector_t)
     mbfl_mandatory_nameref_parameter(mbfl_VECTOR2, 2, reference to object of class mbfl_vector_t)
-    mbfl_optional_parameter(mbfl_COMPAR,          3)
+    mbfl_optional_parameter(mbfl_COMPAR,           3, mbfl_string_equal)
 
     MBFL_VECTOR_VALIDATE_PARAMETER(mbfl_VECTOR1)
     MBFL_VECTOR_VALIDATE_PARAMETER(mbfl_VECTOR2)
@@ -1153,10 +1247,6 @@ function mbfl_vector_equal () {
 
     if (( mbfl_slots_number(mbfl_ARRAY2) != mbfl_slots_number(mbfl_ARRAY1) ))
     then return_failure
-    fi
-
-    if mbfl_string_empty(mbfl_COMPAR)
-    then mbfl_COMPAR='mbfl_string_equal'
     fi
 
     {

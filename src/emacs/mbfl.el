@@ -832,6 +832,8 @@
        "mbfl_array_remove"
        "mbfl_array_delete"
        "mbfl_array_delete_duplicates"
+       "mbfl_array_is_sorted"
+       "mbfl_array_quicksort_bang"
        "mbfl_array_zip"
        "mbfl_array_swap_bang"
        "mbfl_array_set_union"

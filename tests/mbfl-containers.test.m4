@@ -1180,6 +1180,122 @@ function mbfl-containers-multi-array-append-1.1 () {
 }
 
 
+#### index arrays: sorting
+
+function mbfl-containers-array-is-sorted-1.1 () {
+    mbfl_declare_index_array_varref(ARRY)
+
+    mbfl_array_is_sorted _(ARRY)
+}
+function mbfl-containers-array-is-sorted-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a))
+
+    mbfl_array_is_sorted _(ARRY)
+}
+function mbfl-containers-array-is-sorted-1.3 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e f))
+
+    mbfl_array_is_sorted _(ARRY)
+}
+function mbfl-containers-array-is-sorted-1.4 () {
+    mbfl_declare_index_array_varref(ARRY, (b a))
+
+    ! mbfl_array_is_sorted _(ARRY)
+}
+function mbfl-containers-array-is-sorted-1.5 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c e d))
+
+    ! mbfl_array_is_sorted _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-quicksort-1.1 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT)
+
+    mbfl_array_quicksort_bang _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-quicksort-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a))
+
+    mbfl_array_quicksort_bang _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-quicksort-1.3 () {
+    # This inverse-order arrays is sorted with a single partition call.
+    mbfl_declare_index_array_varref(ARRY, (e d c b a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e))
+
+    mbfl_array_quicksort_bang _(ARRY)
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-quicksort-1.4.1 () {
+    # This inverse-order arrays is sorted with a single partition call.
+    mbfl_declare_index_array_varref(ARRY, (b a c))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c))
+
+    mbfl_array_quicksort_bang _(ARRY)
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-quicksort-1.4.2 () {
+    # This inverse-order arrays is sorted with a single partition call.
+    mbfl_declare_index_array_varref(ARRY, (a c b))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c))
+
+    mbfl_array_quicksort_bang _(ARRY)
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-quicksort-1.5 () {
+    # Odd number of values.
+    mbfl_declare_index_array_varref(ARRY, (e b a c d))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e))
+
+    mbfl_array_quicksort_bang _(ARRY)
+    mbfl_array_dump _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-quicksort-1.6 () {
+    # Even number of values.
+    mbfl_declare_index_array_varref(ARRY, (e b a f c d))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f))
+
+    mbfl_array_quicksort_bang _(ARRY)
+    mbfl_array_dump _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl_integer_compare () {
+    mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
+    mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
+
+    if test $LEFT -eq $RIGHT
+    then return 0
+    elif test $LEFT -lt $RIGHT
+    then return 1
+    else return 2
+    fi
+}
+function mbfl_integer_greater () {
+    mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
+    mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
+
+    test $LEFT -gt $RIGHT
+}
+function mbfl-containers-array-quicksort-1.7 () {
+    # This inverse-order arrays is sorted with a single partition call.
+    mbfl_declare_index_array_varref(ARRY, ($RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM))
+
+    mbfl_array_quicksort_bang _(ARRY) mbfl_integer_compare
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_is_sorted _(ARRY) mbfl_integer_greater
+}
+
+
 #### index arrays: set operations
 
 function mbfl-containers-array-set-union-1.1 () {
