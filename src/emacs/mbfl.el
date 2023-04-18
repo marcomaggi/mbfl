@@ -271,6 +271,7 @@
        "mbfl_string_length_equal_to"
        "mbfl_string_less"
        "mbfl_string_less_or_equal"
+       "mbfl_string_compare"
        "mbfl_string_not_equal"
        "mbfl_string_quote"
        "mbfl_string_quote_var"

@@ -1326,6 +1326,38 @@ function string-greater-or-equal-1.4 () {
     mbfl_string_greater_or_equal 'hello' 'ciao'
 }
 
+### --------------------------------------------------------------------
+
+function string-compare-1.1 () {
+    mbfl_string_compare '' ''
+    dotest-equal 0 $?
+}
+
+function string-compare-1.2 () {
+    mbfl_string_compare 'a' ''
+    dotest-equal 2 $?
+}
+
+function string-compare-1.3 () {
+    mbfl_string_compare '' 'a'
+    dotest-equal 1 $?
+}
+
+function string-compare-1.3 () {
+    mbfl_string_compare 'ciao' 'ciao'
+    dotest-equal 0 $?
+}
+
+function string-compare-1.4 () {
+    mbfl_string_compare 'ciao' 'hello'
+    dotest-equal 1 $?
+}
+
+function string-compare-1.4 () {
+    mbfl_string_compare 'hello' 'ciao'
+    dotest-equal 2 $?
+}
+
 ### ------------------------------------------------------------------------
 
 function string-is-yes-1.1 () {

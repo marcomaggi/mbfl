@@ -4549,6 +4549,31 @@ mbfl_string_greater_or_equal 'hello' 'ciao'     @result{} 0
 @end defun
 
 
+@defun mbfl_string_compare @vari{str} @varii{str}
+Compare @vari{str} and @varii{str}:
+
+@itemize
+@item
+if @vari{str} = @varii{str} return 0;
+
+@item
+if @vari{str} < @varii{str} return 1;
+
+@item
+if @vari{str} > @varii{str} return 2.
+@end itemize
+
+@example
+mbfl_string_compare '' ''               @result{} 0
+mbfl_string_compare 'a' ''              @result{} 2
+mbfl_string_compare '' 'a'              @result{} 1
+mbfl_string_compare 'ciao' 'ciao'       @result{} 0
+mbfl_string_compare 'ciao' 'hello'      @result{} 1
+mbfl_string_compare 'hello' 'ciao'      @result{} 2
+@end example
+@end defun
+
+
 @defun mbfl_string_equal_substring @var{STRING} @var{POSITION} @var{PATTERN}
 Return true if the substring starting at @var{POSITION} in @var{STRING}
 is equal to @var{PATTERN}; else return false.  If @var{POSITION} plus

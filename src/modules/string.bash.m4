@@ -439,6 +439,18 @@ function mbfl_string_greater_or_equal () {
     test "$STR1" '>' "$STR2" -o "$STR1" '=' "$STR2"
 }
 
+function mbfl_string_compare () {
+    mbfl_optional_parameter(mbfl_STR1, 1)
+    mbfl_optional_parameter(mbfl_STR2, 2)
+
+    if   mbfl_string_eq("$mbfl_STR1", "$mbfl_STR2")
+    then return 0
+    elif mbfl_string_le("$mbfl_STR1", "$mbfl_STR2")
+    then return 1
+    else return 2
+    fi
+}
+
 function mbfl_string_equal_substring () {
     mbfl_mandatory_parameter(STRING,   1, string)
     mbfl_mandatory_parameter(POSITION, 2, position)
