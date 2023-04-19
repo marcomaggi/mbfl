@@ -29,6 +29,13 @@
 
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
 
+# MBFL_ARRAY_SWAP(mbfl_ARRY, mbfl_I, mbfl_J)
+m4_define([[[MBFL_ARRAY_SWAP]]],[[[
+declare $2_VALUE=mbfl_slot_qref(mbfl_ARRY, [[[$]]]$2)
+mbfl_slot_set($1, [[[$]]]$2,  mbfl_slot_qref($1, [[[$]]]$3))
+mbfl_slot_set($1, [[[$]]]$3, "[[[$]]]$2_VALUE")
+]]])
+
 
 #### global variables
 
@@ -196,7 +203,7 @@ function mbfl_array_split_at () {
 
 function mbfl_array_equal_values () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
-    mbfl_optional_parameter(mbfl_COMPAR,	2, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,	2, mbfl_string_equal)
     declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
 
     #mbfl_array_dump _(mbfl_ARRY) mbfl_ARRY
@@ -209,7 +216,7 @@ function mbfl_array_equal_values () {
 	for ((mbfl_I=1; mbfl_I < mbfl_DIM; ++mbfl_I))
 	do
 	    #echo $FUNCNAME $mbfl_I VALUE0="$mbfl_VALUE0" VALUE${mbfl_I}=mbfl_slot_qref(mbfl_ARRY, $mbfl_I) >&2
-	    if ! "$mbfl_COMPAR" "$mbfl_VALUE0" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	    if ! "$mbfl_ISEQUAL" "$mbfl_VALUE0" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
 	    then return_failure
 	    fi
 	done
@@ -219,7 +226,7 @@ function mbfl_array_equal_values () {
 function mbfl_array_equal () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	1, reference to index array)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	2, reference to index array)
-    mbfl_optional_parameter(mbfl_COMPAR,		3, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
     declare -i mbfl_I mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
 
     if (( mbfl_DIM1 != mbfl_DIM2 ))
@@ -228,7 +235,7 @@ function mbfl_array_equal () {
     for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
     do
 	#echo $FUNCNAME mbfl_slot_qref(mbfl_ARRY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRY2, $mbfl_I) >&2
-	if ! "$mbfl_COMPAR" mbfl_slot_qref(mbfl_ARRY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRY2, $mbfl_I)
+	if ! "$mbfl_ISEQUAL" mbfl_slot_qref(mbfl_ARRY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRY2, $mbfl_I)
 	then return_failure
 	fi
     done
@@ -236,7 +243,7 @@ function mbfl_array_equal () {
 }
 function mbfl_multi_array_equal () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
-    mbfl_optional_parameter(mbfl_COMPAR,		2, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		2, mbfl_string_equal)
 
     if ((0 != mbfl_slots_number(mbfl_ARRYS)))
     then
@@ -252,7 +259,7 @@ function mbfl_multi_array_equal () {
 	    do
 		mbfl_multi_array_homologous_slots_var _(mbfl_HOMOLOGOUS_VALUES) _(mbfl_ARRYS) $mbfl_I
 		#mbfl_array_dump _(mbfl_HOMOLOGOUS_VALUES) mbfl_HOMOLOGOUS_VALUES$mbfl_I
-		if ! mbfl_array_equal_values _(mbfl_HOMOLOGOUS_VALUES) "$mbfl_COMPAR"
+		if ! mbfl_array_equal_values _(mbfl_HOMOLOGOUS_VALUES) "$mbfl_ISEQUAL"
 		then return_failure
 		fi
 	    done
@@ -270,12 +277,12 @@ function $1 () {
     mbfl_mandatory_nameref_parameter(mbfl_IDX_RV,	1, result variable)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,		2, source array)
     mbfl_mandatory_parameter(mbfl_VALUE,		3, target value)
-    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		4, mbfl_string_equal)
     declare -i mbfl_I mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_ARRY)
 
     for $2
     do
-	if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
 	then
 	    mbfl_IDX_RV=$mbfl_I
 	    return_success
@@ -295,16 +302,16 @@ MBFL_CONTAINERS_DEFINE_ARRAY_FIND_CONTAINING_FUNC([[[mbfl_array_find_right_slot_
 function mbfl_array_find_left_slot_containing_value () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, source array)
     mbfl_mandatory_parameter(mbfl_VALUE,		2, target value)
-    mbfl_optional_parameter(mbfl_COMPAR,		3, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
     mbfl_declare_integer_varref(mbfl_IDX_RV)
-    mbfl_array_find_left_slot_containing_value_var _(mbfl_IDX_RV) _(mbfl_ARRY) "$mbfl_VALUE" "$mbfl_COMPAR"
+    mbfl_array_find_left_slot_containing_value_var _(mbfl_IDX_RV) _(mbfl_ARRY) "$mbfl_VALUE" "$mbfl_ISEQUAL"
 }
 function mbfl_array_find_right_slot_containing_value () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, source array)
     mbfl_mandatory_parameter(mbfl_VALUE,		2, target value)
-    mbfl_optional_parameter(mbfl_COMPAR,		3, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
     mbfl_declare_integer_varref(mbfl_IDX_RV)
-    mbfl_array_find_left_slot_containing_value_var _(mbfl_IDX_RV) _(mbfl_ARRY) "$mbfl_VALUE" "$mbfl_COMPAR"
+    mbfl_array_find_left_slot_containing_value_var _(mbfl_IDX_RV) _(mbfl_ARRY) "$mbfl_VALUE" "$mbfl_ISEQUAL"
 }
 
 ### ------------------------------------------------------------------------
@@ -434,13 +441,13 @@ function mbfl_array_delete () {
     mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
     mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
     mbfl_mandatory_parameter(mbfl_VALUE,		3, value to remove)
-    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		4, mbfl_string_equal)
     declare -i mbfl_I mbfl_J mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRY)
 
     for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
     do
 	declare mbfl_SRC_VALUE=mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
-	if ! "$mbfl_COMPAR" "$mbfl_SRC_VALUE" "$mbfl_VALUE"
+	if ! "$mbfl_ISEQUAL" "$mbfl_SRC_VALUE" "$mbfl_VALUE"
 	then
 	    mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, "$mbfl_SRC_VALUE")
 	    let ++mbfl_J
@@ -450,7 +457,7 @@ function mbfl_array_delete () {
 function mbfl_array_delete_duplicates () {
     mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
     mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
-    mbfl_optional_parameter(mbfl_COMPAR,		3, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
     declare -i mbfl_SRC_IDX mbfl_DST_IDX
 
     # Iterate over  mbfl_SRC_ARRY right-to-left: we  have to keep the  original values order  in the
@@ -466,7 +473,7 @@ function mbfl_array_delete_duplicates () {
 	#
 	for ((mbfl_I=mbfl_SRC_IDX-1; mbfl_I >= 0; --mbfl_I))
 	do
-	    if "$mbfl_COMPAR" "$mbfl_SRC_VALUE" mbfl_slot_qref(mbfl_SRC_ARRY,$mbfl_I)
+	    if "$mbfl_ISEQUAL" "$mbfl_SRC_VALUE" mbfl_slot_qref(mbfl_SRC_ARRY,$mbfl_I)
 	    then
 		mbfl_THERE_IS_NO_DUPLICATE=false
 		break
@@ -685,25 +692,27 @@ function mbfl_multi_array_append () {
 
 function mbfl_array_is_sorted () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
-    mbfl_optional_parameter(mbfl_ISGREATER,	2, mbfl_string_greater)
+    mbfl_optional_parameter(mbfl_ISLESS,	2, mbfl_string_less)
     declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
 
     for ((mbfl_I=0, mbfl_J=1; mbfl_J < mbfl_DIM; ++mbfl_I, ++mbfl_J))
     do
-	if "$mbfl_ISGREATER" mbfl_slot_qref(mbfl_ARRY, $mbfl_I) mbfl_slot_qref(mbfl_ARRY, $mbfl_J)
+	if "$mbfl_ISLESS" mbfl_slot_qref(mbfl_ARRY, $mbfl_J) mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
 	then return_failure
 	fi
     done
     return_success
 }
 
+### ------------------------------------------------------------------------
+
 function mbfl_array_quicksort_bang () {
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY,   1, reference to index array)
-    mbfl_optional_parameter(mbfl_COMPAR, 2, mbfl_string_compare)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
+    mbfl_optional_parameter(mbfl_ISLESS,	2, mbfl_string_less)
     declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
 
     if ((1 < mbfl_DIM))
-    then mbfl_p_array_quicksort_bang _(mbfl_ARRY) 0 $((mbfl_DIM-1)) "$mbfl_COMPAR"
+    then mbfl_p_array_quicksort_bang _(mbfl_ARRY) 0 $((mbfl_DIM-1)) "$mbfl_ISLESS"
     else return_success
     fi
 }
@@ -711,71 +720,40 @@ function mbfl_p_array_quicksort_bang () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, reference to index array)
     mbfl_mandatory_integer_parameter(mbfl_LEFT,		2, leftmost index of range to be partitioned)
     mbfl_mandatory_integer_parameter(mbfl_RIGHT,	3, rightmost index of range to be partitioned)
-    mbfl_mandatory_parameter(mbfl_COMPAR,		4, less-than comparison function)
-
-    echo $FUNCNAME enter mbfl_LEFT=$mbfl_LEFT mbfl_RIGHT=$mbfl_RIGHT >&2
+    mbfl_mandatory_parameter(mbfl_ISLESS,		4, less-than comparison function)
 
     if (( mbfl_LEFT >= mbfl_RIGHT ))
     then return_success
     fi
 
-    # Let's pick the slot in the middle as pivot; it does not really matter which slot we choose, we
-    # hope to be lucky about the value it holds; and that is quicksort for everybody.
+    declare -i mbfl_I=mbfl_LEFT-1
+    declare -i mbfl_J=mbfl_RIGHT
+    declare    mbfl_PIVOT=mbfl_slot_qref(mbfl_ARRY, $mbfl_RIGHT)
+
+    # We take the Segewick-Bentley 2-partition implementation from:
     #
-    # The partitioning  function will  move the  pivot value  around in  the slots;  at the  end the
-    # partitioning function will set this variable to the new pivot's slot index.
+    # https://sedgewick.io/
+    # https://sedgewick.io/wp-content/themes/sedgewick/talks/2002QuicksortIsOptimal.pdf
     #
-    declare -i mbfl_PIVOT_IDX=(mbfl_RIGHT-mbfl_LEFT)/2
-    declare -i mbfl_PLEFT=$mbfl_LEFT mbfl_PRIGHT=$mbfl_RIGHT
-    {
-	mbfl_p_array_quicksort_partition
-    }
-    mbfl_PIVOT_IDX=$mbfl_PLEFT
-
-    # If we are here we know that:  mbfl_LEFT >= mbfl_RIGHT
-    # if (( mbfl_LEFT > mbfl_RIGHT))
-    # then return
-    # fi
-
-    mbfl_p_array_quicksort_bang _(mbfl_ARRY) $mbfl_LEFT             $((mbfl_PIVOT_IDX-1)) "$mbfl_COMPAR"
-    mbfl_p_array_quicksort_bang _(mbfl_ARRY) $(($mbfl_PIVOT_IDX+1)) $mbfl_RIGHT           "$mbfl_COMPAR"
-}
-function mbfl_p_array_quicksort_partition () {
-    declare mbfl_PIVOT_VALUE=mbfl_slot_qref(mbfl_ARRY, $mbfl_PIVOT_IDX)
-    echo $FUNCNAME enter mbfl_PIVOT_IDX=$mbfl_PIVOT_IDX mbfl_PIVOT_VALUE="$mbfl_PIVOT_VALUE" mbfl_PLEFT=$mbfl_PLEFT mbfl_PRIGHT=$mbfl_PRIGHT >&2
-
-    while (( mbfl_PLEFT < mbfl_PRIGHT ))
+    # beware that  in the pseudo-code  it is easy  to confuse  the letter l  (ell) with the  digit 1
+    # (one).
+    #
+    while true
     do
-	while true
-	do
-	    #echo $FUNCNAME mbfl_PLEFT=$mbfl_PLEFT "$mbfl_COMPAR" mbfl_slot_qref(mbfl_ARRY, $mbfl_PLEFT) "$mbfl_PIVOT_VALUE" >&2
-	    "$mbfl_COMPAR" mbfl_slot_qref(mbfl_ARRY, $mbfl_PLEFT) "$mbfl_PIVOT_VALUE"
-	    if (( 1 == $? ))		;# arry[left] < pivot
-	    then let ++mbfl_PLEFT	;# leave this alone, go to the next
-	    else break			;# we need to swap this
-	    fi
+	while "$mbfl_ISLESS" mbfl_slot_qref(mbfl_ARRY, $((++mbfl_I))) "$mbfl_PIVOT"
+	do :
 	done
-	while true
-	do
-	    #echo $FUNCNAME mbfl_PRIGHT=$mbfl_PRIGHT "$mbfl_COMPAR" "$mbfl_PIVOT_VALUE" mbfl_slot_qref(mbfl_ARRY, $mbfl_PRIGHT) >&2
-	    "$mbfl_COMPAR" "$mbfl_PIVOT_VALUE" mbfl_slot_qref(mbfl_ARRY, $mbfl_PRIGHT)
-	    if (( 1 == $? ))		;# pivot < arry[right]
-	    then let --mbfl_PRIGHT	;# leave this alone, go to the next
-	    else break			;# we need to swap this
-	    fi
+	while "$mbfl_ISLESS" "$mbfl_PIVOT" mbfl_slot_qref(mbfl_ARRY, $((--mbfl_J)))
+	do (( mbfl_LEFT == mbfl_J )) && break
 	done
-	if (( mbfl_PLEFT < mbfl_PRIGHT ))
-	then
-	    # Swap.
-	    echo $FUNCNAME swap mbfl_PLEFT=$mbfl_PLEFT mbfl_PRIGHT=$mbfl_PRIGHT >&2
-	    declare mbfl_PLEFT_VALUE=mbfl_slot_qref(mbfl_ARRY, $mbfl_PLEFT)
-	    mbfl_slot_set(mbfl_ARRY, $mbfl_PLEFT,  mbfl_slot_qref(mbfl_ARRY, $mbfl_PRIGHT))
-	    mbfl_slot_set(mbfl_ARRY, $mbfl_PRIGHT, "$mbfl_PLEFT_VALUE")
-	else
-	    echo $FUNCNAME break mbfl_PLEFT=$mbfl_PLEFT mbfl_PRIGHT=$mbfl_PRIGHT >&2
-	    break
-	fi
+	(( mbfl_I >= mbfl_J )) && break
+	MBFL_ARRAY_SWAP(mbfl_ARRY,mbfl_I,mbfl_J)
     done
+    # We come here after the bottom BREAK is executed, so mbfl_I >= mbfl_J.
+    MBFL_ARRAY_SWAP(mbfl_ARRY,mbfl_I,mbfl_RIGHT)
+
+    mbfl_p_array_quicksort_bang _(mbfl_ARRY) $mbfl_LEFT    $((mbfl_I-1)) "$mbfl_ISLESS"
+    mbfl_p_array_quicksort_bang _(mbfl_ARRY) $((mbfl_I+1)) $mbfl_RIGHT   "$mbfl_ISLESS"
 }
 
 
@@ -785,7 +763,7 @@ function mbfl_array_set_union () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_ARRY,	1, reference to union index array)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	2, reference to source index array)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	3, reference to source index array)
-    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		4, mbfl_string_equal)
     declare -i mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
     declare -i mbfl_I mbfl_J mbfl_K=mbfl_DIM1
 
@@ -798,7 +776,7 @@ function mbfl_array_set_union () {
 
 	for ((mbfl_J=0; mbfl_J < mbfl_DIM1; ++mbfl_J))
 	do
-	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY1, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY1, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -816,7 +794,7 @@ function mbfl_array_set_intersection () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_ARRY,	1, reference to union index array)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	2, reference to source index array)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	3, reference to source index array)
-    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		4, mbfl_string_equal)
     declare -i mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
     declare -i mbfl_I mbfl_J mbfl_K=0
 
@@ -829,7 +807,7 @@ function mbfl_array_set_intersection () {
 	do
 	    declare mbfl_VALUE2=
 
-	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -847,7 +825,7 @@ function mbfl_array_set_xor () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_ARRY,	1, reference to union index array)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	2, reference to source index array)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	3, reference to source index array)
-    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		4, mbfl_string_equal)
     declare -i mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
     declare -i mbfl_I mbfl_J mbfl_K=0
 
@@ -860,7 +838,7 @@ function mbfl_array_set_xor () {
 
 	for ((mbfl_J=0; mbfl_J < mbfl_DIM2; ++mbfl_J))
 	do
-	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -883,7 +861,7 @@ function mbfl_array_set_xor () {
 
 	for ((mbfl_J=0; mbfl_J < mbfl_DIM1; ++mbfl_J))
 	do
-	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY1, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY1, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -901,7 +879,7 @@ function mbfl_array_set_difference () {
     mbfl_mandatory_nameref_parameter(mbfl_RESULT_ARRY,	1, reference to union index array)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	2, reference to source index array)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	3, reference to source index array)
-    mbfl_optional_parameter(mbfl_COMPAR,		4, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		4, mbfl_string_equal)
     declare -i mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
     declare -i mbfl_I mbfl_J mbfl_K=0
 
@@ -912,7 +890,7 @@ function mbfl_array_set_difference () {
 
 	for ((mbfl_J=0; mbfl_J < mbfl_DIM2; ++mbfl_J))
 	do
-	    if "$mbfl_COMPAR" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -1084,7 +1062,7 @@ function mbfl_stack_copy () {
 function mbfl_stack_equal () {
     mbfl_mandatory_nameref_parameter(mbfl_STACK1, 1, reference to object of class mbfl_stack_t)
     mbfl_mandatory_nameref_parameter(mbfl_STACK2, 2, reference to object of class mbfl_stack_t)
-    mbfl_optional_parameter(mbfl_COMPAR,          3, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,          3, mbfl_string_equal)
 
     MBFL_STACK_VALIDATE_PARAMETER(mbfl_STACK1)
     MBFL_STACK_VALIDATE_PARAMETER(mbfl_STACK2)
@@ -1099,7 +1077,7 @@ function mbfl_stack_equal () {
 	declare -i mbfl_I mbfl_NUM=mbfl_slots_number(mbfl_ARRAY2)
 	for ((mbfl_I=0; mbfl_I<mbfl_NUM; ++mbfl_I))
 	do
-	    if ! "$mbfl_COMPAR" mbfl_slot_qref(mbfl_ARRAY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRAY2, $mbfl_I)
+	    if ! "$mbfl_ISEQUAL" mbfl_slot_qref(mbfl_ARRAY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRAY2, $mbfl_I)
 	    then return_failure
 	    fi
 	done
@@ -1238,7 +1216,7 @@ function mbfl_vector_copy () {
 function mbfl_vector_equal () {
     mbfl_mandatory_nameref_parameter(mbfl_VECTOR1, 1, reference to object of class mbfl_vector_t)
     mbfl_mandatory_nameref_parameter(mbfl_VECTOR2, 2, reference to object of class mbfl_vector_t)
-    mbfl_optional_parameter(mbfl_COMPAR,           3, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISEQUAL,           3, mbfl_string_equal)
 
     MBFL_VECTOR_VALIDATE_PARAMETER(mbfl_VECTOR1)
     MBFL_VECTOR_VALIDATE_PARAMETER(mbfl_VECTOR2)
@@ -1253,7 +1231,7 @@ function mbfl_vector_equal () {
 	declare -i mbfl_I mbfl_NUM=mbfl_slots_number(mbfl_ARRAY2)
 	for ((mbfl_I=0; mbfl_I<mbfl_NUM; ++mbfl_I))
 	do
-	    if ! "$mbfl_COMPAR" mbfl_slot_qref(mbfl_ARRAY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRAY2, $mbfl_I)
+	    if ! "$mbfl_ISEQUAL" mbfl_slot_qref(mbfl_ARRAY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRAY2, $mbfl_I)
 	    then return_failure
 	    fi
 	done

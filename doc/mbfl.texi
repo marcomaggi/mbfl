@@ -193,7 +193,7 @@ Appendices
 * libmbfl-arch::                Archiving and compressing files.
 * libmbfl-passwords::           Generating somewhat random passwords.
 * libmbfl-git::                 Version control with @command{git}.
-* libmbfl-containers::          Data containers library.
+* containers::                  Data containers library.
 * sendmail::                    Examples for sending email.
 * Package License::             GNU Lesser General Public License.
 * Documentation License::       GNU Free Documentation License.
@@ -262,7 +262,7 @@ Basic interface to the version control program @command{git}; @ref{libmbfl-git, 
 @command{git}}.
 
 @item @file{libmbfl-containers.bash}
-Data containers library; @ref{libmbfl-containers, Data containers library}.
+Data containers library; @ref{containers, Data containers library}.
 @end table
 
 Starting with version 3: this package installs files under directories @strong{without} the version
@@ -12005,7 +12005,7 @@ Run the program @git{} with the given arguments; return the exit status of execu
 @end defun
 
 @c page
-@node libmbfl-containers
+@node containers
 @appendix Data containers library
 
 
@@ -12026,23 +12026,23 @@ preprocessor option @option{--print-libmbfl-containers} will print the file path
 installed library, @ref{--print-libmbfl-containers, Invoking the preprocessor}.
 
 @menu
-* libmbfl-containers conventions::      Conventions.
-* libmbfl-containers arrays::           Arrays.
-* libmbfl-containers vectors::          Vectors.
-* libmbfl-containers stacks::           Stacks.
+* containers conventions::      Conventions.
+* containers arrays::           Arrays.
+* containers vectors::          Vectors.
+* containers stacks::           Stacks.
 @end menu
 
 @c page
-@node libmbfl-containers conventions
+@node containers conventions
 @appendixsec Conventions
 
 
 @menu
-* libmbfl-containers conventions underscore::   The underscore syntax.
+* containers conventions underscore::   The underscore syntax.
 @end menu
 
 @c page
-@node libmbfl-containers conventions underscore
+@node containers conventions underscore
 @appendixsubsec The underscore syntax
 
 
@@ -12050,41 +12050,42 @@ In this chapter we use the underscore syntax as defined in @ref{objects conventi
 underscore syntax}.
 
 @c page
-@node libmbfl-containers arrays
+@node containers arrays
 @appendixsec Arrays
 
 
 All the functions documented here operate on Bash indexed arrays, @bashref{Arrays, Arrays}.  All the
 functions are ``unsafe'' and low--level: there is no parameters validation.  If we need validated
-parameters we should use the vector container, @ref{libmbfl-containers vectors, Vectors}.
+parameters we should use the vector container, @ref{containers vectors, Vectors}.
 
 @menu
-* libmbfl-containers arrays conventions::  Conventions.
-* libmbfl-containers arrays makers::       Array constructors.
-* libmbfl-containers arrays inspection::   Inspecting arrays.
-* libmbfl-containers arrays selectors::    Selecting values from arrays.
-* libmbfl-containers arrays compar::       Comparing values.
-* libmbfl-containers arrays search::       Searching values.
-* libmbfl-containers arrays insert::       Inserting values.
-* libmbfl-containers arrays filter::       Filter values.
-* libmbfl-containers arrays delete::       Removing and deleting values.
-* libmbfl-containers arrays fold::         Folding values in indexed arrays.
-* libmbfl-containers arrays foreach::      Iterating over values in indexed arrays.
-* libmbfl-containers arrays map::          Mapping values in indexed arrays.
-* libmbfl-containers arrays copy::         Copying values.
-* libmbfl-containers arrays append::       Appending values to arrays.
-* libmbfl-containers arrays set::          Set operations.
-* libmbfl-containers arrays misc::         Miscellaneous array operations.
+* containers arrays conventions::       Conventions.
+* containers arrays makers::            Array constructors.
+* containers arrays inspection::        Inspecting arrays.
+* containers arrays selectors::         Selecting values from arrays.
+* containers arrays compar::            Comparing values.
+* containers arrays search::            Searching values.
+* containers arrays insert::            Inserting values.
+* containers arrays filter::            Filter values.
+* containers arrays delete::            Removing and deleting values.
+* containers arrays fold::              Folding values in indexed arrays.
+* containers arrays foreach::           Iterating over values in indexed arrays.
+* containers arrays map::               Mapping values in indexed arrays.
+* containers arrays copy::              Copying values.
+* containers arrays append::            Appending values to arrays.
+* containers arrays sorting::           Sorting values into arrays.
+* containers arrays set::               Set operations.
+* containers arrays misc::              Miscellaneous array operations.
 @end menu
 
 @c page
-@node libmbfl-containers arrays conventions
+@node containers arrays conventions
 @appendixsubsec Conventions of the arrays @api{}
 
 
 @menu
-* libmbfl-containers arrays conventions iterations::    Supported iterations over arrays.
-* libmbfl-containers arrays conventions parameters::    Naming conventions for function parameters.
+* containers arrays conventions iterations::    Supported iterations over arrays.
+* containers arrays conventions parameters::    Naming conventions for function parameters.
 @end menu
 
 @c ------------------------------------------------------------------------
@@ -12099,11 +12100,6 @@ For the semantics of the parameter @var{ARRYS} see @ref{@var{ARRYS} parameter, C
 arrays @api{}}.
 @end macro
 
-@macro ParameterSemanticsCOMPAR{}
-For the semantics of the parameter @var{COMPAR} see @ref{@var{COMPAR} parameter, Conventions of the
-arrays @api{}}.
-@end macro
-
 @macro ParameterSemanticsOPERATOR{}
 For the semantics of the parameter @var{OPERATOR} see @ref{@var{OPERATOR} parameter, Conventions of
 the arrays @api{}}.
@@ -12111,6 +12107,26 @@ the arrays @api{}}.
 
 @macro ParameterSemanticsPRED{}
 For the semantics of the parameter @var{PRED} see @ref{@var{PRED} parameter, Conventions of the
+arrays @api{}}.
+@end macro
+
+@macro ParameterSemanticsISEQUAL{}
+For the semantics of the parameter @var{ISEQUAL} see @ref{@var{ISEQUAL} parameter, Conventions
+of the arrays @api{}}.
+@end macro
+
+@macro ParameterSemanticsISLESS{}
+For the semantics of the parameter @var{ISLESS} see @ref{@var{ISLESS} parameter, Conventions of the
+arrays @api{}}.
+@end macro
+
+@macro ParameterSemanticsISGREATER{}
+For the semantics of the parameter @var{ISGREATER} see @ref{@var{ISGREATER} parameter, Conventions
+of the arrays @api{}}.
+@end macro
+
+@macro ParameterSemanticsCOMPAR{}
+For the semantics of the parameter @var{COMPAR} see @ref{@var{COMPAR} parameter, Conventions of the
 arrays @api{}}.
 @end macro
 
@@ -12145,7 +12161,7 @@ For the semantics of a ``map iteration'' see @ref{Arrays map iteration, Conventi
 @end macro
 
 @c page
-@node libmbfl-containers arrays conventions iterations
+@node containers arrays conventions iterations
 @appendixsubsubsec Supported iterations over arrays
 
 
@@ -12192,7 +12208,7 @@ value.  The accumulator has an initial value, which is composed with values from
 @end table
 
 @c page
-@node libmbfl-containers arrays conventions parameters
+@node containers arrays conventions parameters
 @appendixsubsubsec Naming conventions for function parameters
 
 
@@ -12252,24 +12268,6 @@ command or alias, accepting some number of parameters.  It is used in command li
 Unless otherwise stated: if the return status of @var{OPERATOR} is false, the ongoing iteration is
 stopped and its function returns with the same status of @var{OPERATOR}.
 
-@item COMPAR
-@anchor{@var{COMPAR} parameter}
-@cindex @var{COMPAR} parameter for arrays @api{}
-@cindex Parameter @var{COMPAR} for arrays @api{}
-@cindex Function parameter @var{COMPAR} for arrays @api{}
-Every parameter named @var{COMPAR} must be an ``applicable identifier'', bound to a function or
-command or alias, accepting the following parameters:
-
-@example
-@var{COMPAR} @vari{VALUE} @varii{VALUE}
-@end example
-
-@noindent
-where @vari{VALUE} and @varii{VALUE} are values from arrays; @var{COMPAR} must return true if
-@vari{VALUE} and @varii{VALUE} are ``equal'' according to some definition of equality, otherwise it
-must return false.  @var{COMPAR} is usually an optional parameter, when not given: @var{COMPAR}
-defaults to @func{mbfl_string_equal}.
-
 @item PRED
 @anchor{@var{PRED} parameter}
 @cindex @var{PRED} parameter for arrays @api{}
@@ -12285,10 +12283,95 @@ command or alias, accepting the following parameters:
 @noindent
 where @var{VALUE} is a from an array; @var{PRED} is meant to test some condition against @var{VALUE}
 and return true or false.
+
+@item COMPAR
+@anchor{@var{ISEQUAL} parameter}
+@cindex @var{ISEQUAL} parameter for arrays @api{}
+@cindex Parameter @var{ISEQUAL} for arrays @api{}
+@cindex Function parameter @var{ISEQUAL} for arrays @api{}
+Every parameter named @var{ISEQUAL} must be an ``applicable identifier'', bound to a function or
+command or alias, accepting the following parameters:
+
+@example
+@var{ISEQUAL} @vari{VALUE} @varii{VALUE}
+@end example
+
+@noindent
+where @vari{VALUE} and @varii{VALUE} are values from arrays; @var{ISEQUAL} must return true if
+@vari{VALUE} and @varii{VALUE} are ``equal'' according to some definition of equality, otherwise it
+must return false.  @var{ISEQUAL} is usually an optional parameter, when not given: @var{ISEQUAL}
+defaults to @func{mbfl_string_equal}.
+
+@item ISLESS
+@anchor{@var{ISLESS} parameter}
+@cindex @var{ISLESS} parameter for arrays @api{}
+@cindex Parameter @var{ISLESS} for arrays @api{}
+@cindex Function parameter @var{ISLESS} for arrays @api{}
+Every parameter named @var{ISLESS} must be an ``applicable identifier'', bound to a function or
+command or alias, accepting the following parameters:
+
+@example
+@var{ISLESS} @vari{VALUE} @varii{VALUE}
+@end example
+
+@noindent
+where @vari{VALUE} and @varii{VALUE} are values from arrays; @var{ISLESS} must return true if
+@vari{VALUE} is ``less than'' @varii{VALUE} according to some definition of ordering; otherwise it
+must return false.  @var{ISLESS} is usually an optional parameter, when not given: @var{ISLESS}
+defaults to @func{mbfl_string_less}.
+
+@item ISGREATER
+@anchor{@var{ISGREATER} parameter}
+@cindex @var{ISGREATER} parameter for arrays @api{}
+@cindex Parameter @var{ISGREATER} for arrays @api{}
+@cindex Function parameter @var{ISGREATER} for arrays @api{}
+Every parameter named @var{ISGREATER} must be an ``applicable identifier'', bound to a function or
+command or alias, accepting the following parameters:
+
+@example
+@var{ISGREATER} @vari{VALUE} @varii{VALUE}
+@end example
+
+@noindent
+where @vari{VALUE} and @varii{VALUE} are values from arrays; @var{ISGREATER} must return true if
+@vari{VALUE} is ``greater than'' @varii{VALUE} according to some definition of ordering; otherwise
+it must return false.  @var{ISGREATER} is usually an optional parameter, when not given:
+@var{ISGREATER} defaults to @func{mbfl_string_greater}.
+
+@item COMPAR
+@anchor{@var{COMPAR} parameter}
+@cindex @var{COMPAR} parameter for arrays @api{}
+@cindex Parameter @var{COMPAR} for arrays @api{}
+@cindex Function parameter @var{COMPAR} for arrays @api{}
+Every parameter named @var{COMPAR} must be an ``applicable identifier'', bound to a function or
+command or alias, accepting the following parameters:
+
+@example
+@var{COMPAR} @vari{VALUE} @varii{VALUE}
+@end example
+
+@noindent
+where @vari{VALUE} and @varii{VALUE} are values from arrays; @var{COMPAR} must compare its
+parameters and:
+
+@itemize
+@item
+if @vari{VALUE} = @varii{VALUE} return 0;
+
+@item
+if @vari{VALUE} < @varii{VALUE} return 1;
+
+@item
+if @vari{VALUE} > @varii{VALUE} return 2;
+@end itemize
+
+@noindent
+@var{COMPAR} is usually an optional parameter, when not given: @var{COMPAR} defaults to
+@func{mbfl_string_compar}.
 @end table
 
 @c page
-@node libmbfl-containers arrays makers
+@node containers arrays makers
 @appendixsubsec Array constructors
 
 
@@ -12361,7 +12444,7 @@ mbfl_slots_qvalues(ARRY)        @result{} 1 1.1 1.2 1.3 1.4
 @end defun
 
 @c page
-@node libmbfl-containers arrays inspection
+@node containers arrays inspection
 @appendixsubsec Inspecting arrays
 
 
@@ -12414,7 +12497,7 @@ mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 2)        @result{} q
 @end defun
 
 @c page
-@node libmbfl-containers arrays selectors
+@node containers arrays selectors
 @appendixsubsec Selecting values from arrays
 
 
@@ -12483,19 +12566,19 @@ mbfl_slots_qvalues(SUFFIX)      @result{} e f g h i
 @end defun
 
 @c page
-@node libmbfl-containers arrays compar
+@node containers arrays compar
 @appendixsubsec Comparing values
 
 
 @ParameterSemanticsARRY{}
 @ParameterSemanticsARRYS{}
-@ParameterSemanticsCOMPAR{}
+@ParameterSemanticsISEQUAL{}
 
 
 @defun mbfl_array_equal_values @var{ARRY}
-@defunx mbfl_array_equal_values @var{ARRY} @var{COMPAR}
+@defunx mbfl_array_equal_values @var{ARRY} @var{ISEQUAL}
 Return true if all the values in @var{ARRY} are equal according to the comparison operator
-@var{COMPAR}; otherwise return false.
+@var{ISEQUAL}; otherwise return false.
 
 @example
 mbfl_declare_index_array_varref(ARRY, (0 0 0 0 0 0))
@@ -12506,9 +12589,9 @@ mbfl_array_equal_values _(ARRY)         @result{} 0
 
 
 @defun mbfl_array_equal @vari{ARRY} @vari{ARRY}
-@defunx mbfl_array_equal @vari{ARRY} @vari{ARRY} @var{COMPAR}
+@defunx mbfl_array_equal @vari{ARRY} @vari{ARRY} @var{ISEQUAL}
 Compare the arrays and return true if the elements are equal, slot by slot, according to
-@var{COMPAR}; otherwise return false.
+@var{ISEQUAL}; otherwise return false.
 
 @example
 mbfl_declare_index_array_varref(ARRY1, (a b c))
@@ -12524,9 +12607,9 @@ mbfl_array_equal _(ARRY1) _(ARRY2)
 
 
 @defun mbfl_multi_array_equal @var{ARRYS}
-@defunx mbfl_multi_array_equal @var{ARRYS} @var{COMPAR}
+@defunx mbfl_multi_array_equal @var{ARRYS} @var{ISEQUAL}
 Compare the index arrays in @var{ARRYS}, slot by slot, and return true if the values are equal
-according to @var{COMPAR}; otherwise return false.
+according to @var{ISEQUAL}; otherwise return false.
 
 If @var{ARRYS} is empty or contains a single array: return true.
 
@@ -12541,7 +12624,7 @@ mbfl_multi_array_equal _(ARRYS)         @result{} 0
 @end defun
 
 @c page
-@node libmbfl-containers arrays insert
+@node containers arrays insert
 @appendixsubsec Inserting values
 
 
@@ -12609,21 +12692,21 @@ in the slot; this function mutates @var{ARRY} itself.
 @end defun
 
 @c page
-@node libmbfl-containers arrays search
+@node containers arrays search
 @appendixsubsec Searching values
 
 
 @ParameterSemanticsARRY{}
-@ParameterSemanticsCOMPAR{}
+@ParameterSemanticsISEQUAL{}
 @ParameterSemanticsPRED{}
 
 
 @defun mbfl_array_find_left_slot_containing_value_var @var{IDX_RV} @var{ARRY} @var{VALUE}
-@defunx mbfl_array_find_left_slot_containing_value_var @var{IDX_RV} @var{ARRY} @var{VALUE} @var{COMPAR}
+@defunx mbfl_array_find_left_slot_containing_value_var @var{IDX_RV} @var{ARRY} @var{VALUE} @var{ISEQUAL}
 @defunx mbfl_array_find_right_slot_containing_value_var @var{IDX_RV} @var{ARRY} @var{VALUE}
-@defunx mbfl_array_find_right_slot_containing_value_var @var{IDX_RV} @var{ARRY} @var{VALUE} @var{COMPAR}
+@defunx mbfl_array_find_right_slot_containing_value_var @var{IDX_RV} @var{ARRY} @var{VALUE} @var{ISEQUAL}
 Search @var{ARRY} for the leftmost/rightmost slot containing a value equal to @var{VALUE} according
-to @var{COMPAR}.  When found: store slot's index in @var{IDX_RV} and return true; otherwise return
+to @var{ISEQUAL}.  When found: store slot's index in @var{IDX_RV} and return true; otherwise return
 false.
 
 @example
@@ -12641,9 +12724,9 @@ $IDX    @result{} 7
 
 
 @defun mbfl_array_find_left_slot_containing_value @var{ARRY} @var{VALUE}
-@defunx mbfl_array_find_left_slot_containing_value @var{ARRY} @var{VALUE} @var{COMPAR}
+@defunx mbfl_array_find_left_slot_containing_value @var{ARRY} @var{VALUE} @var{ISEQUAL}
 @defunx mbfl_array_find_right_slot_containing_value @var{ARRY} @var{VALUE}
-@defunx mbfl_array_find_right_slot_containing_value @var{ARRY} @var{VALUE} @var{COMPAR}
+@defunx mbfl_array_find_right_slot_containing_value @var{ARRY} @var{VALUE} @var{ISEQUAL}
 Like the functions above, but do not retrieve slot's index.
 @end defun
 
@@ -12678,13 +12761,13 @@ Like the functions above, but do not retrieve slot's index.
 @end defun
 
 @c page
-@node libmbfl-containers arrays filter
+@node containers arrays filter
 @appendixsubsec Filter values
 
 
 @ParameterSemanticsARRY{}
 @ParameterSemanticsPRED{}
-@ParameterSemanticsCOMPAR{}
+@ParameterSemanticsISEQUAL{}
 
 
 @defun mbfl_array_filter @var{DST_ARRY} @var{PRED} @var{SRC_ARRY}
@@ -12738,12 +12821,12 @@ mbfl_slots_qvalues(BAD_ARRY)    @result{} 1 3 5 7 9
 @end defun
 
 @c page
-@node libmbfl-containers arrays delete
+@node containers arrays delete
 @appendixsubsec Removing and deleting values
 
 
 @ParameterSemanticsARRY{}
-@ParameterSemanticsCOMPAR{}
+@ParameterSemanticsISEQUAL{}
 
 
 @defun mbfl_array_remove @var{DST_ARRY} @var{SRC_ARRY} @var{IDX}
@@ -12761,9 +12844,9 @@ mbfl_slots_qvalues(RESULT)      @result{} a b c e f g h i
 
 
 @defun mbfl_array_delete @var{DST_ARRY} @var{SRC_ARRY} @var{VALUE}
-@defunx mbfl_array_delete @var{DST_ARRY} @var{SRC_ARRY} @var{VALUE} @var{COMPAR}
+@defunx mbfl_array_delete @var{DST_ARRY} @var{SRC_ARRY} @var{VALUE} @var{ISEQUAL}
 Copy values from @var{SRC_ARRY} to @var{DST_ARRY} skipping the values equal to @var{VALUE} according
-to @var{COMPAR}.
+to @var{ISEQUAL}.
 
 @example
 mbfl_declare_index_array_varref(ARRY, (a b D c D e D f D g D h i))
@@ -12777,9 +12860,9 @@ mbfl_slots_qvalues(RESULT)      @result{} a b c e f g h i
 
 
 @defun mbfl_array_delete_duplicates @var{DST_ARRY} @var{SRC_ARRY}
-@defunx mbfl_array_delete_duplicates @var{DST_ARRY} @var{SRC_ARRY} @var{COMPAR}
+@defunx mbfl_array_delete_duplicates @var{DST_ARRY} @var{SRC_ARRY} @var{ISEQUAL}
 Copy values from @var{SRC_ARRY} to @var{DST_ARRY} skipping all the duplicate values according to
-@var{COMPAR}.  If a value is present multiple times: its leftmost occurrence is stored in
+@var{ISEQUAL}.  If a value is present multiple times: its leftmost occurrence is stored in
 @var{DST_ARRY}, while all the others are discarded; this way the original unique--values
 left--to--right order is preserved.
 
@@ -12794,7 +12877,7 @@ mbfl_slots_qvalues(RESULT)      @result{} a b c D e f g h i
 @end defun
 
 @c page
-@node libmbfl-containers arrays fold
+@node containers arrays fold
 @appendixsubsec Folding values in indexed arrays
 
 
@@ -12884,7 +12967,7 @@ mbfl_multi_array_right_fold _(R_ACCUM) 'operator' _(ARRYS)
 @end defun
 
 @c page
-@node libmbfl-containers arrays foreach
+@node containers arrays foreach
 @appendixsubsec Iterating over values in indexed arrays
 
 
@@ -12960,7 +13043,7 @@ mbfl_array_multi_left_foreach OPERATOR _(ARRYS)
 @end defun
 
 @c page
-@node libmbfl-containers arrays map
+@node containers arrays map
 @appendixsubsec Mapping values in indexed arrays
 
 
@@ -13040,7 +13123,7 @@ mbfl_slots_qvalues(R_RESULT)    @result{} 111 222 333 444
 @end defun
 
 @c page
-@node libmbfl-containers arrays copy
+@node containers arrays copy
 @appendixsubsec Copying values
 
 
@@ -13063,7 +13146,7 @@ mbfl_slots_qvalues(DST) @result{} . c d .
 @end defun
 
 @c page
-@node libmbfl-containers arrays append
+@node containers arrays append
 @appendixsubsec Appending values to arrays
 
 
@@ -13101,7 +13184,50 @@ mbfl_slots_qvalues(DST_ARRY)    @result{} a b c d e A B C D E F G H I
 @end defun
 
 @c page
-@node libmbfl-containers arrays set
+@node containers arrays sorting
+@appendixsubsec Sorting values into arrays
+
+
+@ParameterSemanticsARRY{}
+@ParameterSemanticsISLESS{}
+@ParameterSemanticsCOMPAR{}
+
+
+@defun mbfl_array_is_sorted @var{ARRY}
+@defunx mbfl_array_is_sorted @var{ARRY} @var{ISLESS}
+Return true if the values in @var{ARRY} are sorted left--to--right in increasing order according to
+@var{ISLESS}.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d))
+mbfl_declare_index_array_varref(ARRY2, (a C D d))
+
+mbfl_array_is_sorted _(ARRY1)    @result{} 0
+mbfl_array_is_sorted _(ARRY2)    @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_array_quicksort_bang @var{ARRY}
+@defunx mbfl_array_quicksort_bang @var{ARRY} @var{ISLESS}
+Apply the quicksort algorithm to sort the values in @var{ARRY}; this function mutates @var{ARRY}
+itself.  Comparison between values is performed with @var{ISLESS}.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (e b d a c))
+
+mbfl_array_quicksort_bang _(ARRY1)
+mbfl_slots_qvalues(ARRY1)        @result{} a b c d e
+
+mbfl_declare_index_array_varref(ARRY2, (55 33 88 99 22 11 44 77 66))
+
+mbfl_array_quicksort_bang _(ARRY2) mbfl_integer_less
+mbfl_slots_qvalues(ARRY2)        @result{} 11 22 33 44 55 66 77 88 99
+@end example
+@end defun
+
+@c page
+@node containers arrays set
 @appendixsubsec Set operations
 
 
@@ -13111,12 +13237,12 @@ it is more efficient to keep sets sorted, when possible, these functions do not 
 
 @ParameterSemanticsARRY{}
 @ParameterSemanticsARRYS{}
-@ParameterSemanticsCOMPAR{}
+@ParameterSemanticsISEQUAL{}
 
 
 @defun mbfl_array_set_union @var{UNION_ARRY} @vari{ARRY} @varii{ARRY}
-@defunx mbfl_array_set_union @var{UNION_ARRY} @vari{ARRY} @varii{ARRY} @var{COMPAR}
-Copy values from @vari{ARRY} and @varii{ARRY} to @var{UNION_ARRY}; use @var{COMPAR} to include only
+@defunx mbfl_array_set_union @var{UNION_ARRY} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
+Copy values from @vari{ARRY} and @varii{ARRY} to @var{UNION_ARRY}; use @var{ISEQUAL} to include only
 unique values.
 
 @example
@@ -13131,8 +13257,8 @@ mbfl_slots_qvalues(UNION)               @result{} a b c d e f g h i
 
 
 @defun mbfl_array_set_intersection @var{INTERSECTION_ARRY} @vari{ARRY} @varii{ARRY}
-@defunx mbfl_array_set_intersection @var{INTERSECTION_ARRY} @vari{ARRY} @varii{ARRY} @var{COMPAR}
-Copy values from @vari{ARRY} and @varii{ARRY} to @var{INTERSECTION_ARRY}; use @var{COMPAR} to
+@defunx mbfl_array_set_intersection @var{INTERSECTION_ARRY} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
+Copy values from @vari{ARRY} and @varii{ARRY} to @var{INTERSECTION_ARRY}; use @var{ISEQUAL} to
 include only values present in both @vari{ARRY} and @varii{ARRY}.
 
 @example
@@ -13147,8 +13273,8 @@ mbfl_slots_qvalues(INTERSECTION)        @result{} c d e
 
 
 @defun mbfl_array_set_xor @var{XOR_ARRY} @vari{ARRY} @varii{ARRY}
-@defunx mbfl_array_set_xor @var{XOR_ARRY} @vari{ARRY} @varii{ARRY} @var{COMPAR}
-Copy values from @vari{ARRY} and @varii{ARRY} to @var{XOR_ARRY}; use @var{COMPAR} to include
+@defunx mbfl_array_set_xor @var{XOR_ARRY} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
+Copy values from @vari{ARRY} and @varii{ARRY} to @var{XOR_ARRY}; use @var{ISEQUAL} to include
 only values exclusively present in either @vari{ARRY} or @varii{ARRY}.
 
 @example
@@ -13163,8 +13289,8 @@ mbfl_slots_qvalues(XOR)                 @result{} a b f g h i
 
 
 @defun mbfl_array_set_difference @var{DIFFERENCE_ARRY} @vari{ARRY} @varii{ARRY}
-@defunx mbfl_array_set_difference @var{DIFFERENCE_ARRY} @vari{ARRY} @varii{ARRY} @var{COMPAR}
-Copy values from @vari{ARRY} to @var{DIFFERENCE_ARRY}; use @var{COMPAR} to include only values
+@defunx mbfl_array_set_difference @var{DIFFERENCE_ARRY} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
+Copy values from @vari{ARRY} to @var{DIFFERENCE_ARRY}; use @var{ISEQUAL} to include only values
 exclusively present in @vari{ARRY} and not in @varii{ARRY}.
 
 @example
@@ -13178,7 +13304,7 @@ mbfl_slots_qvalues(DIFFERENCE)          @result{} a b
 @end defun
 
 @c page
-@node libmbfl-containers arrays misc
+@node containers arrays misc
 @appendixsubsec Miscellaneous array operations
 
 
@@ -13239,11 +13365,11 @@ mbfl_slots_qvalues(DST_ARRY)    @result{} a A b B c C d D e E
 
 
 @c page
-@node libmbfl-containers vectors
+@node containers vectors
 @appendixsec Vectors
 
 @c page
-@node libmbfl-containers stacks
+@node containers stacks
 @appendixsec Stacks
 
 
@@ -13385,15 +13511,15 @@ mbfl_stack_equal _(STK2) _(STK1)
 
 
 @defun mbfl_stack_equal @vari{STK} @varii{STK}
-@defunx mbfl_stack_equal @vari{STK} @varii{STK} @var{COMPAR}
-Compare the elements from @vari{STK} and @varii{STK} using the function @var{COMPAR}: return true if
+@defunx mbfl_stack_equal @vari{STK} @varii{STK} @var{ISEQUAL}
+Compare the elements from @vari{STK} and @varii{STK} using the function @var{ISEQUAL}: return true if
 the elements are equal; return false otherwise.
 
-The optional argument @var{COMPAR} must be an identifier, bound to a shell function or command,
+The optional argument @var{ISEQUAL} must be an identifier, bound to a shell function or command,
 accepting the parameters:
 
 @example
-@var{COMPAR} @vari{ELEMENT} @varii{ELEMENT}
+@var{ISEQUAL} @vari{ELEMENT} @varii{ELEMENT}
 @end example
 
 @noindent

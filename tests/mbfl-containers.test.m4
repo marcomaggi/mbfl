@@ -1207,6 +1207,16 @@ function mbfl-containers-array-is-sorted-1.5 () {
 
     ! mbfl_array_is_sorted _(ARRY)
 }
+function mbfl-containers-array-is-sorted-2.1 () {
+    mbfl_declare_index_array_varref(ARRY, (11 22 33 44))
+
+    mbfl_array_is_sorted _(ARRY) mbfl_integer_less
+}
+function mbfl-containers-array-is-sorted-2.2 () {
+    mbfl_declare_index_array_varref(ARRY, (11 22 999 33 44))
+
+    ! mbfl_array_is_sorted _(ARRY) mbfl_integer_less
+}
 
 ### ------------------------------------------------------------------------
 
@@ -1224,8 +1234,17 @@ function mbfl-containers-array-quicksort-1.2 () {
     mbfl_array_quicksort_bang _(ARRY)
     mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
 }
-function mbfl-containers-array-quicksort-1.3 () {
-    # This inverse-order arrays is sorted with a single partition call.
+function mbfl-containers-array-quicksort-1.3.1 () {
+    # Array already ordered.
+    mbfl_declare_index_array_varref(ARRY, (a b c d e))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e))
+
+    mbfl_array_quicksort_bang _(ARRY)
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-quicksort-1.3.2 () {
+    # Array inverse-ordered.
     mbfl_declare_index_array_varref(ARRY, (e d c b a))
     mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e))
 
@@ -1234,7 +1253,6 @@ function mbfl-containers-array-quicksort-1.3 () {
     mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
 }
 function mbfl-containers-array-quicksort-1.4.1 () {
-    # This inverse-order arrays is sorted with a single partition call.
     mbfl_declare_index_array_varref(ARRY, (b a c))
     mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c))
 
@@ -1243,7 +1261,6 @@ function mbfl-containers-array-quicksort-1.4.1 () {
     mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
 }
 function mbfl-containers-array-quicksort-1.4.2 () {
-    # This inverse-order arrays is sorted with a single partition call.
     mbfl_declare_index_array_varref(ARRY, (a c b))
     mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c))
 
@@ -1256,8 +1273,9 @@ function mbfl-containers-array-quicksort-1.5 () {
     mbfl_declare_index_array_varref(ARRY, (e b a c d))
     mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e))
 
+    #echo $FUNCNAME mbfl_slots_qvalues(ARRY) >&2
     mbfl_array_quicksort_bang _(ARRY)
-    mbfl_array_dump _(ARRY)
+    #mbfl_array_dump _(ARRY)
     mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
 }
 function mbfl-containers-array-quicksort-1.6 () {
@@ -1266,33 +1284,106 @@ function mbfl-containers-array-quicksort-1.6 () {
     mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f))
 
     mbfl_array_quicksort_bang _(ARRY)
-    mbfl_array_dump _(ARRY)
+    #mbfl_array_dump _(ARRY)
     mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
 }
-function mbfl_integer_compare () {
-    mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
-    mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
+function mbfl-containers-array-quicksort-1.7.1 () {
+    # Values with non-zero multiplicity.
+    mbfl_declare_index_array_varref(ARRY, (a b b c d d e))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b b c d d e))
 
-    if test $LEFT -eq $RIGHT
-    then return 0
-    elif test $LEFT -lt $RIGHT
-    then return 1
-    else return 2
-    fi
-}
-function mbfl_integer_greater () {
-    mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
-    mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
-
-    test $LEFT -gt $RIGHT
-}
-function mbfl-containers-array-quicksort-1.7 () {
-    # This inverse-order arrays is sorted with a single partition call.
-    mbfl_declare_index_array_varref(ARRY, ($RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM $RANDOM))
-
-    mbfl_array_quicksort_bang _(ARRY) mbfl_integer_compare
+    mbfl_array_quicksort_bang _(ARRY)
     #mbfl_array_dump _(ARRY)
-    mbfl_array_is_sorted _(ARRY) mbfl_integer_greater
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-quicksort-1.7.2 () {
+    # Values with non-zero multiplicity.
+    mbfl_declare_index_array_varref(ARRY, (a b c d b e d))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b b c d d e))
+
+    mbfl_array_quicksort_bang _(ARRY)
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+function mbfl-containers-array-quicksort-2.1 () {
+    mbfl_declare_index_array_varref(ARRY, (6666 9 777 88))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (9 88 777 6666))
+
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_quicksort_bang _(ARRY) mbfl_integer_less
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-quicksort-2.2 () {
+    # 100 values.
+    if true
+    then mbfl_declare_index_array_varref(ARRY,
+					 (31701 21560 25510    20147 22805 31603    24581 17618 28331    31937
+					  18001 10924  8816    18703  6012 19360    28348 23169 23032     7795
+					   4499 16929 23842     8234 22149 27364    24816  4269 28716    19255
+					   8674 11405 30773     2090  1866 16831     8079 27315 23323    14416
+					  29052 32337 12420    15017 25087 10323     8633  3228 15296    32097
+					  31917   568 26998    23994 26255 10605      729 16652 27121    16472
+					  29348  9837 17356     4171 26252   938    23685   617  1699    30818
+					  11242 23384 28828     5124  9220 23012     5970 31242 19279    21598
+					  27827 15491 19120    30117 31452 14024    14668  5410 28796     9564
+					  1580  20344    49    25969 13488  8559     9631  2492 25604      628))
+    else
+	mbfl_declare_index_array_varref(ARRY,
+					($RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM))
+	echo mbfl_slots_qvalues(ARRY) >&2
+    fi
+
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_quicksort_bang _(ARRY) mbfl_integer_less
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_is_sorted _(ARRY) mbfl_integer_less
+}
+function mbfl-containers-array-quicksort-2.3 () {
+    # 101 values.
+    if true
+    then mbfl_declare_index_array_varref(ARRY,
+					 (19613 16958  8121    23854 29912 25794    14559 11395 31855   10989
+					  17866  5728  3339    24636 23157 19184    17699 27796 27631   26072
+					  10163 30532 30615    12304 30286  2146      508  6453 29424   20388
+					  22993   306 13432    26449 13285 19890    10188 22795 29293   21426
+					  25697 12921   527    12824 31208 14116     6096  3356 28439    9881
+					   3827  3736 23124    27426 16011   455    10955 19610 22168   19862
+					   5297  4131 29696    14139 11056 12420    31412 17012 29737   16462
+					   7624  4426 27632    13116  5081 20796     5636   138 20528   26684
+					  24513 30597  6538    14875  6443 19640     2250  8086  9477   18288
+					   3106 17364  4679    22146   285 31056      603  9631 21491   15847
+					  21808))
+    else
+	mbfl_declare_index_array_varref(ARRY,
+					($RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM $RANDOM $RANDOM  $RANDOM
+					 $RANDOM))
+	echo mbfl_slots_qvalues(ARRY) >&2
+    fi
+
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_quicksort_bang _(ARRY) mbfl_integer_less
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_is_sorted _(ARRY) mbfl_integer_less
 }
 
 
