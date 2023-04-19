@@ -27,9 +27,9 @@ function mbfl_integer_compare () {
     mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
     mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
 
-    if mbfl_string_eq($LEFT, $RIGHT)
+    if mbfl_integer_eq($LEFT, $RIGHT)
     then return 0
-    elif mbfl_string_lt($LEFT, $RIGHT)
+    elif mbfl_integer_lt($LEFT, $RIGHT)
     then return 1
     else return 2
     fi
@@ -38,37 +38,37 @@ function mbfl_integer_equal () {
     mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
     mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
 
-    mbfl_string_eq($LEFT, $RIGHT)
+    mbfl_integer_eq($LEFT, $RIGHT)
 }
 function mbfl_integer_not_equal () {
     mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
     mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
 
-    mbfl_string_neq($LEFT, $RIGHT)
+    mbfl_integer_neq($LEFT, $RIGHT)
 }
 function mbfl_integer_less () {
     mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
     mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
 
-    mbfl_string_lt($LEFT, $RIGHT)
+    mbfl_integer_lt($LEFT, $RIGHT)
 }
 function mbfl_integer_less_or_equal () {
     mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
     mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
 
-    mbfl_string_le($LEFT, $RIGHT)
+    mbfl_integer_le($LEFT, $RIGHT)
 }
 function mbfl_integer_greater () {
     mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
     mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
 
-    mbfl_string_gt($LEFT, $RIGHT)
+    mbfl_integer_gt($LEFT, $RIGHT)
 }
 function mbfl_integer_greater_or_equal () {
     mbfl_mandatory_integer_parameter(LEFT,  1, left integer)
     mbfl_mandatory_integer_parameter(RIGHT, 2, right integer)
 
-    mbfl_string_ge($LEFT, $RIGHT)
+    mbfl_integer_ge($LEFT, $RIGHT)
 }
 
 ### end of file
