@@ -191,8 +191,8 @@ Appendices
 * libmbfl-utils::               Utilities library.
 * libmbfl-at::                  Interface to the external program @command{at}.
 * libmbfl-arch::                Archiving and compressing files.
-* libmbfl-passwords::           Generating somewhat random passwords.
-* libmbfl-git::                 Version control with @command{git}.
+* passwords::                   Generating somewhat random passwords.
+* git::                         Version control with @command{git}.
 * containers::                  Data containers library.
 * sendmail::                    Examples for sending email.
 * Package License::             GNU Lesser General Public License.
@@ -255,10 +255,10 @@ An interface to the common file system archiving and compressing tools; @ref{lib
 and compressing files}.
 
 @item @file{libmbfl-passwords.bash}
-Password strings generation; @ref{libmbfl-passwords, Generating somewhat random passwords}.
+Password strings generation; @ref{passwords, Generating somewhat random passwords}.
 
 @item @file{libmbfl-git.bash}
-Basic interface to the version control program @command{git}; @ref{libmbfl-git, Version control with
+Basic interface to the version control program @command{git}; @ref{git, Version control with
 @command{git}}.
 
 @item @file{libmbfl-containers.bash}
@@ -11693,7 +11693,7 @@ Decompress @var{PATHNAME}, a file pathname, with the currently selected compress
 @end defun
 
 @c page
-@node libmbfl-passwords
+@node passwords
 @appendix Generating somewhat random passwords
 
 
@@ -11765,7 +11765,7 @@ Generate a password string; either print it to @stdout{} or store it in the resu
 @MbflDefunPasswordFunc{mbfl_passwords_printable_ascii_noblank, mbfl_string_is_printable_ascii_noblank}
 
 @c page
-@node libmbfl-git
+@node git
 @appendix Version control with @command{git}
 
 
@@ -11792,23 +11792,23 @@ library, @ref{--print-libmbfl-git, Invoking the preprocessor}.
 @center @url{https://git-scm.com/}
 
 @menu
-* libmbfl-git conventions::     Conventions.
-* libmbfl-git enable::          Library initialisation.
-* libmbfl-git config::          Configuration management.
-* libmbfl-git repository::      Repository management.
-* libmbfl-git branch::          Branches management.
-* libmbfl-git program::         Running the program.
+* git conventions::             Conventions.
+* git enable::                  Library initialisation.
+* git config::                  Configuration management.
+* git repository::              Repository management.
+* git branch::                  Branches management.
+* git program::                 Running the program.
 @end menu
 
 @c page
-@node libmbfl-git conventions
+@node git conventions
 @appendixsec Conventions
 
 In this documentation we assume the underscore is defined as macro as described in @ref{objects
 conventions underscore, The underscore syntax}.
 
 @c page
-@node libmbfl-git enable
+@node git enable
 @appendixsec Library initialisation
 
 
@@ -11818,7 +11818,7 @@ the facilities of this library.
 @end defun
 
 @c page
-@node libmbfl-git config
+@node git config
 @appendixsec Configuration management
 
 
@@ -11923,7 +11923,7 @@ Accessor and mutator for the field @code{terminator} of @class{mbfl_vc_git_confi
 
 
 @c page
-@node libmbfl-git repository
+@node git repository
 @appendixsec Repository management
 
 
@@ -11942,7 +11942,7 @@ resets the cached value to nothing.
 @end defun
 
 @c page
-@node libmbfl-git branch
+@node git branch
 @appendixsec Branches management
 
 
@@ -11996,7 +11996,7 @@ mbfl_vc_git_branch_list_remote_tracking_var mbfl_datavar(BRANCHES_RV)
 @end defun
 
 @c page
-@node libmbfl-git program
+@node git program
 @appendixsec Running the program
 
 
