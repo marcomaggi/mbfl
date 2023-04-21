@@ -312,6 +312,12 @@ m4_define([[[mbfl_default_class_declare_global]]], [[[mbfl_default_object_declar
 m4_define([[[mbfl_default_class_unset]]],          [[[mbfl_default_object_unset([[[$1]]])]]])
 
 
+#### miscellaneous macros
+
+m4_define([[[mbfl_hook_declare]]],       [[[mbfl_declare_index_array_varref([[[$1]]])]]])
+m4_define([[[mbfl_hook_global_declare]]],[[[mbfl_declare_index_array_varref([[[$1]]],,[[[-g]]])]]])
+
+
 #### done
 
 ### end of file

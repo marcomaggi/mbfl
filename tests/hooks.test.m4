@@ -40,16 +40,13 @@
 mbfl_load_library("$MBFL_LIBMBFL_CORE")
 mbfl_load_library("$MBFL_LIBMBFL_TEST")
 
-# With one parameter is expands into a use  of "mbfl_datavar()"; with two parameters it expands into
-# a use of "mbfl_slot_qref".
-#
-m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]])]]])
+MBFL_DEFINE_UNDERSCORE_MACRO
 
 
 #### simple tests
 
 function hooks-simple-1.1 () {
-    mbfl_declare_varref(HOOKS_SIMPLE_1_1,,-g)
+    mbfl_hook_declare(HOOKS_SIMPLE_1_1)
     declare FLAG1=false FLAG2=false
 
     mbfl_hook_define _(HOOKS_SIMPLE_1_1)
@@ -62,22 +59,38 @@ function hooks-simple-1.1 () {
     $FLAG1 && $FLAG2
 }
 
-function hooks-simple-2.1 () {
-    mbfl_declare_varref(HOOKS_SIMPLE_2_1,,-g)
+function hooks-simple-1.2 () {
+    mbfl_hook_declare(HOOKS_SIMPLE_1_2)
     declare FLAG1=false FLAG2=false FLAG2=false
+
+    mbfl_hook_define _(HOOKS_SIMPLE_1_2)
+
+    mbfl_hook_add _(HOOKS_SIMPLE_1_2) 'FLAG1=true'
+    mbfl_hook_add _(HOOKS_SIMPLE_1_2) 'FLAG2=true'
+
+    mbfl_hook_reset _(HOOKS_SIMPLE_1_2)
+
+    mbfl_hook_add _(HOOKS_SIMPLE_1_2) 'FLAG3=true'
+
+    mbfl_hook_run _(HOOKS_SIMPLE_1_2)
+
+    ! $FLAG1 && ! $FLAG2 && $FLAG3
+}
+
+### ------------------------------------------------------------------------
+
+function hooks-simple-2.1 () {
+    mbfl_hook_global_declare(HOOKS_SIMPLE_2_1)
+    declare FLAG1=false FLAG2=false
 
     mbfl_hook_define _(HOOKS_SIMPLE_2_1)
 
     mbfl_hook_add _(HOOKS_SIMPLE_2_1) 'FLAG1=true'
     mbfl_hook_add _(HOOKS_SIMPLE_2_1) 'FLAG2=true'
 
-    mbfl_hook_reset _(HOOKS_SIMPLE_2_1)
-
-    mbfl_hook_add _(HOOKS_SIMPLE_2_1) 'FLAG3=true'
-
     mbfl_hook_run _(HOOKS_SIMPLE_2_1)
 
-    ! $FLAG1 && ! $FLAG2 && $FLAG3
+    $FLAG1 && $FLAG2
 }
 
 

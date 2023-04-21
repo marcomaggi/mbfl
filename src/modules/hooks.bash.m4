@@ -27,7 +27,7 @@
 
 #### local macros
 
-MBFL_DEFINE_UNDERSCORE_MACRO()
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 
 #### interface
@@ -50,7 +50,7 @@ function mbfl_hook_run () {
 
     for ((mbfl_I=0; mbfl_I < mbfl_HOOK_NUM; ++mbfl_I))
     do
-	mbfl_HOOK_COMMAND=mbfl_slot_qref(mbfl_HOOKS,mbfl_I)
+	mbfl_HOOK_COMMAND=_(mbfl_HOOKS,mbfl_I)
 	eval "$mbfl_HOOK_COMMAND"
     done
 }
