@@ -753,13 +753,13 @@ function mbfl_p_default_class_mismatch_error_self_given_type () {
 #### predicates
 
 function mbfl_default_object_is_the_default_object () {
-    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_default_object), "$mbfl_SELF_DATAVAR")
+    mbfl_optional_parameter(mbfl_SELF_DATAVAR, 1)
+    mbfl_string_not_empty(mbfl_SELF_DATAVAR) && mbfl_string_eq(_(mbfl_default_object), "$mbfl_SELF_DATAVAR")
 }
 
 function mbfl_default_object_is_the_default_class () {
-    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_default_class), "$mbfl_SELF_DATAVAR")
+    mbfl_optional_parameter(mbfl_SELF_DATAVAR, 1)
+    mbfl_string_not_empty(mbfl_SELF_DATAVAR) && mbfl_string_eq(_(mbfl_default_class), "$mbfl_SELF_DATAVAR")
 }
 
 
@@ -789,12 +789,12 @@ then
 fi
 
 function mbfl_is_the_unspecified () {
-    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_unspecified),"$mbfl_SELF_DATAVAR")
+    mbfl_optional_parameter(mbfl_SELF_DATAVAR, 1)
+    mbfl_string_not_empty(mbfl_SELF_DATAVAR) && mbfl_string_eq(_(mbfl_unspecified),"$mbfl_SELF_DATAVAR")
 }
 function mbfl_is_the_undefined () {
-    mbfl_mandatory_parameter(mbfl_SELF_DATAVAR, 1, reference to data-structure instance)
-    mbfl_string_eq(_(mbfl_undefined),"$mbfl_SELF_DATAVAR")
+    mbfl_optional_parameter(mbfl_SELF_DATAVAR, 1)
+    mbfl_string_not_empty(mbfl_SELF_DATAVAR) && mbfl_string_eq(_(mbfl_undefined),"$mbfl_SELF_DATAVAR")
 }
 
 ### end of file
