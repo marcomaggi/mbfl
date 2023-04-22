@@ -45,7 +45,6 @@ script_EXAMPLES=
 
 #### load library
 
-mbfl_INTERACTIVE='no'
 mbfl_load_library("$MBFL_LIBMBFL_CORE")
 
 
@@ -59,8 +58,12 @@ declare SIGSPEC='none'
 function main () {
     local -i flag=0
 
-    # Enable job control.  So we can "suspend" later.
-    set -m
+    mbfl_signal_enable
+    mbfl_process_enable
+
+    trap quitting EXIT
+
+    mbfl_set_option_debug
 
     mbfl_message_debug "running: pid $$"
 
@@ -71,10 +74,9 @@ function main () {
     mbfl_signal_attach SIGUSR2 handler_four
 
     mbfl_message_debug "waiting for SIGCONT"
-    suspend
+    mbfl_process_suspend
     mbfl_message_debug "exiting"
-    trap quitting EXIT
-    exit 0
+    exit_because_success
 }
 
 function handler_one () {

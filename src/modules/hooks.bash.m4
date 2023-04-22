@@ -32,33 +32,49 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 #### interface
 
+# For now this is just a placeholder.
+#
 function mbfl_hook_define () {
-    mbfl_mandatory_nameref_parameter(mbfl_HOOKS, 1, reference to hook variable)
-    mbfl_hook_reset _(mbfl_HOOKS)
-}
-function mbfl_hook_add () {
-    mbfl_mandatory_nameref_parameter(mbfl_HOOKS,	1, reference to hook variable)
-    mbfl_mandatory_parameter(mbfl_HOOK_COMMAND,		2, hook command)
-    declare -i mbfl_HOOK_NUM=mbfl_slots_number(mbfl_HOOKS)
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)
 
-    mbfl_slot_set(mbfl_HOOKS, $mbfl_HOOK_NUM, "$mbfl_HOOK_COMMAND")
+    mbfl_hook_remove_commands _(mbfl_HOOK)
 }
-function mbfl_hook_run () {
-    mbfl_mandatory_nameref_parameter(mbfl_HOOKS, 1, reference to hook variable)
-    declare -i mbfl_I mbfl_HOOK_NUM=mbfl_slots_number(mbfl_HOOKS)
-    declare mbfl_HOOK_COMMAND
+function mbfl_hook_undefine () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)
 
-    for ((mbfl_I=0; mbfl_I < mbfl_HOOK_NUM; ++mbfl_I))
-    do
-	mbfl_HOOK_COMMAND=_(mbfl_HOOKS,mbfl_I)
-	eval "$mbfl_HOOK_COMMAND"
+    mbfl_hook_remove_commands _(mbfl_HOOK)
+}
+function mbfl_hook_remove_commands () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_HOOK)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
+    do mbfl_variable_unset mbfl_slot_spec(mbfl_HOOK, $mbfl_I)
     done
 }
-function mbfl_hook_reset () {
-    mbfl_mandatory_nameref_parameter(mbfl_HOOKS, 1, reference to hook variable)
+function mbfl_hook_has_commands () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)
+    (( 0 < mbfl_slots_number(mbfl_HOOK) ))
+}
+function mbfl_hook_add () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK,	1, reference to hook variable)
+    mbfl_mandatory_parameter(mbfl_HOOK_COMMAND,		2, hook command)
+    declare -i mbfl_IDX=mbfl_slots_number(mbfl_HOOK)
 
-    unset -v _(mbfl_HOOKS)
-    declare -ga _(mbfl_HOOKS)
+    if mbfl_string_not_empty(mbfl_HOOK_COMMAND)
+    then mbfl_slot_set(mbfl_HOOK, $mbfl_IDX, "$mbfl_HOOK_COMMAND")
+    else
+	mbfl_message_warning_printf 'attempt to register empty string as handler for signal "%s"' "$mbfl_SIGNAME"
+	return_failure
+    fi
+}
+function mbfl_hook_run () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_HOOK)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
+    do eval _(mbfl_HOOK,$mbfl_I)
+    done
 }
 
 ### end of file

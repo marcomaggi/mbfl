@@ -68,7 +68,7 @@ function hooks-simple-1.2 () {
     mbfl_hook_add _(HOOKS_SIMPLE_1_2) 'FLAG1=true'
     mbfl_hook_add _(HOOKS_SIMPLE_1_2) 'FLAG2=true'
 
-    mbfl_hook_reset _(HOOKS_SIMPLE_1_2)
+    mbfl_hook_undefine _(HOOKS_SIMPLE_1_2)
 
     mbfl_hook_add _(HOOKS_SIMPLE_1_2) 'FLAG3=true'
 
@@ -91,6 +91,23 @@ function hooks-simple-2.1 () {
     mbfl_hook_run _(HOOKS_SIMPLE_2_1)
 
     $FLAG1 && $FLAG2
+}
+
+
+#### inspection
+
+function hooks-inspect-1.1 () {
+    mbfl_hook_declare(HOOKS_INSPECT_1_1)
+
+    mbfl_hook_define _(HOOKS_INSPECT_1_1)
+    mbfl_hook_add _(HOOKS_INSPECT_1_1) 'true'
+    mbfl_hook_has_commands _(HOOKS_INSPECT_1_1)
+}
+function hooks-inspect-1.2 () {
+    mbfl_hook_declare(HOOKS_INSPECT_1_2)
+
+    mbfl_hook_define _(HOOKS_INSPECT_1_2)
+    ! mbfl_hook_has_commands _(HOOKS_INSPECT_1_2)
 }
 
 

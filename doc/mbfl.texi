@@ -178,7 +178,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * fd::                          Handling file descriptors.
 * program::                     Using external programs.
 * process::                     Job control.
-* signal::                      Catching signals.
+* signal::                      Interprocess signals.
 * times::                       Times and dates.
 * math::                        Evaluating mathematical expressions.
 * system::                      Interfacing with the system.
@@ -2627,30 +2627,100 @@ Return true if a function named @var{FUNCNAME} exists; otherwise return false.
 
 
 Sometimes we must execute commands when a certain event happens; @dfn{hooks} provide storage for
-such commands.  Usage of hooks is as follows:
+such commands.
+
+@menu
+* hooks conventions::           Coding conventions and identifier names.
+* hooks examples::              Hooks usage examples.
+* hooks api::                   Hooks programming interface.
+@end menu
+
+@c page
+@node hooks conventions
+@section Coding conventions and identifier names
+
+
+In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
+underscore syntax}.  In this documentation the parameter @var{HOOK} represents the data variable of
+a hook declared with @func{mbfl_hook_declare} and similar.
+
+@c page
+@node hooks examples
+@section Hooks usage examples
+
+
+Usage of hooks is as follows:
 
 @example
-mbfl_declare_global_varref(MY_HOOK)
+mbfl_hook_global_declare(MY_HOOK)
 declare FLAG1=false FLAG2=false
 
-mbfl_hook_define mbfl_datavar(MY_HOOK)
+mbfl_hook_define _(MY_HOOK)
 
-mbfl_hook_add mbfl_datavar(MY_HOOK) 'FLAG1=true'
-mbfl_hook_add mbfl_datavar(MY_HOOK) 'FLAG2=true'
+mbfl_hook_add _(MY_HOOK) 'FLAG1=true'
+mbfl_hook_add _(MY_HOOK) 'FLAG2=true'
 
-mbfl_hook_run mbfl_datavar(MY_HOOK)
+mbfl_hook_run _(MY_HOOK)
+
+$FLAG1 && $FLAG2 ;# true
+
+mbfl_hook_undefine _(MY_HOOK)
+@end example
+
+Hooks are usually declared as global variables, but, if needed, we can undefine a hook using a
+location:
+
+@example
+mbfl_hook_declare(MY_HOOK)
+declare FLAG1=false FLAG2=false
+
+mbfl_location_enter
+@{
+    mbfl_hook_define _(MY_HOOK)
+    mbfl_location_handler "mbfl_hook_undefine _(MY_HOOK)"
+
+    mbfl_hook_add _(MY_HOOK) 'FLAG1=true'
+    mbfl_hook_add _(MY_HOOK) 'FLAG2=true'
+    mbfl_hook_run _(MY_HOOK)
+@}
+mbfl_location_leave
 
 $FLAG1 && $FLAG2 ;# true
 @end example
 
-@defun mbfl_hook_define @var{HOOK_VAR}
-Initialise a new hook global variable whose name is @var{HOOK_VAR}.
+@c page
+@node hooks api
+@section Hooks programming interface
+
+
+@deffn {Preprocessor Macro} mbfl_hook_declare (@var{HOOK_NAME})
+Declare a hook's variables using @code{declare}, making all of them local or global depending on the
+context of the macro use.  This macro is a wrapper for @func{mbfl_declare_varref}.
+@end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_hook_global_declare (@var{HOOK_NAME})
+Declare a global hook variable using @code{declare -g}, but define @var{HOOK_NAME} using
+@code{declare} making it local or global depending on the context of the macro use.  This macro is a
+wrapper for @func{mbfl_declare_varref}.
+@end deffn
+
+
+@defun mbfl_hook_define @var{HOOK}
+Initialise a new already declared @var{HOOK}.  If @var{HOOK} has been previously used: this function
+removes all the old registered commands.
 @end defun
 
 
-@defun mbfl_hook_add @var{HOOK_VAR} @var{HOOK_COMMAND}
-Add to the hook variable @var{HOOK_VAR} the command @var{HOOK_COMMAND}.  When the hook is run:
-@var{HOOK_COMMAND} is executed with:
+@defun mbfl_hook_undefine @var{HOOK}
+Finalise the existent @var{HOOK}; all the registered commands are removed.  To use again this
+variable we have to apply @func{mbfl_hook_define} to it.
+@end defun
+
+
+@defun mbfl_hook_add @var{HOOK} @var{HOOK_COMMAND}
+Add to @var{HOOK} the command @var{HOOK_COMMAND}.  When the hook is run: @var{HOOK_COMMAND} is
+executed with:
 
 @example
 eval @var{HOOK_COMMAND}
@@ -2658,13 +2728,18 @@ eval @var{HOOK_COMMAND}
 @end defun
 
 
-@defun mbfl_hook_run @var{HOOK_VAR}
-Run all the commands in the given hook variable.
+@defun mbfl_hook_has_commands @var{HOOK}
+Return true if @var{HOOK} has commands registered for execution; otherwise return false.
 @end defun
 
 
-@defun mbfl_hook_reset @var{HOOK_VAR}
-Reset to empty the given hook variable.
+@defun mbfl_hook_remove_commands @var{HOOK}
+Remove all the registered commands in @var{HOOK}.
+@end defun
+
+
+@defun mbfl_hook_run @var{HOOK}
+Run all the commands in @var{HOOK}.
 @end defun
 
 @c page
@@ -8584,6 +8659,18 @@ The following are the @gnu{} Coreutils.
 @chapter Job control
 
 
+@defun mbfl_process_enable
+@defunx mbfl_process_disable
+Enable or disable job control, @bashref{Job Control, Job Control}.
+@end defun
+
+
+@defvr {Read-only Variable} mbfl_PID
+The current process ID.  This value is saved by @mbfl{} because the value of @samp{$$} is the PID of
+the current shell or subshell.
+@end defvr
+
+
 @defun mbfl_process_disown @var{ARG} @dots{}
 Execute the builtin @code{disown} using the given optional arguments.
 
@@ -8604,6 +8691,18 @@ enabled: do not execute the builtin.  @ref{getopts, Predefined options}.
 
 @defun mbfl_process_kill @var{ARG} @dots{}
 Execute the builtin @code{kill} using the given optional arguments.
+
+When sending signals to a process: we have to remember that multiple signals with the same number
+may be delivered collapsed into a single signal; so:
+
+@example
+mbfl_process_kill -s SIGUSR1 $SOME_PID
+mbfl_process_kill -s SIGUSR1 $SOME_PID
+@end example
+
+@noindent
+may cause a single @samp{SIGUSR1} to be delivered.  We also have to remember that @samp{$$} expands
+into the PID of the current shell or subshell.
 
 If the predefined options @option{--test} or @option{--show-program} are enabled: print a line on
 the standard error channel describing the operation.  If the predefined option @option{--test} is
@@ -8645,30 +8744,139 @@ for details on the file system pathname of the program @command{sleep}.
 
 @c page
 @node signal
-@chapter Catching signals
+@chapter Interprocess signals
 
 
-@mbfl{} provides an interface to the @code{trap} builtin that allows the
-execution of more than one function when a signal is received; this may
-sound useless, but that is it.
+@mbfl{} provides an interface to the @code{trap} builtin that allows the execution of more than one
+function when a Unix interprocess signal is delivered to the current process.
+
+In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
+underscore syntax}.
 
 
-@defun mbfl_signal_map_signame_to_signum @var{SIGSPEC}
-Convert @var{SIGSPEC} to the corresponding signal number, then print
-the number.
+@defun mbfl_signal_enable
+Initialise @mbfl{}'s signal--handling facilities.  We must call this function before using any of
+the facilities documented here.
 @end defun
 
 
-@defun mbfl_signal_attach @var{SIGSPEC} @var{HANDLER}
-Append @var{HANDLER} to the list of functions that are executed whenever
-@var{SIGSPEC} is received.
+@menu
+* signal specs::                Signal specifications as strings and numbers.
+* signal handlers::             Managing signal handlers.
+@end menu
+
+@c page
+@node signal specs
+@section Signal specifications as strings and numbers
+
+
+@defun mbfl_string_is_signame @var{STR}
+Return true if @var{STR} is a valid signal--name string--specification; otherwise return false.
+
+@example
+mbfl_string_is_signame 'SIGKILL'        @result{} 0
+mbfl_string_is_signame 'ciao            @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_string_is_signum @var{STR}
+Return true if @var{STR} is a valid signal--number specification; otherwise return false.
+
+@example
+mbfl_string_is_signum 9                 @result{} 0
+mbfl_string_is_signum 9999              @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_signal_map_signame_to_signum @var{SIGNAME}
+@defunx mbfl_signal_map_signame_to_signum_var @var{SIGNUM_RV} @var{SIGNAME}
+Convert @var{SIGNAME} to the corresponding signal--number specification, then print the number or
+store it in the result variable @var{SIGNUM_RV}.  When successful return true, otherwise return
+false.
+
+@example
+mbfl_declare_integer_varref(SIGNUM)
+
+mbfl_signal_map_signame_to_signum_var _(SIGNUM) 'SIGKILL'
+@result{} 0
+$SIGNUM         @result{} 9
+@end example
+@end defun
+
+
+@defun mbfl_signal_map_signum_to_signame @var{SIGNUM}
+@defunx mbfl_signal_map_signum_to_signame_var @var{SIGNAME_RV} @var{SIGNUM}
+Convert @var{SIGNUM} to the corresponding signal--name string--specification, then print the name or
+store it in the result variable @var{SIGNAME_RV}.  When successful return true, otherwise return
+false.
+
+@example
+mbfl_declare_varref(SIGNAME)
+
+mbfl_signal_map_signum_to_signame_var _(SIGNAME) 9
+@result{} 0
+$SIGNAME        @result{} SIGKILL
+@end example
+@end defun
+
+@c page
+@node signal handlers
+@section Managing signal handlers
+
+
+Signal handlers are stored in hooks, one hook for every signal specification; @ref{hooks, Executing
+commands with event hooks}.
+
+
+@defun mbfl_signal_hook_var @var{HOOK_RV} @var{SIGNAME}
+If @var{SIGNAME} is a valid signal name: store in the result variable @var{HOOK_RV} @var{SIGNAME}'s
+hook data variable, then return true; otherwise return false.  If currently there is no
+@var{SIGNAME}'s hook: a new hook is defined.
+
+@example
+mbfl_declare_varref(SIGKILL_HOOK)
+
+mbfl_signal_hook_var _(SIGKILL_HOOK) 'SIGKILL'
+@end example
+@end defun
+
+
+@defun mbfl_signal_attach @var{SIGNAME} @var{HANDLER}
+Add @var{HANDLER} to the @var{SIGNAME}'s hook.  When successful return true; otherwise return false.
+If currently there is no @var{SIGNAME}'s hook: a new hook is defined.
+
+@example
+function my_sigkill_handler () @{
+    echo gotcha >&2
+@}
+
+mbfl_signal_attack 'SIGKILL' my_sigkill_handler
+@end example
+@end defun
+
+
+@defun mbfl_signal_has_handlers @var{SIGNAME}
+Return true if @var{SIGNAME} has handlers associated to it, using this @mbfl{} module; otherwise
+return false.
+@end defun
+
+
+@defun mbfl_signal_remove_all_handlers
+Undefine all the signal hooks, implicitly removing all the registered handlers.
+@end defun
+
+
+@defun mbfl_signal_remove_signal_handlers @var{SIGNAME}
+Undefine the signal hook associated to @var{SIGNAME}, implicitly removing all the registered
+handlers.
 @end defun
 
 
 @defun mbfl_signal_invoke_handlers @var{SIGNUM}
-Invoke all the handlers registered for @var{SIGNUM}.  This function is
-not meant to be used during normal scripts execution, but it may be
-useful to debug a script.
+Run the hook associated to the signal @var{SIGNUM}.  This function is not meant to be used during
+normal scripts execution, but it may be useful to debug a script by simulating signal delivery.
 @end defun
 
 @c page

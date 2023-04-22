@@ -103,12 +103,16 @@
        "mbfl_unset_varref"
        "mbfl_datavar"
        "mbfl_namevar"
+       "mbfl_variable_unset"
+       "mbfl_unset_variable"
        ;;
        "mbfl_declare_option"
        "mbfl_declare_program"
        "mbfl_declare_exit_code"
        "mbfl_declare_assoc_array"
        "mbfl_declare_index_array"
+       "mbfl_hook_declare"
+       "mbfl_hook_global_declare"
        ;;
        "mbfl_string_eq"
        "mbfl_string_neq"
@@ -508,6 +512,8 @@
        "mbfl_program_sudo_user"
        "mbfl_program_validate_declared"
        ;;
+       "mbfl_process_enable"
+       "mbfl_process_disable"
        "mbfl_process_disown"
        "mbfl_process_wait"
        "mbfl_process_kill"
@@ -591,7 +597,6 @@
        "mbfl_location_run_all"
        ;;
        "mbfl_variable_alloc"
-       "mbfl_variable_unset"
        "mbfl_variable_array_to_colon_variable"
        "mbfl_variable_colon_variable_drop_duplicate"
        "mbfl_variable_colon_variable_to_array"
@@ -758,6 +763,21 @@
        "mbfl_system_numerical_user_id_to_name"
        "mbfl_system_user_name_to_numerical_id"
        ;;
+       "mbfl_signal_enable"
+       "mbfl_string_is_signame"
+       "mbfl_string_is_signum"
+       "mbfl_signal_map_signame_to_signum"
+       "mbfl_signal_map_signame_to_signum_var"
+       "mbfl_signal_map_signum_to_signame"
+       "mbfl_signal_map_signum_to_signame_var"
+       "mbfl_signal_hook_var"
+       "mbfl_signal_attach"
+       "mbfl_signal_send"
+       "mbfl_signal_invoke_handlers"
+       "mbfl_signal_has_handlers"
+       "mbfl_signal_remove_all_handlers"
+       "mbfl_signal_remove_handler"
+       ;;
        "mbfl_shell_is_function"
        ;;
        "mbfl_dialog_enable_programs"
@@ -789,9 +809,11 @@
        "mbfl_vc_git_program"
        ;;
        "mbfl_hook_define"
+       "mbfl_hook_undefine"
        "mbfl_hook_add"
        "mbfl_hook_run"
-       "mbfl_hook_reset"
+       "mbfl_hook_has_commands"
+       "mbfl_hook_remove_commands"
        ;;
        "mbfl_default_object_define"
        "mbfl_default_object_is_a"
