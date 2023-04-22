@@ -588,6 +588,7 @@ EXTRA_DIST			+=		\
 	tests/compress.test.m4			\
 	tests/encode.test.m4			\
 	tests/fd.test.m4			\
+	tests/fifo.test.m4			\
 	tests/file.test.m4			\
 	tests/getopts.test.m4			\
 	tests/functions.test.m4			\
@@ -624,6 +625,7 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/compress.test			\
 	tests/encode.test			\
 	tests/fd.test				\
+	tests/fifo.test				\
 	tests/file.test				\
 	tests/getopts.test			\
 	tests/hooks.test			\

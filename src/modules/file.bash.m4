@@ -1365,6 +1365,24 @@ function mbfl_file_get_size_var () {
     mbfl_RESULT_VARREF=$(mbfl_file_stat "$mbfl_PATHNAME" --printf='%s')
 }
 
+
+#### named pipes
+
+function mbfl_file_enable_named_pipes () {
+    : mbfl_declare_program mkfifo
+}
+function mbfl_exec_mkfifo () {
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_MKFIFO"
+    then
+	declare FLAGS
+	mbfl_program_exec "$mbfl_PROGRAM_MKFIFO" $FLAGS "$@"
+    else
+	mbfl_message_error_printf 'program "mkfifo" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_MKFIFO"
+	return_because_program_not_found
+    fi
+}
+
+
 
 ### end of file
 # Local Variables:

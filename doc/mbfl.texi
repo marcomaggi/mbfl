@@ -6477,6 +6477,7 @@ the password.
 * file testing::                Testing file existence and the like.
 * file read and write::         Reading and writing files with privileges.
 * file cd::                     Changing directory.
+* file fifo::                   Named pipes.
 @end menu
 
 @c page
@@ -7558,6 +7559,27 @@ execution of the @code{cd} command is successful: the hook @env{mbfl_CHANGE_DIRE
 
 @defun mbfl_cd @var{DIRNAME} @var{OPT} @dots{}
 Wrapper for @func{mbfl_change_directory}.  If verbose mode is on: print a message.
+@end defun
+
+@c page
+@node file fifo
+@section Named pipes
+
+
+Named pipes allow two processes to communicate; @coreutilsref{mkfifo invocation, @command{mkfifo}
+Make FIFOs (named pipes)}.
+
+
+@defun mbfl_file_enable_named_pipes
+Declare the commands required to create named pipes, also known as FIFOs.  @ref{program declaring,
+Declaring the intention to use a program}
+
+The programs are: @command{mkfifo}.
+@end defun
+
+
+@defun mbfl_exec_mkfifo @var{ARG} @dots{}
+Execute the program @command{mkfifo} using the given optional command line arguments.
 @end defun
 
 @c page
@@ -8645,6 +8667,7 @@ The following are the @gnu{} Coreutils.
 @DefineProgramVariable{LN, ln}
 @DefineProgramVariable{LS, ls}
 @DefineProgramVariable{MKDIR, mkdir}
+@DefineProgramVariable{MKFIFO, mkfifo}
 @DefineProgramVariable{MV, mv}
 @DefineProgramVariable{READLINK, readlink}
 @DefineProgramVariable{REALPATH, realpath}
