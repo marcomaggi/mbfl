@@ -6463,6 +6463,7 @@ the password.
 
 
 @menu
+* file conventions::            Coding conventions and identifier names.
 * file names::                  Manipulating file names.
 * file listing::                Listing directory entries.
 * file stat::                   Inspecting files and directories.
@@ -6479,6 +6480,15 @@ the password.
 * file cd::                     Changing directory.
 * file fifo::                   Named pipes.
 @end menu
+
+@c page
+@node file conventions
+@section Coding conventions and identifier names
+
+
+In this documentation, some predicate functions accept an optional parameter @var{PRINT_ERROR}: it
+will cause an error message to be printed with @func{mbfl_message_error} if the test fails; the
+argument value must be @code{print_error}.
 
 @c page
 @node file names
@@ -7352,23 +7362,22 @@ Execute the program @command{chgrp} using the given optional arguments.
 
 
 @menu
-* file testing file::           File functions.
-* file testing directory::      Directory functions.
-* file testing symlink::        Symbolic link functions.
-* file testing misc::           Generic pathname functions.
+* file testing file::           Testing file existence and permissions.
+* file testing directory::      Testing directory existence and permissions.
+* file testing pathname::       Testing pathname permissions.
+* file testing misc::           Testing miscellaneous file types.
 @end menu
 
 @c page
 @node file testing file
-@subsection File functions
+@subsection Testing file existence and permissions
 
 
 @cindex Existence of files
 
 
-When using the following functions: the optional argument @var{PRINT_ERROR} will cause an error
-message to be printed with @func{mbfl_message_error} if the test fails; the argument value must be
-@code{print_error}.
+For the semantics of the parameter @var{PRINT_ERROR} see @ref{file conventions, Coding conventions
+and identifier names}.
 
 
 @defun mbfl_file_exists @var{PATHNAME}
@@ -7401,12 +7410,11 @@ Return true if @var{FILENAME} is not the empty string, is a file and is executab
 
 @c page
 @node file testing directory
-@subsection Directory functions
+@subsection Testing directory existence and permissions
 
 
-When using the following functions: the optional argument @var{PRINT_ERROR} will cause an error
-message to be printed with @func{mbfl_message_error} if the test fails; the argument value must be
-@code{print_error}.
+For the semantics of the parameter @var{PRINT_ERROR} see @ref{file conventions, Coding conventions
+and identifier names}.
 
 
 @defun mbfl_file_is_directory @var{DIRECTORY}
@@ -7447,28 +7455,12 @@ directory.
 @end defun
 
 @c page
-@node file testing symlink
-@subsection Symbolic link functions
+@node file testing pathname
+@subsection Testing pathname permissions
 
 
-When using the following functions: the optional argument @var{PRINT_ERROR} will cause an error
-message to be printed with @func{mbfl_message_error} if the test fails; the argument value must be
-@code{print_error}.
-
-
-@defun mbfl_file_is_symlink @var{PATHNAME}
-@defunx mbfl_file_is_symlink @var{PATHNAME} @var{PRINT_ERROR}
-Return true if @var{PATHNAME} is not the empty string and is a symbolic link.
-@end defun
-
-@c page
-@node file testing misc
-@subsection Generic pathname functions
-
-
-When using the following functions: the optional argument @var{PRINT_ERROR} will cause an error
-message to be printed with @func{mbfl_message_error} if the test fails; the argument value must be
-@code{print_error}.
+For the semantics of the parameter @var{PRINT_ERROR} see @ref{file conventions, Coding conventions
+and identifier names}.
 
 
 @defun mbfl_file_pathname_is_readable @var{PATHNAME}
@@ -7486,6 +7478,28 @@ Return true if @var{PATHNAME} is not the empty string and is writable.
 @defun mbfl_file_pathname_is_executable @var{PATHNAME}
 @defunx mbfl_file_pathname_is_executable @var{PATHNAME} @var{PRINT_ERROR}
 Return true if @var{PATHNAME} is not the empty string and is executable.
+@end defun
+
+@c page
+@node file testing misc
+@subsection Testing miscellaneous file types
+
+
+For the semantics of the parameter @var{PRINT_ERROR} see @ref{file conventions, Coding conventions
+and identifier names}.
+
+
+@defun mbfl_file_is_symlink @var{PATHNAME}
+@defunx mbfl_file_is_symlink @var{PATHNAME} @var{PRINT_ERROR}
+Return true if @var{PATHNAME} is not the empty string and is a symbolic link.
+@end defun
+
+
+@defun mbfl_file_is_fifo @var{PATHNAME}
+@defunx mbfl_file_is_fifo @var{PATHNAME} @var{PRINT_ERROR}
+@defunx mbfl_file_is_named_pipe @var{PATHNAME}
+@defunx mbfl_file_is_named_pipe @var{PATHNAME} @var{PRINT_ERROR}
+Return true if @var{PATHNAME} is not the empty string and is a named pipe.
 @end defun
 
 @c page

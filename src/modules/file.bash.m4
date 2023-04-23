@@ -1371,6 +1371,14 @@ function mbfl_file_get_size_var () {
 function mbfl_file_enable_named_pipes () {
     : mbfl_declare_program mkfifo
 }
+function mbfl_file_is_named_pipe () {
+    mbfl_optional_parameter(PATHNAME, 1)
+    mbfl_optional_parameter(PRINT_ERROR, 2, no)
+    mbfl_file_pathname_p_is "$PRINT_ERROR" '-p' 'named pipe' "$PATHNAME"
+}
+function mbfl_file_is_fifo () {
+    mbfl_file_is_named_pipe "$@"
+}
 function mbfl_exec_mkfifo () {
     if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_MKFIFO"
     then

@@ -615,6 +615,7 @@ EXTRA_DIST			+=		\
 	tests/mbflutils-files.test.m4		\
 	\
 	tests/script-atexit.sh.m4		\
+	tests/fifotest.sh.m4			\
 	tests/signaltest.sh.m4
 
 MBFL_CHECK_BUILT_TESTS		=		\
@@ -666,6 +667,7 @@ TESTS				=		\
 CLEANFILES			+=		\
 	$(MBFL_CHECK_BUILT_TESTS)		\
 	$(builddir)/tests/$(am__dirstamp)	\
+	tests/fifotest.sh			\
 	tests/signaltest.sh			\
 	tests/script-atexit.sh
 
@@ -723,6 +725,7 @@ tests/%.sh: tests/%.sh.m4 $(MBFL_TESTS_PREREQUISITES)
 	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) $< >$@
 
 tests/signal.test: tests/signaltest.sh
+tests/fifo.test: tests/fifotest.sh
 
 tests/mbfl-arch.test:		$(builddir)/src/lib/libmbfl-arch.bash
 tests/mbfl-containers.test.m4:	$(builddir)/src/lib/libmbfl-containers.bash
