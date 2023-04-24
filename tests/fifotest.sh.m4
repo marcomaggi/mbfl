@@ -100,16 +100,12 @@ function main () {
 	# We, the child, communicate with our parent  through stdin and stdout: the parent took care
 	# of redirecting the standard channels to FIFOs.
 	#
-	mbfl_location_enter
-	{
-	    mbfl_message_debug_printf 'chatting with the parent through stdin and stdout'
-	    read
-	    mbfl_message_debug_printf 'read from parent: "%s"' "$REPLY"
-	    printf 'ciao parent\n'
+	mbfl_message_debug_printf 'chatting with the parent through stdin and stdout'
+	read
+	mbfl_message_debug_printf 'read from parent: "%s"' "$REPLY"
+	printf 'ciao parent\n'
 
-	    mbfl_message_debug_printf 'exiting'
-	}
-	mbfl_location_leave
+	mbfl_message_debug_printf 'exiting'
     else exit_failure
     fi
 }

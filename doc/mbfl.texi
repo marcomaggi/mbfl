@@ -1777,7 +1777,8 @@ Enter into a new location.  Initialise the internal state.
 
 @defun mbfl_location_leave
 Leave the current location.  Run all the registered handlers in reverse order.  Return the return
-status of the last command executed before the call to this function (@code{$?}).
+status of the last command executed before the call to this function (@code{$?}).  If this function
+is called when no location exists: nothing happens.
 @end defun
 
 
@@ -1832,21 +1833,28 @@ mbfl_location_leave
 We can use this function to add handlers to some outer location:
 
 @example
-mbfl_location_enter
-@{
-    mbfl_declare_varref(OUTER_HOOK_RV)
-    mbfl_location_hook_var _(OUTER_HOOK_RV)
-
-    mbfl_location_handler my_handler_one
-
+function outer () @{
     mbfl_location_enter
     @{
-        mbfl_location_handler my_handler_two
-        mbfl_hook_add $OUTER_HOOK_RV my_handler_three
+        mbfl_declare_varref(OUTER_LOCATION_HOOK)
+        mbfl_location_hook_var _(OUTER_LOCATION_HOOK)
+
+        mbfl_location_handler my_handler_one
+        inner $OUTER_LOCATION_HOOK
+        do_some_thing
     @}
     mbfl_location_leave
 @}
-mbfl_location_leave
+
+function inner () @{
+    mbfl_location_enter
+    @{
+        mbfl_location_handler my_handler_two
+        mbfl_hook_add $OUTER_LOCATION_HOOK my_handler_three
+        do_some_other_thing
+    @}
+    mbfl_location_leave
+@}
 @end example
 @end defun
 
@@ -7665,13 +7673,10 @@ mbfl_file_enable_remove
 mbfl_process_enable
 
 declare -r CHILD=/path/to/child.bash
-declare -i CHILD_PID
 
-declare -r FIFO_PARENT_TO_CHILD=/path/to/fifo-parent-to-child.$RANDOM
-declare -r FIFO_CHILD_TO_PARENT=/path/to/fifo-child-to-parent.$RANDOM
-
-export FIFO_PARENT_TO_CHILD
-export FIFO_CHILD_TO_PARENT
+# Export these variables so the child sees them.
+declare -rx FIFO_PARENT_TO_CHILD=/path/to/fifo-parent-to-child.$RANDOM
+declare -rx FIFO_CHILD_TO_PARENT=/path/to/fifo-child-to-parent.$RANDOM
 
 declare -ri FD_PARENT_TO_CHILD=4
 declare -ri FD_CHILD_TO_PARENT=5
@@ -7707,9 +7712,7 @@ mbfl_location_enter
     fi
 
     if mbfl_program_execbg 0 1 "$mbfl_PROGRAM_BASH" "$FIFO_SCRIPT"
-    then
-        CHILD_PID=$mbfl_program_BGPID
-        mbfl_location_handler "mbfl_process_wait $CHILD_PID"
+    then mbfl_location_handler "mbfl_process_wait $mbfl_program_BGPID"
     else
         mbfl_location_leave
         exit_failure
@@ -7764,13 +7767,82 @@ Let's say a parent process executes a child process with @func{mbfl_program_exec
 The parent can look like this:
 
 @example
+mbfl_file_enable_remove
+mbfl_process_enable
 
+function doit () @{
+    declare -r CHILD=/path/to/child.bash
+
+    declare -r FIFO_PARENT_TO_CHILD=/path/to/fifo-parent-to-child.$RANDOM
+    declare -r FIFO_CHILD_TO_PARENT=/path/to/fifo-child-to-parent.$RANDOM
+
+    declare -ri FD_PARENT_TO_CHILD=4
+    declare -ri FD_CHILD_TO_PARENT=5
+
+    mbfl_location_enter
+    @{
+        mbfl_declare_varref(OUTER_HOOK)
+        mbfl_location_hook_var _(OUTER_HOOK)
+
+        sub_doit
+
+        printf 'ciao child\n' >&$FD_PARENT_TO_CHILD
+        read -u $FD_CHILD_TO_PARENT
+    @}
+    mbfl_location_leave
+@}
+function sub_doit () @{
+    mbfl_location_enter
+    @{
+        if mbfl_exec_mkfifo --mode=0600 -- "$FIFO_PARENT_TO_CHILD"
+        then mbfl_location_handler "mbfl_file_remove '$FIFO_PARENT_TO_CHILD'"
+        else
+            mbfl_location_leave
+            return_failure
+        fi
+
+        if mbfl_exec_mkfifo --mode=0600 -- "$FIFO_CHILD_TO_PARENT"
+        then mbfl_location_handler "mbfl_file_remove '$FIFO_CHILD_TO_PARENT'"
+        else
+            mbfl_location_leave
+            return_failure
+        fi
+
+        if mbfl_fd_open_input_output $FD_PARENT_TO_CHILD "$FIFO_PARENT_TO_CHILD"
+        then mbfl_hook_add $OUTER_HOOK "mbfl_fd_close $FD_PARENT_TO_CHILD"
+        else
+            mbfl_location_leave
+            return_failure
+        fi
+
+        if mbfl_fd_open_input_output $FD_CHILD_TO_PARENT "$FIFO_CHILD_TO_PARENT"
+        then mbfl_hook_add $OUTER_HOOK "mbfl_fd_close $FD_CHILD_TO_PARENT"
+        else
+            mbfl_location_leave
+            return_failure
+        fi
+
+        if mbfl_program_execbg $FD_PARENT_TO_CHILD $FD_CHILD_TO_PARENT "$mbfl_PROGRAM_BASH" "$CHILD"
+        then mbfl_hook_add $OUTER_HOOK "mbfl_process_wait $mbfl_program_BGPID"
+        else
+            mbfl_location_leave
+            return_failure
+        fi
+
+        # We have connected  both the ends of  both the FIFOs, so  we can remove them  from the file
+        # system: the FIFOs will continue to exist until the file descriptors are closed.
+    @}
+    mbfl_location_leave
+@}
 @end example
 
 The child can look like this:
 
 @example
-
+function main () @{
+  read
+  printf 'ciao parent\n'
+@}
 @end example
 
 @c page
