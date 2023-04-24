@@ -71,9 +71,10 @@ function mbfl_hook_add () {
 function mbfl_hook_run () {
     mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)
     declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_HOOK)
+    declare mbfl_COMMAND
 
     for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
-    do eval _(mbfl_HOOK,$mbfl_I)
+    do mbfl_p_hook_run_command _(mbfl_HOOK) $mbfl_I
     done
 }
 function mbfl_hook_reverse_run () {
@@ -81,8 +82,18 @@ function mbfl_hook_reverse_run () {
     declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_HOOK)
 
     for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
-    do eval _(mbfl_HOOK,$mbfl_I)
+    do mbfl_p_hook_run_command _(mbfl_HOOK) $mbfl_I
     done
+}
+function mbfl_p_hook_run_command () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)
+    mbfl_mandatory_integer_parameter(mbfl_IDX,  2, command index)
+
+    # This can be empty if we have removed a command from the hook.
+    declare mbfl_COMMAND=_(mbfl_HOOK,$mbfl_IDX)
+    if mbfl_string_not_empty(mbfl_COMMAND)
+    then eval "$mbfl_COMMAND"
+    fi
 }
 
 ### end of file
