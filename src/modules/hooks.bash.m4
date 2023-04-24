@@ -76,6 +76,14 @@ function mbfl_hook_run () {
     do eval _(mbfl_HOOK,$mbfl_I)
     done
 }
+function mbfl_hook_reverse_run () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_HOOK)
+
+    for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
+    do eval _(mbfl_HOOK,$mbfl_I)
+    done
+}
 
 ### end of file
 # Local Variables:

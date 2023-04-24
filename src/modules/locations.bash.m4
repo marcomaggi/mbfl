@@ -1,4 +1,4 @@
-# locations.sh.m4 --
+# locations.bash.m4 --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: location handlers module
@@ -9,20 +9,17 @@
 #
 # Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #
-# This is free software; you  can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the
-# Free Software  Foundation; either version  3.0 of the License,  or (at
-# your option) any later version.
+# This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
+# General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
+# License, or (at your option) any later version.
 #
-# This library  is distributed in the  hope that it will  be useful, but
-# WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
-# MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+# This library is distributed in the hope that  it will be useful, but WITHOUT ANY WARRANTY; without
+# even the  implied warranty of MERCHANTABILITY  or FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU
 # Lesser General Public License for more details.
 #
-# You  should have  received a  copy of  the GNU  Lesser  General Public
-# License along  with this library; if  not, write to  the Free Software
-# Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
-# USA.
+# You should have received a copy of the  GNU Lesser General Public License along with this library;
+# if not,  write to  the Free  Software Foundation,  Inc., 59  Temple Place,  Suite 330,  Boston, MA
+# 02111-1307 USA.
 #
 
 
@@ -49,8 +46,8 @@ declare mbfl_location_ATEXIT_ID
 #
 #   0:count
 #
-# is always  empty.  This  means "$mbfl_location_COUNTER" is  the actual
-# number of locations in the array "mbfl_location_HANDLERS".
+# is always  empty.  This means  "$mbfl_location_COUNTER" is the actual  number of locations  in the
+# array "mbfl_location_HANDLERS".
 #
 function mbfl_location_enter () {
     let ++mbfl_location_COUNTER

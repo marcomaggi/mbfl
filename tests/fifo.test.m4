@@ -100,21 +100,23 @@ function fifo-simple-1.1 () {
 }
 
 
-#### chatting with a child process
+#### chatting with a child process, example one
 
 # Run a child process  sending to it the pathnames of FIFOs  through exported environment variables.
 # The child takes care of opening the FIFOs by itself.
 #
 function fifo-child-process-1.1 () {
-    declare -r FIFOTEST_SCRIPT="$testsdir"/fifotest.sh
-    declare -i FIFOTEST_SCRIPT_PID
-    declare -r FIFOTEST_PARENT_TO_CHILD="$(dotest-mkpathname fifotest-parent-to-child)"
-    declare -r FIFOTEST_CHILD_TO_PARENT="$(dotest-mkpathname fifotest-child-to-parent)"
+    declare -r CHILD="$testsdir"/fifotest.sh
+    declare -i CHILD_PID
+    declare -r FIFO_PARENT_TO_CHILD="$(dotest-mkpathname fifo-parent-to-child)"
+    declare -r FIFO_CHILD_TO_PARENT="$(dotest-mkpathname fifo-child-to-parent)"
+    declare -ri FD_PARENT_TO_CHILD=4
+    declare -ri FD_CHILD_TO_PARENT=5
 
     # Make the FIFOs pathnames available to the child process.
     #
-    export FIFOTEST_PARENT_TO_CHILD
-    export FIFOTEST_CHILD_TO_PARENT
+    export FIFO_PARENT_TO_CHILD
+    export FIFO_CHILD_TO_PARENT
 
     #dotest-set-debug
     #mbfl_set_option_test
@@ -124,25 +126,27 @@ function fifo-child-process-1.1 () {
     {
 	mbfl_location_handler 'dotest-clean-files'
 
-	dotest-debug 'creating parent-to-child FIFO'
-	if ! mbfl_exec_mkfifo --mode=0600 -- "$FIFOTEST_PARENT_TO_CHILD"
-	then
-	    mbfl_location_leave
-	    return_failure
-	fi
-
-	dotest-debug 'creating child-to-parent FIFO'
-	if ! mbfl_exec_mkfifo --mode=0600 -- "$FIFOTEST_CHILD_TO_PARENT"
-	then
-	    mbfl_location_leave
-	    return_failure
-	fi
-
-	dotest-debug 'opening parent-to-child FIFO with fd 4'
-	if mbfl_fd_open_input_output 4 "$FIFOTEST_PARENT_TO_CHILD"
-	then mbfl_location_handler 'mbfl_fd_close 4'
+	dotest-debug 'creating parent-to-child FIFO' "$FIFO_PARENT_TO_CHILD"
+	if mbfl_exec_mkfifo --mode=0600 -- "$FIFO_PARENT_TO_CHILD"
+	then mbfl_location_handler "mbfl_file_remove '$FIFO_PARENT_TO_CHILD'"
 	else
-	    dotest-debug 'error opening parent-to-child FIFO with fd 4'
+	    mbfl_location_leave
+	    return_failure
+	fi
+
+	dotest-debug 'creating child-to-parent FIFO' "$FIFO_CHILD_TO_PARENT"
+	if mbfl_exec_mkfifo --mode=0600 -- "$FIFO_CHILD_TO_PARENT"
+	then mbfl_location_handler "mbfl_file_remove '$FIFO_CHILD_TO_PARENT'"
+	else
+	    mbfl_location_leave
+	    return_failure
+	fi
+
+	dotest-debug 'opening parent-to-child FIFO with fd' $FD_PARENT_TO_CHILD
+	if mbfl_fd_open_input_output $FD_PARENT_TO_CHILD "$FIFO_PARENT_TO_CHILD"
+	then mbfl_location_handler "mbfl_fd_close $FD_PARENT_TO_CHILD"
+	else
+	    dotest-debug 'error opening parent-to-child FIFO with fd' $FD_PARENT_TO_CHILD
 	    mbfl_location_leave
 	    return_failure
 	fi
@@ -150,11 +154,11 @@ function fifo-child-process-1.1 () {
 	# Open the parent's  input FIFO as read-write,  otherwise "exec" will block  waiting for the
 	# first character.
 	#
-	dotest-debug 'opening child-to-parent FIFO with fd 5'
-	if mbfl_fd_open_input_output 5 "$FIFOTEST_CHILD_TO_PARENT"
-	then mbfl_location_handler 'mbfl_fd_close 5'
+	dotest-debug 'opening child-to-parent FIFO with fd' $FD_CHILD_TO_PARENT
+	if mbfl_fd_open_input_output $FD_CHILD_TO_PARENT "$FIFO_CHILD_TO_PARENT"
+	then mbfl_location_handler "mbfl_fd_close $FD_CHILD_TO_PARENT"
 	else
-	    dotest-debug 'error opening child-to-parent FIFO with fd 5'
+	    dotest-debug 'error opening child-to-parent FIFO with fd' $FD_CHILD_TO_PARENT
 	    mbfl_location_leave
 	    return_failure
 	fi
@@ -162,39 +166,43 @@ function fifo-child-process-1.1 () {
 	# Execute the child process.
 	#
 	dotest-debug 'running the child process'
-	if mbfl_program_execbg 0 1 "$mbfl_PROGRAM_BASH" "$FIFOTEST_SCRIPT"
+	if mbfl_program_execbg 0 1 "$mbfl_PROGRAM_BASH" "$CHILD"
 	then
-	    FIFOTEST_SCRIPT_PID=$mbfl_program_BGPID
-	    mbfl_location_handler "mbfl_process_wait $FIFOTEST_SCRIPT_PID"
+	    CHILD_PID=$mbfl_program_BGPID
+	    mbfl_location_handler "mbfl_process_wait $CHILD_PID"
 	else
 	    mbfl_location_leave
 	    return_failure
 	fi
 
 	dotest-debug 'chatting with the child process'
-	printf 'ciao child\n' >&4
-	read -u 5
+	printf 'ciao child\n' >&$FD_PARENT_TO_CHILD
+	read -u $FD_CHILD_TO_PARENT
 	dotest-debug 'read string from child:' "$REPLY"
 	dotest-equal 'ciao parent' "$REPLY"
     }
     mbfl_location_leave
 }
 
+
+#### chatting with a child process, example two
+
 # Run a child process  sending to it the pathnames of FIFOs  through exported environment variables.
 # The child takes care of opening the FIFOs by itself.
 #
 function fifo-child-process-1.2 () {
-    declare -r FIFOTEST_SCRIPT="$testsdir"/fifotest.sh
-    declare -i FIFOTEST_SCRIPT_PID
-    declare -r FIFOTEST_PARENT_TO_CHILD="$(dotest-mkpathname fifotest-parent-to-child)"
-    declare -r FIFOTEST_CHILD_TO_PARENT="$(dotest-mkpathname fifotest-child-to-parent)"
+    declare -r CHILD="$testsdir"/fifotest.sh
+    declare -r FIFO_PARENT_TO_CHILD="$(dotest-mkpathname fifo-parent-to-child)"
+    declare -r FIFO_CHILD_TO_PARENT="$(dotest-mkpathname fifo-child-to-parent)"
+    declare -ri FD_PARENT_TO_CHILD=4
+    declare -ri FD_CHILD_TO_PARENT=5
 
     # Make the FIFOs pathnames available to the child process.
     #
-    export FIFOTEST_PARENT_TO_CHILD
-    export FIFOTEST_CHILD_TO_PARENT
+    export FIFO_PARENT_TO_CHILD
+    export FIFO_CHILD_TO_PARENT
 
-    #dotest-set-debug
+    dotest-set-debug
     #mbfl_set_option_test
     #mbfl_set_option_show_program
 
@@ -202,25 +210,25 @@ function fifo-child-process-1.2 () {
     {
 	mbfl_location_handler 'dotest-clean-files'
 
-	dotest-debug 'creating parent-to-child FIFO'
-	if ! mbfl_exec_mkfifo --mode=0600 -- "$FIFOTEST_PARENT_TO_CHILD"
+	dotest-debug 'creating parent-to-child FIFO' "$FIFO_PARENT_TO_CHILD"
+	if ! mbfl_exec_mkfifo --mode=0600 -- "$FIFO_PARENT_TO_CHILD"
 	then
 	    mbfl_location_leave
 	    return_failure
 	fi
 
-	dotest-debug 'creating child-to-parent FIFO'
-	if ! mbfl_exec_mkfifo --mode=0600 -- "$FIFOTEST_CHILD_TO_PARENT"
+	dotest-debug 'creating child-to-parent FIFO' "$FIFO_CHILD_TO_PARENT"
+	if ! mbfl_exec_mkfifo --mode=0600 -- "$FIFO_CHILD_TO_PARENT"
 	then
 	    mbfl_location_leave
 	    return_failure
 	fi
 
-	dotest-debug 'opening parent-to-child FIFO with fd 4'
-	if mbfl_fd_open_input_output 4 "$FIFOTEST_PARENT_TO_CHILD"
-	then mbfl_location_handler 'mbfl_fd_close 4'
+	dotest-debug 'opening parent-to-child FIFO with fd' $FD_PARENT_TO_CHILD
+	if mbfl_fd_open_input_output $FD_PARENT_TO_CHILD "$FIFO_PARENT_TO_CHILD"
+	then mbfl_location_handler "mbfl_fd_close $FD_PARENT_TO_CHILD"
 	else
-	    dotest-debug 'error opening parent-to-child FIFO with fd 4'
+	    dotest-debug 'error opening parent-to-child FIFO with fd $FD_PARENT_TO_CHILD'
 	    mbfl_location_leave
 	    return_failure
 	fi
@@ -228,11 +236,11 @@ function fifo-child-process-1.2 () {
 	# Open the parent's  input FIFO as read-write,  otherwise "exec" will block  waiting for the
 	# first character.
 	#
-	dotest-debug 'opening child-to-parent FIFO with fd 5'
-	if mbfl_fd_open_input_output 5 "$FIFOTEST_CHILD_TO_PARENT"
-	then mbfl_location_handler 'mbfl_fd_close 5'
+	dotest-debug 'opening child-to-parent FIFO with fd' $FD_CHILD_TO_PARENT
+	if mbfl_fd_open_input_output $FD_CHILD_TO_PARENT "$FIFO_CHILD_TO_PARENT"
+	then mbfl_location_handler "mbfl_fd_close $FD_CHILD_TO_PARENT"
 	else
-	    dotest-debug 'error opening child-to-parent FIFO with fd 5'
+	    dotest-debug 'error opening child-to-parent FIFO with fd $FD_CHILD_TO_PARENT'
 	    mbfl_location_leave
 	    return_failure
 	fi
@@ -240,9 +248,8 @@ function fifo-child-process-1.2 () {
 	# Execute the child process.
 	#
 	dotest-debug 'running the child process'
-	if mbfl_program_exec "$mbfl_PROGRAM_BASH" "$FIFOTEST_SCRIPT" channels <"$FIFOTEST_PARENT_TO_CHILD" >"$FIFOTEST_CHILD_TO_PARENT" &
-	then FIFOTEST_SCRIPT_PID=$mbfl_program_BGPID
-	else
+	if ! mbfl_program_exec "$mbfl_PROGRAM_BASH" "$CHILD" channels <"$FIFO_PARENT_TO_CHILD" >"$FIFO_CHILD_TO_PARENT" &
+	then
 	    mbfl_location_leave
 	    return_failure
 	fi
@@ -251,12 +258,12 @@ function fifo-child-process-1.2 () {
 	# system: the FIFOs will continue to exist until the file descriptors are closed.
 	#
 	dotest-debug 'removing FIFOs'
-	mbfl_file_remove "$FIFOTEST_PARENT_TO_CHILD"
-	mbfl_file_remove "$FIFOTEST_CHILD_TO_PARENT"
+	mbfl_file_remove "$FIFO_PARENT_TO_CHILD"
+	mbfl_file_remove "$FIFO_CHILD_TO_PARENT"
 
 	dotest-debug 'chatting with the child process'
-	printf 'ciao child\n' >&4
-	read -u 5
+	printf 'ciao child\n' >&$FD_PARENT_TO_CHILD
+	read -u $FD_CHILD_TO_PARENT
 	dotest-debug 'read string from child:' "$REPLY"
 	dotest-equal 'ciao parent' "$REPLY"
     }

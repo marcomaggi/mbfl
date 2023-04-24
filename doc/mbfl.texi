@@ -2739,7 +2739,12 @@ Remove all the registered commands in @var{HOOK}.
 
 
 @defun mbfl_hook_run @var{HOOK}
-Run all the commands in @var{HOOK}.
+Run all the commands in @var{HOOK}, from the first added to the last added.
+@end defun
+
+
+@defun mbfl_hook_reverse_run @var{HOOK}
+Run all the commands in @var{HOOK} in reverse order, from the last added to the first added.
 @end defun
 
 @c page
@@ -7584,17 +7589,141 @@ Named pipes allow two processes to communicate; @coreutilsref{mkfifo invocation,
 Make FIFOs (named pipes)}.
 
 
-@defun mbfl_file_enable_named_pipes
-Declare the commands required to create named pipes, also known as FIFOs.  @ref{program declaring,
-Declaring the intention to use a program}
-
-The programs are: @command{mkfifo}.
-@end defun
-
-
 @defun mbfl_exec_mkfifo @var{ARG} @dots{}
 Execute the program @command{mkfifo} using the given optional command line arguments.
 @end defun
+
+
+There are multiple ways to use named pipes as interprocess communication method.
+
+@menu
+* file fifo example one::       Each process opens the FIFO pathnames.
+* file fifo example two::       Redirection of standard channels to FIFO pathnames.
+@end menu
+
+@c page
+@node file fifo example one
+@subsection Each process opens the FIFO pathnames
+
+
+One way is to generate unique file pathnames for 2 named pipes and, somehow, make them known to 2
+processes; then have them open the named pipes to exchange characters.  Let's say a parent process
+executes a child process and we use environment variables to make the pathnames known to the child.
+
+The parent can look like this:
+
+@example
+mbfl_file_enable_remove
+mbfl_process_enable
+
+declare -r CHILD=/path/to/child.bash
+declare -i CHILD_PID
+
+declare -r FIFO_PARENT_TO_CHILD=/path/to/fifo-parent-to-child.$RANDOM
+declare -r FIFO_CHILD_TO_PARENT=/path/to/fifo-child-to-parent.$RANDOM
+
+export FIFO_PARENT_TO_CHILD
+export FIFO_CHILD_TO_PARENT
+
+declare -ri FD_PARENT_TO_CHILD=4
+declare -ri FD_CHILD_TO_PARENT=5
+
+mbfl_location_enter
+@{
+    if mbfl_exec_mkfifo --mode=0600 -- "$FIFO_PARENT_TO_CHILD"
+    then mbfl_location_handler "mbfl_file_remove '$FIFO_PARENT_TO_CHILD'"
+    else
+        mbfl_location_leave
+        exit_failure
+    fi
+
+    if mbfl_exec_mkfifo --mode=0600 -- "$FIFO_CHILD_TO_PARENT"
+    then mbfl_location_handler "mbfl_file_remove '$FIFO_CHILD_TO_PARENT'"
+    else
+        mbfl_location_leave
+        exit_failure
+    fi
+
+    if mbfl_fd_open_input_output $FD_PARENT_TO_CHILD "$FIFO_PARENT_TO_CHILD"
+    then mbfl_location_handler "mbfl_fd_close $FD_PARENT_TO_CHILD"
+    else
+        mbfl_location_leave
+        exit_failure
+    fi
+
+    if mbfl_fd_open_input_output $FD_CHILD_TO_PARENT "$FIFO_CHILD_TO_PARENT"
+    then mbfl_location_handler "mbfl_fd_close $FD_CHILD_TO_PARENT"
+    else
+        mbfl_location_leave
+        exit_failure
+    fi
+
+    if mbfl_program_execbg 0 1 "$mbfl_PROGRAM_BASH" "$FIFO_SCRIPT"
+    then
+        CHILD_PID=$mbfl_program_BGPID
+        mbfl_location_handler "mbfl_process_wait $CHILD_PID"
+    else
+        mbfl_location_leave
+        exit_failure
+    fi
+
+    printf 'ciao child\n' >&$FD_PARENT_TO_CHILD
+    read -u $FD_CHILD_TO_PARENT
+@}
+mbfl_location_leave
+@end example
+
+The child can look like this:
+
+@example
+declare -r FIFO_PARENT_TO_CHILD=$FIFO_PARENT_TO_CHILD
+declare -r FIFO_CHILD_TO_PARENT=$FIFO_CHILD_TO_PARENT
+
+declare -ri FD_PARENT_TO_CHILD=4
+declare -ri FD_CHILD_TO_PARENT=5
+
+mbfl_location_enter
+@{
+    if mbfl_fd_open_input_output $FD_PARENT_TO_CHILD "$FIFO_PARENT_TO_CHILD"
+    then mbfl_location_handler "mbfl_fd_close $FD_PARENT_TO_CHILD"
+    else
+        mbfl_location_leave
+        exit_failure
+    fi
+
+    if mbfl_fd_open_input_output $FD_CHILD_TO_PARENT "$FIFO_CHILD_TO_PARENT"
+    then mbfl_location_handler "mbfl_fd_close $FD_CHILD_TO_PARENT"
+    else
+        mbfl_location_leave
+        exit_failure
+    fi
+
+    read -u $FD_PARENT_TO_CHILD
+    printf 'ciao parent\n' >&$FD_CHILD_TO_PARENT
+@}
+mbfl_location_leave
+@end example
+
+@c page
+@node file fifo example two
+@subsection Redirection of standard channels to FIFO pathnames
+
+
+Another way is to generate unique file pathnames for 2 named pipes and, somehow, launch the
+processes redirecting their standard input and output channels to the appropriate named pipes.
+Let's say a parent process executes a child process with @func{mbfl_program_execbg}.
+
+The parent can look like this:
+
+@example
+
+@end example
+
+The child can look like this:
+
+@example
+
+@end example
 
 @c page
 @node fd

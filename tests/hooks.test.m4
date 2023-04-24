@@ -88,7 +88,7 @@ function hooks-simple-2.1 () {
     mbfl_hook_add _(HOOKS_SIMPLE_2_1) 'FLAG1=true'
     mbfl_hook_add _(HOOKS_SIMPLE_2_1) 'FLAG2=true'
 
-    mbfl_hook_run _(HOOKS_SIMPLE_2_1)
+    mbfl_hook_reverse_run _(HOOKS_SIMPLE_2_1)
 
     $FLAG1 && $FLAG2
 }

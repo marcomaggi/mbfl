@@ -64,30 +64,33 @@ function main () {
 	# We, the child, communicate  with our parent through explicitly open  FIFOs.  We expect the
 	# name of the FIFOs to be in these variables.
 	#
-	declare -r FIFOTEST_PARENT_TO_CHILD=$FIFOTEST_PARENT_TO_CHILD
-	declare -r FIFOTEST_CHILD_TO_PARENT=$FIFOTEST_CHILD_TO_PARENT
+	declare -r FIFO_PARENT_TO_CHILD=$FIFO_PARENT_TO_CHILD
+	declare -r FIFO_CHILD_TO_PARENT=$FIFO_CHILD_TO_PARENT
+
+	declare -ri FD_PARENT_TO_CHILD=4
+	declare -ri FD_CHILD_TO_PARENT=5
 
 	mbfl_location_enter
 	{
-	    mbfl_message_debug_printf 'opening child-to-parent FIFO with fd 4: "%s"' "$FIFOTEST_CHILD_TO_PARENT"
-	    if mbfl_fd_open_input_output 4 "$FIFOTEST_CHILD_TO_PARENT"
-	    then mbfl_location_handler 'mbfl_fd_close 4'
+	    mbfl_message_debug_printf 'opening parent-to-child FIFO with fd %s: "%s"' $FD_PARENT_TO_CHILD "$FIFO_PARENT_TO_CHILD"
+	    if mbfl_fd_open_input_output $FD_PARENT_TO_CHILD "$FIFO_PARENT_TO_CHILD"
+	    then mbfl_location_handler "mbfl_fd_close $FD_PARENT_TO_CHILD"
 	    else
 		mbfl_location_leave
 		return_failure
 	    fi
 
-	    mbfl_message_debug_printf 'opening parent-to-child FIFO with fd 5: "%s"' "$FIFOTEST_PARENT_TO_CHILD"
-	    if mbfl_fd_open_input_output 5 "$FIFOTEST_PARENT_TO_CHILD"
-	    then mbfl_location_handler 'mbfl_fd_close 5'
+	    mbfl_message_debug_printf 'opening child-to-parent FIFO with fd %s: "%s"' $FD_CHILD_TO_PARENT "$FIFO_CHILD_TO_PARENT"
+	    if mbfl_fd_open_input_output $FD_CHILD_TO_PARENT "$FIFO_CHILD_TO_PARENT"
+	    then mbfl_location_handler "mbfl_fd_close $FD_CHILD_TO_PARENT"
 	    else
 		mbfl_location_leave
 		return_failure
 	    fi
 
 	    mbfl_message_debug_printf 'chatting with the parent'
-	    read -u 5
-	    printf 'ciao parent\n' >&4
+	    read -u $FD_PARENT_TO_CHILD
+	    printf 'ciao parent\n' >&$FD_CHILD_TO_PARENT
 
 	    mbfl_message_debug_printf 'exiting'
 	}

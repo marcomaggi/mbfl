@@ -1368,9 +1368,6 @@ function mbfl_file_get_size_var () {
 
 #### named pipes
 
-function mbfl_file_enable_named_pipes () {
-    : mbfl_declare_program mkfifo
-}
 function mbfl_file_is_named_pipe () {
     mbfl_optional_parameter(PATHNAME, 1)
     mbfl_optional_parameter(PRINT_ERROR, 2, no)
