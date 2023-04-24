@@ -599,6 +599,7 @@
        "mbfl_location_handler_change_directory"
        "mbfl_location_leave"
        "mbfl_location_run_all"
+       "mbfl_location_hook_var"
        ;;
        "mbfl_variable_alloc"
        "mbfl_variable_array_to_colon_variable"

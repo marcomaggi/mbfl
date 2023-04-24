@@ -1752,7 +1752,8 @@ mbfl_location_leave
 @noindent
 inside a location we can register a ``handler command'' that is automatically executed whenever the
 location is left by calling @func{mbfl_location_leave}.  We can nest locations at will.  We can run
-all the handlers registered so far in a stack of locations.
+all the handlers registered so far in a stack of locations.  Location handlers are stored in hooks,
+@ref{hooks, Executing commands with event hooks}.
 
 @menu
 * locations core::              Locations programming interface.
@@ -1763,6 +1764,10 @@ all the handlers registered so far in a stack of locations.
 @c page
 @node locations core
 @section Locations programming interface
+
+
+In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
+underscore syntax}.
 
 
 @defun mbfl_location_enter
@@ -1799,6 +1804,49 @@ It is suggested to always add the following code to the preamble of a script:
 @example
 mbfl_atexit_enable
 mbfl_location_enable_cleanup_atexit
+@end example
+@end defun
+
+
+@defun mbfl_location_hook_var @var{HOOK_RV}
+When called inside a location: store in the result variable @var{HOOK_RV} the hook associated to the
+current location, then return true; otherwise return false.
+
+@example
+mbfl_location_enter
+@{
+    mbfl_declare_varref(HOOK_RV)
+
+    if ! mbfl_location_hook_var _(HOOK_RV)
+    then return_failure
+    fi
+
+    mbfl_hook_add $HOOK_RV my_handler_one
+
+    mbfl_declare_nameref(HOOK, $HOOK_RV)
+    mbfl_hook_add _(HOOK) my_handler_two
+@}
+mbfl_location_leave
+@end example
+
+We can use this function to add handlers to some outer location:
+
+@example
+mbfl_location_enter
+@{
+    mbfl_declare_varref(OUTER_HOOK_RV)
+    mbfl_location_hook_var _(OUTER_HOOK_RV)
+
+    mbfl_location_handler my_handler_one
+
+    mbfl_location_enter
+    @{
+        mbfl_location_handler my_handler_two
+        mbfl_hook_add $OUTER_HOOK_RV my_handler_three
+    @}
+    mbfl_location_leave
+@}
+mbfl_location_leave
 @end example
 @end defun
 
@@ -8996,19 +9044,6 @@ Signal handlers are stored in hooks, one hook for every signal specification; @r
 commands with event hooks}.
 
 
-@defun mbfl_signal_hook_var @var{HOOK_RV} @var{SIGNAME}
-If @var{SIGNAME} is a valid signal name: store in the result variable @var{HOOK_RV} @var{SIGNAME}'s
-hook data variable, then return true; otherwise return false.  If currently there is no
-@var{SIGNAME}'s hook: a new hook is defined.
-
-@example
-mbfl_declare_varref(SIGKILL_HOOK)
-
-mbfl_signal_hook_var _(SIGKILL_HOOK) 'SIGKILL'
-@end example
-@end defun
-
-
 @defun mbfl_signal_attach @var{SIGNAME} @var{HANDLER}
 Add @var{HANDLER} to the @var{SIGNAME}'s hook.  When successful return true; otherwise return false.
 If currently there is no @var{SIGNAME}'s hook: a new hook is defined.
@@ -9043,6 +9078,20 @@ handlers.
 @defun mbfl_signal_invoke_handlers @var{SIGNUM}
 Run the hook associated to the signal @var{SIGNUM}.  This function is not meant to be used during
 normal scripts execution, but it may be useful to debug a script by simulating signal delivery.
+@end defun
+
+
+@defun mbfl_signal_hook_var @var{HOOK_RV} @var{SIGNAME}
+If @var{SIGNAME} is a valid signal name: store in the result variable @var{HOOK_RV} @var{SIGNAME}'s
+hook data variable, then return true; otherwise return false.  If currently there is no
+@var{SIGNAME}'s hook: a new hook is defined.
+
+@example
+mbfl_declare_varref(SIGKILL_HOOK)
+
+mbfl_signal_hook_var _(SIGKILL_HOOK) 'SIGKILL'
+mbfl_hook_add $SIGKILL_HOOK 'my_signal_handler'
+@end example
 @end defun
 
 @c page

@@ -38,24 +38,26 @@ mbfl_load_library("$MBFL_LIBMBFL_CORE")
 mbfl_load_library("$MBFL_LIBMBFL_TEST")
 
 
+#### macros
+
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+
+
 #### simple handlers
 
-# Access  the  variables  "R_one"  and  "X"  in  the  uplevel  syntactic
-# environment.
+# Access the variables "R_one" and "X" in the uplevel syntactic environment.
 #
 function one () {
     R_one=$X
 }
 
-# Access  the  variables  "R_two"  and  "Y"  in  the  uplevel  syntactic
-# environment.
+# Access the variables "R_two" and "Y" in the uplevel syntactic environment.
 #
 function two () {
     R_two=$Y
 }
 
-# Access  the  variables "R_three"  and  "Z"  in the  uplevel  syntactic
-# environment.
+# Access the variables "R_three" and "Z" in the uplevel syntactic environment.
 #
 function three () {
     R_three=$Z
@@ -71,7 +73,7 @@ function handler_append () {
 
 #### basics
 
-function locations-01.1 () {
+function locations-1.1 () {
     local R_one R_two R_three
     local X=1 Y=2 Z=3
 
@@ -93,7 +95,7 @@ function locations-01.1 () {
 
 # Two nested locations.
 #
-function locations-02.1 () {
+function locations-2.1 () {
     local RESULT
 
     handler_append 0
@@ -115,7 +117,7 @@ function locations-02.1 () {
 
 # Three nested locations.
 #
-function locations-02.2 () {
+function locations-2.2 () {
     local RESULT
 
     handler_append 0
@@ -146,20 +148,20 @@ function locations-02.2 () {
 
 # Two nested function calls.
 #
-function locations-03.1 () {
+function locations-3.1 () {
     local RESULT
 
     handler_append 0
     mbfl_location_enter
     {
-	sub-locations-03.1
+	sub-locations-3.1
     }
     mbfl_location_leave
     handler_append 4
 
     dotest-equal 02314 "$RESULT"
 }
-function sub-locations-03.1 () {
+function sub-locations-3.1 () {
     mbfl_location_handler "handler_append 1"
     mbfl_location_enter
     {
@@ -173,29 +175,29 @@ function sub-locations-03.1 () {
 
 # Three nested function calls.
 #
-function locations-03.2 () {
+function locations-3.2 () {
     local RESULT
 
     handler_append 0
     mbfl_location_enter
     {
-	sub-locations-03.2
+	sub-locations-3.2
     }
     mbfl_location_leave
     handler_append 6
 
     dotest-equal 0342516 "$RESULT"
 }
-function sub-locations-03.2 () {
+function sub-locations-3.2 () {
     mbfl_location_handler "handler_append 1"
     mbfl_location_enter
     {
-	sub-sub-locations-03.2
+	sub-sub-locations-3.2
     }
     mbfl_location_leave
     mbfl_location_handler "handler_append 5"
 }
-function sub-sub-locations-03.2 () {
+function sub-sub-locations-3.2 () {
     mbfl_location_handler "handler_append 2"
     mbfl_location_enter
     {
@@ -208,7 +210,7 @@ function sub-sub-locations-03.2 () {
 
 #### locations sequence
 
-function locations-04.1 () {
+function locations-4.1 () {
     local RESULT
 
     handler_append 0
@@ -231,10 +233,10 @@ function locations-04.1 () {
 
 #### running location handlers upon exiting a script
 
-function locations-05.1 () {
+function locations-5.1 () {
     local LINE1 LINE2 EXIT_CODE
 
-    coproc worker-locations-05.1
+    coproc worker_locations_5_1
 
     if ! read -t 4 -u ${COPROC[0]} LINE1
     then return 1
@@ -249,7 +251,7 @@ function locations-05.1 () {
 
     dotest-equal 0 $EXIT_CODE && dotest-equal 456 "$LINE1" && dotest-equal 123 "$LINE2"
 }
-function worker-locations-05.1 () {
+function worker_locations_5_1 () {
     mbfl_atexit_enable
     mbfl_location_enable_cleanup_atexit
 
@@ -267,10 +269,10 @@ function worker-locations-05.1 () {
 
 ### ------------------------------------------------------------------------
 
-function locations-06.1 () {
+function locations-5.2 () {
     local LINE1 LINE2 EXIT_CODE
 
-    coproc worker-locations-06.1
+    coproc worker_locations_5_2
 
     if ! read -t 4 -u ${COPROC[0]} LINE1
     then return 1
@@ -285,7 +287,7 @@ function locations-06.1 () {
 
     dotest-equal 77 $EXIT_CODE && dotest-equal 77 "$LINE1" && dotest-equal 66 "$LINE2"
 }
-function worker-locations-06.1 () {
+function worker_locations_5_2 () {
     mbfl_atexit_enable
     mbfl_location_enable_cleanup_atexit
 
@@ -369,53 +371,32 @@ function locations-test-suspension-1.1 () {
 }
 
 
-#### internals inspection
-
-# After all the tests we have run: the counter must be back to zero.
-#
-function locations-98.1 () {
-    dotest-equal 0 ${mbfl_location_COUNTER}
-}
-
-# After all the tests we have run: all count fields must be empty.
-#
-function locations-98.2 () {
-    local -i i max=100
-
-    for ((i=0; i < max; ++i))
-    do dotest-equal '' "${mbfl_location_HANDLERS[${mbfl_location_COUNTER}:count]}"
-    done
-}
-
-
 #### running all location handlers
 
-function locations-99.1 () {
+function locations-run-all-1.1 () {
     local RESULT
 
     handler_append 0
     mbfl_location_enter
     {
-	sub-locations-99.2
+	sub_locations_run_all_1_1
 	mbfl_location_run_all
-	locations-98.1
-	locations-98.2
     }
     mbfl_location_leave
     handler_append 6
 
     dotest-equal 0342516 "$RESULT"
 }
-function sub-locations-99.2 () {
+function sub_locations_run_all_1_1 () {
     mbfl_location_handler "handler_append 1"
     mbfl_location_enter
     {
-	sub-sub-locations-99.2
+	sub_sub_locations_run_all_1_1
     }
     mbfl_location_leave
     mbfl_location_handler "handler_append 5"
 }
-function sub-sub-locations-99.2 () {
+function sub_sub_locations_run_all_1_1 () {
     mbfl_location_handler "handler_append 2"
     mbfl_location_enter
     {
@@ -423,6 +404,60 @@ function sub-sub-locations-99.2 () {
     }
     mbfl_location_leave
     mbfl_location_handler "handler_append 4"
+}
+
+
+#### accessing hooks
+
+function locations-hook-1.1 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(HOOK_RV)
+
+	mbfl_location_handler 'handler_append 1'
+	if ! mbfl_location_hook_var _(HOOK_RV)
+	then return_failure
+	fi
+	mbfl_declare_nameref(HOOK, $HOOK_RV)
+
+	mbfl_hook_add $HOOK_RV 'handler_append 2'
+	mbfl_hook_add _(HOOK)  'handler_append 3'
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 03214 "$RESULT"
+}
+
+### ------------------------------------------------------------------------
+
+# Store handlers in uplevel hooks.
+#
+function locations-hook-2.1 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(OUTER_HOOK_RV)
+	mbfl_location_hook_var _(OUTER_HOOK_RV)
+
+	mbfl_location_handler 'handler_append 1'
+
+	mbfl_location_enter
+	{
+	    mbfl_location_handler 'handler_append 2'
+	    mbfl_hook_add $OUTER_HOOK_RV 'handler_append 3'
+	}
+	mbfl_location_leave
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 02314 "$RESULT"
 }
 
 
