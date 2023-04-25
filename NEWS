@@ -56,6 +56,10 @@ changes!
 * BACKWARDS INCOMPATIBILITY The macro "mbfl_command_line_argument()" now
   uses "declare" rather than "local".
 
+* BACKWARDS  INCOMPATIBILITY   Removed  the  sendmail  stuff   from  the
+  distribution: it is no more  used, developed and supported.  The files
+  are still in the repository.
+
 * Added GNU Emacs  module that adds support for MBFL  to shell mode; its
   installation is enabled with the configuration option "--with-emacs".
 

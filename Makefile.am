@@ -65,9 +65,7 @@ doc_mbfl_TEXINFOS	=			\
 	doc/fdl-1.3.texi			\
 	doc/lgpl-3.0.texi			\
 	doc/macros.texi				\
-	doc/one-level-actions.sh		\
-	doc/sendmail-plain.sh			\
-	doc/sendmail-connector.sh
+	doc/one-level-actions.sh
 
 ## --------------------------------------------------------------------
 
@@ -448,23 +446,15 @@ EXTRA_DIST			+=		\
 	examples/at.sh.m4			\
 	examples/compress.sh.m4			\
 	examples/pwentries.sh.m4		\
-	examples/sendmail-mbfl.sh.m4		\
 	examples/template-actions.sh.m4		\
 	examples/template.sh.m4			\
 	examples/semver.m4			\
-	examples/vc.m4				\
-	\
-	examples/sendmail-connector.sh		\
-	examples/sendmail-plain.sh		\
-	examples/test-sendmail-gmail.sh		\
-	examples/test-sendmail-localhost.sh	\
-	examples/test-sendmail-poste.sh
+	examples/vc.m4
 
 MBFL_EXAMPLES_BUILT_FILES	=		\
 	examples/at.sh				\
 	examples/compress.sh			\
 	examples/pwentries.sh			\
-	examples/sendmail-mbfl.sh		\
 	examples/template-actions.sh		\
 	examples/template.sh			\
 	examples/semver				\
@@ -512,9 +502,6 @@ examples/compress.sh: examples/compress.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 examples/pwentries.sh: examples/pwentries.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
-examples/sendmail-mbfl.sh: examples/sendmail-mbfl.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
-	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
-
 examples/template.sh: examples/template.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
@@ -526,13 +513,6 @@ examples/vc: examples/vc.m4 src/lib/libmbfl-git.bash $(MBFL_EXAMPLES_PREREQUISIT
 
 examples/semver: examples/semver.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
-
-if WANT_SENDMAIL
-
-dist_lisp_LISP		= examples/sendmail-mbfl.el
-bin_SCRIPTS		+= examples/sendmail-mbfl.sh
-
-endif
 
 if WANT_VC
 bin_SCRIPTS		+= examples/vc
@@ -737,7 +717,6 @@ tests/mbflutils-files.test.m4:	$(builddir)/src/lib/libmbfl-utils.bash
 #### additional test rules
 
 .PHONY: test test-template test-template-actions test-script-atexit
-.PHONY: test-sendmail-gmail test-sendmail-poste test-sendmail-localhost
 
 test: all $(check_SCRIPTS)
 	$(AM_TESTS_ENVIRONMENT)					\
@@ -754,15 +733,6 @@ test-template-actions: examples/template-actions.sh src/lib/libmbfl.bash
 
 test-script-atexit: tests/script-atexit.sh
 	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(builddir)/tests/script-atexit.sh $(MBFLFLAGS)
-
-test-sendmail-gmail:
-	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(srcdir)/examples/test-sendmail-gmail.sh $(MBFLFLAGS)
-
-test-sendmail-poste:
-	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(srcdir)/examples/test-sendmail-poste.sh $(MBFLFLAGS)
-
-test-sendmail-localhost:
-	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(srcdir)/examples/test-sendmail-localhost.sh $(MBFLFLAGS)
 
 
 #### interface to "make installcheck"

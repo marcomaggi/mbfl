@@ -68,16 +68,7 @@ AC_PATH_PROG([MBFL_PROGRAM_STAT],	[stat])
 AC_PATH_PROG([MBFL_PROGRAM_WHOAMI],	[whoami])
 
 
-#### sendmail interface
-
-AC_ARG_WITH([sendmail],
-  AS_HELP_STRING([--with-sendmail],[enable installation of sendmail example script and emacs interface]),
-  [true],[with_sendmail=no])
-AC_MSG_CHECKING([whether sendmail support will be installed])
-AS_VAR_IF(with_sendmail,'yes',
-  [AC_MSG_RESULT([yes])],
-  [AC_MSG_RESULT([no])])
-AM_CONDITIONAL([WANT_SENDMAIL],[test x$with_sendmail = xyes])
+#### optional features and scripts
 
 AC_ARG_WITH([vc],
   AS_HELP_STRING([--with-vc],[enable installation of vc example script]),

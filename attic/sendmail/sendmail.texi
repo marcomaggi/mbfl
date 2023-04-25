@@ -1,0 +1,1396 @@
+@node sendmail
+@appendix Examples for sending email
+
+
+In this appendix we review some example scripts that send email using Bash.  All the scripts are in
+the @mbfl{} distribution under the @file{examples} directory.
+
+First we examine plain scripts (making no use of @mbfl{}) to understand the basics of how to handle
+the @smtp{} protocol and how to ``talk'' to a process in background.
+
+Then we see the documentation of a complex script, @command{sendmail-mbfl.sh}, which we can use to
+send email with plain or encrypted connections.
+
+Finally we see how to use the @gnu{} Emacs interface to the script, @file{sendmail-mbfl.el}.
+@ref{sendmail script emacs}.
+
+@menu
+* sendmail message::            How to compose a test email message.
+* sendmail plain::              Just send an email message.
+* sendmail connector::          Send email through a process in
+                                background.
+* sendmail gnutls::             Using @command{gnutls-cli} as connector.
+* sendmail openssl::            Using @command{openssl} as connector.
+* sendmail script::             Sending email.
+@end menu
+
+@c page
+@node sendmail message
+@appendixsec How to compose a test email message
+
+
+Here we discuss how to programmatically compose a minimal email message to be used in testing email
+scripts.  Basically a message should look like this:
+
+@example
+Sender: marco@@localhost
+From: marco@@localhost
+To: root@@localhost
+Subject: demo from sendmail-plain.sh
+Message-ID: <15704-6692-23464@@this.hostname>
+Date: Tue, 28 Apr 2009 06:16:01 +0200
+
+This is a text demo from the sendmail-plain.sh script.
+--
+Marco
+@end example
+
+We have to remember that the @smtp{} server receiving the message may rewrite the addresses, for
+example: replacing @code{localhost} with the fully qualified local host name (the output of the
+command @command{hostname --fqdn}); so, when reading the delivered message, we do not have to be
+surprised to find changed addresses.
+
+We want to notice the following:
+
+@itemize
+@item
+The fully qualified local host name is useful to build header values.  We can acquire it with the
+@command{hostname} command like this:
+
+@example
+LOCAL_HOSTNAME=$(hostname --fqdn)
+@end example
+
+@noindent
+do not confuse this value with the host name of the @smtp{} server!
+
+@item
+The value of the @code{Message-ID} header must be enclosed in angular parentheses, and it must
+contain an address--like string with random characters in the name part.  We can generate it with:
+
+@example
+printf -v MESSAGE_ID '%d-%d-%d@@%s' \
+    $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME"
+@end example
+
+@noindent
+or with:
+
+@example
+printf -v MESSAGE_ID '%s@@%s'                   \
+    $(@{ IFS= read -n 15 line </dev/random      \
+         echo "$line" ; @} |                    \
+         md5sum --binary | cut -f1 -d' ')      \
+    "$LOCAL_HOSTNAME"
+@end example
+
+@item
+The value of the @code{Date} header must be the current date in a specified format.  We can generate
+it using the @gnu{} Date program like this:
+
+@example
+DATE=$(date --rfc-2822) || exit 2
+@end example
+
+@item
+In the body of the message: the string that separates the text from the signature is the three
+characters string @code{-- } (dash, dash, white space).  When composing the message we have to be
+careful to use commands that @strong{do not} drop white spaces.
+@end itemize
+
+In the end, we can use the following chunk of code to compose an email message:
+
+@example
+PROGNAME=$@{0##*/@}
+FROM_ADDRESS=marco@@localhost
+TO_ADDRESS=root@@localhost
+
+function print_message () @{
+    local LOCAL_HOSTNAME DATE MESSAGE_ID MESSAGE
+    LOCAL_HOSTNAME=$(hostname --fqdn) || exit 2
+    DATE=$(date --rfc-2822) || exit 2
+    printf -v MESSAGE_ID '%d-%d-%d@@%s' \
+        $RANDOM $RANDOM $RANDOM "$LOCAL_HOSTNAME"
+    MESSAGE="Sender: $FROM_ADDRESS
+From: $FROM_ADDRESS
+To: $TO_ADDRESS
+Subject: demo from $PROGNAME
+Message-ID: <$MESSAGE_ID>
+Date: $DATE
+
+This is a text demo from the $PROGNAME script.
+--\x20
+Marco
+"
+    printf "$MESSAGE"
+@}
+@end example
+
+@noindent
+notice that to put the required single white space character in the text/signature separator we use
+the escape sequence @code{\x20} (where 20 is the hexadecimal value of the white space character in
+the @ascii{} encoding) and print the message with @code{printf}, which expands the escape sequences.
+
+When sending the message to the @smtp{} server we have to:
+
+@itemize
+@item
+Be careful in not to wrongly modify it.
+
+@item
+Send it one line at a time, terminating each line with a carriage return, line feed sequence
+(@code{\r\n}).
+
+@item
+Quote with a dot lines starting with a dot.
+@end itemize
+
+So we can use an equivalent of the following chunk of code, assuming @code{3} is the file descriptor
+connected to the remote @smtp{} server:
+
+@example
+print_message | while IFS= read line
+do
+    if test "$@{line:0:1@}" = '.'
+    then printf '.%s\r\n' "$line" >&3
+    else printf  '%s\r\n' "$line" >&3
+    fi
+done
+@end example
+
+@noindent
+notice that @code{read} is executed in an environment in which @code{IFS} is set to the empty
+string, this is to prevent unwanted modification of the message text.  @code{read} splits the string
+it reads into words according to the current value of @code{IFS}, and this may lead to mutation of
+the input string; word splitting happens when there is a single output variable, too.  To prevent
+word splitting, we set @code{IFS} to the empty string.
+
+@c page
+@node sendmail plain
+@appendixsec Just send an email message
+
+
+The script below can be found in @file{examples/sendmail-plain.sh}.  It just sends a hard--coded
+email message, from a hard--coded address to a hard--coded address.  It makes no use of @mbfl{}.
+
+
+@defun main
+Drive the script controlling the @smtp{} protocol.  It should be obvious what it does once we
+understand the following functions.
+@end defun
+
+
+@defun open_session @var{HOSTNAME}
+Open a connection to the @smtp{} server using a fake device that Bash gives us as interface to the
+network.  For the @code{localhost}, it ends up being:
+
+@example
+/dev/tcp/localhost/25
+@end example
+
+@noindent
+where 25 is the @tcp{} port which is officially assigned to the @smtp{} service.  To open the
+connection we use the idiom:
+
+@example
+exec 3<>/dev/tcp/localhost/25
+@end example
+
+@noindent
+which means: open a read and write connection to the selected hostname, using file descriptor number
+3.  There is nothing special in number 3, it is just the first free file descriptor number after 0
+(standard input), 1 (standard output) and 2 (standard error).
+
+The line:
+
+@example
+trap 'exec 3<&-' EXIT
+@end example
+
+@noindent
+means: close file descriptor 3 whenever the script terminates.  This is redundant in such a simple
+script, it is there for completeness.
+@end defun
+
+
+@defun send @var{STRING}
+@defunx send @var{TEMPLATE} @var{OPT} @dots{}
+Send a string to the @smtp{} server.  Use @func{printf} to format the string @var{TEMPLATE} with
+the optional arguments, then write the resulting string to file descriptor 3.  The string written
+out is terminated with the sequence @code{\r\n} as mandated by the @smtp{} protocol.
+@end defun
+
+
+@defun read_and_send_message
+Read an email message from stdin line by line (newline terminator), and rewrite it to file
+descriptor 3 terminating each line with the sequence carriage return/line feed.  With the exception
+of the terminating sequence, the lines are left unchanged.
+@end defun
+
+
+@defun recv @var{EXPECTED_CODE}
+Read a line (a sequence of characters up until the first @code{\n}) from file descriptor 3.  The
+line is interpreted as a message from the @smtp{} server: the first three characters are a numeric
+code.  If the code is different from @var{EXPECTED_CODE}, raise an error.
+@end defun
+
+@smallexample
+@verbatiminclude sendmail-plain.sh
+@end smallexample
+
+@c page
+@node sendmail connector
+@appendixsec Send email through a process in background
+
+
+The script below can be found in @file{examples/sendmail-connector.sh}.  It just sends a hard--coded
+email message, from a hard--coded address to a hard--coded address.  It makes no use of @mbfl{}.
+
+@quotation
+Bash version 4 introduced the new keyword @code{coproc}, which can be used to spawn processes in
+background and talk to them via pipes.  This keyword in @strong{not} used in this appendix.
+@end quotation
+
+The purpose of the script is to understand how to send a message through a process in background.
+It does the same things of the example described in @ref{sendmail plain, Just send an email
+message}.  The main difference is that the single function @func{open_session} is replaced by the
+two functions @func{open_session} and @func{connector}.
+
+What is important to understand, is how @func{open_session} runs @func{connector} in background
+and sets up two file descriptors to talk to it.  In the real world we never use this technique with
+a function; this example script makes use of @func{connector} as a replacement for an external
+program that can establish sophisticated connections to remote hosts, for example using the
+@tls{}/@ssl{} protocols.
+
+
+@defun open_session @var{HOSTNAME}
+Open a connection to the @smtp{} server spawning a background process represented by the
+@func{connector} function.  It makes use of two @fifo{}s (First In, First Out).
+
+If we were to do it from a C language program: we would use the @cfunc{pipe} system function to
+create two pipes connecting script's process to the background process.
+
+@example
+ ---------  out pipe  -----------  socket  --------
+| script  |--------->| connector |<======>| SMTP   |
+| process |<---------| process   |        | server |
+ ---------  in pipe   -----------          --------
+@end example
+
+Bash has no way to create a pipe using the @cfunc{pipe} system function (up until version 4), so we
+use two @fifo{} channels created by the @command{mkfifo} program:
+
+@example
+: $@{TMPDIR:=/tmp@}
+local INFIFO=$@{TMPDIR@}/in.$$
+local OUFIFO=$@{TMPDIR@}/out.$$
+
+mkfifo --mode=0600 $INFIFO $OUFIFO
+@end example
+
+@noindent
+the script will use @code{INFIFO} to read characters from @func{connector}, and @code{OUFIFO} to
+send characters to @func{connector}.
+
+@example
+ ---------  OUFIFO   -----------  socket  --------
+| script  |-------->| connector |<======>| SMTP   |
+| process |<--------| process   |        | server |
+ ---------  INFIFO   -----------          --------
+@end example
+
+Once the @fifo{}s exist on the file system, we run @func{connector} in background, connecting its
+standard input and output to the @fifo{}s:
+
+@example
+connector $HOSTNAME $SMTP_PORT <$OUFIFO >$INFIFO &
+@end example
+
+@noindent
+be careful in selecting the redirections.  Notice that, in this simple example, we ignore errors
+running @func{connector}.
+
+Now we open file descriptors connecting them to the @fifo{}s:
+
+@example
+exec 3<>$INFIFO 4>$OUFIFO
+@end example
+
+@noindent
+the script will use file descriptor 3 to read characters from @func{connector}, and file descriptor
+4 to send characters to @func{connector}.  We open the input @fifo{} for both reading and writing,
+else @code{exec} will block waiting for the first char.
+
+We have connected both the ends of both the @fifo{}s, so we can remove them from the file system:
+
+@example
+rm $INFIFO $OUFIFO
+@end example
+
+@noindent
+the @fifo{}s will continue to exist in the OS kernel until the file descriptors are closed.
+
+Finally we register a clean up handler that closes the descriptors:
+
+@example
+trap 'exec 3<&- 4>&-' EXIT
+@end example
+@end defun
+
+
+@defun connector @var{HOSTNAME}
+Establish a connection to the @smtp{} server at @var{HOSTNAME}.  It is not important here to fully
+understand how this function works; suffice it to say that it reads lines from stdin, and echoes
+them to the server; it reads lines from the server, and echoes them to stdout.
+@end defun
+
+
+@smallexample
+@verbatiminclude sendmail-connector.sh
+@end smallexample
+
+@c page
+@node sendmail gnutls
+@appendixsec Using @command{gnutls-cli} as connector
+
+
+@gnu{} @tls{} is a library implementing the @tls{} protocol; we can use it to establish encrypted
+and authenticated connections to a remote host.  The @smtp{} protocol has extensions to allow usage
+of a @tls{} layer.
+
+A @gnu{} @tls{} installation comes with a command line test program, @command{gnutls-cli}, that can
+establish an encrypted connection.  We use this command as the ``connector'' modeled in
+@ref{sendmail connector, Send email through a process in background}.  It has a manual page, which
+we may want to read.
+
+When handling an encrypted connection we have to know in advance how the remote @smtp{} server
+behaves.  Let's see first the simpler example, using the a human driven interactive session; then we
+will describe a more complex interaction.
+
+@quotation
+Notice that @command{gnutls-cli} has a @option{--crlf} option that will cause all the lines sent to
+the server to be terminated by a carriage return/line feed sequence (@code{\r\n} or
+@code{\x0d\x0a}).  If we write a script that terminates by itself the lines with this sequence, for
+example:
+
+@example
+printf 'ehlo localhost.localdomain\r\n'
+@end example
+
+@noindent
+we must @strong{avoid} this option, else @smtp{} protocol violation errors may occur.  However, if
+we try a hand--driven interactive session, we want to use this option to send protocol--compliant
+lines.
+@end quotation
+
+@menu
+* sendmail gnutls now::         Immediate encrypted bridge.
+* sendmail gnutls delay::       Delayed encrypted bridge.
+@end menu
+
+@c page
+@node sendmail gnutls now
+@appendixsubsec Immediate encrypted bridge
+
+
+We use as example the server @code{relay.poste.it}, port @code{465}.  You have to have an account
+there to use it; do not bomb this server with fake connections.  This server requests us to build
+the encrypted bridge immediately after the connection has been established, without waiting for any
+line of greetings from the server.
+
+So, we start the connector like this:
+
+@example
+$ gnutls-cli --port 465 relay.poste.it
+@end example
+
+@noindent
+if the connection succeeds: @command{gnutls-cli} prints a lot of message lines on its standard
+output explaining what is going on; at last comes the line of greetings from the server, which
+begins with code @code{220}.
+
+The server supports the @code{AUTH LOGIN} authentication mechanism, which requires the base64
+encoding of the user name and password; we can perform it with the external program @command{base64}
+(which comes with @gnu{} Coreutils) like this:
+
+@example
+ENCODED_USERNAME=$(echo -n 'the-user-name' | base64)
+ENCODED_PASSWORD=$(echo -n 'the-pass-word' | base64)
+@end example
+
+@noindent
+@gnu{} Emacs users can do it with:
+
+@example
+(setq my-usr (base64-encode-string "the-user-name"))
+(setq my-pwd (base64-encode-string "the-pass-word"))
+@end example
+
+@noindent
+The authentication dialogue goes like this:
+
+@enumerate
+@item
+We send @code{AUTH LOGIN}, to start the authentication.
+
+@item
+It replies with @code{334 VXNlcm5hbWU6} which is the request for the username.  The string
+@code{VXNlcm5hbWU6} is the base64 encoding of the string @code{Username:} (without trailing
+newline); we can verify this with:
+
+@example
+$ echo -n Username: | base64
+@end example
+
+@noindent
+or in the Emacs' scratch buffer:
+
+@example
+(base64-encode-string "Username:")
+@end example
+
+@item
+We send the login user name encoded in base64.
+
+@item
+It checks the string and, if the format is correct, it replies with @code{334 UGFzc3dvcmQ6} (this
+should happen even if the username is unknown to the server).  The string @code{UGFzc3dvcmQ6} is the
+base64 encoding of the string @code{Password:} (without ending newline); we can verify this with:
+
+@example
+$ echo -n Password: | base64
+@end example
+
+@noindent
+or in the Emacs' scratch buffer:
+
+@example
+(base64-encode-string "Password:")
+@end example
+
+@item
+We send the login password encoded in base64.
+
+@item
+It checks it and, if correct, it replies with a line starting with code @code{235}.
+@end enumerate
+
+@noindent
+Beware that if we are not quick to send the encoded password after the encoded user name, the server
+may reset the authentication process as if we sent a wrong user name.
+
+
+So we can do the @smtp{} dialogue reported below by hand (which is an edited log of a session under
+Emacs' eshell); lines starting with @code{recv>} are the ones received from the server, lines
+starting with @code{send>} are the ones we send to the server, the ellipses @code{...}  are
+replacements for server text we are not interested in.
+
+@smallexample
+$ gnutls-cli --crlf --port 465 relay.poste.it
+
+recv> 220 ... ESMTP Service ...
+send> ehlo localhost.localdomain
+recv> 250-...
+recv> 250-DSN
+recv> 250-8BITMIME
+recv> 250-PIPELINING
+recv> 250-HELP
+recv> 250-AUTH=LOGIN
+recv> 250-AUTH LOGIN CRAM-MD5 DIGEST-MD5 PLAIN
+recv> 250-DELIVERBY 300
+recv> 250 SIZE
+send> auth login
+recv> 334 VXNlcm5hbWU6
+send> <the-base64-username>
+recv> 334 UGFzc3dvcmQ6
+send> <the-base64-password>
+recv> 235 login authentication successful
+send> mail from:<from-address@@poste.it>
+recv> 250 MAIL FROM:<from-address@@poste.it> OK
+send> rcpt to:<to-address@@other-host.it>
+recv> 250 RCPT TO:<to-address@@other-host.it> OK
+send> data
+recv> 354 Start mail input; end with <CRLF>.<CRLF>
+send> From: <from-address@@poste.it>
+send> To: <to-address@@other-host.it>
+send> Subject: interactive attempt
+send>
+send> Text for interactive attempt.
+send> --
+send> Marco
+send> .
+recv> 250 ... Mail accepted
+send> quit
+recv> 221 ... QUIT
+recv> - Peer has closed the GNUTLS connection
+@end smallexample
+
+@c page
+@node sendmail gnutls delay
+@appendixsubsec Delayed encrypted bridge
+
+
+We use as example the server @code{smtp.gmail.com}, port @code{587}.  You have to have an account
+there to use it; do not bomb this server with fake connections.  This server requests us to start an
+@code{ESMTP} dialogue, then issue the @code{STARTTLS} command and build the encrypted bridge; once
+the bridge is set up, we restart an @code{ESMTP} dialogue and do the authentication and the message
+delivery.
+
+We start the connector like this:
+
+@example
+$ gnutls-cli --starttls --port 587 smtp.gmail.com
+@end example
+
+@noindent
+if the connection succeeds: @command{gnutls-cli} prints message lines on its standard output
+explaining what is going on; at last comes the line of greetings from the server, which begins with
+code @code{220}.
+
+The @option{--starttls} option tells @command{gnutls-cli} @strong{not} to build the encrypted bridge
+immediately; rather, it waits for a @code{SIGALRM} signal, which we must deliver to it when we are
+ready.  The quickest way to send such a signal, when there is only one @command{gnutls-cli} process
+running, is:
+
+@example
+$ kill -SIGALRM $(/sbin/pidof gnutls-cli)
+@end example
+
+@noindent
+beware that @command{pidof} may be installed in other places on your system.
+
+The server supports the @code{AUTH PLAIN} authentication mechanism, which requires the base64
+encoding of the user name and password stored in a special record; we can do it with the external
+program @command{base64} (which comes with @gnu{} Coreutils) like this:
+
+@example
+SECRETS=$(printf "\x00%s\x00%s" \
+   "$@{LOGIN_NAME@}" "$@{PASSWORD@}" | base64)
+@end example
+
+@noindent
+@gnu{} Emacs users can do it with:
+
+@example
+(setq my-auth (base64-encode-string
+   (format "%c%s%c%s" 0 "the-user-name" 0 "the-pass-word")))
+@end example
+
+@noindent
+The authentication dialogue goes like this:
+
+@enumerate
+@item
+We send @code{AUTH PLAIN} followed by the encoded credentials.
+
+@item
+It checks the user name and password and, if correct, it replies with code @code{235}.
+@end enumerate
+
+So, we can do the @smtp{} dialogue reported below by hand (which is an edited log of a session under
+Emacs' eshell); lines starting with @code{recv>} are the ones received from the server, lines
+starting with @code{send>} are the ones we send to the server, the ellipses @code{...}  are
+replacements for server text we are not interested in.
+
+@smallexample
+$ gnutls-cli --crlf --starttls --port 587 smtp.gmail.com
+
+recv> 220 ... ESMTP ...
+send> ehlo localhost.localdomain
+recv> 250-...
+recv> 250-SIZE 35651584
+recv> 250-8BITMIME
+recv> 250-STARTTLS
+send> 250-ENHANCEDSTATUSCODES
+recv> 250 PIPELINING
+send> starttls
+recv> 220 2.0.0 Ready to start TLS
+
+=== here we deliver SIGALRM to the gnutls-cli process
+
+recv> *** Starting TLS handshake
+recv> - Certificate type: X.509
+recv>  - Got a certificate list of 1 certificates.
+recv>
+recv>  - Certificate[0] info:
+recv>  # The hostname in the certificate matches 'smtp.gmail.com'.
+recv>  # valid since: ..
+recv>  # expires at: ...
+recv>  # fingerprint: ...
+recv>  # Subject's DN: ...
+recv>  # Issuer's DN: ...
+recv>
+recv>
+recv> - Peer's certificate issuer is unknown
+recv> - Peer's certificate is NOT trusted
+recv> - Version: TLS1.0
+recv> - Key Exchange: RSA
+recv> - Cipher: ARCFOUR-128
+recv> - MAC: MD5
+recv> - Compression: NULL
+send> ehlo localhost.localdomain
+recv> 250-...
+recv> 250-SIZE 35651584
+recv> 250-8BITMIME
+recv> 250-AUTH LOGIN PLAIN
+recv> 250-ENHANCEDSTATUSCODES
+recv> 250 PIPELINING
+send> auth plain <the-encoded-auth-credentials>
+recv> 235 2.7.0 Accepted
+send> mail from:<from-address@@gmail.com>
+recv> 250 2.1.0 OK ...
+send> rcpt to:<to-address@@poste.it>
+recv> 250 2.1.5 OK ...
+send> data
+recv> 354  Go ahead ...
+send> From: from-address@@gmail.com
+send> To: to-address@@poste.it
+send> Subject: interactive demo from gmail
+send>
+send> demo
+send> .
+recv> 250 2.0.0 OK ...
+send> quit
+recv> 221 2.0.0 closing connection ...
+@end smallexample
+
+@c page
+@node sendmail openssl
+@appendixsec Using @command{openssl} as connector
+
+
+OpenSSL is a library implementing the @ssl{}/@tls{} protocol; we can use it to establish encrypted
+and authenticated connections to a remote host.
+
+An OpenSSL installation comes with a command line test program, @command{openssl}, that can
+establish an encrypted connection.  We use this command as the ``connector'' modeled in
+@ref{sendmail connector, Send email through a process in background}.  It has a manual page, which
+we may want to read.
+
+Here we see how we can use the @command{openssl} program in place of the @command{gnutls-cli}
+program described in @ref{sendmail gnutls, Using @command{gnutls-cli} as connector}.  The two
+methods have a lot in common (the @smtp{} protocol is the same), we only have to understand the
+command line of the program.
+
+@quotation
+Notice that @command{openssl} has a @option{-crlf} option that will cause all the lines sent to the
+server to be terminated by a carriage return/line feed sequence (@code{\r\n} or @code{\x0d\x0a}).
+If we write a script that terminates by itself the lines with this sequence, for example:
+
+@example
+printf 'ehlo localhost.localdomain\r\n'
+@end example
+
+@noindent
+we must @strong{avoid} this option, else @smtp{} protocol violation errors may occur.  However, if
+we try a hand--driven interactive session, we want to use this option to send protocol--compliant
+lines.
+@end quotation
+
+@menu
+* sendmail openssl now::        Immediate encrypted bridge.
+* sendmail openssl delay::      Delayed encrypted bridge.
+@end menu
+
+@c page
+@node sendmail openssl now
+@appendixsubsec Immediate encrypted bridge
+
+
+To build the encrypted bridge right after the connection, without exchanging greetings with the
+server, we do:
+
+@example
+openssl s_client -quiet -connect relay.poste.it:465
+@end example
+
+@noindent
+then we start the @smtp{} dialogue as outlined in @ref{sendmail gnutls now, Immediate encrypted
+bridge}.
+
+@c page
+@node sendmail openssl delay
+@appendixsubsec Delayed encrypted bridge
+
+
+To first exchange greetings, then send @code{STARTTLS} and finally build the encrypted bridge, we
+do:
+
+@example
+openssl s_client -quiet -starttls smtp \
+    -connect smtp.gmail.com:587
+@end example
+
+@noindent
+then we start the @smtp{} dialogue as outlined in @ref{sendmail gnutls now, Immediate encrypted
+bridge}.  @command{openssl} knows how to start an @smtp{} dialogue, and it does it automatically.
+
+@c page
+@node sendmail script
+@appendixsec Sending email
+
+
+This section documents the example script @file{examples/sendmail-mbfl.sh}, which makes use of
+@mbfl{} to send an email message.  The script sends already composed messages using plain or @tls{}
+sessions, and it can use both OpenSSL and @gnu{} @tls{}.
+
+@menu
+* sendmail script examples::    Usage examples.
+* sendmail script invoking::    Command line options.
+* sendmail script hostinfo::    Reading host informations from file.
+* sendmail script authinfo::    Reading authentication credentials
+                                from file.
+* sendmail script emacs::       Interfacing with @gnu{} Emacs.
+@end menu
+
+@c page
+@node sendmail script examples
+@appendixsubsec Usage examples
+
+
+Let's say we have a file named @file{message.mail} holding a fully composed email message:
+
+@example
+Sender: marco@@localhost
+From: marco@@localhost
+To: root@@localhost
+Subject: server on fire?
+
+I noticed flames raising from the server room...
+--
+Marco
+@end example
+
+@noindent
+basically, to send it with @command{sendmail-mbfl.sh} we have to do:
+
+@example
+$ sendmail-mbfl.sh \
+    --envelope-from=marco@@localhost  \
+    --envelope-to=root@@localhost     \
+    --message=message.mail
+@end example
+
+@noindent
+by default the @smtp{} server name is set to @code{localhost} and the @tcp{} port to @code{25}.  The
+default session is plain, without @tls{}.
+
+Port number @code{25} is officially assigned to the @smtp{} protocol; if the localhost uses a
+different @tcp{} port, we can select it with the @option{--port} option:
+
+@example
+$ sendmail-mbfl.sh --port=587         \
+    --envelope-from=marco@@localhost   \
+    --envelope-to=root@@localhost      \
+    --message=message.mail
+@end example
+
+To send mail to a remote @smtp{} server, we select its hostname with the @option{--host} option:
+
+@example
+$ sendmail-mbfl.sh \
+    --host=smtp.gmail.com --port=587  \
+    --envelope-from=marco@@gmail.com   \
+    --envelope-to=marco@@spiffy.it     \
+    --message=message.mail
+@end example
+
+Mail services may offer encrypted sessions to their @smtp{} servers.  Encryption with the @tls{}
+protocol is supported by @command{sendmail-mbfl.sh} through external programs.  Whether a server
+requires an encrypted session, can be specified using the @option{--plain}, @option{--tls} or
+@option{--starttls} options.
+
+To establish an encrypted session, the script needs to acquire the credentials of the user.  These
+can be stored in a configuration file named @file{~/.mbfl-authinfo}, which looks like this:
+
+@smallexample
+machine smtp.gmail.com login marco@@gmail.com password abcdefghilm
+machine relay.poste.it login marco@@poste.it  password 0123456789
+@end smallexample
+
+@noindent
+so that a line/record can be uniquely identified with values of the @option{--host} and
+@option{--username} options.
+
+So we can do:
+
+@example
+$ sendmail-mbfl.sh --host=gmail       \
+    --username=marco --starttls        \
+    --envelope-from=marco@@gmail.com   \
+    --envelope-to=marco@@spiffy.it     \
+    --message=message.mail
+@end example
+
+@c page
+@node sendmail script invoking
+@appendixsubsec Command line options
+
+
+The synopsis is:
+
+@smallexample
+sendmail-mbfl.sh \
+    --envelope-from=@meta{ADDRESS}              \
+    --envelope-to=@meta{ADDRESS}                \
+    [--message=@meta{SOURCE} | --test-message]
+    [options]
+@end smallexample
+
+@noindent
+the script sends an email address, and it can do a plain session or use a connector.  Options
+description follows.
+
+@table @code
+@item -F@var{ADDRESS}
+@itemx --envelope-from=@var{ADDRESS}
+Select the @code{MAIL FROM} envelope address.  If this option is used multiple times: the last one
+wins.
+
+@item -T@var{ADDRESS}
+@itemx --envelope-to=@var{ADDRESS}
+Select the @code{RCPT TO} envelope address.  This option can be used multiple times: each
+@var{ADDRESS} is appended to a list of recipients.
+
+@item -M@var{SOURCE}
+@itemx --message=@var{SOURCE}
+Select the source of the whole email message.  If @var{SOURCE} is a file pathname, that file is read
+and used as data; if @var{SOURCE} is @code{-}, the message is read from the standard input channel.
+It defaults to @code{-}.
+
+@item --test-message
+Send a test message with a hard--coded body part.  This option supersedes @option{--message}.
+
+@item --host=@var{HOST}
+Select the @smtp{} server host name.  It defaults to @code{localhost}.
+
+@item --host-info=@var{FILE}
+Select a file from which to read host and port informations.
+
+@item -p@var{PORT}
+@itemx --port=@var{PORT}
+Select the @smtp{} server @tcp{} port; this option supersedes @option{--host-info}.  It defaults to
+@code{25}.
+
+@item --plain
+@itemx --tls
+@itemx --starttls
+Establish a plain session, @tls{} session with immediate bridge construction or @tls{} session with
+bridge construction after @code{STARTTLS} command.
+
+@item --gnutls
+Use @command{gnutls-cli} as connector for encrypted sessions.  This is the default when
+@option{--tls} or @option{--starttls} are used.
+
+@item --openssl
+Use @command{gnutls-cli} as connector for encrypted sessions.
+
+@item --auth-info=@var{FILE}
+Select the file, in @code{netrc} format, from which to read the authorisation credentials.  Defaults
+to @file{~/.mbfl-authinfo}.
+
+@item --username=@var{USER}
+Specify a string used to select an account in the authorisation file.  @var{USER} must be a
+substring of the username present in the file, the first matching line from the file is selected.
+So, if the authinfo file is:
+
+@example
+machine smtp.gmail.com login mrc.mgg@@gmail.com password <password>
+machine relay.poste.it login marco.maggi-ipsu password <password>
+@end example
+
+@noindent
+we can use @option{--username=mrc.mgg} to select the first line and @option{marco.maggi} to select
+the second line.
+
+@item --auth-none
+@itemx --auth-plain
+@itemx --auth-login
+Perform no authorisation, the @code{AUTH PLAIN} authorisation or the @code{AUTH LOGIN}
+authorisation.
+@end table
+
+@c page
+@node sendmail script hostinfo
+@appendixsubsec Reading host informations from file
+
+
+For each @smtp{} server we need the following informations: the hostname, the port number, the
+session type, the authorisation method.  There are two ways to specify these:
+
+@itemize
+@item
+Use the command line options as in:
+
+@example
+$ sendmail-mbfl.sh \
+    --host=smtp.gmail.org --port=587    \
+    --tls --auth-login                  \
+    ...
+@end example
+
+@item
+Use the hostinfo file and the option @option{--host} to select a record into it, as in:
+
+@example
+$ sendmail-mbfl.sh --host=smtp.gmail.org ...
+
+$ sendmail-mbfl.sh --host=smtp.gmail.org \
+    --host-info=~/.hostrc ...
+@end example
+@end itemize
+
+@noindent
+If @option{--host} is not used: the hostname defaults to @code{localhost}.  If the selection of
+port, session type or authorisation type is left unspecified: The script automatically looks into
+the default hostinfo file.  Informations from command line options supersede informations from the
+hostinfo file.
+
+The default pathname for the hostinfo file is @file{$HOME/.mbfl-hostinfo} and can be overridden by
+the @option{--host-info} option.  The format of this file is line oriented: Blank lines are ignored,
+lines starting with a @code{#} character are comments, lines starting with @code{machine} are host
+records.
+
+Each record line must have the format:
+
+@smallexample
+machine <host> service <name> port <number> session <type> auth <type>
+@end smallexample
+
+@noindent
+for example:
+
+@smallexample
+# ~/.mbfl-hostinfo --
+#
+
+# SMTP servers
+machine localhost service smtp port 25 session plain auth none
+machine relay.poste.it service smtp port 465 session tls auth login
+machine smtp.gmail.com service smtp port 587 session starttls auth plain
+
+# POP3 servers
+machine pop.tiscali.it service pop3 port 110 session plain auth userpass
+machine relay.poste.it service pop3 port 995 session tls auth userpass
+machine pop.googlemail.com service pop3 port 995  session tls auth userpass
+
+### end of file
+@end smallexample
+
+@noindent
+so that we can extract a record with the following script:
+
+@example
+file=~/.mbfl-hostinfo
+host=gmail
+service=smtp
+
+rex='^[ \t]*'
+rex+='machine[ \t]\+.*%s.*[ \t]\+'
+rex+='service[ \t]\+%s[ \t]\+'
+rex+='port[ \t]\+[0-9]\+[ \t]\+'
+rex+='session[ \t]\+\(plain\|tls\|starttls\)[ \t]\+'
+rex+='auth[ \t]\+\(none\|plain\|login\)'
+rex+='[ \t]*$'
+rex=$(printf "$rex" $host $service)
+
+set -- $(grep "$rex" "$file")
+echo machine $2
+echo service $4
+echo port    $6
+echo session $8
+shift 9
+echo auth    $1
+@end example
+
+@noindent
+currently @command{sendmail-mbfl.sh} parses the file using the @code{=~} regular expressions
+operator.
+
+Notice that when using the hostinfo file, the value of the @option{--host} option can be a substring
+of the host name.
+
+@c page
+@node sendmail script authinfo
+@appendixsubsec Reading authentication credentials from file
+
+
+The only way the script has to acquire the user name and password to log into the remote server, is
+by reading the authinfo file.  By default, its pathname is @file{$HOME/.mbfl-authinfo}, it can be
+overridden with the @option{--auth-info} option.
+
+Its format is a simplified version of the @code{netrc} file format: blank lines are ignored, lines
+starting with a @code{#} character are comments, lines starting with @code{machine} are host
+records.
+
+Each record must have the format:
+
+@example
+machine <hostname> login <user-name> password <pass-word>
+@end example
+
+@noindent
+for example:
+
+@example
+machine smtp.gmail.com login one@@gmail.com password abcdefghilm
+machine relay.poste.it login two@@poste.it  password 0123456789
+@end example
+
+@noindent
+so that we can extract a record with the following script:
+
+@example
+file=~/.mbfl-authinfo
+host=poste
+username=marco
+
+rex='^[ \t]*'
+rex+='machine[ \t]\+.*%s.*[ \t]\+'
+rex+='login[ \t]\+.*%s.*[ \t]\+'
+rex+='password[ \t]\+.*'
+rex+='[ \t]*$'
+rex=$(printf "$rex" $host $username)
+
+line=$(grep "$rex" $file)
+set -- $line
+echo machine  $2
+echo username $4
+echo password $6
+@end example
+
+@noindent
+currently @command{sendmail-mbfl.sh} parses the file using the @code{=~} regular expressions
+operator.
+
+The host name and the user name are selected by the command line options @option{--host} and
+@option{--username}.  Notice that the values for these options can be substrings of the values in
+the authinfo file.
+
+@c page
+@node sendmail script emacs
+@appendixsubsec Interfacing with @gnu{} Emacs
+
+
+This section documents an Emacs interface to the
+@command{sendmail-mbfl.sh} script that can be used to send mail.  It
+consists of an Emacs Lisp library that allows us to send mail with all
+the methods supported by the script.
+
+To use it we have to install the file @file{examples/sendmail-mbfl.el}
+in one of the directories in the load path of Emacs, then load it with:
+
+@example
+(require 'sendmail-mbfl)
+@end example
+
+The library assumes that @file{message.el} and @file{sendmail.el} are
+available on the system; recent installations of Emacs should have them.
+
+@menu
+* sendmail script emacs vars::  Customisable variables.
+* sendmail script emacs send::  Sending and delivering functions.
+* sendmail script emacs insp::  Message inspection functions.
+* sendmail script emacs misc::  Miscellaneous functions.
+@end menu
+
+@c page
+@node sendmail script emacs vars
+@appendixsubsubsec Customisable variables
+
+
+A customisation group called @code{sendmail-mbfl} is available to
+configure the library.
+
+
+@defvr {Customisable Variable} sendmail-mbfl-program
+A string representing the name of the @mbfl{} shell script.  By default
+set to @code{sendmail-mbfl.sh}.
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-extra-args
+A list of strings representing extra arguments for the command line of
+@command{sendmail-mbfl.sh}.  By default set to:
+
+@example
+("--verbose" "--debug")
+@end example
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-envelope-from-function
+Select a function to call to acquire, from the current buffer, the
+envelope email address of the sender, to be used in the @code{MAIL FROM}
+@smtp{} command.
+
+The function is invoked with no arguments and it must return a single
+string representing the email address.  If no suitable address is found:
+it must raise an error.  The function may be called multiple times for
+the same message buffer.
+
+The selected function is used by @code{send-mail-with-mbfl}.  By default
+it is set to @code{sendmail-mbfl-envelope-from}.
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-envelope-to-function
+Select a function to call to acquire, from the current buffer, the
+envelope email addresses of the receivers, to be used in the @code{RCPT
+TO} @smtp{} command.
+
+The function is invoked with no arguments and it must return a list of
+strings representing email addresses.  If no suitable address is found:
+it must raise an error.  The function may be called multiple times for
+the same message buffer.
+
+The selected function is used by @code{send-mail-with-mbfl}.  By default
+it is set to @code{sendmail-mbfl-envelope-to}.
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-extract-addresses-function
+Select a function to call to extract a list of email addresses from an
+email header.  It is invoked with no arguments and the buffer narrowed
+to the header to examine.
+
+The function is invoked with no arguments and it must return a list of
+strings representing email addresses, or nil.
+
+The selected function is used by @code{sendmail-mbfl-envelope-from} and
+@code{sendmail-mbfl-envelope-to}.
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-hostname-function
+Select a function to call to extract, from the current buffer, the
+hostname of the @smtp{} server to be used to send the message.  The
+result is used as search key in the selected hostinfo file.
+
+The function is invoked with no arguments and it must return a string
+representing the hostname; if it is unable to determine the hostname: it
+must raise an error.
+
+The selected function is used by @code{send-mail-with-mbfl}.  By default
+it is set to @code{sendmail-mbfl-hostname}.
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-username-function
+Select a function to call to extract, from the current buffer, the
+username with which to login to the @smtp{} server.  The result is used
+as search key in the selected authinfo file.
+
+The function is invoked with no arguments and it must return a string
+representing the username; if it is unable to determine the username: it
+must raise an error.
+
+The selected function is used by @code{send-mail-with-mbfl}.  By default
+it is set to @code{sendmail-mbfl-username}.
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-host-info
+The pathname of the file holding informations about known @smtp{}
+servers.  @ref{sendmail script hostinfo, Reading host informations from
+file}.
+
+By default it is set to @file{~/.mbfl-hostinfo}.
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-auth-info
+The pathname of the file holding informations about known accounts at
+@smtp{} servers.  @ref{sendmail script authinfo, Reading authentication
+credentials from file}.
+
+By default it is set to @file{~/.mbfl-authinfo}.
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-connector
+Select the external program to use to establish the @tls{} transport
+layer.  Valid values are the strings: @code{gnutls}, @code{openssl}.
+The default is @code{openssl} because it is more likely to be installed
+on any system.
+@end defvr
+
+
+@defvr {Customisable Variable} sendmail-mbfl-timeout
+Select the timeout in seconds for reading answers from the @smtp{}
+server.  The default is 5.
+@end defvr
+
+@c page
+@node sendmail script emacs send
+@appendixsubsubsec Sending and delivering functions
+
+
+@defun send-mail-with-mbfl
+Send the email message in the current buffer.  This interactive function
+can be invoked directly by the user, or, better, used as value for
+@code{message-send-mail-function}.  Sending involves:
+
+@enumerate
+@item
+Normalising the message with @code{sendmail-mbfl-normalise-message}.
+
+@item
+Performing special deliveries with @code{sendmail-mbfl-delivery}.
+
+@item
+Posting the message to an @acronym{MTA} using @code{sendmail-mbfl-post}.
+@end enumerate
+@end defun
+
+
+@defun sendmail-mbfl-delivery
+Perform special deliveries of the email message in the current buffer.
+If the message has an @code{Fcc} header, deliver is performed relying on
+@code{mail-do-fcc} from @file{sendmail.el}.
+
+It is to be called after @code{sendmail-mbfl-normalise-message} or an
+equivalent normalisation has been applied to the message.
+@end defun
+
+
+@defun sendmail-mbfl-post
+Post the email message in the current buffer using an @acronym{MTA}.
+Posting involves:
+
+@enumerate
+@item
+Preparing the message with @code{sendmail-mbfl-prepare-message-for-mta}.
+
+@item
+Saving the message into a temporary file.
+
+@item
+Sending the file using the program selected with the customisable
+variable @code{sendmail-mbfl-program}.
+@end enumerate
+
+It is to be called after @code{sendmail-mbfl-normalise-message} or an
+equivalent normalisation has been applied to the message.
+@end defun
+
+@c page
+@node sendmail script emacs insp
+@appendixsubsubsec Message inspection functions
+
+
+@defun sendmail-mbfl-envelope-from
+@defunx sendmail-mbfl-envelope-from/message
+@code{sendmail-mbfl-envelope-from} interprets the current buffer as an
+email message and searches the contents for an email address to be used
+as envelope sender.
+
+It examines the headers @code{From} and @code{Sender}, in this order and
+it returns a single string representing the email address; if no
+suitable address is found: it raises an error.  The address is extracted
+from the headers using the function selected by the customisable
+variable @code{sendmail-mbfl-extract-addresses-function}.
+
+@code{sendmail-mbfl-envelope-from/message} is an interactive wrapper for
+@code{sendmail-mbfl-envelope-from} that prints the result to the
+@code{*Message*} buffer.
+@end defun
+
+
+@defun sendmail-mbfl-envelope-to
+@defunx sendmail-mbfl-envelope-to/message
+@code{sendmail-mbfl-envelope-to} interprets the current buffer as an
+email message and searches the contents for email addresses to be used
+as envelope receivers.
+
+It examines the headers @code{To}, @code{Cc} and @code{Bcc} and it
+returns a list of strings representing email addresses; if no suitable
+address is found: it raises an error.  The addresses are extracted from
+the headers using the function selected by the customisable variable
+@code{sendmail-mbfl-extract-addresses-function}.
+
+@code{sendmail-mbfl-envelope-to/message} is an interactive wrapper for
+@code{sendmail-mbfl-envelope-to} that prints the result to the
+@code{*Message*} buffer.
+@end defun
+
+
+@defun sendmail-mbfl-extract-addresses
+Extract a list of email addresses from the current buffer.  It must be
+invoked with the buffer narrowed to the header to examine.  Return a
+list of email addresses as strings, or nil if no address is found.
+@end defun
+
+
+@defun sendmail-mbfl-hostname
+@defunx sendmail-mbfl-hostname/message
+@code{sendmail-mbfl-hostname} extracts, from the current buffer, the
+hostname of the @smtp{} server to be used to send the message.  The
+result is used as search key in the selected hostinfo file.
+
+It returns a string representing the hostname else, if unable to
+determine the hostname, it raises an error.  The hostname is the
+hostname part of the value returned by
+@code{sendmail-mbfl-envelope-from}.
+
+@code{sendmail-mbfl-hostname/message} is an interactive wrapper for
+@code{sendmail-mbfl-hostname} that prints the result to the
+@code{*Message*} buffer.
+@end defun
+
+
+@defun sendmail-mbfl-username
+@defunx sendmail-mbfl-username/message
+@code{sendmail-mbfl-username} extracts, from the current buffer, the
+username with which login to the @smtp{} server.  The result is used as
+search key in the selected authinfo file.
+
+It returns a string representing the username else, if unable to
+determine the username, it raises an error.  The username is the
+username part of the value returned by
+@code{sendmail-mbfl-envelope-from}.
+
+@code{sendmail-mbfl-username/message} is an interactive wrapper for
+@code{sendmail-mbfl-username} that prints the result to the
+@code{*Message*} buffer.
+@end defun
+
+@c page
+@node sendmail script emacs misc
+@appendixsubsubsec Miscellaneous functions
+
+
+@defun sendmail-mbfl-activate
+Set @code{message-send-mail-function} so that functions from
+@file{message.el} send mail using @code{send-mail-with-mbfl}.
+@end defun
+
+
+@defun sendmail-mbfl-normalise-message
+Normalise the email message in the current buffer so that it is ready to
+be posted or delivered.  Scan the headers for invalid lines and try to
+fix them.  Scan the message for mandatory headers and, if missing, add
+them; this may require querying the user for informations.
+
+It is to be called @strong{before} acquiring sender and receiver
+addresses from the headers.  It is an interactive function: it can be
+explicitly applied to a buffer by the user any number of times.
+
+This function does @strong{not} remove the headers/body separator.
+@end defun
+
+
+@defun sendmail-mbfl-prepare-message-for-mta
+Prepare the email message in the current buffer to be sent to a Mail
+Transport Agent.  Headers like @code{Fcc} and @code{Bcc} are removed;
+the headers/body separator line is removed.  It is to be called
+@strong{after} acquiring sender and receiver addresses from the headers.
+@end defun
+
+
+@defun sendmail-mbfl-copy-message-buffer @var{DST-BUFFER} @var{SRC-BUFFER}
+Copy an email message from @var{SRC-BUFFER} to @var{DST-BUFFER}.  Set
+encoding and text representation properties of the destination buffer to
+be equal to the ones of the source buffer.
+@end defun
+
