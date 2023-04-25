@@ -26,59 +26,35 @@
 #
 
 
+#### macros
+
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+
+
 #### global variables
 
-mbfl_declare_index_array(mbfl_atexit_HANDLERS)
-declare -i mbfl_atexit_NEXT=0
+mbfl_hook_declare(mbfl_atexit_HANDLERS)
 
 function mbfl_atexit_enable () {
     trap mbfl_atexit_run EXIT
 }
-
 function mbfl_atexit_disable () {
-    trap '' EXIT
+    trap EXIT
 }
-
 function mbfl_atexit_register () {
-    mbfl_mandatory_parameter(mbfl_HANDLER, 1, handler script)
-    mbfl_optional_parameter(mbfl_IDVAR, 2)
-
-    if mbfl_string_is_not_empty "$mbfl_IDVAR"
-    then local -n mbfl_ID_VARREF=$mbfl_IDVAR
-    else local mbfl_ID_VARREF
-    fi
-
-    mbfl_slot_set(mbfl_atexit_HANDLERS, $mbfl_atexit_NEXT, $mbfl_HANDLER)
-    mbfl_ID_VARREF=$mbfl_atexit_NEXT
-    let ++mbfl_atexit_NEXT
+    mbfl_mandatory_parameter(mbfl_HANDLER,	1, handler script)
+    mbfl_optional_parameter(mbfl_IDVAR,		2)
+    mbfl_hook_add _(mbfl_atexit_HANDLERS) "$mbfl_HANDLER" "$mbfl_IDVAR"
 }
-
 function mbfl_atexit_forget () {
-    mbfl_mandatory_integer_parameter(ID, 1, handler id)
-
-    mbfl_atexit_HANDLERS[$ID]=
+    mbfl_mandatory_integer_parameter(mbfl_HANDLER_ID, 1, handler id)
+    mbfl_hook_remove _(mbfl_atexit_HANDLERS) $mbfl_HANDLER_ID
 }
-
 function mbfl_atexit_run () {
-    local HANDLER
-    local -i i
-
-    for ((i=mbfl_slots_number(mbfl_atexit_HANDLERS)-1; i >= 0; --i))
-    do
-	HANDLER=mbfl_slot_ref(mbfl_atexit_HANDLERS, $i)
-	if mbfl_string_is_not_empty "$HANDLER"
-	then
-	    # Remove the handler.
-	    mbfl_atexit_HANDLERS[$i]=
-	    # Run it.
-	    "$HANDLER"
-	fi
-    done
+    mbfl_hook_run _(mbfl_atexit_HANDLERS)
 }
-
 function mbfl_atexit_clear () {
-    mbfl_atexit_HANDLERS=()
-    mbfl_atexit_NEXT=0
+    mbfl_hook_remove_commands _(mbfl_atexit_HANDLERS)
 }
 
 ### end of file
