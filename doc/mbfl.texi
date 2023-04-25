@@ -9147,8 +9147,8 @@ handlers.
 @end defun
 
 
-@defun mbfl_signal_invoke_handlers @var{SIGNUM}
-Run the hook associated to the signal @var{SIGNUM}.  This function is not meant to be used during
+@defun mbfl_signal_invoke_handlers @var{SIGNAME}
+Run the hook associated to the signal @var{SIGNAME}.  This function is not meant to be used during
 normal scripts execution, but it may be useful to debug a script by simulating signal delivery.
 @end defun
 

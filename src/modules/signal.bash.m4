@@ -167,13 +167,18 @@ function mbfl_signal_attach () {
 
     if mbfl_signal_hook_var _(mbfl_HOOK) "$mbfl_SIGNAME"
     then
+	# If the hook has no  commands: it means this is the first time we  attach a handler to this
+	# signal; so we also trap the signal itself.
+	if ! mbfl_hook_has_commands $mbfl_HOOK
+	then trap "mbfl_signal_invoke_handlers '$mbfl_SIGNAME'" "$mbfl_SIGNAME"
+	fi
 	mbfl_hook_add $mbfl_HOOK "$mbfl_HANDLER"
+	#mbfl_message_debug_printf 'attached handler to signal "%s": "%s"' "$mbfl_SIGNAME" "$mbfl_HANDLER"
 	return_success
     else
 	mbfl_variable_unset _(mbfl_HOOK)
 	return_failure
     fi
-    #mbfl_message_debug_printf 'attached handler to signal "%s": "%s"' "$mbfl_SIGNAME" "$mbfl_HANDLER"
 }
 function mbfl_signal_has_handlers () {
     mbfl_mandatory_parameter(mbfl_SIGNAME, 1, signal name)
@@ -238,24 +243,15 @@ function mbfl_signal_send () {
     mbfl_process_kill -s "$mbfl_SIGNAME" $mbfl_TARGET_PID
 }
 function mbfl_signal_invoke_handlers () {
-    mbfl_mandatory_parameter(mbfl_SIGNUM, 1, signal number)
+    mbfl_mandatory_parameter(mbfl_SIGNAME, 1, signal name)
+    mbfl_declare_varref(mbfl_HOOK)
 
-    if ! mbfl_string_is_signum "$mbfl_SIGNUM"
-    then return_failure
-    fi
-
-    mbfl_message_debug_printf 'received signal: "%s"' "$mbfl_SIGNUM"
-
-    declare mbfl_OBJECT=_(mbfl_signal_HOOKS, "$mbfl_SIGNUM")
-    if mbfl_is_the_unspecified "$mbfl_OBJECT"
-    then
-	# There is no hook for this signal.
-	return_failure
+    if mbfl_signal_hook_var _(mbfl_HOOK) "$mbfl_SIGNAME"
+    then mbfl_hook_run "$mbfl_HOOK"
     else
-	mbfl_declare_nameref(mbfl_HOOK, "$mbfl_OBJECT")
-	mbfl_hook_run _(mbfl_HOOK)
+	mbfl_variable_unset _(mbfl_HOOK)
+	return_failure
     fi
-    return_success
 }
 
 ### end of file

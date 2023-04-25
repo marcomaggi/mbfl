@@ -38,6 +38,8 @@ mbfl_load_library("$MBFL_LIBMBFL_TEST")
 mbfl_signal_enable
 mbfl_process_enable
 
+script_PROGNAME='signal.test'
+
 
 #### macros
 
@@ -156,8 +158,7 @@ function signal-delivery-simulation-1.1 () {
 	#mbfl_set_option_debug
 
 	mbfl_signal_attach 'SIGUSR1' 'SIGNAL_DELIVERY_SIMULATION_1_1=true'
-	mbfl_signal_map_signame_to_signum_var _(SIGNUM) 'SIGUSR1'
-	mbfl_signal_invoke_handlers $SIGNUM
+	mbfl_signal_invoke_handlers 'SIGUSR1'
 	dotest-equal true "$SIGNAL_DELIVERY_SIMULATION_1_1"
     }
     mbfl_location_leave
@@ -175,50 +176,109 @@ function signal-delivery-simulation-1.1 () {
 function signal-sending-1.1 () {
     run-subprocess-send-signal "SIGUSR1"
 }
-function p-signal-sending-1.2 () {
+function signal-sending-1.2 () {
     run-subprocess-send-signal "SIGUSR2"
 }
 function run-subprocess-send-signal () {
-    declare SIGNAME="$1"
-    declare i pid
-    declare tmpfile="$(dotest-mkfile result.txt)"
+    mbfl_mandatory_parameter(SIGNAME, 1, signal name)
+    declare -r SIGNALTEST_SCRIPT="$testsdir"/signaltest.sh
     declare SIGNALTEST_FLAGS
 
-    dotest-set-debug
-    mbfl_set_option_show_program
+    #mbfl_set_option_debug
 
     if dotest-option-debug
     then SIGNALTEST_FLAGS+=' --debug'
     fi
 
-    mbfl_fd_open_output 3 "$tmpfile"
     mbfl_location_enter
     {
-	mbfl_location_handler "mbfl_fd_close 3"
+	mbfl_message_debug_printf "executing test script"
+	if coproc "$mbfl_PROGRAM_BASH" "$SIGNALTEST_SCRIPT" $SIGNALTEST_FLAGS
+	then
+	    mbfl_message_debug_printf "test script pid: $COPROC_PID"
+	    mbfl_location_handler "mbfl_fd_close _(COPROC,0)"
+	    mbfl_location_handler "mbfl_fd_close _(COPROC,1)"
+	    mbfl_process_disown $COPROC_PID
+	else
+	    mbfl_location_leave
+	    return_failure
+	fi
 
-	dotest-debug "executing test script"
-	mbfl_program_execbg 0 3 "$mbfl_PROGRAM_BASH" "$testsdir"/signaltest.sh ${SIGNALTEST_FLAGS}
-	pid=$mbfl_program_BGPID
-	dotest-debug "test script pid: $pid"
-	mbfl_process_bg $pid
-	mbfl_process_disown $pid
+	if ! {
+		read-from-child-process		'ready'		&&
+		    write-to-child-process	'ready'		&&
+		    mbfl_signal_send $SIGNAME $COPROC_PID	&&
+		    read-from-child-process	'got signal'	&&
+		    write-to-child-process	'quit'		&&
+		    read-from-child-process	'quit'		&&
+		    read-from-child-process	"exiting after interruption ($SIGNAME, 2 handlers)"
+	    }
+	then
+	    mbfl_location_leave
+	    return_failure
+	fi
 
-	# Let the process start and register its signal handlers.
-	mbfl_process_sleep 1s
-	dotest-debug "sending ${SIGNAME} signal to pid '$pid'"
-	mbfl_signal_send $SIGNAME $pid
-	mbfl_process_sleep 1s
-	dotest-debug "sending SIGCONT signal to pid '$pid' to wake it up"
-	mbfl_signal_send 'SIGCONT' $pid
+	# mbfl_message_debug_printf 'telling the child to go'
+	# printf 'go\n' >_(COPROC, 1)
 
-	dotest-debug "waiting for pid '$pid'"
-	mbfl_process_wait $pid
-	dotest-debug "received finalisation of pid '$pid'"
-	mbfl_process_sleep 1s
-	dotest-equal "exiting after interruption ($SIGNAME, 2 handlers)" "$(<${tmpfile})"
+	# mbfl_message_debug_printf "sending ${SIGNAME} signal to pid '$COPROC_PID'"
+	# mbfl_signal_send $SIGNAME $COPROC_PID
+	#mbfl_process_sleep 1s
+	#mbfl_message_debug_printf "sending SIGCONT signal to pid '$COPROC_PID' to wake it up"
+	#mbfl_signal_send 'SIGCONT' $COPROC_PID
+
+	# mbfl_message_debug_printf 'telling the child we are done'
+	# printf 'done\n' >_(COPROC, 1)
+
+	# mbfl_process_sleep 1s
+	# mbfl_message_debug_printf 'reading child last reply'
+	# if ! read-from-child-process 'quit'
+	# then
+	#     mbfl_location_leave
+	#     return_failure
+	# fi
+
+	mbfl_message_debug_printf "waiting for pid '$COPROC_PID'"
+	mbfl_process_wait $COPROC_PID
+	mbfl_message_debug_printf "received finalisation of pid '$COPROC_PID'"
+	dotest-equal "exiting after interruption ($SIGNAME, 2 handlers)" "$REPLY"
     }
     mbfl_location_leave
     dotest-clean-files
+}
+function read-from-child-process () {
+    mbfl_mandatory_parameter(EXPECTED_REPLY, 1, expected child reply string)
+
+    if read -t 4 -u _(COPROC, 0)
+    then
+	if mbfl_string_eq("$REPLY", "$EXPECTED_REPLY")
+	then
+	    mbfl_message_debug_printf 'the child said: "%s"' "$REPLY"
+	    return_success
+	else
+	    mbfl_message_debug_printf 'unexpected child reply: "%s"' "$REPLY"
+	    return_failure
+	fi
+    else
+	if (( 128 < $? ))
+	then mbfl_message_debug_printf 'the child did not reply before timeout'
+	else mbfl_message_debug_printf 'some error reading from the child'
+	fi
+	return_failure
+    fi
+}
+function write-to-child-process () {
+    mbfl_mandatory_parameter(MESSAGE, 1, message string)
+
+    mbfl_message_debug_printf 'sending message to child'
+    if printf '%s\n' "$MESSAGE" >&_(COPROC, 1)
+    then
+	mbfl_message_debug_printf 'parent to child: "%s"' "$MESSAGE"
+	return_success
+    else
+	mbfl_message_debug_printf 'error writing to child: "%s"' "$MESSAGE"
+	return_failure
+    fi
 }
 
 

@@ -32,10 +32,10 @@
 
 #### MBFL's related options and variables
 
-script_REQUIRED_MBFL_VERSION=v3.0.0-devel.3
+script_REQUIRED_MBFL_VERSION=v3.0.0-devel.8
 script_PROGNAME=signaltest.sh
 script_VERSION=2.0
-script_COPYRIGHT_YEARS='2003, 2018'
+script_COPYRIGHT_YEARS='2003, 2018, 2023'
 script_AUTHOR='Marco Maggi'
 script_LICENSE=liberal
 script_USAGE="usage: ${script_PROGNAME} [options]"
@@ -46,6 +46,8 @@ script_EXAMPLES=
 #### load library
 
 mbfl_load_library("$MBFL_LIBMBFL_CORE")
+
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 
 #### global variables
@@ -63,9 +65,9 @@ function main () {
 
     trap quitting EXIT
 
-    mbfl_set_option_debug
+    #mbfl_set_option_debug
 
-    mbfl_message_debug "running: pid $$"
+    mbfl_message_debug_printf 'running child process with PID "%d"' $mbfl_PID
 
     mbfl_signal_attach SIGUSR1 handler_one
     mbfl_signal_attach SIGUSR1 handler_two
@@ -73,12 +75,82 @@ function main () {
     mbfl_signal_attach SIGUSR2 handler_three
     mbfl_signal_attach SIGUSR2 handler_four
 
-    mbfl_message_debug "waiting for SIGCONT"
-    mbfl_process_suspend
-    mbfl_message_debug "exiting"
+    if false
+    then
+	mbfl_declare_varref(SIGUSR1_HOOK)
+	mbfl_signal_hook_var _(SIGUSR1_HOOK) 'SIGUSR1'
+	mbfl_array_dump $SIGUSR1_HOOK SIGUSR1_HOOK
+
+	mbfl_declare_varref(SIGUSR2_HOOK)
+	mbfl_signal_hook_var _(SIGUSR2_HOOK) 'SIGUSR2'
+	mbfl_array_dump $SIGUSR2_HOOK SIGUSR2_HOOK
+    fi
+
+    if ! {
+	    write-to-parent-process		'ready'		&&
+		read-from-parent-process	'ready'		&&
+		wait-for-signal					&&
+		write-to-parent-process		'got signal'	&&
+		read-from-parent-process	'quit'		&&
+		write-to-parent-process		'quit'
+	}
+    then return_failure
+    fi
+
+    # mbfl_message_debug_printf "waiting for a signal %d" $flag
+    # # while (( 0 == flag ))
+    # # do :
+    # # done
+    # mbfl_process_sleep 1s
+    # mbfl_message_debug "waiting for the parent to tell us that we are done"
+
+    #mbfl_message_debug "suspend, wait for SIGCONT"
+    #mbfl_process_sleep 1s
+    #mbfl_process_suspend
+
     exit_because_success
 }
 
+function read-from-parent-process () {
+    mbfl_mandatory_parameter(EXPECTED_REPLY, 1, expected parent reply string)
+
+    mbfl_message_debug_printf 'waiting message from parent'
+    if read -t 4
+    then
+	if mbfl_string_eq("$REPLY", "$EXPECTED_REPLY")
+	then
+	    mbfl_message_debug_printf 'the parent said: "%s"' "$REPLY"
+	    return_success
+	else
+	    mbfl_message_debug_printf 'unexpected parent reply: "%s"' "$REPLY"
+	    return_failure
+	fi
+    else
+	if (( 128 < $? ))
+	then mbfl_message_debug_printf 'the parent did not reply before timeout'
+	else mbfl_message_debug_printf 'some error reading from the parent'
+	fi
+	return_failure
+    fi
+}
+function write-to-parent-process () {
+    mbfl_mandatory_parameter(MESSAGE, 1, message string)
+
+    mbfl_message_debug_printf 'sending message to parent'
+    if printf '%s\n' "$MESSAGE"
+    then
+	mbfl_message_debug_printf 'child to parent: "%s"' "$MESSAGE"
+	return_success
+    else
+	mbfl_message_debug_printf 'error writing to parent: "%s"' "$MESSAGE"
+	return_failure
+    fi
+}
+function wait-for-signal () {
+    while (( 0 == flag ))
+    do :
+    done
+}
 function handler_one () {
     SIGSPEC=SIGUSR1
     mbfl_message_debug "interrupted by signal (handler one)"
@@ -104,12 +176,12 @@ function output_and_debug () {
     mbfl_message_debug "$1"
 }
 function quitting () {
-    local msg="exiting with no interruption"
+    declare EXIT_MESSAGE="exiting with no interruption"
 
     if ((0 != flag))
-    then msg="exiting after interruption ($SIGSPEC, $flag handlers)"
+    then EXIT_MESSAGE="exiting after interruption ($SIGSPEC, $flag handlers)"
     fi
-    output_and_debug "$msg"
+    output_and_debug "$EXIT_MESSAGE"
 }
 
 mbfl_main
