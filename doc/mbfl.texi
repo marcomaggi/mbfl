@@ -2774,12 +2774,23 @@ variable we have to apply @func{mbfl_hook_define} to it.
 
 
 @defun mbfl_hook_add @var{HOOK} @var{HOOK_COMMAND}
-Add to @var{HOOK} the command @var{HOOK_COMMAND}.  When the hook is run: @var{HOOK_COMMAND} is
+@defunx mbfl_hook_add @var{HOOK} @var{HOOK_COMMAND} @var{IDVAR}
+Add to @var{HOOK} the command @var{HOOK_COMMAND}.  When we run the hook: @var{HOOK_COMMAND} is
 executed with:
 
 @example
 eval @var{HOOK_COMMAND}
 @end example
+
+If the optional parameter @var{IDVAR} is present: it must be the name of a variable in the scope of
+the caller, which will be set to a unique identifier associated to the added command; later we can
+use such identifier to remove the command with @func{mbfl_hook_remove}.
+@end defun
+
+
+@defun mbfl_hook_remove @var{HOOK} @var{COMMAND_ID}
+Remove from the @var{HOOK} the command associated to @var{COMMAND_ID}, which must have been obtained
+with a previous call to @func{mbfl_hook_remove}.
 @end defun
 
 

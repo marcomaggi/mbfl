@@ -58,15 +58,54 @@ function mbfl_hook_has_commands () {
 }
 function mbfl_hook_add () {
     mbfl_mandatory_nameref_parameter(mbfl_HOOK,	1, reference to hook variable)
-    mbfl_mandatory_parameter(mbfl_HOOK_COMMAND,		2, hook command)
+    mbfl_mandatory_parameter(mbfl_HOOK_COMMAND,	2, hook command)
+    mbfl_optional_parameter(mbfl_IDVAR,		3)
     declare -i mbfl_IDX=mbfl_slots_number(mbfl_HOOK)
 
     if mbfl_string_not_empty(mbfl_HOOK_COMMAND)
-    then mbfl_slot_set(mbfl_HOOK, $mbfl_IDX, "$mbfl_HOOK_COMMAND")
+    then
+	mbfl_slot_set(mbfl_HOOK, $mbfl_IDX, "$mbfl_HOOK_COMMAND")
+	if mbfl_string_not_empty(mbfl_IDVAR)
+	then
+	    declare -n mbfl_ID_VARREF=$mbfl_IDVAR
+	    mbfl_ID_VARREF=$mbfl_IDX
+	fi
     else
 	mbfl_message_warning_printf 'attempt to register empty string as handler for signal "%s"' "$mbfl_SIGNAME"
 	return_failure
     fi
+}
+function mbfl_hook_remove () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK,		1, reference to hook variable)
+    mbfl_mandatory_integer_parameter(mbfl_HANDLER_ID,	2, handler id)
+    # We must  NOT unset  this array  key/value pair:  we must really  set it  to the  empty string.
+    # If the array is:
+    #
+    #    mbfl_HOOK[0]=hook_0
+    #    mbfl_HOOK[1]=hook_1
+    #    mbfl_HOOK[2]=hook_2
+    #
+    # and we unset "mbfl_HOOK[1]" and , the resulting array is:
+    #
+    #    mbfl_HOOK[0]=hook_0
+    #    mbfl_HOOK[2]=hook_2
+    #
+    # unsetting it will cause:
+    #
+    #    mbfl_slots_number(mbfl_HOOK) => 2
+    #
+    # because there are 2 slots, but this will cause the "for" loops used in this module to fail:
+    #
+    #    for ((mbfl_I=0; mbfl_I < mbfl_slots_number(mbfl_HOOK); ++mbfl_I))
+    #
+    # because 2 is not one  more than the highest slot key.
+    #
+    # We could still correctly loop over the keys with:
+    #
+    #    for KEY in mbfl_slots_keys(mbfl_HOOK)
+    #
+    # but I have decided that I like the for-with-counter loop more.  (Marco Maggi; Apr 25, 2023)
+    mbfl_slot_set(mbfl_HOOK, $mbfl_HANDLER_ID)
 }
 function mbfl_hook_run () {
     mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)

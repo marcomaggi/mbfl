@@ -111,6 +111,29 @@ function hooks-inspect-1.2 () {
 }
 
 
+#### removing hooks
+
+function hooks-remove-1.1 () {
+    mbfl_hook_declare(HOOKS_REMOVE_1_1)
+    declare RESULT= EXPECTED_RESULT=14
+    mbfl_declare_integer_varref(IDA)
+    mbfl_declare_integer_varref(IDB)
+
+    mbfl_hook_define _(HOOKS_REMOVE_1_1)
+    mbfl_hook_add _(HOOKS_REMOVE_1_1) 'RESULT+=1'
+    mbfl_hook_add _(HOOKS_REMOVE_1_1) 'RESULT+=2' _(IDA)
+    mbfl_hook_add _(HOOKS_REMOVE_1_1) 'RESULT+=3' _(IDB)
+    mbfl_hook_add _(HOOKS_REMOVE_1_1) 'RESULT+=4'
+
+    #mbfl_array_dump _(HOOKS_REMOVE_1_1)
+    mbfl_hook_remove _(HOOKS_REMOVE_1_1) $IDA
+    mbfl_hook_remove _(HOOKS_REMOVE_1_1) $IDB
+    #mbfl_array_dump _(HOOKS_REMOVE_1_1)
+
+    mbfl_hook_run _(HOOKS_REMOVE_1_1)
+    dotest-equal "$EXPECTED_RESULT" "$RESULT"
+}
+
 #### let's go
 
 dotest hooks-

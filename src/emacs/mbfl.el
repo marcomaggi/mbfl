@@ -816,6 +816,7 @@
        "mbfl_hook_define"
        "mbfl_hook_undefine"
        "mbfl_hook_add"
+       "mbfl_hook_remove"
        "mbfl_hook_run"
        "mbfl_hook_reverse_run"
        "mbfl_hook_has_commands"
