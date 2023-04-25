@@ -175,9 +175,7 @@ function mbfl_signal_attach () {
 	mbfl_hook_add $mbfl_HOOK "$mbfl_HANDLER"
 	#mbfl_message_debug_printf 'attached handler to signal "%s": "%s"' "$mbfl_SIGNAME" "$mbfl_HANDLER"
 	return_success
-    else
-	mbfl_variable_unset _(mbfl_HOOK)
-	return_failure
+    else return_failure
     fi
 }
 function mbfl_signal_has_handlers () {
@@ -248,9 +246,7 @@ function mbfl_signal_invoke_handlers () {
 
     if mbfl_signal_hook_var _(mbfl_HOOK) "$mbfl_SIGNAME"
     then mbfl_hook_run "$mbfl_HOOK"
-    else
-	mbfl_variable_unset _(mbfl_HOOK)
-	return_failure
+    else return_failure
     fi
 }
 
