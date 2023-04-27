@@ -30,12 +30,15 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 #### global variables
 
-mbfl_declare_index_array(mbfl_location_HOOKS)
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then
+    mbfl_declare_index_array(mbfl_location_HOOKS)
 
-# Identifier from  the atexit module,  associated to the  atexit handler
-# that cleans up the stack of locations.
-#
-declare mbfl_location_ATEXIT_ID
+    # Identifier from the atexit  module, associated to the atexit handler that  cleans up the stack
+    # of locations.
+    #
+    declare mbfl_location_ATEXIT_ID
+fi
 
 
 #### location delimiters
