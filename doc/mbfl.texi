@@ -13696,7 +13696,6 @@ mbfl_slots_qvalues(DST_ARRY)    @result{} a b c d e A B C D E F G H I
 
 @ParameterSemanticsARRY{}
 @ParameterSemanticsISLESS{}
-@ParameterSemanticsCOMPAR{}
 
 
 @defun mbfl_array_is_sorted @var{ARRY}
@@ -13716,8 +13715,8 @@ mbfl_array_is_sorted _(ARRY2)    @result{} 1
 
 @defun mbfl_array_quicksort_bang @var{ARRY}
 @defunx mbfl_array_quicksort_bang @var{ARRY} @var{ISLESS}
-Apply the quicksort algorithm to sort the values in @var{ARRY}; this function mutates @var{ARRY}
-itself.  Comparison between values is performed with @var{ISLESS}.
+Apply the quicksort 2--partition algorithm to sort the values in @var{ARRY}; this function mutates
+@var{ARRY} itself.  Comparison between values is performed with @var{ISLESS}.
 
 @example
 mbfl_declare_index_array_varref(ARRY1, (e b d a c))
@@ -13728,6 +13727,25 @@ mbfl_slots_qvalues(ARRY1)        @result{} a b c d e
 mbfl_declare_index_array_varref(ARRY2, (55 33 88 99 22 11 44 77 66))
 
 mbfl_array_quicksort_bang _(ARRY2) mbfl_integer_less
+mbfl_slots_qvalues(ARRY2)        @result{} 11 22 33 44 55 66 77 88 99
+@end example
+@end defun
+
+
+@defun mbfl_array_quicksort3_bang @var{ARRY}
+@defunx mbfl_array_quicksort3_bang @var{ARRY} @var{ISLESS}
+Apply the quicksort 3--partition algorithm to sort the values in @var{ARRY}; this function mutates
+@var{ARRY} itself.  Comparison between values is performed with @var{ISLESS}.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (e b d a c))
+
+mbfl_array_quicksort3_bang _(ARRY1)
+mbfl_slots_qvalues(ARRY1)        @result{} a b c d e
+
+mbfl_declare_index_array_varref(ARRY2, (55 33 88 99 22 11 44 77 66))
+
+mbfl_array_quicksort3_bang _(ARRY2) mbfl_integer_less
 mbfl_slots_qvalues(ARRY2)        @result{} 11 22 33 44 55 66 77 88 99
 @end example
 @end defun

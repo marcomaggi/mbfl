@@ -8,6 +8,11 @@
 #!
 #!	This library implements common containers as default objects.
 #!
+#!	We take the Segewick-Bentley 2-partition and 3-partitions implementation from:
+#!
+#!		https://sedgewick.io/
+#!		https://sedgewick.io/wp-content/themes/sedgewick/talks/2002QuicksortIsOptimal.pdf
+#!
 #! Copyright (c) 2023 Marco Maggi
 #! <mrc.mgg@gmail.com>
 #!
@@ -704,7 +709,15 @@ function mbfl_array_is_sorted () {
     return_success
 }
 
-### ------------------------------------------------------------------------
+
+#### arrays: sorting with quicksort 3-partition
+#
+# We take the Segewick-Bentley 2-partition implementation from:
+#
+#  https://sedgewick.io/wp-content/themes/sedgewick/talks/2002QuicksortIsOptimal.pdf
+#
+# beware that in the pseudo-code it is easy to confuse the letter l (ell) with the digit 1 (one).
+#
 
 function mbfl_array_quicksort_bang () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
@@ -730,14 +743,6 @@ function mbfl_p_array_quicksort_bang () {
     declare -i mbfl_J=mbfl_RIGHT
     declare    mbfl_PIVOT=mbfl_slot_qref(mbfl_ARRY, $mbfl_RIGHT)
 
-    # We take the Segewick-Bentley 2-partition implementation from:
-    #
-    # https://sedgewick.io/
-    # https://sedgewick.io/wp-content/themes/sedgewick/talks/2002QuicksortIsOptimal.pdf
-    #
-    # beware that  in the pseudo-code  it is easy  to confuse  the letter l  (ell) with the  digit 1
-    # (one).
-    #
     while true
     do
 	while "$mbfl_ISLESS" mbfl_slot_qref(mbfl_ARRY, $((++mbfl_I))) "$mbfl_PIVOT"
@@ -754,6 +759,125 @@ function mbfl_p_array_quicksort_bang () {
 
     mbfl_p_array_quicksort_bang _(mbfl_ARRY) $mbfl_LEFT    $((mbfl_I-1)) "$mbfl_ISLESS"
     mbfl_p_array_quicksort_bang _(mbfl_ARRY) $((mbfl_I+1)) $mbfl_RIGHT   "$mbfl_ISLESS"
+}
+
+
+#### arrays: sorting with quicksort 3-partition
+#
+# We take the Segewick-Bentley 3-partition implementation from:
+#
+#  https://sedgewick.io/wp-content/themes/sedgewick/talks/2002QuicksortIsOptimal.pdf
+#
+# beware that in the pseudo-code it is easy to confuse the letter l (ell) with the digit 1 (one).
+#
+# void
+# quicksort(Item a[], int l, int r)
+# {
+#   int i = l-1;
+#   int j = r;
+#   int p = l-1;
+#   int q = r;
+#   Item v = a[r];
+#
+#   if (r <= l) return;
+#
+#   for (;;) {
+#     while (a[++i] < v) ;
+#     while (v < a[--j]) {
+#       if (j == l) break;
+#     }
+#     if (i >= j) {
+#       break;
+#     }
+#     exch(a[i], a[j]);
+#     if (a[i] == v) {
+#       p++;
+#       exch(a[p], a[i]);
+#     }
+#     if (v == a[j]) {
+#       q--;
+#       exch(a[j], a[q]);
+#     }
+#   }
+#   exch(a[i], a[r]);
+#   j = i-1;
+#   i = i+1;
+#   for (k = l; k < p; k++, j--) {
+#     exch(a[k], a[j]);
+#   }
+#   for (k = r-1; k > q; k--, i++) {
+#     exch(a[i], a[k]);
+#   }
+#   quicksort(a, l, j);
+#   quicksort(a, i, r);
+# }
+#
+
+function mbfl_array_quicksort3_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
+    mbfl_optional_parameter(mbfl_ISLESS,	2, mbfl_string_less)
+    mbfl_optional_parameter(mbfl_ISEQUAL,	3, mbfl_string_equal)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    if ((1 < mbfl_DIM))
+    then mbfl_p_array_quicksort3_bang _(mbfl_ARRY) 0 $((mbfl_DIM-1)) "$mbfl_ISLESS" "$mbfl_ISEQUAL"
+    else return_success
+    fi
+}
+function mbfl_p_array_quicksort3_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, reference to index array)
+    mbfl_mandatory_integer_parameter(mbfl_LEFT,		2, leftmost index of range to be partitioned)
+    mbfl_mandatory_integer_parameter(mbfl_RIGHT,	3, rightmost index of range to be partitioned)
+    mbfl_mandatory_parameter(mbfl_ISLESS,		4, less-than comparison function)
+    mbfl_mandatory_parameter(mbfl_ISEQUAL,		5, equal-to comparison function)
+
+    if (( mbfl_LEFT >= mbfl_RIGHT ))
+    then return_success
+    fi
+
+    declare -i mbfl_I=mbfl_LEFT-1
+    declare -i mbfl_J=mbfl_RIGHT
+    declare -i mbfl_P=mbfl_LEFT-1
+    declare -i mbfl_Q=mbfl_RIGHT
+    declare    mbfl_PIVOT=mbfl_slot_qref(mbfl_ARRY, $mbfl_RIGHT)
+
+    while true
+    do
+	while "$mbfl_ISLESS" mbfl_slot_qref(mbfl_ARRY, $((++mbfl_I))) "$mbfl_PIVOT"
+	do :
+	done
+	while "$mbfl_ISLESS" "$mbfl_PIVOT" mbfl_slot_qref(mbfl_ARRY, $((--mbfl_J)))
+	do (( mbfl_LEFT == mbfl_J )) && break
+	done
+	(( mbfl_I >= mbfl_J )) && break
+	MBFL_ARRAY_SWAP(mbfl_ARRY,mbfl_I,mbfl_J)
+	if "$mbfl_ISEQUAL" _(mbfl_ARRY,$mbfl_I) "$mbfl_PIVOT"
+	then
+	    let ++mbfl_P
+	    MBFL_ARRAY_SWAP(mbfl_ARRY,mbfl_P,mbfl_I)
+	fi
+	if "$mbfl_ISEQUAL" "$mbfl_PIVOT" _(mbfl_ARRY,$mbfl_J)
+	then
+	    let --mbfl_Q
+	    MBFL_ARRAY_SWAP(mbfl_ARRY,mbfl_J,mbfl_Q)
+	fi
+    done
+    # We come here after the bottom BREAK is executed, so mbfl_I >= mbfl_J.
+    MBFL_ARRAY_SWAP(mbfl_ARRY,mbfl_I,mbfl_RIGHT)
+    let mbfl_J=mbfl_I-1
+    let ++mbfl_I
+
+    declare -i mbfl_K
+    for ((mbfl_K=mbfl_LEFT; mbfl_K < mbfl_P; ++mbfl_K, --mbfl_J))
+    do MBFL_ARRAY_SWAP(mbfl_ARRY,mbfl_K,mbfl_J)
+    done
+
+    for ((mbfl_K=mbfl_RIGHT-1; mbfl_K > mbfl_Q; --mbfl_K, ++mbfl_I))
+    do MBFL_ARRAY_SWAP(mbfl_ARRY,mbfl_I,mbfl_K)
+    done
+
+    mbfl_p_array_quicksort3_bang _(mbfl_ARRY) $mbfl_LEFT $mbfl_J     "$mbfl_ISLESS" "$mbfl_ISEQUAL"
+    mbfl_p_array_quicksort3_bang _(mbfl_ARRY) $mbfl_I    $mbfl_RIGHT "$mbfl_ISLESS" "$mbfl_ISEQUAL"
 }
 
 
