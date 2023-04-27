@@ -1,4 +1,4 @@
-y# process.test --
+# process.test --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: tests for the process functions
