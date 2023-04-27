@@ -32,12 +32,12 @@
 
 #### macros
 
-MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 # MBFL_ARRAY_SWAP(mbfl_ARRY, mbfl_I, mbfl_J)
 m4_define([[[MBFL_ARRAY_SWAP]]],[[[
-declare $2_VALUE=mbfl_slot_qref(mbfl_ARRY, [[[$]]]$2)
-mbfl_slot_set($1, [[[$]]]$2,  mbfl_slot_qref($1, [[[$]]]$3))
+declare $2_VALUE=_(mbfl_ARRY, [[[$]]]$2)
+mbfl_slot_set($1, [[[$]]]$2,  _($1, [[[$]]]$3))
 mbfl_slot_set($1, [[[$]]]$3, "[[[$]]]$2_VALUE")
 ]]])
 
@@ -149,8 +149,8 @@ function mbfl_multi_array_homologous_slots_var () {
 
 	for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_ARRYS; ++mbfl_I))
 	do
-	    mbfl_declare_nameref(mbfl_ARRY, mbfl_slot_qref(mbfl_ARRYS, $mbfl_I))
-	    mbfl_slot_set(mbfl_HOMOLOGOUS_VALUES, $mbfl_I, mbfl_slot_qref(mbfl_ARRY, $mbfl_INDEX))
+	    mbfl_declare_nameref(mbfl_ARRY, _(mbfl_ARRYS, $mbfl_I))
+	    mbfl_slot_set(mbfl_HOMOLOGOUS_VALUES, $mbfl_I, _(mbfl_ARRY, $mbfl_INDEX))
 	done
     fi
 }
@@ -216,12 +216,12 @@ function mbfl_array_equal_values () {
     if ((0 != mbfl_DIM && 1 != mbfl_DIM))
     then
 	declare -i mbfl_I
-	declare mbfl_VALUE0=mbfl_slot_qref(mbfl_ARRY, 0)
+	declare mbfl_VALUE0=_(mbfl_ARRY, 0)
 
 	for ((mbfl_I=1; mbfl_I < mbfl_DIM; ++mbfl_I))
 	do
-	    #echo $FUNCNAME $mbfl_I VALUE0="$mbfl_VALUE0" VALUE${mbfl_I}=mbfl_slot_qref(mbfl_ARRY, $mbfl_I) >&2
-	    if ! "$mbfl_ISEQUAL" "$mbfl_VALUE0" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	    #echo $FUNCNAME $mbfl_I VALUE0="$mbfl_VALUE0" VALUE${mbfl_I}=_(mbfl_ARRY, $mbfl_I) >&2
+	    if ! "$mbfl_ISEQUAL" "$mbfl_VALUE0" _(mbfl_ARRY, $mbfl_I)
 	    then return_failure
 	    fi
 	done
@@ -239,8 +239,8 @@ function mbfl_array_equal () {
     fi
     for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
     do
-	#echo $FUNCNAME mbfl_slot_qref(mbfl_ARRY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRY2, $mbfl_I) >&2
-	if ! "$mbfl_ISEQUAL" mbfl_slot_qref(mbfl_ARRY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRY2, $mbfl_I)
+	#echo $FUNCNAME _(mbfl_ARRY1, $mbfl_I) _(mbfl_ARRY2, $mbfl_I) >&2
+	if ! "$mbfl_ISEQUAL" _(mbfl_ARRY1, $mbfl_I) _(mbfl_ARRY2, $mbfl_I)
 	then return_failure
 	fi
     done
@@ -287,7 +287,7 @@ function $1 () {
 
     for $2
     do
-	if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	if "$mbfl_ISEQUAL" "$mbfl_VALUE" _(mbfl_ARRY, $mbfl_I)
 	then
 	    mbfl_IDX_RV=$mbfl_I
 	    return_success
@@ -330,7 +330,7 @@ function $1 () {
 
     for $2
     do
-	if "$mbfl_PRED" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	if "$mbfl_PRED" _(mbfl_ARRY, $mbfl_I)
 	then
 	    mbfl_IDX_RV=$mbfl_I
 	    return_success
@@ -371,7 +371,7 @@ function mbfl_array_filter () {
 
     for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_SRC_DIM; ++mbfl_I))
     do
-	declare mbfl_SRC_VALUE=mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
+	declare mbfl_SRC_VALUE=_(mbfl_SRC_ARRY, $mbfl_I)
 
 	if "$mbfl_PRED" "$mbfl_SRC_VALUE"
 	then
@@ -389,7 +389,7 @@ function mbfl_array_partition () {
 
     for ((mbfl_I=0, mbfl_J=0, mbfl_K=0; mbfl_I < mbfl_SRC_DIM; ++mbfl_I))
     do
-	declare mbfl_SRC_VALUE=mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
+	declare mbfl_SRC_VALUE=_(mbfl_SRC_ARRY, $mbfl_I)
 	if "$mbfl_PRED" "$mbfl_SRC_VALUE"
 	then
 	    mbfl_slot_set(mbfl_GOOD_ARRY, $mbfl_J, "$mbfl_SRC_VALUE")
@@ -411,7 +411,7 @@ function mbfl_array_insert_slot_bang () {
 
     for ((mbfl_I=mbfl_DIM; mbfl_I > mbfl_IDX; --mbfl_I))
     do
-	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY, $((mbfl_I-1)))
+	declare mbfl_VALUE=_(mbfl_ARRY, $((mbfl_I-1)))
 	mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_VALUE")
     done
 }
@@ -437,7 +437,7 @@ function mbfl_array_remove () {
     do
 	if (( mbfl_I != mbfl_IDX ))
 	then
-	    mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I))
+	    mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, _(mbfl_SRC_ARRY, $mbfl_I))
 	    let ++mbfl_J
 	fi
     done
@@ -451,7 +451,7 @@ function mbfl_array_delete () {
 
     for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
     do
-	declare mbfl_SRC_VALUE=mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
+	declare mbfl_SRC_VALUE=_(mbfl_SRC_ARRY, $mbfl_I)
 	if ! "$mbfl_ISEQUAL" "$mbfl_SRC_VALUE" "$mbfl_VALUE"
 	then
 	    mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, "$mbfl_SRC_VALUE")
@@ -470,7 +470,7 @@ function mbfl_array_delete_duplicates () {
     #
     for ((mbfl_SRC_IDX=mbfl_slots_number(mbfl_SRC_ARRY)-1, mbfl_DST_IDX=0; mbfl_SRC_IDX >=0; --mbfl_SRC_IDX))
     do
-	declare mbfl_SRC_VALUE=mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_SRC_IDX)
+	declare mbfl_SRC_VALUE=_(mbfl_SRC_ARRY, $mbfl_SRC_IDX)
 	declare mbfl_THERE_IS_NO_DUPLICATE=true
 	declare -i mbfl_I
 
@@ -478,7 +478,7 @@ function mbfl_array_delete_duplicates () {
 	#
 	for ((mbfl_I=mbfl_SRC_IDX-1; mbfl_I >= 0; --mbfl_I))
 	do
-	    if "$mbfl_ISEQUAL" "$mbfl_SRC_VALUE" mbfl_slot_qref(mbfl_SRC_ARRY,$mbfl_I)
+	    if "$mbfl_ISEQUAL" "$mbfl_SRC_VALUE" _(mbfl_SRC_ARRY,$mbfl_I)
 	    then
 		mbfl_THERE_IS_NO_DUPLICATE=false
 		break
@@ -506,7 +506,7 @@ function $1 () {
 
     for $2
     do
-	"$mbfl_OPERATOR" "$mbfl_ACCUM" mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	"$mbfl_OPERATOR" "$mbfl_ACCUM" _(mbfl_ARRY, $mbfl_I)
 	mbfl_RETURN_STATUS=$?
 	if ((0 != mbfl_RETURN_STATUS))
 	then return $mbfl_RETURN_STATUS
@@ -597,7 +597,7 @@ function $1 () {
 
     for $2
     do
-	"$mbfl_OPERATOR" _(mbfl_DST_VALUE) mbfl_slot_qref(mbfl_SRC_ARRY, $mbfl_I)
+	"$mbfl_OPERATOR" _(mbfl_DST_VALUE) _(mbfl_SRC_ARRY, $mbfl_I)
 	mbfl_RETURN_STATUS=$?
 	if ((0 == mbfl_RETURN_STATUS))
 	then mbfl_slot_set(mbfl_DST_ARRY, $mbfl_I, "$mbfl_DST_VALUE")
@@ -659,11 +659,11 @@ function mbfl_array_range_copy () {
     if ((mbfl_DST_IDX < mbfl_SRC_IDX))
     then
 	for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
-	do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), mbfl_slot_qref(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I))))
+	do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), _(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I))))
 	done
     else
 	for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
-	do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), mbfl_slot_qref(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I))))
+	do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_IDX+mbfl_I)), _(mbfl_SRC_ARRY, $((mbfl_SRC_IDX+mbfl_I))))
 	done
     fi
 }
@@ -679,7 +679,7 @@ function mbfl_array_append () {
     declare -i mbfl_I
 
     for ((mbfl_I=0; mbfl_I < mbfl_SRC_NUM_OF_SLOTS; ++mbfl_I))
-    do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_NUM_OF_SLOTS+mbfl_I)), mbfl_slot_qref(mbfl_SRC_ARRY,$mbfl_I))
+    do mbfl_slot_set(mbfl_DST_ARRY, $((mbfl_DST_NUM_OF_SLOTS+mbfl_I)), _(mbfl_SRC_ARRY,$mbfl_I))
     done
 }
 function mbfl_multi_array_append () {
@@ -688,7 +688,7 @@ function mbfl_multi_array_append () {
     declare -i mbfl_I mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRYS)
 
     for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
-    do mbfl_array_append _(mbfl_DST_ARRY) mbfl_slot_qref(mbfl_SRC_ARRYS,$mbfl_I)
+    do mbfl_array_append _(mbfl_DST_ARRY) _(mbfl_SRC_ARRYS,$mbfl_I)
     done
 }
 
@@ -702,7 +702,7 @@ function mbfl_array_is_sorted () {
 
     for ((mbfl_I=0, mbfl_J=1; mbfl_J < mbfl_DIM; ++mbfl_I, ++mbfl_J))
     do
-	if "$mbfl_ISLESS" mbfl_slot_qref(mbfl_ARRY, $mbfl_J) mbfl_slot_qref(mbfl_ARRY, $mbfl_I)
+	if "$mbfl_ISLESS" _(mbfl_ARRY, $mbfl_J) _(mbfl_ARRY, $mbfl_I)
 	then return_failure
 	fi
     done
@@ -741,14 +741,14 @@ function mbfl_p_array_quicksort_bang () {
 
     declare -i mbfl_I=mbfl_LEFT-1
     declare -i mbfl_J=mbfl_RIGHT
-    declare    mbfl_PIVOT=mbfl_slot_qref(mbfl_ARRY, $mbfl_RIGHT)
+    declare    mbfl_PIVOT=_(mbfl_ARRY, $mbfl_RIGHT)
 
     while true
     do
-	while "$mbfl_ISLESS" mbfl_slot_qref(mbfl_ARRY, $((++mbfl_I))) "$mbfl_PIVOT"
+	while "$mbfl_ISLESS" _(mbfl_ARRY, $((++mbfl_I))) "$mbfl_PIVOT"
 	do :
 	done
-	while "$mbfl_ISLESS" "$mbfl_PIVOT" mbfl_slot_qref(mbfl_ARRY, $((--mbfl_J)))
+	while "$mbfl_ISLESS" "$mbfl_PIVOT" _(mbfl_ARRY, $((--mbfl_J)))
 	do (( mbfl_LEFT == mbfl_J )) && break
 	done
 	(( mbfl_I >= mbfl_J )) && break
@@ -839,14 +839,14 @@ function mbfl_p_array_quicksort3_bang () {
     declare -i mbfl_J=mbfl_RIGHT
     declare -i mbfl_P=mbfl_LEFT-1
     declare -i mbfl_Q=mbfl_RIGHT
-    declare    mbfl_PIVOT=mbfl_slot_qref(mbfl_ARRY, $mbfl_RIGHT)
+    declare    mbfl_PIVOT=_(mbfl_ARRY, $mbfl_RIGHT)
 
     while true
     do
-	while "$mbfl_ISLESS" mbfl_slot_qref(mbfl_ARRY, $((++mbfl_I))) "$mbfl_PIVOT"
+	while "$mbfl_ISLESS" _(mbfl_ARRY, $((++mbfl_I))) "$mbfl_PIVOT"
 	do :
 	done
-	while "$mbfl_ISLESS" "$mbfl_PIVOT" mbfl_slot_qref(mbfl_ARRY, $((--mbfl_J)))
+	while "$mbfl_ISLESS" "$mbfl_PIVOT" _(mbfl_ARRY, $((--mbfl_J)))
 	do (( mbfl_LEFT == mbfl_J )) && break
 	done
 	(( mbfl_I >= mbfl_J )) && break
@@ -896,11 +896,11 @@ function mbfl_array_set_union () {
     for ((mbfl_I=0; mbfl_I < mbfl_DIM2; ++mbfl_I))
     do
 	declare mbfl_UNIQUE=true
-	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY2, $mbfl_I)
+	declare mbfl_VALUE=_(mbfl_ARRY2, $mbfl_I)
 
 	for ((mbfl_J=0; mbfl_J < mbfl_DIM1; ++mbfl_J))
 	do
-	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY1, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" _(mbfl_ARRY1, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -925,13 +925,13 @@ function mbfl_array_set_intersection () {
     for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
     do
 	declare mbfl_UNIQUE=true
-	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY1, $mbfl_I)
+	declare mbfl_VALUE=_(mbfl_ARRY1, $mbfl_I)
 
 	for ((mbfl_J=0; mbfl_J < mbfl_DIM2; ++mbfl_J))
 	do
 	    declare mbfl_VALUE2=
 
-	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" _(mbfl_ARRY2, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -957,12 +957,12 @@ function mbfl_array_set_xor () {
     #
     for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
     do
-	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY1, $mbfl_I)
+	declare mbfl_VALUE=_(mbfl_ARRY1, $mbfl_I)
 	declare mbfl_UNIQUE=true
 
 	for ((mbfl_J=0; mbfl_J < mbfl_DIM2; ++mbfl_J))
 	do
-	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" _(mbfl_ARRY2, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -980,12 +980,12 @@ function mbfl_array_set_xor () {
     #
     for ((mbfl_I=0; mbfl_I < mbfl_DIM2; ++mbfl_I))
     do
-	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY2, $mbfl_I)
+	declare mbfl_VALUE=_(mbfl_ARRY2, $mbfl_I)
 	declare mbfl_UNIQUE=true
 
 	for ((mbfl_J=0; mbfl_J < mbfl_DIM1; ++mbfl_J))
 	do
-	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY1, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" _(mbfl_ARRY1, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -1010,11 +1010,11 @@ function mbfl_array_set_difference () {
     for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
     do
 	declare mbfl_UNIQUE=true
-	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY1, $mbfl_I)
+	declare mbfl_VALUE=_(mbfl_ARRY1, $mbfl_I)
 
 	for ((mbfl_J=0; mbfl_J < mbfl_DIM2; ++mbfl_J))
 	do
-	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" mbfl_slot_qref(mbfl_ARRY2, $mbfl_J)
+	    if "$mbfl_ISEQUAL" "$mbfl_VALUE" _(mbfl_ARRY2, $mbfl_J)
 	    then
 		mbfl_UNIQUE=false
 		break
@@ -1040,7 +1040,7 @@ function mbfl_array_reverse () {
     declare -i mbfl_I
 
     for ((mbfl_I=0; mbfl_I < mbfl_SRC_NUM_OF_SLOTS; ++mbfl_I))
-    do mbfl_slot_set(mbfl_DST_ARRY, $mbfl_I, mbfl_slot_qref(mbfl_SRC_ARRY,$((mbfl_SRC_NUM_OF_SLOTS-mbfl_I-1))))
+    do mbfl_slot_set(mbfl_DST_ARRY, $mbfl_I, _(mbfl_SRC_ARRY,$((mbfl_SRC_NUM_OF_SLOTS-mbfl_I-1))))
     done
 }
 function mbfl_array_reverse_bang () {
@@ -1053,8 +1053,8 @@ function mbfl_array_reverse_bang () {
 	declare mbfl_VALUE
 	for ((mbfl_I=0, mbfl_J=mbfl_NUM_OF_SLOTS-1; mbfl_I < mbfl_J; ++mbfl_I, --mbfl_J))
 	do
-	    mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY, $mbfl_J)
-	    mbfl_slot_set(mbfl_ARRY, $mbfl_J, mbfl_slot_qref(mbfl_ARRY, $mbfl_I))
+	    mbfl_VALUE=_(mbfl_ARRY, $mbfl_J)
+	    mbfl_slot_set(mbfl_ARRY, $mbfl_J, _(mbfl_ARRY, $mbfl_I))
 	    mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_VALUE")
 	done
     fi
@@ -1066,8 +1066,8 @@ function mbfl_array_swap_bang () {
 
     if (( mbfl_IDX1 != mbfl_IDX2 ))
     then
-	declare mbfl_VALUE=mbfl_slot_qref(mbfl_ARRY, $mbfl_IDX1)
-	mbfl_slot_set(mbfl_ARRY, $mbfl_IDX1, mbfl_slot_qref(mbfl_ARRY, $mbfl_IDX2))
+	declare mbfl_VALUE=_(mbfl_ARRY, $mbfl_IDX1)
+	mbfl_slot_set(mbfl_ARRY, $mbfl_IDX1, _(mbfl_ARRY, $mbfl_IDX2))
 	mbfl_slot_set(mbfl_ARRY, $mbfl_IDX2, "$mbfl_VALUE")
     fi
 }
@@ -1080,9 +1080,9 @@ function mbfl_array_zip () {
 
     for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I, ++mbfl_J))
     do
-	mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, mbfl_slot_qref(mbfl_ARRY1,$mbfl_I))
+	mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, _(mbfl_ARRY1,$mbfl_I))
 	let ++mbfl_J
-	mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, mbfl_slot_qref(mbfl_ARRY2,$mbfl_I))
+	mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, _(mbfl_ARRY2,$mbfl_I))
     done
 }
 
@@ -1180,7 +1180,7 @@ function mbfl_stack_copy () {
     declare -i mbfl_I mbfl_NUM=mbfl_slots_number(mbfl_SRC_ARRAY)
 
     for ((mbfl_I=0; mbfl_I<mbfl_NUM; ++mbfl_I))
-    do mbfl_slot_set(mbfl_DST_ARRAY, $mbfl_I, mbfl_slot_qref(mbfl_SRC_ARRAY, $mbfl_I))
+    do mbfl_slot_set(mbfl_DST_ARRAY, $mbfl_I, _(mbfl_SRC_ARRAY, $mbfl_I))
     done
 }
 function mbfl_stack_equal () {
@@ -1201,7 +1201,7 @@ function mbfl_stack_equal () {
 	declare -i mbfl_I mbfl_NUM=mbfl_slots_number(mbfl_ARRAY2)
 	for ((mbfl_I=0; mbfl_I<mbfl_NUM; ++mbfl_I))
 	do
-	    if ! "$mbfl_ISEQUAL" mbfl_slot_qref(mbfl_ARRAY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRAY2, $mbfl_I)
+	    if ! "$mbfl_ISEQUAL" _(mbfl_ARRAY1, $mbfl_I) _(mbfl_ARRAY2, $mbfl_I)
 	    then return_failure
 	    fi
 	done
@@ -1334,7 +1334,7 @@ function mbfl_vector_copy () {
     declare -i mbfl_I mbfl_NUM=mbfl_slots_number(mbfl_SRC_ARRAY)
 
     for ((mbfl_I=0; mbfl_I<mbfl_NUM; ++mbfl_I))
-    do mbfl_slot_set(mbfl_DST_ARRAY, $mbfl_I, mbfl_slot_qref(mbfl_SRC_ARRAY, $mbfl_I))
+    do mbfl_slot_set(mbfl_DST_ARRAY, $mbfl_I, _(mbfl_SRC_ARRAY, $mbfl_I))
     done
 }
 function mbfl_vector_equal () {
@@ -1355,7 +1355,7 @@ function mbfl_vector_equal () {
 	declare -i mbfl_I mbfl_NUM=mbfl_slots_number(mbfl_ARRAY2)
 	for ((mbfl_I=0; mbfl_I<mbfl_NUM; ++mbfl_I))
 	do
-	    if ! "$mbfl_ISEQUAL" mbfl_slot_qref(mbfl_ARRAY1, $mbfl_I) mbfl_slot_qref(mbfl_ARRAY2, $mbfl_I)
+	    if ! "$mbfl_ISEQUAL" _(mbfl_ARRAY1, $mbfl_I) _(mbfl_ARRAY2, $mbfl_I)
 	    then return_failure
 	    fi
 	done
