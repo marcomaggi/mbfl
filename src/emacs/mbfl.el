@@ -594,6 +594,7 @@
        "mbfl_location_enable_cleanup_atexit"
        "mbfl_location_enter"
        "mbfl_location_handler"
+       "mbfl_location_maker_handler"
        "mbfl_location_handler_suspend_testing"
        "mbfl_location_handler_restore_lastpipe"
        "mbfl_location_handler_change_directory"

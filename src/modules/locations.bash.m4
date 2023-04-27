@@ -51,11 +51,12 @@ function mbfl_location_enter () {
 }
 function mbfl_location_leave () {
     # Capture return status of the last executed command.
-    declare -i mbfl_RETURN_STATUS=$?
+    declare -i mbfl_LOCATION_LEAVE_RETURN_STATUS=$?
     declare -i mbfl_DIM=mbfl_slots_number(mbfl_location_HOOKS)
 
     if ((0 < mbfl_DIM))
     then
+	# Pop the last hook from the hooks stack.  Run the hook.
 	declare -i mbfl_I=mbfl_DIM-1
 
 	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
@@ -64,18 +65,12 @@ function mbfl_location_leave () {
 	mbfl_hook_undefine _(mbfl_HOOK)
 	mbfl_variable_unset(_(mbfl_HOOK))
     fi
-    return $mbfl_RETURN_STATUS
+    return $mbfl_LOCATION_LEAVE_RETURN_STATUS
 }
 function mbfl_location_run_all () {
     while ((0 < mbfl_slots_number(mbfl_location_HOOKS)))
     do mbfl_location_leave
     done
-}
-function mbfl_location_enable_cleanup_atexit () {
-    mbfl_atexit_register mbfl_location_run_all mbfl_location_ATEXIT_ID
-}
-function mbfl_location_disable_cleanup_atexit () {
-    mbfl_atexit_forget $mbfl_location_ATEXIT_ID
 }
 function mbfl_location_hook_var () {
     mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, result variable)
@@ -90,7 +85,7 @@ function mbfl_location_hook_var () {
 }
 
 
-#### location handlers
+#### registering and running handlers
 
 function mbfl_location_handler () {
     mbfl_mandatory_parameter(mbfl_HANDLER, 1, location handler)
@@ -99,13 +94,43 @@ function mbfl_location_handler () {
     if ((0 < mbfl_DIM)) && mbfl_string_not_empty(mbfl_HANDLER)
     then
 	declare -i mbfl_I=mbfl_DIM-1
-
 	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
 	mbfl_hook_add _(mbfl_HOOK) "$mbfl_HANDLER"
     else
 	mbfl_message_error 'attempt to register a location handler outside any location'
 	exit_because_no_location
     fi
+}
+function mbfl_location_maker_handler () {
+    mbfl_mandatory_parameter(mbfl_HANDLER, 1, location handler)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_location_HOOKS)
+
+    if ((0 < mbfl_DIM)) && mbfl_string_not_empty(mbfl_HANDLER)
+    then
+	declare -i mbfl_I=mbfl_DIM-1
+	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
+	mbfl_hook_add _(mbfl_HOOK) "mbfl_p_location_run_maker_handler '$mbfl_HANDLER'"
+    else
+	mbfl_message_error 'attempt to register a location handler outside any location'
+	exit_because_no_location
+    fi
+}
+function mbfl_p_location_run_maker_handler () {
+    mbfl_mandatory_parameter(mbfl_HANDLER, 1, location handler)
+
+    if mbfl_string_not_empty(mbfl_HANDLER) && ((0 != mbfl_LOCATION_LEAVE_RETURN_STATUS))
+    then eval "$mbfl_HANDLER"
+    fi
+}
+
+
+#### special location handlers
+
+function mbfl_location_enable_cleanup_atexit () {
+    mbfl_atexit_register mbfl_location_run_all mbfl_location_ATEXIT_ID
+}
+function mbfl_location_disable_cleanup_atexit () {
+    mbfl_atexit_forget $mbfl_location_ATEXIT_ID
 }
 function mbfl_location_handler_suspend_testing () {
     mbfl_option_test_save

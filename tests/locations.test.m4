@@ -461,6 +461,49 @@ function locations-hook-2.1 () {
 }
 
 
+#### maker handlers
+
+# Maker handler NOT run.
+#
+function locations-maker-handlers-1.1 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(HOOK_RV)
+
+	mbfl_location_handler 'handler_append 1'
+	mbfl_location_maker_handler 'handler_append 2'
+	mbfl_location_handler 'handler_append 3'
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 0314 "$RESULT"
+}
+# Maker handler run.
+#
+function locations-maker-handlers-1.2 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(HOOK_RV)
+
+	mbfl_location_handler 'handler_append 1'
+	mbfl_location_maker_handler 'handler_append 2'
+	mbfl_location_handler 'handler_append 3'
+	false
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 03214 "$RESULT"
+}
+
+
 #### let's go
 
 dotest locations-

@@ -1787,24 +1787,31 @@ location.
 @end defun
 
 
-@defun mbfl_location_run_all
-Run all the handlers unwinding all the locations.  This is useful as atexit handler, @ref{exit
-atexit, Running scripts at exit--time}.
+@cindex Maker handlers for locations
+@cindex Locations, maker handlers
+@defun mbfl_location_maker_handler @var{HANDLER_SCRIPT}
+Register a new handler in the current location.  It is an error if this function is called outside a
+location.
+
+@dfn{Maker handlers} are executed only if @func{mbfl_location_leave} is called after a command that
+exited with non--zero status; otherwise they are skipped.  This is a scenario that happens in object
+constructors:
+
+@itemize
+@item
+some asynchronous resources ``belong'' to the constructor and must be released when
+the constructor returns, either successfully or because of an error;
+
+@item
+other asynchronous resources ``belong'' to the constructed object and must be released only when the
+constructor fails.
+@end itemize
 @end defun
 
 
-@defun mbfl_location_enable_cleanup_atexit
-@defunx mbfl_location_disable_cleanup_atexit
-Enable or disable running the location handlers through an atexit handler, @ref{exit atexit, Running
-scripts at exit--time}.  The enable operation registers an atexit handler that cleans up the current
-stack of locations.
-
-It is suggested to always add the following code to the preamble of a script:
-
-@example
-mbfl_atexit_enable
-mbfl_location_enable_cleanup_atexit
-@end example
+@defun mbfl_location_run_all
+Run all the handlers unwinding all the locations.  This is useful as atexit handler, @ref{exit
+atexit, Running scripts at exit--time}.
 @end defun
 
 
@@ -1862,6 +1869,21 @@ function inner () @{
 @c page
 @node locations handlers
 @section Special location handlers
+
+
+@defun mbfl_location_enable_cleanup_atexit
+@defunx mbfl_location_disable_cleanup_atexit
+Enable or disable running the location handlers through an atexit handler, @ref{exit atexit, Running
+scripts at exit--time}.  The enable operation registers an atexit handler that cleans up the current
+stack of locations.
+
+It is suggested to always add the following code to the preamble of a script:
+
+@example
+mbfl_atexit_enable
+mbfl_location_enable_cleanup_atexit
+@end example
+@end defun
 
 
 @defun mbfl_location_handler_suspend_testing
