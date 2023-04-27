@@ -1846,6 +1846,8 @@ function outer () @{
 @}
 
 function inner () @{
+    mbfl_mandatory_parameter(OUTER_LOCATION_HOOK, 1, outer hook)
+
     mbfl_location_enter
     @{
         mbfl_location_handler my_handler_two
@@ -1876,7 +1878,7 @@ programs}.
 
 
 @defun mbfl_location_handler_change_directory @var{NEWPWD}
-Does this:
+Do this:
 
 @enumerate
 @item
@@ -1898,7 +1900,7 @@ When successful return true, otherwise return false.
 
 
 @defun mbfl_location_handler_restore_lastpipe
-When called, save the state of the @code{lastpip} option of @code{shopt} using:
+When called, save the state of the @code{lastpipe} option of @code{shopt} using:
 
 @example
 shopt -p lastpipe
