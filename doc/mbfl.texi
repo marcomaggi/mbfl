@@ -12790,7 +12790,7 @@ command or alias, accepting the following parameters:
 where @var{VALUE} is a from an array; @var{PRED} is meant to test some condition against @var{VALUE}
 and return true or false.
 
-@item COMPAR
+@item ISEQUAL
 @anchor{@var{ISEQUAL} parameter}
 @cindex @var{ISEQUAL} parameter for arrays @api{}
 @cindex Parameter @var{ISEQUAL} for arrays @api{}
@@ -13695,6 +13695,7 @@ mbfl_slots_qvalues(DST_ARRY)    @result{} a b c d e A B C D E F G H I
 
 
 @ParameterSemanticsARRY{}
+@ParameterSemanticsISEQUAL{}
 @ParameterSemanticsISLESS{}
 
 
@@ -13733,9 +13734,9 @@ mbfl_slots_qvalues(ARRY2)        @result{} 11 22 33 44 55 66 77 88 99
 
 
 @defun mbfl_array_quicksort3_bang @var{ARRY}
-@defunx mbfl_array_quicksort3_bang @var{ARRY} @var{ISLESS}
+@defunx mbfl_array_quicksort3_bang @var{ARRY} @var{ISLESS} @var{ISEQUAL}
 Apply the quicksort 3--partition algorithm to sort the values in @var{ARRY}; this function mutates
-@var{ARRY} itself.  Comparison between values is performed with @var{ISLESS}.
+@var{ARRY} itself.  Comparison between values is performed with @var{ISLESS} and @var{ISEQUAL}.
 
 @example
 mbfl_declare_index_array_varref(ARRY1, (e b d a c))
@@ -13745,7 +13746,7 @@ mbfl_slots_qvalues(ARRY1)        @result{} a b c d e
 
 mbfl_declare_index_array_varref(ARRY2, (55 33 88 99 22 11 44 77 66))
 
-mbfl_array_quicksort3_bang _(ARRY2) mbfl_integer_less
+mbfl_array_quicksort3_bang _(ARRY2) mbfl_integer_less mbfl_integer_equal
 mbfl_slots_qvalues(ARRY2)        @result{} 11 22 33 44 55 66 77 88 99
 @end example
 @end defun
