@@ -880,6 +880,7 @@
        "mbfl_array_is_sorted"
        "mbfl_array_quicksort_bang"
        "mbfl_array_quicksort3_bang"
+       "mbfl_array_insertsort_bang"
        "mbfl_array_zip"
        "mbfl_array_swap_bang"
        "mbfl_array_set_union"

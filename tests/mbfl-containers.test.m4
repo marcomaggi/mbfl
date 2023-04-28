@@ -1557,6 +1557,69 @@ function mbfl-containers-array-quicksort3-2.3 () {
 }
 
 
+#### index arrays: insert sort
+
+function mbfl-containers-array-insertsort-1.1 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (C))
+
+    mbfl_array_insertsort_bang _(ARRY) C
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insertsort-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (A))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A C))
+
+    mbfl_array_insertsort_bang _(ARRY) C
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insertsort-1.3 () {
+    mbfl_declare_index_array_varref(ARRY, (A C))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C))
+
+    mbfl_array_insertsort_bang _(ARRY) B
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insertsort-1.4 () {
+    mbfl_declare_index_array_varref(ARRY, (A B C D E F G))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D DUH E F G))
+
+    mbfl_array_insertsort_bang _(ARRY) DUH
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insertsort-1.5 () {
+    mbfl_declare_index_array_varref(ARRY, (A B C D E F G))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D E F G H))
+
+    mbfl_array_insertsort_bang _(ARRY) H
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insertsort-1.6 () {
+    mbfl_declare_index_array_varref(ARRY, (B C D E F G))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D E F G))
+
+    mbfl_array_insertsort_bang _(ARRY) A
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_containers_array_insertsort_2_1 () {
+    mbfl_mandatory_parameter(VALUE1, 1, first value)
+    mbfl_mandatory_parameter(VALUE2, 2, second value)
+
+    mbfl_string_less mbfl_string_idx(VALUE1, 0) mbfl_string_idx(VALUE2, 0)
+}
+function mbfl-containers-array-insertsort-2.1 () {
+    mbfl_declare_index_array_varref(ARRY, (A B C DA DB E F G))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C DA DB DC E F G))
+
+    mbfl_array_insertsort_bang _(ARRY) DC mbfl_containers_array_insertsort_2_1
+    #mbfl_array_dump _(ARRY)
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+
 #### index arrays: set operations
 
 function mbfl-containers-array-set-union-1.1 () {

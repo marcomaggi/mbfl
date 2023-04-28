@@ -881,6 +881,32 @@ function mbfl_p_array_quicksort3_bang () {
 }
 
 
+#### arrays: insert sort
+
+function mbfl_array_insertsort_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
+    mbfl_mandatory_parameter(mbfl_VALUE,	2, new value)
+    mbfl_optional_parameter(mbfl_ISLESS,	3, mbfl_string_less)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    if ((0 == mbfl_DIM))
+    then mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_VALUE")
+    else
+	for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
+	do
+	    if "$mbfl_ISLESS" "$mbfl_VALUE" _(mbfl_ARRY, $mbfl_I)
+	    then
+		mbfl_array_insert_value_bang _(mbfl_ARRY) $mbfl_I "$mbfl_VALUE"
+		return_success
+	    fi
+	done
+	if ((mbfl_I == mbfl_DIM))
+	then mbfl_array_insert_value_bang _(mbfl_ARRY) $mbfl_DIM "$mbfl_VALUE"
+	fi
+    fi
+}
+
+
 #### arrays: set operations
 
 function mbfl_array_set_union () {

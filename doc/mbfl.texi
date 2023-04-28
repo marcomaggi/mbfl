@@ -13775,6 +13775,38 @@ mbfl_slots_qvalues(ARRY2)        @result{} 11 22 33 44 55 66 77 88 99
 @end example
 @end defun
 
+
+@defun mbfl_array_insertsort_bang @var{ARRY} @var{NEW_VALUE}
+@defunx mbfl_array_insertsort_bang @var{ARRY} @var{NEW_VALUE} @var{ISLESS}
+Insert @var{NEW_VALUE} in an already sorted @var{ARRY} so that the resulting array is still sorted;
+this function mutates @var{ARRY} itself.  If @var{ARRY} is not sorted: the behaviour of this
+function is undefined.  Comparison between values is performed with @var{ISLESS}.
+
+@example
+mbfl_declare_index_array_varref(ARRY, (A B C E F G))
+
+mbfl_array_insertsort_bang _(ARRY) D
+mbfl_slots_qvalues(ARRY)        @result{} A B C D E F G
+@end example
+
+If @var{NEW_VALUE} equals values already in the array: it is inserted after the values already
+there.
+
+@example
+function isless () @{
+    mbfl_mandatory_parameter(VALUE1, 1, first value)
+    mbfl_mandatory_parameter(VALUE2, 2, second value)
+
+    mbfl_string_less mbfl_string_idx(VALUE1, 0) mbfl_string_idx(VALUE2, 0)
+@}
+
+mbfl_declare_index_array_varref(ARRY, (A B C DA DB E F G))
+
+mbfl_array_insertsort_bang _(ARRY) DC isless
+mbfl_slots_qvalues(ARRY)        @result{} A B C DA DB DC E F G
+@end example
+@end defun
+
 @c page
 @node containers arrays set
 @appendixsubsec Set operations
