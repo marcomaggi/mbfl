@@ -491,6 +491,24 @@ function mbfl-containers-array-insert-slot-1.3 () {
     #mbfl_array_dump _(ARRY) ARRY
     mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
 }
+function mbfl-containers-array-insert-slot-1.4 () {
+    mbfl_declare_index_array_varref(ARRY,		(a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(99 a))
+
+    mbfl_array_insert_slot_bang _(ARRY) 0
+    mbfl_slot_set(ARRY, 0, 99)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insert-slot-1.5 () {
+    mbfl_declare_index_array_varref(ARRY,		(a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(a 99))
+
+    mbfl_array_insert_slot_bang _(ARRY) 1
+    mbfl_slot_set(ARRY, 1, 99)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
 
 ### ------------------------------------------------------------------------
 
@@ -517,6 +535,139 @@ function mbfl-containers-array-insert-value-1.3 () {
     mbfl_array_insert_value_bang _(ARRY) 0 99
     #mbfl_array_dump _(ARRY) ARRY
     mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insert-value-1.4 () {
+    mbfl_declare_index_array_varref(ARRY,		(a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(99 a))
+
+    mbfl_array_insert_value_bang _(ARRY) 0 99
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insert-value-1.5 () {
+    mbfl_declare_index_array_varref(ARRY,		(a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(a 99))
+
+    mbfl_array_insert_value_bang _(ARRY) 1 99
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-insert-multi-slot-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,		(a b c  d  e  f  g h i))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(a b c 90 91 92 93 d e f g h i))
+    #                                                    0 1 2  3  4  5  6 7 8 9 0 1 2
+
+    mbfl_array_insert_multi_slot_bang _(ARRY) 3 4
+    mbfl_slot_set(ARRY, 3, 90)
+    mbfl_slot_set(ARRY, 4, 91)
+    mbfl_slot_set(ARRY, 5, 92)
+    mbfl_slot_set(ARRY, 6, 93)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insert-multi-slot-1.2 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(90 91 92 93))
+
+    mbfl_array_insert_multi_slot_bang _(ARRY) 0 4
+    mbfl_slot_set(ARRY, 0, 90)
+    mbfl_slot_set(ARRY, 1, 91)
+    mbfl_slot_set(ARRY, 2, 92)
+    mbfl_slot_set(ARRY, 3, 93)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insert-multi-slot-1.3 () {
+    mbfl_declare_index_array_varref(ARRY,		(a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(a 90 91 92 93))
+
+    mbfl_array_insert_multi_slot_bang _(ARRY) 1 4
+    mbfl_slot_set(ARRY, 1, 90)
+    mbfl_slot_set(ARRY, 2, 91)
+    mbfl_slot_set(ARRY, 3, 92)
+    mbfl_slot_set(ARRY, 4, 93)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insert-multi-slot-1.4 () {
+    mbfl_declare_index_array_varref(ARRY,		(a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(90 91 92 93 a))
+
+    mbfl_array_insert_multi_slot_bang _(ARRY) 0 4
+    mbfl_slot_set(ARRY, 0, 90)
+    mbfl_slot_set(ARRY, 1, 91)
+    mbfl_slot_set(ARRY, 2, 92)
+    mbfl_slot_set(ARRY, 3, 93)
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insert-multi-slot-1.5.1 () {
+    mbfl_declare_index_array_varref(ARRY,		(a b c))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(a b c))
+
+    mbfl_array_insert_multi_slot_bang _(ARRY) 0 0
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insert-multi-slot-1.5.2 () {
+    mbfl_declare_index_array_varref(ARRY,		(a b c))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(a b c))
+
+    mbfl_array_insert_multi_slot_bang _(ARRY) 3 0
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-insert-multi-slot-1.5.3 () {
+    mbfl_declare_index_array_varref(ARRY,		(a b c))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(a b c))
+
+    mbfl_array_insert_multi_slot_bang _(ARRY) 1 0
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-insert-multi-value-1.1 () {
+    #                                                    0 1 2             3 4 5 6 7 8
+    mbfl_declare_index_array_varref(ARRY1,		(a b c             d e f g h i))
+    mbfl_declare_index_array_varref(ARRY2,		      (90 91 92 93))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(a b c 90 91 92 93 d e f g h i))
+    #                                                    0 1 2  3  4  5  6 7 8 9 0 1 2
+
+    mbfl_array_insert_multi_value_bang _(ARRY1) 3 _(ARRY2)
+    #mbfl_array_dump _(ARRY1) ARRY1
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY1)
+}
+function mbfl-containers-array-insert-multi-value-1.2 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRY2,		(90 91 92 93))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(90 91 92 93))
+
+    mbfl_array_insert_multi_value_bang _(ARRY1) 0 _(ARRY2)
+    #mbfl_array_dump _(ARRY1) ARRY1
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY1)
+}
+function mbfl-containers-array-insert-multi-value-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1,		(a))
+    mbfl_declare_index_array_varref(ARRY2,		  (90 91 92 93))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(a 90 91 92 93))
+
+    mbfl_array_insert_multi_value_bang _(ARRY1) 1 _(ARRY2)
+    #mbfl_array_dump _(ARRY1) ARRY1
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY1)
+}
+function mbfl-containers-array-insert-multi-value-1.4 () {
+    mbfl_declare_index_array_varref(ARRY1,		            (a))
+    mbfl_declare_index_array_varref(ARRY2,		(90 91 92 93))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT,	(90 91 92 93 a))
+
+    mbfl_array_insert_multi_value_bang _(ARRY1) 0 _(ARRY2)
+    #mbfl_array_dump _(ARRY1) ARRY1
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY1)
 }
 
 

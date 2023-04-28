@@ -412,7 +412,7 @@ function mbfl_array_insert_slot_bang () {
     for ((mbfl_I=mbfl_DIM; mbfl_I > mbfl_IDX; --mbfl_I))
     do
 	declare mbfl_VALUE=_(mbfl_ARRY, $((mbfl_I-1)))
-	mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_VALUE")
+	_(mbfl_ARRY, $mbfl_I, "$mbfl_VALUE")
     done
 }
 function mbfl_array_insert_value_bang () {
@@ -421,7 +421,44 @@ function mbfl_array_insert_value_bang () {
     mbfl_mandatory_parameter(mbfl_VALUE,	3, new value)
 
     mbfl_array_insert_slot_bang _(mbfl_ARRY) $mbfl_IDX
-    mbfl_slot_set(mbfl_ARRY, $mbfl_IDX, "$mbfl_VALUE")
+    _(mbfl_ARRY, $mbfl_IDX, "$mbfl_VALUE")
+}
+
+### ------------------------------------------------------------------------
+
+# Before:
+#
+#  A B C D E F G
+# |-|-|-|-|-|-|-|
+#
+# after:
+#
+#  A B C         D E F G
+# |-|-|-|-|-|-|-|-|-|-|-|
+#
+#       |.......| mbfl_NUM
+#
+function mbfl_array_insert_multi_slot_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY, 1, index array)
+    mbfl_mandatory_integer_parameter(mbfl_IDX,  2, slot index)
+    mbfl_mandatory_integer_parameter(mbfl_NUM,  3, slots number)
+    declare -i mbfl_I
+
+    for ((mbfl_I=mbfl_slots_number(mbfl_ARRY)+mbfl_NUM-1; mbfl_I >= mbfl_IDX+mbfl_NUM; --mbfl_I))
+    do _(mbfl_ARRY, $mbfl_I, _(mbfl_ARRY, $((mbfl_I-mbfl_NUM))))
+    done
+}
+function mbfl_array_insert_multi_value_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1, 1, target index array)
+    mbfl_mandatory_integer_parameter(mbfl_IDX,   2, slot index)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2, 3, index array to be inserted)
+    declare -i mbfl_I mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
+
+    mbfl_array_insert_multi_slot_bang _(mbfl_ARRY1) $mbfl_IDX mbfl_slots_number(mbfl_ARRY2)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM2; ++mbfl_I))
+    do _(mbfl_ARRY1, $((mbfl_I+mbfl_IDX)), _(mbfl_ARRY2, $mbfl_I))
+    done
 }
 
 

@@ -13162,7 +13162,7 @@ mbfl_multi_array_equal _(ARRYS)         @result{} 0
 
 
 @defun mbfl_array_insert_slot_bang @var{ARRY} @var{IDX}
-Open a slot in @var{ARRY} at @var{IDX} by shifting the values to the right; this function mutates
+Open a slot in @var{ARRY} at @var{IDX} by shifting values to the right; this function mutates
 @var{ARRY} itself.
 
 @example
@@ -13194,8 +13194,8 @@ Open a slot in @var{ARRY} at @var{IDX} by shifting the values to the right; this
 
 
 @defun mbfl_array_insert_value_bang @var{ARRY} @var{IDX} @var{VALUE}
-Open a slot in @var{ARRY} at @var{IDX} by shifting the values to the right, then store @var{VALUE}
-in the slot; this function mutates @var{ARRY} itself.
+Open a slot in @var{ARRY} at @var{IDX} by shifting values to the right, then store @var{VALUE} in
+the slot; this function mutates @var{ARRY} itself.
 
 @example
 @{
@@ -13218,6 +13218,37 @@ in the slot; this function mutates @var{ARRY} itself.
   mbfl_array_insert_value_bang _(ARRY) 0 99
   mbfl_slots_qvalues(ARRY)
 @} @result{} 99
+@end example
+@end defun
+
+
+@defun mbfl_array_insert_multi_slot_bang @var{ARRY} @var{IDX} @var{NUM}
+Open @var{NUM} slots in @var{ARRY} at @var{IDX} by shifting the values to the right; this function
+mutates @var{ARRY} itself.
+
+@example
+mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+
+mbfl_array_insert_multi_slot_bang _(ARRY) 3 4
+mbfl_slot_set(ARRY, 3, 90)
+mbfl_slot_set(ARRY, 4, 91)
+mbfl_slot_set(ARRY, 5, 92)
+mbfl_slot_set(ARRY, 6, 93)
+mbfl_slots_qvalues(ARRY)        @result{} a b c 90 91 92 93 d e f g h i
+@end example
+@end defun
+
+
+@defun mbfl_array_insert_multi_value_bang @vari{ARRY} @var{IDX} @varii{arry}
+Open slots in @vari{ARRY} at @var{IDX} by shifting values to the right then insert in this range the
+values from @varii{ARRY}; this function mutates @vari{ARRY} itself.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i))
+mbfl_declare_index_array_varref(ARRY2, (90 91 92 93))
+
+mbfl_array_insert_multi_slot_bang _(ARRY1) 3 _(ARRY2)
+mbfl_slots_qvalues(ARRY1)       @result{} a b c 90 91 92 93 d e f g h i
 @end example
 @end defun
 

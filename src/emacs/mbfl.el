@@ -872,6 +872,8 @@
        "mbfl_array_split_at"
        "mbfl_array_insert_slot_bang"
        "mbfl_array_insert_value_bang"
+       "mbfl_array_insert_multi_slot_bang"
+       "mbfl_array_insert_multi_value_bang"
        "mbfl_array_reverse"
        "mbfl_array_reverse_bang"
        "mbfl_array_remove"
