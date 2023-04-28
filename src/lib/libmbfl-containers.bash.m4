@@ -468,25 +468,28 @@ function mbfl_array_remove () {
     mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
     mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
     mbfl_mandatory_integer_parameter(mbfl_IDX,		3, index of value to remove)
-    declare -i mbfl_I mbfl_J mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRY)
+    declare -i mbfl_I mbfl_J mbfl_DIM=mbfl_slots_number(mbfl_SRC_ARRY)
 
-    for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+    for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_DIM; ++mbfl_I))
     do
 	if (( mbfl_I != mbfl_IDX ))
 	then
-	    mbfl_slot_set(mbfl_DST_ARRY, $mbfl_J, _(mbfl_SRC_ARRY, $mbfl_I))
+	    _(mbfl_DST_ARRY, $mbfl_J, _(mbfl_SRC_ARRY, $mbfl_I))
 	    let ++mbfl_J
 	fi
     done
+    if mbfl_string_equal _(mbfl_DST_ARRY) _(mbfl_SRC_ARRY)
+    then mbfl_variable_unset mbfl_slot_spec(mbfl_DST_ARRY, $((mbfl_DIM-1)))
+    fi
 }
 function mbfl_array_delete () {
     mbfl_mandatory_nameref_parameter(mbfl_DST_ARRY,	1, reference to destination index array)
     mbfl_mandatory_nameref_parameter(mbfl_SRC_ARRY,	2, reference to source index array)
     mbfl_mandatory_parameter(mbfl_VALUE,		3, value to remove)
     mbfl_optional_parameter(mbfl_ISEQUAL,		4, mbfl_string_equal)
-    declare -i mbfl_I mbfl_J mbfl_NUM_OF_SLOTS=mbfl_slots_number(mbfl_SRC_ARRY)
+    declare -i mbfl_I mbfl_J mbfl_DIM=mbfl_slots_number(mbfl_SRC_ARRY)
 
-    for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+    for ((mbfl_I=0, mbfl_J=0; mbfl_I < mbfl_DIM; ++mbfl_I))
     do
 	declare mbfl_SRC_VALUE=_(mbfl_SRC_ARRY, $mbfl_I)
 	if ! "$mbfl_ISEQUAL" "$mbfl_SRC_VALUE" "$mbfl_VALUE"
@@ -920,26 +923,70 @@ function mbfl_p_array_quicksort3_bang () {
 
 #### arrays: insert sort
 
+if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
+then declare -i mbfl_array_INSERTSORT_LINEAR_LIMIT=5
+fi
+
 function mbfl_array_insertsort_bang () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
     mbfl_mandatory_parameter(mbfl_VALUE,	2, new value)
     mbfl_optional_parameter(mbfl_ISLESS,	3, mbfl_string_less)
     declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
 
+    #echo $FUNCNAME mbfl_DIM=$mbfl_DIM >&2
+
     if ((0 == mbfl_DIM))
     then mbfl_slot_set(mbfl_ARRY, $mbfl_I, "$mbfl_VALUE")
+    elif (( mbfl_DIM < mbfl_array_INSERTSORT_LINEAR_LIMIT ))
+    then mbfl_p_array_linear_insertsort_bang _(mbfl_ARRY) 0 $mbfl_DIM "$mbfl_VALUE" "$mbfl_ISLESS"
+    else mbfl_p_array_binary_insertsort_bang _(mbfl_ARRY) 0 $mbfl_DIM "$mbfl_VALUE" "$mbfl_ISLESS"
+    fi
+}
+function mbfl_p_array_binary_insertsort_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, reference to index array)
+    mbfl_mandatory_integer_parameter(mbfl_BEG,		2, left-inclusive index)
+    mbfl_mandatory_integer_parameter(mbfl_END,		3, right-exclusive index)
+    mbfl_mandatory_parameter(mbfl_VALUE,		4, new value)
+    mbfl_mandatory_parameter(mbfl_ISLESS,		5, isless)
+    declare -i mbfl_DELTA=mbfl_END-mbfl_BEG
+
+    if (( mbfl_DELTA < mbfl_array_INSERTSORT_LINEAR_LIMIT ))
+    then mbfl_p_array_linear_insertsort_bang _(mbfl_ARRY) $mbfl_BEG $mbfl_END "$mbfl_VALUE" "$mbfl_ISLESS"
     else
-	for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
-	do
-	    if "$mbfl_ISLESS" "$mbfl_VALUE" _(mbfl_ARRY, $mbfl_I)
-	    then
-		mbfl_array_insert_value_bang _(mbfl_ARRY) $mbfl_I "$mbfl_VALUE"
-		return_success
-	    fi
-	done
-	if ((mbfl_I == mbfl_DIM))
-	then mbfl_array_insert_value_bang _(mbfl_ARRY) $mbfl_DIM "$mbfl_VALUE"
+	declare -i mbfl_I=mbfl_BEG+mbfl_DELTA/2
+
+	#echo $FUNCNAME mbfl_BEG=$mbfl_BEG mbfl_END=$mbfl_END mbfl_DELTA=$mbfl_DELTA mbfl_I=$mbfl_I "$mbfl_VALUE" _(mbfl_ARRY, $mbfl_I) >&2
+
+	if "$mbfl_ISLESS" "$mbfl_VALUE" _(mbfl_ARRY, $mbfl_I)
+	then mbfl_p_array_binary_insertsort_bang _(mbfl_ARRY) $mbfl_BEG $mbfl_I   "$mbfl_VALUE" "$mbfl_ISLESS"
+	else mbfl_p_array_binary_insertsort_bang _(mbfl_ARRY) $mbfl_I   $mbfl_END "$mbfl_VALUE" "$mbfl_ISLESS"
 	fi
+    fi
+}
+function mbfl_p_array_linear_insertsort_bang () {
+    #echo $FUNCNAME >&2
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, reference to index array)
+    mbfl_mandatory_integer_parameter(mbfl_BEG,		2, left-inclusive index)
+    mbfl_mandatory_integer_parameter(mbfl_END,		3, right-exclusive index)
+    mbfl_mandatory_parameter(mbfl_VALUE,		4, new value)
+    mbfl_mandatory_parameter(mbfl_ISLESS,		5, isless)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    # NOTE!!!!  We  could/should iterate until  mbfl_I < mbfl_BEG this  would seem logical.   But if
+    # there is  a substring  of equal values:  we want  to insert the  new value at  the end  of the
+    # string.  For this reason we iterate until mbfl_I < mbfl_DIM, this way we will iterate over the
+    # substring of equal values until it ends.
+    #
+    for ((mbfl_I=mbfl_BEG; mbfl_I < mbfl_DIM; ++mbfl_I))
+    do
+	if "$mbfl_ISLESS" "$mbfl_VALUE" _(mbfl_ARRY, $mbfl_I)
+	then
+	    mbfl_array_insert_value_bang _(mbfl_ARRY) $mbfl_I "$mbfl_VALUE"
+	    return_success
+	fi
+    done
+    if ((mbfl_I == mbfl_END))
+    then mbfl_array_insert_value_bang _(mbfl_ARRY) $mbfl_END "$mbfl_VALUE"
     fi
 }
 

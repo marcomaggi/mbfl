@@ -53,6 +53,12 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
 function operator_return_nine () {
     return 9
 }
+function test_string_less_first_char () {
+    mbfl_mandatory_parameter(VALUE1, 1, first value)
+    mbfl_mandatory_parameter(VALUE2, 2, second value)
+
+    mbfl_string_less mbfl_string_idx(VALUE1, 0) mbfl_string_idx(VALUE2, 0)
+}
 
 
 #### index arrays: makers
@@ -1711,64 +1717,210 @@ function mbfl-containers-array-quicksort3-2.3 () {
 #### index arrays: insert sort
 
 function mbfl-containers-array-insertsort-1.1 () {
-    mbfl_declare_index_array_varref(ARRY)
-    mbfl_declare_index_array_varref(EXPECTED_RESULT, (C))
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=100
 
-    mbfl_array_insertsort_bang _(ARRY) C
-    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+	mbfl_declare_index_array_varref(ARRY)
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (C))
+
+	mbfl_array_insertsort_bang _(ARRY) C
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
 }
 function mbfl-containers-array-insertsort-1.2 () {
-    mbfl_declare_index_array_varref(ARRY, (A))
-    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A C))
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=100
 
-    mbfl_array_insertsort_bang _(ARRY) C
-    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+	mbfl_declare_index_array_varref(ARRY, (A))
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (A C))
+
+	mbfl_array_insertsort_bang _(ARRY) C
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
 }
 function mbfl-containers-array-insertsort-1.3 () {
-    mbfl_declare_index_array_varref(ARRY, (A C))
-    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C))
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=100
 
-    mbfl_array_insertsort_bang _(ARRY) B
-    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+	mbfl_declare_index_array_varref(ARRY, (A C))
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C))
+
+	mbfl_array_insertsort_bang _(ARRY) B
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
 }
 function mbfl-containers-array-insertsort-1.4 () {
-    mbfl_declare_index_array_varref(ARRY, (A B C D E F G))
-    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D DUH E F G))
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=100
 
-    mbfl_array_insertsort_bang _(ARRY) DUH
-    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+	mbfl_declare_index_array_varref(ARRY, (A B C D E F G))
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D DUH E F G))
+
+	mbfl_array_insertsort_bang _(ARRY) DUH
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
 }
 function mbfl-containers-array-insertsort-1.5 () {
-    mbfl_declare_index_array_varref(ARRY, (A B C D E F G))
-    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D E F G H))
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=100
 
-    mbfl_array_insertsort_bang _(ARRY) H
-    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+	mbfl_declare_index_array_varref(ARRY, (A B C D E F G))
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D E F G H))
+
+	mbfl_array_insertsort_bang _(ARRY) H
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
 }
 function mbfl-containers-array-insertsort-1.6 () {
-    mbfl_declare_index_array_varref(ARRY, (B C D E F G))
-    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D E F G))
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=100
 
-    mbfl_array_insertsort_bang _(ARRY) A
-    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+	mbfl_declare_index_array_varref(ARRY, (B C D E F G))
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D E F G))
+
+	mbfl_array_insertsort_bang _(ARRY) A
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
+}
+function mbfl-containers-array-insertsort-1.7 () {
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=100
+
+	mbfl_declare_index_array_varref(ARRY, (A B C DA DB E F G))
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C DA DB DC E F G))
+
+	mbfl_array_insertsort_bang _(ARRY) DC test_string_less_first_char
+	#mbfl_array_dump _(ARRY)
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
 }
 
 ### ------------------------------------------------------------------------
 
-function mbfl_containers_array_insertsort_2_1 () {
-    mbfl_mandatory_parameter(VALUE1, 1, first value)
-    mbfl_mandatory_parameter(VALUE2, 2, second value)
+function mbfl-containers-array-insertsort-2.1.1 () {
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=5
 
-    mbfl_string_less mbfl_string_idx(VALUE1, 0) mbfl_string_idx(VALUE2, 0)
-}
-function mbfl-containers-array-insertsort-2.1 () {
-    mbfl_declare_index_array_varref(ARRY, (A B C DA DB E F G))
-    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C DA DB DC E F G))
+	mbfl_declare_index_array_varref(ARRY,            (a b c d e f g   i l m n o p q r s t u v z))
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h i l m n o p q r s t u v z))
+	#                                                 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
 
-    mbfl_array_insertsort_bang _(ARRY) DC mbfl_containers_array_insertsort_2_1
-    #mbfl_array_dump _(ARRY)
-    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+	mbfl_array_insertsort_bang _(ARRY) h
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
 }
+function mbfl-containers-array-insertsort-2.1.2 () {
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=5
+
+	mbfl_declare_index_array_varref(ARRY,            (a b c d e f g   i l m n o p q r s t u v x z))
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h i l m n o p q r s t u v x z))
+	#                                                 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+
+	mbfl_array_insertsort_bang _(ARRY) h
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
+}
+function mbfl-containers-array-insertsort-2.2.1 () {
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=5
+
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D E F G H I L M N O P Q R S T U V Z))
+	#                                                 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+
+	for ((mbfl_I=0; mbfl_I < mbfl_slots_number(EXPECTED_RESULT); ++mbfl_I))
+	do
+	    mbfl_declare_index_array_varref(ARRY)
+
+	    mbfl_array_copy _(ARRY) _(EXPECTED_RESULT)
+	    mbfl_array_remove _(ARRY) _(ARRY) $mbfl_I
+
+	    #echo $FUNCNAME mbfl_I=$mbfl_I
+	    mbfl_array_insertsort_bang _(ARRY) mbfl_slot_qref(EXPECTED_RESULT, $mbfl_I)
+	    #mbfl_array_dump _(ARRY) ARRY
+	    if ! mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+	    then
+		mbfl_location_leave
+		return $?
+	    fi
+	done
+    }
+    mbfl_location_leave
+}
+function mbfl-containers-array-insertsort-2.2.2 () {
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=5
+
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (A B C D E F G H I L M N O P Q R S T U V X Z))
+	#                                                 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+
+	for ((mbfl_I=0; mbfl_I < mbfl_slots_number(EXPECTED_RESULT); ++mbfl_I))
+	do
+	    mbfl_declare_index_array_varref(ARRY)
+
+	    mbfl_array_copy _(ARRY) _(EXPECTED_RESULT)
+	    mbfl_array_remove _(ARRY) _(ARRY) $mbfl_I
+
+	    #echo $FUNCNAME mbfl_I=$mbfl_I
+	    mbfl_array_insertsort_bang _(ARRY) mbfl_slot_qref(EXPECTED_RESULT, $mbfl_I)
+	    #mbfl_array_dump _(ARRY) ARRY
+	    if ! mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+	    then
+		mbfl_location_leave
+		return $?
+	    fi
+	done
+    }
+    mbfl_location_leave
+}
+function mbfl-containers-array-insertsort-2.3 () {
+    mbfl_location_enter
+    {
+	mbfl_location_handler 'mbfl_array_INSERTSORT_LINEAR_LIMIT=5'
+	mbfl_array_INSERTSORT_LINEAR_LIMIT=5
+
+	mbfl_declare_index_array_varref(ARRY,            (a b c d e f g ha hb hc hd he hf    i l m n o p q r s t u v z))
+	mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g ha hb hc hd he hf h0 i l m n o p q r s t u v z))
+	#                                                 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
+
+	mbfl_array_insertsort_bang _(ARRY) h0 test_string_less_first_char
+	#mbfl_array_dump _(ARRY) ARRY
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+    }
+    mbfl_location_leave
+}
+
 
 
 #### index arrays: set operations

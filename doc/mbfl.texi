@@ -13838,8 +13838,8 @@ function isless () @{
 
 mbfl_declare_index_array_varref(ARRY, (A B C DA DB E F G))
 
-mbfl_array_insertsort_bang _(ARRY) DC isless
-mbfl_slots_qvalues(ARRY)        @result{} A B C DA DB DC E F G
+mbfl_array_insertsort_bang _(ARRY) D0 isless
+mbfl_slots_qvalues(ARRY)        @result{} A B C DA DB D0 E F G
 @end example
 @end defun
 
