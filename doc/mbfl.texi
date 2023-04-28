@@ -13158,6 +13158,11 @@ mbfl_multi_array_equal _(ARRYS)         @result{} 0
 @appendixsubsec Inserting values
 
 
+@cindex Inserting values into an index array
+@cindex Index arrays, inserting values
+@cindex Arrays, inserting values
+
+
 @ParameterSemanticsARRY{}
 
 
