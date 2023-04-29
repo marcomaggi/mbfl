@@ -7461,6 +7461,7 @@ Execute the program @command{chgrp} using the given optional arguments.
 * file testing directory::      Testing directory existence and permissions.
 * file testing pathname::       Testing pathname permissions.
 * file testing misc::           Testing miscellaneous file types.
+* file testing modtime::        Testing modification times.
 @end menu
 
 @c page
@@ -7595,6 +7596,20 @@ Return true if @var{PATHNAME} is not the empty string and is a symbolic link.
 @defunx mbfl_file_is_named_pipe @var{PATHNAME}
 @defunx mbfl_file_is_named_pipe @var{PATHNAME} @var{PRINT_ERROR}
 Return true if @var{PATHNAME} is not the empty string and is a named pipe.
+@end defun
+
+@c page
+@node file testing modtime
+@subsection Testing modification times
+
+
+@defun mbfl_file_modification_time_is_newer @vari{PATHNAME} @varii{PATHNAME}
+Return true if @vari{PATHNAME} has newer modification time than @varii{PATHNAME}.
+@end defun
+
+
+@defun mbfl_file_modification_time_is_older @vari{PATHNAME} @varii{PATHNAME}
+Return true if @vari{PATHNAME} has older modification time than @varii{PATHNAME}.
 @end defun
 
 @c page

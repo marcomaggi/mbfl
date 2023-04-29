@@ -401,6 +401,8 @@
        "mbfl_file_long_listing"
        "mbfl_file_make_directory"
        "mbfl_file_make_if_not_directory"
+       "mbfl_file_modification_time_is_newer"
+       "mbfl_file_modification_time_is_older"
        "mbfl_file_move"
        "mbfl_file_move_to_directory"
        "mbfl_file_normalise"

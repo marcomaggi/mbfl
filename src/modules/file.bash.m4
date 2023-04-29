@@ -1288,6 +1288,22 @@ function mbfl_file_set_group () {
 }
 
 
+#### file modification date
+
+function mbfl_file_modification_time_is_newer () {
+    mbfl_mandatory_parameter(PATHNAME1, 1, pathname one)
+    mbfl_mandatory_parameter(PATHNAME2, 2, pathname two)
+
+    test "$PATHNAME1" -nt "$PATHNAME2"
+}
+function mbfl_file_modification_time_is_older () {
+    mbfl_mandatory_parameter(PATHNAME1, 1, pathname one)
+    mbfl_mandatory_parameter(PATHNAME2, 2, pathname two)
+
+    test "$PATHNAME1" -ot "$PATHNAME2"
+}
+
+
 #### reading and writing files with privileges
 
 function mbfl_file_append () {

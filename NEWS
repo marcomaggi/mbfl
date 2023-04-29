@@ -167,6 +167,11 @@ changes!
     mbfl_file_realpath
     mbfl_file_realpath_var
     mbfl_file_link
+    mbfl_file_modification_time_is_newer
+    mbfl_file_modification_time_is_older
+    mbfl_file_is_named_pipe
+    mbfl_file_is_fifo
+    mbfl_exec_mkfifo
 
 * Started interface to "stat" from GNU Coreutils.
 
