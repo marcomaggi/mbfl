@@ -182,6 +182,78 @@ function mbfl-containers-array-multi-equal-size-2.3 () {
 
 ### ------------------------------------------------------------------------
 
+function mbfl-containers-array-multi-minsize-1.1.1 () {
+    mbfl_declare_index_array_varref(ARRYS)
+    mbfl_declare_integer_varref(SIZE)
+
+    mbfl_multi_array_minsize_var _(SIZE) _(ARRYS)
+    dotest-equal 0 "$SIZE"
+}
+function mbfl-containers-array-multi-minsize-1.1.2 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1)))
+    mbfl_declare_integer_varref(SIZE)
+
+    mbfl_multi_array_minsize_var _(SIZE) _(ARRYS)
+    dotest-equal 0 "$SIZE"
+}
+function mbfl-containers-array-multi-minsize-1.1.3 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1) _(ARRY1)))
+    mbfl_declare_integer_varref(SIZE)
+
+    mbfl_multi_array_minsize_var _(SIZE) _(ARRYS)
+    dotest-equal 0 "$SIZE"
+}
+function mbfl-containers-array-multi-minsize-1.2.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1)))
+    mbfl_declare_integer_varref(SIZE)
+
+    mbfl_multi_array_minsize_var _(SIZE) _(ARRYS)
+    dotest-equal 5 "$SIZE"
+}
+function mbfl-containers-array-multi-minsize-1.2.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1) _(ARRY1)))
+    mbfl_declare_integer_varref(SIZE)
+
+    mbfl_multi_array_minsize_var _(SIZE) _(ARRYS)
+    dotest-equal 5 "$SIZE"
+}
+function mbfl-containers-array-multi-minsize-1.3.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+    mbfl_declare_integer_varref(SIZE)
+
+    mbfl_multi_array_minsize_var _(SIZE) _(ARRYS)
+    dotest-equal 3 "$SIZE"
+}
+function mbfl-containers-array-multi-minsize-1.3.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+    mbfl_declare_integer_varref(SIZE)
+
+    mbfl_multi_array_minsize_var _(SIZE) _(ARRYS)
+    dotest-equal 3 "$SIZE"
+}
+function mbfl-containers-array-multi-minsize-1.3.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+    mbfl_declare_integer_varref(SIZE)
+
+    mbfl_multi_array_minsize_var _(SIZE) _(ARRYS)
+    dotest-equal 3 "$SIZE"
+}
+
+### ------------------------------------------------------------------------
+
 function mbfl-containers-array-multi-homologous-slots-1.1 () {
     mbfl_declare_index_array_varref(ARRY1, (a b c d e))
     mbfl_declare_index_array_varref(ARRY2, (f g h i l))
@@ -342,90 +414,7 @@ function mbfl-containers-array-split-at-1.3 () {
 }
 
 
-#### index arrays: comparison
-
-function mbfl-containers-array-compar-equal-values-1.1 () {
-    mbfl_declare_index_array_varref(ARRY, (0 0 0 0 0 0))
-    mbfl_array_equal_values _(ARRY)
-}
-function mbfl-containers-array-compar-equal-values-1.2 () {
-    mbfl_declare_index_array_varref(ARRY, (0))
-    mbfl_array_equal_values _(ARRY)
-}
-function mbfl-containers-array-compar-equal-values-1.3 () {
-    mbfl_declare_index_array_varref(ARRY)
-    mbfl_array_equal_values _(ARRY)
-}
-function mbfl-containers-array-compar-equal-values-2.1 () {
-    mbfl_declare_index_array_varref(ARRY, (3 0 0 0 0))
-    ! mbfl_array_equal_values _(ARRY)
-}
-function mbfl-containers-array-compar-equal-values-2.2 () {
-    mbfl_declare_index_array_varref(ARRY, (0 0 3 0 0))
-    ! mbfl_array_equal_values _(ARRY)
-}
-
-### ------------------------------------------------------------------------
-
-function mbfl-containers-array-compar-equal-1.1 () {
-    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i l))
-    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g h i l))
-
-    mbfl_array_equal _(ARRY1) _(ARRY2)
-}
-function mbfl-containers-array-compar-equal-1.2 () {
-    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i l))
-    mbfl_declare_index_array_varref(ARRY2, (a b c D E F g h i l))
-
-    ! mbfl_array_equal _(ARRY1) _(ARRY2)
-}
-function mbfl-containers-array-compar-equal-1.3 () {
-    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i l))
-    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g))
-
-    ! mbfl_array_equal _(ARRY1) _(ARRY2)
-}
-function mbfl-containers-array-compar-equal-1.4 () {
-    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g))
-    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g h i l))
-
-    ! mbfl_array_equal _(ARRY1) _(ARRY2)
-}
-
-### ------------------------------------------------------------------------
-
-function mbfl-containers-array-compar-multi-equal-1.1 () {
-    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
-    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
-    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
-    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
-
-    mbfl_multi_array_equal _(ARRYS)
-}
-function mbfl-containers-array-compar-multi-equal-1.2 () {
-    mbfl_declare_index_array_varref(ARRY1, ())
-    mbfl_declare_index_array_varref(ARRY2, ())
-    mbfl_declare_index_array_varref(ARRY3, ())
-    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
-
-    mbfl_multi_array_equal _(ARRYS)
-}
-function mbfl-containers-array-compar-multi-equal-1.3 () {
-    mbfl_declare_index_array_varref(ARRYS)
-
-    mbfl_multi_array_equal _(ARRYS)
-}
-
-function mbfl-containers-array-compar-multi-equal-2.1 () {
-    mbfl_declare_index_array_varref(ARRY1, (a b X d e))
-    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
-    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
-    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
-
-    ! mbfl_multi_array_equal _(ARRYS)
-}
-
-### ------------------------------------------------------------------------
+#### index arrays: comparing two arrays
 
 function mbfl-containers-array-compar-equal-prefix-length-1.1.1 () {
     mbfl_declare_index_array_varref(ARRY1)
@@ -587,6 +576,33 @@ function mbfl-containers-array-compar-equal-suffix-length-1.6 () {
 
     mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY1)
     dotest-equal 5 $LEN
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-compar-equal-1.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i l))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g h i l))
+
+    mbfl_array_equal _(ARRY1) _(ARRY2)
+}
+function mbfl-containers-array-compar-equal-1.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i l))
+    mbfl_declare_index_array_varref(ARRY2, (a b c D E F g h i l))
+
+    ! mbfl_array_equal _(ARRY1) _(ARRY2)
+}
+function mbfl-containers-array-compar-equal-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i l))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g))
+
+    ! mbfl_array_equal _(ARRY1) _(ARRY2)
+}
+function mbfl-containers-array-compar-equal-1.4 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g h i l))
+
+    ! mbfl_array_equal _(ARRY1) _(ARRY2)
 }
 
 ### ------------------------------------------------------------------------
@@ -907,6 +923,68 @@ function mbfl-containers-array-compar-geq-1.6 () {
     mbfl_declare_index_array_varref(ARRY1, (a b c d e))
 
     mbfl_array_geq _(ARRY1) _(ARRY1)
+}
+
+
+#### index arrays: comparing multiple arrays
+
+function mbfl-containers-array-compar-multi-equal-1.1 () {
+    mbfl_declare_index_array_varref(ARRYS)
+
+    mbfl_multi_array_equal _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-equal-1.2.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1)))
+
+    mbfl_multi_array_equal _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-equal-1.2.2 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1) _(ARRY1)))
+    mbfl_declare_index_array_varref(ARRYS)
+
+    mbfl_multi_array_equal _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-equal-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_equal _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-equal-1.4 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b X d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_equal _(ARRYS)
+}
+
+
+#### index arrays: miscellaneous comparisons
+
+function mbfl-containers-array-compar-equal-values-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (0 0 0 0 0 0))
+    mbfl_array_equal_values _(ARRY)
+}
+function mbfl-containers-array-compar-equal-values-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (0))
+    mbfl_array_equal_values _(ARRY)
+}
+function mbfl-containers-array-compar-equal-values-1.3 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_array_equal_values _(ARRY)
+}
+function mbfl-containers-array-compar-equal-values-2.1 () {
+    mbfl_declare_index_array_varref(ARRY, (3 0 0 0 0))
+    ! mbfl_array_equal_values _(ARRY)
+}
+function mbfl-containers-array-compar-equal-values-2.2 () {
+    mbfl_declare_index_array_varref(ARRY, (0 0 3 0 0))
+    ! mbfl_array_equal_values _(ARRY)
 }
 
 
@@ -1823,40 +1901,132 @@ function mbfl-containers-multi-array-append-1.1 () {
 
 #### index arrays: sorting predicates
 
-function mbfl-containers-array-is-sorted-1.1 () {
+function mbfl-containers-array-sort-is-sorted-1.1 () {
     mbfl_declare_index_array_varref(ARRY)
 
     mbfl_array_is_sorted _(ARRY)
 }
-function mbfl-containers-array-is-sorted-1.2 () {
+function mbfl-containers-array-sort-is-sorted-1.2 () {
     mbfl_declare_index_array_varref(ARRY, (a))
 
     mbfl_array_is_sorted _(ARRY)
 }
-function mbfl-containers-array-is-sorted-1.3 () {
+function mbfl-containers-array-sort-is-sorted-1.3 () {
     mbfl_declare_index_array_varref(ARRY, (a b c d e f))
 
     mbfl_array_is_sorted _(ARRY)
 }
-function mbfl-containers-array-is-sorted-1.4 () {
+function mbfl-containers-array-sort-is-sorted-1.4 () {
     mbfl_declare_index_array_varref(ARRY, (b a))
 
     ! mbfl_array_is_sorted _(ARRY)
 }
-function mbfl-containers-array-is-sorted-1.5 () {
+function mbfl-containers-array-sort-is-sorted-1.5 () {
     mbfl_declare_index_array_varref(ARRY, (a b c e d))
 
     ! mbfl_array_is_sorted _(ARRY)
 }
-function mbfl-containers-array-is-sorted-2.1 () {
+function mbfl-containers-array-sort-is-sorted-2.1 () {
     mbfl_declare_index_array_varref(ARRY, (11 22 33 44))
 
     mbfl_array_is_sorted _(ARRY) mbfl_integer_less
 }
-function mbfl-containers-array-is-sorted-2.2 () {
+function mbfl-containers-array-sort-is-sorted-2.2 () {
     mbfl_declare_index_array_varref(ARRY, (11 22 999 33 44))
 
     ! mbfl_array_is_sorted _(ARRY) mbfl_integer_less
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-sort-is-sorted-less-1.1 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_array_is_sorted_less _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-less-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a))
+    mbfl_array_is_sorted_less _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-less-1.3 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c))
+    mbfl_array_is_sorted_less _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-less-1.4 () {
+    mbfl_declare_index_array_varref(ARRY, (c b a))
+    ! mbfl_array_is_sorted_less _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-less-1.5 () {
+    mbfl_declare_index_array_varref(ARRY, (a a a))
+    ! mbfl_array_is_sorted_less _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-sort-is-sorted-greater-1.1 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_array_is_sorted_greater _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-greater-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a))
+    mbfl_array_is_sorted_greater _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-greater-1.3 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c))
+    ! mbfl_array_is_sorted_greater _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-greater-1.4 () {
+    mbfl_declare_index_array_varref(ARRY, (c b a))
+    mbfl_array_is_sorted_greater _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-greater-1.5 () {
+    mbfl_declare_index_array_varref(ARRY, (a a a))
+    ! mbfl_array_is_sorted_greater _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-sort-is-sorted-leq-1.1 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_array_is_sorted_leq _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-leq-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a))
+    mbfl_array_is_sorted_leq _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-leq-1.3 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c))
+    mbfl_array_is_sorted_leq _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-leq-1.4 () {
+    mbfl_declare_index_array_varref(ARRY, (c b a))
+    ! mbfl_array_is_sorted_leq _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-leq-1.5 () {
+    mbfl_declare_index_array_varref(ARRY, (a a a))
+    mbfl_array_is_sorted_leq _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-sort-is-sorted-geq-1.1 () {
+    mbfl_declare_index_array_varref(ARRY)
+    mbfl_array_is_sorted_geq _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-geq-1.2 () {
+    mbfl_declare_index_array_varref(ARRY, (a))
+    mbfl_array_is_sorted_geq _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-geq-1.3 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c))
+    ! mbfl_array_is_sorted_geq _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-geq-1.4 () {
+    mbfl_declare_index_array_varref(ARRY, (c b a))
+    mbfl_array_is_sorted_geq _(ARRY)
+}
+function mbfl-containers-array-sort-is-sorted-geq-1.5 () {
+    mbfl_declare_index_array_varref(ARRY, (a a a))
+    mbfl_array_is_sorted_geq _(ARRY)
 }
 
 

@@ -134,7 +134,26 @@ function mbfl_multi_array_equal_size_var () {
     fi
     return_success
 }
+function mbfl_multi_array_minsize_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,		1, reference result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	2, reference to index array of index arrays)
+    declare -i mbfl_ARRYS_DIM=mbfl_slots_number(mbfl_ARRYS)
 
+    if ((0 == mbfl_ARRYS_DIM))
+    then mbfl_RV=0
+    else
+	mbfl_declare_nameref(mbfl_ARRY, _(mbfl_ARRYS, 0))
+	declare -i mbfl_I mbfl_MIN_DIM=mbfl_slots_number(mbfl_ARRY)
+
+	for ((mbfl_I=1; mbfl_I < mbfl_ARRYS_DIM; ++mbfl_I))
+	do
+	    mbfl_declare_nameref(mbfl_ARRY, _(mbfl_ARRYS, $mbfl_I))
+	    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+	    mbfl_MIN_DIM='(mbfl_MIN_DIM<=mbfl_DIM)?mbfl_MIN_DIM:mbfl_DIM'
+	done
+	mbfl_RV=mbfl_MIN_DIM
+    fi
+}
 function mbfl_multi_array_homologous_slots_var () {
     mbfl_mandatory_nameref_parameter(mbfl_HOMOLOGOUS_VALUES,	1, reference to result index array variable)
     mbfl_mandatory_nameref_parameter(mbfl_ARRYS,		2, reference to index array of index arrays)
@@ -204,83 +223,7 @@ function mbfl_array_split_at () {
 }
 
 
-#### arrays: comparison
-
-function mbfl_array_equal_values () {
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
-    mbfl_optional_parameter(mbfl_ISEQUAL,	2, mbfl_string_equal)
-    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
-
-    #mbfl_array_dump _(mbfl_ARRY) mbfl_ARRY
-
-    if ((0 != mbfl_DIM && 1 != mbfl_DIM))
-    then
-	declare -i mbfl_I
-	declare mbfl_VALUE0=_(mbfl_ARRY, 0)
-
-	for ((mbfl_I=1; mbfl_I < mbfl_DIM; ++mbfl_I))
-	do
-	    #echo $FUNCNAME $mbfl_I VALUE0="$mbfl_VALUE0" VALUE${mbfl_I}=_(mbfl_ARRY, $mbfl_I) >&2
-	    if ! "$mbfl_ISEQUAL" "$mbfl_VALUE0" _(mbfl_ARRY, $mbfl_I)
-	    then return_failure
-	    fi
-	done
-    fi
-    return_success
-}
-function mbfl_array_equal () {
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	1, reference to index array one)
-    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	2, reference to index array two)
-    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
-
-    if mbfl_string_eq(_(mbfl_ARRY1),_(mbfl_ARRY2))
-    then mbfl_RV=mbfl_slots_number(mbfl_ARRY1)
-    else
-	declare -i mbfl_I mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
-
-	if (( mbfl_DIM1 != mbfl_DIM2 ))
-	then return_failure
-	else
-	    for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
-	    do
-		#echo $FUNCNAME _(mbfl_ARRY1, $mbfl_I) _(mbfl_ARRY2, $mbfl_I) >&2
-		if ! "$mbfl_ISEQUAL" _(mbfl_ARRY1, $mbfl_I) _(mbfl_ARRY2, $mbfl_I)
-		then return_failure
-		fi
-	    done
-	    return_success
-	fi
-    fi
-}
-function mbfl_multi_array_equal () {
-    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
-    mbfl_optional_parameter(mbfl_ISEQUAL,		2, mbfl_string_equal)
-
-    if ((0 != mbfl_slots_number(mbfl_ARRYS)))
-    then
-	mbfl_declare_integer_varref(mbfl_NUM_OF_SLOTS)
-
-	if mbfl_multi_array_equal_size_var _(mbfl_NUM_OF_SLOTS) _(mbfl_ARRYS)
-	then
-	    mbfl_declare_index_array_varref(mbfl_HOMOLOGOUS_VALUES)
-	    declare -i mbfl_I
-
-	    #echo $FUNCNAME mbfl_NUM_OF_SLOTS=$mbfl_NUM_OF_SLOTS >&2
-	    for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
-	    do
-		mbfl_multi_array_homologous_slots_var _(mbfl_HOMOLOGOUS_VALUES) _(mbfl_ARRYS) $mbfl_I
-		#mbfl_array_dump _(mbfl_HOMOLOGOUS_VALUES) mbfl_HOMOLOGOUS_VALUES$mbfl_I
-		if ! mbfl_array_equal_values _(mbfl_HOMOLOGOUS_VALUES) "$mbfl_ISEQUAL"
-		then return_failure
-		fi
-	    done
-	else return_failure
-	fi
-    fi
-    return_success
-}
-
-### ------------------------------------------------------------------------
+#### arrays: comparison between two arrays
 
 function mbfl_array_equal_prefix_length_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,		1, reference result variable)
@@ -332,6 +275,30 @@ function mbfl_array_equal_suffix_length_var () {
 
 ### ------------------------------------------------------------------------
 
+function mbfl_array_equal () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	1, reference to index array one)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	2, reference to index array two)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
+
+    if mbfl_string_eq(_(mbfl_ARRY1),_(mbfl_ARRY2))
+    then mbfl_RV=mbfl_slots_number(mbfl_ARRY1)
+    else
+	declare -i mbfl_I mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
+
+	if (( mbfl_DIM1 != mbfl_DIM2 ))
+	then return_failure
+	else
+	    for ((mbfl_I=0; mbfl_I < mbfl_DIM1; ++mbfl_I))
+	    do
+		#echo $FUNCNAME _(mbfl_ARRY1, $mbfl_I) _(mbfl_ARRY2, $mbfl_I) >&2
+		if ! "$mbfl_ISEQUAL" _(mbfl_ARRY1, $mbfl_I) _(mbfl_ARRY2, $mbfl_I)
+		then return_failure
+		fi
+	    done
+	    return_success
+	fi
+    fi
+}
 function mbfl_array_less () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	1, reference to index array one)
     mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	2, reference to index array two)
@@ -463,6 +430,86 @@ function mbfl_array_geq () {
 	else return_success
 	fi
     fi
+}
+
+
+#### arrays: multi comparison
+
+function mbfl_multi_array_equal_prefix_length_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,		1, reference result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	2, reference to index array of index arrays)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
+
+    mbfl_declare_integer_varref(mbfl_MINSIZE)
+    mbfl_multi_array_minsize_var _(mbfl_MINSIZE) _(ARRYS)
+
+    if ((0 == mbfl_MINSIZE))
+    then
+	mbfl_RV=0
+	return_success
+    else
+	declare -i mbfl_I
+
+	for ((mbfl_I=0; mbfl_I < mbfl_MINSIZE; ++mbfl_I))
+	do :
+	done
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_multi_array_equal () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		2, mbfl_string_equal)
+
+    if ((0 != mbfl_slots_number(mbfl_ARRYS)))
+    then
+	mbfl_declare_integer_varref(mbfl_NUM_OF_SLOTS)
+
+	if mbfl_multi_array_equal_size_var _(mbfl_NUM_OF_SLOTS) _(mbfl_ARRYS)
+	then
+	    mbfl_declare_index_array_varref(mbfl_HOMOLOGOUS_VALUES)
+	    declare -i mbfl_I
+
+	    #echo $FUNCNAME mbfl_NUM_OF_SLOTS=$mbfl_NUM_OF_SLOTS >&2
+	    for ((mbfl_I=0; mbfl_I < mbfl_NUM_OF_SLOTS; ++mbfl_I))
+	    do
+		mbfl_multi_array_homologous_slots_var _(mbfl_HOMOLOGOUS_VALUES) _(mbfl_ARRYS) $mbfl_I
+		#mbfl_array_dump _(mbfl_HOMOLOGOUS_VALUES) mbfl_HOMOLOGOUS_VALUES$mbfl_I
+		if ! mbfl_array_equal_values _(mbfl_HOMOLOGOUS_VALUES) "$mbfl_ISEQUAL"
+		then return_failure
+		fi
+	    done
+	else return_failure
+	fi
+    fi
+    return_success
+}
+
+
+#### arrays: comparison misc
+
+function mbfl_array_equal_values () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
+    mbfl_optional_parameter(mbfl_ISEQUAL,	2, mbfl_string_equal)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    #mbfl_array_dump _(mbfl_ARRY) mbfl_ARRY
+
+    if ((0 != mbfl_DIM && 1 != mbfl_DIM))
+    then
+	declare -i mbfl_I
+	declare mbfl_VALUE0=_(mbfl_ARRY, 0)
+
+	for ((mbfl_I=1; mbfl_I < mbfl_DIM; ++mbfl_I))
+	do
+	    #echo $FUNCNAME $mbfl_I VALUE0="$mbfl_VALUE0" VALUE${mbfl_I}=_(mbfl_ARRY, $mbfl_I) >&2
+	    if ! "$mbfl_ISEQUAL" "$mbfl_VALUE0" _(mbfl_ARRY, $mbfl_I)
+	    then return_failure
+	    fi
+	done
+    fi
+    return_success
 }
 
 
@@ -926,17 +973,88 @@ function mbfl_multi_array_append () {
 
 #### arrays: sorting
 
-function mbfl_array_is_sorted () {
+alias mbfl_array_is_sorted='mbfl_array_is_sorted_less'
+
+function mbfl_array_is_sorted_less () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
     mbfl_optional_parameter(mbfl_ISLESS,	2, mbfl_string_less)
-    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+    declare -ir mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
 
-    for ((mbfl_I=0, mbfl_J=1; mbfl_J < mbfl_DIM; ++mbfl_I, ++mbfl_J))
-    do
-	if "$mbfl_ISLESS" _(mbfl_ARRY, $mbfl_J) _(mbfl_ARRY, $mbfl_I)
-	then return_failure
-	fi
-    done
+    if ((0 == mbfl_DIM && 1 == mbfl_DIM))
+    then return_success
+    else
+	declare -i mbfl_I mbfl_J
+
+	for ((mbfl_I=0, mbfl_J=1; mbfl_J < mbfl_DIM; ++mbfl_I, ++mbfl_J))
+	do
+	    if ! "$mbfl_ISLESS" _(mbfl_ARRY, $mbfl_I) _(mbfl_ARRY, $mbfl_J)
+	    then return_failure
+	    fi
+	done
+	return_success
+    fi
+}
+function mbfl_array_is_sorted_greater () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
+    mbfl_optional_parameter(mbfl_ISLESS,	2, mbfl_string_less)
+    declare -ir mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    if ((0 == mbfl_DIM && 1 == mbfl_DIM))
+    then return_success
+    else
+	declare -i mbfl_I mbfl_J
+
+	for ((mbfl_I=mbfl_DIM-2, mbfl_J=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I, --mbfl_J))
+	do
+	    if ! "$mbfl_ISLESS" _(mbfl_ARRY, $mbfl_J) _(mbfl_ARRY, $mbfl_I)
+	    then return_failure
+	    fi
+	done
+	return_success
+    fi
+}
+function mbfl_array_is_sorted_leq () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
+    mbfl_optional_parameter(mbfl_ISEQUAL,	2, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISLESS,	3, mbfl_string_less)
+    declare -ir mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    if ((0 == mbfl_DIM && 1 == mbfl_DIM))
+    then return_success
+    else
+	declare -i mbfl_I mbfl_J
+
+	for ((mbfl_I=0, mbfl_J=1; mbfl_J < mbfl_DIM; ++mbfl_I, ++mbfl_J))
+	do
+	    declare mbfl_LEFT=_(mbfl_ARRY, $mbfl_I) mbfl_RIGHT=_(mbfl_ARRY, $mbfl_J)
+	    if ! "$mbfl_ISLESS" "$mbfl_LEFT" "$mbfl_RIGHT" && ! "$mbfl_ISEQUAL" "$mbfl_LEFT" "$mbfl_RIGHT"
+	    then return_failure
+	    fi
+	done
+	return_success
+    fi
+    return_success
+}
+function mbfl_array_is_sorted_geq () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)
+    mbfl_optional_parameter(mbfl_ISEQUAL,	2, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISLESS,	3, mbfl_string_less)
+    declare -ir mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    if ((0 == mbfl_DIM && 1 == mbfl_DIM))
+    then return_success
+    else
+	declare -i mbfl_I mbfl_J
+
+	for ((mbfl_I=0, mbfl_J=1; mbfl_J < mbfl_DIM; ++mbfl_I, ++mbfl_J))
+	do
+	    declare mbfl_LEFT=_(mbfl_ARRY, $mbfl_I) mbfl_RIGHT=_(mbfl_ARRY, $mbfl_J)
+	    if ! "$mbfl_ISLESS" "$mbfl_RIGHT" "$mbfl_LEFT" && ! "$mbfl_ISEQUAL" "$mbfl_LEFT" "$mbfl_RIGHT"
+	    then return_failure
+	    fi
+	done
+	return_success
+    fi
     return_success
 }
 

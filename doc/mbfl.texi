@@ -12785,9 +12785,9 @@ array_func _(ARRY)
 @cindex Parameter @var{ARRYS}
 @cindex Function parameter @var{ARRYS}
 Every parameter named @var{ARRYS} represents the data variable of an indexed array whose values are
-themselves data variables of indexed arrays.  When such parameter is used in an iteration: all the
-referenced indexed arrays @strong{must} have the same number of slots, all starting with slot
-@samp{0}; otherwise the function's behaviour is undefined.
+themselves data variables of indexed arrays.  When such parameter is used in an iteration: unless
+othewise stated, all the referenced indexed arrays @strong{must} have the same number of slots, all
+starting with slot @samp{0}; otherwise the function's behaviour is undefined.
 
 @example
 mbfl_declare_index_array_varref(ARRY1, (a b c))
@@ -13018,6 +13018,24 @@ mbfl_multi_array_equal_size_var _(SIZE) _(ARRYS)  @result{} 0
 @end defun
 
 
+@defun mbfl_multi_array_minsize_var @var{SIZE_RV} @var{ARRYS}
+Determine the minimum size of the arrays in @var{ARRYS} and store it in the result variable
+@var{SIZE_RV}; the arrays in @var{ARRYS} can be of any size.  If @var{ARRYS} is empty: the minimum
+size is zero.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d))
+mbfl_declare_index_array_varref(ARRY2, (A B C D E))
+mbfl_declare_index_array_varref(ARRY3, (. . .))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+mbfl_declare_integer_varref(SIZE)
+
+mbfl_multi_array_minsize_var _(SIZE) _(ARRYS)
+"$SIZE" @result{} 3
+@end example
+@end defun
+
+
 @defun mbfl_multi_array_homologous_slots_var @var{HOMOLOGOUS_VALUES_ARRY} @var{ARRYS} @var{IDX}
 Store in the result variable @var{HOMOLOGOUS_VALUES_ARRY} the homologous slot values from
 @var{ARRYS} at index @var{IDX}.  This function assumes @var{IDX} is a valid slot index for all the
@@ -13121,6 +13139,7 @@ mbfl_slots_qvalues(SUFFIX)      @result{} e f g h i
 
 @menu
 * containers arrays compar two::        Comparing two arrays.
+* containers arrays compar multi::      Comparing multiple arrays.
 * containers arrays compar misc::       Miscellaneous comparison functions.
 @end menu
 
@@ -13149,58 +13168,6 @@ mbfl_array_equal _(ARRY1) _(ARRY1)
 
 mbfl_array_equal _(ARRY1) _(ARRY2)
 @result{} 1
-@end example
-@end defun
-
-
-@defun mbfl_multi_array_equal @var{ARRYS}
-@defunx mbfl_multi_array_equal @var{ARRYS} @var{ISEQUAL}
-Compare the index arrays in @var{ARRYS}, slot by slot, and return true if the values are equal
-according to @var{ISEQUAL}; otherwise return false.
-
-If @var{ARRYS} is empty or contains a single array: return true.
-
-@example
-mbfl_declare_index_array_varref(ARRY1, (a b c d e))
-mbfl_declare_index_array_varref(ARRY2, (a b c d e))
-mbfl_declare_index_array_varref(ARRY3, (a b c d e))
-mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
-
-mbfl_multi_array_equal _(ARRYS)         @result{} 0
-@end example
-@end defun
-
-
-@defun mbfl_array_equal_prefix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY}
-@defunx mbfl_array_equal_prefix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
-Compare @vari{ARRY} and @varii{ARRY}, slot by slot, left to right, and store in the result variable
-@var{LEN_RV} the length of the prefix they have in common.  Values are compared with @var{ISEQUAL}.
-It does not matter if @vari{ARRY} and @varii{ARRY} have the same length or not.
-
-@example
-mbfl_declare_index_array_varref(ARRY1, (a b 9 d e f g h i))
-mbfl_declare_index_array_varref(ARRY2, (a b c d e))
-mbfl_declare_varref(LEN)
-
-mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
-$LEN    @result{} 2
-@end example
-@end defun
-
-
-@defun mbfl_array_equal_suffix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY}
-@defunx mbfl_array_equal_suffix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
-Compare @vari{ARRY} and @varii{ARRY}, slot by slot, right to left, and store in the result variable
-@var{LEN_RV} the length of the suffix they have in common.  Values are compared with @var{ISEQUAL}.
-It does not matter if @vari{ARRY} and @varii{ARRY} have the same length or not.
-
-@example
-mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i))
-mbfl_declare_index_array_varref(ARRY2,         (e 9 g h i))
-mbfl_declare_varref(LEN)
-
-mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
-$LEN    @result{} 3
 @end example
 @end defun
 
@@ -13275,6 +13242,69 @@ mbfl_array_geq _(ARRY1) _(ARRY2)        @result{} 1
 mbfl_array_geq _(ARRY2) _(ARRY1)        @result{} 0
 @end example
 @end defun
+
+
+@defun mbfl_array_equal_prefix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY}
+@defunx mbfl_array_equal_prefix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
+Compare @vari{ARRY} and @varii{ARRY}, slot by slot, left to right, and store in the result variable
+@var{LEN_RV} the length of the prefix they have in common.  Values are compared with @var{ISEQUAL}.
+It does not matter if @vari{ARRY} and @varii{ARRY} have the same length or not.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b 9 d e f g h i))
+mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+mbfl_declare_varref(LEN)
+
+mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+$LEN    @result{} 2
+@end example
+@end defun
+
+
+@defun mbfl_array_equal_suffix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY}
+@defunx mbfl_array_equal_suffix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
+Compare @vari{ARRY} and @varii{ARRY}, slot by slot, right to left, and store in the result variable
+@var{LEN_RV} the length of the suffix they have in common.  Values are compared with @var{ISEQUAL}.
+It does not matter if @vari{ARRY} and @varii{ARRY} have the same length or not.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i))
+mbfl_declare_index_array_varref(ARRY2,         (e 9 g h i))
+mbfl_declare_varref(LEN)
+
+mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+$LEN    @result{} 3
+@end example
+@end defun
+
+@c page
+@node containers arrays compar multi
+@appendixsubsubsec Comparing multiple arrays
+
+
+@ParameterSemanticsARRY{}
+@ParameterSemanticsARRYS{}
+@ParameterSemanticsISEQUAL{}
+@ParameterSemanticsISLESS{}
+
+
+@defun mbfl_multi_array_equal @var{ARRYS}
+@defunx mbfl_multi_array_equal @var{ARRYS} @var{ISEQUAL}
+Compare the index arrays in @var{ARRYS}, slot by slot, and return true if the values are equal
+according to @var{ISEQUAL}; otherwise return false.
+
+If @var{ARRYS} is empty or contains a single array: return true.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+mbfl_multi_array_equal _(ARRYS)         @result{} 0
+@end example
+@end defun
+
 
 @c page
 @node containers arrays compar misc
@@ -13904,15 +13934,70 @@ mbfl_slots_qvalues(DST_ARRY)    @result{} a b c d e A B C D E F G H I
 
 @defun mbfl_array_is_sorted @var{ARRY}
 @defunx mbfl_array_is_sorted @var{ARRY} @var{ISLESS}
-Return true if the values in @var{ARRY} are sorted left--to--right in increasing order according to
-@var{ISLESS}.
+@defunx mbfl_array_is_sorted_less @var{ARRY}
+@defunx mbfl_array_is_sorted_less @var{ARRY} @var{ISLESS}
+Return true if the values in @var{ARRY} are sorted left--to--right in strict increasing order
+according to @var{ISLESS}; otherwise return false.
 
 @example
 mbfl_declare_index_array_varref(ARRY1, (a b c d))
 mbfl_declare_index_array_varref(ARRY2, (a C D d))
+mbfl_declare_index_array_varref(ARRY3, (a b b c))
 
 mbfl_array_is_sorted _(ARRY1)    @result{} 0
 mbfl_array_is_sorted _(ARRY2)    @result{} 1
+mbfl_array_is_sorted _(ARRY3)    @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_array_is_sorted_greater @var{ARRY}
+@defunx mbfl_array_is_sorted_greater @var{ARRY} @var{ISLESS}
+Return true if the values in @var{ARRY} are sorted left--to--right in strict decreasing order
+according to @var{ISLESS}; otherwise return false.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d))
+mbfl_declare_index_array_varref(ARRY2, (d c b a))
+mbfl_declare_index_array_varref(ARRY3, (c b b a))
+
+mbfl_array_is_sorted_greater _(ARRY1)   @result{} 1
+mbfl_array_is_sorted_greater _(ARRY2)   @result{} 0
+mbfl_array_is_sorted_greater _(ARRY3)   @result{} 1
+@end example
+@end defun
+
+
+@defun mbfl_array_is_sorted_leq @var{ARRY}
+@defunx mbfl_array_is_sorted_leq @var{ARRY} @var{ISEQUAL} @var{ISLESS}
+Return true if the values in @var{ARRY} are sorted left--to--right in non--strict increasing order
+according to @var{ISEQUAL} and @var{ISLESS}; otherwise return false.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d))
+mbfl_declare_index_array_varref(ARRY2, (d c b a))
+mbfl_declare_index_array_varref(ARRY3, (a b b c))
+
+mbfl_array_is_sorted_leq _(ARRY1)       @result{} 0
+mbfl_array_is_sorted_leq _(ARRY2)       @result{} 1
+mbfl_array_is_sorted_leq _(ARRY3)       @result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_array_is_sorted_geq @var{ARRY}
+@defunx mbfl_array_is_sorted_geq @var{ARRY} @var{ISEQUAL} @var{ISLESS}
+Return true if the values in @var{ARRY} are sorted left--to--right in non--strict decreasing order
+according to @var{ISEQUAL} and @var{ISLESS}; otherwise return false.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d))
+mbfl_declare_index_array_varref(ARRY2, (d c b a))
+mbfl_declare_index_array_varref(ARRY3, (c b b a))
+
+mbfl_array_is_sorted_geq _(ARRY1)       @result{} 1
+mbfl_array_is_sorted_geq _(ARRY2)       @result{} 0
+mbfl_array_is_sorted_geq _(ARRY3)       @result{} 0
 @end example
 @end defun
 
