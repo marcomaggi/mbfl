@@ -13119,23 +13119,20 @@ mbfl_slots_qvalues(SUFFIX)      @result{} e f g h i
 @appendixsubsec Comparing values
 
 
+@menu
+* containers arrays compar two::        Comparing two arrays.
+* containers arrays compar misc::       Miscellaneous comparison functions.
+@end menu
+
+@c page
+@node containers arrays compar two
+@appendixsubsubsec Comparing two arrays
+
+
 @ParameterSemanticsARRY{}
 @ParameterSemanticsARRYS{}
 @ParameterSemanticsISEQUAL{}
 @ParameterSemanticsISLESS{}
-
-
-@defun mbfl_array_equal_values @var{ARRY}
-@defunx mbfl_array_equal_values @var{ARRY} @var{ISEQUAL}
-Return true if all the values in @var{ARRY} are equal according to the comparison operator
-@var{ISEQUAL}; otherwise return false.
-
-@example
-mbfl_declare_index_array_varref(ARRY, (0 0 0 0 0 0))
-
-mbfl_array_equal_values _(ARRY)         @result{} 0
-@end example
-@end defun
 
 
 @defun mbfl_array_equal @vari{ARRY} @vari{ARRY}
@@ -13276,6 +13273,26 @@ mbfl_declare_index_array_varref(ARRY2, (a b c d e))
 mbfl_array_geq _(ARRY1) _(ARRY1)        @result{} 0
 mbfl_array_geq _(ARRY1) _(ARRY2)        @result{} 1
 mbfl_array_geq _(ARRY2) _(ARRY1)        @result{} 0
+@end example
+@end defun
+
+@c page
+@node containers arrays compar misc
+@appendixsubsubsec Miscellaneous comparison functions
+
+
+@ParameterSemanticsISEQUAL{}
+
+
+@defun mbfl_array_equal_values @var{ARRY}
+@defunx mbfl_array_equal_values @var{ARRY} @var{ISEQUAL}
+Return true if all the values in @var{ARRY} are equal according to the comparison operator
+@var{ISEQUAL}; otherwise return false.
+
+@example
+mbfl_declare_index_array_varref(ARRY, (0 0 0 0 0 0))
+
+mbfl_array_equal_values _(ARRY)         @result{} 0
 @end example
 @end defun
 
