@@ -1,4 +1,4 @@
-y# message.test --
+# message.test --
 #
 # Part of: Marco's BASH function libraries
 # Contents: tests for the message library

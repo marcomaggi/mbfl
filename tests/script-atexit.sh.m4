@@ -1,4 +1,4 @@
-y#
+#
 # Part of: Marco's Bash Functions Library
 # Contents: test script for atexit module
 # Date: Sun Nov 25, 2018
