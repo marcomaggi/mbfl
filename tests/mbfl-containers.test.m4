@@ -425,6 +425,170 @@ function mbfl-containers-array-multi-equal-2.1 () {
     ! mbfl_multi_array_equal _(ARRYS)
 }
 
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-equal-prefix-length-1.1.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRY2)
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 0 $LEN
+}
+function mbfl-containers-array-equal-prefix-length-1.1.2 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRY2, (a b c))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 0 $LEN
+}
+function mbfl-containers-array-equal-prefix-length-1.1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c))
+    mbfl_declare_index_array_varref(ARRY2)
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 0 $LEN
+}
+function mbfl-containers-array-equal-prefix-length-1.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 5 $LEN
+}
+function mbfl-containers-array-equal-prefix-length-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (A b c d e))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 0 $LEN
+}
+function mbfl-containers-array-equal-prefix-length-1.4.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g h i))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 5 $LEN
+}
+function mbfl-containers-array-equal-prefix-length-1.4.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b C d e f g h i))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 2 $LEN
+}
+function mbfl-containers-array-equal-prefix-length-1.5.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 5 $LEN
+}
+function mbfl-containers-array-equal-prefix-length-1.5.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b C d e f g h i))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 2 $LEN
+}
+function mbfl-containers-array-equal-prefix-length-1.6 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY1)
+    dotest-equal 5 $LEN
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-equal-suffix-length-1.1.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRY2)
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 0 $LEN
+}
+function mbfl-containers-array-equal-suffix-length-1.1.2 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRY2, (a b c))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 0 $LEN
+}
+function mbfl-containers-array-equal-suffix-length-1.1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c))
+    mbfl_declare_index_array_varref(ARRY2)
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 0 $LEN
+}
+function mbfl-containers-array-equal-suffix-length-1.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 5 $LEN
+}
+function mbfl-containers-array-equal-suffix-length-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d E))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 0 $LEN
+}
+function mbfl-containers-array-equal-suffix-length-1.4.1 () {
+    mbfl_declare_index_array_varref(ARRY1,         (e f g h i))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e f g h i))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 5 $LEN
+}
+function mbfl-containers-array-equal-suffix-length-1.4.2 () {
+    mbfl_declare_index_array_varref(ARRY1,         (e f g h i))
+    mbfl_declare_index_array_varref(ARRY2, (a b C d e f G h i))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 2 $LEN
+}
+function mbfl-containers-array-equal-suffix-length-1.5.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i))
+    mbfl_declare_index_array_varref(ARRY2,         (e f g h i))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 5 $LEN
+}
+function mbfl-containers-array-equal-suffix-length-1.5.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e f G h i))
+    mbfl_declare_index_array_varref(ARRY2,         (e f g h i))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+    dotest-equal 2 $LEN
+}
+function mbfl-containers-array-equal-suffix-length-1.6 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_integer_varref(LEN)
+
+    mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY1)
+    dotest-equal 5 $LEN
+}
+
 
 #### index arrays: filtering
 

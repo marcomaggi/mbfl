@@ -858,6 +858,8 @@
        "mbfl_array_dump"
        "mbfl_array_equal"
        "mbfl_array_equal_values"
+       "mbfl_array_equal_prefix_length_var"
+       "mbfl_array_equal_suffix_length_var"
        "mbfl_array_left_fold"
        "mbfl_array_left_foreach"
        "mbfl_array_left_map"

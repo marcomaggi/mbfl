@@ -13168,6 +13168,40 @@ mbfl_multi_array_equal _(ARRYS)         @result{} 0
 @end example
 @end defun
 
+
+@defun mbfl_array_equal_prefix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY}
+@defunx mbfl_array_equal_prefix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
+Compare @vari{ARRY} and @varii{ARRY}, slot by slot, left to right, and store in the result variable
+@var{LEN_RV} the length of the prefix they have in common.  Values are compared with @var{ISEQUAL}.
+It does not matter if @vari{ARRY} and @varii{ARRY} have the same length or not.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b 9 d e f g h i))
+mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+mbfl_declare_varref(LEN)
+
+mbfl_array_equal_prefix_length_var _(LEN) _(ARRY1) _(ARRY2)
+$LEN    @result{} 2
+@end example
+@end defun
+
+
+@defun mbfl_array_equal_suffix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY}
+@defunx mbfl_array_equal_suffix_length_var @var{LEN_RV} @vari{ARRY} @varii{ARRY} @var{ISEQUAL}
+Compare @vari{ARRY} and @varii{ARRY}, slot by slot, right to left, and store in the result variable
+@var{LEN_RV} the length of the suffix they have in common.  Values are compared with @var{ISEQUAL}.
+It does not matter if @vari{ARRY} and @varii{ARRY} have the same length or not.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e f g h i))
+mbfl_declare_index_array_varref(ARRY2,         (e 9 g h i))
+mbfl_declare_varref(LEN)
+
+mbfl_array_equal_suffix_length_var _(LEN) _(ARRY1) _(ARRY2)
+$LEN    @result{} 3
+@end example
+@end defun
+
 @c page
 @node containers arrays insert
 @appendixsubsec Inserting values
