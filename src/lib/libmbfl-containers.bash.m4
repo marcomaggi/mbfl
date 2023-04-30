@@ -337,20 +337,132 @@ function mbfl_array_less () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	2, reference to index array two)
     mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
     mbfl_optional_parameter(mbfl_ISLESS,		4, mbfl_string_less)
-    declare -i mbfl_I mbfl_DIM1=mbfl_slots_number(mbfl_ARRY1) mbfl_DIM2=mbfl_slots_number(mbfl_ARRY2)
-    declare -i mbfl_MIN_DIM='(mbfl_DIM11<mbfl_DIM2)?mbfl_DIM1:mbfl_DIM2'
 
-    if (( mbfl_DIM1 != mbfl_DIM2 ))
+    if mbfl_string_eq(_(mbfl_ARRY1),_(mbfl_ARRY2))
     then return_failure
-    fi
-    for ((mbfl_I=0; mbfl_I < mbfl_MIN_DIM1; ++mbfl_I))
-    do
-	#echo $FUNCNAME _(mbfl_ARRY1, $mbfl_I) _(mbfl_ARRY2, $mbfl_I) >&2
-	if ! "$mbfl_ISLESS" _(mbfl_ARRY1, $mbfl_I) _(mbfl_ARRY2, $mbfl_I)
-	then return_failure
+    else
+	mbfl_declare_integer_varref(mbfl_LEN)
+
+	mbfl_array_equal_prefix_length_var _(mbfl_LEN) _(mbfl_ARRY1) _(mbfl_ARRY2) "$mbfl_ISEQUAL"
+
+	if ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY1)))
+	then
+	    if ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY2)))
+	    then
+		# The arrays have the same length and are equal slot-by-slot.
+		return_failure
+	    else
+		# ARRY2 has a prefix equal to ARRY1, but ARRY2 is longer.
+		return_success
+	    fi
+	elif ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY2)))
+	then
+	    # ARRY1 has a prefix equal to ARRY2, but ARRY1 is longer.
+	    return_failure
+	elif "$mbfl_ISLESS" _(mbfl_ARRY1, $mbfl_LEN) _(mbfl_ARRY2, $mbfl_LEN)
+	then return_success
+	else return_failure
 	fi
-    done
-    return_success
+    fi
+}
+function mbfl_array_greater () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	1, reference to index array one)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	2, reference to index array two)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISLESS,		4, mbfl_string_less)
+
+    if mbfl_string_eq(_(mbfl_ARRY1),_(mbfl_ARRY2))
+    then return_failure
+    else
+	mbfl_declare_integer_varref(mbfl_LEN)
+
+	mbfl_array_equal_prefix_length_var _(mbfl_LEN) _(mbfl_ARRY1) _(mbfl_ARRY2) "$mbfl_ISEQUAL"
+
+	if ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY1)))
+	then
+	    if ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY2)))
+	    then
+		# The arrays have the same length and are equal slot-by-slot.
+		return_failure
+	    else
+		# ARRY2 has a prefix equal to ARRY1, but ARRY2 is longer.
+		return_failure
+	    fi
+	elif ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY2)))
+	then
+	    # ARRY1 has a prefix equal to ARRY2, but ARRY1 is longer.
+	    return_success
+	elif "$mbfl_ISLESS" _(mbfl_ARRY1, $mbfl_LEN) _(mbfl_ARRY2, $mbfl_LEN)
+	then return_failure
+	else return_success
+	fi
+    fi
+}
+function mbfl_array_leq () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	1, reference to index array one)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	2, reference to index array two)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISLESS,		4, mbfl_string_less)
+
+    if mbfl_string_eq(_(mbfl_ARRY1),_(mbfl_ARRY2))
+    then return_success
+    else
+	mbfl_declare_integer_varref(mbfl_LEN)
+
+	mbfl_array_equal_prefix_length_var _(mbfl_LEN) _(mbfl_ARRY1) _(mbfl_ARRY2) "$mbfl_ISEQUAL"
+
+	if ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY1)))
+	then
+	    if ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY2)))
+	    then
+		# The arrays have the same length and are equal slot-by-slot.
+		return_success
+	    else
+		# ARRY2 has a prefix equal to ARRY1, but ARRY2 is longer.
+		return_success
+	    fi
+	elif ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY2)))
+	then
+	    # ARRY1 has a prefix equal to ARRY2, but ARRY1 is longer.
+	    return_failure
+	elif "$mbfl_ISLESS" _(mbfl_ARRY1, $mbfl_LEN) _(mbfl_ARRY2, $mbfl_LEN)
+	then return_success
+	else return_failure
+	fi
+    fi
+}
+function mbfl_array_geq () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY1,	1, reference to index array one)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY2,	2, reference to index array two)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISLESS,		4, mbfl_string_less)
+
+    if mbfl_string_eq(_(mbfl_ARRY1),_(mbfl_ARRY2))
+    then return_success
+    else
+	mbfl_declare_integer_varref(mbfl_LEN)
+
+	mbfl_array_equal_prefix_length_var _(mbfl_LEN) _(mbfl_ARRY1) _(mbfl_ARRY2) "$mbfl_ISEQUAL"
+
+	if ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY1)))
+	then
+	    if ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY2)))
+	    then
+		# The arrays have the same length and are equal slot-by-slot.
+		return_success
+	    else
+		# ARRY2 has a prefix equal to ARRY1, but ARRY2 is longer.
+		return_failure
+	    fi
+	elif ((mbfl_LEN == mbfl_slots_number(mbfl_ARRY2)))
+	then
+	    # ARRY1 has a prefix equal to ARRY2, but ARRY1 is longer.
+	    return_success
+	elif "$mbfl_ISLESS" _(mbfl_ARRY1, $mbfl_LEN) _(mbfl_ARRY2, $mbfl_LEN)
+	then return_failure
+	else return_success
+	fi
+    fi
 }
 
 
