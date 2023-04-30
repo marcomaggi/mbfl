@@ -8494,6 +8494,10 @@ If the function @func{mbfl_program_set_exec_flags} was used to select arguments 
 built--in @code{exec}: that request is honoured by putting the selected arguments on the command
 line of @code{exec}.  The request is considered ``consumed'' and reset.
 
+If a trap is set for the @samp{EXIT} event: such trap is executed by Bash, @bashref{Bourne Shell
+Builtins, trap}.  This means the @mbfl{}'s atexit handlers are executed, @ref{exit atexit, Running
+scripts at exit--time}.
+
 Inside a script, we can easily test program execution with replacement as follows:
 
 @example
