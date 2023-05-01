@@ -448,11 +448,47 @@ function mbfl_multi_array_equal_prefix_length_var () {
 	mbfl_RV=0
 	return_success
     else
+	mbfl_declare_integer_varref(mbfl_HOMO_VALUES)
 	declare -i mbfl_I
 
 	for ((mbfl_I=0; mbfl_I < mbfl_MINSIZE; ++mbfl_I))
-	do :
+	do
+	    mbfl_multi_array_homologous_slots_var _(mbfl_HOMO_VALUES) _(mbfl_ARRYS) $mbfl_I
+	    if ! mbfl_array_equal_values _(mbfl_HOMO_VALUES)
+	    then
+		mbfl_RV=$mbfl_I
+		return_success
+	    fi
 	done
+	mbfl_RV=$mbfl_MINSIZE
+    fi
+}
+function mbfl_multi_array_equal_suffix_length_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,		1, reference result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	2, reference to index array of index arrays)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		3, mbfl_string_equal)
+
+    mbfl_declare_integer_varref(mbfl_MINSIZE)
+    mbfl_multi_array_minsize_var _(mbfl_MINSIZE) _(ARRYS)
+
+    if ((0 == mbfl_MINSIZE))
+    then
+	mbfl_RV=0
+	return_success
+    else
+	mbfl_declare_integer_varref(mbfl_HOMO_VALUES)
+	declare -i mbfl_I
+
+	for ((mbfl_I=mbfl_MINSIZE-1; mbfl_I >= 0; --mbfl_I))
+	do
+	    mbfl_multi_array_homologous_slots_var _(mbfl_HOMO_VALUES) _(mbfl_ARRYS) $mbfl_I
+	    if ! mbfl_array_equal_values _(mbfl_HOMO_VALUES)
+	    then
+		mbfl_RV=$mbfl_I
+		return_success
+	    fi
+	done
+	mbfl_RV=$mbfl_MINSIZE
     fi
 }
 
@@ -462,7 +498,7 @@ function mbfl_multi_array_equal () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
     mbfl_optional_parameter(mbfl_ISEQUAL,		2, mbfl_string_equal)
 
-    if ((0 != mbfl_slots_number(mbfl_ARRYS)))
+    if ((1 < mbfl_slots_number(mbfl_ARRYS)))
     then
 	mbfl_declare_integer_varref(mbfl_NUM_OF_SLOTS)
 

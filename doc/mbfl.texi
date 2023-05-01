@@ -13293,7 +13293,7 @@ $LEN    @result{} 3
 Compare the index arrays in @var{ARRYS}, slot by slot, and return true if the values are equal
 according to @var{ISEQUAL}; otherwise return false.
 
-If @var{ARRYS} is empty or contains a single array: return true.
+If @var{ARRYS} is empty: return true.  If @var{ARRYS} contains a single array: return true.
 
 @example
 mbfl_declare_index_array_varref(ARRY1, (a b c d e))
@@ -13305,6 +13305,51 @@ mbfl_multi_array_equal _(ARRYS)         @result{} 0
 @end example
 @end defun
 
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_multi_array_equal_prefix_length_var @var{LEN_RV} @var{ARRYS}
+@defunx mbfl_multi_array_equal_prefix_length_var @var{LEN_RV} @var{ARRYS} @var{ISEQUAL}
+Store in the result variable @var{LEN_RV} the length of the common prefix of all the arrays in
+@var{ARRYS}.  Values comparison is performed with @var{ISEQUAL}.
+
+If @var{ARRYS} is empty: the length is zero.  If @var{ARRYS} contains a single array: the length is
+the size of the array.  If @var{ARRYS} contains only empty arrays: the length is zero.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c))
+mbfl_declare_index_array_varref(ARRY2, (a b))
+mbfl_declare_index_array_varref(ARRY3, (a b c d))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+mbfl_declare_integer_varref(LEN)
+
+mbfl_multi_array_equal_prefix_length_var _(LEN) _(ARRYS)
+$LEN    @result{} 2
+@end example
+@end defun
+
+
+@defun mbfl_multi_array_equal_suffix_length_var @var{LEN_RV} @var{ARRYS}
+@defunx mbfl_multi_array_equal_suffix_length_var @var{LEN_RV} @var{ARRYS} @var{ISEQUAL}
+Store in the result variable @var{LEN_RV} the length of the common suffix of all the arrays in
+@var{ARRYS}.  Values comparison is performed with @var{ISEQUAL}.
+
+If @var{ARRYS} is empty: the length is zero.  If @var{ARRYS} contains a single array: the length is
+the size of the array.  If @var{ARRYS} contains only empty arrays: the length is zero.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e f))
+mbfl_declare_index_array_varref(ARRY2,       (d e f))
+mbfl_declare_index_array_varref(ARRY3,     (c d e f))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+mbfl_declare_integer_varref(LEN)
+
+mbfl_multi_array_equal_suffix_length_var _(LEN) _(ARRYS)
+$LEN    @result{} 3
+@end example
+@end defun
 
 @c page
 @node containers arrays compar misc
