@@ -1145,7 +1145,7 @@ function mbfl_array_is_sorted_geq () {
 }
 
 
-#### arrays: sorting with quicksort 3-partition
+#### arrays: sorting with quicksort 2-partition
 #
 # We take the Segewick-Bentley 2-partition implementation from:
 #
