@@ -901,6 +901,7 @@
        "mbfl_array_set_intersection"
        "mbfl_array_set_xor"
        "mbfl_array_set_difference"
+       "mbfl_array_reset_bang"
        "mbfl_multi_array_set_union"
        "mbfl_multi_array_set_intersection"
        "mbfl_multi_array_set_xor"

@@ -1591,6 +1591,15 @@ function mbfl_array_zip () {
     done
 }
 
+function mbfl_array_reset_bang () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY, 1, reference to index array)
+    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
+    do _(mbfl_ARRY, $mbfl_I, '')
+    done
+}
+
 
 #### stacks
 

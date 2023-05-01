@@ -14331,6 +14331,10 @@ mbfl_slots_qvalues(DST_ARRY)    @result{} a A b B c C d D e E
 @end defun
 
 
+@defun mbfl_array_reset_bang @var{ARRY}
+Reset to the empty string all the values in @var{ARRY}.
+@end defun
+
 @c page
 @node containers vectors
 @appendixsec Vectors

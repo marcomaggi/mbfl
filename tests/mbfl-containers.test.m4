@@ -3427,6 +3427,17 @@ function mbfl-containers-array-zip-1.1 () {
     mbfl_array_equal _(EXPECTED_RESULT) _(RESULT)
 }
 
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-reset-bang-1.1 () {
+    mbfl_declare_index_array_varref(ARRY, (a b c d e))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, ('' '' '' '' ''))
+
+    mbfl_array_reset_bang _(ARRY)
+    #mbfl_array_dump _(RESULT) RESULT
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
 
 #### stacks
 
