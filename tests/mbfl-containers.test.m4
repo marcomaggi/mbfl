@@ -1200,6 +1200,302 @@ function mbfl-containers-array-compar-multi-suffix-length-1.4.5 () {
     dotest-equal 3 $LEN
 }
 
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-compar-multi-less-1.1 () {
+    mbfl_declare_index_array_varref(ARRYS)
+
+    mbfl_multi_array_less _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-less-1.2.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1)))
+
+    mbfl_multi_array_less _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-less-1.2.2 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1)))
+
+    ! mbfl_multi_array_less _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-less-1.2.3 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1) _(ARRY1)))
+
+    ! mbfl_multi_array_less _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-less-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_less _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-less-1.4.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_less _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-less-1.4.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_less _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-less-1.5.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRY2, (a b))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_less _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-less-1.5.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b))
+    mbfl_declare_index_array_varref(ARRY2)
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_less _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-less-1.5.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b))
+    mbfl_declare_index_array_varref(ARRY2, (a b c))
+    mbfl_declare_index_array_varref(ARRY3)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_less _(ARRYS)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-compar-multi-greater-1.1 () {
+    mbfl_declare_index_array_varref(ARRYS)
+
+    mbfl_multi_array_greater _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-greater-1.2.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1)))
+
+    mbfl_multi_array_greater _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-greater-1.2.2 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1)))
+
+    ! mbfl_multi_array_greater _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-greater-1.2.3 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1) _(ARRY1)))
+
+    ! mbfl_multi_array_greater _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-greater-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_greater _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-greater-1.4.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_greater _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-greater-1.4.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_greater _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-greater-1.5.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRY2, (a b))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_greater _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-greater-1.5.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b))
+    mbfl_declare_index_array_varref(ARRY2)
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_greater _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-greater-1.5.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c))
+    mbfl_declare_index_array_varref(ARRY2, (a b))
+    mbfl_declare_index_array_varref(ARRY3)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_greater _(ARRYS)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-compar-multi-leq-1.1 () {
+    mbfl_declare_index_array_varref(ARRYS)
+
+    mbfl_multi_array_leq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-leq-1.2.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1)))
+
+    mbfl_multi_array_leq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-leq-1.2.2 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1)))
+
+    mbfl_multi_array_leq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-leq-1.2.3 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1) _(ARRY1)))
+
+    mbfl_multi_array_leq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-leq-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_leq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-leq-1.4.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_leq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-leq-1.4.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_leq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-leq-1.5.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRY2, (a b))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_leq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-leq-1.5.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b))
+    mbfl_declare_index_array_varref(ARRY2)
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_leq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-leq-1.5.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b))
+    mbfl_declare_index_array_varref(ARRY2, (a b c))
+    mbfl_declare_index_array_varref(ARRY3)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_leq _(ARRYS)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-array-compar-multi-geq-1.1 () {
+    mbfl_declare_index_array_varref(ARRYS)
+
+    mbfl_multi_array_geq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-geq-1.2.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1)))
+
+    mbfl_multi_array_geq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-geq-1.2.2 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1)))
+
+    mbfl_multi_array_geq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-geq-1.2.3 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY1) _(ARRY1)))
+
+    mbfl_multi_array_geq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-geq-1.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_geq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-geq-1.4.1 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_geq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-geq-1.4.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+    mbfl_declare_index_array_varref(ARRY2, (a b c d))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_geq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-geq-1.5.1 () {
+    mbfl_declare_index_array_varref(ARRY1)
+    mbfl_declare_index_array_varref(ARRY2, (a b))
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_geq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-geq-1.5.2 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b))
+    mbfl_declare_index_array_varref(ARRY2)
+    mbfl_declare_index_array_varref(ARRY3, (a b c))
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    ! mbfl_multi_array_geq _(ARRYS)
+}
+function mbfl-containers-array-compar-multi-geq-1.5.3 () {
+    mbfl_declare_index_array_varref(ARRY1, (a b c))
+    mbfl_declare_index_array_varref(ARRY2, (a b))
+    mbfl_declare_index_array_varref(ARRY3)
+    mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+    mbfl_multi_array_geq _(ARRYS)
+}
+
 
 #### index arrays: miscellaneous comparisons
 

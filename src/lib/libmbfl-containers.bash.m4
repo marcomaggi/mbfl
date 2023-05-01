@@ -326,7 +326,7 @@ function mbfl_array_less () {
 	then
 	    # ARRY1 has a prefix equal to ARRY2, but ARRY1 is longer.
 	    return_failure
-	elif "$mbfl_ISLESS" _(mbfl_ARRY1, $mbfl_LEN) _(mbfl_ARRY2, $mbfl_LEN)
+	elif "$mbfl_ISLESS" _(mbfl_ARRY1, $mbfl_LEN) _(mbfl_ARRY2, $mbfl_LEN);
 	then return_success
 	else return_failure
 	fi
@@ -520,6 +520,56 @@ function mbfl_multi_array_equal () {
 	fi
     fi
     return_success
+}
+# NOTE Can we do better than comparing the arrays two by two?  Maybe.  (Marco Maggi; May  1, 2023)
+#
+function mbfl_p_multi_array_compar () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
+    mbfl_mandatory_parameter(mbfl_ISEQUAL,		2, isequal operator)
+    mbfl_mandatory_parameter(mbfl_ISLESS,		3, isless operator)
+    mbfl_mandatory_parameter(mbfl_ARRY_COMPAR,		4, array comparison operator)
+    declare -i mbfl_ARRYS_DIM=mbfl_slots_number(mbfl_ARRYS)
+
+    if ((1 < mbfl_ARRYS_DIM))
+    then
+	declare -i mbfl_I mbfl_J
+
+	for ((mbfl_I=0, mbfl_J=1; mbfl_I < mbfl_ARRYS_DIM-1; ++mbfl_I, ++mbfl_J))
+	do
+	    if ! "$mbfl_ARRY_COMPAR" _(mbfl_ARRYS, $mbfl_I) _(mbfl_ARRYS, $mbfl_J) "$mbfl_ISEQUAL" "$mbfl_ISLESS"
+	    then return_failure
+	    fi
+	done
+    fi
+    return_success
+}
+function mbfl_multi_array_less () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		2, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISLESS,		3, mbfl_string_less)
+
+    mbfl_p_multi_array_compar _(mbfl_ARRYS) "$mbfl_ISEQUAL" "$mbfl_ISLESS" mbfl_array_less
+}
+function mbfl_multi_array_greater () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		2, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISLESS,		3, mbfl_string_less)
+
+    mbfl_p_multi_array_compar _(mbfl_ARRYS) "$mbfl_ISEQUAL" "$mbfl_ISLESS" mbfl_array_greater
+}
+function mbfl_multi_array_leq () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		2, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISLESS,		3, mbfl_string_less)
+
+    mbfl_p_multi_array_compar _(mbfl_ARRYS) "$mbfl_ISEQUAL" "$mbfl_ISLESS" mbfl_array_leq
+}
+function mbfl_multi_array_geq () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRYS,	1, reference to index array of index arrays)
+    mbfl_optional_parameter(mbfl_ISEQUAL,		2, mbfl_string_equal)
+    mbfl_optional_parameter(mbfl_ISLESS,		3, mbfl_string_less)
+
+    mbfl_p_multi_array_compar _(mbfl_ARRYS) "$mbfl_ISEQUAL" "$mbfl_ISLESS" mbfl_array_geq
 }
 
 

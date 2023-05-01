@@ -13306,6 +13306,83 @@ mbfl_multi_array_equal _(ARRYS)         @result{} 0
 @end defun
 
 
+@defun mbfl_multi_array_less @var{ARRYS}
+@defunx mbfl_multi_array_less @var{ARRYS} @var{ISEQUAL} @var{ISLESS}
+Compare the index arrays in @var{ARRYS}, slot by slot, left to right, and return true if the arrays
+are sorted in strictly monotonic increasing lexicographic order according to @var{ISEQUAL} and
+@var{isless}; otherwise return false.
+
+If @var{ARRYS} is empty: return true.  If @var{ARRYS} contains a single array: return true.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c))
+mbfl_declare_index_array_varref(ARRY2, (a b c d))
+mbfl_declare_index_array_varref(ARRY3, (a b c d e))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+mbfl_multi_array_less _(ARRYS)         @result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_multi_array_greater @var{ARRYS}
+@defunx mbfl_multi_array_greater @var{ARRYS} @var{ISEQUAL} @var{ISLESS}
+Compare the index arrays in @var{ARRYS}, slot by slot, left to right, and return true if the arrays
+are sorted in strictly monotonic decreasing lexicographic order according to @var{ISEQUAL} and
+@var{isless}; otherwise return false.
+
+If @var{ARRYS} is empty: return true.  If @var{ARRYS} contains a single array: return true.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2, (a b c d))
+mbfl_declare_index_array_varref(ARRY3, (a b c))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3)))
+
+mbfl_multi_array_greater _(ARRYS)       @result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_multi_array_leq @var{ARRYS}
+@defunx mbfl_multi_array_leq @var{ARRYS} @var{ISEQUAL} @var{ISLESS}
+Compare the index arrays in @var{ARRYS}, slot by slot, left to right, and return true if the arrays
+are sorted in non--strict monotonic increasing lexicographic order according to @var{ISEQUAL} and
+@var{isless}; otherwise return false.
+
+If @var{ARRYS} is empty: return true.  If @var{ARRYS} contains a single array: return true.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c))
+mbfl_declare_index_array_varref(ARRY2, (a b c d))
+mbfl_declare_index_array_varref(ARRY3, (a b c d))
+mbfl_declare_index_array_varref(ARRY4, (a b c d e))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3) _(ARRY4)))
+
+mbfl_multi_array_leq _(ARRYS)           @result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_multi_array_geq @var{ARRYS}
+@defunx mbfl_multi_array_geq @var{ARRYS} @var{ISEQUAL} @var{ISLESS}
+Compare the index arrays in @var{ARRYS}, slot by slot, left to right, and return true if the arrays
+are sorted in non--strict monotonic decreasing lexicographic order according to @var{ISEQUAL} and
+@var{isless}; otherwise return false.
+
+If @var{ARRYS} is empty: return true.  If @var{ARRYS} contains a single array: return true.
+
+@example
+mbfl_declare_index_array_varref(ARRY1, (a b c d e))
+mbfl_declare_index_array_varref(ARRY2, (a b c d))
+mbfl_declare_index_array_varref(ARRY3, (a b c d))
+mbfl_declare_index_array_varref(ARRY4, (a b c))
+mbfl_declare_index_array_varref(ARRYS, (_(ARRY1) _(ARRY2) _(ARRY3) _(ARRY4)))
+
+mbfl_multi_array_geq _(ARRYS)           @result{} 0
+@end example
+@end defun
+
 @c ------------------------------------------------------------------------
 
 @defun mbfl_multi_array_equal_prefix_length_var @var{LEN_RV} @var{ARRYS}
