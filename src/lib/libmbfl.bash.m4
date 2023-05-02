@@ -49,12 +49,19 @@ m4_undivert(actions.bash)
 m4_undivert(getopts.bash)
 m4_undivert(program.bash)
 m4_undivert(process.bash)
+m4_undivert(error-descriptors.bash)
 m4_undivert(signal.bash)
 m4_undivert(times-and-dates.bash)
 m4_undivert(dialog.bash)
 m4_undivert(math.bash)
 m4_undivert(system.bash)
 m4_undivert(semver.bash)
+
+function mbfl_library_initialise_libmbfl () {
+    mbfl_error_descriptor_initialise_module
+}
+
+mbfl_library_initialise_libmbfl
 
 #!# end of file
 # Local Variables:
