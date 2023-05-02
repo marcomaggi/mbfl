@@ -60,8 +60,8 @@ function mbfl_location_leave () {
 	declare -i mbfl_I=mbfl_DIM-1
 
 	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
-	mbfl_hook_reverse_run _(mbfl_HOOK)
 	mbfl_variable_unset(mbfl_slot_spec(mbfl_location_HOOKS, $mbfl_I))
+	mbfl_hook_reverse_run _(mbfl_HOOK)
 	mbfl_hook_undefine _(mbfl_HOOK)
 	mbfl_variable_unset(_(mbfl_HOOK))
     fi

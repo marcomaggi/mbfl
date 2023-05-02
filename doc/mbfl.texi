@@ -1778,6 +1778,8 @@ Enter into a new location.  Initialise the internal state.
 Leave the current location.  Run all the registered handlers in reverse order.  Return the return
 status of the last command executed before the call to this function (@code{$?}).  If this function
 is called when no location exists: nothing happens.
+
+Before running the handlers the state of the current location is removed from the script's state.
 @end defun
 
 
