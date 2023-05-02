@@ -153,7 +153,7 @@ EXTRA_DIST			+=		\
 	src/modules/base.bash.m4		\
 	src/modules/dialog.bash.m4		\
 	src/modules/encode.bash.m4		\
-	src/modules/error-descriptors.bash.m4	\
+	src/modules/conditions.bash.m4		\
 	src/modules/fd.bash.m4			\
 	src/modules/file.bash.m4		\
 	src/modules/getopts.bash.m4		\
@@ -185,7 +185,7 @@ MBFL_LIB_MODULES		=		\
 	src/modules/config-values.bash		\
 	src/modules/dialog.bash			\
 	src/modules/encode.bash			\
-	src/modules/error-descriptors.bash	\
+	src/modules/conditions.bash		\
 	src/modules/fd.bash			\
 	src/modules/file.bash			\
 	src/modules/getopts.bash		\
@@ -569,7 +569,7 @@ EXTRA_DIST			+=		\
 	tests/bash-feature-coproc.test.m4	\
 	tests/compress.test.m4			\
 	tests/encode.test.m4			\
-	tests/error-descriptors.test.m4		\
+	tests/conditions.test.m4		\
 	tests/fd.test.m4			\
 	tests/fifo.test.m4			\
 	tests/file.test.m4			\
@@ -608,7 +608,7 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/bash-feature-coproc.test		\
 	tests/compress.test			\
 	tests/encode.test			\
-	tests/error-descriptors.test		\
+	tests/conditions.test			\
 	tests/fd.test				\
 	tests/fifo.test				\
 	tests/file.test				\
