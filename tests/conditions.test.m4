@@ -213,6 +213,61 @@ function conditions-logic-error-method-print-1.1 () {
 }
 
 
+#### condition objects handling with locations
+
+# Build a condition object, store it into a global varref, use it upon exiting a location, unset it.
+#
+function conditions-location-mechanism-1.1 () {
+    mbfl_default_object_declare_global(condition_object_conditions_location_mechanism_1_1)
+    mbfl_declare_varref(FLAG, false)
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler "handler_conditions_location_mechanism_1_1"
+
+	mbfl_condition_define _(condition_object_conditions_location_mechanism_1_1) "this is condition conditions_location_1_1"
+    }
+    mbfl_location_leave
+    dotest-equal 'this is condition conditions_location_1_1' "$FLAG"
+}
+function handler_conditions_location_mechanism_1_1 () {
+    if mbfl_condition_is_a _(condition_object_conditions_location_mechanism_1_1)
+    then
+	mbfl_condition_message_var _(FLAG) _(condition_object_conditions_location_mechanism_1_1)
+	mbfl_variable_unset(_(condition_object_conditions_location_mechanism_1_1))
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+# Build a condition object,  store it into a global variable, use it  upon exiting a location, unset
+# it.
+#
+function conditions-location-mechanism-1.2 () {
+    declare -g condition_object_conditions_location_mechanism_1_2
+    mbfl_declare_varref(FLAG, false)
+
+    mbfl_location_enter
+    {
+	mbfl_location_handler "handler_conditions_location_mechanism_1_2"
+
+	mbfl_default_object_declare(CND)
+	mbfl_condition_define _(CND) "this is condition conditions_location_1_2"
+	condition_object_conditions_location_mechanism_1_2=_(CND)
+    }
+    mbfl_location_leave
+    dotest-equal 'this is condition conditions_location_1_2' "$FLAG" && ! test -v "$condition_object_conditions_location_mechanism_1_2"
+}
+function handler_conditions_location_mechanism_1_2 () {
+    if mbfl_condition_is_a "$condition_object_conditions_location_mechanism_1_2"
+    then
+	mbfl_declare_nameref(CND, "$condition_object_conditions_location_mechanism_1_2")
+	mbfl_condition_message_var _(FLAG) _(CND)
+	mbfl_variable_unset(_(CND))
+    fi
+}
+
+
 #### let's go
 
 dotest conditions-
