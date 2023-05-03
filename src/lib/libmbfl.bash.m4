@@ -50,6 +50,7 @@ m4_undivert(getopts.bash)
 m4_undivert(program.bash)
 m4_undivert(process.bash)
 m4_undivert(conditions.bash)
+m4_undivert(exception-handlers.bash)
 m4_undivert(signal.bash)
 m4_undivert(times-and-dates.bash)
 m4_undivert(dialog.bash)
@@ -58,6 +59,7 @@ m4_undivert(system.bash)
 m4_undivert(semver.bash)
 
 function mbfl_library_initialise_libmbfl () {
+    mbfl_initialise_module_exception_handlers
     mbfl_initialise_module_conditions
 }
 

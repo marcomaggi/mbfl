@@ -51,165 +51,165 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 #### base class tests
 
 function conditions-base-define-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_condition_define _(ERR) 'this is an error message'
-    mbfl_condition_is_a _(ERR)
+    mbfl_condition_define _(CND) 'this is an error message' 'false'
+    mbfl_condition_is_a _(CND)
 }
 function conditions-base-accessors-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_condition_define _(ERR) 'this is an error message'
-    mbfl_condition_message_var _(MSG) _(ERR)
+    mbfl_condition_define _(CND) 'this is an error message' 'false'
+    mbfl_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is an error message' "$MSG"
 }
 function conditions-base-mutators-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_condition_define _(ERR) 'this is an error message'
-    mbfl_condition_message_set _(ERR) 'this is another error message'
-    mbfl_condition_message_var _(MSG) _(ERR)
+    mbfl_condition_define _(CND) 'this is an error message' 'false'
+    mbfl_condition_message_set _(CND) 'this is another error message'
+    mbfl_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is another error message' "$MSG"
 }
 function conditions-base-method-print-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_condition_define _(ERR) 'this is an error message'
-    mbfl_condition_print _(ERR) |& dotest-output 'this is an error message'
+    mbfl_condition_define _(CND) 'this is an error message' 'false'
+    mbfl_condition_print _(CND) |& dotest-output 'this is an error message'
 }
 
 
 #### error class tests
 
 function conditions-error-maker-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_error_condition_define _(ERR) 'this is an error message'
-    mbfl_error_condition_is_a _(ERR)
+    mbfl_error_condition_define _(CND) 'this is an error message' 'false'
+    mbfl_error_condition_is_a _(CND)
 }
 function conditions-error-accessors-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_error_condition_define _(ERR) 'this is an error message'
-    mbfl_error_condition_message_var _(MSG) _(ERR)
+    mbfl_error_condition_define _(CND) 'this is an error message' 'false'
+    mbfl_error_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is an error message' "$MSG"
 }
 function conditions-error-mutators-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_condition_define _(ERR) 'this is an error message'
-    mbfl_error_condition_message_set _(ERR) 'this is another error message'
-    mbfl_error_condition_message_var _(MSG) _(ERR)
+    mbfl_error_condition_define _(CND) 'this is an error message' 'false'
+    mbfl_error_condition_message_set _(CND) 'this is another error message'
+    mbfl_error_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is another error message' "$MSG"
 }
 function conditions-error-method-pring-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_error_condition_define _(ERR) 'this is an error message'
-    mbfl_condition_print _(ERR) |& dotest-output 'conditions.test: error: this is an error message'
+    mbfl_error_condition_define _(CND) 'this is an error message' 'false'
+    mbfl_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
 }
 
 
 #### warning class tests
 
 function conditions-warning-maker-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_warning_condition_define _(ERR) 'this is an warning message'
-    mbfl_warning_condition_is_a _(ERR)
+    mbfl_warning_condition_make _(CND) 'this is an warning message'
+    mbfl_warning_condition_is_a _(CND)
 }
 function conditions-warning-accessors-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_warning_condition_define _(ERR) 'this is an warning message'
-    mbfl_warning_condition_message_var _(MSG) _(ERR)
+    mbfl_warning_condition_make _(CND) 'this is an warning message'
+    mbfl_warning_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is an warning message' "$MSG"
 }
 function conditions-warning-mutators-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_condition_define _(ERR) 'this is an warning message'
-    mbfl_warning_condition_message_set _(ERR) 'this is another warning message'
-    mbfl_warning_condition_message_var _(MSG) _(ERR)
+    mbfl_warning_condition_make _(CND) 'this is an warning message'
+    mbfl_warning_condition_message_set _(CND) 'this is another warning message'
+    mbfl_warning_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is another warning message' "$MSG"
 }
 function conditions-warning-method-print-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_warning_condition_define _(ERR) 'this is an warning message'
-    mbfl_condition_print _(ERR) |& dotest-output 'conditions.test: warning: this is an warning message'
+    mbfl_warning_condition_make _(CND) 'this is an warning message'
+    mbfl_condition_print _(CND) |& dotest-output 'conditions.test: warning: this is an warning message'
 }
 
 
 #### runtime-error class tests
 
 function conditions-runtime-error-maker-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_runtime_error_condition_define _(ERR) 'this is an error message'
-    mbfl_runtime_error_condition_is_a _(ERR)
+    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
+    mbfl_runtime_error_condition_is_a _(CND)
 }
 function conditions-runtime-error-accessors-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_runtime_error_condition_define _(ERR) 'this is an error message'
-    mbfl_runtime_error_condition_message_var _(MSG) _(ERR)
+    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
+    mbfl_runtime_error_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is an error message' "$MSG"
 }
 function conditions-runtime-error-mutators-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_condition_define _(ERR) 'this is an error message'
-    mbfl_runtime_error_condition_message_set _(ERR) 'this is another error message'
-    mbfl_runtime_error_condition_message_var _(MSG) _(ERR)
+    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
+    mbfl_runtime_error_condition_message_set _(CND) 'this is another error message'
+    mbfl_runtime_error_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is another error message' "$MSG"
 }
 function conditions-runtime-error-method-print-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_runtime_error_condition_define _(ERR) 'this is an error message'
-    mbfl_condition_print _(ERR) |& dotest-output 'conditions.test: error: this is an error message'
+    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
+    mbfl_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
 }
 
 
 #### logic-error class tests
 
 function conditions-logic-error-maker-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_logic_error_condition_define _(ERR) 'this is an error message'
-    mbfl_logic_error_condition_is_a _(ERR)
+    mbfl_logic_error_condition_make _(CND) 'this is an error message'
+    mbfl_logic_error_condition_is_a _(CND)
 }
 function conditions-logic-error-accessors-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_logic_error_condition_define _(ERR) 'this is an error message'
-    mbfl_logic_error_condition_message_var _(MSG) _(ERR)
+    mbfl_logic_error_condition_make _(CND) 'this is an error message'
+    mbfl_logic_error_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is an error message' "$MSG"
 }
 function conditions-logic-error-mutators-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_condition_define _(ERR) 'this is an error message'
-    mbfl_logic_error_condition_message_set _(ERR) 'this is another error message'
-    mbfl_logic_error_condition_message_var _(MSG) _(ERR)
+    mbfl_logic_error_condition_make _(CND) 'this is an error message'
+    mbfl_logic_error_condition_message_set _(CND) 'this is another error message'
+    mbfl_logic_error_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is another error message' "$MSG"
 }
 function conditions-logic-error-method-print-1.1 () {
-    mbfl_default_object_declare(ERR)
+    mbfl_default_object_declare(CND)
 
-    mbfl_logic_error_condition_define _(ERR) 'this is an error message'
-    mbfl_condition_print _(ERR) |& dotest-output 'conditions.test: error: this is an error message'
+    mbfl_logic_error_condition_make _(CND) 'this is an error message'
+    mbfl_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
 }
 
 
@@ -225,7 +225,7 @@ function conditions-location-mechanism-1.1 () {
     {
 	mbfl_location_handler "handler_conditions_location_mechanism_1_1"
 
-	mbfl_condition_define _(condition_object_conditions_location_mechanism_1_1) "this is condition conditions_location_1_1"
+	mbfl_condition_define _(condition_object_conditions_location_mechanism_1_1) "this is condition conditions_location_1_1" 'false'
     }
     mbfl_location_leave
     dotest-equal 'this is condition conditions_location_1_1' "$FLAG"
@@ -252,7 +252,7 @@ function conditions-location-mechanism-1.2 () {
 	mbfl_location_handler "handler_conditions_location_mechanism_1_2"
 
 	mbfl_default_object_declare(CND)
-	mbfl_condition_define _(CND) "this is condition conditions_location_1_2"
+	mbfl_condition_define _(CND) "this is condition conditions_location_1_2" 'false'
 	condition_object_conditions_location_mechanism_1_2=_(CND)
     }
     mbfl_location_leave

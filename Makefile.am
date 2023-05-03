@@ -153,6 +153,7 @@ EXTRA_DIST			+=		\
 	src/modules/base.bash.m4		\
 	src/modules/dialog.bash.m4		\
 	src/modules/encode.bash.m4		\
+	src/modules/exception-handlers.bash.m4	\
 	src/modules/conditions.bash.m4		\
 	src/modules/fd.bash.m4			\
 	src/modules/file.bash.m4		\
@@ -185,6 +186,7 @@ MBFL_LIB_MODULES		=		\
 	src/modules/config-values.bash		\
 	src/modules/dialog.bash			\
 	src/modules/encode.bash			\
+	src/modules/exception-handlers.bash	\
 	src/modules/conditions.bash		\
 	src/modules/fd.bash			\
 	src/modules/file.bash			\
