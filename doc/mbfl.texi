@@ -3604,17 +3604,50 @@ false.
 @section Exceptional--condition objects
 
 
+Exceptional--condition objects are used to signal exceptional conditions while executing a script;
+these objects are handed to exception handlers to react to the condition.
+
 @menu
 * objects conditions base::             Base exceptional--condition objects.
 * objects conditions warning::          Warning exceptional--condition objects.
 * objects conditions error::            Error exceptional--condition objects.
 * objects conditions logic error::      Logic error exceptional--condition objects.
 * objects conditions runtime error::    Runtime exceptional--condition objects.
+* objects conditions invalid field::    Invalid value to object's field
+                                        exceptional--condition objects.
 @end menu
 
 @c page
 @node objects conditions base
 @subsection Base exceptional--condition objects
+
+
+All the exceptional--condition objects must be subclasses of @class{mbfl_condition_t}.  We can
+subclass it as follows:
+
+@example
+mbfl_default_class_declare_global(my_something_happened_t)
+
+mbfl_default_class_define _(my_something_happened_t) _(mbfl_condition_t) 'my_something_happened'
+
+function my_something_happened_make () @{
+    mbfl_mandatory_nameref_parameter(CND, 1, condition object)
+    mbfl_mandatory_parameter(MSG,         2, condition description)
+    declare CONTINUABLE='true'
+
+    my_something_happened_define _(CND) "$MSG" "$CONTINUABLE"
+@}
+@end example
+
+@noindent
+and we can use the subclass as follows:
+
+@example
+mbfl_default_object_declare(SOMETHING)
+
+my_something_happened_make _(SOMETHING) 'something happened'
+mbfl_raise _(SOMETHING)
+@end example
 
 
 @deftp {Abstract Class} mbfl_condition_t
@@ -3671,7 +3704,14 @@ exceptional--conditions are meant to be non--continuable no matter what.
 
 
 @dfn{Warning exceptional--conditions} are used to inform the user about something; for example the
-use of a dangerous or deprecated procedure.
+use of a dangerous or deprecated procedure.  We can use them as follows:
+
+@example
+mbfl_default_object_declare(WARNING)
+
+mbfl_warning_condition_make _(WARNING) 'starting dangerous situation'
+mbfl_raise _(WARNING)
+@end example
 
 Usually when an exceptional--condition of this class is raised: the correct handling is to just
 resum the execution of the script.
@@ -3776,7 +3816,14 @@ exceptional--conditions are meant to be non--continuable no matter what.
 
 @dfn{Logic error exceptional--conditions} are used to signal a programming error: something that
 should not happen in a perfect program.  For example: parameters of the wrong type handed to a
-function call; out--of--range array indexes.
+function call; out--of--range array indexes.  We can use them as follows:
+
+@example
+mbfl_default_object_declare(ERR)
+
+mbfl_logic_error_condition_make _(ERR) 'internal error'
+mbfl_raise _(ERR)
+@end example
 
 Usually when an exceptional--condition of this class is raised: the correct handling is to attempt a
 clean release of all the resources, then to terminate the program with an appropriate exit status.
@@ -3830,7 +3877,18 @@ exceptional--conditions are meant to be non--continuable no matter what.
 
 @dfn{Runtime error exceptional--conditions} are used to signal a runtime error: usually some sort of
 synchronisation problem between the current process and some other process or the user itself.  For
-example: file system errors; input/output errors; invalid file contents; invalid user requests.
+example: file system errors; input/output errors; invalid file contents; invalid user requests.  We
+can use them as follows:
+
+@example
+mbfl_default_object_declare(ERR)
+
+mbfl_runtime_error_condition_make _(ERR) 'internal error'
+mbfl_raise _(ERR)
+@end example
+
+Usually when an exceptional--condition of this class is raised: the correct handling is to attempt a
+clean release of all the resources, then to terminate the program with an appropriate exit status.
 
 
 @deftp {Class} mbfl_runtime_error_condition_t
@@ -3869,6 +3927,60 @@ Accessor and mutator for a message string describing the exceptional--condition.
 
 @defop {Accessor} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_continuable_set @var{CND} @var{BOOLEAN}
 @defopx {Mutator} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_continuable_var @var{BOOLEAN_RV} @var{CND}
+Accessor and mutator for a boolean value stating if this exceptional--condition is continuable or
+not.  We must be careful in changing the default setting for this state: some
+exceptional--conditions are meant to be non--continuable no matter what.
+@end defop
+
+@c page
+@node objects conditions invalid field
+@subsection Invalid value to object's field exceptional--condition objects
+
+
+@dfn{Invalid value to object's field exceptional--conditions} are used to signal a programming
+error: an attempt was performed to set an object's value to an invalid value; such conditions are
+usually raised by class accessors.
+
+Usually when an exceptional--condition of this class is raised: the correct handling is to attempt a
+clean release of all the resources, then to terminate the program with an appropriate exit status.
+
+
+@deftp {Class} mbfl_invalid_object_field_value_condition_t
+@deftpx {Superclass} mbfl_logic_error_condition_t
+@deftpx {Metaclass} mbfl_default_class
+Class describing invalid value to object's field exceptional--conditions.  By default instances of
+this type are non--continuable.
+@end deftp
+
+
+@defop {Constructor} {mbfl_condition_t} mbfl_invalid_object_field_value_condition_make @var{CND} @var{MESSAGE}
+Define an object previously declared with @class{mbfl_default_object_declare} or similar.  The
+parameter @var{MESSAGE} is the same of @func{mbfl_condition_define}.  The condition is
+non--continuable by default.
+@end defop
+
+
+@defop {Constructor} {mbfl_condition_t} mbfl_invalid_object_field_value_condition_define @var{CND} @var{MESSAGE} @var{CONTINUABLE}
+Define an object previously declared with @class{mbfl_default_object_declare} or similar.  This is
+an internal constructor that should not be used directly by client code.  The parameters
+@var{MESSAGE} and @var{CONTINUABLE} are the same of @func{mbfl_condition_define}.
+@end defop
+
+
+@defop {Predicate} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_is_a @var{OBJ}
+Return true if @var{OBJ} is an instance of @class{mbfl_invalid_object_field_value_condition_t}; otherwise return
+false.
+@end defop
+
+
+@defop {Accessor} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_message_set @var{CND} @var{MESSAGE_STRING}
+@defopx {Mutator} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_message_var @var{MESSAGE_STRING_RV} @var{CND}
+Accessor and mutator for a message string describing the exceptional--condition.
+@end defop
+
+
+@defop {Accessor} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_continuable_set @var{CND} @var{BOOLEAN}
+@defopx {Mutator} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_continuable_var @var{BOOLEAN_RV} @var{CND}
 Accessor and mutator for a boolean value stating if this exceptional--condition is continuable or
 not.  We must be careful in changing the default setting for this state: some
 exceptional--conditions are meant to be non--continuable no matter what.
