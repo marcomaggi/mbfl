@@ -168,7 +168,6 @@ EXTRA_DIST			+=		\
 	src/modules/process.bash.m4		\
 	src/modules/program.bash.m4		\
 	src/modules/semver.bash.m4		\
-	src/modules/shell.bash.m4		\
 	src/modules/signal.bash.m4		\
 	src/modules/string.bash.m4		\
 	src/modules/object.bash.m4		\
@@ -201,7 +200,6 @@ MBFL_LIB_MODULES		=		\
 	src/modules/process.bash		\
 	src/modules/program.bash		\
 	src/modules/semver.bash			\
-	src/modules/shell.bash			\
 	src/modules/signal.bash			\
 	src/modules/string.bash			\
 	src/modules/object.bash			\

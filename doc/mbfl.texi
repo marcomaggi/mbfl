@@ -2934,28 +2934,28 @@ variable:
 @subsection Parameters naming conventions
 
 
-@cindex @var{STDOBJ} function parameter
-@cindex @var{STDCLS} function parameter
-@cindex @var{STDMETACLS} function parameter
-@cindex Function parameter @var{STDOBJ}
-@cindex function parameter @var{STDCLS}
-@cindex function parameter @var{STDMETACLS}
-@cindex Parameter @var{STDOBJ}
-@cindex Parameter @var{STDCLS}
-@cindex Parameter @var{STDMETACLS}
+@cindex @var{DEFOBJ} function parameter
+@cindex @var{DEFCLS} function parameter
+@cindex @var{DEFMETACLS} function parameter
+@cindex Function parameter @var{DEFOBJ}
+@cindex function parameter @var{DEFCLS}
+@cindex function parameter @var{DEFMETACLS}
+@cindex Parameter @var{DEFOBJ}
+@cindex Parameter @var{DEFCLS}
+@cindex Parameter @var{DEFMETACLS}
 
 
-In this documentation we use @var{STDOBJ} as function parameter name to indicate that the parameter
+In this documentation we use @var{DEFOBJ} as function parameter name to indicate that the parameter
 given to a function call must be a string representing the name of data variable: such variable must
 be a Bash array containing a default object, that is the instance of a default class.  If the
 function is given a parameter of another type: its behaviour is undefined.
 
-In this documentation we use @var{STDCLS} as function parameter name to indicate that the parameter
+In this documentation we use @var{DEFCLS} as function parameter name to indicate that the parameter
 given to a function call must be a string representing the name of data variable: such variable must
 be a Bash array containing a default class object, that is the instance of a default metaclass.
 If the function is given a parameter of another type: its behaviour is undefined.
 
-In this documentation we use @var{STDMETACLS} as function parameter name to indicate that the
+In this documentation we use @var{DEFMETACLS} as function parameter name to indicate that the
 parameter given to a function call must be a string representing the name of data variable: such
 variable must be a Bash array containing a default metaclass object, that is the instance of a
 default metaclass itself representing a metaclass.  If the function is given a parameter of another
@@ -2964,8 +2964,8 @@ type: its behaviour is undefined.
 If functions are described as follows:
 
 @example
-my_func @var{STDOBJ}
-my_other_func @var{STDCLS}
+my_func @var{DEFOBJ}
+my_other_func @var{DEFCLS}
 @end example
 
 @noindent
@@ -3271,6 +3271,21 @@ The metaclass of @class{mbfl_default_object}.  It is also the metaclass of all t
 @subsection Operating on default classes
 
 
+Here is a usage example:
+
+@example
+mbfl_default_class_declare(color)
+mbfl_default_object_declare(dark_slate_blue)
+
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
+color_define _(dark_slate_blue) 72 61 139
+
+mbfl_declare_varref(RED)
+color_red_var _(RED) _(dark_slate_blue)
+$RED    @result{} 72
+@end example
+
+
 @deftp {Class} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_class
 Default class of objects used by @mbfl{}.  It has no superclass.  It defines no fields aside from a
@@ -3288,10 +3303,11 @@ of which is a data variable whose name we can pass around as parameter to functi
 @end deffn
 
 
-@defun mbfl_default_class_define @var{STDCLS} @var{STDMETACLS} @var{CLASS_NAME} @var{FIELD_SPECS}
-Define a new default class @var{STDCLS} whose metaclass is @var{STDMETACLS}.
+@defun mbfl_default_class_define @var{DEFCLS} @var{DEFSUPERCLS} @var{CLASS_NAME} @var{FIELD_SPECS}
+Define a new default class @var{DEFCLS} whose superclass is @var{DEFSUPERCLS}.  By using this
+function we decide that the metaclass of the new class is @class{mbfl_default_class}.
 
-If we want to subclass @class{mbfl_default_object}, then the parameter @var{STDMETACLS} must be the
+If we want to subclass @class{mbfl_default_object}, then the parameter @var{DEFSUPERCLS} must be the
 datavar of @class{mbfl_default_object}; otherwise it must be the datavar of a subclass of
 @class{mbfl_default_object}.
 
@@ -3301,24 +3317,24 @@ The name of the new class is the identifier @var{CLASS_NAME}, which must be a st
 The following functions are defined:
 
 @table @code
-@item @var{CLASS_NAME}_define @var{STDOBJ} @var{FIELD_VALUE} @dots{}
-Initialise @var{STDOBJ} as instance of @var{STDCLS} filling its fields with the given
+@item @var{CLASS_NAME}_define @var{DEFOBJ} @var{FIELD_VALUE} @dots{}
+Initialise @var{DEFOBJ} as instance of @var{DEFCLS} filling its fields with the given
 @var{FIELD_VALUE} parameters.
 
-@item @var{CLASS_NAME}_is_a @var{STDOBJ}
-Return true if @var{STDOBJ} is an instance of @var{STDCLS}; otherwise return false.
+@item @var{CLASS_NAME}_is_a @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @var{DEFCLS}; otherwise return false.
 
-@item @var{CLASS_NAME}_@var{FIELD_NAME}_var @var{RV} @var{STDOBJ}
+@item @var{CLASS_NAME}_@var{FIELD_NAME}_var @var{RV} @var{DEFOBJ}
 Field accessor: store in the result variable @var{RV} the value of the field @var{FIELD_NAME}.
 
-@item @var{CLASS_NAME}_@var{FIELD_NAME}_set @var{STDOBJ} @var{NEW_FIELD_VALUE}
+@item @var{CLASS_NAME}_@var{FIELD_NAME}_set @var{DEFOBJ} @var{NEW_FIELD_VALUE}
 Field mutator: store in the field the new value @var{NEW_FIELD_VALUE}.
 @end table
 @end defun
 
 
-@defun mbfl_default_class_is_a @var{STDOBJ}
-Return true if @var{STDOBJ} is an instance of @class{mbfl_default_class} or of a subclass of
+@defun mbfl_default_class_is_a @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_default_class} or of a subclass of
 @class{mbfl_default_class}; otherwise return false.
 
 @example
@@ -3326,22 +3342,22 @@ mbfl_default_class_is_a _(mbfl_default_class)  @result{} true
 mbfl_default_class_is_a _(mbfl_default_object) @result{} true
 
 mbfl_default_class_declare(color)
-mbfl_default_class_define _(color) _(mbfl_default_object) r g b
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' r g b
 mbfl_default_class_is_a _(color) @result{} true
 @end example
 @end defun
 
 
-@defun mbfl_default_metaclass_is_a @var{STDOBJ}
-Return true if @var{STDOBJ} is an object that meets the following criteria:
+@defun mbfl_default_metaclass_is_a @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an object that meets the following criteria:
 
 @enumerate
 @item
-the class of @var{STDOBJ} is @class{mbfl_default_class} or a subclass of
+the class of @var{DEFOBJ} is @class{mbfl_default_class} or a subclass of
 @class{mbfl_default_class};
 
 @item
-@var{STDOBJ} itself must be a subclass of @class{mbfl_default_class}.
+@var{DEFOBJ} itself must be a subclass of @class{mbfl_default_class}.
 @end enumerate
 
 @example
@@ -3351,44 +3367,44 @@ mbfl_default_metaclass_is_a _(mbfl_default_class)  @result{} true
 @end defun
 
 
-@defun mbfl_default_class_parent_var @var{PARENT_RV} @var{STDCLS}
-Store in the result variable @var{PARENT_RV} the data variable of the parent of @var{STDCLS}.
+@defun mbfl_default_class_parent_var @var{PARENT_RV} @var{DEFCLS}
+Store in the result variable @var{PARENT_RV} the data variable of the parent of @var{DEFCLS}.
 
 @example
 mbfl_default_class_declare(color)
-declare PARENT
+mbfl_declare_varref(PARENT)
 
 mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
-mbfl_default_class_parent_var PARENT _(color)
+mbfl_default_class_parent_var _(PARENT) _(color)
 $PARENT @result{} _(mbfl_default_object)
 @end example
 @end defun
 
 
-@defun mbfl_default_class_name_var @var{NAME_RV} @var{STDCLS}
-Store in the result variable @var{NAME_RV} the string representing the name of @var{STDCLS}.
+@defun mbfl_default_class_name_var @var{NAME_RV} @var{DEFCLS}
+Store in the result variable @var{NAME_RV} the string representing the name of @var{DEFCLS}.
 
 @example
 mbfl_default_class_declare(color)
-declare NAME
+mbfl_declare_varref(NAME)
 
 mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
-mbfl_default_class_name_var NAME _(color)
+mbfl_default_class_name_var _(NAME) _(color)
 $NAME @result{} color
 @end example
 @end defun
 
 
-@defun mbfl_default_class_fields_number_var @var{FIELDS_NUMBER_RV} @var{STDCLS}
+@defun mbfl_default_class_fields_number_var @var{FIELDS_NUMBER_RV} @var{DEFCLS}
 Store in the result variable @var{FIELDS_NUMBER_RV} the number of fields in instances of
-@var{STDCLS}.
+@var{DEFCLS}.
 
 @example
 mbfl_default_class_declare(color)
-declare FIELDS_NUMBER
+mbfl_declare_varref(FIELDS_NUMBER)
 
 mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
-mbfl_default_class_fields_number_var FIELDS_NUMBER _(color)
+mbfl_default_class_fields_number_var _(FIELDS_NUMBER) _(color)
 $FIELDS_NUMBER @result{} 3
 @end example
 @end defun
@@ -3429,15 +3445,15 @@ of which is a data variable whose name we can pass around as parameter to functi
 @end deffn
 
 
-@defun mbfl_default_object_define @var{STDOBJ} @var{STDCLS} @var{FIELD_VALUE} @dots{}
-Initialise the default object @var{STDOBJ} whose class is @var{STDCLS}.  Store the
+@defun mbfl_default_object_define @var{DEFOBJ} @var{DEFCLS} @var{FIELD_VALUE} @dots{}
+Initialise the default object @var{DEFOBJ} whose class is @var{DEFCLS}.  Store the
 @var{FIELD_VALUE} in the fields; the @var{FIELD_VALUE} parameters must be in the same order in which
 the fields were previously defined in the call to @func{mbfl_default_object_define}.
 @end defun
 
 
-@defun mbfl_default_object_class_var @var{CLASS_RV} @var{STDOBJ}
-Store in the result variable @var{CLASS_RV} the data variable of the class of @var{STDOBJ}.
+@defun mbfl_default_object_class_var @var{CLASS_RV} @var{DEFOBJ}
+Store in the result variable @var{CLASS_RV} the data variable of the class of @var{DEFOBJ}.
 
 @example
 mbfl_default_class_declare(color)
@@ -3457,7 +3473,7 @@ $CLASS          @result{} _(color)
 @end defun
 
 
-@defun mbfl_default_object_is_a @var{STDOBJ}
+@defun mbfl_default_object_is_a @var{DEFOBJ}
 Return true if the given parameter is the datavar of an object whose class is a subclass of
 @class{mbfl_default_object}; otherwise return false.
 
@@ -3473,15 +3489,15 @@ mbfl_default_object_is_a _(dark_slate_blue) @result{} true
 @end defun
 
 
-@defun mbfl_default_object_is_of_class @var{STDOBJ} @var{STDCLS}
+@defun mbfl_default_object_is_of_class @var{DEFOBJ} @var{DEFCLS}
 Return true if the following criteria are met:
 
 @enumerate
 @item
-@var{STDOBJ} is a default object: its class is a subclass of @class{mbfl_default_object};
+@var{DEFOBJ} is a default object: its class is a subclass of @class{mbfl_default_object};
 
 @item
-the class of @var{STDOBJ} is @var{STDCLS} or a subclass of @var{STDCLS};
+the class of @var{DEFOBJ} is @var{DEFCLS} or a subclass of @var{DEFCLS};
 @end enumerate
 
 @example
@@ -3501,12 +3517,12 @@ mbfl_default_object_is_of_class _(dark_slate_blue) _(color)
 @section Default object predicates
 
 
-@defun mbfl_default_object_is_the_default_object @var{STDOBJ}
+@defun mbfl_default_object_is_the_default_object @var{DEFOBJ}
 Return true if the parameter is the datavar of @class{mbfl_default_object}; otherwise return false.
 @end defun
 
 
-@defun mbfl_default_object_is_the_default_class @var{STDOBJ}
+@defun mbfl_default_object_is_the_default_class @var{DEFOBJ}
 Return true if the parameter is the datavar of @class{mbfl_default_class}; otherwise return false.
 @end defun
 
@@ -3550,15 +3566,15 @@ Class of objects representing unique constant values.
 @end deftp
 
 
-@defun mbfl_predefined_constant_define @var{STDOBJ}
+@defun mbfl_predefined_constant_define @var{DEFOBJ}
 Define a new instance of @objtype{mbfl_predefined_constant} and store its fields in the data
 variable @var{STRU_DATAVAR}.
 @end defun
 
 
-@defun mbfl_predefined_constant_is_a @var{STDOBJ}
+@defun mbfl_predefined_constant_is_a @var{DEFOBJ}
 Return true if the parameter is the datavar of a data--structure instance of type
-@objtype{mbfl_predefined_constant}; otherwise return false.  The parameter @var{STDOBJ} must be an
+@objtype{mbfl_predefined_constant}; otherwise return false.  The parameter @var{DEFOBJ} must be an
 object.
 @end defun
 
@@ -3573,12 +3589,12 @@ A unique value used as function call parameter to indicate an unspecified value.
 @end defivar
 
 
-@defun mbfl_is_the_undefined @var{STDOBJ}
+@defun mbfl_is_the_undefined @var{DEFOBJ}
 Return true if the parameter is the data variable of @code{mbfl_undefined}; otherwise return false.
 @end defun
 
 
-@defun mbfl_is_the_unspecified @var{STDOBJ}
+@defun mbfl_is_the_unspecified @var{DEFOBJ}
 Return true if the parameter is the data variable of @code{mbfl_unspecified}; otherwise return
 false.
 @end defun
