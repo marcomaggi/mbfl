@@ -67,21 +67,6 @@ function mbfl_initialise_module_conditions () {
     }
 }
 
-function mbfl_string_normalise_boolean_var () {
-    mbfl_mandatory_nameref_parameter(NORMAL_RV, 1, result variable)
-    mbfl_mandatory_nameref_parameter(VAL,       2, possible boolean value)
-
-    case "$VAL" in
-	'true'|'false')	NORMAL_RV=$VAL		;;
-	'yes'|'1')	NORMAL_RV='true'	;;
-	'no'|'0')	NORMAL_RV='false'	;;
-	*)
-	    return_failure
-	    ;;
-    esac
-    return_success
-}
-
 
 #### predefined core condition object classes
 

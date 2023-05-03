@@ -784,6 +784,24 @@ function mbfl_string_strip_prefix_and_suffix_var () {
 }
 
 
+#### values normalisation
+
+function mbfl_string_normalise_boolean_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_NORMAL_RV,	1, result variable)
+    mbfl_mandatory_parameter(mbfl_VAL,			2, possible boolean value)
+
+    case "$mbfl_VAL" in
+	'true'|'false')	mbfl_NORMAL_RV=$mbfl_VAL	;;
+	'yes'|'1')	mbfl_NORMAL_RV='true'		;;
+	'no'|'0')	mbfl_NORMAL_RV='false'		;;
+	*)
+	    return_failure
+	    ;;
+    esac
+    return_success
+}
+
+
 #### miscellaneous
 
 function mbfl_string_replace () {

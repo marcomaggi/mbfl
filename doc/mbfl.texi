@@ -3888,6 +3888,7 @@ exceptional--conditions are meant to be non--continuable no matter what.
 * strings comparison::          Comparing strings.
 * strings encoding::            Encoding and decoding strings.
 * strings stripping::           Stripping substrings from strings.
+* strings normalisation::       Normalising strings.
 * strings misc::                Miscellaneous functions.
 @end menu
 
@@ -5217,6 +5218,30 @@ mbfl_string_strip_prefix_and_suffix_var RV 'hello' 'ciao mamma' 'mom'      @resu
 "$RV"                                                                      @result{} 'ciao mamma'
 @end example
 @end defun
+
+@c page
+@node strings normalisation
+@section Normalising strings
+
+
+@defun mbfl_string_normalise_boolean_var @var{NORMAL_RV} @var{STR}
+Normalise @var{STR} as a boolean string representation and store the result in the result variable
+@var{NORMAL_RV}; when successful return true, otherwise return false.
+
+Normalised boolean values are: @samp{true}, @samp{false}.
+
+Supported values for @var{STR} are: @samp{true}, @samp{false}, @samp{yes}, @samp{no}, @samp{1},
+@samp{0}.
+
+@example
+mbfl_declare_varref(NORMAL_STR)
+
+mbfl_string_normalise_boolean_var mbfl_datavar(NORMAL_RV) 'yes'
+$NORMAL_RV              @result{} true
+eval $NORMAL_RV         @result{} 0
+@end example
+@end defun
+
 
 @c page
 @node strings misc

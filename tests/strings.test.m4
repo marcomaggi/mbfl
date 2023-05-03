@@ -40,6 +40,8 @@
 mbfl_load_library("$MBFL_LIBMBFL_CORE")
 mbfl_load_library("$MBFL_LIBMBFL_TEST")
 
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+
 
 #### quoted characters
 
@@ -684,7 +686,7 @@ function string-split-1.3 () {
     declare -a SPLITFIELD
 
     string=abc:def:ghi:lmn:opq:rs
-    mbfl_string_split "$string" _
+    mbfl_string_split "$string" [[[_]]]
     dotest-equal 1 $SPLITCOUNT && dotest-equal $string "${SPLITFIELD[0]}"
 }
 function string-split-1.4 () {
@@ -1858,6 +1860,51 @@ function string-bool-2.1 () {
 }
 function string-bool-2.2 () {
     mbfl_string_is_false 'false'
+}
+
+
+#### strings normalisation
+
+function string-normalisation-boolean-1.1.1 () {
+    mbfl_declare_varref(STR)
+
+    mbfl_string_normalise_boolean_var _(STR) 'true' &&
+	dotest-equal 'true' "$STR"
+}
+function string-normalisation-boolean-1.1.2 () {
+    mbfl_declare_varref(STR)
+
+    mbfl_string_normalise_boolean_var _(STR) 'false' &&
+	dotest-equal 'false' "$STR"
+}
+function string-normalisation-boolean-1.2.1 () {
+    mbfl_declare_varref(STR)
+
+    mbfl_string_normalise_boolean_var _(STR) 'yes' &&
+	dotest-equal 'true' "$STR"
+}
+function string-normalisation-boolean-1.2.2 () {
+    mbfl_declare_varref(STR)
+
+    mbfl_string_normalise_boolean_var _(STR) 'no' &&
+	dotest-equal 'false' "$STR"
+}
+function string-normalisation-boolean-1.3.1 () {
+    mbfl_declare_varref(STR)
+
+    mbfl_string_normalise_boolean_var _(STR) '1' &&
+	dotest-equal 'true' "$STR"
+}
+function string-normalisation-boolean-1.3.2 () {
+    mbfl_declare_varref(STR)
+
+    mbfl_string_normalise_boolean_var _(STR) '0' &&
+	dotest-equal 'false' "$STR"
+}
+function string-normalisation-boolean-1.4 () {
+    mbfl_declare_varref(STR)
+
+    ! mbfl_string_normalise_boolean_var _(STR) 'ciao'
 }
 
 
