@@ -402,7 +402,7 @@ function mbfl_main () {
 }
 function mbfl_main_check_mbfl_semantic_version () {
     # First check for a validating function defined by the script.
-    if mbfl_shell_is_function 'script_check_mbfl_semantic_version'
+    if mbfl_function_exists 'script_check_mbfl_semantic_version'
     then
 	if ! script_check_mbfl_semantic_version "$mbfl_SEMANTIC_VERSION"
 	then
@@ -442,7 +442,7 @@ function mbfl_main_check_mbfl_semantic_version_variable () {
 #
 function mbfl_invoke_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if mbfl_shell_is_function "$FUNC"
+    if mbfl_function_exists "$FUNC"
     then $FUNC
     else return 0
     fi
@@ -452,7 +452,7 @@ function mbfl_invoke_script_function () {
 #
 function mbfl_invoke_existent_script_function () {
     mbfl_mandatory_parameter(FUNC, 1, function name)
-    if mbfl_shell_is_function "$FUNC"
+    if mbfl_function_exists "$FUNC"
     then $FUNC
     else
 	mbfl_message_error_printf 'internal error: request to call non-existent function \"%s\"' "$FUNC"

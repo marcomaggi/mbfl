@@ -60,6 +60,10 @@ changes!
   distribution: it is no more  used, developed and supported.  The files
   are still in the repository.
 
+* BACKWARDS INCOMPATIBILITY Removed the function:
+
+    mbfl_shell_is_function
+
 * Added GNU Emacs  module that adds support for MBFL  to shell mode; its
   installation is enabled with the configuration option "--with-emacs".
 

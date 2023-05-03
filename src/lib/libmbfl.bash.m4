@@ -30,7 +30,6 @@ shopt -s expand_aliases
 
 m4_undivert(config-values.bash)
 m4_undivert(base.bash)
-m4_undivert(shell.bash)
 m4_undivert(main.bash)
 m4_undivert(string.bash)
 m4_undivert(integers.bash)
