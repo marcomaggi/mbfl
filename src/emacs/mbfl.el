@@ -303,6 +303,7 @@
        "mbfl_string_strip_prefix_var"
        "mbfl_string_strip_suffix_var"
        "mbfl_string_strip_prefix_and_suffix_var"
+       "mbfl_string_normalise_boolean_var"
        ;;
        "mbfl_integer_equal"
        "mbfl_integer_not_equal"
