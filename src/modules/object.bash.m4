@@ -282,6 +282,14 @@ function mbfl_default_object_class_var () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing an object of type mbfl_default_object)
     mbfl_CLASS_RV=_(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX)
 }
+function mbfl_default_object_class_name_var () {
+    mbfl_mandatory_nameref_parameter(NAME, 1, result variable)
+    mbfl_mandatory_nameref_parameter(OBJ,  2, default object)
+    mbfl_declare_varref(CLASS)
+
+    mbfl_default_object_class_var _(CLASS) _(OBJ)
+    mbfl_default_class_name_var   _(NAME)  "$CLASS"
+}
 
 function mbfl_default_object_call_method () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to object of class mbfl_default_object)

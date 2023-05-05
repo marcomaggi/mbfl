@@ -3456,7 +3456,7 @@ Store in the result variable @var{CLASS_RV} the data variable of the class of @v
 mbfl_default_class_declare(color)
 mbfl_default_object_declare(dark_slate_blue)
 
-mbfl_default_class_define _(color) _(mbfl_default_object) r g b
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' r g b
 color_define _(dark_slate_blue) 72 61 139
 
 declare METACLASS CLASS
@@ -3470,6 +3470,25 @@ $CLASS          @result{} _(color)
 @end defun
 
 
+@defun mbfl_default_object_class_name_var @var{NAME_RV} @var{DEFOBJ}
+Store in the result variable @var{NAME_RV} a string representing @var{DEFOBJ}'s class name.
+
+@example
+mbfl_default_class_declare(color)
+mbfl_default_object_declare(dark_slate_blue)
+
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' r g b
+color_define _(dark_slate_blue) 72 61 139
+
+mbfl_declare_varref(NAME)
+
+mbfl_default_object_class_name_var _(NAME) _(dark_slate_blue)
+
+"$NAME"         @result{} color
+@end example
+@end defun
+
+
 @defun mbfl_default_object_is_a @var{DEFOBJ}
 Return true if the given parameter is the datavar of an object whose class is a subclass of
 @class{mbfl_default_object}; otherwise return false.
@@ -3478,7 +3497,7 @@ Return true if the given parameter is the datavar of an object whose class is a 
 mbfl_default_class_declare(color)
 mbfl_default_object_declare(dark_slate_blue)
 
-mbfl_default_class_define _(color) _(mbfl_default_object) r g b
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' r g b
 color_define _(dark_slate_blue) 72 61 139
 
 mbfl_default_object_is_a _(dark_slate_blue) @result{} true
@@ -3501,7 +3520,7 @@ the class of @var{DEFOBJ} is @var{DEFCLS} or a subclass of @var{DEFCLS};
 mbfl_default_class_declare(color)
 mbfl_default_object_declare(dark_slate_blue)
 
-mbfl_default_class_define _(color) _(mbfl_default_object) r g b
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color' r g b
 color_define _(dark_slate_blue) 72 61 139
 
 mbfl_default_object_is_of_class _(dark_slate_blue) _(color)

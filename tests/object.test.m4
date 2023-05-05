@@ -60,6 +60,11 @@ function object-default-object-1.3 () {
 function object-default-object-1.4 () {
     mbfl_default_class_is_a _(mbfl_default_object)
 }
+function object-default-object-1.5 () {
+    mbfl_declare_varref(NAME)
+    mbfl_default_object_class_name_var _(NAME) _(mbfl_default_object)
+    dotest-equal 'mbfl_default_class' "$NAME"
+}
 
 ### ------------------------------------------------------------------------
 ### inspecting the fields
