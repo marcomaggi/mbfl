@@ -124,10 +124,178 @@ function exception-handlers-continuable-exception-1.1 () {
 
 #### multiple handlers
 
+# Raise no exception.
+#
 function exception-handlers-operations-1.1 () {
     # Configure which exceptional-condition will be raised.
     #
     declare -rA RAISE=([ALPHA]=false [BETA]=false [GAMMA]=false)
+
+    # Configure which exceptional-condition will be handled successfully and will cause execution to
+    # resume as if nothing happened.
+    #
+    declare -rA HANDLE_SUCCESSFULLY=([ALPHA]=false [BETA]=false [GAMMA]=false)
+
+    # Describe which operatio step function returned successfully.
+    #
+    declare -a OPERATION_STEP_SUCCESS=([0]=false [1]=false [2]=false [3]=false)
+
+    declare EXCEPTION_HANDLER_RETURN_STATUS='no-exception'
+
+    mbfl_declare_varref(CONDITION_MESSAGE)
+
+    if test_operation_1_step_0
+    then OPERATION_STEP_SUCCESS[0]=true
+    fi
+
+    dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 3)	'operation step 3 status'     &&
+	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 2)	'operation step 2 status'     &&
+	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 1)	'operation step 1 status'     &&
+	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 0)	'operation step 0 status'     &&
+	dotest-equal 'no-exception' "$EXCEPTION_HANDLER_RETURN_STATUS" 'exception handler result' &&
+	mbfl_string_empty(CONDITION_MESSAGE)
+}
+
+### ------------------------------------------------------------------------
+
+# Raise exception gamma, handle it successfully.
+#
+function exception-handlers-operations-2.1 () {
+    # Configure which exceptional-condition will be raised.
+    #
+    declare -rA RAISE=([ALPHA]=false [BETA]=false [GAMMA]=true)
+
+    # Configure which exceptional-condition will be handled successfully and will cause execution to
+    # resume as if nothing happened.
+    #
+    declare -rA HANDLE_SUCCESSFULLY=([ALPHA]=false [BETA]=false [GAMMA]=true)
+
+    # Describe which operatio step function returned successfully.
+    #
+    declare -a OPERATION_STEP_SUCCESS=([0]=false [1]=false [2]=false [3]=false)
+
+    mbfl_declare_varref(CONDITION_MESSAGE)
+
+    #dotest-set-debug
+
+    if test_operation_1_step_0
+    then OPERATION_STEP_SUCCESS[0]=true
+    fi
+
+    dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 3)	'operation step 3 status'     &&
+	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 2)	'operation step 2 status'     &&
+	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 1)	'operation step 1 status'     &&
+	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 0)	'operation step 0 status'     &&
+	dotest-equal	'handler-success' "$EXCEPTION_HANDLER_RETURN_STATUS" 'exception handler result' &&
+	dotest-equal	'this is a gamma condition' "$CONDITION_MESSAGE"
+}
+
+# Raise exception gamma, handling failure.
+#
+function exception-handlers-operations-2.2 () {
+    # Configure which exceptional-condition will be raised.
+    #
+    declare -rA RAISE=([ALPHA]=false [BETA]=false [GAMMA]=true)
+
+    # Configure which exceptional-condition will be handled successfully and will cause execution to
+    # resume as if nothing happened.
+    #
+    declare -rA HANDLE_SUCCESSFULLY=([ALPHA]=false [BETA]=false [GAMMA]=false)
+
+    # Describe which operatio step function returned successfully.
+    #
+    declare -a OPERATION_STEP_SUCCESS=([0]=false [1]=false [2]=false [3]=false)
+
+    mbfl_declare_varref(CONDITION_MESSAGE)
+
+    #dotest-set-debug
+
+    if test_operation_1_step_0
+    then OPERATION_STEP_SUCCESS[0]=true
+    fi
+
+    dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 3)	'operation step 3 status'     &&
+	dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 2)	'operation step 2 status'     &&
+	dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 1)	'operation step 1 status'     &&
+	dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 0)	'operation step 0 status'     &&
+	dotest-equal	'handler-failure' "$EXCEPTION_HANDLER_RETURN_STATUS" 'exception handler result' &&
+	dotest-equal	'this is a gamma condition' "$CONDITION_MESSAGE"
+}
+
+### ------------------------------------------------------------------------
+
+# Raise exception beta, handle it successfully.
+#
+function exception-handlers-operations-3.1 () {
+    # Configure which exceptional-condition will be raised.
+    #
+    declare -rA RAISE=([ALPHA]=false [BETA]=true [GAMMA]=false)
+
+    # Configure which exceptional-condition will be handled successfully and will cause execution to
+    # resume as if nothing happened.
+    #
+    declare -rA HANDLE_SUCCESSFULLY=([ALPHA]=false [BETA]=true [GAMMA]=false)
+
+    # Describe which operatio step function returned successfully.
+    #
+    declare -a OPERATION_STEP_SUCCESS=([0]=false [1]=false [2]=false [3]=false)
+
+    mbfl_declare_varref(CONDITION_MESSAGE)
+
+    #dotest-set-debug
+
+    if test_operation_1_step_0
+    then OPERATION_STEP_SUCCESS[0]=true
+    fi
+
+    dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 3)	'operation step 3 status'     &&
+	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 2)	'operation step 2 status'     &&
+	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 1)	'operation step 1 status'     &&
+	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 0)	'operation step 0 status'     &&
+	dotest-equal	'handler-success' "$EXCEPTION_HANDLER_RETURN_STATUS" 'exception handler result' &&
+	dotest-equal	'this is a beta condition' "$CONDITION_MESSAGE"
+}
+
+# Raise exception beta, handle it with failure.
+#
+function exception-handlers-operations-3.2 () {
+    # Configure which exceptional-condition will be raised.
+    #
+    declare -rA RAISE=([ALPHA]=false [BETA]=true [GAMMA]=false)
+
+    # Configure which exceptional-condition will be handled successfully and will cause execution to
+    # resume as if nothing happened.
+    #
+    declare -rA HANDLE_SUCCESSFULLY=([ALPHA]=false [BETA]=false [GAMMA]=false)
+
+    # Describe which operatio step function returned successfully.
+    #
+    declare -a OPERATION_STEP_SUCCESS=([0]=false [1]=false [2]=false [3]=false)
+
+    mbfl_declare_varref(CONDITION_MESSAGE)
+
+    #dotest-set-debug
+
+    if test_operation_1_step_0
+    then OPERATION_STEP_SUCCESS[0]=true
+    fi
+
+    dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 3)	'operation step 3 status'     &&
+	dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 2)	'operation step 2 status'     &&
+	dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 1)	'operation step 1 status'     &&
+	dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 0)	'operation step 0 status'     &&
+	dotest-equal	'handler-failure' "$EXCEPTION_HANDLER_RETURN_STATUS" 'exception handler result' &&
+	dotest-equal	'this is a beta condition' "$CONDITION_MESSAGE"
+}
+
+### ------------------------------------------------------------------------
+
+# Raise exception alpha, handle it successfully.
+#
+function exception-handlers-operations-4.1 () {
+    # Configure which exceptional-condition will be raised.
+    #
+    declare -rA RAISE=([ALPHA]=true [BETA]=false [GAMMA]=false)
 
     # Configure which exceptional-condition will be handled successfully and will cause execution to
     # resume as if nothing happened.
@@ -140,6 +308,8 @@ function exception-handlers-operations-1.1 () {
 
     mbfl_declare_varref(CONDITION_MESSAGE)
 
+    #dotest-set-debug
+
     if test_operation_1_step_0
     then OPERATION_STEP_SUCCESS[0]=true
     fi
@@ -148,17 +318,21 @@ function exception-handlers-operations-1.1 () {
 	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 2)	'operation step 2 status'     &&
 	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 1)	'operation step 1 status'     &&
 	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 0)	'operation step 0 status'     &&
-	mbfl_string_empty(CONDITION_MESSAGE)
+	dotest-equal	'handler-success' "$EXCEPTION_HANDLER_RETURN_STATUS" 'exception handler result' &&
+	dotest-equal	'this is an alpha condition' "$CONDITION_MESSAGE"
 }
-function exception-handlers-operations-2.1 () {
+
+# Raise exception alpha, handle it with failure.
+#
+function exception-handlers-operations-4.2 () {
     # Configure which exceptional-condition will be raised.
     #
-    declare -rA RAISE=([ALPHA]=false [BETA]=false [GAMMA]=true)
+    declare -rA RAISE=([ALPHA]=true [BETA]=false [GAMMA]=false)
 
     # Configure which exceptional-condition will be handled successfully and will cause execution to
     # resume as if nothing happened.
     #
-    declare -rA HANDLE_SUCCESSFULLY=([ALPHA]=true [BETA]=false [GAMMA]=true)
+    declare -rA HANDLE_SUCCESSFULLY=([ALPHA]=false [BETA]=false [GAMMA]=false)
 
     # Describe which operatio step function returned successfully.
     #
@@ -166,17 +340,18 @@ function exception-handlers-operations-2.1 () {
 
     mbfl_declare_varref(CONDITION_MESSAGE)
 
-    dotest-set-debug
+    #dotest-set-debug
 
     if test_operation_1_step_0
     then OPERATION_STEP_SUCCESS[0]=true
     fi
 
-    dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 3)	'operation step 3 status'     &&
-	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 2)	'operation step 2 status'     &&
-	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 1)	'operation step 1 status'     &&
-	dotest-equal	'true'	_(OPERATION_STEP_SUCCESS, 0)	'operation step 0 status'     &&
-	dotest-equal	'this is a gamma condition' "$CONDITION_MESSAGE"
+    dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 3)	'operation step 3 status'     &&
+	dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 2)	'operation step 2 status'     &&
+	dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 1)	'operation step 1 status'     &&
+	dotest-equal	'false'	_(OPERATION_STEP_SUCCESS, 0)	'operation step 0 status'     &&
+	dotest-equal	'handler-failure' "$EXCEPTION_HANDLER_RETURN_STATUS" 'exception handler result' &&
+	dotest-equal	'this is an alpha condition' "$CONDITION_MESSAGE"
 }
 
 ### ------------------------------------------------------------------------
@@ -318,14 +493,6 @@ function test_operation_1_exception_handler_2 () {
     else return_after_not_handling_exception
     fi
 }
-function mbfl_default_object_class_name_var () {
-    mbfl_mandatory_nameref_parameter(NAME, 1, result variable)
-    mbfl_mandatory_nameref_parameter(OBJ,  2, default object)
-    mbfl_declare_varref(CLASS)
-
-    mbfl_default_object_class_var _(CLASS) _(OBJ)
-    mbfl_default_class_name_var   _(NAME)  "$CLASS"
-}
 function test_operation_1_exception_handler_3 () {
     mbfl_mandatory_nameref_parameter(CND, 1, condition object)
 
@@ -356,10 +523,10 @@ function test_operation_1_raise () {
 
     if mbfl_exception_raise _(CND)
     then
-	TEST_EXCEPTION_HANDLED_SUCCESSFULLY=true
+	EXCEPTION_HANDLER_RETURN_STATUS='handler-success'
 	return_success
     else
-	TEST_EXCEPTION_HANDLED_SUCCESSFULLY=false
+	EXCEPTION_HANDLER_RETURN_STATUS='handler-failure'
 	mbfl_location_leave
 	return_failure
     fi
