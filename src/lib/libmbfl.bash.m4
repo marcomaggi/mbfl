@@ -58,8 +58,8 @@ m4_undivert(system.bash)
 m4_undivert(semver.bash)
 
 function mbfl_library_initialise_libmbfl () {
-    mbfl_initialise_module_exception_handlers
     mbfl_initialise_module_conditions
+    mbfl_initialise_module_exception_handlers
 }
 
 mbfl_library_initialise_libmbfl

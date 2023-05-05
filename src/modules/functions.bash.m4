@@ -47,7 +47,6 @@ function mbfl_function_copy () {
 
     mbfl_p_function_copy "$mbfl_SRC_FUNCNAME" "$mbfl_DST_FUNCNAME"
 }
-
 function mbfl_function_rename () {
     mbfl_mandatory_parameter(mbfl_SRC_FUNCNAME, 1, source function name)
     mbfl_mandatory_parameter(mbfl_DST_FUNCNAME, 2, destination function name)
@@ -104,12 +103,15 @@ function mbfl_p_function_copy () {
 	return_because_failure
     fi
 }
-
 function mbfl_function_exists () {
     mbfl_mandatory_parameter(mbfl_FUNCNAME, 1, function name)
     declare JUNK
 
     JUNK=$(declare -fp "$mbfl_FUNCNAME" 2>&1)
+}
+function mbfl_function_unset () {
+    mbfl_mandatory_parameter(mbfl_FUNCNAME, 1, function name)
+    unset -f "$mbfl_FUNCNAME"
 }
 
 ### end of file

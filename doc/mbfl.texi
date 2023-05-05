@@ -168,6 +168,8 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 * functions::                   Manipulating functions.
 * hooks::                       Executing commands with event hooks.
 * objects::                     Object-oriented programming.
+* conditions::                  Exceptional-condition objects.
+* exceptions::                  Raising and handling exceptions.
 * strings::                     Manipulating strings with functions.
 * integers::                    Manipulating integers.
 * actions::                     Selecting actions to perform.
@@ -2702,6 +2704,11 @@ false otherwise.
 Return true if a function named @var{FUNCNAME} exists; otherwise return false.
 @end defun
 
+
+@defun mbfl_function_unset @var{FUNCNAME}
+Unset the function @var{NICKNAME}.
+@end defun
+
 @c page
 @node hooks
 @chapter Executing commands with event hooks
@@ -2855,7 +2862,6 @@ Lisp implementations.
 * objects conventions::         Naming and coding conventions.
 * objects default::             Default classes and objects.
 * objects special::             Special predefined classes and objects.
-* objects conditions::          Exceptional--condition objects.
 @end menu
 
 @c page
@@ -3600,26 +3606,24 @@ false.
 @end defun
 
 @c page
-@node objects conditions
-@section Exceptional--condition objects
+@node conditions
+@chapter Exceptional--condition objects
 
 
 Exceptional--condition objects are used to signal exceptional conditions while executing a script;
-these objects are handed to exception handlers to react to the condition.
+these objects are handed to exception handlers to react to the condition, @ref{exceptions, Raising
+and handling exceptions}.
 
 @menu
-* objects conditions base::             Base exceptional--condition objects.
-* objects conditions warning::          Warning exceptional--condition objects.
-* objects conditions error::            Error exceptional--condition objects.
-* objects conditions logic error::      Logic error exceptional--condition objects.
-* objects conditions runtime error::    Runtime exceptional--condition objects.
-* objects conditions invalid field::    Invalid value to object's field
-                                        exceptional--condition objects.
+* conditions base::             Base exceptional-condition objects.
+* conditions warning::          Warning exceptional-condition objects.
+* conditions errors::           Error exceptional--condition objects.
+* conditions classes::          Exceptional--condition objects about classes.
 @end menu
 
 @c page
-@node objects conditions base
-@subsection Base exceptional--condition objects
+@node conditions base
+@section Base exceptional--condition objects
 
 
 All the exceptional--condition objects must be subclasses of @class{mbfl_condition_t}.  We can
@@ -3699,18 +3703,18 @@ exceptional--conditions are meant to be non--continuable no matter what.
 @end defop
 
 @c page
-@node objects conditions warning
-@subsection Warning exceptional--condition objects
+@node conditions warning
+@section Warning exceptional--condition objects
 
 
 @dfn{Warning exceptional--conditions} are used to inform the user about something; for example the
 use of a dangerous or deprecated procedure.  We can use them as follows:
 
 @example
-mbfl_default_object_declare(WARNING)
+mbfl_default_object_declare(CND)
 
-mbfl_warning_condition_make _(WARNING) 'starting dangerous situation'
-mbfl_raise _(WARNING)
+mbfl_warning_condition_make _(CND) 'starting dangerous situation'
+mbfl_exception_raise _(CND)
 @end example
 
 Usually when an exceptional--condition of this class is raised: the correct handling is to just
@@ -3727,8 +3731,7 @@ user about something.  By default exceptional--conditions of this class are cont
 
 @defop {Constructor} {mbfl_condition_t} mbfl_warning_condition_make @var{CND} @var{MESSAGE}
 Define an object previously declared with @class{mbfl_default_object_declare} or similar.  The
-parameter @var{MESSAGE} is the same of @func{mbfl_condition_define}.  The condition is continuable
-by default.
+parameter @var{MESSAGE} is the same of @func{mbfl_condition_define}.
 @end defop
 
 
@@ -3757,38 +3760,30 @@ not.
 @end defop
 
 @c page
-@node objects conditions error
+@node conditions errors
+@section Error exceptional--condition objects
+
+
+@menu
+* conditions errors error::     Error exceptional-condition objects.
+* conditions errors logic::     Logic error exceptional-condition objects.
+* conditions errors runtime::   Runtime exceptional-condition objects.
+@end menu
+
+@c page
+@node conditions errors error
 @subsection Error exceptional--condition objects
 
 
 @dfn{Error exceptional--conditions} are used to signal an error in a procedure the script is
 executing.
 
-Usually when an exceptional--condition of this class is raised: the correct handling is to attempt a
-clean release of all the resources, then to terminate the program with an appropriate exit status.
-Occasionally the error can be recovered and script's execution can continue.
-
 
 @deftp {Abstract Class} mbfl_error_condition_t
 @deftpx {Superclass} mbfl_condition_t
 @deftpx {Metaclass} mbfl_default_class
-Class describing error exceptional--conditions; instances of this class's subclasses are used to
-signal an error.  This is an abstract class: it can be subclassed but not instantiated.
+Class describing error exceptional--conditions.
 @end deftp
-
-
-@defop {Constructor} {mbfl_condition_t} mbfl_error_condition_make @var{CND} @var{MESSAGE}
-Define an object previously declared with @class{mbfl_default_object_declare} or similar.  The
-parameter @var{MESSAGE} is the same of @func{mbfl_condition_define}.  The condition is
-non--continuable by default.
-@end defop
-
-
-@defop {Constructor} {mbfl_condition_t} mbfl_error_condition_define @var{CND} @var{MESSAGE} @var{CONTINUABLE}
-Define an object previously declared with @class{mbfl_default_object_declare} or similar.  This is
-an internal constructor that should not be used directly by client code.  The parameters
-@var{MESSAGE} and @var{CONTINUABLE} are the same of @func{mbfl_condition_define}.
-@end defop
 
 
 @defop {Predicate} {mbfl_error_condition_t} mbfl_error_condition_is_a @var{OBJ}
@@ -3810,19 +3805,19 @@ exceptional--conditions are meant to be non--continuable no matter what.
 @end defop
 
 @c page
-@node objects conditions logic error
-@subsection Logic error exceptional--condition objects
+@node conditions errors logic
+@subsection Logic--error exceptional--condition objects
 
 
-@dfn{Logic error exceptional--conditions} are used to signal a programming error: something that
-should not happen in a perfect program.  For example: parameters of the wrong type handed to a
+@dfn{Logic--error exceptional--conditions} are used to signal a programming error: something that
+should not happen in a perfect script.  For example: parameters of the wrong type handed to a
 function call; out--of--range array indexes.  We can use them as follows:
 
 @example
-mbfl_default_object_declare(ERR)
+mbfl_default_object_declare(CND)
 
-mbfl_logic_error_condition_make _(ERR) 'internal error'
-mbfl_raise _(ERR)
+mbfl_logic_error_condition_make _(CND) 'internal error'
+mbfl_exception_raise _(CND)
 @end example
 
 Usually when an exceptional--condition of this class is raised: the correct handling is to attempt a
@@ -3832,22 +3827,24 @@ clean release of all the resources, then to terminate the program with an approp
 @deftp {Class} mbfl_logic_error_condition_t
 @deftpx {Superclass} mbfl_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
-Class describing logic error exceptional--conditions.  By default instances of this type are
+Class describing logic--error exceptional--conditions.  By default instances of this type are
 non--continuable.
 @end deftp
 
 
-@defop {Constructor} {mbfl_condition_t} mbfl_logic_error_condition_make @var{CND} @var{MESSAGE}
+@defop {Constructor} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_make @var{CND} @var{MESSAGE}
 Define an object previously declared with @class{mbfl_default_object_declare} or similar.  The
-parameter @var{MESSAGE} is the same of @func{mbfl_condition_define}.  The condition is
-non--continuable by default.
+parameter @var{MESSAGE} is the same of @func{mbfl_condition_define}.  Objects built with this
+constructor are non--continuable by default.
 @end defop
 
 
-@defop {Constructor} {mbfl_condition_t} mbfl_logic_error_condition_define @var{CND} @var{MESSAGE} @var{CONTINUABLE}
-Define an object previously declared with @class{mbfl_default_object_declare} or similar.  This is
-an internal constructor that should not be used directly by client code.  The parameters
-@var{MESSAGE} and @var{CONTINUABLE} are the same of @func{mbfl_condition_define}.
+@defop {Constructor} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_define @var{CND} @var{MESSAGE} @var{CONTINUABLE}
+This is an low--level constructor that does not validate its parameters; it should be used by client
+code only to define high--level constructors.
+
+Define an object previously declared with @class{mbfl_default_object_declare} or similar.  The
+parameters @var{MESSAGE} and @var{CONTINUABLE} are the same of @func{mbfl_condition_define}.
 @end defop
 
 
@@ -3871,7 +3868,7 @@ exceptional--conditions are meant to be non--continuable no matter what.
 @end defop
 
 @c page
-@node objects conditions runtime error
+@node conditions errors runtime
 @subsection Runtime exceptional--condition objects
 
 
@@ -3933,7 +3930,16 @@ exceptional--conditions are meant to be non--continuable no matter what.
 @end defop
 
 @c page
-@node objects conditions invalid field
+@node conditions classes
+@section Exceptional--condition objects about classes
+
+
+@menu
+* conditions invalid field::    Invalid value to object's field exceptional-condition objects.
+@end menu
+
+@c page
+@node conditions invalid field
 @subsection Invalid value to object's field exceptional--condition objects
 
 
@@ -3985,6 +3991,61 @@ Accessor and mutator for a boolean value stating if this exceptional--condition 
 not.  We must be careful in changing the default setting for this state: some
 exceptional--conditions are meant to be non--continuable no matter what.
 @end defop
+
+@c page
+@node exceptions
+@chapter Raising and handling exceptions
+
+
+
+@defun mbfl_exception_handler @var{HANDLER}
+Push @var{HANDLER} on the stack of exceptional--condition handlers.  Register a location handler
+that pops @var{HANDLER} from the stack upon exiting the current location.
+
+The parameter @var{HANDLER} should be an applicable identifier bound to a function, alias or
+command.
+@end defun
+
+
+@defun mbfl_exception_raise @var{CND}
+Raise an exceptional condition represented by @var{CND}, which must be an object whose class is a
+subclass of @class{mbfl_condition_t}.  Starting from the top of handlers's stack, apply the next
+handler to the exceptional--condition object:
+
+@example
+@var{HANDLER} @var{CND}
+@end example
+
+@noindent
+the handler should try to react to the exception and possibly exit the script, if it is appropriate.
+If the handler returns and its return status is zero:
+
+@itemize
+@item
+if @var{CND} is continuable: just return to the caller with return status @samp{0}; this should
+resume script's execution;
+
+@item
+if @var{CND} is non--continuable: call @func{exit_because_non_continuable_exception}; this will exit
+the script after running the atexit scripts, @ref{exit atexit, Running scripts at exit--time}.
+@end itemize
+
+If the handler returns and its return status is non--zero: try the next handler from the stack.  If
+no client handler returns successfully: the default exception handler will call
+@func{exit_because_uncaught_exception}.
+@end defun
+
+
+@anchor{exit_because_uncaught_exception}
+@defun exit_because_uncaught_exception
+Exit with code @code{87} by calling @func{mbfl_exit}.
+@end defun
+
+
+@anchor{exit_because_non_continuable_exception}
+@defun exit_because_non_continuable_exception
+Exit with code @code{86} by calling @func{mbfl_exit}.
+@end defun
 
 @c page
 @node strings

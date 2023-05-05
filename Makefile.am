@@ -568,8 +568,9 @@ EXTRA_DIST			+=		\
 	tests/atexit.test.m4			\
 	tests/bash-feature-coproc.test.m4	\
 	tests/compress.test.m4			\
-	tests/encode.test.m4			\
 	tests/conditions.test.m4		\
+	tests/encode.test.m4			\
+	tests/exception-handlers.test.m4	\
 	tests/fd.test.m4			\
 	tests/fifo.test.m4			\
 	tests/file.test.m4			\
@@ -607,8 +608,9 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/atexit.test			\
 	tests/bash-feature-coproc.test		\
 	tests/compress.test			\
-	tests/encode.test			\
 	tests/conditions.test			\
+	tests/encode.test			\
+	tests/exception-handlers.test		\
 	tests/fd.test				\
 	tests/fifo.test				\
 	tests/file.test				\

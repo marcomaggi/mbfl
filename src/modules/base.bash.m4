@@ -193,6 +193,16 @@ then
     mbfl_EXIT_CODES_BY_NAME[invalid_mbfl_version]=88
     function exit_because_invalid_mbfl_version   () { mbfl_exit 88; }
     alias return_because_invalid_mbfl_version='return 88'
+
+    mbfl_EXIT_CODES[15]=87
+    mbfl_EXIT_NAMES[15]=uncaught_exception
+    mbfl_EXIT_CODES_BY_NAME[uncaught_exception]=87
+    function exit_because_uncaught_exception () { mbfl_exit 87; }
+
+    mbfl_EXIT_CODES[16]=86
+    mbfl_EXIT_NAMES[16]=non_continuable_exception
+    mbfl_EXIT_CODES_BY_NAME[non_continuable_exception]=86
+    function exit_because_non_continuable_exception () { mbfl_exit 86; }
 fi
 
 alias exit_success='exit_because_success'

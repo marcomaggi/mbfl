@@ -1,7 +1,7 @@
 # conditions.test.m4 --
 #
 # Part of: Marco's BASH Functions Library
-# Contents: tests for file module
+# Contents: tests for exceptional-condition objects
 # Date: May  2, 2023
 #
 # Abstract
@@ -50,17 +50,29 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 #### base class tests
 
+mbfl_default_class_declare_global(my_something_happened_t)
+
+mbfl_default_class_define _(my_something_happened_t) _(mbfl_condition_t) 'my_something_happened'
+
+function my_something_happened_make () {
+    mbfl_mandatory_nameref_parameter(CND, 1, condition object)
+    mbfl_mandatory_parameter(MSG,         2, condition description)
+    mbfl_mandatory_parameter(CONTINUABLE, 3, condition continuable state)
+
+    my_something_happened_define _(CND) "$MSG" "$CONTINUABLE"
+}
+
 function conditions-base-define-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_condition_define _(CND) 'this is an error message' 'false'
+    my_something_happened_make _(CND) 'this is an error message' 'false'
     mbfl_condition_is_a _(CND)
 }
 function conditions-base-accessors-1.1 () {
     mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_condition_define _(CND) 'this is an error message' 'false'
+    my_something_happened_make _(CND) 'this is an error message' 'false'
     mbfl_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is an error message' "$MSG"
 }
@@ -68,7 +80,7 @@ function conditions-base-mutators-1.1 () {
     mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_condition_define _(CND) 'this is an error message' 'false'
+    my_something_happened_make _(CND) 'this is an error message' 'false'
     mbfl_condition_message_set _(CND) 'this is another error message'
     mbfl_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is another error message' "$MSG"
@@ -76,24 +88,36 @@ function conditions-base-mutators-1.1 () {
 function conditions-base-method-print-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_condition_define _(CND) 'this is an error message' 'false'
+    my_something_happened_make _(CND) 'this is an error message' 'false'
     mbfl_condition_print _(CND) |& dotest-output 'this is an error message'
 }
 
 
 #### error class tests
 
+mbfl_default_class_declare_global(my_some_error_happened_t)
+
+mbfl_default_class_define _(my_some_error_happened_t) _(mbfl_error_condition_t) 'my_some_error_happened'
+
+function my_some_error_happened_make () {
+    mbfl_mandatory_nameref_parameter(CND, 1, condition object)
+    mbfl_mandatory_parameter(MSG,         2, condition description)
+    mbfl_mandatory_parameter(CONTINUABLE, 3, condition continuable state)
+
+    my_some_error_happened_define _(CND) "$MSG" "$CONTINUABLE"
+}
+
 function conditions-error-maker-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_error_condition_define _(CND) 'this is an error message' 'false'
+    my_some_error_happened_make _(CND) 'this is an error message' 'false'
     mbfl_error_condition_is_a _(CND)
 }
 function conditions-error-accessors-1.1 () {
     mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_error_condition_define _(CND) 'this is an error message' 'false'
+    my_some_error_happened_make _(CND) 'this is an error message' 'false'
     mbfl_error_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is an error message' "$MSG"
 }
@@ -101,7 +125,7 @@ function conditions-error-mutators-1.1 () {
     mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
-    mbfl_error_condition_define _(CND) 'this is an error message' 'false'
+    my_some_error_happened_make _(CND) 'this is an error message' 'false'
     mbfl_error_condition_message_set _(CND) 'this is another error message'
     mbfl_error_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is another error message' "$MSG"
@@ -109,7 +133,7 @@ function conditions-error-mutators-1.1 () {
 function conditions-error-method-pring-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_error_condition_define _(CND) 'this is an error message' 'false'
+    my_some_error_happened_make _(CND) 'this is an error message' 'false'
     mbfl_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
 }
 
@@ -210,61 +234,6 @@ function conditions-logic-error-method-print-1.1 () {
 
     mbfl_logic_error_condition_make _(CND) 'this is an error message'
     mbfl_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
-}
-
-
-#### condition objects handling with locations
-
-# Build a condition object, store it into a global varref, use it upon exiting a location, unset it.
-#
-function conditions-location-mechanism-1.1 () {
-    mbfl_default_object_declare_global(condition_object_conditions_location_mechanism_1_1)
-    mbfl_declare_varref(FLAG, false)
-
-    mbfl_location_enter
-    {
-	mbfl_location_handler "handler_conditions_location_mechanism_1_1"
-
-	mbfl_condition_define _(condition_object_conditions_location_mechanism_1_1) "this is condition conditions_location_1_1" 'false'
-    }
-    mbfl_location_leave
-    dotest-equal 'this is condition conditions_location_1_1' "$FLAG"
-}
-function handler_conditions_location_mechanism_1_1 () {
-    if mbfl_condition_is_a _(condition_object_conditions_location_mechanism_1_1)
-    then
-	mbfl_condition_message_var _(FLAG) _(condition_object_conditions_location_mechanism_1_1)
-	mbfl_variable_unset(_(condition_object_conditions_location_mechanism_1_1))
-    fi
-}
-
-### ------------------------------------------------------------------------
-
-# Build a condition object,  store it into a global variable, use it  upon exiting a location, unset
-# it.
-#
-function conditions-location-mechanism-1.2 () {
-    declare -g condition_object_conditions_location_mechanism_1_2
-    mbfl_declare_varref(FLAG, false)
-
-    mbfl_location_enter
-    {
-	mbfl_location_handler "handler_conditions_location_mechanism_1_2"
-
-	mbfl_default_object_declare(CND)
-	mbfl_condition_define _(CND) "this is condition conditions_location_1_2" 'false'
-	condition_object_conditions_location_mechanism_1_2=_(CND)
-    }
-    mbfl_location_leave
-    dotest-equal 'this is condition conditions_location_1_2' "$FLAG" && ! test -v "$condition_object_conditions_location_mechanism_1_2"
-}
-function handler_conditions_location_mechanism_1_2 () {
-    if mbfl_condition_is_a "$condition_object_conditions_location_mechanism_1_2"
-    then
-	mbfl_declare_nameref(CND, "$condition_object_conditions_location_mechanism_1_2")
-	mbfl_condition_message_var _(FLAG) _(CND)
-	mbfl_variable_unset(_(CND))
-    fi
 }
 
 

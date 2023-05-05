@@ -32,14 +32,17 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 #### global variables
 
-function mbfl_initialise_module_conditions () {
-    mbfl_default_class_declare_global(mbfl_condition_t)
-    mbfl_default_class_declare_global(mbfl_error_condition_t)
-    mbfl_default_class_declare_global(mbfl_warning_condition_t)
-    mbfl_default_class_declare_global(mbfl_logic_error_condition_t)
-    mbfl_default_class_declare_global(mbfl_runtime_error_condition_t)
-    mbfl_default_class_declare_global(mbfl_invalid_object_field_value_condition_t)
+# Here we want  to make global both  the data variable "_(mbfl_condition_t)" and  the proxy variable
+# "mbfl_condition_t".  So we keep these declarations outside the module initialisation function.
+#
+mbfl_default_class_declare(mbfl_condition_t)
+mbfl_default_class_declare(mbfl_error_condition_t)
+mbfl_default_class_declare(mbfl_warning_condition_t)
+mbfl_default_class_declare(mbfl_logic_error_condition_t)
+mbfl_default_class_declare(mbfl_runtime_error_condition_t)
+mbfl_default_class_declare(mbfl_invalid_object_field_value_condition_t)
 
+function mbfl_initialise_module_conditions () {
     mbfl_default_class_define _(mbfl_condition_t)               _(mbfl_default_object)    'mbfl_condition' 'message' 'continuable'
     mbfl_default_class_define _(mbfl_warning_condition_t)       _(mbfl_condition_t)       'mbfl_warning_condition'
     mbfl_default_class_define _(mbfl_error_condition_t)         _(mbfl_condition_t)       'mbfl_error_condition'
@@ -48,12 +51,16 @@ function mbfl_initialise_module_conditions () {
 
     mbfl_default_class_define _(mbfl_invalid_object_field_value_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_invalid_object_field_value_condition'
+    # Unset the constructors of abstract classes.
+    mbfl_function_unset 'mbfl_condition_define'
+    mbfl_function_unset 'mbfl_error_condition_define'
 
+    # Redefine "mbfl_condition_continuable_set()"
+    #
     mbfl_function_rename 'mbfl_condition_continuable_set' 'mbfl_p_condition_continuable_set'
-
     function mbfl_condition_continuable_set () {
 	mbfl_mandatory_nameref_parameter(mbfl_OBJ,	1, reference to condition object)
-	mbfl_mandatory_nameref_parameter(mbfl_VAL,	2, possible boolean value)
+	mbfl_mandatory_parameter(mbfl_VAL,		2, possible boolean value)
 	mbfl_declare_varref(mbfl_NORMAL)
 
 	if mbfl_string_normalise_boolean_var _(mbfl_NORMAL) "$mbfl_VAL"
@@ -62,7 +69,7 @@ function mbfl_initialise_module_conditions () {
 	    mbfl_default_object_declare(mbfl_CND)
 
 	    mbfl_invalid_object_field_value_condition_make _(mbfl_CND) _(mbfl_OBJ) 'continuable' "$mbfl_VAL"
-	    mbfl_raise _(mbfl_CND)
+	    mbfl_exception_raise _(mbfl_CND)
 	fi
     }
 }
@@ -126,6 +133,7 @@ function mbfl_condition_is_continuable () {
     mbfl_declare_varref(CONTINUABLE)
 
     mbfl_condition_continuable_var _(CONTINUABLE) _(CND)
+    #echo $FUNCNAME continuable "$CONTINUABLE" >&2
     "$CONTINUABLE"
 }
 
