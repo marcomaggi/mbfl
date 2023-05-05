@@ -1,12 +1,12 @@
-# conditions.bash.m4 --
+# exceptional-conditions.bash.m4 --
 #
 # Part of: Marco's BASH Functions Library
-# Contents: exceptional conditions descriptors module
+# Contents: exceptional-condition objects module
 # Date: May  2, 2023
 #
 # Abstract
 #
-#       This module defines standard objects describing exceptional conditions.
+#       This module defines standard objects describing exceptional-conditions.
 #
 # Copyright (c) 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
@@ -42,7 +42,7 @@ mbfl_default_class_declare(mbfl_logic_error_condition_t)
 mbfl_default_class_declare(mbfl_runtime_error_condition_t)
 mbfl_default_class_declare(mbfl_invalid_object_field_value_condition_t)
 
-function mbfl_initialise_module_conditions () {
+function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_exceptional_condition_t) _(mbfl_default_object) 'mbfl_exceptional_condition' \
 			      'message' 'continuable'
 

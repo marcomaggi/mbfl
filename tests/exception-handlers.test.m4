@@ -361,9 +361,9 @@ function test_operation_1_step_0 () {
     mbfl_default_class_declare(test_condition_1_beta_t)
     mbfl_default_class_declare(test_condition_1_gamma_t)
 
-    mbfl_default_class_define _(test_condition_1_alpha_t) _(mbfl_condition_t) 'test_condition_1_alpha'
-    mbfl_default_class_define _(test_condition_1_beta_t)  _(mbfl_condition_t) 'test_condition_1_beta'
-    mbfl_default_class_define _(test_condition_1_gamma_t) _(mbfl_condition_t) 'test_condition_1_gamma'
+    mbfl_default_class_define _(test_condition_1_alpha_t) _(mbfl_exceptional_condition_t) 'test_condition_1_alpha'
+    mbfl_default_class_define _(test_condition_1_beta_t)  _(mbfl_exceptional_condition_t) 'test_condition_1_beta'
+    mbfl_default_class_define _(test_condition_1_gamma_t) _(mbfl_exceptional_condition_t) 'test_condition_1_gamma'
 
     dotest-debug enter
     mbfl_location_enter

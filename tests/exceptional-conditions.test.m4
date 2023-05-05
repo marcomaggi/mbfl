@@ -52,7 +52,7 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 mbfl_default_class_declare_global(my_something_happened_t)
 
-mbfl_default_class_define _(my_something_happened_t) _(mbfl_condition_t) 'my_something_happened'
+mbfl_default_class_define _(my_something_happened_t) _(mbfl_exceptional_condition_t) 'my_something_happened'
 
 function my_something_happened_make () {
     mbfl_mandatory_nameref_parameter(CND, 1, condition object)
@@ -66,14 +66,14 @@ function conditions-base-define-1.1 () {
     mbfl_default_object_declare(CND)
 
     my_something_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_condition_is_a _(CND)
+    mbfl_exceptional_condition_is_a _(CND)
 }
 function conditions-base-accessors-1.1 () {
     mbfl_default_object_declare(CND)
     mbfl_declare_varref(MSG)
 
     my_something_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_condition_message_var _(MSG) _(CND)
+    mbfl_exceptional_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is an error message' "$MSG"
 }
 function conditions-base-mutators-1.1 () {
@@ -81,15 +81,15 @@ function conditions-base-mutators-1.1 () {
     mbfl_declare_varref(MSG)
 
     my_something_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_condition_message_set _(CND) 'this is another error message'
-    mbfl_condition_message_var _(MSG) _(CND)
+    mbfl_exceptional_condition_message_set _(CND) 'this is another error message'
+    mbfl_exceptional_condition_message_var _(MSG) _(CND)
     dotest-equal 'this is another error message' "$MSG"
 }
 function conditions-base-method-print-1.1 () {
     mbfl_default_object_declare(CND)
 
     my_something_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_condition_print _(CND) |& dotest-output 'this is an error message'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output 'this is an error message'
 }
 
 
@@ -134,7 +134,7 @@ function conditions-error-method-pring-1.1 () {
     mbfl_default_object_declare(CND)
 
     my_some_error_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
 }
 
 
@@ -167,7 +167,7 @@ function conditions-warning-method-print-1.1 () {
     mbfl_default_object_declare(CND)
 
     mbfl_warning_condition_make _(CND) 'this is an warning message'
-    mbfl_condition_print _(CND) |& dotest-output 'conditions.test: warning: this is an warning message'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output 'conditions.test: warning: this is an warning message'
 }
 
 
@@ -200,7 +200,7 @@ function conditions-runtime-error-method-print-1.1 () {
     mbfl_default_object_declare(CND)
 
     mbfl_runtime_error_condition_make _(CND) 'this is an error message'
-    mbfl_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
 }
 
 
@@ -233,7 +233,7 @@ function conditions-logic-error-method-print-1.1 () {
     mbfl_default_object_declare(CND)
 
     mbfl_logic_error_condition_make _(CND) 'this is an error message'
-    mbfl_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
 }
 
 

@@ -146,65 +146,65 @@ MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 
 #### libmbfl modules generation
 
-EXTRA_DIST			+=		\
-	src/modules/actions.bash.m4		\
-	src/modules/arrays.bash.m4		\
-	src/modules/atexit.bash.m4		\
-	src/modules/base.bash.m4		\
-	src/modules/dialog.bash.m4		\
-	src/modules/encode.bash.m4		\
-	src/modules/exception-handlers.bash.m4	\
-	src/modules/conditions.bash.m4		\
-	src/modules/fd.bash.m4			\
-	src/modules/file.bash.m4		\
-	src/modules/getopts.bash.m4		\
-	src/modules/hooks.bash.m4		\
-	src/modules/functions.bash.m4		\
-	src/modules/integers.bash.m4		\
-	src/modules/locations.bash.m4		\
-	src/modules/main.bash.m4		\
-	src/modules/math.bash.m4		\
-	src/modules/message.bash.m4		\
-	src/modules/process.bash.m4		\
-	src/modules/program.bash.m4		\
-	src/modules/semver.bash.m4		\
-	src/modules/signal.bash.m4		\
-	src/modules/string.bash.m4		\
-	src/modules/object.bash.m4		\
-	src/modules/system.bash.m4		\
-	src/modules/times-and-dates.bash.m4	\
+EXTRA_DIST			+=			\
+	src/modules/actions.bash.m4			\
+	src/modules/arrays.bash.m4			\
+	src/modules/atexit.bash.m4			\
+	src/modules/base.bash.m4			\
+	src/modules/dialog.bash.m4			\
+	src/modules/encode.bash.m4			\
+	src/modules/exception-handlers.bash.m4		\
+	src/modules/exceptional-conditions.bash.m4	\
+	src/modules/fd.bash.m4				\
+	src/modules/file.bash.m4			\
+	src/modules/getopts.bash.m4			\
+	src/modules/hooks.bash.m4			\
+	src/modules/functions.bash.m4			\
+	src/modules/integers.bash.m4			\
+	src/modules/locations.bash.m4			\
+	src/modules/main.bash.m4			\
+	src/modules/math.bash.m4			\
+	src/modules/message.bash.m4			\
+	src/modules/process.bash.m4			\
+	src/modules/program.bash.m4			\
+	src/modules/semver.bash.m4			\
+	src/modules/signal.bash.m4			\
+	src/modules/string.bash.m4			\
+	src/modules/object.bash.m4			\
+	src/modules/system.bash.m4			\
+	src/modules/times-and-dates.bash.m4		\
 	src/modules/variable.bash.m4
 
 # This  is *not*  the  order  in which  modules  are  included in  the
 # library; that order is established in the file "libmbfl.bash.m4"!
-MBFL_LIB_MODULES		=		\
-	src/modules/actions.bash		\
-	src/modules/arrays.bash			\
-	src/modules/atexit.bash			\
-	src/modules/base.bash			\
-	src/modules/config-values.bash		\
-	src/modules/dialog.bash			\
-	src/modules/encode.bash			\
-	src/modules/exception-handlers.bash	\
-	src/modules/conditions.bash		\
-	src/modules/fd.bash			\
-	src/modules/file.bash			\
-	src/modules/getopts.bash		\
-	src/modules/hooks.bash			\
-	src/modules/functions.bash		\
-	src/modules/integers.bash		\
-	src/modules/locations.bash		\
-	src/modules/main.bash			\
-	src/modules/math.bash			\
-	src/modules/message.bash		\
-	src/modules/process.bash		\
-	src/modules/program.bash		\
-	src/modules/semver.bash			\
-	src/modules/signal.bash			\
-	src/modules/string.bash			\
-	src/modules/object.bash			\
-	src/modules/system.bash			\
-	src/modules/times-and-dates.bash	\
+MBFL_LIB_MODULES		=			\
+	src/modules/actions.bash			\
+	src/modules/arrays.bash				\
+	src/modules/atexit.bash				\
+	src/modules/base.bash				\
+	src/modules/config-values.bash			\
+	src/modules/dialog.bash				\
+	src/modules/encode.bash				\
+	src/modules/exception-handlers.bash		\
+	src/modules/exceptional-conditions.bash		\
+	src/modules/fd.bash				\
+	src/modules/file.bash				\
+	src/modules/getopts.bash			\
+	src/modules/hooks.bash				\
+	src/modules/functions.bash			\
+	src/modules/integers.bash			\
+	src/modules/locations.bash			\
+	src/modules/main.bash				\
+	src/modules/math.bash				\
+	src/modules/message.bash			\
+	src/modules/process.bash			\
+	src/modules/program.bash			\
+	src/modules/semver.bash				\
+	src/modules/signal.bash				\
+	src/modules/string.bash				\
+	src/modules/object.bash				\
+	src/modules/system.bash				\
+	src/modules/times-and-dates.bash		\
 	src/modules/variable.bash
 
 CLEANFILES			+=		\
@@ -568,7 +568,7 @@ EXTRA_DIST			+=		\
 	tests/atexit.test.m4			\
 	tests/bash-feature-coproc.test.m4	\
 	tests/compress.test.m4			\
-	tests/conditions.test.m4		\
+	tests/exceptional-conditions.test.m4	\
 	tests/encode.test.m4			\
 	tests/exception-handlers.test.m4	\
 	tests/fd.test.m4			\
@@ -608,7 +608,7 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/atexit.test			\
 	tests/bash-feature-coproc.test		\
 	tests/compress.test			\
-	tests/conditions.test			\
+	tests/exceptional-conditions.test	\
 	tests/encode.test			\
 	tests/exception-handlers.test		\
 	tests/fd.test				\
