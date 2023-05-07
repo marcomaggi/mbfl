@@ -59,16 +59,44 @@ function test_exception_handler_return_success () {
 
 #### basic tests
 
+# Raise a non-contiuable exception and let it be handled by the default handler.
+#
 function exception-handlers-uncaught-exception-1.1 () {
     mbfl_default_object_declare(CND)
     declare -i RETURN_STATUS
 
-    mbfl_runtime_error_condition_make _(CND) 'this is an error message' 'false'
+    mbfl_logic_error_condition_make _(CND) $FUNCNAME 'this is an error message'
 
     # Raise the exception in a subshell so we easily intercept its exit status.
     (mbfl_exception_raise _(CND))
     RETURN_STATUS=$?
     dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $RETURN_STATUS 'exit status after uncaught exception'
+}
+# Raise a contiuable exception and let it be handled by the default handler.
+#
+function exception-handlers-uncaught-exception-2.1 () {
+    mbfl_default_object_declare(CND)
+    declare -i RETURN_STATUS
+
+    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'this is an error message'
+
+    # Raise the exception in a subshell so we easily intercept its exit status.
+    (mbfl_exception_raise _(CND))
+    RETURN_STATUS=$?
+    dotest-equal 0 $RETURN_STATUS 'exit status after uncaught exception'
+}
+# Raise a contiuable exception and let it be handled by the default handler.
+#
+function exception-handlers-uncaught-exception-2.2 () {
+    mbfl_default_object_declare(CND)
+    declare -i RETURN_STATUS
+
+    mbfl_warning_condition_make _(CND) $FUNCNAME 'this is a warning message'
+
+    # Raise the exception in a subshell so we easily intercept its exit status.
+    (mbfl_exception_raise _(CND))
+    RETURN_STATUS=$?
+    dotest-equal 0 $RETURN_STATUS 'exit status after uncaught exception'
 }
 
 # Raise a non-continuable exception; the  handler returns success; "mbfl_exception_raise" exits with
@@ -84,7 +112,7 @@ function exception-handlers-non-continuable-exception-1.1 () {
 	{
 	    mbfl_default_object_declare(CND)
 
-	    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
+	    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'this is an error message'
 	    mbfl_runtime_error_condition_continuable_set _(CND) 'false'
 
 	    # Raise the exception in a subshell so we easily intercept its exit status.
@@ -109,7 +137,7 @@ function exception-handlers-continuable-exception-1.1 () {
 	{
 	    mbfl_default_object_declare(CND)
 
-	    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
+	    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'this is an error message'
 	    mbfl_runtime_error_condition_continuable_set _(CND) 'true'
 
 	    (mbfl_exception_raise _(CND))
@@ -414,21 +442,21 @@ function test_operation_1_step_3 () {
 
 	if _(RAISE, ALPHA)
 	then
-	    test_condition_1_alpha_define _(CND) 'this is an alpha condition' 'true'
+	    test_condition_1_alpha_define _(CND) $FUNCNAME 'this is an alpha condition' 'true'
 	    dotest-debug raising alpha condition datavar="_(CND)"
 	    if ! test_operation_1_raise _(CND)
 	    then return_failure
 	    fi
 	elif _(RAISE, BETA)
 	then
-	    test_condition_1_beta_define  _(CND) 'this is a beta condition'   'true'
+	    test_condition_1_beta_define  _(CND) $FUNCNAME 'this is a beta condition'   'true'
 	    dotest-debug raising beta condition datavar="_(CND)"
 	    if ! test_operation_1_raise _(CND)
 	    then return_failure
 	    fi
 	elif _(RAISE, GAMMA)
 	then
-	    test_condition_1_gamma_define _(CND) 'this is a gamma condition'  'true'
+	    test_condition_1_gamma_define _(CND) $FUNCNAME 'this is a gamma condition'  'true'
 	    dotest-debug raising gamma condition datavar="_(CND)"
 	    if ! test_operation_1_raise _(CND)
 	    then return_failure

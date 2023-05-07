@@ -6,7 +6,10 @@
 #
 # Abstract
 #
-#       This module defines exception handlers.
+#       This module defines the exception handlers mechanism.
+#
+#       A lot of ideas were recycled from  the "Revised^6 Report on the Algorithmic Language Scheme"
+#       (R6RS): <https://www.r6rs.org/>.
 #
 # Copyright (c) 2023 Marco Maggi
 # <mrc.mgg@gmail.com>
@@ -38,7 +41,13 @@ function mbfl_initialise_module_exception_handlers () {
 }
 function mbfl_default_exception_handler () {
     mbfl_mandatory_nameref_parameter(CND, 1, condition object)
-    exit_because_uncaught_exception
+
+    if mbfl_exceptional_condition_is_continuable _(CND)
+    then
+	mbfl_exceptional_condition_print _(CND) >&2
+	return_success
+    else exit_because_uncaught_exception
+    fi
 }
 
 

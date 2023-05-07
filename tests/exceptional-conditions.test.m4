@@ -37,7 +37,7 @@
 
 #### setup
 
-declare -r script_PROGNAME='conditions.test'
+declare -r script_PROGNAME='exceptional-conditions.test'
 
 mbfl_load_library("$MBFL_LIBMBFL_CORE")
 mbfl_load_library("$MBFL_LIBMBFL_TEST")
@@ -55,86 +55,60 @@ mbfl_default_class_declare_global(my_something_happened_t)
 mbfl_default_class_define _(my_something_happened_t) _(mbfl_exceptional_condition_t) 'my_something_happened'
 
 function my_something_happened_make () {
-    mbfl_mandatory_nameref_parameter(CND, 1, condition object)
-    mbfl_mandatory_parameter(MSG,         2, condition description)
-    mbfl_mandatory_parameter(CONTINUABLE, 3, condition continuable state)
+    mbfl_mandatory_nameref_parameter(CND,	1, condition object)
+    mbfl_mandatory_parameter(WHO,		2, entity reporting the exceptional-condition)
+    mbfl_mandatory_parameter(MESSAGE,		3, exceptional-condition description message)
+    mbfl_mandatory_parameter(CONTINUABLE,	4, condition continuable state)
 
-    my_something_happened_define _(CND) "$MSG" "$CONTINUABLE"
+    my_something_happened_define _(CND) "$WHO" "$MESSAGE" "$CONTINUABLE"
 }
 
 function conditions-base-define-1.1 () {
     mbfl_default_object_declare(CND)
 
-    my_something_happened_make _(CND) 'this is an error message' 'false'
+    my_something_happened_make _(CND) $FUNCNAME 'this is an error message' 'false'
     mbfl_exceptional_condition_is_a _(CND)
 }
 function conditions-base-accessors-1.1 () {
     mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
 
-    my_something_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_exceptional_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is an error message' "$MSG"
+    my_something_happened_make _(CND) $FUNCNAME 'this is an error message' 'false'
+    mbfl_exceptional_condition_who_var		_(WHO)		_(CND)
+    mbfl_exceptional_condition_message_var	_(MESSAGE)	_(CND)
+    mbfl_exceptional_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	$FUNCNAME			"$WHO"		&&
+	dotest-equal	'this is an error message'	"$MESSAGE"	&&
+	dotest-equal	'false'				"$CONTINUABLE"
 }
 function conditions-base-mutators-1.1 () {
     mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
 
-    my_something_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_exceptional_condition_message_set _(CND) 'this is another error message'
-    mbfl_exceptional_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is another error message' "$MSG"
+    my_something_happened_make _(CND) $FUNCNAME 'this is an error message' 'false'
+
+    mbfl_exceptional_condition_who_set		_(CND) 'another_who'
+    mbfl_exceptional_condition_message_set	_(CND) 'this is another error message'
+    mbfl_exceptional_condition_continuable_set	_(CND) 'true'
+
+    mbfl_exceptional_condition_who_var		_(WHO)		_(CND)
+    mbfl_exceptional_condition_message_var	_(MESSAGE)	_(CND)
+    mbfl_exceptional_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	'another_who'			"$WHO"		&&
+	dotest-equal	'this is another error message'	"$MESSAGE"	&&
+	dotest-equal	'true'				"$CONTINUABLE"
 }
 function conditions-base-method-print-1.1 () {
     mbfl_default_object_declare(CND)
 
-    my_something_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_exceptional_condition_print _(CND) |& dotest-output 'this is an error message'
-}
-
-
-#### error class tests
-
-mbfl_default_class_declare_global(my_some_error_happened_t)
-
-mbfl_default_class_define _(my_some_error_happened_t) _(mbfl_error_condition_t) 'my_some_error_happened'
-
-function my_some_error_happened_make () {
-    mbfl_mandatory_nameref_parameter(CND, 1, condition object)
-    mbfl_mandatory_parameter(MSG,         2, condition description)
-    mbfl_mandatory_parameter(CONTINUABLE, 3, condition continuable state)
-
-    my_some_error_happened_define _(CND) "$MSG" "$CONTINUABLE"
-}
-
-function conditions-error-maker-1.1 () {
-    mbfl_default_object_declare(CND)
-
-    my_some_error_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_error_condition_is_a _(CND)
-}
-function conditions-error-accessors-1.1 () {
-    mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
-
-    my_some_error_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_error_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is an error message' "$MSG"
-}
-function conditions-error-mutators-1.1 () {
-    mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
-
-    my_some_error_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_error_condition_message_set _(CND) 'this is another error message'
-    mbfl_error_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is another error message' "$MSG"
-}
-function conditions-error-method-pring-1.1 () {
-    mbfl_default_object_declare(CND)
-
-    my_some_error_happened_make _(CND) 'this is an error message' 'false'
-    mbfl_exceptional_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
+    my_something_happened_make _(CND) $FUNCNAME 'this is an exception message' 'false'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output "$FUNCNAME: this is an exception message"
 }
 
 
@@ -143,31 +117,113 @@ function conditions-error-method-pring-1.1 () {
 function conditions-warning-maker-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_warning_condition_make _(CND) 'this is an warning message'
+    mbfl_warning_condition_make _(CND) $FUNCNAME 'this is an warning message'
     mbfl_warning_condition_is_a _(CND)
 }
 function conditions-warning-accessors-1.1 () {
     mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
 
-    mbfl_warning_condition_make _(CND) 'this is an warning message'
-    mbfl_warning_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is an warning message' "$MSG"
+    mbfl_warning_condition_make _(CND) $FUNCNAME 'this is an error message'
+    mbfl_warning_condition_who_var		_(WHO)		_(CND)
+    mbfl_warning_condition_message_var		_(MESSAGE)	_(CND)
+    mbfl_warning_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	$FUNCNAME			"$WHO"		&&
+	dotest-equal	'this is an error message'	"$MESSAGE"	&&
+	dotest-equal	'true'				"$CONTINUABLE"
 }
 function conditions-warning-mutators-1.1 () {
     mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
 
-    mbfl_warning_condition_make _(CND) 'this is an warning message'
-    mbfl_warning_condition_message_set _(CND) 'this is another warning message'
-    mbfl_warning_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is another warning message' "$MSG"
+    mbfl_warning_condition_make _(CND) $FUNCNAME 'this is an error message'
+
+    mbfl_warning_condition_who_set		_(CND) 'another_who'
+    mbfl_warning_condition_message_set		_(CND) 'this is another error message'
+    mbfl_warning_condition_continuable_set	_(CND) 'false'
+
+    mbfl_warning_condition_who_var		_(WHO)		_(CND)
+    mbfl_warning_condition_message_var		_(MESSAGE)	_(CND)
+    mbfl_warning_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	'another_who'			"$WHO"		&&
+	dotest-equal	'this is another error message'	"$MESSAGE"	&&
+	dotest-equal	'false'				"$CONTINUABLE"
 }
 function conditions-warning-method-print-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_warning_condition_make _(CND) 'this is an warning message'
-    mbfl_exceptional_condition_print _(CND) |& dotest-output 'conditions.test: warning: this is an warning message'
+    mbfl_warning_condition_make _(CND) $FUNCNAME 'this is an warning message'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output "exceptional-conditions.test: warning: $FUNCNAME: this is an warning message"
+}
+
+
+#### error class tests
+
+mbfl_default_class_declare_global(my_some_error_happened_condition_t)
+
+mbfl_default_class_define _(my_some_error_happened_condition_t) _(mbfl_error_condition_t) 'my_some_error_happened_condition'
+
+function my_some_error_happened_condition_make () {
+    mbfl_mandatory_nameref_parameter(CND,	1, condition object)
+    mbfl_mandatory_parameter(WHO,		2, entity reporting the exceptional-condition)
+    mbfl_mandatory_parameter(MESSAGE,		3, exceptional-condition description message)
+    mbfl_mandatory_parameter(CONTINUABLE,	4, exceptional-condition continuable state)
+
+    my_some_error_happened_condition_define _(CND) "$WHO" "$MESSAGE" "$CONTINUABLE"
+}
+
+function conditions-error-maker-1.1 () {
+    mbfl_default_object_declare(CND)
+
+    my_some_error_happened_condition_make _(CND) $FUNCNAME 'this is an error message' 'false'
+    mbfl_error_condition_is_a _(CND)
+}
+function conditions-error-accessors-1.1 () {
+    mbfl_default_object_declare(CND)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
+
+    my_some_error_happened_condition_make _(CND) $FUNCNAME 'this is an error message' 'false'
+    mbfl_error_condition_who_var		_(WHO)		_(CND)
+    mbfl_error_condition_message_var		_(MESSAGE)	_(CND)
+    mbfl_error_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	$FUNCNAME			"$WHO"		&&
+	dotest-equal	'this is an error message'	"$MESSAGE"	&&
+	dotest-equal	'false'				"$CONTINUABLE"
+}
+function conditions-error-mutators-1.1 () {
+    mbfl_default_object_declare(CND)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
+
+    my_some_error_happened_condition_make _(CND) $FUNCNAME 'this is an error message' 'false'
+
+    mbfl_error_condition_who_set		_(CND) 'another_who'
+    mbfl_error_condition_message_set		_(CND) 'this is another error message'
+    mbfl_error_condition_continuable_set	_(CND) 'true'
+
+    mbfl_error_condition_who_var		_(WHO)		_(CND)
+    mbfl_error_condition_message_var		_(MESSAGE)	_(CND)
+    mbfl_error_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	'another_who'			"$WHO"		&&
+	dotest-equal	'this is another error message'	"$MESSAGE"	&&
+	dotest-equal	'true'				"$CONTINUABLE"
+}
+function conditions-error-method-pring-1.1 () {
+    mbfl_default_object_declare(CND)
+
+    my_some_error_happened_condition_make _(CND) $FUNCNAME 'this is an error message' 'false'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output "exceptional-conditions.test: error: $FUNCNAME: this is an error message"
 }
 
 
@@ -176,31 +232,49 @@ function conditions-warning-method-print-1.1 () {
 function conditions-runtime-error-maker-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
+    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'this is an error message'
     mbfl_runtime_error_condition_is_a _(CND)
 }
 function conditions-runtime-error-accessors-1.1 () {
     mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
 
-    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
-    mbfl_runtime_error_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is an error message' "$MSG"
+    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'this is an error message'
+    mbfl_error_condition_who_var		_(WHO)		_(CND)
+    mbfl_error_condition_message_var		_(MESSAGE)	_(CND)
+    mbfl_error_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	$FUNCNAME			"$WHO"		&&
+	dotest-equal	'this is an error message'	"$MESSAGE"	&&
+	dotest-equal	'true'				"$CONTINUABLE"
 }
 function conditions-runtime-error-mutators-1.1 () {
     mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
 
-    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
-    mbfl_runtime_error_condition_message_set _(CND) 'this is another error message'
-    mbfl_runtime_error_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is another error message' "$MSG"
+    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'this is an error message'
+
+    mbfl_error_condition_who_set		_(CND) 'another_who'
+    mbfl_error_condition_message_set		_(CND) 'this is another error message'
+    mbfl_error_condition_continuable_set	_(CND) 'false'
+
+    mbfl_error_condition_who_var		_(WHO)		_(CND)
+    mbfl_error_condition_message_var		_(MESSAGE)	_(CND)
+    mbfl_error_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	'another_who'			"$WHO"		&&
+	dotest-equal	'this is another error message'	"$MESSAGE"	&&
+	dotest-equal	'false'				"$CONTINUABLE"
 }
 function conditions-runtime-error-method-print-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_runtime_error_condition_make _(CND) 'this is an error message'
-    mbfl_exceptional_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
+    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'this is an error message'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output "exceptional-conditions.test: error: $FUNCNAME: this is an error message"
 }
 
 
@@ -209,31 +283,49 @@ function conditions-runtime-error-method-print-1.1 () {
 function conditions-logic-error-maker-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_logic_error_condition_make _(CND) 'this is an error message'
+    mbfl_logic_error_condition_make _(CND) $FUNCNAME 'this is an error message'
     mbfl_logic_error_condition_is_a _(CND)
 }
 function conditions-logic-error-accessors-1.1 () {
     mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
 
-    mbfl_logic_error_condition_make _(CND) 'this is an error message'
-    mbfl_logic_error_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is an error message' "$MSG"
+    mbfl_logic_error_condition_make _(CND) $FUNCNAME 'this is an error message'
+    mbfl_error_condition_who_var		_(WHO)		_(CND)
+    mbfl_error_condition_message_var		_(MESSAGE)	_(CND)
+    mbfl_error_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	$FUNCNAME			"$WHO"		&&
+	dotest-equal	'this is an error message'	"$MESSAGE"	&&
+	dotest-equal	'false'				"$CONTINUABLE"
 }
 function conditions-logic-error-mutators-1.1 () {
     mbfl_default_object_declare(CND)
-    mbfl_declare_varref(MSG)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
 
-    mbfl_logic_error_condition_make _(CND) 'this is an error message'
-    mbfl_logic_error_condition_message_set _(CND) 'this is another error message'
-    mbfl_logic_error_condition_message_var _(MSG) _(CND)
-    dotest-equal 'this is another error message' "$MSG"
+    mbfl_logic_error_condition_make _(CND) $FUNCNAME 'this is an error message'
+
+    mbfl_error_condition_who_set		_(CND) 'another_who'
+    mbfl_error_condition_message_set		_(CND) 'this is another error message'
+    mbfl_error_condition_continuable_set	_(CND) 'true'
+
+    mbfl_error_condition_who_var		_(WHO)		_(CND)
+    mbfl_error_condition_message_var		_(MESSAGE)	_(CND)
+    mbfl_error_condition_continuable_var	_(CONTINUABLE)	_(CND)
+
+    dotest-equal	'another_who'			"$WHO"		&&
+	dotest-equal	'this is another error message'	"$MESSAGE"	&&
+	dotest-equal	'true'				"$CONTINUABLE"
 }
 function conditions-logic-error-method-print-1.1 () {
     mbfl_default_object_declare(CND)
 
-    mbfl_logic_error_condition_make _(CND) 'this is an error message'
-    mbfl_exceptional_condition_print _(CND) |& dotest-output 'conditions.test: error: this is an error message'
+    mbfl_logic_error_condition_make _(CND) $FUNCNAME 'this is an error message'
+    mbfl_exceptional_condition_print _(CND) |& dotest-output "exceptional-conditions.test: error: $FUNCNAME: this is an error message"
 }
 
 

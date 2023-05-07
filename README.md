@@ -15,7 +15,7 @@ both Ubuntu GNU+Linux systems and OS X systems.
 
 ## License
 
-Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018, 2020
+Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018, 2020, 2023
 Marco Maggi <mrc.mgg@gmail.com>.  All rights reserved.
 
 This is  free software; you can  redistribute it and/or modify  it under
@@ -131,6 +131,11 @@ $ make install-html
 
 The  stuff was  written by  Marco Maggi.   If this  package exists  it's
 because of the great GNU software tools that he uses all the time.
+
+A  lot  of  ideas  were  recycled from  the  "Revised^6  Report  on  the
+Algorithmic Language Scheme" (R6RS):
+
+[https://www.r6rs.org/](https://www.r6rs.org/)
 
 
 ## Bugs, vulnerabilities and contributions

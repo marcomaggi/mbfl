@@ -3636,8 +3636,16 @@ and handling exceptions}.
 @menu
 * conditions base::             Base exceptional-condition objects.
 * conditions warning::          Warning exceptional-condition objects.
-* conditions errors::           Error exceptional--condition objects.
-* conditions classes::          Exceptional--condition objects about classes.
+
+Error exceptional-condition objects.
+
+* conditions error::            Error exceptional-condition objects.
+* conditions logic::            Logic--error exceptional-condition objects.
+* conditions runtime::          Runtime--error exceptional-condition objects.
+
+Class related exceptional-condition objects.
+
+* conditions invalid attrib value::  Invalid attribute value to exceptional--condition objects.
 @end menu
 
 @c page
@@ -3655,11 +3663,12 @@ mbfl_default_class_define _(my_something_happened_t) \
     _(mbfl_exceptional_condition_t) 'my_something_happened'
 
 function my_something_happened_make () @{
-    mbfl_mandatory_nameref_parameter(CND, 1, condition object)
-    mbfl_mandatory_parameter(MSG,         2, condition description)
+    mbfl_mandatory_nameref_parameter(CND, 1, exceptional-condition object)
+    mbfl_mandatory_parameter(WHO,         2, entity reporting the exceptional-condition)
+    mbfl_mandatory_parameter(MESSAGE,     3, exceptional-condition description message)
     declare CONTINUABLE='true'
 
-    my_something_happened_define _(CND) "$MSG" "$CONTINUABLE"
+    my_something_happened_define _(CND) "$WHO" "$MESSAGE" "$CONTINUABLE"
 @}
 @end example
 
@@ -3667,11 +3676,20 @@ function my_something_happened_make () @{
 and we can use the subclass as follows:
 
 @example
-mbfl_default_object_declare(SOMETHING)
+mbfl_default_object_declare(CND)
 
-my_something_happened_make _(SOMETHING) 'something happened'
-mbfl_raise _(SOMETHING)
+my_something_happened_make _(CND) 'someone' 'something happened'
+mbfl_exception_raise _(CND)
 @end example
+
+@menu
+* conditions base class::       Class definition of @class{mbfl_exceptional_condition_t}.
+* conditions base attributes::  Attributes of @class{mbfl_exceptional_condition_t}.
+@end menu
+
+@c page
+@node conditions base class
+@subsection Class definition of @class{mbfl_exceptional_condition_t}
 
 
 @deftp {Abstract Class} mbfl_exceptional_condition_t
@@ -3685,8 +3703,7 @@ describe exceptional conditions, like errors and warnings.
 @cindex Parameter @var{CND}
 @cindex Function parameter @var{CND}
 In this documentation the function parameter @var{CND} represents the data variable of an instance
-of a subclass of @class{mbfl_exceptional_condition_t}.  This is an abstract class: it can be subclassed but not
-instantiated.
+of a subclass of @class{mbfl_exceptional_condition_t}.
 @end deftp
 
 
@@ -3694,37 +3711,84 @@ instantiated.
 Return true if @var{OBJ} is an instance of @class{mbfl_exceptional_condition_t}; otherwise return false.
 @end defop
 
+@c page
+@node conditions base attributes
+@subsection Attributes of @class{mbfl_exceptional_condition_t}
+
+
+@menu
+* conditions base attributes who::          Attribute @code{who} of @class{mbfl_exceptional_condition_t}.
+* conditions base attributes message::      Attribute @code{message} of @class{mbfl_exceptional_condition_t}.
+* conditions base attributes continuable::  Attribute @code{continuable} of @class{mbfl_exceptional_condition_t}.
+@end menu
+
+@c page
+@node conditions base attributes who
+@subsubsection Attribute @code{who} of @class{mbfl_exceptional_condition_t}
+
+
+@anchor{@code{who} of @class{mbfl_exceptional_condition_t}}
+@defcv {Class Attribute} {mbfl_exceptional_condition_t} who
+A non--empty string describing the entity that raised the exceptional--condition.
+@end defcv
+
+
+@anchor{mbfl_exceptional_condition_who_set}
+@defop {Accessor} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_who_set @var{CND} @var{WHO}
+@defopx {Mutator} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_who_var @var{WHO_RV} @var{CND}
+Class attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions base attributes message
+@subsubsection Attribute @code{message} of @class{mbfl_exceptional_condition_t}
+
+
+@anchor{@code{message} of @class{mbfl_exceptional_condition_t}}
+@defcv {Class Attribute} {mbfl_exceptional_condition_t} message
+A non--empty string describing the exceptional--condition.
+@end defcv
+
 
 @anchor{mbfl_exceptional_condition_message_set}
 @defop {Accessor} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_message_set @var{CND} @var{MESSAGE}
 @defopx {Mutator} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_message_var @var{MESSAGE_RV} @var{CND}
-Accessor and mutator for a message string describing the exceptional--condition.
-
-The parameter @var{MESSAGE} must be a string describing the exceptional--condition; it cannot be
-empty.
+Class attribute accessor and mutator.
 @end defop
+
+@c page
+@node conditions base attributes continuable
+@subsubsection Attribute @code{continuable} of @class{mbfl_exceptional_condition_t}
+
+
+@anchor{@code{continuable} of @class{mbfl_exceptional_condition_t}}
+@defcv {Class Attribute} {mbfl_exceptional_condition_t} continuable
+A string representing a boolean:
+
+@table @samp
+@item true
+This condition is meant to be continuable: the exception can be fixed, in which case script's
+execution can go on.
+
+@item false
+This condition is non--continuable: the exception cannot be fixed, script's execution must be
+terminated.
+@end table
+
+We must be careful in changing the default value of this attribute: some exceptional--conditions are
+meant to be non--continuable no matter what.
+@end defcv
 
 
 @anchor{mbfl_exceptional_condition_continuable_set}
 @defop {Accessor} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_continuable_set @var{CND} @var{CONTINUABLE}
 @defopx {Mutator} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_continuable_var @var{CONTINUABLE_RV} @var{CND}
-Accessor and mutator for a boolean value stating if this exceptional--condition is continuable or
-not.  We must be careful in changing the default setting for this state: some
-exceptional--conditions are meant to be non--continuable no matter what.
+Class attribute accessor and mutator.
 
-The parameter @var{CONTINUABLE} must be a string accepted by @func{mbfl_string_normalise_boolean_var};
-otherwise and exceptional--condition of type @class{mbfl_invalid_object_field_value_condition_t} is
-raised.  When the normalised value is:
-
-@table @samp
-@item true
-This condition is meant to be continuable, the exception can be fixed, in which case script's
-execution can go on.
-
-@item false
-This condition is non--continuable, the exception cannot be fixed, script's execution must be
-terminated.
-@end table
+The parameter @var{CONTINUABLE} must be a string as accepted by
+@func{mbfl_string_normalise_boolean_var}, otherwise an exceptional--condition of type
+@class{mbfl_invalid_object_field_value_condition_t} is raised;
+@ref{mbfl_string_normalise_boolean_var, Normalising strings}
 @end defop
 
 @c page
@@ -3743,7 +3807,17 @@ mbfl_exception_raise _(CND)
 @end example
 
 Usually when an exceptional--condition of this class is raised: the correct handling is to just
-resum the execution of the script.
+notify the user and resume the execution of the script.
+
+@menu
+* conditions warning class::            Class definition of @class{mbfl_warning_condition_t}.
+* conditions warning constructors::     Class constructors of @class{mbfl_warning_condition_t}.
+* conditions warning attributes::       Attributes of @class{mbfl_warning_condition_t}.
+@end menu
+
+@c page
+@node conditions warning class
+@subsection Class definition of @class{mbfl_warning_condition_t}
 
 
 @deftp {Class} mbfl_warning_condition_t
@@ -3752,6 +3826,15 @@ resum the execution of the script.
 Class describing warning exceptional--conditions; instances of this class are used to notify the
 user about something.  By default exceptional--conditions of this class are continuable.
 @end deftp
+
+
+@defop {Predicate} {mbfl_warning_condition_t} mbfl_warning_condition_is_a @var{OBJ}
+Return true if @var{OBJ} is an instance of @class{mbfl_warning_condition_t}; otherwise return false.
+@end defop
+
+@c page
+@node conditions warning constructors
+@subsection Class constructors of @class{mbfl_warning_condition_t}
 
 
 @defop {Constructor} {mbfl_warning_condition_t} mbfl_warning_condition_make @var{CND} @var{MESSAGE}
@@ -3773,48 +3856,76 @@ For the semantics of the parameter @var{CONTINUABLE}
 @ref{mbfl_exceptional_condition_continuable_set, Base exceptional--condition objects}.
 @end defop
 
+@c page
+@node conditions warning attributes
+@subsection Attributes of @class{mbfl_warning_condition_t}
 
-@defop {Predicate} {mbfl_warning_condition_t} mbfl_warning_condition_is_a @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_warning_condition_t}; otherwise return false.
+
+@menu
+* conditions warning attributes who::           Attribute @code{who} of @class{mbfl_warning_condition_t}.
+* conditions warning attributes message::       Attribute @code{message} of @class{mbfl_warning_condition_t}.
+* conditions warning attributes continuable::   Attribute @code{continuable} of @class{mbfl_warning_condition_t}.
+@end menu
+
+@c page
+@node conditions warning attributes who
+@subsubsection Attribute @code{who} of @class{mbfl_warning_condition_t}
+
+
+For the semantics of the @code{who} attribute, @ref{conditions base attributes who, Attribute
+@code{who} of @class{mbfl_exceptional_condition_t}}.
+
+
+@defop {Accessor} {mbfl_warning_condition_t} mbfl_warning_condition_who_set @var{CND} @var{WHO}
+@defopx {Mutator} {mbfl_warning_condition_t} mbfl_warning_condition_who_var @var{WHO_RV} @var{CND}
+Class attribute accessor and mutator.
 @end defop
+
+@c page
+@node conditions warning attributes message
+@subsubsection Attribute @code{message} of @class{mbfl_warning_condition_t}
+
+
+For the semantics of the @code{message} attribute, @ref{conditions base attributes message,
+Attribute @code{message} of @class{mbfl_exceptional_condition_t}}.
 
 
 @defop {Accessor} {mbfl_warning_condition_t} mbfl_warning_condition_message_set @var{CND} @var{MESSAGE}
 @defopx {Mutator} {mbfl_warning_condition_t} mbfl_warning_condition_message_var @var{MESSAGE_STRING_RV} @var{CND}
-Accessor and mutator for a message string describing the exceptional--condition.
-
-For the semantics of the parameter @var{MESSAGE} @ref{mbfl_exceptional_condition_message_set,
-Base exceptional--condition objects}.
+Attribute accessor and mutator.
 @end defop
+
+@c page
+@node conditions warning attributes continuable
+@subsubsection Attribute @code{continuable} of @class{mbfl_warning_condition_t}
+
+
+For the semantics of the @code{continuable} attribute, @ref{conditions base attributes continuable,
+Attribute @code{continuable} of @class{mbfl_exceptional_condition_t}}.
 
 
 @defop {Accessor} {mbfl_warning_condition_t} mbfl_warning_condition_continuable_set @var{CND} @var{CONTINUABLE}
 @defopx {Mutator} {mbfl_warning_condition_t} mbfl_warning_condition_continuable_var @var{CONTINUABLE_RV} @var{CND}
-Accessor and mutator for a boolean value stating if this exceptional--condition is continuable or
-not.
-
-For the semantics of the parameter @var{CONTINUABLE}
-@ref{mbfl_exceptional_condition_continuable_set, Base exceptional--condition objects}.
+Attribute accessor and mutator.
 @end defop
 
 @c page
-@node conditions errors
+@node conditions error
 @section Error exceptional--condition objects
-
-
-@menu
-* conditions errors error::     Error exceptional-condition objects.
-* conditions errors logic::     Logic error exceptional-condition objects.
-* conditions errors runtime::   Runtime exceptional-condition objects.
-@end menu
-
-@c page
-@node conditions errors error
-@subsection Error exceptional--condition objects
 
 
 @dfn{Error exceptional--conditions} are used to signal an error in a procedure the script is
 executing.
+
+@menu
+* conditions error class::            Class definition of @class{mbfl_error_condition_t}.
+* conditions error constructors::     Class constructors of @class{mbfl_error_condition_t}.
+* conditions error attributes::       Attributes of @class{mbfl_error_condition_t}.
+@end menu
+
+@c page
+@node conditions error class
+@subsection Class definition of @class{mbfl_error_condition_t}
 
 
 @deftp {Abstract Class} mbfl_error_condition_t
@@ -3828,6 +3939,39 @@ Class describing error exceptional--conditions.
 Return true if @var{OBJ} is an instance of @class{mbfl_error_condition_t}; otherwise return false.
 @end defop
 
+@c page
+@node conditions error constructors
+@subsection Class constructors of @class{mbfl_error_condition_t}
+
+@c page
+@node conditions error attributes
+@subsection Attributes of @class{mbfl_error_condition_t}
+
+
+@menu
+* conditions error attributes who::           Attribute @code{who} of @class{mbfl_error_condition_t}.
+* conditions error attributes message::       Attribute @code{message} of @class{mbfl_error_condition_t}.
+* conditions error attributes continuable::   Attribute @code{continuable} of @class{mbfl_error_condition_t}.
+@end menu
+
+@c page
+@node conditions error attributes who
+@subsubsection Attribute @code{who} of @class{mbfl_error_condition_t}
+
+
+For the semantics of the @code{who} attribute, @ref{conditions base attributes who, Attribute
+@code{who} of @class{mbfl_exceptional_condition_t}}.
+
+
+@defop {Accessor} {mbfl_error_condition_t} mbfl_error_condition_who_set @var{CND} @var{WHO}
+@defopx {Mutator} {mbfl_error_condition_t} mbfl_error_condition_who_var @var{WHO_RV} @var{CND}
+Class attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions error attributes message
+@subsubsection Attribute @code{message} of @class{mbfl_error_condition_t}
+
 
 @defop {Accessor} {mbfl_error_condition_t} mbfl_error_condition_message_set @var{CND} @var{MESSAGE}
 @defopx {Mutator} {mbfl_error_condition_t} mbfl_error_condition_message_var @var{MESSAGE_STRING_RV} @var{CND}
@@ -3836,6 +3980,10 @@ Accessor and mutator for a message string describing the exceptional--condition.
 For the semantics of the parameter @var{MESSAGE} @ref{mbfl_exceptional_condition_message_set,
 Base exceptional--condition objects}.
 @end defop
+
+@c page
+@node conditions error attributes continuable
+@subsubsection Attribute @code{continuable} of @class{mbfl_error_condition_t}
 
 
 @defop {Accessor} {mbfl_error_condition_t} mbfl_error_condition_continuable_set @var{CND} @var{CONTINUABLE}
@@ -3849,8 +3997,9 @@ For the semantics of the parameter @var{CONTINUABLE}
 @end defop
 
 @c page
-@node conditions errors logic
-@subsection Logic--error exceptional--condition objects
+@node conditions logic
+@section Logic--error exceptional--condition objects
+
 
 
 @dfn{Logic--error exceptional--conditions} are used to signal a programming error: something that
@@ -3867,6 +4016,16 @@ mbfl_exception_raise _(CND)
 Usually when an exceptional--condition of this class is raised: the correct handling is to attempt a
 clean release of all the resources, then to terminate the program with an appropriate exit status.
 
+@menu
+* conditions logic class::         Class definition of @class{mbfl_logic_error_condition_t}.
+* conditions logic constructors::  Class constructors of @class{mbfl_logic_error_condition_t}.
+* conditions logic attributes::    Attributes of @class{mbfl_logic_error_condition_t}.
+@end menu
+
+@c page
+@node conditions logic class
+@subsection Class definition of @class{mbfl_logic_error_condition_t}
+
 
 @deftp {Class} mbfl_logic_error_condition_t
 @deftpx {Superclass} mbfl_error_condition_t
@@ -3874,6 +4033,16 @@ clean release of all the resources, then to terminate the program with an approp
 Class describing logic--error exceptional--conditions.  By default instances of this type are
 non--continuable.
 @end deftp
+
+
+@defop {Predicate} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_is_a @var{OBJ}
+Return true if @var{OBJ} is an instance of @class{mbfl_logic_error_condition_t}; otherwise return
+false.
+@end defop
+
+@c page
+@node conditions logic constructors
+@subsection Class constructors of @class{mbfl_logic_error_condition_t}
 
 
 @defop {Constructor} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_make @var{CND} @var{MESSAGE}
@@ -3899,35 +4068,62 @@ For the semantics of the parameter @var{CONTINUABLE}
 @ref{mbfl_exceptional_condition_continuable_set, Base exceptional--condition objects}.
 @end defop
 
+@c page
+@node conditions logic attributes
+@subsection Attributes of @class{mbfl_logic_error_condition_t}
 
-@defop {Predicate} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_is_a @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_logic_error_condition_t}; otherwise return
-false.
+
+@menu
+* conditions logic attributes who::           Attribute @code{who} of @class{mbfl_logic_error_condition_t}.
+* conditions logic attributes message::       Attribute @code{message} of @class{mbfl_logic_error_condition_t}.
+* conditions logic attributes continuable::   Attribute @code{continuable} of @class{mbfl_logic_error_condition_t}.
+@end menu
+
+@c page
+@node conditions logic attributes who
+@subsubsection Attribute @code{who} of @class{mbfl_logic_error_condition_t}
+
+
+For the semantics of the @code{who} attribute, @ref{conditions base attributes who, Attribute
+@code{who} of @class{mbfl_exceptional_condition_t}}.
+
+
+@defop {Accessor} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_who_set @var{CND} @var{WHO}
+@defopx {Mutator} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_who_var @var{WHO_RV} @var{CND}
+Class attribute accessor and mutator.
 @end defop
+
+@c page
+@node conditions logic attributes message
+@subsubsection Attribute @code{message} of @class{mbfl_logic_error_condition_t}
+
+
+For the semantics of the @code{message} attribute, @ref{conditions base attributes message,
+Attribute @code{message} of @class{mbfl_exceptional_condition_t}}.
 
 
 @defop {Accessor} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_message_set @var{CND} @var{MESSAGE}
 @defopx {Mutator} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_message_var @var{MESSAGE_STRING_RV} @var{CND}
-Accessor and mutator for a message string describing the exceptional--condition.
-
-For the semantics of the parameter @var{MESSAGE} @ref{mbfl_exceptional_condition_message_set,
-Base exceptional--condition objects}.
+Attribute accessor and mutator.
 @end defop
+
+@c page
+@node conditions logic attributes continuable
+@subsubsection Attribute @code{continuable} of @class{mbfl_logic_error_condition_t}
+
+
+For the semantics of the @code{continuable} attribute, @ref{conditions base attributes continuable,
+Attribute @code{continuable} of @class{mbfl_exceptional_condition_t}}.
 
 
 @defop {Accessor} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_continuable_set @var{CND} @var{CONTINUABLE}
 @defopx {Mutator} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_continuable_var @var{CONTINUABLE_RV} @var{CND}
-Accessor and mutator for a boolean value stating if this exceptional--condition is continuable or
-not.  We must be careful in changing the default setting for this state: some
-exceptional--conditions are meant to be non--continuable no matter what.
-
-For the semantics of the parameter @var{CONTINUABLE}
-@ref{mbfl_exceptional_condition_continuable_set, Base exceptional--condition objects}.
+Attribute accessor and mutator.
 @end defop
 
 @c page
-@node conditions errors runtime
-@subsection Runtime exceptional--condition objects
+@node conditions runtime
+@section Runtime--error exceptional--condition objects
 
 
 @dfn{Runtime error exceptional--conditions} are used to signal a runtime error: usually some sort of
@@ -3945,6 +4141,16 @@ mbfl_raise _(ERR)
 Usually when an exceptional--condition of this class is raised: the correct handling is to attempt a
 clean release of all the resources, then to terminate the program with an appropriate exit status.
 
+@menu
+* conditions runtime class::         Class definition of @class{mbfl_runtime_error_condition_t}.
+* conditions runtime constructors::  Class constructors of @class{mbfl_runtime_error_condition_t}.
+* conditions runtime attributes::    Attributes of @class{mbfl_runtime_error_condition_t}.
+@end menu
+
+@c page
+@node conditions runtime class
+@subsection Class definition of @class{mbfl_runtime_error_condition_t}
+
 
 @deftp {Class} mbfl_runtime_error_condition_t
 @deftpx {Superclass} mbfl_error_condition_t
@@ -3952,6 +4158,16 @@ clean release of all the resources, then to terminate the program with an approp
 Class describing runtime error exceptional--conditions.  By default instances of this type are
 continuable.
 @end deftp
+
+
+@defop {Predicate} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_is_a @var{OBJ}
+Return true if @var{OBJ} is an instance of @class{mbfl_runtime_error_condition_t}; otherwise return
+false.
+@end defop
+
+@c page
+@node conditions runtime constructors
+@subsection Class constructors of @class{mbfl_runtime_error_condition_t}
 
 
 @defop {Constructor} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_make @var{CND} @var{MESSAGE}
@@ -3974,44 +4190,62 @@ For the semantics of the parameter @var{CONTINUABLE}
 @ref{mbfl_exceptional_condition_continuable_set, Base exceptional--condition objects}.
 @end defop
 
+@c page
+@node conditions runtime attributes
+@subsection Attributes of @class{mbfl_runtime_error_condition_t}
 
-@defop {Predicate} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_is_a @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_runtime_error_condition_t}; otherwise return
-false.
+
+@menu
+* conditions runtime attributes who::           Attribute @code{who} of @class{mbfl_runtime_error_condition_t}.
+* conditions runtime attributes message::       Attribute @code{message} of @class{mbfl_runtime_error_condition_t}.
+* conditions runtime attributes continuable::   Attribute @code{continuable} of @class{mbfl_runtime_error_condition_t}.
+@end menu
+
+@c page
+@node conditions runtime attributes who
+@subsubsection Attribute @code{who} of @class{mbfl_runtime_error_condition_t}
+
+
+For the semantics of the @code{who} attribute, @ref{conditions base attributes who, Attribute
+@code{who} of @class{mbfl_exceptional_condition_t}}.
+
+
+@defop {Accessor} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_who_set @var{CND} @var{WHO}
+@defopx {Mutator} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_who_var @var{WHO_RV} @var{CND}
+Class attribute accessor and mutator.
 @end defop
+
+@c page
+@node conditions runtime attributes message
+@subsubsection Attribute @code{message} of @class{mbfl_runtime_error_condition_t}
+
+
+For the semantics of the @code{message} attribute, @ref{conditions base attributes message,
+Attribute @code{message} of @class{mbfl_exceptional_condition_t}}.
 
 
 @defop {Accessor} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_message_set @var{CND} @var{MESSAGE}
-@defopx {Mutator} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_message_var @var{MESSAGE_RV} @var{CND}
-Accessor and mutator for a message string describing the exceptional--condition.
-
-For the semantics of the parameter @var{MESSAGE} @ref{mbfl_exceptional_condition_message_set,
-Base exceptional--condition objects}.
+@defopx {Mutator} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_message_var @var{MESSAGE_STRING_RV} @var{CND}
+Attribute accessor and mutator.
 @end defop
+
+@c page
+@node conditions runtime attributes continuable
+@subsubsection Attribute @code{continuable} of @class{mbfl_runtime_error_condition_t}
+
+
+For the semantics of the @code{continuable} attribute, @ref{conditions base attributes continuable,
+Attribute @code{continuable} of @class{mbfl_exceptional_condition_t}}.
 
 
 @defop {Accessor} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_continuable_set @var{CND} @var{CONTINUABLE}
 @defopx {Mutator} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_continuable_var @var{CONTINUABLE_RV} @var{CND}
-Accessor and mutator for a boolean value stating if this exceptional--condition is continuable or
-not.  We must be careful in changing the default setting for this state: some
-exceptional--conditions are meant to be non--continuable no matter what.
-
-For the semantics of the parameter @var{CONTINUABLE}
-@ref{mbfl_exceptional_condition_continuable_set, Base exceptional--condition objects}.
+Attribute accessor and mutator.
 @end defop
 
 @c page
-@node conditions classes
-@section Exceptional--condition objects about classes
-
-
-@menu
-* conditions invalid field::    Invalid value to object's field exceptional-condition objects.
-@end menu
-
-@c page
-@node conditions invalid field
-@subsection Invalid value to object's field exceptional--condition objects
+@node conditions invalid attrib value
+@section Invalid attribute value to exceptional--condition objects
 
 
 @dfn{Invalid value to object's field exceptional--conditions} are used to signal a programming
@@ -4021,6 +4255,16 @@ usually raised by class accessors.
 Usually when an exceptional--condition of this class is raised: the correct handling is to attempt a
 clean release of all the resources, then to terminate the program with an appropriate exit status.
 
+@menu
+* conditions invalid attrib value class::         Class definition of @class{mbfl_invalid_object_field_value_condition_t}.
+* conditions invalid attrib value constructors::  Class constructors of @class{mbfl_invalid_object_field_value_condition_t}.
+* conditions invalid attrib value attributes::    Attributes of @class{mbfl_invalid_object_field_value_condition_t}.
+@end menu
+
+@c page
+@node conditions invalid attrib value class
+@subsection Class definition of @class{mbfl_invalid_object_field_value_condition_t}
+
 
 @deftp {Class} mbfl_invalid_object_field_value_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
@@ -4028,6 +4272,16 @@ clean release of all the resources, then to terminate the program with an approp
 Class describing invalid value to object's field exceptional--conditions.  By default instances of
 this type are non--continuable.
 @end deftp
+
+
+@defop {Predicate} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_is_a @var{OBJ}
+Return true if @var{OBJ} is an instance of @class{mbfl_invalid_object_field_value_condition_t}; otherwise return
+false.
+@end defop
+
+@c page
+@node conditions invalid attrib value constructors
+@subsection Class constructors of @class{mbfl_invalid_object_field_value_condition_t}
 
 
 @defop {Constructor} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_make @var{CND} @var{MESSAGE}
@@ -4050,30 +4304,57 @@ For the semantics of the parameter @var{CONTINUABLE}
 @ref{mbfl_exceptional_condition_continuable_set, Base exceptional--condition objects}.
 @end defop
 
+@c page
+@node conditions invalid attrib value attributes
+@subsection Attributes of @class{mbfl_invalid_object_field_value_condition_t}
 
-@defop {Predicate} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_is_a @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_invalid_object_field_value_condition_t}; otherwise return
-false.
+
+@menu
+* conditions invalid attrib value attributes who::           Attribute @code{who} of @class{mbfl_invalid_object_field_value_condition_t}.
+* conditions invalid attrib value attributes message::       Attribute @code{message} of @class{mbfl_invalid_object_field_value_condition_t}.
+* conditions invalid attrib value attributes continuable::   Attribute @code{continuable} of @class{mbfl_invalid_object_field_value_condition_t}.
+@end menu
+
+@c page
+@node conditions invalid attrib value attributes who
+@subsubsection Attribute @code{who} of @class{mbfl_invalid_object_field_value_condition_t}.
+
+
+For the semantics of the @code{who} attribute, @ref{conditions base attributes who, Attribute
+@code{who} of @class{mbfl_exceptional_condition_t}}.
+
+
+@defop {Accessor} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_who_set @var{CND} @var{WHO}
+@defopx {Mutator} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_who_var @var{WHO_RV} @var{CND}
+Class attribute accessor and mutator.
 @end defop
+
+@c page
+@node conditions invalid attrib value attributes message
+@subsubsection Attribute @code{message} of @class{mbfl_invalid_object_field_value_condition_t}
+
+
+For the semantics of the @code{message} attribute, @ref{conditions base attributes message,
+Attribute @code{message} of @class{mbfl_exceptional_condition_t}}.
 
 
 @defop {Accessor} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_message_set @var{CND} @var{MESSAGE}
 @defopx {Mutator} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_message_var @var{MESSAGE_RV} @var{CND}
-Accessor and mutator for a message string describing the exceptional--condition.
-
-For the semantics of the parameter @var{MESSAGE} @ref{mbfl_exceptional_condition_message_set,
-Base exceptional--condition objects}.
+Attribute accessor and mutator.
 @end defop
+
+@c page
+@node conditions invalid attrib value attributes continuable
+@subsubsection Attribute @code{continuable} of @class{mbfl_invalid_object_field_value_condition_t}
+
+
+For the semantics of the @code{continuable} attribute, @ref{conditions base attributes continuable,
+Attribute @code{continuable} of @class{mbfl_exceptional_condition_t}}.
 
 
 @defop {Accessor} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_continuable_set @var{CND} @var{CONTINUABLE}
 @defopx {Mutator} {mbfl_invalid_object_field_value_condition_t} mbfl_invalid_object_field_value_condition_continuable_var @var{CONTINUABLE_RV} @var{CND}
-Accessor and mutator for a boolean value stating if this exceptional--condition is continuable or
-not.  We must be careful in changing the default setting for this state: some
-exceptional--conditions are meant to be non--continuable no matter what.
-
-For the semantics of the parameter @var{CONTINUABLE}
-@ref{mbfl_exceptional_condition_continuable_set, Base exceptional--condition objects}.
+Attribute accessor and mutator.
 @end defop
 
 @c page
@@ -5481,6 +5762,7 @@ mbfl_string_strip_prefix_and_suffix_var RV 'hello' 'ciao mamma' 'mom'      @resu
 @section Normalising strings
 
 
+@anchor{mbfl_string_normalise_boolean_var}
 @defun mbfl_string_normalise_boolean_var @var{NORMAL_RV} @var{STR}
 Normalise @var{STR} as a boolean string representation and store the result in the result variable
 @var{NORMAL_RV}; when successful return true, otherwise return false.
@@ -15118,6 +15400,15 @@ and as backup at:
 Lots of interesting stuff at the following site:
 
 @center @url{http://www.bash-hackers.org/wiki/}
+
+In the design of this library, a lot of ideas were recycled from the ``Revised^6 Report on the
+Algorithmic Language Scheme'':
+
+@center @url{https://www.r6rs.org/}
+
+@noindent
+this is especially true for the object--oriented programming modules, the exceptional--condition
+objects, the exception handlers.
 
 @c page
 @node concept index
