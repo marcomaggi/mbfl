@@ -4424,12 +4424,13 @@ Attribute accessor and mutator.
 @section Invalid attribute value to exceptional--condition objects
 
 
-@dfn{Invalid value to object's field exceptional--conditions} are used to signal a programming
-error: an attempt was performed to set an object's value to an invalid value; such conditions are
-usually raised by class accessors.
+@dfn{Invalid value to object's attribute exceptional--conditions} are used to signal a programming
+error: an attempt was performed to set an object's attribute to an invalid value; such conditions
+are usually raised by class constructors and class attribute accessors.
 
-Usually when an exceptional--condition of this class is raised: the correct handling is to attempt a
-clean release of all the resources, then to terminate the program with an appropriate exit status.
+Usually when an exceptional--condition of this class is raised, the correct handling is to: attempt
+a clean release of all the resources; inform the user; terminate the script with an appropriate exit
+status.
 
 @menu
 * conditions invalid attrib value class::         Class definition of @class{mbfl_invalid_object_attrib_value_condition_t}.
@@ -4445,8 +4446,8 @@ clean release of all the resources, then to terminate the program with an approp
 @deftp {Class} mbfl_invalid_object_attrib_value_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
-Class describing invalid value to object's field exceptional--conditions.  By default instances of
-this type are non--continuable.
+Class describing invalid value to object's attribute exceptional--conditions.  Instances of this
+class should be non--continuable.
 @end deftp
 
 
@@ -4457,7 +4458,7 @@ false.
 @example
 mbfl_default_object_declare(CND)
 
-mbfl_invalid_object_attrib_value_condition_define _(CND) 'someone' 'my bad'
+mbfl_invalid_object_attrib_value_condition_make _(CND) 'someone' _(OBJ) 'red' 'ciao'
 mbfl_invalid_object_attrib_value_condition_is_a _(CND)
 @result{} 0
 @end example
@@ -4468,24 +4469,68 @@ mbfl_invalid_object_attrib_value_condition_is_a _(CND)
 @subsection Class constructors of @class{mbfl_invalid_object_attrib_value_condition_t}
 
 
-@defop {Constructor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_make @var{CND} @var{MESSAGE}
+@defop {Constructor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_make @var{CND} @var{WHO} @var{OBJ} @var{ATTRIBUTE_NAME} @var{INVALID_VALUE}
 Define an object previously declared with @class{mbfl_default_object_declare} or similar.  The
 condition is non--continuable by default.
 
-For the semantics of the parameter @var{MESSAGE} @ref{mbfl_exceptional_condition_message_set,
-Base exceptional--condition objects}.
+@RefWhoConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
+
+@RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
+
+@ref{@code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the semantics of the
+parameter @var{OBJ}.
+
+@ref{@code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the
+semantics of the parameter @var{ATTRIBUTE_NAME}.
+
+@ref{@code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the semantics
+of the parameter @var{INVALID_VALUE}.
+
+Let's say we have this class definition:
+
+@example
+mbfl_default_class_declare(color)
+
+mbfl_default_class_define _(color) _(mbfl_default_object) 'color_p' red green blue
+@end example
+
+@noindent
+we want the field values to be integers; we can define a mutator as follows:
+
+@example
+function color_red_set () @{
+    mbfl_mandatory_nameref_parameter(OBJ, 1, color object)
+    mbfl_mandatory_parameter(RED, 2, red value)
+
+    if mbfl_string_is_digit "$RED"
+    then color_p_red_set _(OBJ) "$RED"
+    else
+        mbfl_default_object_declare(CND)
+
+        mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(OBJ) 'red' "$RED"
+        mbfl_exception_raise _(CND)
+    fi
+@}
+@end example
 @end defop
 
 
-@defop {Constructor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_define @var{CND} @var{MESSAGE} @var{CONTINUABLE}
-Define an object previously declared with @class{mbfl_default_object_declare} or similar.  This is
-an internal constructor that should not be used directly by client code.
+@defop {Constructor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_define @var{CND} @var{WHO} @var{CONTINUABLE} @var{OBJ} @var{ATTRIBUTE_NAME} @var{INVALID_VALUE}
+Define an object previously declared with @class{mbfl_default_object_declare} or similar.  This is a
+low--level constructor that should not be used only to define high--level constructors.
 
-For the semantics of the parameter @var{MESSAGE} @ref{mbfl_exceptional_condition_message_set,
-Base exceptional--condition objects}.
+@RefWhoConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
 
-For the semantics of the parameter @var{CONTINUABLE}
-@ref{mbfl_exceptional_condition_continuable_set, Base exceptional--condition objects}.
+@RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
+
+@ref{@code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the semantics of the
+parameter @var{OBJ}.
+
+@ref{@code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the
+semantics of the parameter @var{ATTRIBUTE_NAME}.
+
+@ref{@code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the semantics
+of the parameter @var{INVALID_VALUE}.
 @end defop
 
 @c page
@@ -4495,8 +4540,10 @@ For the semantics of the parameter @var{CONTINUABLE}
 
 @menu
 * conditions invalid attrib value attributes who::           Attribute @code{who} of @class{mbfl_invalid_object_attrib_value_condition_t}.
-* conditions invalid attrib value attributes message::       Attribute @code{message} of @class{mbfl_invalid_object_attrib_value_condition_t}.
 * conditions invalid attrib value attributes continuable::   Attribute @code{continuable} of @class{mbfl_invalid_object_attrib_value_condition_t}.
+* conditions invalid attrib value attributes object::        Attribute @code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}.
+* conditions invalid attrib value attributes attrib-name::   Attribute @code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}.
+* conditions invalid attrib value attributes invalid-value:: Attribute @code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}.
 @end menu
 
 @c page
@@ -4504,26 +4551,11 @@ For the semantics of the parameter @var{CONTINUABLE}
 @subsubsection Attribute @code{who} of @class{mbfl_invalid_object_attrib_value_condition_t}.
 
 
-For the semantics of the @code{who} attribute, @ref{conditions base attributes who, Attribute
-@code{who} of @class{mbfl_exceptional_condition_t}}.
+@RefWhoConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
 
 
 @defop {Accessor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_who_set @var{CND} @var{WHO}
 @defopx {Mutator} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_who_var @var{WHO_RV} @var{CND}
-Class attribute accessor and mutator.
-@end defop
-
-@c page
-@node conditions invalid attrib value attributes message
-@subsubsection Attribute @code{message} of @class{mbfl_invalid_object_attrib_value_condition_t}
-
-
-For the semantics of the @code{message} attribute, @ref{conditions base attributes message,
-Attribute @code{message} of @class{mbfl_exceptional_condition_t}}.
-
-
-@defop {Accessor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_message_set @var{CND} @var{MESSAGE}
-@defopx {Mutator} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_message_var @var{MESSAGE_RV} @var{CND}
 Attribute accessor and mutator.
 @end defop
 
@@ -4542,9 +4574,56 @@ Attribute accessor and mutator.
 @end defop
 
 @c page
+@node conditions invalid attrib value attributes object
+@subsubsection Attribute @code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}
+
+
+@anchor{@code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}}
+@defcv {Class Attribute} {mbfl_invalid_object_attrib_value_condition_t} object
+The data variable of the object whose attribute we tried to set to an invalid value.
+@end defcv
+
+
+@defop {Accessor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_object_set @var{CND} @var{OBJ}
+@defopx {Mutator} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_object_var @var{OBJ_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions invalid attrib value attributes attrib-name
+@subsubsection Attribute @code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}
+
+
+@anchor{@code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}}
+@defcv {Class Attribute} {mbfl_invalid_object_attrib_value_condition_t} attrib_name
+A string representing the attribute name.
+@end defcv
+
+
+@defop {Accessor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_attrib_name_set @var{CND} @var{NAME}
+@defopx {Mutator} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_attrib_name_var @var{NAME_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions invalid attrib value attributes invalid-value
+@subsubsection Attribute @code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}
+
+
+@anchor{@code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}}
+@defcv {Class Attribute} {mbfl_invalid_object_attrib_value_condition_t} invalid_value
+A string representing the invalid value.
+@end defcv
+
+
+@defop {Accessor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_invalid_value_set @var{CND} @var{INVALID_VALUE}
+@defopx {Mutator} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_invalid_value_var @var{INVALID_VALUE_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
 @node exceptions
 @chapter Raising and handling exceptions
-
 
 
 @defun mbfl_exception_handler @var{HANDLER}

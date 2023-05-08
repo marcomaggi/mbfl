@@ -56,7 +56,7 @@ function mbfl_initialise_module_exceptional_conditions () {
 
     mbfl_default_class_define _(mbfl_invalid_object_attrib_value_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_invalid_object_attrib_value_condition' \
-			      'object' 'attrib_name' 'attrib_value'
+			      'object' 'attrib_name' 'invalid_value'
 
     # Unset the constructors of abstract classes.
     mbfl_function_unset 'mbfl_exceptional_condition_define'
