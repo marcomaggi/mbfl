@@ -43,7 +43,7 @@ mbfl_default_class_declare(mbfl_error_condition_t)
 mbfl_default_class_declare(mbfl_warning_condition_t)
 mbfl_default_class_declare(mbfl_logic_error_condition_t)
 mbfl_default_class_declare(mbfl_runtime_error_condition_t)
-mbfl_default_class_declare(mbfl_invalid_object_field_value_condition_t)
+mbfl_default_class_declare(mbfl_invalid_object_attrib_value_condition_t)
 
 function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_exceptional_condition_t) _(mbfl_default_object) 'mbfl_exceptional_condition' \
@@ -54,8 +54,8 @@ function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_logic_error_condition_t)   _(mbfl_error_condition_t)        'mbfl_logic_error_condition'
     mbfl_default_class_define _(mbfl_runtime_error_condition_t) _(mbfl_error_condition_t)        'mbfl_runtime_error_condition'
 
-    mbfl_default_class_define _(mbfl_invalid_object_field_value_condition_t) _(mbfl_logic_error_condition_t) \
-			      'mbfl_invalid_object_field_value_condition' \
+    mbfl_default_class_define _(mbfl_invalid_object_attrib_value_condition_t) _(mbfl_logic_error_condition_t) \
+			      'mbfl_invalid_object_attrib_value_condition' \
 			      'object' 'attrib_name' 'attrib_value'
 
     # Unset the constructors of abstract classes.
@@ -75,7 +75,7 @@ function mbfl_initialise_module_exceptional_conditions () {
 	else
 	    mbfl_default_object_declare(mbfl_CND)
 
-	    mbfl_invalid_object_field_value_condition_make _(mbfl_CND) $FUNC _(mbfl_OBJ) 'continuable' "$mbfl_VAL"
+	    mbfl_invalid_object_attrib_value_condition_make _(mbfl_CND) $FUNC _(mbfl_OBJ) 'continuable' "$mbfl_VAL"
 	    mbfl_exception_raise _(mbfl_CND)
 	fi
     }
