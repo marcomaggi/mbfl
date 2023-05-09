@@ -4428,10 +4428,6 @@ Attribute accessor and mutator.
 error: an attempt was performed to set an object's attribute to an invalid value; such conditions
 are usually raised by class constructors and class attribute accessors.
 
-Usually when an exceptional--condition of this class is raised, the correct handling is to: attempt
-a clean release of all the resources; inform the user; terminate the script with an appropriate exit
-status.
-
 @menu
 * conditions invalid attrib value class::         Class definition of @class{mbfl_invalid_object_attrib_value_condition_t}.
 * conditions invalid attrib value constructors::  Class constructors of @class{mbfl_invalid_object_attrib_value_condition_t}.
