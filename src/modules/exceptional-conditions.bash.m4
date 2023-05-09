@@ -44,6 +44,7 @@ mbfl_default_class_declare(mbfl_warning_condition_t)
 mbfl_default_class_declare(mbfl_logic_error_condition_t)
 mbfl_default_class_declare(mbfl_runtime_error_condition_t)
 mbfl_default_class_declare(mbfl_invalid_object_attrib_value_condition_t)
+mbfl_default_class_declare(mbfl_invalid_ctor_parm_value_condition_t)
 
 function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_exceptional_condition_t) _(mbfl_default_object) 'mbfl_exceptional_condition' \
@@ -53,6 +54,10 @@ function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_error_condition_t)         _(mbfl_exceptional_condition_t)  'mbfl_error_condition'
     mbfl_default_class_define _(mbfl_logic_error_condition_t)   _(mbfl_error_condition_t)        'mbfl_logic_error_condition'
     mbfl_default_class_define _(mbfl_runtime_error_condition_t) _(mbfl_error_condition_t)        'mbfl_runtime_error_condition'
+
+    mbfl_default_class_define _(mbfl_invalid_ctor_parm_value_condition_t) _(mbfl_logic_error_condition_t) \
+			      'mbfl_invalid_ctor_parm_value_condition' \
+			      'class' 'parm_name' 'invalid_value'
 
     mbfl_default_class_define _(mbfl_invalid_object_attrib_value_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_invalid_object_attrib_value_condition' \
@@ -107,12 +112,29 @@ function mbfl_logic_error_condition_make () {
 }
 
 
-#### predefined condition object classes: attempt to set an object's attrib with invalid value
+#### predefined condition object classes: classes and objects related
 
+function mbfl_invalid_ctor_parm_value_condition_make () {
+    mbfl_mandatory_nameref_parameter(mbfl_CND,		1, exceptional-condition object)
+    mbfl_mandatory_parameter(mbfl_WHO,			2, entity reporting the exceptional-condition)
+    mbfl_mandatory_nameref_parameter(mbfl_CLASS,	3, default class)
+    mbfl_mandatory_parameter(mbfl_PARM_NAME,		4, parameter name)
+    mbfl_mandatory_parameter(mbfl_INVALID_VALUE,	5, invalid parameter value)
+    mbfl_declare_varref(mbfl_CLASS_NAME)
+    declare mbfl_MSG
+
+    #echo $FUNCNAME _(mbfl_CND) "$mbfl_WHO" _(mbfl_CLASS) "$mbfl_PARM_NAME" "$mbfl_INVALID_VALUE" >&2
+
+    mbfl_default_class_name_var _(mbfl_CLASS_NAME) _(mbfl_CLASS)
+    printf -v mbfl_MSG 'invalid value for parameter "%s" of class "%s" constructor: "%s"' \
+	   "$mbfl_PARM_NAME" "$mbfl_CLASS_NAME" "$mbfl_INVALID_VALUE"
+    mbfl_invalid_ctor_parm_value_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MSG" 'false' \
+						  _(mbfl_CLASS) "$mbfl_PARM_NAME" "$mbfl_INVALID_VALUE"
+}
 function mbfl_invalid_object_attrib_value_condition_make () {
     mbfl_mandatory_nameref_parameter(mbfl_CND,		1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,			2, entity reporting the exceptional-condition)
-    mbfl_mandatory_parameter(mbfl_OBJ,			3, default object)
+    mbfl_mandatory_nameref_parameter(mbfl_OBJ,		3, default object)
     mbfl_mandatory_parameter(mbfl_ATTRIB_NAME,		4, attribute name)
     mbfl_mandatory_parameter(mbfl_INVALID_VALUE,	5, invalid attribute value)
     mbfl_declare_varref(mbfl_CLASS_NAME)
@@ -121,8 +143,8 @@ function mbfl_invalid_object_attrib_value_condition_make () {
     mbfl_default_object_class_name_var _(mbfl_CLASS_NAME) _(mbfl_OBJ)
     printf -v mbfl_MSG 'invalid boolean value for attribute "%s" of class "%s" object: "%s"' \
 	   "$mbfl_ATTRIB_NAME" "$mbfl_CLASS_NAME" "$mbfl_INVALID_VALUE"
-    mbfl_invalid_object_attrib_value_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MSG" \
-						      "$mbfl_OBJ" "$mbfl_ATTRIB_NAME" "$mbfl_INVALID_VALUE"
+    mbfl_invalid_object_attrib_value_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MSG" 'false' \
+						      _(mbfl_OBJ) "$mbfl_ATTRIB_NAME" "$mbfl_INVALID_VALUE"
 }
 
 

@@ -1,4 +1,4 @@
-# conditions.test.m4 --
+# exceptional-conditions.test.m4 --
 #
 # Part of: Marco's BASH Functions Library
 # Contents: tests for exceptional-condition objects
@@ -46,6 +46,90 @@ mbfl_load_library("$MBFL_LIBMBFL_TEST")
 #### macros
 
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+
+
+#### helpers
+
+mbfl_default_class_declare(colour)
+
+mbfl_default_class_define _(colour) _(mbfl_default_object) 'colour' red green blue
+
+mbfl_function_rename 'colour_red_set'   'colour_p_red_set'
+mbfl_function_rename 'colour_green_set' 'colour_p_green_set'
+mbfl_function_rename 'colour_blue_set'  'colour_p_blue_set'
+
+function colour_make () {
+    mbfl_mandatory_nameref_parameter(OBJ,	1, colour object)
+    mbfl_mandatory_parameter(RED,		2, red)
+    mbfl_mandatory_parameter(GREEN,		3, green)
+    mbfl_mandatory_parameter(BLUE,		3, blue)
+
+    if ! mbfl_string_is_digit "$RED"
+    then
+	mbfl_default_object_declare(CND)
+
+	mbfl_invalid_ctor_parm_value_condition_make _(CND) $FUNCNAME _(colour) 'RED' "$RED"
+	mbfl_exception_raise _(CND)
+    fi
+
+    if ! mbfl_string_is_digit "$GREEN"
+    then
+	mbfl_default_object_declare(CND)
+
+	dotest-debug  _(CND) invalid green $FUNCNAME _(colour) 'green' "$GREEN"
+	mbfl_invalid_ctor_parm_value_condition_make _(CND) $FUNCNAME _(colour) 'GREEN' "$GREEN"
+	mbfl_exception_raise _(CND)
+    fi
+
+    if ! mbfl_string_is_digit "$BLUE"
+    then
+	mbfl_default_object_declare(CND)
+
+	mbfl_invalid_ctor_parm_value_condition_make _(CND) $FUNCNAME _(colour) 'BLUE' "$BLUE"
+	mbfl_exception_raise _(CND)
+    fi
+
+    colour_define _(OBJ) "$RED" "$GREEN" "$BLUE"
+}
+function colour_red_set () {
+    mbfl_mandatory_nameref_parameter(OBJ,	1, colour object)
+    mbfl_mandatory_parameter(RED,		2, red)
+
+    if mbfl_string_is_digit "$RED"
+    then colour_p_red_set _(OBJ) "$RED"
+    else
+	mbfl_default_object_declare(CND)
+
+	mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(OBJ) 'red' "$RED"
+	mbfl_exception_raise _(CND)
+    fi
+}
+function colour_green_set () {
+    mbfl_mandatory_nameref_parameter(OBJ,	1, colour object)
+    mbfl_mandatory_parameter(GREEN,		2, green)
+
+    if mbfl_string_is_digit "$GREEN"
+    then colour_p_green_set _(OBJ) "$GREEN"
+    else
+	mbfl_default_object_declare(CND)
+
+	mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(OBJ) 'green' "$GREEN"
+	mbfl_exception_raise _(CND)
+    fi
+}
+function colour_blue_set () {
+    mbfl_mandatory_nameref_parameter(OBJ,	1, colour object)
+    mbfl_mandatory_parameter(BLUE,		2, blue)
+
+    if mbfl_string_is_digit "$BLUE"
+    then colour_p_blue_set _(OBJ) "$BLUE"
+    else
+	mbfl_default_object_declare(CND)
+
+	mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(OBJ) 'blue' "$BLUE"
+	mbfl_exception_raise _(CND)
+    fi
+}
 
 
 #### base class tests
@@ -326,6 +410,122 @@ function conditions-logic-error-method-print-1.1 () {
 
     mbfl_logic_error_condition_make _(CND) $FUNCNAME 'this is an error message'
     mbfl_exceptional_condition_print _(CND) |& dotest-output "exceptional-conditions.test: error: $FUNCNAME: this is an error message"
+}
+
+
+#### invalid constructo's parameter value
+
+function conditions-invalid-ctor-parm-value-maker-1.1 () {
+    mbfl_default_object_declare(CND)
+    mbfl_default_object_declare(gray)
+
+    colour_define _(gray) 9 9 9
+
+    mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(gray) 'red' 'ciao'
+    mbfl_invalid_object_attrib_value_condition_is_a _(CND)
+}
+function conditions-invalid-ctor-parm-value-maker-2.1 () {
+    mbfl_default_object_declare(gray)
+
+    colour_make _(gray) 9 9 9
+}
+
+function conditions-invalid-ctor-parm-value-maker-2.2 () {
+    mbfl_default_object_declare(gray)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
+    mbfl_declare_varref(CLASS)
+    mbfl_declare_varref(PARM_NAME)
+    mbfl_declare_varref(INVALID_VALUE)
+
+    #dotest-set-debug
+
+    mbfl_location_enter
+    {
+	mbfl_exception_handler exception_handler_conditions_invalid_ctor_parm_value_maker_2_2
+
+	colour_make _(gray) 9 'ciao' 9
+    }
+    mbfl_location_leave
+
+    dotest-equal	'colour_make'	"$WHO"			&&
+	dotest-equal	'invalid value for parameter "BLUE" of class "colour" constructor: "ciao"' "$MESSAGE" &&
+	dotest-equal	'false'		"$CONTINUABLE"		&&
+	dotest-equal	_(colour)	"$CLASS"		&&
+	dotest-equal	'BLUE'		"$PARM_NAME"		&&
+	dotest-equal	'ciao'		"$INVALID_VALUE"
+}
+function exception_handler_conditions_invalid_ctor_parm_value_maker_2_2 () {
+    mbfl_mandatory_nameref_parameter(CND, 1, exceptional-condition object)
+
+    if mbfl_invalid_ctor_parm_value_condition_is_a _(CND)
+    then
+	#dotest-debug here
+
+	mbfl_invalid_ctor_parm_value_condition_who_var			_(WHO)			_(CND)
+	mbfl_invalid_ctor_parm_value_condition_message_var		_(MESSAGE)	      	_(CND)
+	mbfl_invalid_ctor_parm_value_condition_continuable_var		_(CONTINUABLE)	      	_(CND)
+	mbfl_invalid_ctor_parm_value_condition_class_var		_(CLASS)		_(CND)
+	mbfl_invalid_ctor_parm_value_condition_parm_name_var		_(PARM_NAME)		_(CND)
+	mbfl_invalid_ctor_parm_value_condition_invalid_value_var	_(INVALID_VALUE)	_(CND)
+
+	mbfl_invalid_ctor_parm_value_condition_continuable_set _(CND) 'true'
+	return_success_after_handling_exception
+    else return_after_not_handling_exception
+    fi
+}
+
+
+#### invalid value to object's attribute
+
+function conditions-invalid-attrib-value-maker-1.1 () {
+    mbfl_default_object_declare(CND)
+    mbfl_default_object_declare(gray)
+
+    colour_define _(gray) 9 9 9
+
+    mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(gray) 'red' 'ciao'
+    mbfl_invalid_object_attrib_value_condition_is_a _(CND)
+}
+function conditions-invalid-attrib-value-accessors-1.1 () {
+    mbfl_default_object_declare(CND)
+    mbfl_default_object_declare(gray)
+
+    colour_define _(gray) 9 9 9
+
+    mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(gray) 'red' 'ciao'
+
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
+    mbfl_declare_varref(OBJECT)
+    mbfl_declare_varref(ATTRIB_NAME)
+    mbfl_declare_varref(INVALID_VALUE)
+
+    mbfl_invalid_object_attrib_value_condition_who_var			_(WHO)		      _(CND)
+    mbfl_invalid_object_attrib_value_condition_message_var		_(MESSAGE)	      _(CND)
+    mbfl_invalid_object_attrib_value_condition_continuable_var		_(CONTINUABLE)	      _(CND)
+    mbfl_invalid_object_attrib_value_condition_object_var		_(OBJECT)	      _(CND)
+    mbfl_invalid_object_attrib_value_condition_attrib_name_var		_(ATTRIB_NAME)	      _(CND)
+    mbfl_invalid_object_attrib_value_condition_invalid_value_var	_(INVALID_VALUE)      _(CND)
+
+    dotest-equal	$FUNCNAME	"$WHO"			&&
+	dotest-equal	'invalid boolean value for attribute "red" of class "colour" object: "ciao"' "$MESSAGE" &&
+	dotest-equal	'false'		"$CONTINUABLE"		&&
+	dotest-equal	_(gray)		"$OBJECT"		&&
+	dotest-equal	'red'		"$ATTRIB_NAME"		&&
+	dotest-equal	'ciao'		"$INVALID_VALUE"
+}
+function conditions-invalid-attrib-value-method-print-1.1 () {
+    mbfl_default_object_declare(CND)
+    mbfl_default_object_declare(gray)
+
+    colour_define _(gray) 9 9 9
+
+    mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(gray) 'red' 'ciao'
+    mbfl_exceptional_condition_print _(CND) |& \
+	dotest-output "exceptional-conditions.test: error: $FUNCNAME: invalid boolean value for attribute \"red\" of class \"colour\" object: \"ciao\""
 }
 
 
