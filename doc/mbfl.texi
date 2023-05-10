@@ -5085,23 +5085,62 @@ successfully: the default exception--handler will call @func{exit_because_uncaug
 @section How to write and set exception--handlers
 
 
+An exception--handler function typically handles just a few exceptional--condition classes; every
+exception--handler must return using one among:
+
+@example
+return_success_after_handling_exception
+return_failure_after_handling_exception
+return_after_not_handling_exception
+@end example
+
+The basic template of an exception--handler is as follows:
+
+@example
+function my_exception_handler () @{
+    mbfl_mandatory_nameref_parameter(CND, 1, exceptional-condition object)
+
+    if spiffy_condition_is_a _(CND)
+    then
+        do_some_thing _(CND)
+        if handled_successfully
+        then return_success_after_handling_exception
+        else return_failure_after_handling_exception
+        fi
+    else return_after_not_handling_exception
+    fi
+@}
+@end example
+
+@noindent
+most exceptional--condition objects are non--continuable: it is not possible to resume script's
+execution after handling them; so we should just use @code{return_failure_after_handling_exception}.
+
+
 @defun mbfl_exception_handler @var{HANDLER}
 Push @var{HANDLER} on the stack of exceptional--condition handlers.  Register a location handler
 that pops @var{HANDLER} from the stack upon leaving the current location,
 @ref{mbfl_location_handler, Locations programming interface}.
 
 The parameter @var{HANDLER} should be an applicable identifier bound to a function, alias or
-command; it must accept a single mandatory parameter, it will be used as follows:
+command; it must accept a single mandatory parameter:
 
 @example
-declare -i RETURN_STATUS
-
 @var{HANDLER} @var{CONDITION_OBJECT}
-RETURN_STATUS=$?
-if   ((0 == RETURN_STATUS))
-then ...
-elif ((1 == RETURN_STATUS))
-then ...
+@end example
+@end defun
+
+
+@defun mbfl_default_exception_handler @var{CND}
+The default exception--handler; it is pushed on then exception--handlers stack upon loading
+@mbfl{}'s core library.  We can think of it as having the following implementation:
+
+@example
+if mbfl_exceptional_condition_is_continuable _(CND)
+then
+    mbfl_exceptional_condition_print _(CND) >&2
+    return_success_after_handling_exception
+else exit_because_uncaught_exception
 fi
 @end example
 @end defun

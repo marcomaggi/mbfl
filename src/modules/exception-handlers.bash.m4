@@ -35,6 +35,10 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 #### initialisation
 
+alias return_success_after_handling_exception='return 0'
+alias return_failure_after_handling_exception='return 1'
+alias return_after_not_handling_exception='return 2'
+
 function mbfl_initialise_module_exception_handlers () {
     declare -ga mbfl_exception_handlers_STACK=()
     mbfl_exception_handlers_push 'mbfl_default_exception_handler'
@@ -45,7 +49,7 @@ function mbfl_default_exception_handler () {
     if mbfl_exceptional_condition_is_continuable _(CND)
     then
 	mbfl_exceptional_condition_print _(CND) >&2
-	return_success
+	return_success_after_handling_exception
     else exit_because_uncaught_exception
     fi
 }
@@ -103,10 +107,6 @@ function mbfl_exception_raise () {
 	# If we are here: the handler did not handle the exception; try the upper handler.
     done
 }
-
-alias return_success_after_handling_exception='return 0'
-alias return_failure_after_handling_exception='return 1'
-alias return_after_not_handling_exception='return 2'
 
 ### end of file
 # Local Variables:
