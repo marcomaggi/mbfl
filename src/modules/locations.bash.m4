@@ -97,8 +97,9 @@ function mbfl_location_handler () {
 	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
 	mbfl_hook_add _(mbfl_HOOK) "$mbfl_HANDLER"
     else
-	mbfl_message_error 'attempt to register a location handler outside any location'
-	exit_because_no_location
+	mbfl_default_object_declare(CND)
+	mbfl_outside_location_condition_make _(CND) $FUNCNAME 'attempt to register a location handler outside any location'
+	mbfl_exception_raise _(CND)
     fi
 }
 function mbfl_location_maker_handler () {
@@ -111,8 +112,9 @@ function mbfl_location_maker_handler () {
 	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
 	mbfl_hook_add _(mbfl_HOOK) "mbfl_p_location_run_maker_handler '$mbfl_HANDLER'"
     else
-	mbfl_message_error 'attempt to register a location handler outside any location'
-	exit_because_no_location
+	mbfl_default_object_declare(CND)
+	mbfl_outside_location_condition_make _(CND) $FUNCNAME 'attempt to register a location handler outside any location'
+	mbfl_exception_raise _(CND)
     fi
 }
 function mbfl_p_location_run_maker_handler () {

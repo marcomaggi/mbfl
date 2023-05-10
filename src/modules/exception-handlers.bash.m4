@@ -50,7 +50,12 @@ function mbfl_default_exception_handler () {
     then
 	mbfl_exceptional_condition_print _(CND) >&2
 	return_success_after_handling_exception
-    else exit_because_uncaught_exception
+    else
+	mbfl_declare_varref(MESSAGE)
+
+	mbfl_exceptional_condition_message_var _(MESSAGE) _(CND)
+	mbfl_message_error_printf 'uncaught exception: %s' "$MESSAGE"
+	exit_because_uncaught_exception
     fi
 }
 

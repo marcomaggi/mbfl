@@ -529,6 +529,15 @@ function conditions-invalid-attrib-value-method-print-1.1 () {
 }
 
 
+#### outside location exceptional-condition
+
+function conditions-outside-location-1.1 () {
+    declare MSG=$(mbfl_location_handler 'ciao' 2>&1)
+    declare EXPECTED_MSG='exceptional-conditions.test: error: uncaught exception: attempt to register a location handler outside any location'
+    dotest-equal "$EXPECTED_MSG" "$MSG"
+}
+
+
 #### let's go
 
 dotest conditions-

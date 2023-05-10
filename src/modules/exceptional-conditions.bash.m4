@@ -46,6 +46,8 @@ mbfl_default_class_declare(mbfl_runtime_error_condition_t)
 mbfl_default_class_declare(mbfl_invalid_object_attrib_value_condition_t)
 mbfl_default_class_declare(mbfl_invalid_ctor_parm_value_condition_t)
 
+mbfl_default_class_declare(mbfl_outside_location_condition_t)
+
 function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_exceptional_condition_t) _(mbfl_default_object) 'mbfl_exceptional_condition' \
 			      'who' 'message' 'continuable'
@@ -62,6 +64,8 @@ function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_invalid_object_attrib_value_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_invalid_object_attrib_value_condition' \
 			      'object' 'attrib_name' 'invalid_value'
+
+    mbfl_default_class_define _(mbfl_outside_location_condition_t) _(mbfl_logic_error_condition_t) 'mbfl_outside_location_condition'
 
     # Unset the constructors of abstract classes.
     mbfl_function_unset 'mbfl_exceptional_condition_define'
@@ -109,6 +113,14 @@ function mbfl_logic_error_condition_make () {
     mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
 
     mbfl_logic_error_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'false'
+}
+
+function mbfl_outside_location_condition_make () {
+    mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
+    mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
+    mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
+
+    mbfl_outside_location_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'false'
 }
 
 
