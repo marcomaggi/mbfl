@@ -1785,6 +1785,7 @@ Before running the handlers the state of the current location is removed from th
 @end defun
 
 
+@anchor{mbfl_location_handler}
 @defun mbfl_location_handler @var{HANDLER_SCRIPT}
 Register a new handler in the current location.  It is an error if this function is called outside a
 location.
@@ -4857,15 +4858,16 @@ Attribute accessor and mutator.
 @chapter Raising and handling exceptions
 
 
-Exception handling is a technique to handle exceptional conditions in the execution of a script; it
-is useful whenever similar exceptional conditions may happen in different portions of a script and
-similar handling procedures are desirable.
+Exception handling is a technique to handle exceptional conditions in the execution of a script;
+errors are a special case of exceptional conditions.  It is useful whenever similar exceptional
+conditions may happen in different portions of a script and similar handling procedures are
+desirable.
 
 @menu
 * exceptions conventions::      Conventions.
 * exceptions howto::            How to organise code to use @mbfl{} exceptions.
-* exceptions raise::            How to set exception handlers and raise exceptions.
-* exceptions handlers::         How to write exception handlers.
+* exceptions raise::            How to raise exceptional-condition objects.
+* exceptions handlers::         How to write and set exception-handlers.
 @end menu
 
 @c page
@@ -4901,7 +4903,7 @@ other Bash value is allowed.
 Whenever an exceptional--condition object is ``raised'' an exception--handling function is called to
 react to it; such function is called @dfn{exception--handler}.  @mbfl{} allows us to push
 exception--handlers onto a global stack, in such a way that handlers are made ``local'' by removing
-them upon exiting the current location.  Here is how to write a function:
+them upon leaving the current location.  Here is how to write a function:
 
 @example
 function do_some_thing () @{
@@ -4917,7 +4919,7 @@ function do_some_thing () @{
 @noindent
 while ``do some thing'' code is running: if an exception is raised by @func{mbfl_exception_raise},
 the exception--handler @func{handle_some_exceptions} is applied to the exceptional--condition
-object; upon exiting the location @func{handle_some_exceptions} is popped from the stack.
+object; upon leaving the location @func{handle_some_exceptions} is popped from the stack.
 
 To raise an exceptional--condition we can write code as follows:
 
@@ -4953,11 +4955,15 @@ function perform_an_operation () @{
         mbfl_exception_handler 'an_exception_handler'
 
         if ! operation_step_one
-        then return_failure
+        then
+            mbfl_location_leave
+            return_because_reason
         fi
 
         if ! operation_step_two
-        then return_failure
+        then
+            mbfl_location_leave
+            return_because_another_reason
         fi
     @}
     mbfl_location_leave
@@ -4971,14 +4977,18 @@ function operation_step_one () @{
         if ! do_some_thing
         then
             if ! raise_an_exception
-            then return $?
+            then
+                mbfl_location_leave
+                return_because_bad_reason
             fi
         fi
 
-        if ! operation_step_two
+        if ! do_some_other_thing
         then
             if ! raise_another_exception
-            then return $?
+            then
+                mbfl_location_leave
+                return_because_another_bad_reason
             fi
         fi
     @}
@@ -5027,74 +5037,99 @@ if it is called, it might terminate the script with a ``uncaught exception'' exi
 
 @c page
 @node exceptions raise
-@section How to set exception handlers and raise exceptions
-
-
-@defun mbfl_exception_handler @var{HANDLER}
-Push @var{HANDLER} on the stack of exceptional--condition handlers.  Register a location handler
-that pops @var{HANDLER} from the stack upon exiting the current location.
-
-The parameter @var{HANDLER} should be an applicable identifier bound to a function, alias or
-command.
-@end defun
+@section How to raise exceptional--condition objects
 
 
 @defun mbfl_exception_raise @var{CND}
 Raise an exceptional condition represented by @var{CND}, which must be an object whose class is a
-subclass of @class{mbfl_exceptional_condition_t}.  Starting from the top of handlers's stack, apply
-the next handler to the exceptional--condition object:
+subclass of @class{mbfl_exceptional_condition_t}, @ref{conditions base, Base exceptional--condition
+objects}.
 
-@example
-@var{HANDLER} @var{CND}
-@end example
-
-@noindent
-the handler should try to react to the exception and possibly exit the script, if it is appropriate.
-If the handler returns and its return status is zero:
+Starting from the top of exception--handlers's stack: apply the next handler to @var{CND}.  The
+handler should try to react to the exception.
 
 @itemize
 @item
-if @var{CND} is continuable: just return to the caller with return status @samp{0}; this should
-resume script's execution;
+The handler might exit the script.
 
 @item
-if @var{CND} is non--continuable: call @func{exit_because_non_continuable_exception}; this will exit
-the script after running the atexit scripts, @ref{exit atexit, Running scripts at exit--time}.
+If the handler returns using @code{return_success_after_handling_exception}: it matters if the
+exceptional--condition object is continuable, @RefContinuableConditionAttribute{}.
+
+@itemize -
+@item
+If @var{CND} is continuable: @func{mbfl_exception_raise} will return to the caller with return
+status @samp{0}; this should resume script's execution.
+
+@item
+If @var{CND} is non--continuable: @func{mbfl_exception_raise} will call
+@func{exit_because_non_continuable_exception}; this will exit the script after running the atexit
+scripts, if we have enabled them; @ref{exit atexit, Running scripts at exit--time}.
 @end itemize
 
-If the handler returns and its return status is non--zero: try the next handler from the stack.  If
-no client handler returns successfully: the default exception handler will call
-@func{exit_because_uncaught_exception}.
+@item
+If the handler returns using @code{return_failure_after_handling_exception}:
+@func{mbfl_exception_raise} returns to its caller with @code{return_failure}; this is meant to cause
+the calling functions to return with failure status up until the ``beginning of task'' position in
+the script.
+
+@item
+If the handler returns using @code{return_after_not_handling_exception}: @func{mbfl_exception_raise}
+will apply to @var{CND} the next handler from the stack.  If no client exception--handler returns
+successfully: the default exception--handler will call @func{exit_because_uncaught_exception}.
+@end itemize
 @end defun
 
 @c page
 @node exceptions handlers
-@section How to write exception handlers
+@section How to write and set exception--handlers
+
+
+@defun mbfl_exception_handler @var{HANDLER}
+Push @var{HANDLER} on the stack of exceptional--condition handlers.  Register a location handler
+that pops @var{HANDLER} from the stack upon leaving the current location,
+@ref{mbfl_location_handler, Locations programming interface}.
+
+The parameter @var{HANDLER} should be an applicable identifier bound to a function, alias or
+command; it must accept a single mandatory parameter, it will be used as follows:
+
+@example
+declare -i RETURN_STATUS
+
+@var{HANDLER} @var{CONDITION_OBJECT}
+RETURN_STATUS=$?
+if   ((0 == RETURN_STATUS))
+then ...
+elif ((1 == RETURN_STATUS))
+then ...
+fi
+@end example
+@end defun
 
 
 @anchor{return_success_after_handling_exception}
-@defun return_success_after_handling_exception
+@deffn Alias return_success_after_handling_exception
 Return from an exception handler with a return status signalling to @func{mbfl_exception_raise} that
 the exceptional--condition has been handled and that the script can resume execution.
-@end defun
+@end deffn
 
 
 @anchor{return_failure_after_handling_exception}
-@defun return_failure_after_handling_exception
+@deffn Alias return_failure_after_handling_exception
 Return from an exception handler with a return status signalling to @func{mbfl_exception_raise} that
 the exceptional--condition has been handled but the script cannot resume execution.
-@end defun
+@end deffn
 
 
 @anchor{return_after_not_handling_exception}
-@defun return_after_not_handling_exception
+@deffn Alias return_after_not_handling_exception
 Return from an exception handler with a return status signalling to @func{mbfl_exception_raise} that
 the exceptional--condition has not been handled.
-@end defun
+@end deffn
 
 
 @anchor{exit_because_uncaught_exception}
-@defun exit_because_uncaught_exception
+@defun Alias exit_because_uncaught_exception
 Exit with code @code{87} by calling @func{mbfl_exit}.
 @end defun
 

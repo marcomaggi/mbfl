@@ -104,9 +104,9 @@ function mbfl_exception_raise () {
     done
 }
 
-function return_success_after_handling_exception () { return 0; }
-function return_failure_after_handling_exception () { return 1; }
-function return_after_not_handling_exception     () { return 2; }
+alias return_success_after_handling_exception='return 0'
+alias return_failure_after_handling_exception='return 1'
+alias return_after_not_handling_exception='return 2'
 
 ### end of file
 # Local Variables:
