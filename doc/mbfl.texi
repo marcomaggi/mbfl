@@ -1787,16 +1787,22 @@ Before running the handlers the state of the current location is removed from th
 
 @anchor{mbfl_location_handler}
 @defun mbfl_location_handler @var{HANDLER_SCRIPT}
-Register a new handler in the current location.  It is an error if this function is called outside a
-location.
+Register a new handler in the current location.
+
+It is an error if this function is called outside a location: an exceptional--condition of class
+@class{mbfl_outside_location_condition} is raised; @ref{conditions location outside, Invalid
+operation outside location exceptional--condition objects}.
 @end defun
 
 
 @cindex Maker handlers for locations
 @cindex Locations, maker handlers
 @defun mbfl_location_maker_handler @var{HANDLER_SCRIPT}
-Register a new handler in the current location.  It is an error if this function is called outside a
-location.
+Register a new handler in the current location.
+
+It is an error if this function is called outside a location: an exceptional--condition of class
+@class{mbfl_outside_location_condition} is raised; @ref{conditions location outside, Invalid
+operation outside location exceptional--condition objects}.
 
 @dfn{Maker handlers} are executed only if @func{mbfl_location_leave} is called after a command that
 exited with non--zero status; otherwise they are skipped.  This is a scenario that happens in object
