@@ -3635,6 +3635,7 @@ these objects are handed to exception handlers to react to the condition, @ref{e
 and handling exceptions}.
 
 @menu
+* conditions conventions::      Conventions.
 * conditions base::             Base exceptional-condition objects.
 * conditions warning::          Warning exceptional-condition objects.
 
@@ -3649,6 +3650,23 @@ Class related exceptional-condition objects.
 * conditions invalid ctor value::    Invalid constructor parameter value exceptional--condition objects.
 * conditions invalid attrib value::  Invalid attribute value exceptional--condition objects.
 @end menu
+
+@c page
+@node conditions conventions
+@section Conventions
+
+
+@menu
+* conditions conventions underscore::   The underscore syntax.
+@end menu
+
+@c page
+@node conditions conventions underscore
+@subsection The underscore syntax
+
+
+In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
+underscore syntax}.
 
 @c page
 @node conditions base
@@ -4839,6 +4857,179 @@ Attribute accessor and mutator.
 @chapter Raising and handling exceptions
 
 
+Exception handling is a technique to handle exceptional conditions in the execution of a script; it
+is useful whenever similar exceptional conditions may happen in different portions of a script and
+similar handling procedures are desirable.
+
+@menu
+* exceptions conventions::      Conventions.
+* exceptions howto::            How to organise code to use @mbfl{} exceptions.
+* exceptions raise::            How to set exception handlers and raise exceptions.
+* exceptions handlers::         How to write exception handlers.
+@end menu
+
+@c page
+@node exceptions conventions
+@section Conventions
+
+
+@menu
+* exceptions conventions underscore::   The underscore syntax.
+@end menu
+
+@c page
+@node exceptions conventions underscore
+@subsection The underscore syntax
+
+
+In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
+underscore syntax}.
+
+@c page
+@node exceptions howto
+@section How to organise code to use @mbfl{} exceptions
+
+
+Effective use of @mbfl{}'s exception--handling is intertwined with the location mechanism,
+@ref{locations, Running location handlers}.
+
+Exceptional conditions are described by instances of appropriate exceptional--condition classes,
+@ref{conditions, Exceptional--condition objects}.  It is mandatory to use only
+exceptional--condition objects whose class is a subclass of @class{mbfl_exceptional_condition_t}; no
+other Bash value is allowed.
+
+Whenever an exceptional--condition object is ``raised'' an exception--handling function is called to
+react to it; such function is called @dfn{exception--handler}.  @mbfl{} allows us to push
+exception--handlers onto a global stack, in such a way that handlers are made ``local'' by removing
+them upon exiting the current location.  Here is how to write a function:
+
+@example
+function do_some_thing () @{
+    mbfl_location_enter
+    @{
+        mbfl_exception_handler 'handle_some_exceptions'
+        # do some thing
+    @}
+    mbfl_location_leave
+@}
+@end example
+
+@noindent
+while ``do some thing'' code is running: if an exception is raised by @func{mbfl_exception_raise},
+the exception--handler @func{handle_some_exceptions} is applied to the exceptional--condition
+object; upon exiting the location @func{handle_some_exceptions} is popped from the stack.
+
+To raise an exceptional--condition we can write code as follows:
+
+@example
+if ! try_an_action 1 2 3
+then
+    mbfl_default_object_declare(CND)
+
+    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'failed action'
+    mbfl_exception_raise _(CND)
+fi
+@end example
+
+Compared to other languages: @mbfl{}'s exception--handling is peculiar because, under Bash, there is
+no automatic call stack unwinding; when needed we must @code{return} from all the functions until we
+reach a ``beginning of task'' function.  We must partition the code into an appropriate number of
+nested functions.  We can organise code as follows:
+
+@example
+function main () @{
+    declare -i RETURN_STATUS
+
+    perform_an_operation
+    RETURN_STATUS=$?
+    if (( 0 != RETURN_STATUS ))
+    then exit_failure
+    fi
+    exit_success
+@}
+function perform_an_operation () @{
+    mbfl_location_enter
+    @{
+        mbfl_exception_handler 'an_exception_handler'
+
+        if ! operation_step_one
+        then return_failure
+        fi
+
+        if ! operation_step_two
+        then return_failure
+        fi
+    @}
+    mbfl_location_leave
+    return_success
+@}
+function operation_step_one () @{
+    mbfl_location_enter
+    @{
+        mbfl_exception_handler 'another_exception_handler'
+
+        if ! do_some_thing
+        then
+            if ! raise_an_exception
+            then return $?
+            fi
+        fi
+
+        if ! operation_step_two
+        then
+            if ! raise_another_exception
+            then return $?
+            fi
+        fi
+    @}
+    mbfl_location_leave
+    return_success
+@}
+@end example
+
+We can push any number of handlers in each location:
+
+@example
+function perform_an_operation () @{
+    mbfl_location_enter
+    @{
+        mbfl_exception_handler 'an_exception_handler'
+        mbfl_exception_handler 'another_exception_handler'
+        # do some thing
+    @}
+    mbfl_location_leave
+    return_success
+@}
+@end example
+
+@noindent
+whenever an exceptional--condition is raised: the topmost handler is applied to the object; it
+might:
+
+@itemize
+@item
+handle the exception then exit the script;
+
+@item
+handle the exception then return signalling that script's execution can go on;
+
+@item
+handle the exception then return signalling that script's execution cannot go on;
+
+@item
+return signalling that the exception was not handled;
+@end itemize
+
+@noindent
+in the last case: the next handler from the stack is applied to the object and so on until some
+handler handles the exception.  A default handler is pushed to the stack upon @mbfl{} loading--time:
+if it is called, it might terminate the script with a ``uncaught exception'' exit status.
+
+@c page
+@node exceptions raise
+@section How to set exception handlers and raise exceptions
+
+
 @defun mbfl_exception_handler @var{HANDLER}
 Push @var{HANDLER} on the stack of exceptional--condition handlers.  Register a location handler
 that pops @var{HANDLER} from the stack upon exiting the current location.
@@ -4874,6 +5065,31 @@ the script after running the atexit scripts, @ref{exit atexit, Running scripts a
 If the handler returns and its return status is non--zero: try the next handler from the stack.  If
 no client handler returns successfully: the default exception handler will call
 @func{exit_because_uncaught_exception}.
+@end defun
+
+@c page
+@node exceptions handlers
+@section How to write exception handlers
+
+
+@anchor{return_success_after_handling_exception}
+@defun return_success_after_handling_exception
+Return from an exception handler with a return status signalling to @func{mbfl_exception_raise} that
+the exceptional--condition has been handled and that the script can resume execution.
+@end defun
+
+
+@anchor{return_failure_after_handling_exception}
+@defun return_failure_after_handling_exception
+Return from an exception handler with a return status signalling to @func{mbfl_exception_raise} that
+the exceptional--condition has been handled but the script cannot resume execution.
+@end defun
+
+
+@anchor{return_after_not_handling_exception}
+@defun return_after_not_handling_exception
+Return from an exception handler with a return status signalling to @func{mbfl_exception_raise} that
+the exceptional--condition has not been handled.
 @end defun
 
 
