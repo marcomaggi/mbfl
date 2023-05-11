@@ -339,6 +339,11 @@ changes!
 
 * Added the module "function".
 
+* Added object-oriented programming facilities.
+
+* Added exceptional-condition objects  and support for exception-handler
+  functions.
+
 
 Notes for revision 2.2.0
 ------------------------
