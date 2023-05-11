@@ -529,12 +529,22 @@ function conditions-invalid-attrib-value-method-print-1.1 () {
 }
 
 
+#### uncaught exceptional conditions
+
+function conditions-uncaught-1.1 () {
+    mbfl_default_object_declare(CND)
+
+    mbfl_logic_error_condition_make _(CND) $FUNCNAME 'an error'
+    (mbfl_exception_raise _(CND))
+    dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $?
+}
+
+
 #### outside location exceptional-condition
 
 function conditions-outside-location-1.1 () {
-    declare MSG=$(mbfl_location_handler 'ciao' 2>&1)
-    declare EXPECTED_MSG='exceptional-conditions.test: error: uncaught exception: attempt to register a location handler outside any location'
-    dotest-equal "$EXPECTED_MSG" "$MSG"
+    (mbfl_location_handler 'ciao')
+    dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $?
 }
 
 

@@ -83,7 +83,7 @@ function exception-handlers-uncaught-exception-2.1 () {
     # Raise the exception in a subshell so we easily intercept its exit status.
     (mbfl_exception_raise _(CND))
     RETURN_STATUS=$?
-    dotest-equal 0 $RETURN_STATUS 'exit status after uncaught exception'
+    dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $RETURN_STATUS 'exit status after uncaught exception'
 }
 # Raise a contiuable exception and let it be handled by the default handler.
 #

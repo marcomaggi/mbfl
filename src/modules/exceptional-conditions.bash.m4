@@ -43,9 +43,9 @@ mbfl_default_class_declare(mbfl_error_condition_t)
 mbfl_default_class_declare(mbfl_warning_condition_t)
 mbfl_default_class_declare(mbfl_logic_error_condition_t)
 mbfl_default_class_declare(mbfl_runtime_error_condition_t)
+mbfl_default_class_declare(mbfl_uncaught_exceptional_condition_t)
 mbfl_default_class_declare(mbfl_invalid_object_attrib_value_condition_t)
 mbfl_default_class_declare(mbfl_invalid_ctor_parm_value_condition_t)
-
 mbfl_default_class_declare(mbfl_outside_location_condition_t)
 
 function mbfl_initialise_module_exceptional_conditions () {
@@ -56,6 +56,10 @@ function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_error_condition_t)         _(mbfl_exceptional_condition_t)  'mbfl_error_condition'
     mbfl_default_class_define _(mbfl_logic_error_condition_t)   _(mbfl_error_condition_t)        'mbfl_logic_error_condition'
     mbfl_default_class_define _(mbfl_runtime_error_condition_t) _(mbfl_error_condition_t)        'mbfl_runtime_error_condition'
+
+    mbfl_default_class_define _(mbfl_uncaught_exceptional_condition_t) _(mbfl_logic_error_condition_t) \
+			      'mbfl_uncaught_exceptional_condition' \
+			      'object'
 
     mbfl_default_class_define _(mbfl_invalid_ctor_parm_value_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_invalid_ctor_parm_value_condition' \
@@ -114,7 +118,14 @@ function mbfl_logic_error_condition_make () {
 
     mbfl_logic_error_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'false'
 }
+function mbfl_uncaught_exceptional_condition_make () {
+    mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
+    mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
+    mbfl_mandatory_nameref_parameter(mbfl_OBJ,	3, uncaught exceptional-condition object)
 
+    #echo $FUNCNAME  _(mbfl_CND) "$mbfl_WHO" 'uncaught exception' 'false' _(mbfl_OBJ) >&2
+    mbfl_uncaught_exceptional_condition_define _(mbfl_CND) "$mbfl_WHO" 'uncaught exception' 'false' _(mbfl_OBJ)
+}
 function mbfl_outside_location_condition_make () {
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
@@ -162,28 +173,61 @@ function mbfl_invalid_object_attrib_value_condition_make () {
 
 #### predefined condition object methods
 
-function mbfl_exceptional_condition_print () {
-    mbfl_mandatory_nameref_parameter(CND, 1, reference to error descriptor object)
-    mbfl_declare_varref(WHO)
-    mbfl_declare_varref(MESSAGE)
+function mbfl_exceptional_condition_is_continuable () {
+    mbfl_mandatory_nameref_parameter(mbfl_CND, 1, reference to error descriptor object)
+    mbfl_declare_varref(mbfl_CONTINUABLE)
 
-    mbfl_exceptional_condition_who_var     _(WHO)     _(CND)
-    mbfl_exceptional_condition_message_var _(MESSAGE) _(CND)
+    mbfl_exceptional_condition_continuable_var _(mbfl_CONTINUABLE) _(mbfl_CND)
+    #echo $FUNCNAME continuable "$mbfl_CONTINUABLE" >&2
+    "$mbfl_CONTINUABLE"
+}
+function mbfl_exceptional_condition_print_report () {
+    mbfl_mandatory_nameref_parameter(mbfl_CND, 1, reference to error descriptor object)
+    mbfl_declare_varref(mbfl_WHO)
+    mbfl_declare_varref(mbfl_MESSAGE)
 
-    if mbfl_error_condition_is_a _(CND)
-    then mbfl_message_error_printf '%s: %s' "$WHO" "$MESSAGE"
-    elif mbfl_warning_condition_is_a _(CND)
-    then mbfl_message_warning_printf '%s: %s' "$WHO" "$MESSAGE"
-    else printf '%s: %s\n' "$WHO" "$MESSAGE"
+    mbfl_exceptional_condition_who_var     _(mbfl_WHO)     _(mbfl_CND)
+    mbfl_exceptional_condition_message_var _(mbfl_MESSAGE) _(mbfl_CND)
+
+    if mbfl_error_condition_is_a _(mbfl_CND)
+    then mbfl_message_error_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
+    elif mbfl_warning_condition_is_a _(mbfl_CND)
+    then mbfl_message_warning_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
+    else printf '%s: %s\n' "$mbfl_WHO" "$mbfl_MESSAGE"
     fi
 }
-function mbfl_exceptional_condition_is_continuable () {
-    mbfl_mandatory_nameref_parameter(CND, 1, reference to error descriptor object)
-    mbfl_declare_varref(CONTINUABLE)
+function mbfl_exceptional_condition_print () {
+    mbfl_mandatory_nameref_parameter(mbfl_CND, 1, reference to error descriptor object)
+    mbfl_declare_varref(mbfl_WHO)
+    mbfl_declare_varref(mbfl_MESSAGE)
 
-    mbfl_exceptional_condition_continuable_var _(CONTINUABLE) _(CND)
-    #echo $FUNCNAME continuable "$CONTINUABLE" >&2
-    "$CONTINUABLE"
+    mbfl_exceptional_condition_who_var     _(mbfl_WHO)     _(mbfl_CND)
+    mbfl_exceptional_condition_message_var _(mbfl_MESSAGE) _(mbfl_CND)
+
+    if mbfl_uncaught_exceptional_condition_is_a _(mbfl_CND)
+    then
+	mbfl_message_error_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
+
+	mbfl_declare_varref(mbfl_ORIGINAL_CND_VARNAME)
+	mbfl_declare_varref(mbfl_ORIGINAL_CLASS_NAME)
+	mbfl_declare_varref(mbfl_ORIGINAL_WHO)
+	mbfl_declare_varref(mbfl_ORIGINAL_MESSAGE)
+
+	mbfl_uncaught_exceptional_condition_object_var _(mbfl_ORIGINAL_CND_VARNAME) _(mbfl_CND)
+	mbfl_declare_nameref(mbfl_ORIGINAL_CND, $mbfl_ORIGINAL_CND_VARNAME)
+
+	mbfl_default_object_class_name_var      _(mbfl_ORIGINAL_CLASS_NAME)	_(mbfl_ORIGINAL_CND)
+	mbfl_exceptional_condition_who_var      _(mbfl_ORIGINAL_WHO)		_(mbfl_ORIGINAL_CND)
+	mbfl_exceptional_condition_message_var  _(mbfl_ORIGINAL_MESSAGE)	_(mbfl_ORIGINAL_CND)
+
+	printf '  exceptional-condition class:\t%s\n  who:                        \t%s\n  message:                    \t%s\n' \
+	       "$mbfl_ORIGINAL_CLASS_NAME" "$mbfl_ORIGINAL_WHO" "$mbfl_ORIGINAL_MESSAGE" >&2
+    elif mbfl_error_condition_is_a _(mbfl_CND)
+    then mbfl_message_error_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
+    elif mbfl_warning_condition_is_a _(mbfl_CND)
+    then mbfl_message_warning_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
+    else printf '%s: %s\n' "$mbfl_WHO" "$mbfl_MESSAGE"
+    fi
 }
 
 ### end of file

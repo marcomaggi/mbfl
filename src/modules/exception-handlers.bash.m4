@@ -44,18 +44,26 @@ function mbfl_initialise_module_exception_handlers () {
     mbfl_exception_handlers_push 'mbfl_default_exception_handler'
 }
 function mbfl_default_exception_handler () {
-    mbfl_mandatory_nameref_parameter(CND, 1, condition object)
+    mbfl_mandatory_nameref_parameter(mbfl_CND, 1, condition object)
 
-    if mbfl_exceptional_condition_is_continuable _(CND)
+    #echo $FUNCNAME enter mbfl_CND=$mbfl_CND _(mbfl_CND)  >&2
+
+    if mbfl_warning_condition_is_a _(mbfl_CND) && mbfl_exceptional_condition_is_continuable _(mbfl_CND)
     then
-	mbfl_exceptional_condition_print _(CND) >&2
+	mbfl_exceptional_condition_print _(mbfl_CND) >&2
 	return_success_after_handling_exception
-    else
-	mbfl_declare_varref(MESSAGE)
-
-	mbfl_exceptional_condition_message_var _(MESSAGE) _(CND)
-	mbfl_message_error_printf 'uncaught exception: %s' "$MESSAGE"
+    elif mbfl_uncaught_exceptional_condition_is_a _(mbfl_CND)
+    then
+	#mbfl_array_dump _(mbfl_CND)
+	mbfl_exceptional_condition_print _(mbfl_CND) >&2
 	exit_because_uncaught_exception
+    else
+	mbfl_default_object_declare(mbfl_ENVELOPE_CND)
+
+	#echo $FUNCNAME envelope object _(mbfl_ENVELOPE_CND) uncaught exception ,_(mbfl_CND), >&2
+	mbfl_uncaught_exceptional_condition_make _(mbfl_ENVELOPE_CND) $FUNCNAME _(mbfl_CND)
+	#mbfl_array_dump _(mbfl_ENVELOPE_CND)
+	mbfl_exception_raise _(mbfl_ENVELOPE_CND)
     fi
 }
 
@@ -82,6 +90,8 @@ function mbfl_exception_handlers_pop () {
 function mbfl_exception_raise () {
     mbfl_mandatory_nameref_parameter(mbfl_CND, 1, condition object)
     declare -i mbfl_RETURN_STATUS mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_exception_handlers_STACK)
+
+    #echo $FUNCNAME enter raising mbfl_CND=$mbfl_CND _(mbfl_CND) >&2
 
     for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
     do
