@@ -5177,9 +5177,21 @@ exceptional--condition objects whose class is a subclass of @class{mbfl_exceptio
 other Bash value is allowed.
 
 Whenever an exceptional--condition object is ``raised'' an exception--handling function is called to
-react to it; such function is called @dfn{exception--handler}.  @mbfl{} allows us to push
-exception--handlers onto a global stack, in such a way that handlers are made ``local'' by removing
-them upon leaving the current location.  Here is how to write a function:
+react to it; such function is called @dfn{exception--handler}.  To raise an exceptional--condition
+we apply the function @func{mbfl_exception_raise} to the object's data variable:
+
+@example
+if ! try_an_action 1 2 3
+then
+    mbfl_default_object_declare(CND)
+
+    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'failed action'
+    mbfl_exception_raise _(CND)
+fi
+@end example
+
+@mbfl{} allows us to push exception--handlers onto a global stack, in such a way that handlers are
+made ``local'' by removing them upon leaving the current location.  Here is how to write a function:
 
 @example
 function do_some_thing () @{
@@ -5193,21 +5205,9 @@ function do_some_thing () @{
 @end example
 
 @noindent
-while ``do some thing'' code is running: if an exception is raised by @func{mbfl_exception_raise},
-the exception--handler @func{handle_some_exceptions} is applied to the exceptional--condition
-object; upon leaving the location @func{handle_some_exceptions} is popped from the stack.
-
-To raise an exceptional--condition we can write code as follows:
-
-@example
-if ! try_an_action 1 2 3
-then
-    mbfl_default_object_declare(CND)
-
-    mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'failed action'
-    mbfl_exception_raise _(CND)
-fi
-@end example
+while ``do some thing'' code is running: if an exception is raised, the exception--handler
+@func{handle_some_exceptions} is applied to the exceptional--condition object; upon leaving the
+location @func{handle_some_exceptions} is popped from the stack.
 
 Compared to other languages: @mbfl{}'s exception--handling is peculiar because, under Bash, there is
 no automatic call stack unwinding; when needed we must @code{return} from all the functions until we
@@ -5408,17 +5408,33 @@ command; it must accept a single mandatory parameter:
 
 
 @defun mbfl_default_exception_handler @var{CND}
-The default exception--handler; it is pushed on then exception--handlers stack upon loading
+The default exception--handler; it is pushed on the global exception--handlers stack upon loading
 @mbfl{}'s core library.  We can think of it as having the following implementation:
 
 @example
-if mbfl_exceptional_condition_is_continuable _(CND)
+mbfl_mandatory_nameref_parameter(mbfl_CND, 1, exceptional-condition object)
+
+if mbfl_warning_condition_is_a _(mbfl_CND) &&
+   mbfl_exceptional_condition_is_continuable _(mbfl_CND)
 then
-    mbfl_exceptional_condition_print _(CND) >&2
+    mbfl_exceptional_condition_print _(mbfl_CND) >&2
     return_success_after_handling_exception
-else exit_because_uncaught_exception
+elif mbfl_uncaught_exceptional_condition_is_a _(mbfl_CND)
+then
+    mbfl_exceptional_condition_print _(mbfl_CND) >&2
+    exit_because_uncaught_exception
+else
+    mbfl_default_object_declare(mbfl_ENVELOPE_CND)
+
+    mbfl_uncaught_exceptional_condition_make _(mbfl_ENVELOPE_CND) $FUNCNAME _(mbfl_CND)
+    mbfl_exception_raise _(mbfl_ENVELOPE_CND)
 fi
 @end example
+
+Notice that if the default handler raises an ``uncaught exceptional--condition'': the topmost
+exception--handler from the stack is applied to it; the exception--handlers we install have a chance
+to handle the uncaught exceptional--condition.  @ref{conditions uncaught, Uncaught
+exceptional-condition objects}.
 @end defun
 
 

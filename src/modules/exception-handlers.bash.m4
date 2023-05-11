@@ -44,7 +44,7 @@ function mbfl_initialise_module_exception_handlers () {
     mbfl_exception_handlers_push 'mbfl_default_exception_handler'
 }
 function mbfl_default_exception_handler () {
-    mbfl_mandatory_nameref_parameter(mbfl_CND, 1, condition object)
+    mbfl_mandatory_nameref_parameter(mbfl_CND, 1, exceptional-condition object)
 
     #echo $FUNCNAME enter mbfl_CND=$mbfl_CND _(mbfl_CND)  >&2
 
