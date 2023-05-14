@@ -90,13 +90,17 @@ function mbfl_exception_handlers_pop () {
 function mbfl_exception_raise () {
     mbfl_mandatory_nameref_parameter(mbfl_CND, 1, condition object)
     declare -i mbfl_RETURN_STATUS mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_exception_handlers_STACK)
+    declare mbfl_HANDLER
 
     #echo $FUNCNAME enter raising mbfl_CND=$mbfl_CND _(mbfl_CND) >&2
 
     for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
     do
 	#echo $FUNCNAME applying the handler $mbfl_I _(mbfl_exception_handlers_STACK, $mbfl_I) "$mbfl_CND" >&2
-	_(mbfl_exception_handlers_STACK, $mbfl_I) _(mbfl_CND)
+	mbfl_HANDLER=_(mbfl_exception_handlers_STACK, $mbfl_I)
+	# NOTE If the  handler string contains separators:  we want it to be  expanded into multiple
+	# strings.  At least for now.  (Marco Maggi; May 14, 2023)
+	$mbfl_HANDLER _(mbfl_CND)
 	mbfl_RETURN_STATUS=$?
 	if ((0 == $mbfl_RETURN_STATUS))
 	then
