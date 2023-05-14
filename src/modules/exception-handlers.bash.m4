@@ -109,7 +109,7 @@ function mbfl_exception_raise () {
 	    # The exception  was handled correctly;  the problem  possibly fixed.  If  the condition
 	    # object is continuable: just return to the caller; otherwise exit the script.
 	    #
-	    if mbfl_exceptional_condition_is_continuable _(CND)
+	    if mbfl_exceptional_condition_is_continuable _(mbfl_CND)
 	    then
 		#echo $FUNCNAME the condition is continuable >&2
 		return_success
