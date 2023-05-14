@@ -105,13 +105,22 @@ function mbfl_p_function_copy () {
 }
 function mbfl_function_exists () {
     mbfl_mandatory_parameter(mbfl_FUNCNAME, 1, function name)
-    declare JUNK
-
-    JUNK=$(declare -fp "$mbfl_FUNCNAME" 2>&1)
+    JUNK=$(declare -Fp "$mbfl_FUNCNAME" 2>&1)
 }
 function mbfl_function_unset () {
     mbfl_mandatory_parameter(mbfl_FUNCNAME, 1, function name)
-    unset -f "$mbfl_FUNCNAME"
+
+    if mbfl_function_exists "$mbfl_FUNCNAME"
+    then
+	if ! unset -f "$mbfl_FUNCNAME"
+	then
+	    mbfl_message_error_printf 'error unsetting function: "%s"' "$mbfl_FUNCNAME"
+	    return_because_failure
+	fi
+    else
+	mbfl_message_error_printf 'attempt to unset non-existent function: "%s"' "$mbfl_FUNCNAME"
+	return_because_failure
+    fi
 }
 
 ### end of file
