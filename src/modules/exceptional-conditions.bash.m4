@@ -164,7 +164,7 @@ function mbfl_invalid_object_attrib_value_condition_make () {
     declare mbfl_MSG
 
     mbfl_default_object_class_name_var _(mbfl_CLASS_NAME) _(mbfl_OBJ)
-    printf -v mbfl_MSG 'invalid boolean value for attribute "%s" of class "%s" object: "%s"' \
+    printf -v mbfl_MSG 'invalid value for attribute "%s" of class "%s" object: "%s"' \
 	   "$mbfl_ATTRIB_NAME" "$mbfl_CLASS_NAME" "$mbfl_INVALID_VALUE"
     mbfl_invalid_object_attrib_value_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MSG" 'false' \
 						      _(mbfl_OBJ) "$mbfl_ATTRIB_NAME" "$mbfl_INVALID_VALUE"

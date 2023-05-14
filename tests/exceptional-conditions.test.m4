@@ -511,7 +511,7 @@ function conditions-invalid-attrib-value-accessors-1.1 () {
     mbfl_invalid_object_attrib_value_condition_invalid_value_var	_(INVALID_VALUE)      _(CND)
 
     dotest-equal	$FUNCNAME	"$WHO"			&&
-	dotest-equal	'invalid boolean value for attribute "red" of class "colour" object: "ciao"' "$MESSAGE" &&
+	dotest-equal	'invalid value for attribute "red" of class "colour" object: "ciao"' "$MESSAGE" &&
 	dotest-equal	'false'		"$CONTINUABLE"		&&
 	dotest-equal	_(gray)		"$OBJECT"		&&
 	dotest-equal	'red'		"$ATTRIB_NAME"		&&
@@ -525,7 +525,7 @@ function conditions-invalid-attrib-value-method-print-1.1 () {
 
     mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(gray) 'red' 'ciao'
     mbfl_exceptional_condition_print _(CND) |& \
-	dotest-output "exceptional-conditions.test: error: $FUNCNAME: invalid boolean value for attribute \"red\" of class \"colour\" object: \"ciao\""
+	dotest-output "exceptional-conditions.test: error: $FUNCNAME: invalid value for attribute \"red\" of class \"colour\" object: \"ciao\""
 }
 
 
