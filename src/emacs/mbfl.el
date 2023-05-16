@@ -954,6 +954,15 @@
        "mbfl_invalid_object_attrib_value_condition_invalid_value_set"
        "mbfl_invalid_object_attrib_value_condition_invalid_value_var"
        ;;
+       "mbfl_semver_parser_error_condition_make"
+       "mbfl_semver_parser_error_condition_is_a"
+       "mbfl_semver_parser_error_condition_who_set"
+       "mbfl_semver_parser_error_condition_who_var"
+       "mbfl_semver_parser_error_condition_message_set"
+       "mbfl_semver_parser_error_condition_message_var"
+       "mbfl_semver_parser_error_condition_continuable_set"
+       "mbfl_semver_parser_error_condition_continuable_var"
+       ;;
        "mbfl_exception_handler"
        "mbfl_exception_raise"
        "mbfl_default_exception_handler"

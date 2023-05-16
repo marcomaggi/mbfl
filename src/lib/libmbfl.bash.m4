@@ -60,6 +60,7 @@ m4_undivert(semver.bash)
 function mbfl_library_initialise_libmbfl () {
     mbfl_initialise_module_exceptional_conditions
     mbfl_initialise_module_exception_handlers
+    mbfl_initialise_module_semver
 }
 
 mbfl_library_initialise_libmbfl

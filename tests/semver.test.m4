@@ -540,25 +540,70 @@ function semver-class-semver-parser-3.1 () {
     }
 }
 
-function semver-class-semver-parser-4.1 () {
-    mbfl_default_object_declare(SEMVER_PARSER)
+### ------------------------------------------------------------------------
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
+function handler_semver_class_semver_parser () {
+    mbfl_mandatory_parameter(EXPECTED_ATTRIB_NAME,	1, expected attribute name)
+    mbfl_mandatory_nameref_parameter(CND,		2, exceptional-condition object)
+
+    #echo $FUNCNAME enter $EXPECTED_ATTRIB_NAME >&2
+
+    if mbfl_invalid_object_attrib_value_condition_is_a _(CND)
+    then
+       	mbfl_declare_varref(ATTRIB_NAME)
+
+	mbfl_invalid_object_attrib_value_condition_attrib_name_var _(ATTRIB_NAME) _(CND)
+	#echo $FUNCNAME names "$EXPECTED_ATTRIB_NAME" "$ATTRIB_NAME" >&2
+
+	# We   make  this   exceptional-condition  continuable   so  the   mutators  in   the  tests
+	# "semver-class-semver-spec-from-components-2.*" will return successfully.
+	mbfl_exceptional_condition_continuable_set _(CND) true
+
+	if mbfl_string_eq("$ATTRIB_NAME", "$EXPECTED_ATTRIB_NAME")
+	then
+	    FLAG='one'
+	    #echo $FUNCNAME success $FLAG >&2
+	    return_success_after_handling_exception
+	else
+	    FLAG='two'
+	    #echo $FUNCNAME failure >&2
+	    return_failure_after_handling_exception
+	fi
+    else
+	FLAG='three'
+	return_after_not_handling_exception
+    fi
+}
+function semver-class-semver-parser-4.1 () {
+    declare FLAG='false' RETURN_STATUS=0
+
+    mbfl_location_enter
     {
-	mbfl_semver_parser_parse_leading_v_set _(SEMVER_PARSER) 'ciao' 2>&1 && echo success
-    } | {
-	dotest-output '<unknown>: error: invalid parse_leading_v option value: "ciao"'
+	mbfl_exception_handler 'handler_semver_class_semver_parser parse_leading_v'
+	mbfl_default_object_declare(SEMVER_PARSER)
+
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+
+	mbfl_semver_parser_parse_leading_v_set _(SEMVER_PARSER) 'ciao'
+	RETURN_STATUS=$?
     }
+    mbfl_location_leave
+    dotest-equal 'one' $FLAG 'flag value' && dotest-equal 0 $RETURN_STATUS 'return status'
 }
 function semver-class-semver-parser-4.2 () {
-    mbfl_default_object_declare(SEMVER_PARSER)
+    declare FLAG='false' RETURN_STATUS=0
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
+    mbfl_location_enter
     {
-	mbfl_semver_parser_accept_underscore_in_build_metadata_set _(SEMVER_PARSER) 'ciao' 2>&1 && echo success
-    } | {
-	dotest-output '<unknown>: error: invalid accept_underscore_in_build_metadata option value: "ciao"'
+	mbfl_exception_handler 'handler_semver_class_semver_parser accept_underscore_in_build_metadata'
+	mbfl_default_object_declare(SEMVER_PARSER)
+
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_accept_underscore_in_build_metadata_set _(SEMVER_PARSER) 'ciao'
+	RETURN_STATUS=$?
     }
+    mbfl_location_leave
+    dotest-equal 'one' $FLAG 'flag value' && dotest-equal 0 $RETURN_STATUS 'return status'
 }
 
 
@@ -733,35 +778,108 @@ function semver-class-semver-spec-from-components-2.1.5 () {
 
 ### ------------------------------------------------------------------------
 
-function semver-class-semver-spec-from-components-2.2.1 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
+function handler_semver_class_semver_spec_from_components () {
+    mbfl_mandatory_parameter(EXPECTED_ATTRIB_NAME,	1, expected attribute name)
+    mbfl_mandatory_nameref_parameter(CND,		2, exceptional-condition object)
 
-    mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
-    ! mbfl_semver_spec_major_number_set _(SEMVER_SPEC) 'ciao mamma'
+    #echo $FUNCNAME enter $EXPECTED_ATTRIB_NAME >&2
+
+    if mbfl_invalid_object_attrib_value_condition_is_a _(CND)
+    then
+       	mbfl_declare_varref(ATTRIB_NAME)
+
+	mbfl_invalid_object_attrib_value_condition_attrib_name_var _(ATTRIB_NAME) _(CND)
+	#echo $FUNCNAME names "$EXPECTED_ATTRIB_NAME" "$ATTRIB_NAME" >&2
+
+	# We   make  this   exceptional-condition  continuable   so  the   mutators  in   the  tests
+	# "semver-class-semver-spec-from-components-2.*" will return successfully.
+	mbfl_exceptional_condition_continuable_set _(CND) true
+
+	if mbfl_string_eq("$ATTRIB_NAME", "$EXPECTED_ATTRIB_NAME")
+	then
+	    FLAG='one'
+	    #echo $FUNCNAME success $FLAG >&2
+	    return_success_after_handling_exception
+	else
+	    FLAG='two'
+	    #echo $FUNCNAME failure >&2
+	    return_failure_after_handling_exception
+	fi
+    else
+	FLAG='three'
+	return_after_not_handling_exception
+    fi
+}
+function semver-class-semver-spec-from-components-2.2.1 () {
+    declare FLAG='false' RETURN_STATUS=0
+
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_class_semver_spec_from_components major_number'
+	mbfl_default_object_declare(SEMVER_SPEC)
+
+	mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
+	mbfl_semver_spec_major_number_set _(SEMVER_SPEC) 'ciao mamma'
+	RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+    dotest-equal 'one' $FLAG 'flag value' && dotest-equal 0 $RETURN_STATUS 'return status'
 }
 function semver-class-semver-spec-from-components-2.2.2 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
+    declare FLAG='false' RETURN_STATUS=0
 
-    mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
-    ! mbfl_semver_spec_minor_number_set _(SEMVER_SPEC) 'ciao mamma'
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_class_semver_spec_from_components minor_number'
+	mbfl_default_object_declare(SEMVER_SPEC)
+
+	mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
+	! mbfl_semver_spec_minor_number_set _(SEMVER_SPEC) 'ciao mamma'
+    }
+    mbfl_location_leave
+    dotest-equal 'one' $FLAG 'flag value' && dotest-equal 0 $RETURN_STATUS 'return status'
 }
 function semver-class-semver-spec-from-components-2.2.3 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
+    declare FLAG='false' RETURN_STATUS=0
 
-    mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
-    ! mbfl_semver_spec_patch_level_set _(SEMVER_SPEC) 'ciao mamma'
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_class_semver_spec_from_components patch_level'
+	mbfl_default_object_declare(SEMVER_SPEC)
+
+	mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
+	! mbfl_semver_spec_patch_level_set _(SEMVER_SPEC) 'ciao mamma'
+    }
+    mbfl_location_leave
+    dotest-equal 'one' $FLAG 'flag value' && dotest-equal 0 $RETURN_STATUS 'return status'
 }
 function semver-class-semver-spec-from-components-2.2.4 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
+    declare FLAG='false' RETURN_STATUS=0
 
-    mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
-    ! mbfl_semver_spec_prerelease_version_set _(SEMVER_SPEC) 'ciao mamma'
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_class_semver_spec_from_components prerelease_version'
+	mbfl_default_object_declare(SEMVER_SPEC)
+
+	mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
+	! mbfl_semver_spec_prerelease_version_set _(SEMVER_SPEC) 'ciao mamma'
+    }
+    mbfl_location_leave
+    dotest-equal 'one' $FLAG 'flag value' && dotest-equal 0 $RETURN_STATUS 'return status'
 }
 function semver-class-semver-spec-from-components-2.2.5 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
+    declare FLAG='false' RETURN_STATUS=0
 
-    mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
-    ! mbfl_semver_spec_build_metadata_set _(SEMVER_SPEC) 'ciao mamma'
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_class_semver_spec_from_components build_metadata'
+	mbfl_default_object_declare(SEMVER_SPEC)
+
+	mbfl_semver_spec_make_from_components _(SEMVER_SPEC) 1 2 3 devel.4 x86-64
+	! mbfl_semver_spec_build_metadata_set _(SEMVER_SPEC) 'ciao mamma'
+    }
+    mbfl_location_leave
+    dotest-equal 'one' $FLAG 'flag value' && dotest-equal 0 $RETURN_STATUS 'return status'
 }
 
 
@@ -932,31 +1050,36 @@ function semver-parse-1.4.04 () {
 # Expected a leading 'v' character.
 #
 function semver-parse-error-1.0 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    declare -r INPUT_STRING='1.2.3'
-    declare -i START_INDEX=0
-
+    declare FLAG='false'
     declare -i EXPECTED_RETURN_STATUS=1
     declare -i GOT_RETURN_STATUS
-
     declare -r EXPECTED_ERROR_MESSAGE='mandatory leading "v" character not present in semantic-version specification'
     mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parser_parse_leading_v_set _(SEMVER_PARSER) 'mandatory'
+	declare -r INPUT_STRING='1.2.3'
+	declare -i START_INDEX=0
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_error_message_var _(GOT_ERROR_MESSAGE) _(SEMVER_PARSER)
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE"
+	mbfl_semver_parser_parse_leading_v_set _(SEMVER_PARSER) 'mandatory'
+
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+
+    dotest-equal	'failure-handling'		"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'
 }
 
 ### ------------------------------------------------------------------------
@@ -964,85 +1087,100 @@ function semver-parse-error-1.0 () {
 # Leading zero in major number.
 #
 function semver-parse-error-version-numbers-1.1 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    declare -r INPUT_STRING='01.2.3'
-    declare -i START_INDEX=0
-
+    declare FLAG='false'
     declare -i EXPECTED_RETURN_STATUS=1
     declare -i GOT_RETURN_STATUS
-
     declare -r EXPECTED_ERROR_MESSAGE='invalid version numbers specification'
     mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_error_message_var _(GOT_ERROR_MESSAGE) _(SEMVER_PARSER)
+	declare -r INPUT_STRING='01.2.3'
+	declare -i START_INDEX=0
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE"
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+
+    dotest-equal	'failure-handling'		"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'
 }
 
 # Leading zero in minor number.
 #
 function semver-parse-error-version-numbers-1.2 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    declare -r INPUT_STRING='1.02.3'
-    declare -i START_INDEX=0
-
+    declare FLAG='false'
     declare -i EXPECTED_RETURN_STATUS=1
     declare -i GOT_RETURN_STATUS
-
     declare -r EXPECTED_ERROR_MESSAGE='invalid version numbers specification'
     mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_error_message_var _(GOT_ERROR_MESSAGE) _(SEMVER_PARSER)
+	declare -r INPUT_STRING='1.02.3'
+	declare -i START_INDEX=0
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE"
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+
+    dotest-equal	'failure-handling'		"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'
 }
 
 # Leading zero in patch level.
 #
 function semver-parse-error-version-numbers-1.3 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    declare -r INPUT_STRING='1.2.03'
-    declare -i START_INDEX=0
-
+    declare FLAG='false'
     declare -i EXPECTED_RETURN_STATUS=1
     declare -i GOT_RETURN_STATUS
-
     declare -r EXPECTED_ERROR_MESSAGE='invalid version numbers specification'
     mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_error_message_var _(GOT_ERROR_MESSAGE) _(SEMVER_PARSER)
+	declare -r INPUT_STRING='1.2.03'
+	declare -i START_INDEX=0
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE"
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+
+    dotest-equal	'failure-handling'		"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'
 }
 
 ### ------------------------------------------------------------------------
@@ -1050,85 +1188,121 @@ function semver-parse-error-version-numbers-1.3 () {
 # Invalid character in major number.
 #
 function semver-parse-error-version-numbers-2.0 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    declare -r INPUT_STRING='1x9.2.3'
-    declare -i START_INDEX=0
-
+    declare FLAG='false'
     declare -i EXPECTED_RETURN_STATUS=1
     declare -i GOT_RETURN_STATUS
-
     declare -r EXPECTED_ERROR_MESSAGE='invalid version numbers specification'
     mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_error_message_var _(GOT_ERROR_MESSAGE) _(SEMVER_PARSER)
+	declare -r INPUT_STRING='1x9.2.3'
+	declare -i START_INDEX=0
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE"
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+
+    dotest-equal	'failure-handling'		"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'
 }
 
 # Invalid character in minor number.
 #
 function semver-parse-error-version-numbers-2.1 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    declare -r INPUT_STRING='1.2x9.3'
-    declare -i START_INDEX=0
-
+    declare FLAG='false'
     declare -i EXPECTED_RETURN_STATUS=1
     declare -i GOT_RETURN_STATUS
-
     declare -r EXPECTED_ERROR_MESSAGE='invalid version numbers specification'
     mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_error_message_var _(GOT_ERROR_MESSAGE) _(SEMVER_PARSER)
+	declare -r INPUT_STRING='1.2x9.3'
+	declare -i START_INDEX=0
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE"
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+
+    dotest-equal	'failure-handling'		"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'
 }
 
 # Invalid character in patch level.
 #
 function semver-parse-error-version-numbers-2.2 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    declare -r INPUT_STRING='1.2.3x9'
-    declare -i START_INDEX=0
-
+    declare FLAG='false'
     declare -i EXPECTED_RETURN_STATUS=1
     declare -i GOT_RETURN_STATUS
-
     declare -r EXPECTED_ERROR_MESSAGE='invalid version numbers specification'
     mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_error_message_var _(GOT_ERROR_MESSAGE) _(SEMVER_PARSER)
+	declare -r INPUT_STRING='1.2.3x9'
+	declare -i START_INDEX=0
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE"
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+
+    dotest-equal	'failure-handling'		"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'
+}
+
+### ------------------------------------------------------------------------
+
+function handler_semver_parse_error () {
+    mbfl_mandatory_nameref_parameter(CND, 1, exceptional-condition object)
+
+    #echo $FUNCNAME enter $EXPECTED_ATTRIB_NAME >&2
+
+    if mbfl_semver_parser_error_condition_is_a _(CND)
+    then
+	mbfl_semver_parser_error_condition_message_var _(GOT_ERROR_MESSAGE) _(CND)
+	#printf '%s: messages\n\t%s\n\t%s\n' $FUNCNAME "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE" >&2
+
+	FLAG='failure-handling'
+	#echo $FUNCNAME success $FLAG >&2
+	return_failure_after_handling_exception
+    else
+	FLAG='not-handled'
+	return_after_not_handling_exception
+    fi
 }
 
 
@@ -1137,29 +1311,34 @@ function semver-parse-error-version-numbers-2.2 () {
 # Empty prerelease version after hypen character.
 #
 function semver-parse-error-prerelease-version-1.1 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    declare -r INPUT_STRING='1.2.3-'
-    declare -i START_INDEX=0
-
+    declare FLAG='false'
     declare -i EXPECTED_RETURN_STATUS=1
     declare -i GOT_RETURN_STATUS
-
     declare -r EXPECTED_ERROR_MESSAGE='invalid prerelease version'
     mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_error_message_var _(GOT_ERROR_MESSAGE) _(SEMVER_PARSER)
+	declare -r INPUT_STRING='1.2.3-'
+	declare -i START_INDEX=0
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE"
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+
+    dotest-equal	'failure-handling'		"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'
 }
 
 
@@ -1168,60 +1347,78 @@ function semver-parse-error-prerelease-version-1.1 () {
 # Invalid character in build metadata causes parsing to stop.
 #
 function semver-parse-error-build-metadata-1.0 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    #                        012345678901
-    declare -r INPUT_STRING='1.2.3+x86_64'
-    declare -i START_INDEX=0
+    declare FLAG='false'
+    declare -i EXPECTED_RETURN_STATUS=0
+    declare -i GOT_RETURN_STATUS
+    declare -r EXPECTED_ERROR_MESSAGE=
+    mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
     declare -i EXPECTED_END_INDEX=9
     mbfl_declare_integer_varref(GOT_END_INDEX,0)
 
-    declare -i EXPECTED_RETURN_STATUS=0
-    declare -i GOT_RETURN_STATUS
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_accept_underscore_in_build_metadata_set _(SEMVER_PARSER) 'false'
+	# No exception is raised, but parsing will stop at the underscore.
+	#
+	#                        012345678901
+	declare -r INPUT_STRING='1.2.3+x86_64'
+	declare -i START_INDEX=0
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
 
-    mbfl_semver_parser_input_end_index_var _(GOT_END_INDEX) _(PARSER_INPUT)
+	mbfl_semver_parser_accept_underscore_in_build_metadata_set _(SEMVER_PARSER) 'false'
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal $EXPECTED_END_INDEX $GOT_END_INDEX 'end index'
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+
+	mbfl_semver_parser_input_end_index_var _(GOT_END_INDEX) _(PARSER_INPUT)
+    }
+    mbfl_location_leave
+
+    dotest-equal	'false'				"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'		      &&
+	dotest-equal	$EXPECTED_END_INDEX		$GOT_END_INDEX		'end index'
 }
 
 # Empty build metadata after plus character.
 #
 function semver-parse-error-build-metadata-1.1 () {
-    mbfl_default_object_declare(SEMVER_SPEC)
-    mbfl_default_object_declare(SEMVER_PARSER)
-    mbfl_default_object_declare(PARSER_INPUT)
-
-    declare -r INPUT_STRING='1.2.3+'
-    declare -i START_INDEX=0
-
+    declare FLAG='false'
     declare -i EXPECTED_RETURN_STATUS=1
     declare -i GOT_RETURN_STATUS
-
     declare -r EXPECTED_ERROR_MESSAGE='invalid build metadata'
     mbfl_declare_varref(GOT_ERROR_MESSAGE)
 
-    mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+    mbfl_location_enter
+    {
+	mbfl_exception_handler 'handler_semver_parse_error'
 
-    mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
-    GOT_RETURN_STATUS=$?
+	mbfl_default_object_declare(SEMVER_SPEC)
+	mbfl_default_object_declare(SEMVER_PARSER)
+	mbfl_default_object_declare(PARSER_INPUT)
 
-    mbfl_semver_parser_error_message_var _(GOT_ERROR_MESSAGE) _(SEMVER_PARSER)
+	declare -r INPUT_STRING='1.2.3+'
+	declare -i START_INDEX=0
 
-    dotest-equal $EXPECTED_RETURN_STATUS $GOT_RETURN_STATUS 'return status' && \
-	dotest-equal "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE"
+	mbfl_semver_parser_make_default _(SEMVER_PARSER)
+	mbfl_semver_parser_input_make   _(PARSER_INPUT) "$INPUT_STRING" $START_INDEX
+
+	mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
+	GOT_RETURN_STATUS=$?
+    }
+    mbfl_location_leave
+
+    dotest-equal	'failure-handling'		"$FLAG"			'exception-handler flag'      &&
+	dotest-equal	$EXPECTED_RETURN_STATUS		$GOT_RETURN_STATUS	'return status'		      &&
+	dotest-equal	"$EXPECTED_ERROR_MESSAGE"	"$GOT_ERROR_MESSAGE"	'error message'
 }
 
 

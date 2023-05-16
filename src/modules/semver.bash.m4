@@ -30,7 +30,7 @@
 
 #### macros
 
-MBFL_DEFINE_UNDERSCORE_MACRO()
+MBFL_DEFINE_UNDERSCORE_MACRO
 
 
 #### validation predicates
@@ -63,25 +63,38 @@ function mbfl_string_is_semver_prerelease_version () {
 }
 function mbfl_string_is_semver_build_metadata () {
     mbfl_mandatory_parameter(STR, 1, string)
-    declare -r IDREX='([0-9A-Za-z\-]+)'
-    declare REX='^'
-    REX+=$IDREX
-    REX+='(\.'
-    REX+=$IDREX
-    REX+=')*$'
-
-    [[ "$STR" =~ $REX ]]
+    [[ "$STR" =~ ${MBFL_SEMVER_REX_BUILD_METADATA[1]} ]]
 }
 function mbfl_string_is_semver_build_metadata_with_underscore () {
     mbfl_mandatory_parameter(STR, 1, string)
-    declare -r IDREX='([0-9A-Za-z_\-]+)'
-    declare REX='^'
-    REX+=$IDREX
-    REX+='(\.'
-    REX+=$IDREX
-    REX+=')*$'
+    [[ "$STR" =~ ${MBFL_SEMVER_REX_BUILD_METADATA[3]} ]]
+}
 
-    [[ "$STR" =~ $REX ]]
+### ------------------------------------------------------------------------
+
+function mbfl_string_is_a_semver_parser_parse_leading_v_option () {
+    mbfl_mandatory_parameter(mbfl_OPTION_VALUE, 1, semver_parser_parse_leading_v option value)
+
+    case "$mbfl_OPTION_VALUE" in
+	'mandatory'|'optional'|'missing')
+	    return_success
+	    ;;
+	*)
+	    return_failure
+	    ;;
+    esac
+}
+function mbfl_string_is_a_semver_parser_accept_underscore_in_build_metadata_option () {
+    mbfl_mandatory_parameter(mbfl_OPTION_VALUE, 1, semver_parser_parse_leading_v option value)
+
+    case "$mbfl_OPTION_VALUE" in
+	'true'|'false')
+	    return_success
+	    ;;
+	*)
+	    return_failure
+	    ;;
+    esac
 }
 
 
@@ -89,9 +102,17 @@ function mbfl_string_is_semver_build_metadata_with_underscore () {
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
+    # These regular expressions must not contain the leading "+" character.
+    declare -ra MBFL_SEMVER_REX_BUILD_METADATA=([0]='^(([0-9A-Za-z\-]+)(\.([0-9A-Za-z\-]+))*)'
+						[1]='^(([0-9A-Za-z\-]+)(\.([0-9A-Za-z\-]+))*)$'
+						[2]=[[['^(([0-9A-Za-z_\-]+)(\.([0-9A-Za-z_\-]+))*)']]]
+						[3]=[[['^(([0-9A-Za-z_\-]+)(\.([0-9A-Za-z_\-]+))*)$']]])
+
     mbfl_default_class_declare(mbfl_semver_parser_input_t)
     mbfl_default_class_declare(mbfl_semver_parser_t)
     mbfl_default_class_declare(mbfl_semver_spec_t)
+
+    mbfl_default_class_declare(mbfl_semver_parser_error_condition_t)
 
     mbfl_default_class_define _(mbfl_semver_parser_input_t) _(mbfl_default_object)	\
 			      'mbfl_semver_parser_input'				\
@@ -107,23 +128,102 @@ then
 			      major_number minor_number patch_level			\
 			      prerelease_version build_metadata
 
-    # The string field is immutable.
-    unset -f 'mbfl_semver_parser_input_string_set'
-    # The start_index field is immutable.
-    unset -f 'mbfl_semver_parser_input_start_index_set'
+    # mbfl_default_class_define _(mbfl_semver_comparator_t) _(mbfl_default_object)	\
+	# 			      'mbfl_semver_comparator'					\
+	# 			      major_number minor_number patch_level			\
+	# 			      prerelease_version
+
+    # mbfl_default_class_define _(mbfl_semver_parser_t) _(mbfl_default_object)		\
+	# 			      'mbfl_semver_parser'					\
+	# 			      error_message
+
     mbfl_function_rename 'mbfl_semver_parser_input_end_index_set'   'mbfl_p_semver_parser_input_end_index_set'
-
-    mbfl_function_rename 'mbfl_semver_parser_parse_leading_v_set' 'mbfl_p_semver_parser_parse_leading_v_set'
-    mbfl_function_rename \
-	'mbfl_semver_parser_accept_underscore_in_build_metadata_set' \
-	'mbfl_p_semver_parser_accept_underscore_in_build_metadata_set'
-
-    mbfl_function_rename 'mbfl_semver_spec_major_number_set'		'mbfl_p_semver_spec_major_number_set'
-    mbfl_function_rename 'mbfl_semver_spec_minor_number_set'		'mbfl_p_semver_spec_minor_number_set'
-    mbfl_function_rename 'mbfl_semver_spec_patch_level_set'		'mbfl_p_semver_spec_patch_level_set'
-    mbfl_function_rename 'mbfl_semver_spec_prerelease_version_set'	'mbfl_p_semver_spec_prerelease_version_set'
-    mbfl_function_rename 'mbfl_semver_spec_build_metadata_set'		'mbfl_p_semver_spec_build_metadata_set'
 fi
+
+function mbfl_initialise_module_semver () {
+    mbfl_default_class_define _(mbfl_semver_parser_error_condition_t) _(mbfl_runtime_error_condition_t) \
+     			      'mbfl_semver_parser_error_condition'
+
+    # Unset the mutators of immutable attributes.
+    mbfl_function_unset 'mbfl_semver_parser_input_string_set'
+    mbfl_function_unset 'mbfl_semver_parser_input_start_index_set'
+
+    # Mutators for "mbfl_semver_spec_t".
+    mbfl_default_object_make_predicate_mutator_from_mutator \
+	'mbfl_semver_spec_major_number_set' 'major_number' 'mbfl_string_is_semver_major_number'
+    mbfl_default_object_make_predicate_mutator_from_mutator \
+	'mbfl_semver_spec_minor_number_set' 'minor_number' 'mbfl_string_is_semver_minor_number'
+    mbfl_default_object_make_predicate_mutator_from_mutator \
+	'mbfl_semver_spec_patch_level_set' 'patch_level' 'mbfl_string_is_semver_patch_level'
+    mbfl_default_object_make_predicate_mutator_from_mutator \
+	'mbfl_semver_spec_prerelease_version_set' 'prerelease_version' 'mbfl_string_is_semver_prerelease_version'
+    mbfl_default_object_make_predicate_mutator_from_mutator \
+	'mbfl_semver_spec_build_metadata_set' 'build_metadata' 'mbfl_string_is_semver_build_metadata'
+
+    # Mutators for "mbfl_semver_parser".
+    mbfl_default_object_make_predicate_mutator_from_mutator				\
+	'mbfl_semver_parser_parse_leading_v_set'					\
+	'parse_leading_v'								\
+	'mbfl_string_is_a_semver_parser_parse_leading_v_option'
+    mbfl_default_object_make_predicate_mutator_from_mutator				\
+	'mbfl_semver_parser_accept_underscore_in_build_metadata_set'			\
+	'accept_underscore_in_build_metadata'						\
+	'mbfl_string_is_a_semver_parser_accept_underscore_in_build_metadata_option'
+}
+
+function mbfl_default_object_make_predicate_mutator_from_mutator () {
+    mbfl_mandatory_parameter(mbfl_ORIGINAL_MUTATOR_NAME,	1, untyped mutator name)
+    mbfl_mandatory_parameter(mbfl_ATTRIB_NAME,			2, attribute value)
+    mbfl_mandatory_parameter(mbfl_PREDICATE,			3, predicate name)
+    declare mbfl_UNPRED_MUTATOR_NAME
+
+    printf -v mbfl_UNPRED_MUTATOR_NAME 'mbfl_default_object_unpred_mutator_%s' "$mbfl_ORIGINAL_MUTATOR_NAME"
+
+    declare mbfl_PRED_MUTATOR_NAME=$mbfl_ORIGINAL_MUTATOR_NAME
+    declare mbfl_PRED_MUTATOR_BODY="{ "
+    mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_OBJ_DATAVAR=\${1:?\"missing default-object parameter to '\$FUNCNAME'\"};"
+    mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_ATTRIB_VALUE=\${2:?\"missing new attribute value parameter to '\$FUNCNAME'\"};"
+    mbfl_PRED_MUTATOR_BODY+="mbfl_default_object__predicate_mutator_implementation \"\$mbfl_OBJ_DATAVAR\""
+    mbfl_PRED_MUTATOR_BODY+=" '${mbfl_PRED_MUTATOR_NAME}' '${mbfl_UNPRED_MUTATOR_NAME}' '${mbfl_PREDICATE}'"
+    mbfl_PRED_MUTATOR_BODY+=" '${mbfl_ATTRIB_NAME}' \"\$mbfl_ATTRIB_VALUE\";"
+    mbfl_PRED_MUTATOR_BODY+='}'
+
+    if ! mbfl_function_rename "$mbfl_ORIGINAL_MUTATOR_NAME" "$mbfl_UNPRED_MUTATOR_NAME"
+    then return_because_failure
+    fi
+    eval function "$mbfl_ORIGINAL_MUTATOR_NAME" '()' "$mbfl_PRED_MUTATOR_BODY"
+    #echo function "$mbfl_ORIGINAL_MUTATOR_NAME" '()' "$mbfl_PRED_MUTATOR_BODY" >&2
+}
+
+function mbfl_default_object__predicate_mutator_implementation () {
+    mbfl_mandatory_nameref_parameter(mbfl_OBJ,		1, default-object reference)
+    mbfl_mandatory_parameter(mbfl_PRED_MUTATOR_NAME,	2, typed mutator name)
+    mbfl_mandatory_parameter(mbfl_UNPRED_MUTATOR_NAME,	3, untyped mutator name)
+    mbfl_mandatory_parameter(mbfl_PREDICATE,		4, predicate name)
+    mbfl_mandatory_parameter(mbfl_ATTRIB_NAME,		5, new attribute name)
+    mbfl_mandatory_parameter(mbfl_ATTRIB_VALUE,		6, new attribute value)
+
+    if "$mbfl_PREDICATE" "$mbfl_ATTRIB_VALUE"
+    then "$mbfl_UNPRED_MUTATOR_NAME" _(mbfl_OBJ) "$mbfl_ATTRIB_VALUE"
+    else
+	mbfl_default_object_declare(mbfl_CND)
+
+	mbfl_invalid_object_attrib_value_condition_make _(mbfl_CND) "$mbfl_PRED_MUTATOR_NAME" _(mbfl_OBJ) \
+							"$mbfl_ATTRIB_NAME" "$mbfl_ATTRIB_VALUE"
+	mbfl_exception_raise _(mbfl_CND)
+    fi
+}
+
+
+#### exceptional-condition classes
+
+function mbfl_semver_parser_error_condition_make () {
+    mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-conditio object)
+    mbfl_mandatory_parameter(mbfl_WHO,		2, entity that raised the exception)
+    mbfl_mandatory_parameter(mbfl_MESSAGE,	3, error message)
+
+    mbfl_semver_parser_error_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'false'
+}
 
 
 #### semver-parser input-string class
@@ -182,58 +282,6 @@ function mbfl_semver_parser_make_default () {
     mbfl_mandatory_nameref_parameter(mbfl_SEMVER_PARSER, 1, reference to object of class mbfl_semver_parser_t)
 
     mbfl_semver_parser_define _(mbfl_SEMVER_PARSER) 'optional' 'false' ''
-}
-
-# Field mutator that checks its argument.
-#
-function mbfl_semver_parser_parse_leading_v_set () {
-    mbfl_mandatory_nameref_parameter(mbfl_SEMVER_PARSER, 1, reference to object of class mbfl_semver_parser_t)
-    mbfl_mandatory_parameter(mbfl_OPTION_VALUE,		 2, option value)
-
-    if ! mbfl_string_is_a_semver_parser_parse_leading_v_option "$mbfl_OPTION_VALUE"
-    then
-	mbfl_message_error_printf 'invalid parse_leading_v option value: "%s"' "$mbfl_OPTION_VALUE"
-	return_because_failure
-    fi
-    mbfl_p_semver_parser_parse_leading_v_set _(mbfl_SEMVER_PARSER) "$mbfl_OPTION_VALUE"
-}
-# Field mutator that checks its argument.
-#
-function mbfl_semver_parser_accept_underscore_in_build_metadata_set () {
-    mbfl_mandatory_nameref_parameter(mbfl_SEMVER_PARSER, 1, reference to object of class mbfl_semver_parser_t)
-    mbfl_mandatory_parameter(mbfl_OPTION_VALUE,		 2, option value)
-
-    if ! mbfl_string_is_a_semver_parser_accept_underscore_in_build_metadata_option "$mbfl_OPTION_VALUE"
-    then
-	mbfl_message_error_printf 'invalid accept_underscore_in_build_metadata option value: "%s"' "$mbfl_OPTION_VALUE"
-	return_because_failure
-    fi
-    mbfl_p_semver_parser_accept_underscore_in_build_metadata_set _(mbfl_SEMVER_PARSER) "$mbfl_OPTION_VALUE"
-}
-
-function mbfl_string_is_a_semver_parser_parse_leading_v_option () {
-    mbfl_mandatory_parameter(mbfl_OPTION_VALUE, 1, semver_parser_parse_leading_v option value)
-
-    case "$mbfl_OPTION_VALUE" in
-	'mandatory'|'optional'|'missing')
-	    return_success
-	    ;;
-	*)
-	    return_failure
-	    ;;
-    esac
-}
-function mbfl_string_is_a_semver_parser_accept_underscore_in_build_metadata_option () {
-    mbfl_mandatory_parameter(mbfl_OPTION_VALUE, 1, semver_parser_parse_leading_v option value)
-
-    case "$mbfl_OPTION_VALUE" in
-	'true'|'false')
-	    return_success
-	    ;;
-	*)
-	    return_failure
-	    ;;
-    esac
 }
 
 
@@ -320,63 +368,6 @@ function mbfl_semver_spec_string_var () {
     fi
 }
 
-function mbfl_semver_spec_major_number_set () {
-    mbfl_mandatory_nameref_parameter(mbfl_SEMVER_SPEC,	1, reference to object of class mbfl_semver_spec_t)
-    mbfl_mandatory_parameter(mbfl_FIELD_VALUE,		2, field value)
-
-    if ! mbfl_string_is_semver_major_number "$mbfl_FIELD_VALUE"
-    then
-	mbfl_message_error_printf 'invalid major number specification: "%s"' "$mbfl_FIELD_VALUE"
-	return_because_failure
-    fi
-
-    mbfl_p_semver_spec_major_number_set _(mbfl_SEMVER_SPEC) "$mbfl_FIELD_VALUE"
-}
-function mbfl_semver_spec_minor_number_set () {
-    mbfl_mandatory_nameref_parameter(mbfl_SEMVER_SPEC,	1, reference to object of class mbfl_semver_spec_t)
-    mbfl_mandatory_parameter(mbfl_FIELD_VALUE,		2, field value)
-
-    if ! mbfl_string_is_semver_minor_number "$mbfl_FIELD_VALUE"
-    then
-	mbfl_message_error_printf 'invalid minor number specification: "%s"' "$mbfl_FIELD_VALUE"
-	return_because_failure
-    fi
-    mbfl_p_semver_spec_minor_number_set _(mbfl_SEMVER_SPEC) "$mbfl_FIELD_VALUE"
-}
-function mbfl_semver_spec_patch_level_set () {
-    mbfl_mandatory_nameref_parameter(mbfl_SEMVER_SPEC,	1, reference to object of class mbfl_semver_spec_t)
-    mbfl_mandatory_parameter(mbfl_FIELD_VALUE,		2, field value)
-
-    if ! mbfl_string_is_semver_patch_level "$mbfl_FIELD_VALUE"
-    then
-	mbfl_message_error_printf 'invalid patch level specification: "%s"' "$mbfl_FIELD_VALUE"
-	return_because_failure
-    fi
-    mbfl_p_semver_spec_patch_level_set _(mbfl_SEMVER_SPEC) "$mbfl_FIELD_VALUE"
-}
-function mbfl_semver_spec_prerelease_version_set () {
-    mbfl_mandatory_nameref_parameter(mbfl_SEMVER_SPEC,	1, reference to object of class mbfl_semver_spec_t)
-    mbfl_mandatory_parameter(mbfl_FIELD_VALUE,		2, field value)
-
-    if ! mbfl_string_is_semver_prerelease_version "$mbfl_FIELD_VALUE"
-    then
-	mbfl_message_error_printf 'invalid prerelease version specification: "%s"' "$mbfl_FIELD_VALUE"
-	return_because_failure
-    fi
-    mbfl_p_semver_spec_prerelease_version_set _(mbfl_SEMVER_SPEC) "$mbfl_FIELD_VALUE"
-}
-function mbfl_semver_spec_build_metadata_set () {
-    mbfl_mandatory_nameref_parameter(mbfl_SEMVER_SPEC,	1, reference to object of class mbfl_semver_spec_t)
-    mbfl_mandatory_parameter(mbfl_FIELD_VALUE,		2, field value)
-
-    if ! mbfl_string_is_semver_build_metadata "$mbfl_FIELD_VALUE"
-    then
-	mbfl_message_error_printf 'invalid build metadata specification: "%s"' "$mbfl_FIELD_VALUE"
-	return_because_failure
-    fi
-    mbfl_p_semver_spec_build_metadata_set _(mbfl_SEMVER_SPEC) "$mbfl_FIELD_VALUE"
-}
-
 
 #### parser functions: main parser
 
@@ -414,14 +405,22 @@ function mbfl_semver_parse () {
 
     if ! mbfl_p_semver_parse_leading_v
     then
-	mbfl_semver_parser_error_message_set _(mbfl_SEMVER_PARSER) "$mbfl_PARSING_ERROR_MESSAGE"
-	return_because_failure
+	mbfl_default_object_declare(mbfl_CND)
+
+	mbfl_semver_parser_error_condition_make _(mbfl_CND) $FUNCNAME "$mbfl_PARSING_ERROR_MESSAGE"
+	if ! mbfl_exception_raise _(mbfl_CND)
+	then return_because_failure
+	fi
     fi
 
     if ! mbfl_p_semver_parse_version_numbers
     then
-	mbfl_semver_parser_error_message_set _(mbfl_SEMVER_PARSER) "$mbfl_PARSING_ERROR_MESSAGE"
-	return_because_failure
+	mbfl_default_object_declare(mbfl_CND)
+
+	mbfl_semver_parser_error_condition_make _(mbfl_CND) $FUNCNAME "$mbfl_PARSING_ERROR_MESSAGE"
+	if ! mbfl_exception_raise _(mbfl_CND)
+	then return_because_failure
+	fi
     fi
 
     if mbfl_string_eq('-', mbfl_string_qidx(mbfl_INPUT_STRING, $mbfl_NEXT_INDEX))
@@ -429,29 +428,39 @@ function mbfl_semver_parse () {
 	# There is a prerelease version component.
 	if ! mbfl_p_semver_parse_prerelease_version
 	then
-	    mbfl_semver_parser_error_message_set _(mbfl_SEMVER_PARSER) "$mbfl_PARSING_ERROR_MESSAGE"
-	    return_because_failure
+	    mbfl_default_object_declare(mbfl_CND)
+
+	    mbfl_semver_parser_error_condition_make _(mbfl_CND) $FUNCNAME "$mbfl_PARSING_ERROR_MESSAGE"
+	    if ! mbfl_exception_raise _(mbfl_CND)
+	    then return_because_failure
+	    fi
 	fi
     fi
 
     if mbfl_string_eq('+', mbfl_string_qidx(mbfl_INPUT_STRING, $mbfl_NEXT_INDEX))
     then
+	let ++mbfl_NEXT_INDEX
+
 	# There is a build metadata component.
 	mbfl_declare_varref(AUIBM)
 
 	mbfl_semver_parser_accept_underscore_in_build_metadata_var _(AUIBM) _(mbfl_SEMVER_PARSER)
 	if ! mbfl_p_semver_parse_build_metadata
 	then
-	    mbfl_semver_parser_error_message_set _(mbfl_SEMVER_PARSER) "$mbfl_PARSING_ERROR_MESSAGE"
-	    return_because_failure
+	    mbfl_default_object_declare(mbfl_CND)
+
+	    mbfl_semver_parser_error_condition_make _(mbfl_CND) $FUNCNAME "$mbfl_PARSING_ERROR_MESSAGE"
+	    if ! mbfl_exception_raise _(mbfl_CND)
+	    then return_because_failure
+	    fi
 	fi
     fi
 
     mbfl_semver_spec_define _(mbfl_SEMVER_SPEC) \
 			    "$mbfl_MAJOR_NUMBER" "$mbfl_MINOR_NUMBER" "$mbfl_PATCH_LEVEL" \
 			    "$mbfl_PRERELEASE_VERSION" "$mbfl_BUILD_METADATA"
+    # Let's return the same return status of this call!
     mbfl_semver_parser_input_end_index_set _(mbfl_PARSER_INPUT) "$mbfl_NEXT_INDEX"
-    return_because_success
 }
 
 
@@ -493,9 +502,9 @@ function mbfl_p_semver_parse_leading_v () {
 function mbfl_p_semver_parse_version_numbers () {
     # If a version number is  a single digit: it can be 0.  If there  are multiple digits: the first
     # digit cannot be 0.
-    local -r REX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))($|[\-\+]|[^0-9A-Za-z])'
-    #              1  2               3  4               5  6
-    #              |-----------------------------------------------------||----------------------|
+    declare -r REX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))($|[\-\+]|[^0-9A-Za-z])'
+    #                1  2               3  4               5  6
+    #                |-----------------------------------------------------||---------------------|
     #                                    major.minor.patch                   end or one char after
 
     if [[ "${mbfl_INPUT_STRING:$mbfl_NEXT_INDEX}" =~ $REX ]]
@@ -586,27 +595,10 @@ function mbfl_p_semver_parse_prerelease_version () {
 # number of optional identifiers separated by dots.
 #
 function mbfl_p_semver_parse_build_metadata () {
-    declare IDRANGE='0-9A-Za-z'
     if "$AUIBM"
-    then IDRANGE+=[[['_']]]
+    then declare -r REX=${MBFL_SEMVER_REX_BUILD_METADATA[2]}
+    else declare -r REX=${MBFL_SEMVER_REX_BUILD_METADATA[0]}
     fi
-    # Let's make sure that the quoted hypen is the last character in the range!
-    IDRANGE+='\-'
-
-    local IDREX='(['
-    IDREX+=$IDRANGE
-    IDREX+=']+)'
-
-    local REX='^\+('
-    REX+=$IDREX
-    REX+='(\.'
-    REX+=$IDREX
-    REX+=')*'
-    REX+=')'
-
-    # For debugging purposes.
-    #echo IDRANGE=\""$IDRANGE"\" IDREX=\""$IDREX"\" REX=\""$REX"\" >&2
-    #echo ${FUNCNAME}: INPUT_STRING="${mbfl_INPUT_STRING:$mbfl_NEXT_INDEX}" START_INDEX=$mbfl_NEXT_INDEX >&2
 
     if [[ "${mbfl_INPUT_STRING:$mbfl_NEXT_INDEX}" =~ $REX ]]
     then
@@ -615,7 +607,7 @@ function mbfl_p_semver_parse_build_metadata () {
 	#echo ${FUNCNAME}: BUILD_METADATA="mbfl_slot_ref(BASH_REMATCH, 1)" >&2
 
 	mbfl_BUILD_METADATA=mbfl_slot_ref(BASH_REMATCH, 1)
-	let mbfl_NEXT_INDEX+=1+${#BASH_REMATCH[1]}
+	let mbfl_NEXT_INDEX+=mbfl_string_len(mbfl_BUILD_METADATA)
 	return_because_success
     else
 	# For debugging purposes.
