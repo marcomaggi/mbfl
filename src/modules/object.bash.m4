@@ -785,7 +785,7 @@ function mbfl_p_object_make_function () {
 
 if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
 then
-    mbfl_default_object_declare(mbfl_predefined_constant)
+    mbfl_default_class_declare(mbfl_predefined_constant)
     mbfl_default_class_define _(mbfl_predefined_constant) _(mbfl_default_object) 'mbfl_predefined_constant'
 
     mbfl_default_object_declare(mbfl_unspecified)
