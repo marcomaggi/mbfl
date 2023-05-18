@@ -53,10 +53,6 @@ AM_ETAGSFLAGS		= --language=none					\
 	--regex='/function[ \t]+\([a-zA-Z0-9_\-]+\)/\1/'			\
 	--regex='/mbfl_default_class_declare(\([a-zA-Z0-9_\-]+\))/\1/'
 
-#	--regex='/function\s-\([\sw_\-]+\)/\1/'
-#	--regex='/function[[:blank:]]+\([[:alnum:]_\-]+\)/\1/'
-#	--regex='/mbfl_default_class_declare(\([[:alnum:]_\-]+\))/\1/'
-
 CLEANFILES		=
 DISTCLEANFILES		= $(MBFL_AM_DIRSTAMP_FILES)
 
