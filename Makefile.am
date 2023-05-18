@@ -21,18 +21,44 @@
 ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
 EXTRA_DIST		= README COPYING INSTALL NEWS
-CLEANFILES		=
-MAINTAINERCLEANFILES	=
 MBFL_LIB_INSTDIR	= $(datadir)/$(PACKAGE)
 
 ## --------------------------------------------------------------------
 
 MBFL_PROGRAM_BASH	= @MBFL_PROGRAM_BASH@
 
+MBFL_AM_DIRSTAMP_FILES	=				\
+	doc/$(am__dirstamp)				\
+	doc/mbfl.html/$(am__dirstamp)			\
+	examples/$(am__dirstamp)			\
+	src/bin/$(am__dirstamp)				\
+	src/etc/bash_completions.d/$(am__dirstamp)	\
+	src/lib/$(am__dirstamp)				\
+	src/modules/$(am__dirstamp)			\
+	src/utils-modules/$(am__dirstamp)		\
+	tests/$(am__dirstamp)
+
+BUILT_SOURCES		=			\
+	src/bin/mbflpp.bash.m4			\
+	src/modules/config-values.bash.m4	\
+	$(MBFL_AM_DIRSTAMP_FILES)
+
 EXTRA_DIST		+=			\
 	src/backup/mbflpp.bash			\
 	src/backup/libmbfl.bash			\
 	src/backup/libmbfl-preprocessor.m4
+
+ETAGS_ARGS		=
+AM_ETAGSFLAGS		= --language=none					\
+	--regex='/function[ \t]+\([a-zA-Z0-9_\-]+\)/\1/'			\
+	--regex='/mbfl_default_class_declare(\([a-zA-Z0-9_\-]+\))/\1/'
+
+#	--regex='/function\s-\([\sw_\-]+\)/\1/'
+#	--regex='/function[[:blank:]]+\([[:alnum:]_\-]+\)/\1/'
+#	--regex='/mbfl_default_class_declare(\([[:alnum:]_\-]+\))/\1/'
+
+CLEANFILES		=
+DISTCLEANFILES		= $(MBFL_AM_DIRSTAMP_FILES)
 
 
 #### meta infrastructure
@@ -47,9 +73,7 @@ EXTRA_DIST		+=						\
 	doc/one-level-actions.sh					\
 	doc/two-levels-actions.sh					\
 	doc/mbfl.style.css
-CLEANFILES		+=						\
-	doc/mbfl.css							\
-	doc/mbfl.html/$(am__dirstamp)
+CLEANFILES		+= doc/mbfl.css
 
 AM_MAKEINFOFLAGS	= --no-split -I $(srcdir)/examples
 AM_MAKEINFOHTMLFLAGS	= --split=node  -I $(srcdir)/examples		\
@@ -105,7 +129,7 @@ dist_mbflprepro_DATA		= $(MBFL_PREPROCESSOR)
 #### scripts generation
 
 bin_SCRIPTS			= src/bin/mbflpp.bash
-CLEANFILES			+= src/bin/$(am__dirstamp) src/bin/mbflpp.bash
+CLEANFILES			+= src/bin/mbflpp.bash
 
 # These flags  are always used  on the command line  of "mbflpp.bash".
 # We can set "MBFLPPFLAGS" on the command line of "make".
@@ -126,8 +150,7 @@ MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash
 
 MBFL_SCRIPTS_PREREQUISITES	=		\
 	$(MBFL_PREPROCESSOR)			\
-	$(MBFL_BACKUP_PROGRAM_MBFLPP)		\
-	src/bin/$(am__dirstamp)
+	$(MBFL_BACKUP_PROGRAM_MBFLPP)
 
 src/bin/$(am__dirstamp):
 	@$(MKDIR_P) src/bin
@@ -146,38 +169,49 @@ MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 
 #### libmbfl modules generation
 
-EXTRA_DIST			+=			\
-	src/modules/actions.bash.m4			\
-	src/modules/arrays.bash.m4			\
-	src/modules/atexit.bash.m4			\
-	src/modules/base.bash.m4			\
-	src/modules/dialog.bash.m4			\
-	src/modules/encode.bash.m4			\
-	src/modules/exception-handlers.bash.m4		\
-	src/modules/exceptional-conditions.bash.m4	\
-	src/modules/fd.bash.m4				\
-	src/modules/file.bash.m4			\
-	src/modules/getopts.bash.m4			\
-	src/modules/hooks.bash.m4			\
-	src/modules/functions.bash.m4			\
-	src/modules/integers.bash.m4			\
-	src/modules/locations.bash.m4			\
-	src/modules/main.bash.m4			\
-	src/modules/math.bash.m4			\
-	src/modules/message.bash.m4			\
-	src/modules/process.bash.m4			\
-	src/modules/program.bash.m4			\
-	src/modules/semver.bash.m4			\
-	src/modules/signal.bash.m4			\
-	src/modules/string.bash.m4			\
-	src/modules/object.bash.m4			\
-	src/modules/system.bash.m4			\
-	src/modules/times-and-dates.bash.m4		\
-	src/modules/variable.bash.m4
+libmbfldir		= $(MBFL_LIB_INSTDIR)
+libmbfl_DATA		= src/lib/libmbfl.bash
+
+# We use the prefix "$(srcdir)/" so that "etags" will find the
+# sources.
+#
+libmbfl_MODULES		=					\
+	$(srcdir)/src/modules/actions.bash.m4			\
+	$(srcdir)/src/modules/arrays.bash.m4			\
+	$(srcdir)/src/modules/atexit.bash.m4			\
+	$(srcdir)/src/modules/base.bash.m4			\
+	$(srcdir)/src/modules/dialog.bash.m4			\
+	$(srcdir)/src/modules/encode.bash.m4			\
+	$(srcdir)/src/modules/exception-handlers.bash.m4	\
+	$(srcdir)/src/modules/exceptional-conditions.bash.m4	\
+	$(srcdir)/src/modules/fd.bash.m4			\
+	$(srcdir)/src/modules/file.bash.m4			\
+	$(srcdir)/src/modules/getopts.bash.m4			\
+	$(srcdir)/src/modules/hooks.bash.m4			\
+	$(srcdir)/src/modules/functions.bash.m4			\
+	$(srcdir)/src/modules/integers.bash.m4			\
+	$(srcdir)/src/modules/locations.bash.m4			\
+	$(srcdir)/src/modules/main.bash.m4			\
+	$(srcdir)/src/modules/math.bash.m4			\
+	$(srcdir)/src/modules/message.bash.m4			\
+	$(srcdir)/src/modules/process.bash.m4			\
+	$(srcdir)/src/modules/program.bash.m4			\
+	$(srcdir)/src/modules/semver.bash.m4			\
+	$(srcdir)/src/modules/signal.bash.m4			\
+	$(srcdir)/src/modules/string.bash.m4			\
+	$(srcdir)/src/modules/object.bash.m4			\
+	$(srcdir)/src/modules/system.bash.m4			\
+	$(srcdir)/src/modules/times-and-dates.bash.m4		\
+	$(srcdir)/src/modules/variable.bash.m4
+
+libmbfl_BSOURCES	= $(libmbfl_MODULES) $(srcdir)/src/lib/libmbfl.bash.m4
+EXTRA_DIST		+= $(libmbfl_BSOURCES)
+ETAGS_ARGS		+= $(libmbfl_BSOURCES)
 
 # This  is *not*  the  order  in which  modules  are  included in  the
 # library; that order is established in the file "libmbfl.bash.m4"!
-MBFL_LIB_MODULES		=			\
+#
+libmbfl_PROCESSED_MODULES	=			\
 	src/modules/actions.bash			\
 	src/modules/arrays.bash				\
 	src/modules/atexit.bash				\
@@ -207,44 +241,38 @@ MBFL_LIB_MODULES		=			\
 	src/modules/times-and-dates.bash		\
 	src/modules/variable.bash
 
+.INTERMEDIATE:	$(libmbfl_PROCESSED_MODULES)
+.SECONDARY:	$(libmbfl_PROCESSED_MODULES)
+
 CLEANFILES			+=		\
-	$(MBFL_LIB_MODULES)			\
-	src/modules/$(am__dirstamp)
+	src/lib/libmbfl.bash			\
+	$(libmbfl_PROCESSED_MODULES)
 
-MBFL_MODULES_LIBMBFL		= $(srcdir)/src/backup/libmbfl.bash
-MBFL_MODULES_ENV		=
-MBFL_MODULES_RUN		= $(MBFL_MODULES_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_MODULES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --libmbfl="$(MBFL_MODULES_LIBMBFL)"
+## ------------------------------------------------------------------------
 
-MBFL_MODULES_PREREQUISITES	=		\
+libmbfl_MODULES_ENV		=
+libmbfl_MODULES_RUN		= $(libmbfl_MODULES_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_MODULES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --libmbfl="$(srcdir)/src/backup/libmbfl.bash"
+
+libmbfl_MODULES_PREREQUISITES	=		\
 	$(MBFL_PROGRAM_MBFLPP)			\
-	$(MBFL_MODULES_LIBMBFL)			\
-	src/modules/$(am__dirstamp)		\
+	$(srcdir)/src/backup/libmbfl.bash	\
 	$(MBFL_PREPROCESSOR)
 
 src/modules/$(am__dirstamp):
 	@$(MKDIR_P) src/modules
 	@: > src/modules/$(am__dirstamp)
 
-src/modules/%.bash: src/modules/%.bash.m4 $(MBFL_MODULES_PREREQUISITES)
-	$(MBFL_MODULES_RUN) $(MBFL_MODULES_FLAGS) $< >$@
+src/modules/%.bash: src/modules/%.bash.m4 $(libmbfl_MODULES_PREREQUISITES)
+	$(libmbfl_MODULES_RUN) $(libmbfl_MODULES_FLAGS) $< >$@
 
-
-#### libmbfl generation
+## ------------------------------------------------------------------------
 
-EXTRA_DIST			+= src/lib/libmbfl.bash.m4
-mbfllibdir			= $(MBFL_LIB_INSTDIR)
-mbfllib_DATA			= src/lib/libmbfl.bash
-CLEANFILES			+=		\
-	src/lib/libmbfl.bash			\
-	src/lib/$(am__dirstamp)
+libmbfl_ENV		=
+libmbfl_RUN		= $(libmbfl_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --include=$(builddir)/src/modules
 
-MBFL_LIB_ENV		=
-MBFL_LIB_RUN		= $(MBFL_LIB_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIB_FLAGS		=  $(MBFLPP_GENERAL_FLAGS) --include=$(builddir)/src/modules
-
-MBFL_LIB_PREREQUISITES	=			\
-	src/lib/$(am__dirstamp)			\
+libmbfl_PREREQUISITES	=			\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
@@ -252,194 +280,187 @@ src/lib/$(am__dirstamp):
 	@$(MKDIR_P) src/lib
 	@: > src/lib/$(am__dirstamp)
 
-src/lib/libmbfl.bash: src/lib/libmbfl.bash.m4 $(MBFL_LIB_MODULES) $(MBFL_LIB_PREREQUISITES)
-	$(MBFL_LIB_RUN) $(MBFL_LIB_FLAGS) --output=$@ $<
+src/lib/libmbfl.bash: src/lib/libmbfl.bash.m4 $(libmbfl_PROCESSED_MODULES) $(libmbfl_PREREQUISITES)
+	$(libmbfl_RUN) $(libmbfl_FLAGS) --output=$@ $<
 
 
 #### libmbfl-utils generation: modules
 
-EXTRA_DIST			+=		\
-	src/utils-modules/utils-file.bash.m4
+libmbfl_utilsdir	= $(MBFL_LIB_INSTDIR)
+libmbfl_utils_DATA	= src/lib/libmbfl-utils.bash
 
-# This  is *not*  the  order  in which  modules  are  included in  the
-# library;    that    order    is     established    in    the    file
-# "libmbfl-utils.bash.m4"!
-MBFL_LIBUTILS_MODULES		=		\
+libmbfl_utils_MODULES	=		\
+	$(srcdir)/src/utils-modules/utils-file.bash.m4
+
+libmbfl_utils_BSOURCES	= $(libmbfl_utils_MODULES) $(srcdir)/src/lib/libmbfl-utils.bash.m4
+EXTRA_DIST		+= $(libmbfl_utils_BSOURCES)
+ETAGS_ARGS		+= $(libmbfl_utils_BSOURCES)
+
+libmbfl_utils_PROCESSED_MODULES	=		\
 	src/utils-modules/utils-file.bash
 
-CLEANFILES			+=		\
-	$(MBFL_LIBUTILS_MODULES)		\
-	src/utils-modules/$(am__dirstamp)
+.INTERMEDIATE:	$(libmbfl_utils_PROCESSED_MODULES)
+.SECONDARY:	$(libmbfl_utils_PROCESSED_MODULES)
 
-MBFL_UTILS_MODULES_ENV		=
-MBFL_UTILS_MODULES_RUN		= $(MBFL_UTILS_MODULES_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_UTILS_MODULES_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
+CLEANFILES		+=			\
+	src/lib/libmbfl-utils.bash		\
+	$(libmbfl_utils_PROCESSED_MODULES)
 
-MBFL_UTILS_MODULES_PREREQUISITES	=		\
-	src/utils-modules/$(am__dirstamp)		\
-	$(MBFL_PROGRAM_MBFLPP)				\
+## ------------------------------------------------------------------------
+
+libmbfl_utils_MODULES_ENV	=
+libmbfl_utils_MODULES_RUN	= $(libmbfl_utils_MODULES_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_utils_MODULES_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
+
+libmbfl_utils_MODULES_PREREQUISITES	=	\
+	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
 src/utils-modules/$(am__dirstamp):
 	@$(MKDIR_P) src/utils-modules
 	@: > src/utils-modules/$(am__dirstamp)
 
-src/utils-modules/%.bash: src/utils-modules/%.bash.m4 $(MBFL_UTILS_MODULES_PREREQUISITES)
-	$(MBFL_UTILS_MODULES_RUN) $(MBFL_UTILS_MODULES_FLAGS) --output=$@ $<
+src/utils-modules/%.bash: src/utils-modules/%.bash.m4 $(libmbfl_utils_MODULES_PREREQUISITES)
+	$(libmbfl_utils_MODULES_RUN) $(libmbfl_utils_MODULES_FLAGS) --output=$@ $<
 
-
-#### libmbfl-utils generation
+## ------------------------------------------------------------------------
 
-EXTRA_DIST			+= src/lib/libmbfl-utils.bash.m4
-mbfllibutilsdir			= $(MBFL_LIB_INSTDIR)
-mbfllibutils_DATA		= src/lib/libmbfl-utils.bash
-CLEANFILES			+=		\
-	src/lib/libmbfl-utils.bash		\
-	src/lib/$(am__dirstamp)
+libmbfl_utils_ENV		=
+libmbfl_utils_RUN		= $(libmbfl_utils_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_utils_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --include=$(builddir)/src/utils-modules
 
-MBFL_LIBUTILS_ENV		=
-MBFL_LIBUTILS_RUN		= $(MBFL_LIBUTILS_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBUTILS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --include=$(builddir)/src/utils-modules
-
-MBFL_LIBUTILS_PREREQUISITES	=		\
-	src/lib/$(am__dirstamp)			\
+libmbfl_utils_PREREQUISITES	=		\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbfl-utils.bash: src/lib/libmbfl-utils.bash.m4 $(MBFL_LIBUTILS_MODULES) $(MBFL_LIBUTILS_PREREQUISITES)
-	$(MBFL_LIBUTILS_RUN) $(MBFL_LIBUTILS_FLAGS) --output=$@ $<
+src/lib/libmbfl-utils.bash: src/lib/libmbfl-utils.bash.m4 $(libmbfl_utils_PROCESSED_MODULES) $(libmbfl_utils_PREREQUISITES)
+	$(libmbfl_utils_RUN) $(libmbfl_utils_FLAGS) --output=$@ $<
 
 
 #### libmbfl-tests generation
 
-EXTRA_DIST			+= src/lib/libmbfl-tests.bash.m4
-mbfllibtestdir			= $(MBFL_LIB_INSTDIR)
-mbfllibtest_DATA		= src/lib/libmbfl-tests.bash
-CLEANFILES			+=		\
-	src/lib/libmbfl-tests.bash		\
-	src/lib/$(am__dirstamp)
+libmbfl_testsdir	= $(MBFL_LIB_INSTDIR)
+libmbfl_tests_DATA	= src/lib/libmbfl-tests.bash
+libmbfl_tests_BSOURCES	= $(srcdir)/src/lib/libmbfl-tests.bash.m4
+EXTRA_DIST		+= $(libmbfl_tests_BSOURCES)
+ETAGS_ARGS		+= $(libmbfl_tests_BSOURCES)
+CLEANFILES		+= src/lib/libmbfl-tests.bash
 
-MBFL_LIBTEST_ENV		=
-MBFL_LIBTEST_RUN		= $(MBFL_LIBTEST_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBTEST_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
+libmbfl_tests_ENV	=
+libmbfl_tests_RUN	= $(libmbfl_tests_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_tests_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-MBFL_LIBTEST_PREREQUISITES	=		\
-	src/lib/$(am__dirstamp)			\
-	$(MBFL_PROGRAM_MBFLPP)			\
+libmbfl_tests_PREREQUISITES	=	\
+	$(MBFL_PROGRAM_MBFLPP)		\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbfl-tests.bash: src/lib/libmbfl-tests.bash.m4 $(MBFL_LIBTEST_PREREQUISITES)
-	$(MBFL_LIBTEST_RUN) $(MBFL_LIBTEST_FLAGS) --output=$@ $<
+src/lib/libmbfl-tests.bash: src/lib/libmbfl-tests.bash.m4 $(libmbfl_tests_PREREQUISITES)
+	$(libmbfl_tests_RUN) $(libmbfl_tests_FLAGS) --output=$@ $<
 
 
 #### libmbfl-at generation
 
-EXTRA_DIST			+= src/lib/libmbfl-at.bash.m4
-mbfllibatdir			= $(MBFL_LIB_INSTDIR)
-mbfllibat_DATA			= src/lib/libmbfl-at.bash
-CLEANFILES			+=		\
-	src/lib/libmbfl-at.bash			\
-	src/lib/$(am__dirstamp)
+libmbfl_atdir		= $(MBFL_LIB_INSTDIR)
+libmbfl_at_DATA		= src/lib/libmbfl-at.bash
+libmbfl_at_BSOURCES	= $(srcdir)/src/lib/libmbfl-at.bash.m4
+EXTRA_DIST		+= $(libmbfl_at_BSOURCES)
+ETAGS_ARGS		+= $(libmbfl_at_BSOURCES)
+CLEANFILES		+= src/lib/libmbfl-at.bash
 
-MBFL_LIBAT_ENV			=
-MBFL_LIBAT_RUN			= $(MBFL_LIBAT_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBAT_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
+libmbfl_at_ENV		=
+libmbfl_at_RUN		= $(libmbfl_at_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_at_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-MBFL_LIBAT_PREREQUISITES	=		\
-	src/lib/$(am__dirstamp)			\
-	$(MBFL_PROGRAM_MBFLPP)			\
+libmbfl_at_PREREQUISITES	=	\
+	$(MBFL_PROGRAM_MBFLPP)		\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbfl-at.bash: src/lib/libmbfl-at.bash.m4 $(MBFL_LIBAT_PREREQUISITES)
-	$(MBFL_LIBAT_RUN) $(MBFL_LIBAT_FLAGS) --output=$@ $<
+src/lib/libmbfl-at.bash: src/lib/libmbfl-at.bash.m4 $(libmbfl_at_PREREQUISITES)
+	$(libmbfl_at_RUN) $(libmbfl_at_FLAGS) --output=$@ $<
 
 
 #### libmbfl-arch generation
 
-EXTRA_DIST			+= src/lib/libmbfl-arch.bash.m4
-mbfllibarchdir			= $(MBFL_LIB_INSTDIR)
-mbfllibarch_DATA		= src/lib/libmbfl-arch.bash
-CLEANFILES			+=		\
-	src/lib/libmbfl-arch.bash		\
-	src/lib/$(am__dirstamp)
+libmbfl_archdir		= $(MBFL_LIB_INSTDIR)
+libmbfl_arch_DATA	= src/lib/libmbfl-arch.bash
+libmbfl_arch_BSOURCES	= $(srcdir)/src/lib/libmbfl-arch.bash.m4
+EXTRA_DIST		+= $(libmbfl_arch_BSOURCES)
+ETAGS_ARGS		+= $(libmbfl_arch_BSOURCES)
+CLEANFILES		+= src/lib/libmbfl-arch.bash
 
-MBFL_LIBARCH_ENV		=
-MBFL_LIBARCH_RUN		= $(MBFL_LIBARCH_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBARCH_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
+libmbfl_arch_ENV	=
+libmbfl_arch_RUN	= $(libmbfl_arch_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_arch_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-MBFL_LIBARCH_PREREQUISITES	=		\
-	src/lib/$(am__dirstamp)			\
-	$(MBFL_PROGRAM_MBFLPP)			\
+libmbfl_arch_PREREQUISITES	=	\
+	$(MBFL_PROGRAM_MBFLPP)		\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbfl-arch.bash: src/lib/libmbfl-arch.bash.m4 $(MBFL_LIBARCH_PREREQUISITES)
-	$(MBFL_LIBARCH_RUN) $(MBFL_LIBARCH_FLAGS) --output=$@ $<
+src/lib/libmbfl-arch.bash: src/lib/libmbfl-arch.bash.m4 $(libmbfl_arch_PREREQUISITES)
+	$(libmbfl_arch_RUN) $(libmbfl_arch_FLAGS) --output=$@ $<
 
 
 #### libmbfl-passwords generation
 
-EXTRA_DIST			+= src/lib/libmbfl-passwords.bash.m4
-mbfllibpasswordsdir		= $(MBFL_LIB_INSTDIR)
-mbfllibpasswords_DATA		= src/lib/libmbfl-passwords.bash
-CLEANFILES			+=		\
-	src/lib/libmbfl-passwords.bash		\
-	src/lib/$(am__dirstamp)
+libmbfl_passwordsdir	= $(MBFL_LIB_INSTDIR)
+libmbfl_passwords_DATA	= src/lib/libmbfl-passwords.bash
+libmbfl_passwords_BSOURCES= $(srcdir)/src/lib/libmbfl-passwords.bash.m4
+EXTRA_DIST		+= $(libmbfl_passwords_BSOURCES)
+ETAGS_ARGS		+= $(libmbfl_passwords_BSOURCES)
+CLEANFILES		+= src/lib/libmbfl-passwords.bash
 
-MBFL_LIBPASSWORDS_ENV		=
-MBFL_LIBPASSWORDS_RUN		= $(MBFL_LIBPASSWORDS_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBPASSWORDS_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
+libmbfl_passwords_ENV	=
+libmbfl_passwords_RUN	= $(libmbfl_passwords_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_passwords_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-MBFL_LIBPASSWORDS_PREREQUISITES	=		\
-	src/lib/$(am__dirstamp)			\
-	$(MBFL_PROGRAM_MBFLPP)			\
+libmbfl_passwords_PREREQUISITES	=	\
+	$(MBFL_PROGRAM_MBFLPP)		\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbfl-passwords.bash: src/lib/libmbfl-passwords.bash.m4 $(MBFL_LIBPASSWORDS_PREREQUISITES)
-	$(MBFL_LIBPASSWORDS_RUN) $(MBFL_LIBPASSWORDS_FLAGS) --output=$@ $<
+src/lib/libmbfl-passwords.bash: src/lib/libmbfl-passwords.bash.m4 $(libmbfl_passwords_PREREQUISITES)
+	$(libmbfl_passwords_RUN) $(libmbfl_passwords_FLAGS) --output=$@ $<
 
 
 #### libmbfl-git generation
 
-EXTRA_DIST			+= src/lib/libmbfl-git.bash.m4
-mbfllibgitdir			= $(MBFL_LIB_INSTDIR)
-mbfllibgit_DATA			= src/lib/libmbfl-git.bash
-CLEANFILES			+=		\
-	src/lib/libmbfl-git.bash		\
-	src/lib/$(am__dirstamp)
+libmbfl_gitdir	= $(MBFL_LIB_INSTDIR)
+libmbfl_git_DATA	= src/lib/libmbfl-git.bash
+libmbfl_git_BSOURCES	= $(srcdir)/src/lib/libmbfl-git.bash.m4
+EXTRA_DIST		+= $(libmbfl_git_BSOURCES)
+ETAGS_ARGS		+= $(libmbfl_git_BSOURCES)
+CLEANFILES		+= src/lib/libmbfl-git.bash
 
-MBFL_LIBGIT_ENV			=
-MBFL_LIBGIT_RUN			= $(MBFL_LIBGIT_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBGIT_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
+libmbfl_git_ENV		=
+libmbfl_git_RUN		= $(libmbfl_git_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_git_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-MBFL_LIBGIT_PREREQUISITES	=		\
-	src/lib/$(am__dirstamp)			\
-	$(MBFL_PROGRAM_MBFLPP)			\
+libmbfl_git_PREREQUISITES	=	\
+	$(MBFL_PROGRAM_MBFLPP)		\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbfl-git.bash: src/lib/libmbfl-git.bash.m4 $(MBFL_LIBGIT_PREREQUISITES)
-	$(MBFL_LIBGIT_RUN) $(MBFL_LIBGIT_FLAGS) --output=$@ $<
+src/lib/libmbfl-git.bash: src/lib/libmbfl-git.bash.m4 $(libmbfl_git_PREREQUISITES)
+	$(libmbfl_git_RUN) $(libmbfl_git_FLAGS) --output=$@ $<
 
 
 #### libmbfl-containers generation
 
-EXTRA_DIST			+= src/lib/libmbfl-containers.bash.m4
-mbfllibcontainersdir		= $(MBFL_LIB_INSTDIR)
-mbfllibcontainers_DATA		= src/lib/libmbfl-containers.bash
-CLEANFILES			+=		\
-	src/lib/libmbfl-containers.bash		\
-	src/lib/$(am__dirstamp)
+libmbfl_containersdir	= $(MBFL_LIB_INSTDIR)
+libmbfl_containers_DATA	= src/lib/libmbfl-containers.bash
+libmbfl_containers_BSOURCES= $(srcdir)/src/lib/libmbfl-containers.bash.m4
+EXTRA_DIST		+= $(libmbfl_containers_BSOURCES)
+ETAGS_ARGS		+= $(libmbfl_containers_BSOURCES)
+CLEANFILES		+= src/lib/libmbfl-containers.bash
 
-MBFL_LIBCONTAINERS_ENV		=
-MBFL_LIBCONTAINERS_RUN		= $(MBFL_LIBCONTAINERS_ENV) $(MBFL_RUN_MBFLPP)
-MBFL_LIBCONTAINERS_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
+libmbfl_containers_ENV	=
+libmbfl_containers_RUN	= $(libmbfl_containers_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_containers_FLAGS= $(MBFLPP_GENERAL_FLAGS)
 
-MBFL_LIBCONTAINERS_PREREQUISITES=		\
-	src/lib/$(am__dirstamp)			\
+libmbfl_containers_PREREQUISITES	=	\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
 
-src/lib/libmbfl-containers.bash: src/lib/libmbfl-containers.bash.m4 $(MBFL_LIBCONTAINERS_PREREQUISITES)
-	$(MBFL_LIBCONTAINERS_RUN) $(MBFL_LIBCONTAINERS_FLAGS) --output=$@ $<
+src/lib/libmbfl-containers.bash: src/lib/libmbfl-containers.bash.m4 $(libmbfl_containers_PREREQUISITES)
+	$(libmbfl_containers_RUN) $(libmbfl_containers_FLAGS) --output=$@ $<
 
 
 #### examples
@@ -464,9 +485,7 @@ MBFL_EXAMPLES_BUILT_FILES	=		\
 
 noinst_SCRIPTS			= $(MBFL_EXAMPLES_BUILT_FILES)
 
-CLEANFILES			+=		\
-	$(MBFL_EXAMPLES_BUILT_FILES)		\
-	examples/$(am__dirstamp)
+CLEANFILES			+= $(MBFL_EXAMPLES_BUILT_FILES)
 
 MBFL_EXAMPLES_ENV		=
 MBFL_EXAMPLES_RUN		= $(MBFL_EXAMPLES_ENV) $(MBFL_RUN_MBFLPP)
@@ -480,7 +499,6 @@ MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_CONTAINERS__="$(builddir)/src/lib/lib
 MBFL_EXAMPLES_FLAGS		+= --define=__LIBMBFL_PASSWORDS__="$(builddir)/src/lib/libmbfl-passwords.bash"
 
 MBFL_EXAMPLES_PREREQUISITES	=			\
-	examples/$(am__dirstamp)			\
 	$(builddir)/src/lib/libmbfl.bash		\
 	$(builddir)/src/lib/libmbfl-at.bash		\
 	$(builddir)/src/lib/libmbfl-arch.bash		\
@@ -529,13 +547,11 @@ noinst_SCRIPTS			+= \
 	src/etc/bash_completions.d/semver.bash		\
 	src/etc/bash_completions.d/vc.bash
 
-completions_PREREQUISITES	= \
-	src/etc/bash_completions.d/$(am__dirstamp)
+completions_PREREQUISITES	=
 
 CLEANFILES			+=			\
 	src/etc/bash_completions.d/semver.bash		\
-	src/etc/bash_completions.d/vc.bash		\
-	src/etc/bash_completions.d/$(am__dirstamp)
+	src/etc/bash_completions.d/vc.bash
 
 completionsdir			= $(sysconfdir)/bash_completion.d
 if WANT_VC
@@ -652,7 +668,6 @@ TESTS				=		\
 
 CLEANFILES			+=		\
 	$(MBFL_CHECK_BUILT_TESTS)		\
-	$(builddir)/tests/$(am__dirstamp)	\
 	tests/fifotest.sh			\
 	tests/signaltest.sh			\
 	tests/script-atexit.sh
@@ -683,7 +698,6 @@ MBFL_TESTS_RUN		= $(MBFL_TESTS_ENV) $(MBFL_RUN_MBFLPP)
 MBFL_TESTS_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
 MBFL_TESTS_PREREQUISITES=				\
-	tests/$(am__dirstamp)				\
 	$(builddir)/src/lib/libmbfl.bash		\
 	$(builddir)/src/lib/libmbfl-tests.bash		\
 	$(MBFL_PROGRAM_MBFLPP)				\
