@@ -171,49 +171,6 @@ function mbfl_initialise_module_semver () {
 	'mbfl_string_is_a_semver_parser_accept_underscore_in_build_metadata_option'
 }
 
-function mbfl_default_object_make_predicate_mutator_from_mutator () {
-    mbfl_mandatory_parameter(mbfl_ORIGINAL_MUTATOR_NAME,	1, untyped mutator name)
-    mbfl_mandatory_parameter(mbfl_ATTRIB_NAME,			2, attribute value)
-    mbfl_mandatory_parameter(mbfl_PREDICATE,			3, predicate name)
-    declare mbfl_UNPRED_MUTATOR_NAME
-
-    printf -v mbfl_UNPRED_MUTATOR_NAME 'mbfl_default_object_unpred_mutator_%s' "$mbfl_ORIGINAL_MUTATOR_NAME"
-
-    declare mbfl_PRED_MUTATOR_NAME=$mbfl_ORIGINAL_MUTATOR_NAME
-    declare mbfl_PRED_MUTATOR_BODY="{ "
-    mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_OBJ_DATAVAR=\${1:?\"missing default-object parameter to '\$FUNCNAME'\"};"
-    mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_ATTRIB_VALUE=\${2:?\"missing new attribute value parameter to '\$FUNCNAME'\"};"
-    mbfl_PRED_MUTATOR_BODY+="mbfl_default_object__predicate_mutator_implementation \"\$mbfl_OBJ_DATAVAR\""
-    mbfl_PRED_MUTATOR_BODY+=" '${mbfl_PRED_MUTATOR_NAME}' '${mbfl_UNPRED_MUTATOR_NAME}' '${mbfl_PREDICATE}'"
-    mbfl_PRED_MUTATOR_BODY+=" '${mbfl_ATTRIB_NAME}' \"\$mbfl_ATTRIB_VALUE\";"
-    mbfl_PRED_MUTATOR_BODY+='}'
-
-    if ! mbfl_function_rename "$mbfl_ORIGINAL_MUTATOR_NAME" "$mbfl_UNPRED_MUTATOR_NAME"
-    then return_because_failure
-    fi
-    eval function "$mbfl_ORIGINAL_MUTATOR_NAME" '()' "$mbfl_PRED_MUTATOR_BODY"
-    #echo function "$mbfl_ORIGINAL_MUTATOR_NAME" '()' "$mbfl_PRED_MUTATOR_BODY" >&2
-}
-
-function mbfl_default_object__predicate_mutator_implementation () {
-    mbfl_mandatory_nameref_parameter(mbfl_OBJ,		1, default-object reference)
-    mbfl_mandatory_parameter(mbfl_PRED_MUTATOR_NAME,	2, typed mutator name)
-    mbfl_mandatory_parameter(mbfl_UNPRED_MUTATOR_NAME,	3, untyped mutator name)
-    mbfl_mandatory_parameter(mbfl_PREDICATE,		4, predicate name)
-    mbfl_mandatory_parameter(mbfl_ATTRIB_NAME,		5, new attribute name)
-    mbfl_mandatory_parameter(mbfl_ATTRIB_VALUE,		6, new attribute value)
-
-    if "$mbfl_PREDICATE" "$mbfl_ATTRIB_VALUE"
-    then "$mbfl_UNPRED_MUTATOR_NAME" _(mbfl_OBJ) "$mbfl_ATTRIB_VALUE"
-    else
-	mbfl_default_object_declare(mbfl_CND)
-
-	mbfl_invalid_object_attrib_value_condition_make _(mbfl_CND) "$mbfl_PRED_MUTATOR_NAME" _(mbfl_OBJ) \
-							"$mbfl_ATTRIB_NAME" "$mbfl_ATTRIB_VALUE"
-	mbfl_exception_raise _(mbfl_CND)
-    fi
-}
-
 
 #### exceptional-condition classes
 
@@ -254,12 +211,16 @@ function mbfl_semver_parser_input_make () {
 #
 function mbfl_semver_parser_input_end_index_set () {
     mbfl_mandatory_nameref_parameter(mbfl_PARSER_INPUT,	1, reference to object of class mbfl_semver_parser_input_t)
-    mbfl_mandatory_integer_parameter(mbfl_END_INDEX,	2, semantic-version parser input string end index)
+    mbfl_mandatory_parameter(mbfl_END_INDEX,		2, semantic-version parser input string end index)
     mbfl_declare_varref(mbfl_INPUT_STRING)
 
     if ! mbfl_string_is_digit "$mbfl_END_INDEX"
     then
-	mbfl_message_error_printf 'expected positive integer as input string end index, got: "%s"' "$mbfl_END_INDEX"
+	mbfl_default_object_declare(CND)
+
+	mbfl_invalid_object_attrib_value_condition_make _(mbfl_CND) $FUNCNAME _(mbfl_OBJ) \
+							'end_index' "$mbfl_END_INDES"
+	mbfl_exception_raise _(mbfl_CND)
 	return_because_failure
     fi
 

@@ -311,6 +311,58 @@ function mbfl_default_object_unknown_method () {
     echo $FUNCNAME unknown method call: "$@" >&2
 }
 
+### ------------------------------------------------------------------------
+
+# For a default object: rename an existing attribute mutator function to a hidden name; define a new
+# attribute  mutator function  with the  original name;  the new  mutator calls  the old  mutator to
+# perform the mutation.
+#
+# The new  mutator uses a predicate  to validate the new  attribute value: if the  predicate returns
+# false an  exceptional-condition object  of type  "mbfl_invalid_object_attrib_value_condition_t" is
+# raised.
+#
+function mbfl_default_object_make_predicate_mutator_from_mutator () {
+    mbfl_mandatory_parameter(mbfl_ORIGINAL_MUTATOR_NAME,	1, untyped mutator name)
+    mbfl_mandatory_parameter(mbfl_ATTRIB_NAME,			2, attribute value)
+    mbfl_mandatory_parameter(mbfl_PREDICATE,			3, predicate name)
+    declare mbfl_UNPRED_MUTATOR_NAME
+
+    printf -v mbfl_UNPRED_MUTATOR_NAME 'mbfl_default_object_unpred_mutator_%s' "$mbfl_ORIGINAL_MUTATOR_NAME"
+
+    declare mbfl_PRED_MUTATOR_NAME=$mbfl_ORIGINAL_MUTATOR_NAME
+    declare mbfl_PRED_MUTATOR_BODY="{ "
+    mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_OBJ_DATAVAR=\${1:?\"missing default-object parameter to '\$FUNCNAME'\"};"
+    mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_ATTRIB_VALUE=\${2:?\"missing new attribute value parameter to '\$FUNCNAME'\"};"
+    mbfl_PRED_MUTATOR_BODY+="mbfl_default_object__predicate_mutator_implementation \"\$mbfl_OBJ_DATAVAR\""
+    mbfl_PRED_MUTATOR_BODY+=" '${mbfl_PRED_MUTATOR_NAME}' '${mbfl_UNPRED_MUTATOR_NAME}' '${mbfl_PREDICATE}'"
+    mbfl_PRED_MUTATOR_BODY+=" '${mbfl_ATTRIB_NAME}' \"\$mbfl_ATTRIB_VALUE\";"
+    mbfl_PRED_MUTATOR_BODY+='}'
+
+    if ! mbfl_function_rename "$mbfl_ORIGINAL_MUTATOR_NAME" "$mbfl_UNPRED_MUTATOR_NAME"
+    then return_because_failure
+    fi
+    eval function "$mbfl_ORIGINAL_MUTATOR_NAME" '()' "$mbfl_PRED_MUTATOR_BODY"
+    #echo function "$mbfl_ORIGINAL_MUTATOR_NAME" '()' "$mbfl_PRED_MUTATOR_BODY" >&2
+}
+function mbfl_default_object__predicate_mutator_implementation () {
+    mbfl_mandatory_nameref_parameter(mbfl_OBJ,		1, default-object reference)
+    mbfl_mandatory_parameter(mbfl_PRED_MUTATOR_NAME,	2, typed mutator name)
+    mbfl_mandatory_parameter(mbfl_UNPRED_MUTATOR_NAME,	3, untyped mutator name)
+    mbfl_mandatory_parameter(mbfl_PREDICATE,		4, predicate name)
+    mbfl_mandatory_parameter(mbfl_ATTRIB_NAME,		5, new attribute name)
+    mbfl_mandatory_parameter(mbfl_ATTRIB_VALUE,		6, new attribute value)
+
+    if "$mbfl_PREDICATE" "$mbfl_ATTRIB_VALUE"
+    then "$mbfl_UNPRED_MUTATOR_NAME" _(mbfl_OBJ) "$mbfl_ATTRIB_VALUE"
+    else
+	mbfl_default_object_declare(mbfl_CND)
+
+	mbfl_invalid_object_attrib_value_condition_make _(mbfl_CND) "$mbfl_PRED_MUTATOR_NAME" _(mbfl_OBJ) \
+							"$mbfl_ATTRIB_NAME" "$mbfl_ATTRIB_VALUE"
+	mbfl_exception_raise _(mbfl_CND)
+    fi
+}
+
 
 #### API of "mbfl_default_class"
 
