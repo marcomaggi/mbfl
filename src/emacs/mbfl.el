@@ -205,7 +205,8 @@
        "MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS"
        ;;
        "mbfl_exception_raise_then_return_failure"
-       "mbfl_location_leave_then_return_failure")
+       "mbfl_location_leave_then_return_failure"
+       "mbfl_check_mandatory_parameters_number")
      'symbols)))
 
 (defconst mbfl-known-functions
@@ -924,6 +925,22 @@
        "mbfl_uncaught_exceptional_condition_continuable_var"
        "mbfl_uncaught_exceptional_condition_object_set"
        "mbfl_uncaught_exceptional_condition_object_var"
+       ;;
+       "mbfl_wrong_parameters_number_condition_make"
+       "mbfl_wrong_parameters_number_condition_define"
+       "mbfl_wrong_parameters_number_condition_is_a"
+       "mbfl_wrong_parameters_number_condition_who_set"
+       "mbfl_wrong_parameters_number_condition_who_var"
+       "mbfl_wrong_parameters_number_condition_message_set"
+       "mbfl_wrong_parameters_number_condition_message_var"
+       "mbfl_wrong_parameters_number_condition_continuable_set"
+       "mbfl_wrong_parameters_number_condition_continuable_var"
+       "mbfl_wrong_parameters_number_condition_expected_min_number_set"
+       "mbfl_wrong_parameters_number_condition_expected_min_number_var"
+       "mbfl_wrong_parameters_number_condition_expected_max_number_set"
+       "mbfl_wrong_parameters_number_condition_expected_max_number_var"
+       "mbfl_wrong_parameters_number_condition_given_number_set"
+       "mbfl_wrong_parameters_number_condition_given_number_var"
        ;;
        "mbfl_invalid_function_parameter_condition_make"
        "mbfl_invalid_function_parameter_condition_define"

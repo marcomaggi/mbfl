@@ -317,6 +317,14 @@ m4_define([[[mbfl_default_class_unset]]],          [[[mbfl_default_object_unset(
 m4_define([[[mbfl_exception_raise_then_return_failure]]],[[[{ mbfl_exception_raise [[[$1]]] ; return_because_failure ; }]]])
 m4_define([[[mbfl_location_leave_then_return_failure]]], [[[{ mbfl_location_leave ; return_because_failure ; }]]])
 
+m4_define([[[mbfl_check_mandatory_parameters_number]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+m4_ifelse($#,[[[2]]],m4_dnl
+[[[{ if (( $[[[]]]MBFL_SHARP > $2 || $1 > $[[[]]]MBFL_SHARP )) ; then mbfl_default_object_declare(CND) ; mbfl_wrong_parameters_number_condition_make _(CND) $FUNCNAME $[[[]]]MBFL_SHARP $1 $2 ; mbfl_exception_raise_then_return_failure(_(CND)) ; fi ; } ]]],m4_dnl
+$#,[[[1]]],m4_dnl
+[[[{ if (( $1 > $[[[]]]MBFL_SHARP )) ; then mbfl_default_object_declare(CND) ; mbfl_wrong_parameters_number_condition_make _(CND) $FUNCNAME $[[[]]]MBFL_SHARP $1 9999 ; mbfl_exception_raise_then_return_failure(_(CND)) ; fi ; } ]]],m4_dnl
+[[[MBFL_P_ERRPRINT([[[wrong number of parameters]]]) m4_m4exit([[[1]]])]]])m4_dnl
+m4_changecom([[[MBFL_SHARP()]]])]]])
+
 
 #### miscellaneous macros
 

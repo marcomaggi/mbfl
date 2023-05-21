@@ -44,6 +44,7 @@ mbfl_default_class_declare(mbfl_warning_condition_t)
 mbfl_default_class_declare(mbfl_logic_error_condition_t)
 mbfl_default_class_declare(mbfl_runtime_error_condition_t)
 mbfl_default_class_declare(mbfl_uncaught_exceptional_condition_t)
+mbfl_default_class_declare(mbfl_wrong_parameters_number_condition_t)
 mbfl_default_class_declare(mbfl_invalid_function_parameter_condition_t)
 mbfl_default_class_declare(mbfl_invalid_object_attrib_value_condition_t)
 mbfl_default_class_declare(mbfl_invalid_ctor_parm_value_condition_t)
@@ -61,6 +62,10 @@ function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_uncaught_exceptional_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_uncaught_exceptional_condition' \
 			      'object'
+
+    mbfl_default_class_define _(mbfl_wrong_parameters_number_condition_t) _(mbfl_logic_error_condition_t) \
+			      'mbfl_wrong_parameters_number_condition' \
+			      'expected_min_number' 'expected_max_number' 'given_number'
 
     mbfl_default_class_define _(mbfl_invalid_function_parameter_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_invalid_function_parameter_condition' \
@@ -85,6 +90,7 @@ function mbfl_initialise_module_exceptional_conditions () {
     #
     mbfl_function_rename 'mbfl_exceptional_condition_continuable_set' 'mbfl_p_exceptional_condition_continuable_set'
     function mbfl_exceptional_condition_continuable_set () {
+	mbfl_check_mandatory_parameters_number(2)
 	mbfl_mandatory_nameref_parameter(mbfl_OBJ,	1, reference to condition object)
 	mbfl_mandatory_parameter(mbfl_VAL,		2, possible boolean value)
 	mbfl_declare_varref(mbfl_NORMAL)
@@ -104,6 +110,7 @@ function mbfl_initialise_module_exceptional_conditions () {
 #### predefined core condition object classes
 
 function mbfl_warning_condition_make () {
+    mbfl_check_mandatory_parameters_number(3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
@@ -111,6 +118,7 @@ function mbfl_warning_condition_make () {
     mbfl_warning_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'true'
 }
 function mbfl_runtime_error_condition_make () {
+    mbfl_check_mandatory_parameters_number(3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
@@ -118,6 +126,7 @@ function mbfl_runtime_error_condition_make () {
     mbfl_runtime_error_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'true'
 }
 function mbfl_logic_error_condition_make () {
+    mbfl_check_mandatory_parameters_number(3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
@@ -125,6 +134,7 @@ function mbfl_logic_error_condition_make () {
     mbfl_logic_error_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'false'
 }
 function mbfl_uncaught_exceptional_condition_make () {
+    mbfl_check_mandatory_parameters_number(3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_nameref_parameter(mbfl_OBJ,	3, uncaught exceptional-condition object)
@@ -133,6 +143,7 @@ function mbfl_uncaught_exceptional_condition_make () {
     mbfl_uncaught_exceptional_condition_define _(mbfl_CND) "$mbfl_WHO" 'uncaught exception' 'false' _(mbfl_OBJ)
 }
 function mbfl_outside_location_condition_make () {
+    mbfl_check_mandatory_parameters_number(3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
@@ -141,9 +152,30 @@ function mbfl_outside_location_condition_make () {
 }
 
 
-#### predefined exceptional-condition object classes: classes and objects related
+#### predefined exceptional-condition object classes: functions related
 
+function mbfl_wrong_parameters_number_condition_make () {
+    mbfl_check_mandatory_parameters_number(5)
+    mbfl_mandatory_nameref_parameter(mbfl_CND,			1, exceptional-condition object)
+    mbfl_mandatory_parameter(mbfl_FUNCNAME,			2, entity reporting the exceptional-condition)
+    mbfl_mandatory_parameter(mbfl_GIVEN_NUMBER,			3, given parameters number)
+    mbfl_mandatory_integer_parameter(mbfl_MIN_EXPECTED_NUMBER,	4, expected minimum parameters number)
+    mbfl_optional_integer_parameter(mbfl_MAX_EXPECTED_NUMBER,	5, 9999)
+    declare mbfl_MSG
+
+    if (( 9999 == $mbfl_MAX_EXPECTED_NUMBER ))
+    then printf -v mbfl_MSG 'in call to "%s" expected at least %d parameters, given %d parameters' \
+		"$mbfl_FUNCNAME" "$mbfl_MIN_EXPECTED_NUMBER" "$mbfl_GIVEN_NUMBER"
+    else printf -v mbfl_MSG 'in call to "%s" expected between %d and %d parameters, given %d parameters' \
+		"$mbfl_FUNCNAME" "$mbfl_MIN_EXPECTED_NUMBER" "$mbfl_MAX_EXPECTED_NUMBER" "$mbfl_GIVEN_NUMBER"
+    fi
+
+    #                                                         who              message     continuable
+    mbfl_wrong_parameters_number_condition_define _(mbfl_CND) "$mbfl_FUNCNAME" "$mbfl_MSG" 'false' \
+						  "$mbfl_MIN_EXPECTED_NUMBER" "$mbfl_MAX_EXPECTED_NUMBER" "$mbfl_GIVEN_NUMBER"
+}
 function mbfl_invalid_function_parameter_condition_make () {
+    mbfl_check_mandatory_parameters_number(5,6)
     mbfl_mandatory_nameref_parameter(mbfl_CND,		1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_FUNCNAME,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_ERROR_DESCRIPTION,	3, error description)
@@ -165,42 +197,45 @@ function mbfl_invalid_function_parameter_condition_make () {
 #### predefined exceptional-condition object classes: classes and objects related
 
 function mbfl_invalid_ctor_parm_value_condition_make () {
+    mbfl_check_mandatory_parameters_number(5)
     mbfl_mandatory_nameref_parameter(mbfl_CND,		1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,			2, entity reporting the exceptional-condition)
     mbfl_mandatory_nameref_parameter(mbfl_CLASS,	3, default class)
-    mbfl_mandatory_parameter(mbfl_PARM_NAME,		4, parameter name)
-    mbfl_mandatory_parameter(mbfl_INVALID_VALUE,	5, invalid parameter value)
+    mbfl_mandatory_parameter(mbfl_PARAMETER_NAME,	4, parameter name)
+    mbfl_mandatory_parameter(mbfl_PARAMETER_VALUE,	5, invalid parameter value)
     mbfl_declare_varref(mbfl_CLASS_NAME)
     declare mbfl_MSG
 
-    #echo $FUNCNAME _(mbfl_CND) "$mbfl_WHO" _(mbfl_CLASS) "$mbfl_PARM_NAME" "$mbfl_INVALID_VALUE" >&2
+    #echo $FUNCNAME _(mbfl_CND) "$mbfl_WHO" _(mbfl_CLASS) "$mbfl_PARAMETER_NAME" "$mbfl_PARAMETER_VALUE" >&2
 
     mbfl_default_class_name_var _(mbfl_CLASS_NAME) _(mbfl_CLASS)
     printf -v mbfl_MSG 'invalid value for parameter "%s" of class "%s" constructor: "%s"' \
-	   "$mbfl_PARM_NAME" "$mbfl_CLASS_NAME" "$mbfl_INVALID_VALUE"
+	   "$mbfl_PARAMETER_NAME" "$mbfl_CLASS_NAME" "$mbfl_PARAMETER_VALUE"
     mbfl_invalid_ctor_parm_value_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MSG" 'false' \
-						  _(mbfl_CLASS) "$mbfl_PARM_NAME" "$mbfl_INVALID_VALUE"
+						  _(mbfl_CLASS) "$mbfl_PARAMETER_NAME" "$mbfl_PARAMETER_VALUE"
 }
 function mbfl_invalid_object_attrib_value_condition_make () {
+    mbfl_check_mandatory_parameters_number(5)
     mbfl_mandatory_nameref_parameter(mbfl_CND,		1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,			2, entity reporting the exceptional-condition)
     mbfl_mandatory_nameref_parameter(mbfl_OBJ,		3, default object)
     mbfl_mandatory_parameter(mbfl_ATTRIB_NAME,		4, attribute name)
-    mbfl_mandatory_parameter(mbfl_INVALID_VALUE,	5, invalid attribute value)
+    mbfl_mandatory_parameter(mbfl_PARAMETER_VALUE,	5, invalid attribute value)
     mbfl_declare_varref(mbfl_CLASS_NAME)
     declare mbfl_MSG
 
     mbfl_default_object_class_name_var _(mbfl_CLASS_NAME) _(mbfl_OBJ)
     printf -v mbfl_MSG 'invalid value for attribute "%s" of class "%s" object: "%s"' \
-	   "$mbfl_ATTRIB_NAME" "$mbfl_CLASS_NAME" "$mbfl_INVALID_VALUE"
+	   "$mbfl_ATTRIB_NAME" "$mbfl_CLASS_NAME" "$mbfl_PARAMETER_VALUE"
     mbfl_invalid_object_attrib_value_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MSG" 'false' \
-						      _(mbfl_OBJ) "$mbfl_ATTRIB_NAME" "$mbfl_INVALID_VALUE"
+						      _(mbfl_OBJ) "$mbfl_ATTRIB_NAME" "$mbfl_PARAMETER_VALUE"
 }
 
 
 #### predefined exceptional-condition object methods
 
 function mbfl_exceptional_condition_is_continuable () {
+    mbfl_check_mandatory_parameters_number(1)
     mbfl_mandatory_nameref_parameter(mbfl_CND, 1, reference to error descriptor object)
     mbfl_declare_varref(mbfl_CONTINUABLE)
 
@@ -209,6 +244,7 @@ function mbfl_exceptional_condition_is_continuable () {
     "$mbfl_CONTINUABLE"
 }
 function mbfl_exceptional_condition_print_report () {
+    mbfl_check_mandatory_parameters_number(1)
     mbfl_mandatory_nameref_parameter(mbfl_CND, 1, reference to error descriptor object)
     mbfl_declare_varref(mbfl_WHO)
     mbfl_declare_varref(mbfl_MESSAGE)
@@ -224,6 +260,7 @@ function mbfl_exceptional_condition_print_report () {
     fi
 }
 function mbfl_exceptional_condition_print () {
+    mbfl_check_mandatory_parameters_number(1)
     mbfl_mandatory_nameref_parameter(mbfl_CND, 1, reference to error descriptor object)
     mbfl_declare_varref(mbfl_WHO)
     mbfl_declare_varref(mbfl_MESSAGE)

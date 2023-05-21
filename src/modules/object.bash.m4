@@ -201,6 +201,7 @@ function mbfl_default_classes_are_parent_and_child () {
 #### data-structure instance handling
 
 function mbfl_default_object_define () {
+    mbfl_check_mandatory_parameters_number(3)
     mbfl_mandatory_nameref_parameter(mbfl_SELF,			1, reference to a default object)
     mbfl_mandatory_nameref_parameter(mbfl_CLASS,		2, reference to a default class)
     mbfl_mandatory_nameref_parameter(mbfl_FIELD_INIT_VALUES,	3, reference to an index array containing init field values)
@@ -240,6 +241,7 @@ function mbfl_default_object_define () {
 }
 
 function mbfl_default_object_define_and_init () {
+    mbfl_check_mandatory_parameters_number(4)
     mbfl_mandatory_nameref_parameter(mbfl_SELF,			1, reference to a default object)
     mbfl_mandatory_nameref_parameter(mbfl_CLASS,		2, reference to a default class)
     mbfl_mandatory_nameref_parameter(mbfl_FIELD_INIT_VALUES,	3, reference to an index array containing init field values)
@@ -258,6 +260,7 @@ function mbfl_default_object_define_and_init () {
 # "mbfl_default_object".  We do our best.
 #
 function mbfl_default_object_is_a () {
+    mbfl_check_mandatory_parameters_number(1)
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, variable referencing a data-structure instance)
 
     if test -v _(mbfl_SELF) -a -v mbfl_slot_spec(mbfl_SELF,MBFL_STDOBJ__CLASS_INDEX)
@@ -267,6 +270,7 @@ function mbfl_default_object_is_a () {
 }
 
 function mbfl_default_object_is_of_class () {
+    mbfl_check_mandatory_parameters_number(2)
     mbfl_mandatory_nameref_parameter(mbfl_OBJECT, 1, variable referencing an object of class mbfl_default_object)
     mbfl_mandatory_nameref_parameter(mbfl_CLASS,  2, variable referencing a class of class mbfl_default_object)
 
@@ -278,11 +282,13 @@ function mbfl_default_object_is_of_class () {
 }
 
 function mbfl_default_object_class_var () {
+    mbfl_check_mandatory_parameters_number(2)
     mbfl_mandatory_nameref_parameter(mbfl_CLASS_RV,	1, the result variable)
     mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing an object of type mbfl_default_object)
     mbfl_CLASS_RV=_(mbfl_SELF, MBFL_STDOBJ__CLASS_INDEX)
 }
 function mbfl_default_object_class_name_var () {
+    mbfl_check_mandatory_parameters_number(2)
     mbfl_mandatory_nameref_parameter(NAME, 1, result variable)
     mbfl_mandatory_nameref_parameter(OBJ,  2, default object)
     mbfl_declare_varref(CLASS)
@@ -292,6 +298,7 @@ function mbfl_default_object_class_name_var () {
 }
 
 function mbfl_default_object_call_method () {
+    mbfl_check_mandatory_parameters_number(2)
     mbfl_mandatory_nameref_parameter(mbfl_SELF, 1, reference to object of class mbfl_default_object)
     mbfl_mandatory_parameter(mbfl_METHOD,       2, method name)
     shift 2
@@ -322,6 +329,7 @@ function mbfl_default_object_unknown_method () {
 # raised.
 #
 function mbfl_default_object_make_predicate_mutator_from_mutator () {
+    mbfl_check_mandatory_parameters_number(3)
     mbfl_mandatory_parameter(mbfl_ORIGINAL_MUTATOR_NAME,	1, untyped mutator name)
     mbfl_mandatory_parameter(mbfl_ATTRIB_NAME,			2, attribute value)
     mbfl_mandatory_parameter(mbfl_PREDICATE,			3, predicate name)
@@ -331,6 +339,7 @@ function mbfl_default_object_make_predicate_mutator_from_mutator () {
 
     declare mbfl_PRED_MUTATOR_NAME=$mbfl_ORIGINAL_MUTATOR_NAME
     declare mbfl_PRED_MUTATOR_BODY="{ "
+    mbfl_PRED_MUTATOR_BODY+="mbfl_check_mandatory_parameters_number(2);"
     mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_OBJ_DATAVAR=\${1:?\"missing default-object parameter to '\$FUNCNAME'\"};"
     mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_ATTRIB_VALUE=\${2:?\"missing new attribute value parameter to '\$FUNCNAME'\"};"
     mbfl_PRED_MUTATOR_BODY+="mbfl_default_object__predicate_mutator_implementation \"\$mbfl_OBJ_DATAVAR\""
@@ -367,6 +376,7 @@ function mbfl_default_object__predicate_mutator_implementation () {
 #### API of "mbfl_default_class"
 
 function mbfl_default_class_define () {
+    mbfl_check_mandatory_parameters_number(3)
     mbfl_mandatory_nameref_parameter(mbfl_NEW_CLASS,	1, reference to the new default class)
     mbfl_mandatory_nameref_parameter(mbfl_PARENT_CLASS,	2, reference to the parent default class)
     mbfl_mandatory_parameter(mbfl_NEW_CLASS_NAME,	3, the name of the new default class)

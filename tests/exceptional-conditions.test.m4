@@ -591,6 +591,68 @@ function conditions-invalid-function-parameter-2.1 () {
 }
 
 
+#### wrong parameters number
+
+function func-wrong-parameters-number-one () {
+    mbfl_check_mandatory_parameters_number(3)
+    mbfl_mandatory_parameter(ALPHA, 1, the alpha)
+    mbfl_mandatory_parameter(BETA,  2, the beta)
+    mbfl_mandatory_parameter(GAMMA, 3, the gamma)
+    mbfl_optional_parameter(DELTA, 4)
+    return_success
+}
+function conditions-wrong-parameters-number-1.1 () {
+    (func-wrong-parameters-number-one a)
+    dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $?
+}
+function conditions-wrong-parameters-number-1.2 () {
+    (func-wrong-parameters-number-one a b)
+    dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $?
+}
+function conditions-wrong-parameters-number-1.3 () {
+    func-wrong-parameters-number-one a b c
+}
+function conditions-wrong-parameters-number-1.4 () {
+    func-wrong-parameters-number-one a b c d
+}
+function conditions-wrong-parameters-number-1.5 () {
+    func-wrong-parameters-number-one a b c d e
+}
+
+### ------------------------------------------------------------------------
+
+function func-wrong-parameters-number-two () {
+    mbfl_check_mandatory_parameters_number(3,5)
+    mbfl_mandatory_parameter(ALPHA, 1, the alpha)
+    mbfl_mandatory_parameter(BETA,  2, the beta)
+    mbfl_mandatory_parameter(GAMMA, 3, the gamma)
+    mbfl_optional_parameter(DELTA, 4)
+    mbfl_optional_parameter(IOTA, 5)
+    return_success
+}
+function conditions-wrong-parameters-number-1.1 () {
+    (func-wrong-parameters-number-two a)
+    dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $?
+}
+function conditions-wrong-parameters-number-1.2 () {
+    (func-wrong-parameters-number-two a b)
+    dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $?
+}
+function conditions-wrong-parameters-number-1.3 () {
+    func-wrong-parameters-number-two a b c
+}
+function conditions-wrong-parameters-number-1.4 () {
+    func-wrong-parameters-number-two a b c d
+}
+function conditions-wrong-parameters-number-1.5 () {
+    func-wrong-parameters-number-two a b c d e
+}
+function conditions-wrong-parameters-number-1.6 () {
+    (func-wrong-parameters-number-two a b c d e f)
+    dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $?
+}
+
+
 #### let's go
 
 dotest conditions-
