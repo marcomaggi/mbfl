@@ -716,10 +716,8 @@ function object-error-instance-1.1 () {
     mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
 
     greek_define _(self) 1 2 3
-    color_red_var RED _(self)
-    RV=$?
-
-    dotest-equal 1 $RV 'applied field accessor to instance of wrong type'
+    (color_red_var RED _(self))
+    dotest-equal ${mbfl_EXIT_CODES_BY_NAME[uncaught_exception]} $?
 }
 
 function object-error-instance-1.2 () {
@@ -732,10 +730,8 @@ function object-error-instance-1.2 () {
     mbfl_default_class_define _(color) _(mbfl_default_object) 'color' red green blue
 
     greek_define _(self) 1 2 3
-    color_red_set _(self) 11
-    RV=$?
-
-    dotest-equal 1 $RV 'applied field mutator to instance of wrong type'
+    (color_red_set _(self) 11)
+    dotest-equal ${mbfl_EXIT_CODES_BY_NAME[uncaught_exception]} $?
 }
 
 

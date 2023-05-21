@@ -809,14 +809,15 @@ function mbfl_p_default_class_mismatch_error_self_given_type () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing a default object)
     mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,2, variable referencing a default class)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	3, the name of the calling function)
-    declare mbfl_SELF_TYPE mbfl_SELF_NAME mbfl_GIVEN_NAME
+    mbfl_default_object_declare(CND)
+    mbfl_declare_varref(mbfl_REQUIRED_TYPE_NAME)
+    declare mbfl_ERRDESCR
 
-    mbfl_default_object_class_var mbfl_SELF_TYPE  _(mbfl_SELF)
-    mbfl_default_class_name_var mbfl_SELF_NAME  $mbfl_SELF_TYPE
-    mbfl_default_class_name_var mbfl_GIVEN_NAME _(mbfl_REQUIRED_TYPE)
-    mbfl_message_error_printf 'in call to "%s": instance parameter "%s" of wrong type, expected "%s" got: "%s"' \
-			      "$mbfl_CALLER_FUNCNAME" _(mbfl_SELF) "$mbfl_GIVEN_NAME" "$mbfl_SELF_NAME"
-    return_because_failure
+    mbfl_default_class_name_var _(mbfl_REQUIRED_TYPE_NAME) _(mbfl_REQUIRED_TYPE)
+    printf -v mbfl_ERRDESCR 'expected instance parameter of type: "%s"' "$mbfl_REQUIRED_TYPE_NAME"
+
+    mbfl_invalid_function_parameter_condition_make _(CND) $mbfl_CALLER_FUNCNAME "$mbfl_ERRDESCR" 1 'SELF' "$mbfl_SELF"
+    mbfl_exception_raise_then_return_failure(_(CND))
 }
 
 
