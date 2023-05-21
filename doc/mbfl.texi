@@ -1785,6 +1785,16 @@ Before running the handlers the state of the current location is removed from th
 @end defun
 
 
+@deffn {Preprocessor Macro} mbfl_location_leave_then_return_failure
+Expand as follows:
+
+@example
+mbfl_location_leave_then_return_failure
+@expansion{} @{ mbfl_location_leave ; return_because_failure ; @}
+@end example
+@end deffn
+
+
 @anchor{mbfl_location_handler}
 @defun mbfl_location_handler @var{HANDLER_SCRIPT}
 Register a new handler in the current location.
@@ -5550,6 +5560,16 @@ will apply to @var{CND} the next handler from the stack.  If no client exception
 successfully: the default exception--handler will call @func{exit_because_uncaught_exception}.
 @end itemize
 @end defun
+
+
+@deffn {Preprocessor Macro} mbfl_exception_raise_then_return_failure (@var{CND})
+Expand as follows:
+
+@example
+mbfl_exception_raise_then_return_failure(@var{CND})
+@expansion{} @{ mbfl_exception_raise @var{CND} ; return_because_failure ; @}
+@end example
+@end deffn
 
 @c page
 @node exceptions handlers

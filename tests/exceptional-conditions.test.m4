@@ -69,7 +69,7 @@ function colour_make () {
 	mbfl_default_object_declare(CND)
 
 	mbfl_invalid_ctor_parm_value_condition_make _(CND) $FUNCNAME _(colour) 'RED' "$RED"
-	mbfl_exception_raise _(CND)
+	mbfl_exception_raise_then_return_failure(_(CND))
     fi
 
     if ! mbfl_string_is_digit "$GREEN"
@@ -78,7 +78,7 @@ function colour_make () {
 
 	dotest-debug  _(CND) invalid green $FUNCNAME _(colour) 'green' "$GREEN"
 	mbfl_invalid_ctor_parm_value_condition_make _(CND) $FUNCNAME _(colour) 'GREEN' "$GREEN"
-	mbfl_exception_raise _(CND)
+	mbfl_exception_raise_then_return_failure(_(CND))
     fi
 
     if ! mbfl_string_is_digit "$BLUE"
@@ -86,7 +86,7 @@ function colour_make () {
 	mbfl_default_object_declare(CND)
 
 	mbfl_invalid_ctor_parm_value_condition_make _(CND) $FUNCNAME _(colour) 'BLUE' "$BLUE"
-	mbfl_exception_raise _(CND)
+	mbfl_exception_raise_then_return_failure(_(CND))
     fi
 
     colour_define _(OBJ) "$RED" "$GREEN" "$BLUE"
@@ -101,7 +101,7 @@ function colour_red_set () {
 	mbfl_default_object_declare(CND)
 
 	mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(OBJ) 'red' "$RED"
-	mbfl_exception_raise _(CND)
+	mbfl_exception_raise_then_return_failure(_(CND))
     fi
 }
 function colour_green_set () {
@@ -114,7 +114,7 @@ function colour_green_set () {
 	mbfl_default_object_declare(CND)
 
 	mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(OBJ) 'green' "$GREEN"
-	mbfl_exception_raise _(CND)
+	mbfl_exception_raise_then_return_failure(_(CND))
     fi
 }
 function colour_blue_set () {
@@ -127,7 +127,7 @@ function colour_blue_set () {
 	mbfl_default_object_declare(CND)
 
 	mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(OBJ) 'blue' "$BLUE"
-	mbfl_exception_raise _(CND)
+	mbfl_exception_raise_then_return_failure(_(CND))
     fi
 }
 
@@ -450,10 +450,10 @@ function conditions-invalid-ctor-parm-value-maker-2.2 () {
     mbfl_location_leave
 
     dotest-equal	'colour_make'	"$WHO"			&&
-	dotest-equal	'invalid value for parameter "BLUE" of class "colour" constructor: "ciao"' "$MESSAGE" &&
+	dotest-equal	'invalid value for parameter "GREEN" of class "colour" constructor: "ciao"' "$MESSAGE" &&
 	dotest-equal	'false'		"$CONTINUABLE"		&&
 	dotest-equal	_(colour)	"$CLASS"		&&
-	dotest-equal	'BLUE'		"$PARM_NAME"		&&
+	dotest-equal	'GREEN'		"$PARM_NAME"		&&
 	dotest-equal	'ciao'		"$INVALID_VALUE"
 }
 function exception_handler_conditions_invalid_ctor_parm_value_maker_2_2 () {

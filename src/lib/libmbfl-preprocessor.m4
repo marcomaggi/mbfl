@@ -312,6 +312,12 @@ m4_define([[[mbfl_default_class_declare_global]]], [[[mbfl_default_object_declar
 m4_define([[[mbfl_default_class_unset]]],          [[[mbfl_default_object_unset([[[$1]]])]]])
 
 
+#### exceptional-condition objects and exception-handlers
+
+m4_define([[[mbfl_exception_raise_then_return_failure]]],[[[{ mbfl_exception_raise [[[$1]]] ; return_because_failure ; }]]])
+m4_define([[[mbfl_location_leave_then_return_failure]]], [[[{ mbfl_location_leave ; return_because_failure ; }]]])
+
+
 #### miscellaneous macros
 
 m4_define([[[mbfl_hook_declare]]],       [[[mbfl_declare_index_array_varref([[[$1]]])]]])

@@ -95,7 +95,7 @@ function mbfl_initialise_module_exceptional_conditions () {
 	    mbfl_default_object_declare(mbfl_CND)
 
 	    mbfl_invalid_object_attrib_value_condition_make _(mbfl_CND) $FUNC _(mbfl_OBJ) 'continuable' "$mbfl_VAL"
-	    mbfl_exception_raise _(mbfl_CND)
+	    mbfl_exception_raise_then_return_failure(_(mbfl_CND))
 	fi
     }
 }
