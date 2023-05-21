@@ -548,6 +548,49 @@ function conditions-outside-location-1.1 () {
 }
 
 
+#### invalid parameter to function
+
+function conditions-invalid-function-parameter-1.1 () {
+    mbfl_default_object_declare(CND)
+    mbfl_declare_varref(WHO)
+    mbfl_declare_varref(MESSAGE)
+    mbfl_declare_varref(CONTINUABLE)
+    mbfl_declare_varref(ERROR_DESCRIPTION)
+    mbfl_declare_varref(PARAMETER_NUMBER)
+    mbfl_declare_varref(PARAMETER_NAME)
+    mbfl_declare_varref(PARAMETER_VALUE)
+    declare -r EXPECTED_MESSAGE='in call to "conditions-invalid-function-parameter-1.1" invalid value for parameter 1 "MOOD": "happy", expected good value'
+
+    mbfl_invalid_function_parameter_condition_make _(CND) $FUNCNAME 'expected good value' 1 'MOOD' 'happy'
+
+    mbfl_invalid_function_parameter_condition_who_var			_(WHO)		      _(CND)
+    mbfl_invalid_function_parameter_condition_message_var		_(MESSAGE)	      _(CND)
+    mbfl_invalid_function_parameter_condition_continuable_var		_(CONTINUABLE)	      _(CND)
+    mbfl_invalid_function_parameter_condition_error_description_var	_(ERROR_DESCRIPTION)  _(CND)
+    mbfl_invalid_function_parameter_condition_parameter_number_var	_(PARAMETER_NUMBER)   _(CND)
+    mbfl_invalid_function_parameter_condition_parameter_name_var	_(PARAMETER_NAME)     _(CND)
+    mbfl_invalid_function_parameter_condition_parameter_value_var	_(PARAMETER_VALUE)    _(CND)
+
+    mbfl_invalid_function_parameter_condition_is_a _(CND) &&
+	dotest-equal	$FUNCNAME		"$WHO"			'attribute who' &&
+	dotest-equal	"$EXPECTED_MESSAGE"	"$MESSAGE"		'attribute message' &&
+	dotest-equal	'false'			"$CONTINUABLE"		'attribute continuable' &&
+	dotest-equal	"expected good value"	"$ERROR_DESCRIPTION"	'attribute error description' &&
+	dotest-equal	'1'			"$PARAMETER_NUMBER"	'attribute parameter number' &&
+	dotest-equal	'MOOD'			"$PARAMETER_NAME"	'attribute parameter name' &&
+	dotest-equal	'happy'			"$PARAMETER_VALUE"	'attribute parameter value'
+}
+
+function conditions-invalid-function-parameter-2.1 () {
+    mbfl_default_object_declare(CND)
+
+    #                                                     who       error_description     parm_number parm_name parm_value
+    mbfl_invalid_function_parameter_condition_make _(CND) $FUNCNAME 'expected good value' 1           'MOOD'    'happy'
+    (mbfl_exception_raise _(CND))
+    dotest-equal _(mbfl_EXIT_CODES_BY_NAME, uncaught_exception) $?
+}
+
+
 #### let's go
 
 dotest conditions-

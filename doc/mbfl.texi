@@ -3661,6 +3661,7 @@ Class related exceptional-condition objects.
 Miscellaneous exceptional-condition objects.
 
 * conditions location outside::      Invalid operation outside location exceptional--condition objects.
+* conditions invalid parameter::     Invalid parameter to function call exceptional--condition objects.
 @end menu
 
 @c page
@@ -4477,7 +4478,7 @@ appropriate exit status.
 @deftp {Class} mbfl_uncaught_exceptional_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
-Class describing an uncaught exceptional--conditions.  Instances of this class should be
+Class describing uncaught exceptional--conditions.  Instances of this class should be
 non--continuable.
 @end deftp
 
@@ -5034,7 +5035,7 @@ exit status.
 @deftp {Class} mbfl_outside_location_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
-Class describing an invalid operation outside a location exceptional--conditions.  Instances of this
+Class describing invalid operation outside a location exceptional--conditions.  Instances of this
 class should be non--continuable.
 @end deftp
 
@@ -5126,6 +5127,200 @@ Attribute accessor and mutator.
 
 @defop {Accessor} {mbfl_outside_location_condition_t} mbfl_outside_location_condition_continuable_set @var{CND} @var{CONTINUABLE}
 @defopx {Mutator} {mbfl_outside_location_condition_t} mbfl_outside_location_condition_continuable_var @var{CONTINUABLE_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions invalid parameter
+@section Invalid parameter to function call exceptional--condition objects
+
+
+@dfn{Invalid parameter to function call exceptional--conditions} are used to signal a programming
+error.  Example:
+
+@example
+function myfunc () @{
+    mbfl_mandatory_parameter(MOOD, 1, the mood)
+
+    if ! some_predicate "$MOOD"
+    then
+        mbfl_default_object_declare(CND)
+
+        mbfl_invalid_function_parameter_condition_make _(CND) \
+            $FUNCNAME 'expected good value' 1 'MOOD' "$MOOD"
+        mbfl_exception_raise _(CND)
+        return_because_failure
+    fi
+
+    # do something
+@}
+@end example
+
+Usually when an exceptional--condition of this class is raised, the correct handling is to: attempt
+a clean release of all the resources; inform the user; terminate the program with an appropriate
+exit status.
+
+@menu
+* conditions invalid parameter class::         Class definition of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter constructors::  Class constructors of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter attributes::    Attributes of @class{mbfl_invalid_function_parameter_condition_t}.
+@end menu
+
+@c page
+@node conditions invalid parameter class
+@subsection Class definition of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@deftp {Class} mbfl_invalid_function_parameter_condition_t
+@deftpx {Superclass} mbfl_logic_error_condition_t
+@deftpx {Metaclass} mbfl_default_class
+Class describing invalid parameter to function call exceptional--conditions.  Instances of this
+class should be non--continuable.
+@end deftp
+
+
+@defop {Predicate} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_is_a @var{OBJ}
+Return true if @var{OBJ} is an instance of @class{mbfl_invalid_function_parameter_condition_t};
+otherwise return false.
+@end defop
+
+@c page
+@node conditions invalid parameter constructors
+@subsection Class constructors of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@defop {Constructor} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_make @var{CND} @var{FUNCNAME} @var{ERROR_DESCRIPTION} @var{PARAMETER_NUMBER} @var{PARAMETER_NAME} @var{PARAMETER_VALUE}
+Build a new class instance.  Exceptional--condition objects built with this constructor are
+non--continuable.
+
+The parameter @var{FUNCNAME} must be the name of the function; it is usually the value of the Bash
+variable @env{FUNCNAME}.
+
+The parameter @var{ERROR_DESCRIPTION} must be a string describing why the parameter is invalid; it
+should be something like @code{expected value of type ... got ...}.
+
+The parameter @var{PARAMETER_NUMBER} must be the 1--based parameter's number.
+
+The parameter @var{PARAMETER_NAME} must be the parameter's identifier.
+
+The parameter @var{PARAMETER_VALUE} must be the invalid parameter's value; it can be the empty string.
+@end defop
+
+@c page
+@node conditions invalid parameter attributes
+@subsection Attributes of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@menu
+* conditions invalid parameter attributes who::               Attribute @code{who} of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter attributes message::           Attribute @code{message} of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter attributes continuable::       Attribute @code{continuable} of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter attributes error_description:: Attribute @code{error_description} of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter attributes parameter_number::  Attribute @code{parameter_number} of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter attributes parameter_name::    Attribute @code{parameter_name} of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter attributes parameter_value::   Attribute @code{parameter_value} of @class{mbfl_invalid_function_parameter_condition_t}.
+@end menu
+
+@c page
+@node conditions invalid parameter attributes who
+@subsubsection Attribute @code{who} of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
+
+
+@defop {Accessor} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_who_set @var{CND} @var{WHO}
+@defopx {Mutator} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_who_var @var{WHO_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions invalid parameter attributes message
+@subsubsection Attribute @code{message} of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@RefMessageConditionAttribute{} for the semantics of the parameter @var{MESSAGE}.
+
+
+@defop {Accessor} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_message_set @var{CND} @var{MESSAGE}
+@defopx {Mutator} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_message_var @var{MESSAGE_STRING_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions invalid parameter attributes continuable
+@subsubsection Attribute @code{continuable} of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
+
+
+@defop {Accessor} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_continuable_set @var{CND} @var{CONTINUABLE}
+@defopx {Mutator} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_continuable_var @var{CONTINUABLE_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions invalid parameter attributes error_description
+@subsubsection Attribute @code{error_description} of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@anchor{@code{error_description} of @class{mbfl_invalid_function_parameter_condition_t}}
+@defcv {Class Attribute} {mbfl_invalid_function_parameter_condition_t} error_description
+A string describing what is wrong with the given parameter to function call.
+@end defcv
+
+
+@defop {Accessor} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_error_description_set @var{CND} @var{ERROR_DESCRIPTION}
+@defopx {Mutator} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_error_description_var @var{ERROR_DESCRIPTION_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions invalid parameter attributes parameter_number
+@subsubsection Attribute @code{parameter_number} of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@anchor{@code{parameter_number} of @class{mbfl_invalid_function_parameter_condition_t}}
+@defcv {Class Attribute} {mbfl_invalid_function_parameter_condition_t} parameter_number
+The 1--based parameter number.
+@end defcv
+
+
+@defop {Accessor} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_parameter_number_set @var{CND} @var{PARAMETER_NUMBER}
+@defopx {Mutator} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_parameter_number_var @var{PARAMETER_NUMBER_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions invalid parameter attributes parameter_name
+@subsubsection Attribute @code{parameter_name} of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@anchor{@code{parameter_name} of @class{mbfl_invalid_function_parameter_condition_t}}
+@defcv {Class Attribute} {mbfl_invalid_function_parameter_condition_t} parameter_name
+A string representing the parameter name.
+@end defcv
+
+
+@defop {Accessor} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_parameter_name_set @var{CND} @var{PARAMETER_NAME}
+@defopx {Mutator} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_parameter_name_var @var{PARAMETER_NAME_RV} @var{CND}
+Attribute accessor and mutator.
+@end defop
+
+@c page
+@node conditions invalid parameter attributes parameter_value
+@subsubsection Attribute @code{parameter_value} of @class{mbfl_invalid_function_parameter_condition_t}
+
+
+@anchor{@code{parameter_value} of @class{mbfl_invalid_function_parameter_condition_t}}
+@defcv {Class Attribute} {mbfl_invalid_function_parameter_condition_t} parameter_value
+The string representing the invalid parameter to function call.
+@end defcv
+
+
+@defop {Accessor} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_parameter_value_set @var{CND} @var{PARAMETER_VALUE}
+@defopx {Mutator} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_parameter_value_var @var{PARAMETER_VALUE_RV} @var{CND}
 Attribute accessor and mutator.
 @end defop
 

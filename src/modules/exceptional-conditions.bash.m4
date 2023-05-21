@@ -44,6 +44,7 @@ mbfl_default_class_declare(mbfl_warning_condition_t)
 mbfl_default_class_declare(mbfl_logic_error_condition_t)
 mbfl_default_class_declare(mbfl_runtime_error_condition_t)
 mbfl_default_class_declare(mbfl_uncaught_exceptional_condition_t)
+mbfl_default_class_declare(mbfl_invalid_function_parameter_condition_t)
 mbfl_default_class_declare(mbfl_invalid_object_attrib_value_condition_t)
 mbfl_default_class_declare(mbfl_invalid_ctor_parm_value_condition_t)
 mbfl_default_class_declare(mbfl_outside_location_condition_t)
@@ -60,6 +61,11 @@ function mbfl_initialise_module_exceptional_conditions () {
     mbfl_default_class_define _(mbfl_uncaught_exceptional_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_uncaught_exceptional_condition' \
 			      'object'
+
+    mbfl_default_class_define _(mbfl_invalid_function_parameter_condition_t) _(mbfl_logic_error_condition_t) \
+			      'mbfl_invalid_function_parameter_condition' \
+			      'error_description' \
+			      'parameter_number' 'parameter_name' 'parameter_value'
 
     mbfl_default_class_define _(mbfl_invalid_ctor_parm_value_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_invalid_ctor_parm_value_condition' \
@@ -135,7 +141,28 @@ function mbfl_outside_location_condition_make () {
 }
 
 
-#### predefined condition object classes: classes and objects related
+#### predefined exceptional-condition object classes: classes and objects related
+
+function mbfl_invalid_function_parameter_condition_make () {
+    mbfl_mandatory_nameref_parameter(mbfl_CND,		1, exceptional-condition object)
+    mbfl_mandatory_parameter(mbfl_FUNCNAME,		2, entity reporting the exceptional-condition)
+    mbfl_mandatory_parameter(mbfl_ERROR_DESCRIPTION,	3, error description)
+    mbfl_mandatory_parameter(mbfl_PARAMETER_NUMBER,	4, parameter name)
+    mbfl_mandatory_parameter(mbfl_PARAMETER_NAME,	5, invalid parameter value)
+    mbfl_optional_parameter(mbfl_PARAMETER_VALUE,	6)
+    declare mbfl_MSG
+
+    printf -v mbfl_MSG 'in call to "%s" invalid value for parameter %d "%s": "%s", %s' \
+	   "$mbfl_FUNCNAME" "$mbfl_PARAMETER_NUMBER" "$mbfl_PARAMETER_NAME" "$mbfl_PARAMETER_VALUE" "$mbfl_ERROR_DESCRIPTION"
+
+    #                                                            who              message     continuable
+    mbfl_invalid_function_parameter_condition_define _(mbfl_CND) "$mbfl_FUNCNAME" "$mbfl_MSG" 'false' \
+						     "$mbfl_ERROR_DESCRIPTION" \
+						     "$mbfl_PARAMETER_NUMBER" "$mbfl_PARAMETER_NAME" "$mbfl_PARAMETER_VALUE"
+}
+
+
+#### predefined exceptional-condition object classes: classes and objects related
 
 function mbfl_invalid_ctor_parm_value_condition_make () {
     mbfl_mandatory_nameref_parameter(mbfl_CND,		1, exceptional-condition object)
@@ -171,7 +198,7 @@ function mbfl_invalid_object_attrib_value_condition_make () {
 }
 
 
-#### predefined condition object methods
+#### predefined exceptional-condition object methods
 
 function mbfl_exceptional_condition_is_continuable () {
     mbfl_mandatory_nameref_parameter(mbfl_CND, 1, reference to error descriptor object)
