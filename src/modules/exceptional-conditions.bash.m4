@@ -166,6 +166,9 @@ function mbfl_wrong_parameters_number_condition_make () {
     if (( 9999 == $mbfl_MAX_EXPECTED_NUMBER ))
     then printf -v mbfl_MSG 'in call to "%s" expected at least %d parameters, given %d parameters' \
 		"$mbfl_FUNCNAME" "$mbfl_MIN_EXPECTED_NUMBER" "$mbfl_GIVEN_NUMBER"
+    elif (( $mbfl_MIN_EXPECTED_NUMBER == $mbfl_MAX_EXPECTED_NUMBER ))
+    then printf -v mbfl_MSG 'in call to "%s" expected exactly %d parameters, given %d parameters' \
+		"$mbfl_FUNCNAME" "$mbfl_MIN_EXPECTED_NUMBER" "$mbfl_GIVEN_NUMBER"
     else printf -v mbfl_MSG 'in call to "%s" expected between %d and %d parameters, given %d parameters' \
 		"$mbfl_FUNCNAME" "$mbfl_MIN_EXPECTED_NUMBER" "$mbfl_MAX_EXPECTED_NUMBER" "$mbfl_GIVEN_NUMBER"
     fi

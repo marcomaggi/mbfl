@@ -725,6 +725,7 @@ function mbfl_default_class_define__build_parent_field_accessor () {
     printf -v mbfl_PARENT_ACCESSOR_NAME	MBFL_STDOBJ__FUNCNAME_PATTERN__ACCESSOR "$mbfl_PARENT_CLASS_NAME" "$mbfl_FIELD_NAME"
 
     mbfl_ACCESSOR_BODY='{ '
+    mbfl_ACCESSOR_BODY+="mbfl_check_mandatory_parameters_number(2);"
     mbfl_ACCESSOR_BODY+="declare mbfl_RV_DATAVAR=\${1:?\"missing result variable datavar parameter to '${mbfl_ACCESSOR_NAME}'\"};"
     mbfl_ACCESSOR_BODY+="declare mbfl_SELF_DATAVAR=\${2:?"
     mbfl_ACCESSOR_BODY+="\"missing reference to object '${mbfl_NEW_CLASS_NAME}' parameter to '${mbfl_ACCESSOR_NAME}'\"};"
@@ -778,15 +779,24 @@ function mbfl_default_class_define__build_new_field_accessor () {
 # This is the implementation of the slot accessor functions.
 #
 function mbfl_p_default_object_slot_accessor () {
-    mbfl_mandatory_nameref_parameter(mbfl_VALUE,	1, the result variable)
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		2, variable referencing the default object)
-    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the default class)
-    mbfl_mandatory_parameter(mbfl_FIELD_INDEX,		4, the field offset in the class instance)
-    mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
+    mbfl_mandatory_nameref_parameter(mbfl_VALUE,		1, the result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_SELF,			2, variable referencing the default object)
+    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_CLASS,	3, variable referencing the default class)
+    mbfl_mandatory_parameter(mbfl_FIELD_INDEX,			4, the field offset in the class instance)
+    mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,		5, the name of the calling function)
 
-    if mbfl_default_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
+    if mbfl_default_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_CLASS)
     then mbfl_VALUE=mbfl_slot_ref(mbfl_SELF, $mbfl_FIELD_INDEX)
-    else mbfl_p_default_class_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_REQUIRED_TYPE) "$mbfl_CALLER_FUNCNAME"
+    else
+	mbfl_default_object_declare(CND)
+	mbfl_declare_varref(mbfl_REQUIRED_CLASS_NAME)
+	declare mbfl_ERRDESCR
+
+	mbfl_default_class_name_var _(mbfl_REQUIRED_CLASS_NAME) _(mbfl_REQUIRED_CLASS)
+	printf -v mbfl_ERRDESCR 'expected instance parameter of type: "%s"' "$mbfl_REQUIRED_CLASS_NAME"
+
+	mbfl_invalid_function_parameter_condition_make _(CND) $mbfl_CALLER_FUNCNAME "$mbfl_ERRDESCR" 1 'SELF' "$mbfl_SELF"
+	mbfl_exception_raise_then_return_failure(_(CND))
     fi
 }
 
@@ -795,29 +805,23 @@ function mbfl_p_default_object_slot_accessor () {
 function mbfl_p_default_object_slot_mutator () {
     mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing the default object)
     mbfl_mandatory_parameter(mbfl_NEW_VALUE,		2, the new field value)
-    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,3, variable referencing the default class)
+    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_CLASS,3, variable referencing the default class)
     mbfl_mandatory_parameter(mbfl_FIELD_INDEX,		4, the field offset in the class instance)
     mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	5, the name of the calling function)
 
-    if mbfl_default_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_TYPE)
+    if mbfl_default_object_is_of_class _(mbfl_SELF) _(mbfl_REQUIRED_CLASS)
     then mbfl_slot_set(mbfl_SELF, $mbfl_FIELD_INDEX, "$mbfl_NEW_VALUE")
-    else mbfl_p_default_class_mismatch_error_self_given_type _(mbfl_SELF) _(mbfl_REQUIRED_TYPE) "$mbfl_CALLER_FUNCNAME"
+    else
+	mbfl_default_object_declare(mbfl_CND)
+	mbfl_declare_varref(mbfl_CLASS_NAME)
+	declare mbfl_ERRDESCR
+
+	mbfl_default_class_name_var _(mbfl_CLASS_NAME) _(mbfl_REQUIRED_CLASS)
+	printf -v mbfl_ERRDESCR 'expected instance parameter of type: "%s"' "$mbfl_CLASS_NAME"
+
+	mbfl_invalid_function_parameter_condition_make _(mbfl_CND) $mbfl_CALLER_FUNCNAME "$mbfl_ERRDESCR" 1 'SELF' "$mbfl_SELF"
+	mbfl_exception_raise_then_return_failure(_(mbfl_CND))
     fi
-}
-
-function mbfl_p_default_class_mismatch_error_self_given_type () {
-    mbfl_mandatory_nameref_parameter(mbfl_SELF,		1, variable referencing a default object)
-    mbfl_mandatory_nameref_parameter(mbfl_REQUIRED_TYPE,2, variable referencing a default class)
-    mbfl_mandatory_parameter(mbfl_CALLER_FUNCNAME,	3, the name of the calling function)
-    mbfl_default_object_declare(CND)
-    mbfl_declare_varref(mbfl_REQUIRED_TYPE_NAME)
-    declare mbfl_ERRDESCR
-
-    mbfl_default_class_name_var _(mbfl_REQUIRED_TYPE_NAME) _(mbfl_REQUIRED_TYPE)
-    printf -v mbfl_ERRDESCR 'expected instance parameter of type: "%s"' "$mbfl_REQUIRED_TYPE_NAME"
-
-    mbfl_invalid_function_parameter_condition_make _(CND) $mbfl_CALLER_FUNCNAME "$mbfl_ERRDESCR" 1 'SELF' "$mbfl_SELF"
-    mbfl_exception_raise_then_return_failure(_(CND))
 }
 
 
