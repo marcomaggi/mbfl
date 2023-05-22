@@ -90,7 +90,7 @@ function mbfl_initialise_module_exceptional_conditions () {
     #
     mbfl_function_rename 'mbfl_exceptional_condition_continuable_set' 'mbfl_p_exceptional_condition_continuable_set'
     function mbfl_exceptional_condition_continuable_set () {
-	mbfl_check_mandatory_parameters_number(2)
+	mbfl_check_mandatory_parameters_number(2,2)
 	mbfl_mandatory_nameref_parameter(mbfl_OBJ,	1, reference to condition object)
 	mbfl_mandatory_parameter(mbfl_VAL,		2, possible boolean value)
 	mbfl_declare_varref(mbfl_NORMAL)
@@ -110,7 +110,7 @@ function mbfl_initialise_module_exceptional_conditions () {
 #### predefined core condition object classes
 
 function mbfl_warning_condition_make () {
-    mbfl_check_mandatory_parameters_number(3)
+    mbfl_check_mandatory_parameters_number(3,3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
@@ -118,7 +118,7 @@ function mbfl_warning_condition_make () {
     mbfl_warning_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'true'
 }
 function mbfl_runtime_error_condition_make () {
-    mbfl_check_mandatory_parameters_number(3)
+    mbfl_check_mandatory_parameters_number(3,3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
@@ -126,7 +126,7 @@ function mbfl_runtime_error_condition_make () {
     mbfl_runtime_error_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'true'
 }
 function mbfl_logic_error_condition_make () {
-    mbfl_check_mandatory_parameters_number(3)
+    mbfl_check_mandatory_parameters_number(3,3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
@@ -134,7 +134,7 @@ function mbfl_logic_error_condition_make () {
     mbfl_logic_error_condition_define _(mbfl_CND) "$mbfl_WHO" "$mbfl_MESSAGE" 'false'
 }
 function mbfl_uncaught_exceptional_condition_make () {
-    mbfl_check_mandatory_parameters_number(3)
+    mbfl_check_mandatory_parameters_number(3,3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_nameref_parameter(mbfl_OBJ,	3, uncaught exceptional-condition object)
@@ -143,7 +143,7 @@ function mbfl_uncaught_exceptional_condition_make () {
     mbfl_uncaught_exceptional_condition_define _(mbfl_CND) "$mbfl_WHO" 'uncaught exception' 'false' _(mbfl_OBJ)
 }
 function mbfl_outside_location_condition_make () {
-    mbfl_check_mandatory_parameters_number(3)
+    mbfl_check_mandatory_parameters_number(3,3)
     mbfl_mandatory_nameref_parameter(mbfl_CND,	1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_WHO,		2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_MESSAGE,	3, exceptional-condition description message)
@@ -155,7 +155,7 @@ function mbfl_outside_location_condition_make () {
 #### predefined exceptional-condition object classes: functions related
 
 function mbfl_wrong_parameters_number_condition_make () {
-    mbfl_check_mandatory_parameters_number(5)
+    mbfl_check_mandatory_parameters_number(5,5)
     mbfl_mandatory_nameref_parameter(mbfl_CND,			1, exceptional-condition object)
     mbfl_mandatory_parameter(mbfl_FUNCNAME,			2, entity reporting the exceptional-condition)
     mbfl_mandatory_parameter(mbfl_GIVEN_NUMBER,			3, given parameters number)
