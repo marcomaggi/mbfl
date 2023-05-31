@@ -21,27 +21,18 @@
 ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
 EXTRA_DIST		= README COPYING INSTALL NEWS
-MBFL_LIB_INSTDIR	= $(datadir)/$(PACKAGE)
+BUILT_SOURCES		=
+CLEANFILES		=
+DISTCLEANFILES		=
 
 ## --------------------------------------------------------------------
 
 MBFL_PROGRAM_BASH	= @MBFL_PROGRAM_BASH@
+MBFL_LIB_INSTDIR	= $(datadir)/$(PACKAGE)
 
-MBFL_AM_DIRSTAMP_FILES	=				\
-	doc/$(am__dirstamp)				\
-	doc/mbfl.html/$(am__dirstamp)			\
-	examples/$(am__dirstamp)			\
-	src/bin/$(am__dirstamp)				\
-	src/etc/bash_completions.d/$(am__dirstamp)	\
-	src/lib/$(am__dirstamp)				\
-	src/modules/$(am__dirstamp)			\
-	src/utils-modules/$(am__dirstamp)		\
-	tests/$(am__dirstamp)
-
-BUILT_SOURCES		=			\
+BUILT_SOURCES		+=			\
 	src/bin/mbflpp.bash.m4			\
-	src/modules/config-values.bash.m4	\
-	$(MBFL_AM_DIRSTAMP_FILES)
+	src/modules/config-values.bash.m4
 
 EXTRA_DIST		+=			\
 	src/backup/mbflpp.bash			\
@@ -53,8 +44,54 @@ AM_ETAGSFLAGS		= --language=none					\
 	--regex='/function[ \t]+\([a-zA-Z0-9_\-]+\)/\1/'			\
 	--regex='/mbfl_default_class_declare(\([a-zA-Z0-9_\-]+\))/\1/'
 
-CLEANFILES		=
-DISTCLEANFILES		= $(MBFL_AM_DIRSTAMP_FILES)
+
+#### GNU Automake am__dirstamp files
+
+MBFL_AM_DIRSTAMP_FILES	=				\
+	doc/$(am__dirstamp)				\
+	doc/mbfl.html/$(am__dirstamp)			\
+	examples/$(am__dirstamp)			\
+	src/bin/$(am__dirstamp)				\
+	src/etc/bash_completion.d/$(am__dirstamp)	\
+	src/lib/$(am__dirstamp)				\
+	src/modules/$(am__dirstamp)			\
+	src/utils-modules/$(am__dirstamp)		\
+	tests/$(am__dirstamp)
+
+BUILT_SOURCES		+= $(MBFL_AM_DIRSTAMP_FILES)
+DISTCLEANFILES		+= $(MBFL_AM_DIRSTAMP_FILES)
+
+doc/mbfl.html/$(am__dirstamp): doc/$(am__dirstamp)
+	@$(MKDIR_P) doc/mbfl.html/
+	@: > doc/mbfl.html/$(am__dirstamp)
+
+src/bin/$(am__dirstamp):
+	@$(MKDIR_P) src/bin
+	@: > src/bin/$(am__dirstamp)
+
+src/modules/$(am__dirstamp):
+	@$(MKDIR_P) src/modules
+	@: > src/modules/$(am__dirstamp)
+
+src/lib/$(am__dirstamp):
+	@$(MKDIR_P) src/lib
+	@: > src/lib/$(am__dirstamp)
+
+src/utils-modules/$(am__dirstamp):
+	@$(MKDIR_P) src/utils-modules
+	@: > src/utils-modules/$(am__dirstamp)
+
+examples/$(am__dirstamp):
+	@$(MKDIR_P) examples
+	@: > examples/$(am__dirstamp)
+
+src/etc/bash_completion.d/$(am__dirstamp):
+	@$(MKDIR_P) src/etc/bash_completion.d
+	@: > src/etc/bash_completion.d/$(am__dirstamp)
+
+$(builddir)/tests/$(am__dirstamp):
+	@$(MKDIR_P) tests
+	@: > tests/$(am__dirstamp)
 
 
 #### meta infrastructure
@@ -89,11 +126,7 @@ doc_mbfl_TEXINFOS	=			\
 
 ## --------------------------------------------------------------------
 
-doc/mbfl.html/$(am__dirstamp): doc/$(am__dirstamp)
-	@$(MKDIR_P) doc/mbfl.html/
-	@: > doc/mbfl.html/$(am__dirstamp)
-
-doc/mbfl.html/mbfl.css: doc/mbfl.style.css doc/mbfl.html/$(am__dirstamp)
+doc/mbfl.html/mbfl.css: doc/mbfl.style.css
 	$(INSTALL) -m 0444 \
 		"$(top_srcdir)/doc/mbfl.style.css" \
 		"$(builddir)/doc/mbfl.html/mbfl.css"
@@ -147,10 +180,6 @@ MBFL_SCRIPTS_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --add-bash
 MBFL_SCRIPTS_PREREQUISITES	=		\
 	$(MBFL_PREPROCESSOR)			\
 	$(MBFL_BACKUP_PROGRAM_MBFLPP)
-
-src/bin/$(am__dirstamp):
-	@$(MKDIR_P) src/bin
-	@: > src/bin/$(am__dirstamp)
 
 src/bin/%.bash: src/bin/%.bash.m4 $(MBFL_SCRIPTS_PREREQUISITES)
 	$(MBFL_SCRIPTS_RUN) $(MBFL_SCRIPTS_FLAGS) --output=$@ $<
@@ -255,10 +284,6 @@ libmbfl_MODULES_PREREQUISITES	=		\
 	$(srcdir)/src/backup/libmbfl.bash	\
 	$(MBFL_PREPROCESSOR)
 
-src/modules/$(am__dirstamp):
-	@$(MKDIR_P) src/modules
-	@: > src/modules/$(am__dirstamp)
-
 src/modules/%.bash: src/modules/%.bash.m4 $(libmbfl_MODULES_PREREQUISITES)
 	$(libmbfl_MODULES_RUN) $(libmbfl_MODULES_FLAGS) $< >$@
 
@@ -271,10 +296,6 @@ libmbfl_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --include=$(builddir)/src/modules
 libmbfl_PREREQUISITES	=			\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
-
-src/lib/$(am__dirstamp):
-	@$(MKDIR_P) src/lib
-	@: > src/lib/$(am__dirstamp)
 
 src/lib/libmbfl.bash: src/lib/libmbfl.bash.m4 $(libmbfl_PROCESSED_MODULES) $(libmbfl_PREREQUISITES)
 	$(libmbfl_RUN) $(libmbfl_FLAGS) --output=$@ $<
@@ -311,10 +332,6 @@ libmbfl_utils_MODULES_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 libmbfl_utils_MODULES_PREREQUISITES	=	\
 	$(MBFL_PROGRAM_MBFLPP)			\
 	$(MBFL_PREPROCESSOR)
-
-src/utils-modules/$(am__dirstamp):
-	@$(MKDIR_P) src/utils-modules
-	@: > src/utils-modules/$(am__dirstamp)
 
 src/utils-modules/%.bash: src/utils-modules/%.bash.m4 $(libmbfl_utils_MODULES_PREREQUISITES)
 	$(libmbfl_utils_MODULES_RUN) $(libmbfl_utils_MODULES_FLAGS) --output=$@ $<
@@ -505,10 +522,6 @@ MBFL_EXAMPLES_PREREQUISITES	=			\
 	$(MBFL_PROGRAM_MBFLPP)				\
 	$(MBFL_PREPROCESSOR)
 
-examples/$(am__dirstamp):
-	@$(MKDIR_P) examples
-	@: > examples/$(am__dirstamp)
-
 examples/at.sh: examples/at.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
 
@@ -540,33 +553,29 @@ endif
 ## ------------------------------------------------------------------------
 
 noinst_SCRIPTS			+= \
-	src/etc/bash_completions.d/semver.bash		\
-	src/etc/bash_completions.d/vc.bash
+	src/etc/bash_completion.d/semver.bash		\
+	src/etc/bash_completion.d/vc.bash
 
 completions_PREREQUISITES	=
 
 CLEANFILES			+=			\
-	src/etc/bash_completions.d/semver.bash		\
-	src/etc/bash_completions.d/vc.bash
+	src/etc/bash_completion.d/semver.bash		\
+	src/etc/bash_completion.d/vc.bash
 
 completionsdir			= $(sysconfdir)/bash_completion.d
 if WANT_VC
-completions_SCRIPTS		= src/etc/bash_completions.d/vc.bash
+completions_SCRIPTS		= src/etc/bash_completion.d/vc.bash
 endif
 if WANT_SEMVER
-completions_SCRIPTS		= src/etc/bash_completions.d/semver.bash
+completions_SCRIPTS		= src/etc/bash_completion.d/semver.bash
 endif
 
-src/etc/bash_completions.d/$(am__dirstamp):
-	@$(MKDIR_P) src/etc/bash_completions.d
-	@: > src/etc/bash_completions.d/$(am__dirstamp)
-
-src/etc/bash_completions.d/vc.bash:					\
+src/etc/bash_completion.d/vc.bash:					\
 		examples/vc						\
 		$(completions_PREREQUISITES)
 	$(MBFL_PROGRAM_BASH) examples/vc help print-completions-script >$(@)
 
-src/etc/bash_completions.d/semver.bash:					\
+src/etc/bash_completion.d/semver.bash:					\
 		examples/semver						\
 		$(completions_PREREQUISITES)
 	$(MBFL_PROGRAM_BASH) examples/semver help print-completions-script >$(@)
@@ -709,10 +718,6 @@ TEST_LOG_COMPILER	= $(MBFL_PROGRAM_BASH)
 AM_TEST_LOG_FLAGS	= $(MBFLFLAGS)
 
 ## --------------------------------------------------------------------
-
-$(builddir)/tests/$(am__dirstamp):
-	@$(MKDIR_P) tests
-	@: > tests/$(am__dirstamp)
 
 tests/%.test: tests/%.test.m4 $(MBFL_TESTS_PREREQUISITES)
 	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) $< >$@
