@@ -21,7 +21,7 @@
 
      MBFL_LIBRARY_SPEC=([NAME]="libmbfl-git" [SEMVER]="3.0.0" ...)
 
-   the single first like can be easily extracted from the file and parsed like an associative array.
+   the single first line can be easily extracted from the file and parsed like an associative array.
 
 * TODO Library libmbfl-git
 ** TODO Interface more commands.
