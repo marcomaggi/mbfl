@@ -241,17 +241,17 @@ m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS]]],m4_dnl
 
 #### defining program execution functions
 
-m4_define([[[MBFL_DEFINE_PROGRAM_EXECUTOR_FUNCNAME_PREFIX]]],[[[program_]]])
-m4_define([[[MBFL_DEFINE_PROGRAM_REPLACER_FUNCNAME_PREFIX]]],[[[program_replace_]]])
+m4_define([[[MBFL_DEFINE_PROGRAM_EXECUTOR_FUNCNAME_PREFIX]]],[[[$1[[[]]]program_]]])
+m4_define([[[MBFL_DEFINE_PROGRAM_REPLACER_FUNCNAME_PREFIX]]],[[[$1[[[]]]program_replace_]]])
 
 dnl Synopsis:
 dnl
-dnl   MBFL_DEFINE_PROGRAM_EXECUTOR(STEM, EXECUTABLE_PATHNAME, OPTIONAL_DEFAULT_FLAGS)
+dnl   MBFL_DEFINE_PROGRAM_EXECUTOR(STEM, EXECUTABLE_PATHNAME, OPTIONAL_DEFAULT_FLAGS, OPTIONAL_FUNCTION_PREFIX)
 dnl
 dnl If we change this macro expansion: remember to update the documentation.
 dnl
 m4_define([[[MBFL_DEFINE_PROGRAM_EXECUTOR]]],[[[
-function MBFL_DEFINE_PROGRAM_EXECUTOR_FUNCNAME_PREFIX[[[]]]$1 () {
+function MBFL_DEFINE_PROGRAM_EXECUTOR_FUNCNAME_PREFIX([[[$4]]])[[[]]]$1 () {
     mbfl_declare_varref(PROGRAM)
     mbfl_program_found_var mbfl_datavar(PROGRAM) $2 || exit $?
     mbfl_program_exec "$PROGRAM" $3 "$[[[]]]@"
@@ -260,12 +260,12 @@ function MBFL_DEFINE_PROGRAM_EXECUTOR_FUNCNAME_PREFIX[[[]]]$1 () {
 
 dnl Synopsis:
 dnl
-dnl   MBFL_DEFINE_PROGRAM_REPLACER(STEM, EXECUTABLE_PATHNAME, OPTIONAL_DEFAULT_FLAGS)
+dnl   MBFL_DEFINE_PROGRAM_REPLACER(STEM, EXECUTABLE_PATHNAME, OPTIONAL_DEFAULT_FLAGS, OPTIONAL_FUNCTION_PREFIX)
 dnl
 dnl If we change this macro expansion: remember to update the documentation.
 dnl
 m4_define([[[MBFL_DEFINE_PROGRAM_REPLACER]]],[[[
-function program_replace_[[[]]]$1 () {
+function MBFL_DEFINE_PROGRAM_REPLACER_FUNCNAME_PREFIX([[[$4]]])[[[]]]$1 () {
     mbfl_declare_varref(PROGRAM)
     mbfl_program_found_var mbfl_datavar(PROGRAM) $2 || exit $?
     mbfl_program_replace "$PROGRAM" $3 "$[[[]]]@"

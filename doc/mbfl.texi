@@ -11247,7 +11247,7 @@ fi
 the function will return with status equal to the exit status of the program.
 
 
-@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_EXECUTOR (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
+@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_EXECUTOR (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS}, @var{OPTIONAL_FUNCTION_PREFIX})
 Define a function we can call to execute an external program previously declared with
 @func{mbfl_declare_program} and similar functions; @ref{program declaring, Declaring the intention
 to use a program}.  The program is executed with @func{mbfl_program_exec}; @ref{mbfl_program_exec,
@@ -11263,12 +11263,15 @@ The executable specification of the program; it must be the same string used as 
 
 @item OPTIONAL_DEFAULT_FLAGS
 Optional sequence of strings that will be inserted on the command line of the program.
+
+@item OPTIONAL_FUNCTION_PREFIX
+Optional function--name prefix.
 @end table
 
 With this preprocessor version the expansion of a macro use looks like this:
 
 @example
-function program_@var{STEM} () @{
+function @var{OPTIONAL_FUNCTION_PREFIX}program_@var{STEM} () @{
     mbfl_declare_varref(PROGRAM)
     mbfl_program_found_var mbfl_datavar(PROGRAM) @var{EXECUTABLE_PATHNAME} || exit $?
     mbfl_program_exec "$PROGRAM" @var{OPTIONAL_DEFAULT_FLAGS} "$@@"
@@ -11277,12 +11280,23 @@ function program_@var{STEM} () @{
 @end deffn
 
 
-@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_REPLACER (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS})
+@deffn {Preprocessor Macro} MBFL_DEFINE_PROGRAM_REPLACER (@var{STEM}, @var{EXECUTABLE_PATHNAME}, @var{OPTIONAL_DEFAULT_FLAGS}, @var{OPTIONAL_FUNCTION_PREFIX})
 Like @func{MBFL_DEFINE_PROGRAM_REPLACER}, but uses @func{mbfl_program_replace} rather than
 @func{mbfl_program_exec}; @ref{mbfl_program_replace, Core @api{} for program execution with
 replacement}.
 
-The generated function name is @code{program_replace_@var{STEM}}.
+If the optional parameter @var{OPTIONAL_FUNCTION_PREFIX} is not used: the generated function name is:
+
+@example
+program_replace_@var{STEM}
+@end example
+
+@noindent
+otherwise it is:
+
+@example
+@var{OPTIONAL_FUNCTION_PREFIX}program_replace_@var{STEM}
+@end example
 @end deffn
 
 @c page
