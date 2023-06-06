@@ -1973,6 +1973,18 @@ mbfl_location_leave
 @end example
 @end defun
 
+
+@defun mbfl_location_handler_restore_nullglob
+When called, save the state of the @code{nullglob} option of @code{shopt} using:
+
+@example
+shopt -p nullglob
+@end example
+
+Upon exiting the location: the handler restores the previous status of @code{nullglob}.
+@bashref{The Shopt Builtin, The Shopt Builtin}.
+@end defun
+
 @c page
 @node locations examples
 @section Locations usage examples

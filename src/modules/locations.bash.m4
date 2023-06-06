@@ -159,6 +159,10 @@ function mbfl_location_handler_restore_lastpipe () {
     # Upon exiting the location: restore the previous status of "lastpipe".
     mbfl_location_handler "$(shopt -p lastpipe)"
 }
+function mbfl_location_handler_restore_nullglob () {
+    # Upon exiting the location: restore the previous status of "nullglob".
+    mbfl_location_handler "$(shopt -p nullglob)"
+}
 
 ### end of file
 # Local Variables:
