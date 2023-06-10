@@ -68,6 +68,14 @@ m4_define([[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST]]],[[[m4_dnl
 m4_ifelse([[[$1]]],,,[[[$1]]] [[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))]]])m4_dnl
 ]]])
 
+m4_define([[[mbfl_p_qq]]],[[[m4_dnl
+m4_ifelse($#,1,"$$1",[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 1 got $#]]])]]])m4_dnl
+]]])
+
+m4_define([[[MBFL_DEFINE_QQ_MACRO]]],[[[m4_dnl
+m4_define([[[QQ]]],[[[mbfl_p_qq($]]]@[[[)]]])m4_dnl
+]]])
+
 
 #### function parameters handling
 

@@ -203,6 +203,8 @@
        "MBFL_DEFINE_UNDERSCORE_MACRO"
        "MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS"
        "MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS"
+       "MBFL_DEFINE_QQ_MACRO"
+       "QQ"
        ;;
        "mbfl_exception_raise_then_return_failure"
        "mbfl_location_leave_then_return_failure"
