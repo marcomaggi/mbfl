@@ -4403,7 +4403,7 @@ mbfl_runtime_error_condition_is_a _(CND)
 
 @defop {Constructor} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_make @var{CND} @var{WHO} @var{MESSAGE}
 Define an object previously declared with @class{mbfl_default_object_declare} or similar.  Objects
-built with this constructors are continuable by default.
+built with this constructor are continuable by default.
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
 
