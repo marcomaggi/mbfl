@@ -50,9 +50,8 @@ declare -r COMPLETIONS_SCRIPT_NAMESPACE='p-mbfl-examples'
 
 #### library embedding
 
-# We embed because it makes it easier to use this script in MBFL's own test suite.
-mbfl_embed_library
-# mbfl_library_loader
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
 
 
 #### declare external programs usage

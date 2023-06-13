@@ -46,9 +46,10 @@ m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_sl
 
 #### setup
 
-mbfl_load_library("$MBFL_LIBMBFL_CORE")
-mbfl_load_library("$MBFL_LIBMBFL_GIT")
-mbfl_load_library("$MBFL_LIBMBFL_TEST")
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
+mbfl_linker_source_library_by_stem(tests)
+mbfl_linker_source_library_by_stem(git)
 
 
 #### configuration options

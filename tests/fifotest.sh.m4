@@ -45,7 +45,8 @@ script_EXAMPLES=
 
 #### load library
 
-mbfl_load_library("$MBFL_LIBMBFL_CORE")
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
 
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 

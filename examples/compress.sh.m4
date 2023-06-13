@@ -7,7 +7,7 @@
 #!	This script shows how to use the interface to the
 #!	compression programs.
 #!
-#! Copyright (c) 2005, 2009, 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+#! Copyright (c) 2005, 2009, 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #!
 #! This program is  free software: you can redistribute  it and/or modify
 #! it under the  terms of the GNU General Public  License as published by
@@ -43,9 +43,9 @@ script_EXAMPLES="Usage examples:
 
 #### libraries loading
 
-# We embed because it makes it easier to use this script in MBFL's own test suite.
-mbfl_embed_library
-mbfl_embed_library(__LIBMBFL_ARCH__)
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
+mbfl_linker_source_library_by_stem(arch)
 
 
 #### options definitions

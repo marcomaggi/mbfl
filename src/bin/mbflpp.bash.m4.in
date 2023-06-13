@@ -5500,6 +5500,8 @@ mbfl_declare_option PRINT_LIBPATH		no '' print-libdir        noarg \
 		    'print the librarires installation directory'
 mbfl_declare_option PRINT_LIBMBFL		no '' print-libmbfl       noarg \
 		    'print the full installation pathname of the library "libmbfl.bash"'
+mbfl_declare_option PRINT_LIBMBFL_LINKER	no '' print-libmbfl-linker   noarg \
+		    'print the full installation pathname of the library "libmbfl-linker.bash"'
 mbfl_declare_option PRINT_LIBMBFL_TESTS		no '' print-libmbfl-tests   noarg \
 		    'print the full installation pathname of the library "libmbfl-tests.bash"'
 mbfl_declare_option PRINT_LIBMBFL_UTILS		no '' print-libmbfl-utils noarg \
@@ -5583,6 +5585,10 @@ function script_option_update_print_libpath () {
 }
 function script_option_update_print_libmbfl () {
     printf '%s/libmbfl.bash\n' "$MBFL_INSTALLDIR"
+    exit_success
+}
+function script_option_update_print_libmbfl_linker () {
+    printf '%s/libmbfl-linker.bash\n' "$MBFL_INSTALLDIR"
     exit_success
 }
 function script_option_update_print_libmbfl_tests () {

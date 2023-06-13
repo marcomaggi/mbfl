@@ -72,7 +72,8 @@
 @set LIBMBFLPASSWORDS           libmbfl-passwords.bash
 @set LIBMBFLGIT                 libmbfl-git.bash
 
-@set LIBMBFLFILE                @file{libmbfl.bash}
+@set LIBMBFLFILE                @file{libmbfl-core.bash}
+@set LIBMBFLLINKERFILE          @file{libmbfl-linker.bash}
 @set LIBMBFLTESTSFILE           @file{libmbfl-tests.bash}
 @set LIBMBFLUTILSFILE           @file{libmbfl-utils.bash}
 @set LIBMBFLATFILE              @file{libmbfl-at.bash}
@@ -190,6 +191,7 @@ included in the section entitled ``@gnu{} Free Documentation License''.
 
 Appendices
 
+* linker::                      Searching and sourcing libraries at run--time.
 * libmbfl-utils::               Utilities library.
 * libmbfl-at::                  Interface to the external program @command{at}.
 * libmbfl-arch::                Archiving and compressing files.
@@ -239,7 +241,13 @@ The installed libraries are:
 
 @table @asis
 @item @file{libmbfl.bash}
+@itemx @file{libmbfl-core.bash}
 The core library implementing shell language extensions, adaptations and system interface.
+@file{libmbfl.bash} should be a symbolic link to @file{libmbfl-core.bash}.
+
+@item @file{libmbfl-linker.bash}
+A library to embed into scripts to load other libraries at run--time; @ref{linker, Searching and
+loading libraries at run--time}.
 
 @item @file{libmbfl-tests.bash}
 A library to organise test suites for shell functions; @ref{testing, Building test suites}.
@@ -350,6 +358,8 @@ it will add to @file{Makefile.in} the following variable definitions:
 MBFLPP                  = @@MBFLPP@@
 MBFL_LIBDIR             = @@MBFL_LIBDIR@@
 MBFL_LIBMBFL            = @@MBFL_LIBMBFL@@
+MBFL_LIBMBFL_CORE       = @@MBFL_LIBMBFL_CORE@@
+MBFL_LIBMBFL_LINKER     = @@MBFL_LIBMBFL_LINKER@@
 MBFL_LIBMBFL_TESTS      = @@MBFL_LIBMBFL_TESTS@@
 MBFL_LIBMBFL_UTILS      = @@MBFL_LIBMBFL_UTILS@@
 MBFL_LIBMBFL_AT         = @@MBFL_LIBMBFL_AT@@
@@ -754,6 +764,13 @@ exit successfully.  The installation directory is selected with the option @opti
 @cindex Preprocessor option @option{--print-libmbfl}
 Print to @stdout{} the file system absolute pathname of the installed library @value{LIBMBFLFILE},
 then exit successfully.
+
+@item --print-libmbfl-linker
+@anchor{--print-libmbfl-linker}
+@cindex @option{--print-libmbfl-linker}, preprocessor option
+@cindex Preprocessor option @option{--print-libmbfl-linker}
+Print to @stdout{} the file system absolute pathname of the installed library
+@value{LIBMBFLLINKERFILE}, then exit successfully.
 
 @item --print-libmbfl-tests
 @anchor{--print-libmbfl-tests}
@@ -14111,6 +14128,214 @@ function mytest-1.2 () @{
 dotest mytest-
 dotest-final-report
 @end example
+
+@c page
+@node linker
+@appendix Searching and sourcing libraries at run--time
+
+
+@cindex @value{LIBMBFLLINKERFILE}, utilities library
+@cindex Library of utilities, @value{LIBMBFLLINKERFILE}
+@cindex Utilities, the library @value{LIBMBFLLINKERFILE}
+
+
+This section documents the library @value{LIBMBFLLINKERFILE}, the @dfn{linker library}; a library to
+be embedded in a script to search and source other libraries at run--time.  The linker library is
+standalone: it does not require @mbfl{}'s core library to be sourced first.
+
+@menu
+* linker embedding::            Embedding the linker library.
+* linker sourcing::             Sourcing libraries at run--time.
+* linker finding::              Finding libraries.
+@end menu
+
+@c page
+@node linker embedding
+@appendixsec Embedding the linker library
+
+
+We can embed this library at preprocessing--time by adding the following line on the top of a source
+file:
+
+@example
+mbfl_embed_library(/path/to/@value{LIBMBFLLINKERFILE})
+@end example
+
+@noindent
+for details @ref{preprocessor loading, Libraries loading and embedding}.
+
+If we use the @gnu{} Autotools to configure a package, we can add the following line to
+@file{Makefile.am}:
+
+@example
+MBFL_LIBMBFL_LINKER     = @@MBFL_LIBMBFL_LINKER@@
+@end example
+
+@noindent
+and use such variable to embed the linker library; @ref{overview autotools, Using the @gnu{}
+Autotools}.  For example, in the @file{Makefile.am} we do:
+
+@example
+myscriptsdir            = $(bindir)
+myscripts_SCRIPTS       = myscript.bash
+myscripts_BSOURCES      = myscript.bash.m4
+CLEANFILES              += $(myscripts_SCRIPTS)
+EXTRA_DIST              += $(myscripts_BSOURCES)
+
+AM_MBFLPP_FLAGS         = --add-bash --define=__LIBMBFL_LINKER__="$(MBFL_LIBMBFL_LINKER)"
+
+%.bash : %.bash.m4
+        $(MBFLPP) $(AM_MBFLPP_FLAGS) $(MBFLPPFLAGS) <$< >$@@
+@end example
+
+@noindent
+and in the script we do:
+
+@example
+mbfl_embed_library(__LIBMBFL_LINKER__)
+@end example
+
+Also notice that the preprocessor option @option{--print-libmbfl-linker} will print the file
+pathname of the installed library, @ref{--print-libmbfl-linker, Invoking the preprocessor}.  For
+example:
+
+@example
+mbflpp.bash --print-libmbfl-linker
+@print{} /usr/local/share/mbfl/libmbfl-linker.bash
+@end example
+
+@c page
+@node linker sourcing
+@appendixsec Sourcing libraries at run--time
+
+
+To source a library at run--time, we have to first embed the linker library; @ref{linker embedding,
+Embedding the linker library}.  The linker library visits the file systems searching for @mbfl{}
+library files in a list of directories.
+
+The linker library defines a default search path containing the following directories:
+
+@example
+/usr/local/share/mbfl
+/usr/share/mbfl
+/share/mbfl
+@end example
+
+We can define a search path, which takes precedence over the default one, by exporting the
+environment variable @env{MBFL_LIBRARY_PATH}.  For example, we can put the following line in a
+@file{~/.bash_profile} file:
+
+@example
+export MBFL_LIBRARY_PATH=/home/marco/share/mbfl
+@end example
+
+Once the search path is configured, we start a script with the following preprocessor macro uses:
+
+@example
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
+@end example
+
+@noindent
+the macro @func{mbfl_linker_source_library_by_stem} will search a library whose file name is built
+from the ``stem'' @samp{core} as follows:
+
+@example
+printf -v FILENAME 'libmbfl-%s.bash' "$STEM"
+@end example
+
+@noindent
+in this case the result is @file{libmbfl-core.bash}; if the library is found: it is loaded using
+@func{mbfl_load_library}; if the library is not found: the script exits with
+@func{exit_because_error_loading_library}.
+
+We can insert as many uses of @func{mbfl_linker_source_library_by_stem} to load all the libraries we
+need:
+
+@example
+mbfl_linker_source_library_by_stem(git)
+mbfl_linker_source_library_by_stem(passwords)
+mbfl_linker_source_library_by_stem(containers)
+@end example
+
+If a library with a specific stem has already been loaded: nothing happens.  In the following code:
+
+@example
+mbfl_linker_source_library_by_stem(containers)
+mbfl_linker_source_library_by_stem(containers)
+@end example
+
+@noindent
+the first use of @func{mbfl_linker_source_library_by_stem} will source the library, the second use
+will do nothing.
+
+@c page
+@node linker finding
+@appendixsec Finding libraries
+
+
+@defvr {Environment Variable} MBFL_LIBRARY_PATH
+A Unix--style colon separated list of directories to be searched, left--to--right, for @mbfl{}
+libraries.
+@end defvr
+
+
+@deffn {Preprocessor Macro} mbfl_linker_source_library_by_stem (@var{STEM})
+Expand into code that searches a library in the current search path and sources the corresponding
+file.  If the library is not found: the script exits with @func{exit_because_error_loading_library}.
+
+If the library has already been searched and found: the search path is @strong{not} visited again;
+the already found pathname is used.
+
+If the library has already been sourced: the source file is @strong{not} sourced again; nothing
+happens.
+@end deffn
+
+
+@defun mbfl_linker_search_by_stem_var @var{PATHNAME_RV} @var{STEM}
+Search a library in the current search path and store the resulting absolute file pathname in the
+result variable @var{PATHNAME_RV}.  When successful return true, otherwise return false and leave
+@var{PATHNAME_RV} untouched.
+
+Searching is performed by @func{mbfl_linker_search_by_stem_in_search_path_var}.
+
+First the library is searched in the custom search path defined by the environment variable
+@env{MBFL_LIBRARY_PATH}.  Then the library is searched in @mbfl{}'s default search path:
+
+@example
+/usr/local/share/mbfl
+/usr/share/mbfl
+/share/mbfl
+@end example
+@end defun
+
+
+@defun mbfl_linker_search_by_stem_in_search_path_var @var{PATHNAME_RV} @var{STEM} @var{SEARCH_PATH_ARRY}
+Search a library in the search path defined by @var{SEARCH_PATH_ARRY} and store the resulting
+absolute file pathname in the result variable @var{PATHNAME_RV}.  When successful return true,
+otherwise return false and leave @var{PATHNAME_RV} untouched.
+
+The parameter @var{STEM} must be an identifier which is used to build the library filename as
+follows:
+
+@example
+printf -v FILENAME 'libmbfl-%s.bash' @var{STEM}
+@end example
+
+The parameter @var{SEARCH_PATH_ARRY} must be the name of an index array whose values are directories
+in which to search for the library file.  The array is visited in increasing index order, starting
+from index @samp{0}.
+
+@example
+mbfl_declare_varref(PATHNAME)
+mbfl_declare_index_array_varref(SEARCH_PATH)
+
+mbfl_slot_set(SEARCH_PATH, 0, '/home/marco/share/mbfl')
+mbfl_slot_set(SEARCH_PATH, 1, '/opt/mbfl/4.0.0')
+
+mbfl_linker_search_by_stem_in_search_path_var mbfl_datavar(PATHNAME) 'core' mbfl_datavar(SEARCH_PATH)
+@end example
+@end defun
 
 @c page
 @node libmbfl-utils

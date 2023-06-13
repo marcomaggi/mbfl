@@ -21,8 +21,6 @@
 #! not, see <http://www.gnu.org/licenses/>.
 #!
 
-m4_define([[[_]]],[[[mbfl_datavar([[[$1]]])]]])
-
 
 #### global variables
 
@@ -45,7 +43,13 @@ declare -r CDPATH=
 
 #### library loading
 
-mbfl_embed_library
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
+
+
+#### macros
+
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 
 #### declare exit codes

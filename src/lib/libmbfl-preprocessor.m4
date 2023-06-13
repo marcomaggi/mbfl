@@ -113,7 +113,15 @@ mbfl_variable_unset(ARGV[$2]) m4_dnl
 m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
 m4_define([[[mbfl_load_library]]],  [[[source m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1) || exit 100]]])
 
-m4_define([[[mbfl_embed_library]]],[[[m4_undivert(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]])
+m4_define([[[mbfl_embed_library]]],[[[m4_undivert(m4_ifelse($1,,'__MBFL_LIBMBFL_INSTALLATION_PATHNAME__',$1))]]])
+
+m4_define([[[mbfl_linker_source_library_by_stem]]],[[[
+if mbfl_linker_find_library_by_stem '$1'
+then
+    mbfl_slot_set(MBFL_LINKER_LOADED_LIBRARIES,$1,true)
+    mbfl_load_library(mbfl_slot_qref(MBFL_LINKER_FOUND_LIBRARIES,$1))
+fi
+]]])
 
 
 #### string macros

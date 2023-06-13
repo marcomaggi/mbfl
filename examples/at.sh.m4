@@ -6,7 +6,7 @@
 #!
 #!	This example script shows how to use the 'at' interface.
 #!
-#! Copyright (c) 2005, 2009, 2018, 2020 Marco Maggi
+#! Copyright (c) 2005, 2009, 2018, 2020, 2023 Marco Maggi
 #! <mrc.mgg@gmail.com>
 #!
 #! The author hereby grants  permission to use, copy, modify, distribute,
@@ -51,9 +51,9 @@ script_EXAMPLES="Examples:
 \tat.sh --drop --identifier=1234
 "
 
-# We embed because it makes it easier to use this script in MBFL's own test suite.
-mbfl_embed_library
-mbfl_embed_library(__LIBMBFL_AT__)
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
+mbfl_linker_source_library_by_stem(at)
 
 # keyword default-value brief-option long-option has-argument description
 mbfl_declare_option ACTION_SCHEDULE    no  S   schedule        noarg   'schedules a command'

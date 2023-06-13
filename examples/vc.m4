@@ -23,11 +23,6 @@
 #!
 
 
-#### macros
-
-m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],[[[MBFL_P_WRONG_NUM_ARGS($#,1 or 2)]]])]]])
-
-
 #### global variables
 
 declare -r script_REQUIRED_MBFL_VERSION=v3.0.0-devel.8
@@ -49,8 +44,14 @@ declare -r CDPATH=
 
 #### library loading
 
-mbfl_embed_library
-mbfl_embed_library(__LIBMBFL_GIT__)
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
+mbfl_linker_source_library_by_stem(git)
+
+
+#### macros
+
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 
 #### declare external programs usage

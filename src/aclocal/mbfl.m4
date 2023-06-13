@@ -59,8 +59,13 @@ AC_DEFUN([MBFL_SETUP],
      [AS_VAR_SET([mbfl_cv_pathname_libdir],[$("${MBFLPP}" --print-libdir)])])
 
    AC_CACHE_CHECK([pathname of library "libmbfl"],
-     [mbfl_cv_pathname_libmbfl],
-     [AS_VAR_SET([mbfl_cv_pathname_libmbfl],[$("${MBFLPP}" --print-libmbfl)])])
+     [mbfl_cv_pathname_libmbfl_core],
+     [AS_VAR_SET([mbfl_cv_pathname_libmbfl_core],[$("${MBFLPP}" --print-libmbfl)])
+      AS_VAR_SET([mbfl_cv_pathname_libmbfl],["$mbfl_cv_pathname_libmbfl_core"])])
+
+   AC_CACHE_CHECK([pathname of library "libmbfl-linker"],
+     [mbfl_cv_pathname_libmbfl_linker],
+     [AS_VAR_SET([mbfl_cv_pathname_libmbfl_linker],[$("${MBFLPP}" --print-libmbfl-linker)])])
 
    AC_CACHE_CHECK([pathname of library "libmbfl-tests"],
      [mbfl_cv_pathname_libmbfl_tests],
@@ -92,6 +97,8 @@ AC_DEFUN([MBFL_SETUP],
 
    AC_SUBST(MBFL_LIBDIR,                ["$mbfl_cv_pathname_libdir"])
    AC_SUBST(MBFL_LIBMBFL,               ["$mbfl_cv_pathname_libmbfl"])
+   AC_SUBST(MBFL_LIBMBFL_CORE,          ["$mbfl_cv_pathname_libmbfl_core"])
+   AC_SUBST(MBFL_LIBMBFL_LINKER,        ["$mbfl_cv_pathname_libmbfl_linker"])
    AC_SUBST(MBFL_LIBMBFL_TESTS,         ["$mbfl_cv_pathname_libmbfl_tests"])
    AC_SUBST(MBFL_LIBMBFL_AT,            ["$mbfl_cv_pathname_libmbfl_at"])
    AC_SUBST(MBFL_LIBMBFL_ARCH,          ["$mbfl_cv_pathname_libmbfl_arch"])

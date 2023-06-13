@@ -6,7 +6,7 @@
 #!
 #!	This script reads entries from "/etc/passwd".
 #!
-#! Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+#! Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
 #!
 #! The author hereby grants  permission to use, copy, modify, distribute,
 #! and  license this  software  and its  documentation  for any  purpose,
@@ -51,9 +51,8 @@ script_EXAMPLES="Usage examples:
 
 #### library loading
 
-# We embed because it makes it easier to use this script in MBFL's own test suite.
-mbfl_embed_library
-# mbfl_library_loader
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
 
 
 #### declare exit codes

@@ -28,7 +28,9 @@
 # OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
-mbfl_load_library("$MBFL_LIBMBFL_CORE")
+mbfl_embed_library(__LIBMBFL_LINKER__)
+mbfl_linker_source_library_by_stem(core)
+mbfl_linker_source_library_by_stem(tests)
 
 function main () {
     mbfl_atexit_enable
