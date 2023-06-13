@@ -67,6 +67,9 @@ changes!
 * Added GNU Emacs  module that adds support for MBFL  to shell mode; its
   installation is enabled with the configuration option "--with-emacs".
 
+* Added  new inker  library "libmbfl-linker.bash"  to search  and source
+  libraries at run-time.
+
 * Added  new  library   "libmbfl-passwords.bash"  to  generate  password
   strings.
 
