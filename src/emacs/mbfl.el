@@ -93,6 +93,7 @@
        "mbfl_load_library"
        "mbfl_library_loader"
        "mbfl_embed_library"
+       "mbfl_linker_source_library_by_stem"
        "mbfl_declare_varref"
        "mbfl_declare_global_varref"
        "mbfl_declare_integer_varref"
@@ -862,6 +863,9 @@
        "mbfl_function_rename"
        "mbfl_function_exists"
        "mbfl_function_unset"
+       ;;
+       "mbfl_linker_search_by_stem_var"
+       "mbfl_linker_search_by_stem_in_search_path_var"
        ;;
        "mbfl_exceptional_condition_define"
        "mbfl_exceptional_condition_is_a"

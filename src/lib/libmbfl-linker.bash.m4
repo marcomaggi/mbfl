@@ -75,6 +75,7 @@ function mbfl_linker_find_library_by_stem () {
 	    return 0
 	else
 	    # Exit with "library not found" status.
+	    printf 'libmbfl-linker: required MBFL library not found in search path: "%s"\n' QQ(mbfl_STEM)
 	    exit_because_error_loading_library
 	fi
     fi
