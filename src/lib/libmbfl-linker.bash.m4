@@ -1,7 +1,7 @@
-#!# libmbfl-libraries.bash.m4 --
+#!# libmbfl-linker.bash.m4 --
 #!#
 #!# Part of: Marco's BASH Functions Library
-#!# Contents: utilities library file
+#!# Contents: linker library
 #!# Date: Jun 11, 2023
 #!#
 #!# Abstract
