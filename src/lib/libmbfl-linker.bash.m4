@@ -9,7 +9,7 @@
 #!#	This library must be  standalone: it must not require any of the  functions in the core MBFL
 #!#	libraries or any other libraries.
 #!#
-#!# Copyright (c) 2023 Marco Maggi
+#!# Copyright (c) 2023, 2024 Marco Maggi
 #!# <mrc.mgg@gmail.com>
 #!#
 #!# This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -123,9 +123,12 @@ function mbfl_linker_search_by_stem_in_search_path_var () {
 	    if test -r QQ(mbfl_LIBRARY_PATHNAME)
 	    then
 		mbfl_RV=QQ(mbfl_LIBRARY_PATHNAME)
+		if test -n QQ(MBFL_LINKER_DEBUG) -a QQ(MBFL_LINKER_DEBUG) = 'true'
+		then printf 'libmbfl-linker.bash: found library: "%s"\n' QQ(mbfl_RV) >&2
+		fi
 		return 0
 	    else
-		printf 'libmbfl-libraries.bash: library file not readable: "%s"\n' QQ(mbfl_LIBRARY_PATHNAME) >&2
+		printf 'libmbfl-linker.bash: library file not readable: "%s"\n' QQ(mbfl_LIBRARY_PATHNAME) >&2
 	    fi
 	fi
     done
