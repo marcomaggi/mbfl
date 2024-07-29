@@ -191,6 +191,27 @@ MBFL_PROGRAM_MBFLPP	= $(builddir)/src/bin/mbflpp.bash
 MBFL_RUN_MBFLPP		= $(MBFL_PROGRAM_BASH) $(MBFL_PROGRAM_MBFLPP)
 
 
+#### libmbfl-linker generation
+
+libmbfl_linkerdir		= $(MBFL_LIB_INSTDIR)
+libmbfl_linker_DATA		= src/lib/libmbfl-linker.bash
+libmbfl_linker_BSOURCES		= $(srcdir)/src/lib/libmbfl-linker.bash.m4
+EXTRA_DIST			+= $(libmbfl_linker_BSOURCES)
+ETAGS_ARGS			+= $(libmbfl_linker_BSOURCES)
+CLEANFILES			+= src/lib/libmbfl-linker.bash
+
+libmbfl_linker_ENV		=
+libmbfl_linker_RUN		= $(libmbfl_linker_ENV) $(MBFL_RUN_MBFLPP)
+libmbfl_linker_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
+
+libmbfl_linker_PREREQUISITES	=	\
+	$(MBFL_PROGRAM_MBFLPP)		\
+	$(MBFL_PREPROCESSOR)
+
+src/lib/libmbfl-linker.bash: src/lib/libmbfl-linker.bash.m4 $(libmbfl_linker_PREREQUISITES)
+	$(libmbfl_linker_RUN) $(libmbfl_linker_FLAGS) --output=$@ $<
+
+
 #### libmbfl modules generation
 
 libmbfldir		= $(MBFL_LIB_INSTDIR)
@@ -280,8 +301,9 @@ libmbfl_MODULES_FLAGS		= $(MBFLPP_GENERAL_FLAGS) --libmbfl="$(srcdir)/src/backup
 
 libmbfl_MODULES_PREREQUISITES	=		\
 	$(MBFL_PROGRAM_MBFLPP)			\
+	$(MBFL_PREPROCESSOR)			\
 	$(srcdir)/src/backup/libmbfl-core.bash	\
-	$(MBFL_PREPROCESSOR)
+	$(builddir)/src/lib/libmbfl-linker.bash
 
 src/modules/%.bash: src/modules/%.bash.m4 $(libmbfl_MODULES_PREREQUISITES)
 	$(libmbfl_MODULES_RUN) $(libmbfl_MODULES_FLAGS) $< >$@
@@ -302,27 +324,6 @@ src/lib/libmbfl-core.bash: src/lib/libmbfl-core.bash.m4 $(libmbfl_PROCESSED_MODU
 install-data-hook:
 	cd $(DESTDIR)$(libmbfldir) && \
 	$(LN_S) libmbfl-core.bash libmbfl.bash
-
-
-#### libmbfl-linker generation
-
-libmbfl_linkerdir		= $(MBFL_LIB_INSTDIR)
-libmbfl_linker_DATA		= src/lib/libmbfl-linker.bash
-libmbfl_linker_BSOURCES		= $(srcdir)/src/lib/libmbfl-linker.bash.m4
-EXTRA_DIST			+= $(libmbfl_linker_BSOURCES)
-ETAGS_ARGS			+= $(libmbfl_linker_BSOURCES)
-CLEANFILES			+= src/lib/libmbfl-linker.bash
-
-libmbfl_linker_ENV		=
-libmbfl_linker_RUN		= $(libmbfl_linker_ENV) $(MBFL_RUN_MBFLPP)
-libmbfl_linker_FLAGS		= $(MBFLPP_GENERAL_FLAGS)
-
-libmbfl_linker_PREREQUISITES	=	\
-	$(MBFL_PROGRAM_MBFLPP)		\
-	$(MBFL_PREPROCESSOR)
-
-src/lib/libmbfl-linker.bash: src/lib/libmbfl-linker.bash.m4 $(libmbfl_linker_PREREQUISITES)
-	$(libmbfl_linker_RUN) $(libmbfl_linker_FLAGS) --output=$@ $<
 
 
 #### libmbfl-utils generation: modules
@@ -355,7 +356,8 @@ libmbfl_utils_MODULES_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
 libmbfl_utils_MODULES_PREREQUISITES	=	\
 	$(MBFL_PROGRAM_MBFLPP)			\
-	$(MBFL_PREPROCESSOR)
+	$(MBFL_PREPROCESSOR)			\
+	$(builddir)/src/lib/libmbfl-linker.bash
 
 src/utils-modules/%.bash: src/utils-modules/%.bash.m4 $(libmbfl_utils_MODULES_PREREQUISITES)
 	$(libmbfl_utils_MODULES_RUN) $(libmbfl_utils_MODULES_FLAGS) --output=$@ $<
@@ -387,9 +389,10 @@ libmbfl_tests_ENV	=
 libmbfl_tests_RUN	= $(libmbfl_tests_ENV) $(MBFL_RUN_MBFLPP)
 libmbfl_tests_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-libmbfl_tests_PREREQUISITES	=	\
-	$(MBFL_PROGRAM_MBFLPP)		\
-	$(MBFL_PREPROCESSOR)
+libmbfl_tests_PREREQUISITES	=		\
+	$(MBFL_PROGRAM_MBFLPP)			\
+	$(MBFL_PREPROCESSOR)			\
+	$(builddir)/src/lib/libmbfl-linker.bash
 
 src/lib/libmbfl-tests.bash: src/lib/libmbfl-tests.bash.m4 $(libmbfl_tests_PREREQUISITES)
 	$(libmbfl_tests_RUN) $(libmbfl_tests_FLAGS) --output=$@ $<
@@ -408,9 +411,10 @@ libmbfl_at_ENV		=
 libmbfl_at_RUN		= $(libmbfl_at_ENV) $(MBFL_RUN_MBFLPP)
 libmbfl_at_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-libmbfl_at_PREREQUISITES	=	\
-	$(MBFL_PROGRAM_MBFLPP)		\
-	$(MBFL_PREPROCESSOR)
+libmbfl_at_PREREQUISITES	=			\
+	$(MBFL_PROGRAM_MBFLPP)				\
+	$(MBFL_PREPROCESSOR)				\
+	$(builddir)/src/lib/libmbfl-linker.bash
 
 src/lib/libmbfl-at.bash: src/lib/libmbfl-at.bash.m4 $(libmbfl_at_PREREQUISITES)
 	$(libmbfl_at_RUN) $(libmbfl_at_FLAGS) --output=$@ $<
@@ -429,9 +433,10 @@ libmbfl_arch_ENV	=
 libmbfl_arch_RUN	= $(libmbfl_arch_ENV) $(MBFL_RUN_MBFLPP)
 libmbfl_arch_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-libmbfl_arch_PREREQUISITES	=	\
-	$(MBFL_PROGRAM_MBFLPP)		\
-	$(MBFL_PREPROCESSOR)
+libmbfl_arch_PREREQUISITES	=			\
+	$(MBFL_PROGRAM_MBFLPP)				\
+	$(MBFL_PREPROCESSOR)				\
+	$(builddir)/src/lib/libmbfl-linker.bash
 
 src/lib/libmbfl-arch.bash: src/lib/libmbfl-arch.bash.m4 $(libmbfl_arch_PREREQUISITES)
 	$(libmbfl_arch_RUN) $(libmbfl_arch_FLAGS) --output=$@ $<
@@ -450,9 +455,10 @@ libmbfl_passwords_ENV	=
 libmbfl_passwords_RUN	= $(libmbfl_passwords_ENV) $(MBFL_RUN_MBFLPP)
 libmbfl_passwords_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-libmbfl_passwords_PREREQUISITES	=	\
-	$(MBFL_PROGRAM_MBFLPP)		\
-	$(MBFL_PREPROCESSOR)
+libmbfl_passwords_PREREQUISITES	=			\
+	$(MBFL_PROGRAM_MBFLPP)				\
+	$(MBFL_PREPROCESSOR)				\
+	$(builddir)/src/lib/libmbfl-linker.bash
 
 src/lib/libmbfl-passwords.bash: src/lib/libmbfl-passwords.bash.m4 $(libmbfl_passwords_PREREQUISITES)
 	$(libmbfl_passwords_RUN) $(libmbfl_passwords_FLAGS) --output=$@ $<
@@ -471,9 +477,10 @@ libmbfl_git_ENV		=
 libmbfl_git_RUN		= $(libmbfl_git_ENV) $(MBFL_RUN_MBFLPP)
 libmbfl_git_FLAGS	= $(MBFLPP_GENERAL_FLAGS)
 
-libmbfl_git_PREREQUISITES	=	\
-	$(MBFL_PROGRAM_MBFLPP)		\
-	$(MBFL_PREPROCESSOR)
+libmbfl_git_PREREQUISITES	=			\
+	$(MBFL_PROGRAM_MBFLPP)				\
+	$(MBFL_PREPROCESSOR)				\
+	$(builddir)/src/lib/libmbfl-linker.bash
 
 src/lib/libmbfl-git.bash: src/lib/libmbfl-git.bash.m4 $(libmbfl_git_PREREQUISITES)
 	$(libmbfl_git_RUN) $(libmbfl_git_FLAGS) --output=$@ $<
@@ -492,9 +499,10 @@ libmbfl_containers_ENV	=
 libmbfl_containers_RUN	= $(libmbfl_containers_ENV) $(MBFL_RUN_MBFLPP)
 libmbfl_containers_FLAGS= $(MBFLPP_GENERAL_FLAGS)
 
-libmbfl_containers_PREREQUISITES	=	\
-	$(MBFL_PROGRAM_MBFLPP)			\
-	$(MBFL_PREPROCESSOR)
+libmbfl_containers_PREREQUISITES	=		\
+	$(MBFL_PROGRAM_MBFLPP)				\
+	$(MBFL_PREPROCESSOR)				\
+	$(builddir)/src/lib/libmbfl-linker.bash
 
 src/lib/libmbfl-containers.bash: src/lib/libmbfl-containers.bash.m4 $(libmbfl_containers_PREREQUISITES)
 	$(libmbfl_containers_RUN) $(libmbfl_containers_FLAGS) --output=$@ $<
@@ -538,7 +546,8 @@ MBFL_EXAMPLES_PREREQUISITES	=			\
 	$(builddir)/src/lib/libmbfl-containers.bash	\
 	$(builddir)/src/lib/libmbfl-passwords.bash	\
 	$(MBFL_PROGRAM_MBFLPP)				\
-	$(MBFL_PREPROCESSOR)
+	$(MBFL_PREPROCESSOR)				\
+	$(builddir)/src/lib/libmbfl-linker.bash
 
 examples/at.sh: examples/at.sh.m4 $(MBFL_EXAMPLES_PREREQUISITES)
 	$(MBFL_EXAMPLES_RUN) $(MBFL_EXAMPLES_FLAGS) --output=$@ $<
@@ -592,12 +601,12 @@ endif
 src/etc/bash_completion.d/vc.bash:					\
 		examples/vc						\
 		$(completions_PREREQUISITES)
-	$(MBFL_PROGRAM_BASH) examples/vc help print-completions-script >$(@)
+	MBFL_LIBRARY_PATH=$(builddir)/src/lib/ $(MBFL_PROGRAM_BASH) examples/vc help print-completions-script >$(@)
 
 src/etc/bash_completion.d/semver.bash:					\
 		examples/semver						\
 		$(completions_PREREQUISITES)
-	$(MBFL_PROGRAM_BASH) examples/semver help print-completions-script >$(@)
+	MBFL_LIBRARY_PATH=$(builddir)/src/lib/ $(MBFL_PROGRAM_BASH) examples/semver help print-completions-script >$(@)
 
 
 #### interface to "make check"
@@ -778,6 +787,7 @@ test-script-atexit: tests/script-atexit.sh
 # PATH's directories.
 #
 MBFL_ICHECK_ENV	 = PATH=$(DESTDIR)$(bindir):$$PATH; export PATH;
+MBFL_ICHECK_ENV	 = MBFL_LIBRARY_PATH=$(DESTDIR)$(MBFL_LIB_INSTDIR); export MBFL_LIBRARY_PATH;
 MBFL_ICHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;
 MBFL_ICHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_ICHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
