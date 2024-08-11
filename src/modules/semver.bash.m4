@@ -11,7 +11,7 @@
 #
 #		<https://semver.org/>
 #
-# Copyright (c) 2020, 2023 Marco Maggi
+# Copyright (c) 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -308,7 +308,7 @@ function mbfl_semver_spec_string_var () {
     mbfl_declare_varref(mbfl_PRERELEASE_VERSION)
     mbfl_declare_varref(mbfl_BUILD_METADATA)
 
-    if ! mbfl_semver_spec_is_a _(mbfl_SEMVER_SPEC)
+    if ! mbfl_semver_spec_p _(mbfl_SEMVER_SPEC)
     then
 	mbfl_message_error_printf 'expected datavar of object of class "mbfl_semver_spec_t", got: "%s"' _(mbfl_SEMVER_SPEC)
 	return_because_failure
@@ -340,12 +340,12 @@ function mbfl_semver_parse () {
 
     # Validate parameters.
     {
-	if ! mbfl_semver_parser_is_a _(mbfl_SEMVER_PARSER)
+	if ! mbfl_semver_parser_p _(mbfl_SEMVER_PARSER)
 	then
 	    mbfl_message_error_printf 'expected datavar of object of class "mbfl_semver_parser_t", got: "%s"' _(mbfl_SEMVER_PARSER)
 	    return_because_failure
 	fi
-	if ! mbfl_semver_parser_input_is_a _(mbfl_PARSER_INPUT)
+	if ! mbfl_semver_parser_input_p _(mbfl_PARSER_INPUT)
 	then
 	    mbfl_message_error_printf 'expected datavar of object of class "mbfl_semver_parser_input_t", got: "%s"' _(mbfl_PARSER_INPUT)
 	    return_because_failure

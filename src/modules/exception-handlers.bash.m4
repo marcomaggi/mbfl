@@ -11,7 +11,7 @@
 #       A lot of ideas were recycled from  the "Revised^6 Report on the Algorithmic Language Scheme"
 #       (R6RS): <https://www.r6rs.org/>.
 #
-# Copyright (c) 2023 Marco Maggi
+# Copyright (c) 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -48,11 +48,11 @@ function mbfl_default_exception_handler () {
 
     #echo $FUNCNAME enter mbfl_CND=$mbfl_CND _(mbfl_CND)  >&2
 
-    if mbfl_warning_condition_is_a _(mbfl_CND) && mbfl_exceptional_condition_is_continuable _(mbfl_CND)
+    if mbfl_warning_condition_p _(mbfl_CND) && mbfl_exceptional_condition_is_continuable _(mbfl_CND)
     then
 	mbfl_exceptional_condition_print _(mbfl_CND) >&2
 	return_success_after_handling_exception
-    elif mbfl_uncaught_exceptional_condition_is_a _(mbfl_CND)
+    elif mbfl_uncaught_exceptional_condition_p _(mbfl_CND)
     then
 	#mbfl_array_dump _(mbfl_CND)
 	mbfl_exceptional_condition_print _(mbfl_CND) >&2

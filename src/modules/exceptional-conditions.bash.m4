@@ -11,7 +11,7 @@
 #       A lot of ideas were recycled from  the "Revised^6 Report on the Algorithmic Language Scheme"
 #       (R6RS): <https://www.r6rs.org/>.
 #
-# Copyright (c) 2023 Marco Maggi
+# Copyright (c) 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -51,13 +51,13 @@ mbfl_default_class_declare(mbfl_invalid_ctor_parm_value_condition_t)
 mbfl_default_class_declare(mbfl_outside_location_condition_t)
 
 function mbfl_initialise_module_exceptional_conditions () {
-    mbfl_default_class_define _(mbfl_exceptional_condition_t) _(mbfl_default_object) 'mbfl_exceptional_condition' \
-			      'who' 'message' 'continuable'
+    mbfl_default_abstract_class_define _(mbfl_exceptional_condition_t) _(mbfl_default_object) 'mbfl_exceptional_condition' \
+				       'who' 'message' 'continuable'
 
-    mbfl_default_class_define _(mbfl_warning_condition_t)       _(mbfl_exceptional_condition_t)  'mbfl_warning_condition'
-    mbfl_default_class_define _(mbfl_error_condition_t)         _(mbfl_exceptional_condition_t)  'mbfl_error_condition'
-    mbfl_default_class_define _(mbfl_logic_error_condition_t)   _(mbfl_error_condition_t)        'mbfl_logic_error_condition'
-    mbfl_default_class_define _(mbfl_runtime_error_condition_t) _(mbfl_error_condition_t)        'mbfl_runtime_error_condition'
+    mbfl_default_class_define		_(mbfl_warning_condition_t)       _(mbfl_exceptional_condition_t)  'mbfl_warning_condition'
+    mbfl_default_abstract_class_define	_(mbfl_error_condition_t)         _(mbfl_exceptional_condition_t)  'mbfl_error_condition'
+    mbfl_default_class_define		_(mbfl_logic_error_condition_t)   _(mbfl_error_condition_t)        'mbfl_logic_error_condition'
+    mbfl_default_class_define		_(mbfl_runtime_error_condition_t) _(mbfl_error_condition_t)        'mbfl_runtime_error_condition'
 
     mbfl_default_class_define _(mbfl_uncaught_exceptional_condition_t) _(mbfl_logic_error_condition_t) \
 			      'mbfl_uncaught_exceptional_condition' \
@@ -81,10 +81,6 @@ function mbfl_initialise_module_exceptional_conditions () {
 			      'object' 'attrib_name' 'invalid_value'
 
     mbfl_default_class_define _(mbfl_outside_location_condition_t) _(mbfl_logic_error_condition_t) 'mbfl_outside_location_condition'
-
-    # Unset the constructors of abstract classes.
-    mbfl_function_unset 'mbfl_exceptional_condition_define'
-    mbfl_function_unset 'mbfl_error_condition_define'
 
     # Redefine "mbfl_exceptional_condition_continuable_set()" to introduce type-checking.
     #
@@ -255,9 +251,9 @@ function mbfl_exceptional_condition_print_report () {
     mbfl_exceptional_condition_who_var     _(mbfl_WHO)     _(mbfl_CND)
     mbfl_exceptional_condition_message_var _(mbfl_MESSAGE) _(mbfl_CND)
 
-    if mbfl_error_condition_is_a _(mbfl_CND)
+    if mbfl_error_condition_p _(mbfl_CND)
     then mbfl_message_error_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
-    elif mbfl_warning_condition_is_a _(mbfl_CND)
+    elif mbfl_warning_condition_p _(mbfl_CND)
     then mbfl_message_warning_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
     else printf '%s: %s\n' "$mbfl_WHO" "$mbfl_MESSAGE"
     fi
@@ -271,7 +267,7 @@ function mbfl_exceptional_condition_print () {
     mbfl_exceptional_condition_who_var     _(mbfl_WHO)     _(mbfl_CND)
     mbfl_exceptional_condition_message_var _(mbfl_MESSAGE) _(mbfl_CND)
 
-    if mbfl_uncaught_exceptional_condition_is_a _(mbfl_CND)
+    if mbfl_uncaught_exceptional_condition_p _(mbfl_CND)
     then
 	mbfl_message_error_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
 
@@ -289,9 +285,9 @@ function mbfl_exceptional_condition_print () {
 
 	printf '  exceptional-condition class:\t%s\n  who:                        \t%s\n  message:                    \t%s\n' \
 	       "$mbfl_ORIGINAL_CLASS_NAME" "$mbfl_ORIGINAL_WHO" "$mbfl_ORIGINAL_MESSAGE" >&2
-    elif mbfl_error_condition_is_a _(mbfl_CND)
+    elif mbfl_error_condition_p _(mbfl_CND)
     then mbfl_message_error_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
-    elif mbfl_warning_condition_is_a _(mbfl_CND)
+    elif mbfl_warning_condition_p _(mbfl_CND)
     then mbfl_message_warning_printf '%s: %s' "$mbfl_WHO" "$mbfl_MESSAGE"
     else printf '%s: %s\n' "$mbfl_WHO" "$mbfl_MESSAGE"
     fi

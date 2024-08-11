@@ -1,6 +1,6 @@
 ;;; mbfl.el --- support for programming MBFL under GNU Emacs
 
-;; Copyright (C) 2023  Marco Maggi
+;; Copyright (C) 2023, 2024  Marco Maggi
 
 ;; Author: Marco Maggi <mrc.mgg@gmail.com>
 ;; Created: 2023
@@ -73,6 +73,7 @@
     (regexp-opt
      '("mbfl_default_object"
        "mbfl_default_class"
+       "mbfl_default_abstract_class"
        ;;
        "mbfl_predefined_constant")
      'symbols)))
@@ -840,24 +841,27 @@
        "mbfl_hook_remove_commands"
        ;;
        "mbfl_default_object_define"
+       "mbfl_default_object_maybe_p"
        "mbfl_default_object_is_a"
-       "mbfl_default_object_is_of_class"
        "mbfl_default_object_class_var"
        "mbfl_default_object_class_name_var"
-       "mbfl_default_object_is_the_default_object"
-       "mbfl_default_object_is_the_default_class"
+       "mbfl_the_default_class_p"
+       "mbfl_the_default_abstract_class_p"
        "mbfl_default_class_define"
-       "mbfl_default_class_is_a"
-       "mbfl_default_metaclass_is_a"
+       "mbfl_default_abstract_class_define"
+       "mbfl_default_class_p"
+       "mbfl_default_metaclass_p"
+       "mbfl_default_abstract_class_p"
        "mbfl_default_class_parent_var"
        "mbfl_default_class_name_var"
        "mbfl_default_class_fields_number_var"
-       "mbfl_default_classes_are_parent_and_child"
+       "mbfl_default_classes_are_superclass_and_subclass"
+       "mbfl_default_classes_are_same_or_superclass_and_subclass"
        ;;
        "mbfl_predefined_constant_define"
-       "mbfl_predefined_constant_is_a"
-       "mbfl_is_the_undefined"
-       "mbfl_is_the_unspecified"
+       "mbfl_predefined_constant_p"
+       "mbfl_the_undefined_p"
+       "mbfl_the_unspecified_p"
        ;;
        "mbfl_function_copy"
        "mbfl_function_rename"
@@ -868,7 +872,7 @@
        "mbfl_linker_search_by_stem_in_search_path_var"
        ;;
        "mbfl_exceptional_condition_define"
-       "mbfl_exceptional_condition_is_a"
+       "mbfl_exceptional_condition_p"
        "mbfl_exceptional_condition_who_set"
        "mbfl_exceptional_condition_who_var"
        "mbfl_exceptional_condition_message_set"
@@ -879,7 +883,7 @@
        "mbfl_exceptional_condition_is_continuable"
        "mbfl_warning_condition_make"
        "mbfl_warning_condition_define"
-       "mbfl_warning_condition_is_a"
+       "mbfl_warning_condition_p"
        "mbfl_warning_condition_who_set"
        "mbfl_warning_condition_who_var"
        "mbfl_warning_condition_message_set"
@@ -887,7 +891,7 @@
        "mbfl_warning_condition_continuable_set"
        "mbfl_warning_condition_continuable_var"
        "mbfl_error_condition_define"
-       "mbfl_error_condition_is_a"
+       "mbfl_error_condition_p"
        "mbfl_error_condition_who_set"
        "mbfl_error_condition_who_var"
        "mbfl_error_condition_message_set"
@@ -896,7 +900,7 @@
        "mbfl_error_condition_continuable_var"
        "mbfl_logic_error_condition_make"
        "mbfl_logic_error_condition_define"
-       "mbfl_logic_error_condition_is_a"
+       "mbfl_logic_error_condition_p"
        "mbfl_logic_error_condition_who_set"
        "mbfl_logic_error_condition_who_var"
        "mbfl_logic_error_condition_message_set"
@@ -905,7 +909,7 @@
        "mbfl_logic_error_condition_continuable_var"
        "mbfl_runtime_error_condition_make"
        "mbfl_runtime_error_condition_define"
-       "mbfl_runtime_error_condition_is_a"
+       "mbfl_runtime_error_condition_p"
        "mbfl_runtime_error_condition_who_set"
        "mbfl_runtime_error_condition_who_var"
        "mbfl_runtime_error_condition_message_set"
@@ -914,7 +918,7 @@
        "mbfl_runtime_error_condition_continuable_var"
        "mbfl_outside_location_condition_make"
        "mbfl_outside_location_condition_define"
-       "mbfl_outside_location_condition_is_a"
+       "mbfl_outside_location_condition_p"
        "mbfl_outside_location_condition_who_set"
        "mbfl_outside_location_condition_who_var"
        "mbfl_outside_location_condition_message_set"
@@ -923,7 +927,7 @@
        "mbfl_outside_location_condition_continuable_var"
        "mbfl_uncaught_exceptional_condition_make"
        "mbfl_uncaught_exceptional_condition_define"
-       "mbfl_uncaught_exceptional_condition_is_a"
+       "mbfl_uncaught_exceptional_condition_p"
        "mbfl_uncaught_exceptional_condition_who_set"
        "mbfl_uncaught_exceptional_condition_who_var"
        "mbfl_uncaught_exceptional_condition_message_set"
@@ -935,7 +939,7 @@
        ;;
        "mbfl_wrong_parameters_number_condition_make"
        "mbfl_wrong_parameters_number_condition_define"
-       "mbfl_wrong_parameters_number_condition_is_a"
+       "mbfl_wrong_parameters_number_condition_p"
        "mbfl_wrong_parameters_number_condition_who_set"
        "mbfl_wrong_parameters_number_condition_who_var"
        "mbfl_wrong_parameters_number_condition_message_set"
@@ -951,7 +955,7 @@
        ;;
        "mbfl_invalid_function_parameter_condition_make"
        "mbfl_invalid_function_parameter_condition_define"
-       "mbfl_invalid_function_parameter_condition_is_a"
+       "mbfl_invalid_function_parameter_condition_p"
        "mbfl_invalid_function_parameter_condition_who_set"
        "mbfl_invalid_function_parameter_condition_who_var"
        "mbfl_invalid_function_parameter_condition_message_set"
@@ -969,7 +973,7 @@
        ;;
        "mbfl_invalid_ctor_parm_value_condition_make"
        "mbfl_invalid_ctor_parm_value_condition_define"
-       "mbfl_invalid_ctor_parm_value_condition_is_a"
+       "mbfl_invalid_ctor_parm_value_condition_p"
        "mbfl_invalid_ctor_parm_value_condition_who_set"
        "mbfl_invalid_ctor_parm_value_condition_who_var"
        "mbfl_invalid_ctor_parm_value_condition_message_set"
@@ -985,7 +989,7 @@
        ;;
        "mbfl_invalid_object_attrib_value_condition_make"
        "mbfl_invalid_object_attrib_value_condition_define"
-       "mbfl_invalid_object_attrib_value_condition_is_a"
+       "mbfl_invalid_object_attrib_value_condition_p"
        "mbfl_invalid_object_attrib_value_condition_who_set"
        "mbfl_invalid_object_attrib_value_condition_who_var"
        "mbfl_invalid_object_attrib_value_condition_message_set"
@@ -1000,7 +1004,7 @@
        "mbfl_invalid_object_attrib_value_condition_invalid_value_var"
        ;;
        "mbfl_semver_parser_error_condition_make"
-       "mbfl_semver_parser_error_condition_is_a"
+       "mbfl_semver_parser_error_condition_p"
        "mbfl_semver_parser_error_condition_who_set"
        "mbfl_semver_parser_error_condition_who_var"
        "mbfl_semver_parser_error_condition_message_set"

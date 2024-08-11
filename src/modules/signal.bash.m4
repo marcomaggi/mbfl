@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -142,7 +142,7 @@ function mbfl_signal_hook_var () {
     fi
 
     declare mbfl_OBJECT=_(mbfl_signal_HOOKS, $mbfl_SIGNUM)
-    if mbfl_is_the_unspecified "$mbfl_OBJECT"
+    if mbfl_the_unspecified_p "$mbfl_OBJECT"
     then
 	# Declare and define a new global hook...
 	mbfl_hook_global_declare(mbfl_THE_HOOK)
@@ -189,7 +189,7 @@ function mbfl_signal_has_handlers () {
     fi
 
     declare mbfl_OBJECT=_(mbfl_signal_HOOKS, $mbfl_SIGNUM)
-    if mbfl_is_the_unspecified "$mbfl_OBJECT"
+    if mbfl_the_unspecified_p "$mbfl_OBJECT"
     then return_failure
     else mbfl_hook_has_commands "$mbfl_OBJECT"
     fi

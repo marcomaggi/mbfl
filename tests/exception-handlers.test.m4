@@ -12,7 +12,7 @@
 #
 #	that will select these tests.
 #
-# Copyright (c) 2023 Marco Maggi
+# Copyright (c) 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -485,7 +485,7 @@ function test_operation_1_exception_handler_1 () {
 	dotest-debug condition class name="$NAME"
     fi
 
-    if test_condition_1_alpha_is_a _(CND)
+    if test_condition_1_alpha_p _(CND)
     then
 	dotest-debug handling alpha condition
 	test_condition_1_alpha_message_var _(CONDITION_MESSAGE) _(CND)
@@ -510,7 +510,7 @@ function test_operation_1_exception_handler_2 () {
 	dotest-debug condition class name="$NAME"
     fi
 
-    if test_condition_1_beta_is_a _(CND)
+    if test_condition_1_beta_p _(CND)
     then
 	dotest-debug handling beta condition
 	test_condition_1_beta_message_var _(CONDITION_MESSAGE) _(CND)
@@ -532,7 +532,7 @@ function test_operation_1_exception_handler_3 () {
 	dotest-debug condition class name="$NAME"
     fi
 
-    if test_condition_1_gamma_is_a _(CND)
+    if test_condition_1_gamma_p _(CND)
     then
 	dotest-debug handling gamma condition
 	test_condition_1_gamma_message_var _(CONDITION_MESSAGE) _(CND)

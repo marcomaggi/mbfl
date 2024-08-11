@@ -12,7 +12,7 @@
 #
 #	that will select these tests.
 #
-# Copyright (c) 2023 Marco Maggi
+# Copyright (c) 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -152,7 +152,7 @@ function conditions-base-define-1.1 () {
     mbfl_default_object_declare(CND)
 
     my_something_happened_make _(CND) $FUNCNAME 'this is an error message' 'false'
-    mbfl_exceptional_condition_is_a _(CND)
+    mbfl_exceptional_condition_p _(CND)
 }
 function conditions-base-accessors-1.1 () {
     mbfl_default_object_declare(CND)
@@ -203,7 +203,7 @@ function conditions-warning-maker-1.1 () {
     mbfl_default_object_declare(CND)
 
     mbfl_warning_condition_make _(CND) $FUNCNAME 'this is an warning message'
-    mbfl_warning_condition_is_a _(CND)
+    mbfl_warning_condition_p _(CND)
 }
 function conditions-warning-accessors-1.1 () {
     mbfl_default_object_declare(CND)
@@ -267,7 +267,7 @@ function conditions-error-maker-1.1 () {
     mbfl_default_object_declare(CND)
 
     my_some_error_happened_condition_make _(CND) $FUNCNAME 'this is an error message' 'false'
-    mbfl_error_condition_is_a _(CND)
+    mbfl_error_condition_p _(CND)
 }
 function conditions-error-accessors-1.1 () {
     mbfl_default_object_declare(CND)
@@ -318,7 +318,7 @@ function conditions-runtime-error-maker-1.1 () {
     mbfl_default_object_declare(CND)
 
     mbfl_runtime_error_condition_make _(CND) $FUNCNAME 'this is an error message'
-    mbfl_runtime_error_condition_is_a _(CND)
+    mbfl_runtime_error_condition_p _(CND)
 }
 function conditions-runtime-error-accessors-1.1 () {
     mbfl_default_object_declare(CND)
@@ -369,7 +369,7 @@ function conditions-logic-error-maker-1.1 () {
     mbfl_default_object_declare(CND)
 
     mbfl_logic_error_condition_make _(CND) $FUNCNAME 'this is an error message'
-    mbfl_logic_error_condition_is_a _(CND)
+    mbfl_logic_error_condition_p _(CND)
 }
 function conditions-logic-error-accessors-1.1 () {
     mbfl_default_object_declare(CND)
@@ -423,7 +423,7 @@ function conditions-invalid-ctor-parm-value-maker-1.1 () {
     colour_define _(gray) 9 9 9
 
     mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(gray) 'red' 'ciao'
-    mbfl_invalid_object_attrib_value_condition_is_a _(CND)
+    mbfl_invalid_object_attrib_value_condition_p _(CND)
 }
 function conditions-invalid-ctor-parm-value-maker-2.1 () {
     mbfl_default_object_declare(gray)
@@ -460,7 +460,7 @@ function conditions-invalid-ctor-parm-value-maker-2.2 () {
 function exception_handler_conditions_invalid_ctor_parm_value_maker_2_2 () {
     mbfl_mandatory_nameref_parameter(CND, 1, exceptional-condition object)
 
-    if mbfl_invalid_ctor_parm_value_condition_is_a _(CND)
+    if mbfl_invalid_ctor_parm_value_condition_p _(CND)
     then
 	#dotest-debug here
 
@@ -487,7 +487,7 @@ function conditions-invalid-attrib-value-maker-1.1 () {
     colour_define _(gray) 9 9 9
 
     mbfl_invalid_object_attrib_value_condition_make _(CND) $FUNCNAME _(gray) 'red' 'ciao'
-    mbfl_invalid_object_attrib_value_condition_is_a _(CND)
+    mbfl_invalid_object_attrib_value_condition_p _(CND)
 }
 function conditions-invalid-attrib-value-accessors-1.1 () {
     mbfl_default_object_declare(CND)
@@ -572,7 +572,7 @@ function conditions-invalid-function-parameter-1.1 () {
     mbfl_invalid_function_parameter_condition_parameter_name_var	_(PARAMETER_NAME)     _(CND)
     mbfl_invalid_function_parameter_condition_parameter_value_var	_(PARAMETER_VALUE)    _(CND)
 
-    mbfl_invalid_function_parameter_condition_is_a _(CND) &&
+    mbfl_invalid_function_parameter_condition_p _(CND) &&
 	dotest-equal	$FUNCNAME		"$WHO"			'attribute who' &&
 	dotest-equal	"$EXPECTED_MESSAGE"	"$MESSAGE"		'attribute message' &&
 	dotest-equal	'false'			"$CONTINUABLE"		'attribute continuable' &&

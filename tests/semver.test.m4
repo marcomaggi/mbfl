@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2020, 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -431,10 +431,7 @@ function semver-class-parser-input-2.1 () {
     declare -r INPUT_STRING="1.2.3-alpha.1"
 
     mbfl_semver_parser_input_make _(PARSER_INPUT) "$INPUT_STRING" 0
-    mbfl_semver_parser_input_is_a _(PARSER_INPUT)
-}
-function semver-class-parser-input-2.2 () {
-    ! mbfl_semver_parser_input_is_a 'ciao'
+    mbfl_semver_parser_input_p _(PARSER_INPUT)
 }
 
 ### ------------------------------------------------------------------------
@@ -522,7 +519,7 @@ function semver-class-semver-parser-2.1 () {
     declare PLV AUIBM
 
     mbfl_semver_parser_make_default _(SEMVER_PARSER)
-    mbfl_semver_parser_is_a _(SEMVER_PARSER)
+    mbfl_semver_parser_p _(SEMVER_PARSER)
 }
 
 function semver-class-semver-parser-3.1 () {
@@ -549,7 +546,7 @@ function handler_semver_class_semver_parser () {
 
     #echo $FUNCNAME enter $EXPECTED_ATTRIB_NAME >&2
 
-    if mbfl_invalid_object_attrib_value_condition_is_a _(CND)
+    if mbfl_invalid_object_attrib_value_condition_p _(CND)
     then
        	mbfl_declare_varref(ATTRIB_NAME)
 
@@ -785,7 +782,7 @@ function handler_semver_class_semver_spec_from_components () {
 
     #echo $FUNCNAME enter $EXPECTED_ATTRIB_NAME >&2
 
-    if mbfl_invalid_object_attrib_value_condition_is_a _(CND)
+    if mbfl_invalid_object_attrib_value_condition_p _(CND)
     then
        	mbfl_declare_varref(ATTRIB_NAME)
 
@@ -1292,7 +1289,7 @@ function handler_semver_parse_error () {
 
     #echo $FUNCNAME enter $EXPECTED_ATTRIB_NAME >&2
 
-    if mbfl_semver_parser_error_condition_is_a _(CND)
+    if mbfl_semver_parser_error_condition_p _(CND)
     then
 	mbfl_semver_parser_error_condition_message_var _(GOT_ERROR_MESSAGE) _(CND)
 	#printf '%s: messages\n\t%s\n\t%s\n' $FUNCNAME "$EXPECTED_ERROR_MESSAGE" "$GOT_ERROR_MESSAGE" >&2

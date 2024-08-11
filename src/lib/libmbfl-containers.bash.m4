@@ -13,7 +13,7 @@
 #!		https://sedgewick.io/
 #!		https://sedgewick.io/wp-content/themes/sedgewick/talks/2002QuicksortIsOptimal.pdf
 #!
-#! Copyright (c) 2023 Marco Maggi
+#! Copyright (c) 2023, 2024 Marco Maggi
 #! <mrc.mgg@gmail.com>
 #!
 #! This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -1610,7 +1610,7 @@ m4_define([[[MBFL_STACK_ACCESS_ARRAY]]],[[[
 ]]])
 
 m4_define([[[MBFL_STACK_VALIDATE_PARAMETER]]],[[[
-  if ! mbfl_stack_is_a _($1)
+  if ! mbfl_stack_p _($1)
   then
       mbfl_message_error_printf 'expected object of class "mbfl_stack" as parameter, got: "%s"' _($1)
       return_failure
@@ -1761,7 +1761,7 @@ m4_define([[[MBFL_VECTOR_ACCESS_ARRAY]]],[[[
 ]]])
 
 m4_define([[[MBFL_VECTOR_VALIDATE_PARAMETER]]],[[[
-  if ! mbfl_vector_is_a _($1)
+  if ! mbfl_vector_p _($1)
   then
       mbfl_message_error_printf 'expected object of class "mbfl_vector" as parameter, got: "%s"' _($1)
       return_failure

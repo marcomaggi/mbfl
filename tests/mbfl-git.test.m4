@@ -13,7 +13,7 @@
 #
 #	that will select these tests.
 #
-# Copyright (c) 2023 Marco Maggi
+# Copyright (c) 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -59,8 +59,7 @@ function mbfl-git-config-option-1.1 () {
 
     mbfl_vc_git_config_option_define _(thing) 'mine'
 
-    mbfl_default_object_is_a _(thing) &&
-	mbfl_vc_git_config_option_is_a _(thing)
+    mbfl_default_object_maybe_p _(thing) && mbfl_vc_git_config_option_p _(thing)
 }
 function mbfl-git-config-option-1.2 () {
     mbfl_default_object_declare(thing)
