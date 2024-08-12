@@ -3969,7 +3969,8 @@ false.
 
 Exceptional--condition objects are used to signal exceptional conditions while executing a script;
 these objects are handed to exception handlers to react to the condition, @ref{exceptions, Raising
-and handling exceptions}.
+and handling exceptions}.  Exceptional--condition objects are ``default objects'' as defined by the
+object--oriented programming facilities of @mbfl{}; @ref{objects} for details.
 
 @menu
 * conditions conventions::      Conventions.
@@ -4058,6 +4059,7 @@ mbfl_exception_raise _(CND)
 
 
 @deftp {Abstract Class} mbfl_exceptional_condition_t
+@deftpx {Proxy Variable} mbfl_exceptional_condition_t
 @deftpx {Superclass} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_abstract_class
 Base class describing exceptional--conditions; instances of this class's subclasses are used to
@@ -4072,7 +4074,7 @@ of a subclass of @class{mbfl_exceptional_condition_t}.
 @end deftp
 
 
-@defop {Predicate} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_p @var{OBJ}
+@defop {Predicate} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_p @var{DEFOBJ}
 Return true if the default object @var{OBJ} is an instance of @class{mbfl_exceptional_condition_t};
 otherwise return false.
 
@@ -4113,7 +4115,7 @@ mbfl_exceptional_condition_p _(CND)
 @subsubsection Attribute @code{who} of @class{mbfl_exceptional_condition_t}
 
 
-Given a subclass of @class{mbfl_exceptional_condition_t} we an use this attribute as follows:
+Given a subclass of @class{mbfl_exceptional_condition_t} we can use this attribute as follows:
 
 @example
 mbfl_default_object_declare(CND)
@@ -4142,7 +4144,7 @@ Class attribute accessor and mutator.
 @subsubsection Attribute @code{message} of @class{mbfl_exceptional_condition_t}
 
 
-Given a subclass of @class{mbfl_exceptional_condition_t} we an use this attribute as follows:
+Given a subclass of @class{mbfl_exceptional_condition_t} we can use this attribute as follows:
 
 @example
 mbfl_default_object_declare(CND)
@@ -4171,7 +4173,7 @@ Class attribute accessor and mutator.
 @subsubsection Attribute @code{continuable} of @class{mbfl_exceptional_condition_t}
 
 
-Given a subclass of @class{mbfl_exceptional_condition_t} we an use this attribute as follows:
+Given a subclass of @class{mbfl_exceptional_condition_t} we can use this attribute as follows:
 
 @example
 mbfl_default_object_declare(CND)
