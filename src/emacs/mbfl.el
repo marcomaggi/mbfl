@@ -845,6 +845,7 @@
        "mbfl_default_object_is_a"
        "mbfl_default_object_class_var"
        "mbfl_default_object_class_name_var"
+       "mbfl_the_default_object_p"
        "mbfl_the_default_class_p"
        "mbfl_the_default_abstract_class_p"
        "mbfl_default_class_define"
