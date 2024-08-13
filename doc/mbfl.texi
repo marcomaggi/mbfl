@@ -4044,8 +4044,8 @@ of a subclass of @class{mbfl_exceptional_condition_t}.
 
 
 @defop {Predicate} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_p @var{DEFOBJ}
-Return true if the default object @var{OBJ} is an instance of @class{mbfl_exceptional_condition_t};
-otherwise return false.
+Return true if the default object @var{DEFOBJ} is an instance of
+@class{mbfl_exceptional_condition_t}; otherwise return false.
 
 @example
 mbfl_default_object_declare(CND)
@@ -4267,6 +4267,7 @@ notify the user and resume the execution of the script.
 
 
 @deftp {Class} mbfl_warning_condition_t
+@deftpx {Proxy Variable} mbfl_warning_condition_t
 @deftpx {Superclass} mbfl_exceptional_condition_t
 @deftpx {Metaclass} mbfl_default_class
 Class describing warning exceptional--conditions; instances of this class are used to notify the
@@ -4274,8 +4275,9 @@ user about something.  Exceptional--conditions of this class should be continuab
 @end deftp
 
 
-@defop {Predicate} {mbfl_warning_condition_t} mbfl_warning_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_warning_condition_t}; otherwise return false.
+@defop {Predicate} {mbfl_warning_condition_t} mbfl_warning_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_warning_condition_t}; otherwise return
+false.
 
 @example
 mbfl_default_object_declare(CND)
@@ -4426,14 +4428,16 @@ mbfl_exception_raise _(CND)
 
 
 @deftp {Abstract Class} mbfl_error_condition_t
+@deftpx {Proxy Variable} mbfl_error_condition_t
 @deftpx {Superclass} mbfl_exceptional_condition_t
 @deftpx {Metaclass} mbfl_default_abstract_class
 Class describing error exceptional--conditions.
 @end deftp
 
 
-@defop {Predicate} {mbfl_error_condition_t} mbfl_error_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_error_condition_t}; otherwise return false.
+@defop {Predicate} {mbfl_error_condition_t} mbfl_error_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_error_condition_t}; otherwise return
+false.
 
 @example
 mbfl_default_object_declare(CND)
@@ -4525,6 +4529,7 @@ exit status.
 
 
 @deftp {Class} mbfl_logic_error_condition_t
+@deftpx {Proxy Variable} mbfl_logic_error_condition_t
 @deftpx {Superclass} mbfl_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
 Class describing logic--error exceptional--conditions.  Instances of this class should be
@@ -4532,8 +4537,8 @@ non--continuable.
 @end deftp
 
 
-@defop {Predicate} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_logic_error_condition_t}; otherwise return
+@defop {Predicate} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_logic_error_condition_t}; otherwise return
 false.
 
 @example
@@ -4655,6 +4660,7 @@ execution, otherwise terminate the process with a meaningful exit status.
 
 
 @deftp {Class} mbfl_runtime_error_condition_t
+@deftpx {Proxy Variable} mbfl_runtime_error_condition_t
 @deftpx {Superclass} mbfl_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
 Class describing runtime--error exceptional--conditions.  Instances of this class should be
@@ -4662,9 +4668,9 @@ continuable.
 @end deftp
 
 
-@defop {Predicate} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_runtime_error_condition_t}; otherwise return
-false.
+@defop {Predicate} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_runtime_error_condition_t}; otherwise
+return false.
 
 @example
 mbfl_default_object_declare(CND)
@@ -4778,6 +4784,7 @@ appropriate exit status.
 
 
 @deftp {Class} mbfl_uncaught_exceptional_condition_t
+@deftpx {Proxy Variable} mbfl_uncaught_exceptional_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
 Class describing uncaught exceptional--conditions.  Instances of this class should be
@@ -4785,9 +4792,9 @@ non--continuable.
 @end deftp
 
 
-@defop {Predicate} {mbfl_uncaught_exceptional_condition_t} mbfl_runtime_error_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_uncaught_exceptional_condition_t}; otherwise
-return false.
+@defop {Predicate} {mbfl_uncaught_exceptional_condition_t} mbfl_runtime_error_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_uncaught_exceptional_condition_t};
+otherwise return false.
 @end defop
 
 @c page
@@ -4910,6 +4917,7 @@ raised by class constructors.
 
 
 @deftp {Class} mbfl_invalid_ctor_parm_value_condition_t
+@deftpx {Proxy Variable} mbfl_invalid_ctor_parm_value_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
 Class describing invalid parameter value to object's constructor exceptional--conditions.  Instances
@@ -4917,8 +4925,8 @@ of this class should be non--continuable.
 @end deftp
 
 
-@defop {Predicate} {mbfl_invalid_ctor_parm_value_condition_t} mbfl_invalid_ctor_parm_value_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_invalid_ctor_parm_value_condition_t};
+@defop {Predicate} {mbfl_invalid_ctor_parm_value_condition_t} mbfl_invalid_ctor_parm_value_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_invalid_ctor_parm_value_condition_t};
 otherwise return false.
 
 @example
@@ -5127,6 +5135,7 @@ are usually raised by class attribute mutators.
 
 
 @deftp {Class} mbfl_invalid_object_attrib_value_condition_t
+@deftpx {Proxy Variable} mbfl_invalid_object_attrib_value_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
 Class describing invalid value to object's attribute exceptional--conditions.  Instances of this
@@ -5134,9 +5143,9 @@ class should be non--continuable.
 @end deftp
 
 
-@defop {Predicate} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_invalid_object_attrib_value_condition_t}; otherwise return
-false.
+@defop {Predicate} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_invalid_object_attrib_value_condition_t};
+otherwise return false.
 
 @example
 mbfl_default_object_declare(CND)
@@ -5335,6 +5344,7 @@ exit status.
 
 
 @deftp {Class} mbfl_outside_location_condition_t
+@deftpx {Proxy Variable} mbfl_outside_location_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
 Class describing invalid operation outside a location exceptional--conditions.  Instances of this
@@ -5342,8 +5352,8 @@ class should be non--continuable.
 @end deftp
 
 
-@defop {Predicate} {mbfl_outside_location_condition_t} mbfl_outside_location_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_outside_location_condition_t}; otherwise
+@defop {Predicate} {mbfl_outside_location_condition_t} mbfl_outside_location_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_outside_location_condition_t}; otherwise
 return false.
 
 @example
@@ -5490,14 +5500,15 @@ exit status.
 
 
 @deftp {Class} mbfl_wrong_parameters_number_condition_t
+@deftpx {Proxy Variable} mbfl_wrong_parameters_number_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
 Class describing a programming error.  Instances of this class should be non--continuable.
 @end deftp
 
 
-@defop {Predicate} {mbfl_wrong_parameters_number_condition_t} mbfl_wrong_parameters_number_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_wrong_parameters_number_condition_t};
+@defop {Predicate} {mbfl_wrong_parameters_number_condition_t} mbfl_wrong_parameters_number_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_wrong_parameters_number_condition_t};
 otherwise return false.
 @end defop
 
@@ -5697,6 +5708,7 @@ exit status.
 
 
 @deftp {Class} mbfl_invalid_function_parameter_condition_t
+@deftpx {Proxy Variable} mbfl_invalid_function_parameter_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
 Class describing invalid parameter to function call exceptional--conditions.  Instances of this
@@ -5704,8 +5716,8 @@ class should be non--continuable.
 @end deftp
 
 
-@defop {Predicate} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_p @var{OBJ}
-Return true if @var{OBJ} is an instance of @class{mbfl_invalid_function_parameter_condition_t};
+@defop {Predicate} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_p @var{DEFOBJ}
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_invalid_function_parameter_condition_t};
 otherwise return false.
 @end defop
 
