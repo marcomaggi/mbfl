@@ -53,6 +53,10 @@ changes!
 * BACKWARDS  INCOMPATIBILITY  The  library "libmbfltest.bash"  has  been
   renamed to "libmbfl-tests.bash".
 
+* BACKWARDS INCOMPATIBILITY  Removed support for loading  libraries into
+  interactive shell by "disabling" some dangerous features; the variable
+  "mbfl_INTERACTIVE" does not exist anymore.
+
 * BACKWARDS INCOMPATIBILITY The macro "mbfl_command_line_argument()" now
   uses "declare" rather than "local".
 

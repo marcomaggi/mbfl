@@ -44,14 +44,11 @@ mbfl_slot_set($1, [[[$]]]$3, "[[[$]]]$2_VALUE")
 
 #### global variables
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    mbfl_default_class_declare(mbfl_stack_t)
-    mbfl_default_class_declare(mbfl_vector_t)
+mbfl_default_class_declare(mbfl_stack_t)
+mbfl_default_class_declare(mbfl_vector_t)
 
-    mbfl_default_class_define _(mbfl_stack_t)  _(mbfl_default_object) 'mbfl_stack'  array
-    mbfl_default_class_define _(mbfl_vector_t) _(mbfl_default_object) 'mbfl_vector' array
-fi
+mbfl_default_class_define _(mbfl_stack_t)  _(mbfl_default_object) 'mbfl_stack'  array
+mbfl_default_class_define _(mbfl_vector_t) _(mbfl_default_object) 'mbfl_vector' array
 
 
 #### arrays: subroutines for multi arrays handling
@@ -1318,9 +1315,7 @@ function mbfl_p_array_quicksort3_bang () {
 
 #### arrays: insert sort
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then declare -i mbfl_array_INSERTSORT_LINEAR_LIMIT=5
-fi
+declare -i mbfl_array_INSERTSORT_LINEAR_LIMIT=5
 
 function mbfl_array_insertsort_bang () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRY,	1, reference to index array)

@@ -99,12 +99,9 @@ m4_define([[[MBFL_STDOBJ__FUNCNAME_PATTERN__MUTATOR]]],		[[['%s_%s_set']]])
 
 #### global variables
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    mbfl_default_class_declare(mbfl_default_object)
-    mbfl_default_class_declare(mbfl_default_class)
-    mbfl_default_class_declare(mbfl_default_abstract_class)
-fi
+mbfl_default_class_declare(mbfl_default_object)
+mbfl_default_class_declare(mbfl_default_class)
+mbfl_default_class_declare(mbfl_default_abstract_class)
 
 
 #### default object class
@@ -112,15 +109,12 @@ fi
 # The object "mbfl_default_object" is the default class of objects created by "mbfl_object_define".
 #
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    mbfl_slot_set(mbfl_default_object, MBFL_STDOBJ__CLASS_INDEX,		_(mbfl_default_abstract_class))
-    mbfl_slot_set(mbfl_default_object, MBFL_STDCLS__FIELD_INDEX__PARENT,       '')
-    mbfl_slot_set(mbfl_default_object, MBFL_STDCLS__FIELD_INDEX__NAME,         'mbfl_default_object')
-    mbfl_slot_set(mbfl_default_object, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER, 0)
+mbfl_slot_set(mbfl_default_object, MBFL_STDOBJ__CLASS_INDEX,			_(mbfl_default_abstract_class))
+mbfl_slot_set(mbfl_default_object, MBFL_STDCLS__FIELD_INDEX__PARENT,		'')
+mbfl_slot_set(mbfl_default_object, MBFL_STDCLS__FIELD_INDEX__NAME,		'mbfl_default_object')
+mbfl_slot_set(mbfl_default_object, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER,	0)
 
-    # This class adds no fields to its instances: we store nothing after the number of fields.
-fi
+# This class adds no fields to its instances: we store nothing after the number of fields.
 
 
 #### default metaclass
@@ -129,19 +123,16 @@ fi
 # it is also the class of itself.
 #
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    mbfl_slot_set(mbfl_default_class, MBFL_STDOBJ__CLASS_INDEX,			_(mbfl_default_class))
-    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__PARENT,		_(mbfl_default_object))
-    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__NAME,		'mbfl_default_class')
-    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER,	3)
+mbfl_slot_set(mbfl_default_class, MBFL_STDOBJ__CLASS_INDEX,			_(mbfl_default_class))
+mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__PARENT,		_(mbfl_default_object))
+mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__NAME,		'mbfl_default_class')
+mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER,	3)
 
-    # This class adds fields to its instances, so  we store their specifications after the number of
-    # fields.
-    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_SPEC_INDEX__PARENT,        'parent')
-    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_SPEC_INDEX__NAME,          'name')
-    mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_SPEC_INDEX__FIELDS_NUMBER, 'fields_number')
-fi
+# This class  adds fields to  its instances, so  we store their  specifications after the  number of
+# fields.
+mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_SPEC_INDEX__PARENT,        'parent')
+mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_SPEC_INDEX__NAME,          'name')
+mbfl_slot_set(mbfl_default_class, MBFL_STDCLS__FIELD_SPEC_INDEX__FIELDS_NUMBER, 'fields_number')
 
 
 #### default abstract class
@@ -150,19 +141,16 @@ fi
 # "mbfl_default_abstract_class_define".
 #
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDOBJ__CLASS_INDEX,		_(mbfl_default_class))
-    mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_INDEX__PARENT,	_(mbfl_default_class))
-    mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_INDEX__NAME,		'mbfl_default_abstract_class')
-    mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER,	3)
+mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDOBJ__CLASS_INDEX,			_(mbfl_default_class))
+mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_INDEX__PARENT,		_(mbfl_default_class))
+mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_INDEX__NAME,		'mbfl_default_abstract_class')
+mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_INDEX__FIELDS_NUMBER,	3)
 
-    # This class adds fields to its instances, so  we store their specifications after the number of
-    # fields.
-    mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_SPEC_INDEX__PARENT,        'parent')
-    mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_SPEC_INDEX__NAME,          'name')
-    mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_SPEC_INDEX__FIELDS_NUMBER, 'fields_number')
-fi
+# This class  adds fields to  its instances, so  we store their  specifications after the  number of
+# fields.
+mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_SPEC_INDEX__PARENT,        'parent')
+mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_SPEC_INDEX__NAME,          'name')
+mbfl_slot_set(mbfl_default_abstract_class, MBFL_STDCLS__FIELD_SPEC_INDEX__FIELDS_NUMBER, 'fields_number')
 
 
 #### predicates, accessors and operations for instances of "mbfl_default_class"
@@ -873,18 +861,14 @@ function mbfl_p_object_make_function () {
 
 #### predefined constants
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    mbfl_default_class_declare(mbfl_predefined_constant)
-    mbfl_default_class_define _(mbfl_predefined_constant) _(mbfl_default_object) 'mbfl_predefined_constant'
+mbfl_default_class_declare(mbfl_predefined_constant)
+mbfl_default_class_define _(mbfl_predefined_constant) _(mbfl_default_object) 'mbfl_predefined_constant'
 
-    mbfl_default_object_declare(mbfl_unspecified)
-    mbfl_default_object_declare(mbfl_undefined)
+mbfl_default_object_declare(mbfl_unspecified)
+mbfl_default_object_declare(mbfl_undefined)
 
-    #declare -f -p mbfl_predefined_constant_define >&2
-    mbfl_predefined_constant_define _(mbfl_unspecified)
-    mbfl_predefined_constant_define _(mbfl_undefined)
-fi
+mbfl_predefined_constant_define _(mbfl_unspecified)
+mbfl_predefined_constant_define _(mbfl_undefined)
 
 function mbfl_the_unspecified_p () {
     mbfl_optional_parameter(mbfl_SELF_DATAVAR, 1)

@@ -10,7 +10,7 @@
 #!
 #!		<https://en.wikipedia.org/wiki/ISO_basic_Latin_alphabet>
 #!
-#! Copyright (c) 2020, 2023 Marco Maggi
+#! Copyright (c) 2020, 2023, 2024 Marco Maggi
 #! <mrc.mgg@gmail.com>
 #!
 #! This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -26,9 +26,7 @@
 #! 02111-1307 USA.
 #!
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then declare -r mbfl_LOADED_MBFLPASSWORDS='yes'
-fi
+declare -r mbfl_LOADED_MBFLPASSWORDS='yes'
 
 
 #### macros

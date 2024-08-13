@@ -100,45 +100,42 @@ function mbfl_string_is_a_semver_parser_accept_underscore_in_build_metadata_opti
 
 #### class definitions
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    # These regular expressions must not contain the leading "+" character.
-    declare -ra MBFL_SEMVER_REX_BUILD_METADATA=([0]='^(([0-9A-Za-z\-]+)(\.([0-9A-Za-z\-]+))*)'
-						[1]='^(([0-9A-Za-z\-]+)(\.([0-9A-Za-z\-]+))*)$'
-						[2]=[[['^(([0-9A-Za-z_\-]+)(\.([0-9A-Za-z_\-]+))*)']]]
-						[3]=[[['^(([0-9A-Za-z_\-]+)(\.([0-9A-Za-z_\-]+))*)$']]])
+# These regular expressions must not contain the leading "+" character.
+declare -ra MBFL_SEMVER_REX_BUILD_METADATA=([0]='^(([0-9A-Za-z\-]+)(\.([0-9A-Za-z\-]+))*)'
+					    [1]='^(([0-9A-Za-z\-]+)(\.([0-9A-Za-z\-]+))*)$'
+					    [2]=[[['^(([0-9A-Za-z_\-]+)(\.([0-9A-Za-z_\-]+))*)']]]
+					    [3]=[[['^(([0-9A-Za-z_\-]+)(\.([0-9A-Za-z_\-]+))*)$']]])
 
-    mbfl_default_class_declare(mbfl_semver_parser_input_t)
-    mbfl_default_class_declare(mbfl_semver_parser_t)
-    mbfl_default_class_declare(mbfl_semver_spec_t)
+mbfl_default_class_declare(mbfl_semver_parser_input_t)
+mbfl_default_class_declare(mbfl_semver_parser_t)
+mbfl_default_class_declare(mbfl_semver_spec_t)
 
-    mbfl_default_class_declare(mbfl_semver_parser_error_condition_t)
+mbfl_default_class_declare(mbfl_semver_parser_error_condition_t)
 
-    mbfl_default_class_define _(mbfl_semver_parser_input_t) _(mbfl_default_object)	\
-			      'mbfl_semver_parser_input'				\
-			      string start_index end_index
+mbfl_default_class_define _(mbfl_semver_parser_input_t) _(mbfl_default_object)	\
+			  'mbfl_semver_parser_input'				\
+			  string start_index end_index
 
-    mbfl_default_class_define _(mbfl_semver_parser_t) _(mbfl_default_object)		\
-			      'mbfl_semver_parser'					\
-			      parse_leading_v accept_underscore_in_build_metadata	\
-			      error_message
+mbfl_default_class_define _(mbfl_semver_parser_t) _(mbfl_default_object)		\
+			  'mbfl_semver_parser'					\
+			  parse_leading_v accept_underscore_in_build_metadata	\
+			  error_message
 
-    mbfl_default_class_define _(mbfl_semver_spec_t) _(mbfl_default_object)		\
-			      'mbfl_semver_spec'					\
-			      major_number minor_number patch_level			\
-			      prerelease_version build_metadata
+mbfl_default_class_define _(mbfl_semver_spec_t) _(mbfl_default_object)		\
+			  'mbfl_semver_spec'					\
+			  major_number minor_number patch_level			\
+			  prerelease_version build_metadata
 
-    # mbfl_default_class_define _(mbfl_semver_comparator_t) _(mbfl_default_object)	\
-	# 			      'mbfl_semver_comparator'					\
-	# 			      major_number minor_number patch_level			\
-	# 			      prerelease_version
+# mbfl_default_class_define _(mbfl_semver_comparator_t) _(mbfl_default_object)	\
+    # 			      'mbfl_semver_comparator'					\
+    # 			      major_number minor_number patch_level			\
+    # 			      prerelease_version
 
-    # mbfl_default_class_define _(mbfl_semver_parser_t) _(mbfl_default_object)		\
-	# 			      'mbfl_semver_parser'					\
-	# 			      error_message
+# mbfl_default_class_define _(mbfl_semver_parser_t) _(mbfl_default_object)		\
+    # 			      'mbfl_semver_parser'					\
+    # 			      error_message
 
-    mbfl_function_rename 'mbfl_semver_parser_input_end_index_set'   'mbfl_p_semver_parser_input_end_index_set'
-fi
+mbfl_function_rename 'mbfl_semver_parser_input_end_index_set'   'mbfl_p_semver_parser_input_end_index_set'
 
 function mbfl_initialise_module_semver () {
     mbfl_default_class_define _(mbfl_semver_parser_error_condition_t) _(mbfl_runtime_error_condition_t) \

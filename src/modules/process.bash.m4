@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (C) 2020, 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
 # General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
@@ -22,9 +22,7 @@
 # 02111-1307 USA.
 #
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then declare -ir mbfl_PID=$$
-fi
+declare -ir mbfl_PID=$$
 
 function mbfl_process_enable () {
     set -m

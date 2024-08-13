@@ -12,7 +12,7 @@
 #         Support for encoded argument values is provided and requires
 #       the "encode.sh" file to be included in the script.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020, 2023 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -34,16 +34,13 @@
 
 #### global variables
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    declare -i mbfl_getopts_INDEX=0
-    mbfl_declare_index_array(mbfl_getopts_KEYWORDS)
-    mbfl_declare_index_array(mbfl_getopts_DEFAULTS)
-    mbfl_declare_index_array(mbfl_getopts_BRIEFS)
-    mbfl_declare_index_array(mbfl_getopts_LONGS)
-    mbfl_declare_index_array(mbfl_getopts_HASARG)
-    mbfl_declare_index_array(mbfl_getopts_DESCRIPTION)
-fi
+declare -i mbfl_getopts_INDEX=0
+mbfl_declare_index_array(mbfl_getopts_KEYWORDS)
+mbfl_declare_index_array(mbfl_getopts_DEFAULTS)
+mbfl_declare_index_array(mbfl_getopts_BRIEFS)
+mbfl_declare_index_array(mbfl_getopts_LONGS)
+mbfl_declare_index_array(mbfl_getopts_HASARG)
+mbfl_declare_index_array(mbfl_getopts_DESCRIPTION)
 
 function mbfl_getopts_reset () {
     unset mbfl_getopts_KEYWORDS
@@ -65,8 +62,7 @@ function mbfl_getopts_reset () {
 
 #### default options description
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then mbfl_message_DEFAULT_OPTIONS="
+mbfl_message_DEFAULT_OPTIONS="
 \t--tmpdir=DIR
 \t\tselect a directory for temporary files
 \t-i --interactive
@@ -113,7 +109,6 @@ then mbfl_message_DEFAULT_OPTIONS="
 \t\tprint usage informations and the list of script specific
 \t\toptions, then exit
 "
-fi
 
 
 function mbfl_declare_option () {

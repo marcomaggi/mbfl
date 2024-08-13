@@ -7,7 +7,7 @@
 #
 #
 #
-# Copyright (C) 2013, 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (C) 2013, 2018, 2020, 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
 # General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
@@ -25,66 +25,63 @@
 
 #### global variables
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    # Associative array:  the keys are the  names of the action  sets, the values are  "true".  If a
-    # string represents  the name of an  action set: it  is a key in  this array.  If a  string does
-    # *not* represent the name of an action set: it is not a key in this array.
-    #
-    mbfl_declare_assoc_array(mbfl_action_sets_EXISTS)
+# Associative array: the keys are the names of the  action sets, the values are "true".  If a string
+# represents the name of an action set: it is a key in this array.  If a string does *not* represent
+# the name of an action set: it is not a key in this array.
+#
+mbfl_declare_assoc_array(mbfl_action_sets_EXISTS)
 
-    # Associative array: the keys are strings like:
-    #
-    #   ${ACTION_SET}-${ACTION_IDENTIFIER}
-    #
-    # the values are the names of the actions sets being subsets of $ACTION_SET.
-    #
-    # Every action set might be associated to multiple action identifiers.
-    #
-    # * If the pair $ACTION_SET,  $ACTION_IDENTIFIER is a non-leaf node in the  actions tree: it has
-    #   an action subset, whose name is the value in this array.
-    #
-    # * If the pair  $ACTION_SET, $ACTION_IDENTIFIER is a leaf  node in the actions tree:  it has no
-    #   action subset, and the value in this this array is the special name "NONE".
-    #
-    mbfl_declare_assoc_array(mbfl_action_sets_SUBSETS)
+# Associative array: the keys are strings like:
+#
+#   ${ACTION_SET}-${ACTION_IDENTIFIER}
+#
+# the values are the names of the actions sets being subsets of $ACTION_SET.
+#
+# Every action set might be associated to multiple action identifiers.
+#
+# * If the pair  $ACTION_SET, $ACTION_IDENTIFIER is a non-leaf  node in the actions tree:  it has an
+#   action subset, whose name is the value in this array.
+#
+# * If the pair $ACTION_SET, $ACTION_IDENTIFIER is a leaf node in the actions tree: it has no action
+#   subset, and the value in this this array is the special name "NONE".
+#
+mbfl_declare_assoc_array(mbfl_action_sets_SUBSETS)
 
-    # Associative array: the keys are strings like:
-    #
-    #   ${ACTION_SET}-${ACTION_IDENTIFIER}
-    #
-    # the values are strings used to compose the function names associated with the script action.
-    #
-    # Every action set  might be associated to  multiple action identifiers.  The  strings from this
-    # array's  values are  used to  compose the  main function  name, the  "before parsing  options"
-    # function name, the "after parsing options" function name as follows:
-    #
-    #   script_before_parsing_options_$KEYWORD
-    #   script_after_parsing_options_$KEYWORD
-    #   script_action_$KEYWORD
-    #
-    mbfl_declare_assoc_array(mbfl_action_sets_KEYWORDS)
+# Associative array: the keys are strings like:
+#
+#   ${ACTION_SET}-${ACTION_IDENTIFIER}
+#
+# the values are strings used to compose the function names associated with the script action.
+#
+# Every  action set  might be  associated to  multiple action  identifiers.  The  strings from  this
+# array's values are used  to compose the main function name, the  "before parsing options" function
+# name, the "after parsing options" function name as follows:
+#
+#   script_before_parsing_options_$KEYWORD
+#   script_after_parsing_options_$KEYWORD
+#   script_action_$KEYWORD
+#
+mbfl_declare_assoc_array(mbfl_action_sets_KEYWORDS)
 
-    # Associative array: the keys are strings like:
-    #
-    #   ${ACTION_SET}-${ACTION_IDENTIFIER}
-    #
-    # the  values are  strings representing  a description  of the  associated script  action.  Such
-    # descriptions are used when composing the help screen.
-    #
-    mbfl_declare_assoc_array(mbfl_action_sets_DESCRIPTIONS)
+# Associative array: the keys are strings like:
+#
+#   ${ACTION_SET}-${ACTION_IDENTIFIER}
+#
+# the  values  are  strings representing  a  description  of  the  associated script  action.   Such
+# descriptions are used when composing the help screen.
+#
+mbfl_declare_assoc_array(mbfl_action_sets_DESCRIPTIONS)
 
-    # Associative array:  the keys are  the ${ACTION_SET}, the  values are strings  representing the
-    # action command line arguments.
-    #
-    mbfl_declare_assoc_array(mbfl_action_sets_IDENTIFIERS)
+# Associative array: the keys are the ${ACTION_SET},  the values are strings representing the action
+# command line arguments.
+#
+mbfl_declare_assoc_array(mbfl_action_sets_IDENTIFIERS)
 
-    # If "mbfl_actions_dispatch()" selects an action set: its name is stored here.  This variable is
-    # used when composing the help screen.
-    #
-    # The default value "NONE" indicates that there is currently no action selected.
-    declare mbfl_action_sets_SELECTED_SET=NONE
-fi
+# If "mbfl_actions_dispatch()"  selects an action  set: its name is  stored here.  This  variable is
+# used when composing the help screen.
+#
+# The default value "NONE" indicates that there is currently no action selected.
+declare mbfl_action_sets_SELECTED_SET=NONE
 
 
 # Declare a new action set.

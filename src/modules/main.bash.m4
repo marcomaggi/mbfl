@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
+# Copyright (c) 2004-2005, 2009, 2013, 2018, 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -35,51 +35,48 @@ MBFL_DEFINE_UNDERSCORE_MACRO()
 
 #### generic variables
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    declare mbfl_option_TMPDIR=${TMPDIR:-/tmp/${USER}}
-    declare -r mbfl_ORG_PWD=$PWD
+declare mbfl_option_TMPDIR=${TMPDIR:-/tmp/${USER}}
+declare -r mbfl_ORG_PWD=$PWD
 
-    declare -i ARGC=0 ARGC1=0 ARG1ST=0
-    mbfl_declare_index_array(ARGV) ARGV1
+declare -i ARGC=0 ARGC1=0 ARG1ST=0
+mbfl_declare_index_array(ARGV) ARGV1
 
-    for ((ARGC1=0; $# > 0; ++ARGC1))
-    do
-        ARGV1[$ARGC1]=$1
-        shift
-    done
+for ((ARGC1=0; $# > 0; ++ARGC1))
+do
+    ARGV1[$ARGC1]=$1
+    shift
+done
 
-    # The name of the main function  to be called when no special action
-    # is requested.  This  value can be customised by both  the MBFL and
-    # the user script by calling the function "mbfl_main_set_main()".
-    #
-    declare mbfl_main_SCRIPT_FUNCTION=main
+# The name of the main function  to be called when no special action
+# is requested.  This  value can be customised by both  the MBFL and
+# the user script by calling the function "mbfl_main_set_main()".
+#
+declare mbfl_main_SCRIPT_FUNCTION=main
 
-    # The name of  the main function to be called  whtn a special action
-    # is requested, for example: printing the required external programs
-    # then exit.   This value  is for  internal use only  and it  can be
-    # changed      by     MBFL      by     calling      the     function
-    # "mbfl_main_set_private_main()".
-    #
-    # When  this variable  is  not set  to the  empty  string: it  takes
-    # precedence over the value selected by "mbfl_main_SCRIPT_FUNCTION".
-    #
-    declare mbfl_main_PRIVATE_SCRIPT_FUNCTION=
+# The name of  the main function to be called  whtn a special action
+# is requested, for example: printing the required external programs
+# then exit.   This value  is for  internal use only  and it  can be
+# changed      by     MBFL      by     calling      the     function
+# "mbfl_main_set_private_main()".
+#
+# When  this variable  is  not set  to the  empty  string: it  takes
+# precedence over the value selected by "mbfl_main_SCRIPT_FUNCTION".
+#
+declare mbfl_main_PRIVATE_SCRIPT_FUNCTION=
 
-    # The name of the function to be called right before parsing command
-    # line options.  This  value can be customised by both  the MBFL and
-    # the      user     script      by     calling      the     function
-    # "mbfl_main_set_before_parsing_options()".
-    #
-    declare mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS=script_before_parsing_options
+# The name of the function to be called right before parsing command
+# line options.  This  value can be customised by both  the MBFL and
+# the      user     script      by     calling      the     function
+# "mbfl_main_set_before_parsing_options()".
+#
+declare mbfl_main_SCRIPT_BEFORE_PARSING_OPTIONS=script_before_parsing_options
 
-    # The name of the function to  be called right after parsing command
-    # line options.  This  value can be customised by both  the MBFL and
-    # the      user     script      by     calling      the     function
-    # "mbfl_main_set_before_parsing_options()".
-    #
-    declare mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=script_after_parsing_options
-fi
+# The name of the function to  be called right after parsing command
+# line options.  This  value can be customised by both  the MBFL and
+# the      user     script      by     calling      the     function
+# "mbfl_main_set_before_parsing_options()".
+#
+declare mbfl_main_SCRIPT_AFTER_PARSING_OPTIONS=script_after_parsing_options
 
 function mbfl_main_set_main () {
     mbfl_mandatory_parameter(FUNC,1,main function name)
@@ -100,9 +97,7 @@ function mbfl_main_set_after_parsing_options () {
 
 #### exit codes management
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then declare -i mbfl_main_pending_EXIT_CODE=0
-fi
+declare -i mbfl_main_pending_EXIT_CODE=0
 
 # NOTE Use of this function is deprecated; it is still here for backwards compatibility.  (Marco
 # Maggi; Nov 11, 2020)
@@ -148,9 +143,6 @@ function mbfl_main_print_exit_code_names () {
 
 
 #### license message variables
-
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
 
 declare -r mbfl_message_LICENSE_GPL="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
@@ -270,13 +262,8 @@ DISTRIBUTORS  HAVE  NO  OBLIGATION   TO  PROVIDE  MAINTENANCE,  SUPPORT,
 UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 "
 
-fi
-
 
 #### version message variables
-
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
 
 declare -r mbfl_message_VERSION="${script_PROGNAME} version ${script_VERSION}
 Written by ${script_AUTHOR}.\n
@@ -285,8 +272,6 @@ This is free software; see the  source or use the '--license' option for
 copying conditions.  There is NO warranty; not  even for MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.
 "
-
-fi
 
 
 #### printing stuff

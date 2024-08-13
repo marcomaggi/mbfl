@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
 # General Public  License as published by  the Free Software  Foundation; either version 3.0  of the
@@ -30,15 +30,12 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 #### global variables
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    mbfl_declare_index_array(mbfl_location_HOOKS)
+mbfl_declare_index_array(mbfl_location_HOOKS)
 
-    # Identifier from the atexit  module, associated to the atexit handler that  cleans up the stack
-    # of locations.
-    #
-    declare mbfl_location_ATEXIT_ID
-fi
+# Identifier from the  atexit module, associated to the  atexit handler that cleans up  the stack of
+# locations.
+#
+declare mbfl_location_ATEXIT_ID
 
 
 #### location delimiters

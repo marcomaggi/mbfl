@@ -289,7 +289,6 @@ privileges.
 @menu
 * overview loading::            How to load the core library.
 * overview autotools::          Using the @gnu{} Autotools.
-* overview interactive::        Using the library interactively.
 * overview rv::                 Result variables.
 * overview notes::              Miscellaneous notes.
 @end menu
@@ -377,36 +376,6 @@ directory, and the libraries pathnames.
 In the template file @file{Makefile.am} we can use the @env{MBFL_} variables to drive the loading or
 embedding of libraries into our scripts, libraries and test files.
 @end enumerate
-
-@c page
-@node overview interactive
-@section Using the library interactively
-
-
-It is possible, but not recommended, to source the core library in an interactive shell, though some
-modules must be disabled.  The purpose of interactive loading is only to test and debug the
-functions by hand.
-
-To do this execute the following code in the shell before sourcing the library:
-
-@example
-declare -r mbfl_INTERACTIVE=yes
-@end example
-
-@noindent
-without exporting the variable.  The ``dangerous'' blocks of code in the library are surrounded by:
-
-@example
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    ...
-fi
-@end example
-
-@noindent
-so they are not executed.  Disabled modules are: main, actions, getopts, signal; ``disabled'' does
-not mean that the functions are not there: only the global variable declarations are excluded; this
-is a little dirty, but, at present, it should work.
 
 @c page
 @node overview rv

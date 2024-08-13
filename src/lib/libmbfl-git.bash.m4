@@ -8,7 +8,7 @@
 #!
 #!	Very basic interface to the version control program GIT.
 #!
-#! Copyright (c) 2023 Marco Maggi
+#! Copyright (c) 2023, 2024 Marco Maggi
 #! <mrc.mgg@gmail.com>
 #!
 #! This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -35,37 +35,34 @@ m4_define([[[_]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_sl
 
 #### global variables
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    mbfl_default_class_declare(mbfl_vc_git_config_option)
+mbfl_default_class_declare(mbfl_vc_git_config_option)
 
-    mbfl_default_class_define _(mbfl_vc_git_config_option) _(mbfl_default_object) 'mbfl_vc_git_config_option' \
-			      database key default_value type terminator
+mbfl_default_class_define _(mbfl_vc_git_config_option) _(mbfl_default_object) 'mbfl_vc_git_config_option' \
+			  database key default_value type terminator
 
-    # Rename the constructor  and mutator functions of the class  "mbfl_vc_git_config_option", so that they
-    # can be reimplemented with functions validating the new field value.  The field "default_value"
-    # needs no validation.
-    #
-    # I do not like this, but with the current class implementation that's the way it is.  Maybe, in
-    # some future, it will be possible to specify  the identifiers of a field's accessor and mutator
-    # at class defintion time.  (Marco Maggi; Mar 29, 2023)
-    #
-    {
-	declare mbfl_FIELD_NAME mbfl_SRC_FUNCNAME mbfl_DST_FUNCNAME
+# Rename the  constructor and mutator  functions of  the class "mbfl_vc_git_config_option",  so that
+# they  can   be  reimplemented  with  functions   validating  the  new  field   value.   The  field
+# "default_value" needs no validation.
+#
+# I do not  like this, but with  the current class implementation  that's the way it  is.  Maybe, in
+# some future, it will  be possible to specify the identifiers of a  field's accessor and mutator at
+# class defintion time.  (Marco Maggi; Mar 29, 2023)
+#
+{
+    declare mbfl_FIELD_NAME mbfl_SRC_FUNCNAME mbfl_DST_FUNCNAME
 
-	mbfl_function_rename 'mbfl_vc_git_config_option_define' 'mbfl_p_vc_git_config_option_define'
-	for mbfl_FIELD_NAME in database key type terminator
-	do
-	    printf -v mbfl_SRC_FUNCNAME 'mbfl_vc_git_config_option_%s_set'   "$mbfl_FIELD_NAME"
-	    printf -v mbfl_DST_FUNCNAME 'mbfl_p_vc_git_config_option_%s_set' "$mbfl_FIELD_NAME"
-	    mbfl_function_rename "$mbfl_SRC_FUNCNAME" "$mbfl_DST_FUNCNAME"
-	done
-    }
+    mbfl_function_rename 'mbfl_vc_git_config_option_define' 'mbfl_p_vc_git_config_option_define'
+    for mbfl_FIELD_NAME in database key type terminator
+    do
+	printf -v mbfl_SRC_FUNCNAME 'mbfl_vc_git_config_option_%s_set'   "$mbfl_FIELD_NAME"
+	printf -v mbfl_DST_FUNCNAME 'mbfl_p_vc_git_config_option_%s_set' "$mbfl_FIELD_NAME"
+	mbfl_function_rename "$mbfl_SRC_FUNCNAME" "$mbfl_DST_FUNCNAME"
+    done
+}
 
-    # Global variable used to cache the result of "mbfl_vc_git_repository_top_srcdir_var()".
-    #
-    declare -g mbfl_vc_git_REPOSITORY_TOP_SRCDIR_CACHED_VALUE=
-fi
+# Global variable used to cache the result of "mbfl_vc_git_repository_top_srcdir_var()".
+#
+declare -g mbfl_vc_git_REPOSITORY_TOP_SRCDIR_CACHED_VALUE=
 
 
 #### library initialisation

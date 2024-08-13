@@ -12,7 +12,7 @@
 #	functionalities; in the  way the author has understood parameter  expansion: there are cases
 #	that are not correctly handled.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2017, 2018, 2020, 2023 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2017, 2018, 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -96,14 +96,11 @@ function mbfl_p_file_looking_at_component_beginning () {
 
 #### changing directory functions
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    # Index array used to  store commands to execute whenever the  current directory changes because
-    # of a call to "mbfl_change_directory()".
-    #
-    mbfl_declare_global_varref(mbfl_CHANGE_DIRECTORY_HOOK)
-    mbfl_hook_define _(mbfl_CHANGE_DIRECTORY_HOOK)
-fi
+# Index array used to store commands to execute  whenever the current directory changes because of a
+# call to "mbfl_change_directory()".
+#
+mbfl_declare_global_varref(mbfl_CHANGE_DIRECTORY_HOOK)
+mbfl_hook_define _(mbfl_CHANGE_DIRECTORY_HOOK)
 
 function mbfl_cd () {
     mbfl_mandatory_parameter(DIRECTORY, 1, directory)

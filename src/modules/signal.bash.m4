@@ -32,25 +32,22 @@ MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 #### global variables
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
-    # Global integer variable representing the maximum signal number.
-    #
-    declare -i mbfl_signal_MAX_SIGNUM
+# Global integer variable representing the maximum signal number.
+#
+declare -i mbfl_signal_MAX_SIGNUM
 
-    # Global assoc array mapping signal names to signal numbers.
-    #
-    mbfl_declare_assoc_array(mbfl_signal_SIGNAMES_TO_SIGNUMS)
+# Global assoc array mapping signal names to signal numbers.
+#
+mbfl_declare_assoc_array(mbfl_signal_SIGNAMES_TO_SIGNUMS)
 
-    # Global index array mapping signal numbers to signal names.
-    #
-    mbfl_declare_assoc_array(mbfl_signal_SIGNUMS_TO_SIGNAMES)
+# Global index array mapping signal numbers to signal names.
+#
+mbfl_declare_assoc_array(mbfl_signal_SIGNUMS_TO_SIGNAMES)
 
-    # Global  index array  mapping signal  numbers  to handler  hooks.   When requested:  a hook  is
-    # constructed and its datavar stored in this array to hold signal handlers.
-    #
-    mbfl_declare_index_array(mbfl_signal_HOOKS)
-fi
+# Global  index array  mapping signal  numbers  to handler  hooks.   When requested:  a hook  is
+# constructed and its datavar stored in this array to hold signal handlers.
+#
+mbfl_declare_index_array(mbfl_signal_HOOKS)
 
 function mbfl_signal_enable () {
     declare mbfl_SIGNAME

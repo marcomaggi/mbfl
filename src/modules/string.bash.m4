@@ -11,7 +11,7 @@
 #       The functions make heavy usage of  special variable substitutions (like ${name:num:num}) so,
 #       maybe, other Bourne shells will not work at all.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020, 2023 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2014, 2018, 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -32,9 +32,6 @@ m4_define([[[__]]],[[[mbfl_datavar($1)]]])
 
 
 #### global variables, known character ranges
-
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then
 
 # These should be  all the symbols in the ASCII  table in the range [0, 127],  with the exception of
 # blanks.  Notice the value is the concatenation of the strings:
@@ -80,8 +77,6 @@ declare -r MBFL_ASCII_RANGE_BASE64="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBF
 # We need to quote the symbols to avoit a further round of evaluation!!!
 #
 declare -r MBFL_ASCII_RANGE_PRINTABLE_ASCII_NOBLANK="${MBFL_ASCII_RANGE_LOWER_CASE_ALPHABET}${MBFL_ASCII_RANGE_UPPER_CASE_ALPHABET}${MBFL_ASCII_RANGE_DIGITS}${MBFL_ASCII_RANGE_ASCII_SYMBOLS}"
-
-fi
 
 
 #### quoted characters

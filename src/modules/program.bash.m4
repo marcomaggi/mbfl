@@ -7,7 +7,7 @@
 # Abstract
 #
 #
-# Copyright (c) 2003-2005, 2009, 2013-2014, 2017-2018, 2020, 2023 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013-2014, 2017-2018, 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -110,9 +110,7 @@ function mbfl_program_find () {
 
 #### program finding functions
 
-if mbfl_string_neq_yes("$mbfl_INTERACTIVE")
-then mbfl_declare_assoc_array(mbfl_program_PATHNAMES)
-fi
+mbfl_declare_assoc_array(mbfl_program_PATHNAMES)
 
 function mbfl_declare_program () {
     mbfl_mandatory_parameter(PROGRAM, 1, program)
