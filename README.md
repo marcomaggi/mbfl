@@ -15,8 +15,8 @@ both Ubuntu GNU+Linux systems and OS X systems.
 
 ## License
 
-Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018, 2020, 2023
-Marco Maggi <mrc.mgg@gmail.com>.  All rights reserved.
+Copyright (c)  2003-2005, 2009-2010,  2012-2014, 2017-2018,  2020, 2023,
+2024 Marco Maggi <mrc.mgg@gmail.com>.  All rights reserved.
 
 This is  free software; you can  redistribute it and/or modify  it under
 the terms of  the GNU Lesser General Public License  as published by the
