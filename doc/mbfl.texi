@@ -3987,7 +3987,7 @@ underscore syntax}.
 @section Base exceptional--condition objects
 
 
-All the exceptional--condition objects must be subclasses of @class{mbfl_exceptional_condition_t}.
+All the exceptional--condition objects must be subclasses of @class{mbfl_exceptional_condition}.
 We can subclass it as follows:
 
 @example
@@ -4017,17 +4017,17 @@ mbfl_exception_raise _(CND)
 @end example
 
 @menu
-* conditions base class::       Class definition of @class{mbfl_exceptional_condition_t}.
-* conditions base attributes::  Attributes of @class{mbfl_exceptional_condition_t}.
-* conditions base methods::     Class methods of @class{mbfl_exceptional_condition_t}.
+* conditions base class::       Class definition of @class{mbfl_exceptional_condition}.
+* conditions base attributes::  Attributes of @class{mbfl_exceptional_condition}.
+* conditions base methods::     Class methods of @class{mbfl_exceptional_condition}.
 @end menu
 
 @c page
 @node conditions base class
-@subsection Class definition of @class{mbfl_exceptional_condition_t}
+@subsection Class definition of @class{mbfl_exceptional_condition}
 
 
-@deftp {Abstract Class} mbfl_exceptional_condition_t
+@deftp {Abstract Class} mbfl_exceptional_condition
 @deftpx {Proxy Variable} mbfl_exceptional_condition_t
 @deftpx {Superclass} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_abstract_class
@@ -4039,13 +4039,13 @@ describe exceptional conditions, like errors and warnings.
 @cindex Parameter @var{CND}
 @cindex Function parameter @var{CND}
 In this documentation the function parameter @var{CND} represents the data variable of an instance
-of a subclass of @class{mbfl_exceptional_condition_t}.
+of a subclass of @class{mbfl_exceptional_condition}.
 @end deftp
 
 
 @defop {Predicate} {mbfl_exceptional_condition_t} mbfl_exceptional_condition_p @var{DEFOBJ}
 Return true if the default object @var{DEFOBJ} is an instance of
-@class{mbfl_exceptional_condition_t}; otherwise return false.
+@class{mbfl_exceptional_condition}; otherwise return false.
 
 @example
 mbfl_default_object_declare(CND)
@@ -4058,33 +4058,33 @@ mbfl_exceptional_condition_p _(CND)
 
 @c page
 @node conditions base attributes
-@subsection Attributes of @class{mbfl_exceptional_condition_t}
+@subsection Attributes of @class{mbfl_exceptional_condition}
 
 
 @menu
-* conditions base attributes who::          Attribute @code{who} of @class{mbfl_exceptional_condition_t}.
-* conditions base attributes message::      Attribute @code{message} of @class{mbfl_exceptional_condition_t}.
-* conditions base attributes continuable::  Attribute @code{continuable} of @class{mbfl_exceptional_condition_t}.
+* conditions base attributes who::          Attribute @code{who} of @class{mbfl_exceptional_condition}.
+* conditions base attributes message::      Attribute @code{message} of @class{mbfl_exceptional_condition}.
+* conditions base attributes continuable::  Attribute @code{continuable} of @class{mbfl_exceptional_condition}.
 @end menu
 
 @macro RefWhoConditionAttribute{}
-@ref{@code{who} of @class{mbfl_exceptional_condition_t}}
+@ref{@code{who} of @class{mbfl_exceptional_condition}}
 @end macro
 
 @macro RefMessageConditionAttribute{}
-@ref{@code{message} of @class{mbfl_exceptional_condition_t}}
+@ref{@code{message} of @class{mbfl_exceptional_condition}}
 @end macro
 
 @macro RefContinuableConditionAttribute{}
-@ref{@code{continuable} of @class{mbfl_exceptional_condition_t}}
+@ref{@code{continuable} of @class{mbfl_exceptional_condition}}
 @end macro
 
 @c page
 @node conditions base attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_exceptional_condition_t}
+@subsubsection Attribute @code{who} of @class{mbfl_exceptional_condition}
 
 
-Given a subclass of @class{mbfl_exceptional_condition_t} we can use this attribute as follows:
+Given a subclass of @class{mbfl_exceptional_condition} we can use this attribute as follows:
 
 @example
 mbfl_default_object_declare(CND)
@@ -4096,7 +4096,7 @@ mbfl_exceptional_condition_who_var _(WHO) _(CND)
 @end example
 
 
-@anchor{@code{who} of @class{mbfl_exceptional_condition_t}}
+@anchor{@code{who} of @class{mbfl_exceptional_condition}}
 @defcv {Class Attribute} {mbfl_exceptional_condition_t} who
 A non--empty string describing the entity that raised the exceptional--condition.
 @end defcv
@@ -4110,10 +4110,10 @@ Class attribute accessor and mutator.
 
 @c page
 @node conditions base attributes message
-@subsubsection Attribute @code{message} of @class{mbfl_exceptional_condition_t}
+@subsubsection Attribute @code{message} of @class{mbfl_exceptional_condition}
 
 
-Given a subclass of @class{mbfl_exceptional_condition_t} we can use this attribute as follows:
+Given a subclass of @class{mbfl_exceptional_condition} we can use this attribute as follows:
 
 @example
 mbfl_default_object_declare(CND)
@@ -4125,7 +4125,7 @@ mbfl_exceptional_condition_message_var _(MSG) _(CND)
 @end example
 
 
-@anchor{@code{message} of @class{mbfl_exceptional_condition_t}}
+@anchor{@code{message} of @class{mbfl_exceptional_condition}}
 @defcv {Class Attribute} {mbfl_exceptional_condition_t} message
 A non--empty string describing the exceptional--condition.
 @end defcv
@@ -4139,10 +4139,10 @@ Class attribute accessor and mutator.
 
 @c page
 @node conditions base attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_exceptional_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_exceptional_condition}
 
 
-Given a subclass of @class{mbfl_exceptional_condition_t} we can use this attribute as follows:
+Given a subclass of @class{mbfl_exceptional_condition} we can use this attribute as follows:
 
 @example
 mbfl_default_object_declare(CND)
@@ -4154,7 +4154,7 @@ $CONT   @result{} true
 @end example
 
 
-@anchor{@code{continuable} of @class{mbfl_exceptional_condition_t}}
+@anchor{@code{continuable} of @class{mbfl_exceptional_condition}}
 @defcv {Class Attribute} {mbfl_exceptional_condition_t} continuable
 A string representing a boolean:
 
@@ -4184,13 +4184,13 @@ Class attribute accessor and mutator.
 
 The parameter @var{CONTINUABLE} must be a string as accepted by
 @func{mbfl_string_normalise_boolean_var}, otherwise an exceptional--condition of type
-@class{mbfl_invalid_object_attrib_value_condition_t} is raised;
+@class{mbfl_invalid_object_attrib_value_condition} is raised;
 @ref{mbfl_string_normalise_boolean_var, Normalising strings}
 @end defop
 
 @c page
 @node conditions base methods
-@subsection Class methods of @class{mbfl_exceptional_condition_t}
+@subsection Class methods of @class{mbfl_exceptional_condition}
 
 
 @defun mbfl_exceptional_condition_print @var{CND}
@@ -4256,17 +4256,17 @@ Usually when an exceptional--condition of this class is raised: the correct hand
 notify the user and resume the execution of the script.
 
 @menu
-* conditions warning class::            Class definition of @class{mbfl_warning_condition_t}.
-* conditions warning constructors::     Class constructors of @class{mbfl_warning_condition_t}.
-* conditions warning attributes::       Attributes of @class{mbfl_warning_condition_t}.
+* conditions warning class::            Class definition of @class{mbfl_warning_condition}.
+* conditions warning constructors::     Class constructors of @class{mbfl_warning_condition}.
+* conditions warning attributes::       Attributes of @class{mbfl_warning_condition}.
 @end menu
 
 @c page
 @node conditions warning class
-@subsection Class definition of @class{mbfl_warning_condition_t}
+@subsection Class definition of @class{mbfl_warning_condition}
 
 
-@deftp {Class} mbfl_warning_condition_t
+@deftp {Class} mbfl_warning_condition
 @deftpx {Proxy Variable} mbfl_warning_condition_t
 @deftpx {Superclass} mbfl_exceptional_condition_t
 @deftpx {Metaclass} mbfl_default_class
@@ -4276,7 +4276,7 @@ user about something.  Exceptional--conditions of this class should be continuab
 
 
 @defop {Predicate} {mbfl_warning_condition_t} mbfl_warning_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_warning_condition_t}; otherwise return
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_warning_condition}; otherwise return
 false.
 
 @example
@@ -4290,7 +4290,7 @@ mbfl_warning_condition_p _(CND)
 
 @c page
 @node conditions warning constructors
-@subsection Class constructors of @class{mbfl_warning_condition_t}
+@subsection Class constructors of @class{mbfl_warning_condition}
 
 
 @defop {Constructor} {mbfl_warning_condition_t} mbfl_warning_condition_make @var{CND} @var{WHO} @var{MESSAGE}
@@ -4335,18 +4335,18 @@ function mbfl_warning_condition_for_danger_make () @{
 
 @c page
 @node conditions warning attributes
-@subsection Attributes of @class{mbfl_warning_condition_t}
+@subsection Attributes of @class{mbfl_warning_condition}
 
 
 @menu
-* conditions warning attributes who::           Attribute @code{who} of @class{mbfl_warning_condition_t}.
-* conditions warning attributes message::       Attribute @code{message} of @class{mbfl_warning_condition_t}.
-* conditions warning attributes continuable::   Attribute @code{continuable} of @class{mbfl_warning_condition_t}.
+* conditions warning attributes who::           Attribute @code{who} of @class{mbfl_warning_condition}.
+* conditions warning attributes message::       Attribute @code{message} of @class{mbfl_warning_condition}.
+* conditions warning attributes continuable::   Attribute @code{continuable} of @class{mbfl_warning_condition}.
 @end menu
 
 @c page
 @node conditions warning attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_warning_condition_t}
+@subsubsection Attribute @code{who} of @class{mbfl_warning_condition}
 
 
 @RefWhoConditionAttribute{} for the semantics of the attribute @code{who}.
@@ -4359,7 +4359,7 @@ Class attribute accessor and mutator.
 
 @c page
 @node conditions warning attributes message
-@subsubsection Attribute @code{message} of @class{mbfl_warning_condition_t}
+@subsubsection Attribute @code{message} of @class{mbfl_warning_condition}
 
 
 @RefMessageConditionAttribute{} for the semantics of the attribute @code{message}.
@@ -4372,7 +4372,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions warning attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_warning_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_warning_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the attribute @code{continuable}.
@@ -4389,7 +4389,7 @@ Attribute accessor and mutator.
 
 
 @dfn{Error exceptional--conditions} are used to signal an error in a procedure the script is
-executing.  The abstract class @class{mbfl_error_condition_t} is meant to be the base of all the
+executing.  The abstract class @class{mbfl_error_condition} is meant to be the base of all the
 error exceptional--condition objects; we can subclass it as follows:
 
 @example
@@ -4418,16 +4418,16 @@ mbfl_exception_raise _(CND)
 @end example
 
 @menu
-* conditions error class::            Class definition of @class{mbfl_error_condition_t}.
-* conditions error attributes::       Attributes of @class{mbfl_error_condition_t}.
+* conditions error class::            Class definition of @class{mbfl_error_condition}.
+* conditions error attributes::       Attributes of @class{mbfl_error_condition}.
 @end menu
 
 @c page
 @node conditions error class
-@subsection Class definition of @class{mbfl_error_condition_t}
+@subsection Class definition of @class{mbfl_error_condition}
 
 
-@deftp {Abstract Class} mbfl_error_condition_t
+@deftp {Abstract Class} mbfl_error_condition
 @deftpx {Proxy Variable} mbfl_error_condition_t
 @deftpx {Superclass} mbfl_exceptional_condition_t
 @deftpx {Metaclass} mbfl_default_abstract_class
@@ -4436,7 +4436,7 @@ Class describing error exceptional--conditions.
 
 
 @defop {Predicate} {mbfl_error_condition_t} mbfl_error_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_error_condition_t}; otherwise return
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_error_condition}; otherwise return
 false.
 
 @example
@@ -4450,18 +4450,18 @@ mbfl_error_condition_p _(CND)
 
 @c page
 @node conditions error attributes
-@subsection Attributes of @class{mbfl_error_condition_t}
+@subsection Attributes of @class{mbfl_error_condition}
 
 
 @menu
-* conditions error attributes who::           Attribute @code{who} of @class{mbfl_error_condition_t}.
-* conditions error attributes message::       Attribute @code{message} of @class{mbfl_error_condition_t}.
-* conditions error attributes continuable::   Attribute @code{continuable} of @class{mbfl_error_condition_t}.
+* conditions error attributes who::           Attribute @code{who} of @class{mbfl_error_condition}.
+* conditions error attributes message::       Attribute @code{message} of @class{mbfl_error_condition}.
+* conditions error attributes continuable::   Attribute @code{continuable} of @class{mbfl_error_condition}.
 @end menu
 
 @c page
 @node conditions error attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_error_condition_t}
+@subsubsection Attribute @code{who} of @class{mbfl_error_condition}
 
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
@@ -4474,7 +4474,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions error attributes message
-@subsubsection Attribute @code{message} of @class{mbfl_error_condition_t}
+@subsubsection Attribute @code{message} of @class{mbfl_error_condition}
 
 
 @RefMessageConditionAttribute{} for the semantics of the parameter @var{MESSAGE}.
@@ -4487,7 +4487,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions error attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_error_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_error_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -4518,17 +4518,17 @@ a clean release of all the resources; inform the user; terminate the program wit
 exit status.
 
 @menu
-* conditions logic class::         Class definition of @class{mbfl_logic_error_condition_t}.
-* conditions logic constructors::  Class constructors of @class{mbfl_logic_error_condition_t}.
-* conditions logic attributes::    Attributes of @class{mbfl_logic_error_condition_t}.
+* conditions logic class::         Class definition of @class{mbfl_logic_error_condition}.
+* conditions logic constructors::  Class constructors of @class{mbfl_logic_error_condition}.
+* conditions logic attributes::    Attributes of @class{mbfl_logic_error_condition}.
 @end menu
 
 @c page
 @node conditions logic class
-@subsection Class definition of @class{mbfl_logic_error_condition_t}
+@subsection Class definition of @class{mbfl_logic_error_condition}
 
 
-@deftp {Class} mbfl_logic_error_condition_t
+@deftp {Class} mbfl_logic_error_condition
 @deftpx {Proxy Variable} mbfl_logic_error_condition_t
 @deftpx {Superclass} mbfl_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
@@ -4538,7 +4538,7 @@ non--continuable.
 
 
 @defop {Predicate} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_logic_error_condition_t}; otherwise return
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_logic_error_condition}; otherwise return
 false.
 
 @example
@@ -4552,7 +4552,7 @@ mbfl_logic_error_condition_p _(CND)
 
 @c page
 @node conditions logic constructors
-@subsection Class constructors of @class{mbfl_logic_error_condition_t}
+@subsection Class constructors of @class{mbfl_logic_error_condition}
 
 
 @defop {Constructor} {mbfl_logic_error_condition_t} mbfl_logic_error_condition_make @var{CND} @var{WHO} @var{MESSAGE}
@@ -4579,18 +4579,18 @@ to define high--level constructors.
 
 @c page
 @node conditions logic attributes
-@subsection Attributes of @class{mbfl_logic_error_condition_t}
+@subsection Attributes of @class{mbfl_logic_error_condition}
 
 
 @menu
-* conditions logic attributes who::           Attribute @code{who} of @class{mbfl_logic_error_condition_t}.
-* conditions logic attributes message::       Attribute @code{message} of @class{mbfl_logic_error_condition_t}.
-* conditions logic attributes continuable::   Attribute @code{continuable} of @class{mbfl_logic_error_condition_t}.
+* conditions logic attributes who::           Attribute @code{who} of @class{mbfl_logic_error_condition}.
+* conditions logic attributes message::       Attribute @code{message} of @class{mbfl_logic_error_condition}.
+* conditions logic attributes continuable::   Attribute @code{continuable} of @class{mbfl_logic_error_condition}.
 @end menu
 
 @c page
 @node conditions logic attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_logic_error_condition_t}
+@subsubsection Attribute @code{who} of @class{mbfl_logic_error_condition}
 
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
@@ -4603,7 +4603,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions logic attributes message
-@subsubsection Attribute @code{message} of @class{mbfl_logic_error_condition_t}
+@subsubsection Attribute @code{message} of @class{mbfl_logic_error_condition}
 
 
 @RefMessageConditionAttribute{} for the semantics of the parameter @var{MESSAGE}.
@@ -4616,7 +4616,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions logic attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_logic_error_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_logic_error_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -4649,17 +4649,17 @@ a clean release of all the associated resources; inform the user; if appropriate
 execution, otherwise terminate the process with a meaningful exit status.
 
 @menu
-* conditions runtime class::         Class definition of @class{mbfl_runtime_error_condition_t}.
-* conditions runtime constructors::  Class constructors of @class{mbfl_runtime_error_condition_t}.
-* conditions runtime attributes::    Attributes of @class{mbfl_runtime_error_condition_t}.
+* conditions runtime class::         Class definition of @class{mbfl_runtime_error_condition}.
+* conditions runtime constructors::  Class constructors of @class{mbfl_runtime_error_condition}.
+* conditions runtime attributes::    Attributes of @class{mbfl_runtime_error_condition}.
 @end menu
 
 @c page
 @node conditions runtime class
-@subsection Class definition of @class{mbfl_runtime_error_condition_t}
+@subsection Class definition of @class{mbfl_runtime_error_condition}
 
 
-@deftp {Class} mbfl_runtime_error_condition_t
+@deftp {Class} mbfl_runtime_error_condition
 @deftpx {Proxy Variable} mbfl_runtime_error_condition_t
 @deftpx {Superclass} mbfl_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
@@ -4669,7 +4669,7 @@ continuable.
 
 
 @defop {Predicate} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_runtime_error_condition_t}; otherwise
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_runtime_error_condition}; otherwise
 return false.
 
 @example
@@ -4683,7 +4683,7 @@ mbfl_runtime_error_condition_p _(CND)
 
 @c page
 @node conditions runtime constructors
-@subsection Class constructors of @class{mbfl_runtime_error_condition_t}
+@subsection Class constructors of @class{mbfl_runtime_error_condition}
 
 
 @defop {Constructor} {mbfl_runtime_error_condition_t} mbfl_runtime_error_condition_make @var{CND} @var{WHO} @var{MESSAGE}
@@ -4710,18 +4710,18 @@ to define high--level constructors.
 
 @c page
 @node conditions runtime attributes
-@subsection Attributes of @class{mbfl_runtime_error_condition_t}
+@subsection Attributes of @class{mbfl_runtime_error_condition}
 
 
 @menu
-* conditions runtime attributes who::           Attribute @code{who} of @class{mbfl_runtime_error_condition_t}.
-* conditions runtime attributes message::       Attribute @code{message} of @class{mbfl_runtime_error_condition_t}.
-* conditions runtime attributes continuable::   Attribute @code{continuable} of @class{mbfl_runtime_error_condition_t}.
+* conditions runtime attributes who::           Attribute @code{who} of @class{mbfl_runtime_error_condition}.
+* conditions runtime attributes message::       Attribute @code{message} of @class{mbfl_runtime_error_condition}.
+* conditions runtime attributes continuable::   Attribute @code{continuable} of @class{mbfl_runtime_error_condition}.
 @end menu
 
 @c page
 @node conditions runtime attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_runtime_error_condition_t}
+@subsubsection Attribute @code{who} of @class{mbfl_runtime_error_condition}
 
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
@@ -4734,7 +4734,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions runtime attributes message
-@subsubsection Attribute @code{message} of @class{mbfl_runtime_error_condition_t}
+@subsubsection Attribute @code{message} of @class{mbfl_runtime_error_condition}
 
 
 @RefMessageConditionAttribute{} for the semantics of the parameter @var{MESSAGE}.
@@ -4747,7 +4747,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions runtime attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_runtime_error_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_runtime_error_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -4773,17 +4773,17 @@ a clean release of all the associated resources; inform the user; terminate the 
 appropriate exit status.
 
 @menu
-* conditions uncaught class::         Class definition of @class{mbfl_uncaught_exceptional_condition_t}.
-* conditions uncaught constructors::  Class constructors of @class{mbfl_uncaught_exceptional_condition_t}.
-* conditions uncaught attributes::    Attributes of @class{mbfl_uncaught_exceptional_condition_t}.
+* conditions uncaught class::         Class definition of @class{mbfl_uncaught_exceptional_condition}.
+* conditions uncaught constructors::  Class constructors of @class{mbfl_uncaught_exceptional_condition}.
+* conditions uncaught attributes::    Attributes of @class{mbfl_uncaught_exceptional_condition}.
 @end menu
 
 @c page
 @node conditions uncaught class
-@subsection Class definition of @class{mbfl_uncaught_exceptional_condition_t}
+@subsection Class definition of @class{mbfl_uncaught_exceptional_condition}
 
 
-@deftp {Class} mbfl_uncaught_exceptional_condition_t
+@deftp {Class} mbfl_uncaught_exceptional_condition
 @deftpx {Proxy Variable} mbfl_uncaught_exceptional_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
@@ -4793,13 +4793,13 @@ non--continuable.
 
 
 @defop {Predicate} {mbfl_uncaught_exceptional_condition_t} mbfl_runtime_error_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_uncaught_exceptional_condition_t};
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_uncaught_exceptional_condition};
 otherwise return false.
 @end defop
 
 @c page
 @node conditions uncaught constructors
-@subsection Class constructors of @class{mbfl_uncaught_exceptional_condition_t}
+@subsection Class constructors of @class{mbfl_uncaught_exceptional_condition}
 
 
 @defop {Constructor} {mbfl_uncaught_exceptional_condition_t} mbfl_runtime_error_condition_make @var{CND} @var{WHO} @var{OBJ}
@@ -4808,7 +4808,7 @@ built with this constructor are continuable by default.
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
 
-@ref{@code{object} of @class{mbfl_uncaught_exceptional_condition_t}} for the semantics of the
+@ref{@code{object} of @class{mbfl_uncaught_exceptional_condition}} for the semantics of the
 parameter @var{OBJ}.
 @end defop
 
@@ -4824,24 +4824,24 @@ to define high--level constructors.
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
 
-@ref{@code{object} of @class{mbfl_uncaught_exceptional_condition_t}} for the semantics of the
+@ref{@code{object} of @class{mbfl_uncaught_exceptional_condition}} for the semantics of the
 parameter @var{OBJ}.
 @end defop
 
 @c page
 @node conditions uncaught attributes
-@subsection Attributes of @class{mbfl_uncaught_exceptional_condition_t}
+@subsection Attributes of @class{mbfl_uncaught_exceptional_condition}
 
 
 @menu
-* conditions uncaught attributes who::           Attribute @code{who} of @class{mbfl_uncaught_exceptional_condition_t}.
-* conditions uncaught attributes continuable::   Attribute @code{continuable} of @class{mbfl_uncaught_exceptional_condition_t}.
-* conditions uncaught attributes object::        Attribute @code{object} of @class{mbfl_uncaught_exceptional_condition_t}.
+* conditions uncaught attributes who::           Attribute @code{who} of @class{mbfl_uncaught_exceptional_condition}.
+* conditions uncaught attributes continuable::   Attribute @code{continuable} of @class{mbfl_uncaught_exceptional_condition}.
+* conditions uncaught attributes object::        Attribute @code{object} of @class{mbfl_uncaught_exceptional_condition}.
 @end menu
 
 @c page
 @node conditions uncaught attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_uncaught_exceptional_condition_t}
+@subsubsection Attribute @code{who} of @class{mbfl_uncaught_exceptional_condition}
 
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
@@ -4854,7 +4854,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions uncaught attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_uncaught_exceptional_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_uncaught_exceptional_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -4867,10 +4867,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions uncaught attributes object
-@subsubsection Attribute @code{object} of @class{mbfl_uncaught_exceptional_condition_t}
+@subsubsection Attribute @code{object} of @class{mbfl_uncaught_exceptional_condition}
 
 
-@anchor{@code{object} of @class{mbfl_uncaught_exceptional_condition_t}}
+@anchor{@code{object} of @class{mbfl_uncaught_exceptional_condition}}
 @defcv {Class Attribute} {mbfl_uncaught_exceptional_condition_t} object
 Data variable of an exceptional--condition object that was raised but not handled by any
 exception--handler.
@@ -4884,7 +4884,7 @@ Attribute accessor and mutator.
 
 
 Let's say @env{CND} is a variable holding the data variable of a
-@class{mbfl_uncaught_exceptional_condition_t} instance; to access the original
+@class{mbfl_uncaught_exceptional_condition} instance; to access the original
 exceptional--condition object we do:
 
 @example
@@ -4906,17 +4906,17 @@ error: an invalid value was used as object's constructor parameter; such conditi
 raised by class constructors.
 
 @menu
-* conditions invalid ctor value class::         Class definition of @class{mbfl_invalid_ctor_parm_value_condition_t}.
-* conditions invalid ctor value constructors::  Class constructors of @class{mbfl_invalid_ctor_parm_value_condition_t}.
-* conditions invalid ctor value attributes::    Attributes of @class{mbfl_invalid_ctor_parm_value_condition_t}.
+* conditions invalid ctor value class::         Class definition of @class{mbfl_invalid_ctor_parm_value_condition}.
+* conditions invalid ctor value constructors::  Class constructors of @class{mbfl_invalid_ctor_parm_value_condition}.
+* conditions invalid ctor value attributes::    Attributes of @class{mbfl_invalid_ctor_parm_value_condition}.
 @end menu
 
 @c page
 @node conditions invalid ctor value class
-@subsection Class definition of @class{mbfl_invalid_ctor_parm_value_condition_t}
+@subsection Class definition of @class{mbfl_invalid_ctor_parm_value_condition}
 
 
-@deftp {Class} mbfl_invalid_ctor_parm_value_condition_t
+@deftp {Class} mbfl_invalid_ctor_parm_value_condition
 @deftpx {Proxy Variable} mbfl_invalid_ctor_parm_value_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
@@ -4926,7 +4926,7 @@ of this class should be non--continuable.
 
 
 @defop {Predicate} {mbfl_invalid_ctor_parm_value_condition_t} mbfl_invalid_ctor_parm_value_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_invalid_ctor_parm_value_condition_t};
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_invalid_ctor_parm_value_condition};
 otherwise return false.
 
 @example
@@ -4940,7 +4940,7 @@ mbfl_invalid_ctor_parm_value_condition_p _(CND)
 
 @c page
 @node conditions invalid ctor value constructors
-@subsection Class constructors of @class{mbfl_invalid_ctor_parm_value_condition_t}
+@subsection Class constructors of @class{mbfl_invalid_ctor_parm_value_condition}
 
 
 @defop {Constructor} {mbfl_invalid_ctor_parm_value_condition_t} mbfl_invalid_ctor_parm_value_condition_make @var{CND} @var{WHO} @var{CLASS} @var{PARM_NAME} @var{INVALID_VALUE}
@@ -4951,13 +4951,13 @@ condition is non--continuable by default.
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
 
-@ref{@code{class} of @class{mbfl_invalid_ctor_parm_value_condition_t}} for the semantics of the
+@ref{@code{class} of @class{mbfl_invalid_ctor_parm_value_condition}} for the semantics of the
 parameter @var{CLASS}.
 
-@ref{@code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition_t}} for the semantics of the
+@ref{@code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition}} for the semantics of the
 parameter @var{PARM_NAME}.
 
-@ref{@code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition_t}} for the semantics of
+@ref{@code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition}} for the semantics of
 the parameter @var{INVALID_VALUE}.
 
 Let's say we have this class definition:
@@ -5017,32 +5017,32 @@ low--level constructor that should not be used only to define high--level constr
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
 
-@ref{@code{class} of @class{mbfl_invalid_ctor_parm_value_condition_t}} for the semantics of the
+@ref{@code{class} of @class{mbfl_invalid_ctor_parm_value_condition}} for the semantics of the
 parameter @var{CLASS}.
 
-@ref{@code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition_t}} for the semantics of the
+@ref{@code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition}} for the semantics of the
 parameter @var{PARM_NAME}.
 
-@ref{@code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition_t}} for the semantics of
+@ref{@code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition}} for the semantics of
 the parameter @var{INVALID_VALUE}.
 @end defop
 
 @c page
 @node conditions invalid ctor value attributes
-@subsection Attributes of @class{mbfl_invalid_ctor_parm_value_condition_t}
+@subsection Attributes of @class{mbfl_invalid_ctor_parm_value_condition}
 
 
 @menu
-* conditions invalid ctor value attributes who::           Attribute @code{who} of @class{mbfl_invalid_ctor_parm_value_condition_t}.
-* conditions invalid ctor value attributes continuable::   Attribute @code{continuable} of @class{mbfl_invalid_ctor_parm_value_condition_t}.
-* conditions invalid ctor value attributes class::         Attribute @code{class} of @class{mbfl_invalid_ctor_parm_value_condition_t}.
-* conditions invalid ctor value attributes parm-name::     Attribute @code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition_t}.
-* conditions invalid ctor value attributes invalid-value:: Attribute @code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition_t}.
+* conditions invalid ctor value attributes who::           Attribute @code{who} of @class{mbfl_invalid_ctor_parm_value_condition}.
+* conditions invalid ctor value attributes continuable::   Attribute @code{continuable} of @class{mbfl_invalid_ctor_parm_value_condition}.
+* conditions invalid ctor value attributes class::         Attribute @code{class} of @class{mbfl_invalid_ctor_parm_value_condition}.
+* conditions invalid ctor value attributes parm-name::     Attribute @code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition}.
+* conditions invalid ctor value attributes invalid-value:: Attribute @code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition}.
 @end menu
 
 @c page
 @node conditions invalid ctor value attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_invalid_ctor_parm_value_condition_t}.
+@subsubsection Attribute @code{who} of @class{mbfl_invalid_ctor_parm_value_condition}.
 
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -5055,7 +5055,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid ctor value attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_invalid_ctor_parm_value_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_invalid_ctor_parm_value_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -5068,10 +5068,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid ctor value attributes class
-@subsubsection Attribute @code{class} of @class{mbfl_invalid_ctor_parm_value_condition_t}
+@subsubsection Attribute @code{class} of @class{mbfl_invalid_ctor_parm_value_condition}
 
 
-@anchor{@code{class} of @class{mbfl_invalid_ctor_parm_value_condition_t}}
+@anchor{@code{class} of @class{mbfl_invalid_ctor_parm_value_condition}}
 @defcv {Class Attribute} {mbfl_invalid_ctor_parm_value_condition_t} class
 The data variable of the class whose constructor's parameter we tried to set to an invalid value.
 @end defcv
@@ -5084,10 +5084,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid ctor value attributes parm-name
-@subsubsection Attribute @code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition_t}
+@subsubsection Attribute @code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition}
 
 
-@anchor{@code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition_t}}
+@anchor{@code{parm_name} of @class{mbfl_invalid_ctor_parm_value_condition}}
 @defcv {Class Attribute} {mbfl_invalid_ctor_parm_value_condition_t} parm_name
 A string representing the parameter name.
 @end defcv
@@ -5100,10 +5100,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid ctor value attributes invalid-value
-@subsubsection Attribute @code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition_t}
+@subsubsection Attribute @code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition}
 
 
-@anchor{@code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition_t}}
+@anchor{@code{invalid_value} of @class{mbfl_invalid_ctor_parm_value_condition}}
 @defcv {Class Attribute} {mbfl_invalid_ctor_parm_value_condition_t} invalid_value
 A string representing the invalid value.
 @end defcv
@@ -5124,17 +5124,17 @@ error: an attempt was performed to set an object's attribute to an invalid value
 are usually raised by class attribute mutators.
 
 @menu
-* conditions invalid attrib value class::         Class definition of @class{mbfl_invalid_object_attrib_value_condition_t}.
-* conditions invalid attrib value constructors::  Class constructors of @class{mbfl_invalid_object_attrib_value_condition_t}.
-* conditions invalid attrib value attributes::    Attributes of @class{mbfl_invalid_object_attrib_value_condition_t}.
+* conditions invalid attrib value class::         Class definition of @class{mbfl_invalid_object_attrib_value_condition}.
+* conditions invalid attrib value constructors::  Class constructors of @class{mbfl_invalid_object_attrib_value_condition}.
+* conditions invalid attrib value attributes::    Attributes of @class{mbfl_invalid_object_attrib_value_condition}.
 @end menu
 
 @c page
 @node conditions invalid attrib value class
-@subsection Class definition of @class{mbfl_invalid_object_attrib_value_condition_t}
+@subsection Class definition of @class{mbfl_invalid_object_attrib_value_condition}
 
 
-@deftp {Class} mbfl_invalid_object_attrib_value_condition_t
+@deftp {Class} mbfl_invalid_object_attrib_value_condition
 @deftpx {Proxy Variable} mbfl_invalid_object_attrib_value_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
@@ -5144,7 +5144,7 @@ class should be non--continuable.
 
 
 @defop {Predicate} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_invalid_object_attrib_value_condition_t};
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_invalid_object_attrib_value_condition};
 otherwise return false.
 
 @example
@@ -5158,7 +5158,7 @@ mbfl_invalid_object_attrib_value_condition_p _(CND)
 
 @c page
 @node conditions invalid attrib value constructors
-@subsection Class constructors of @class{mbfl_invalid_object_attrib_value_condition_t}
+@subsection Class constructors of @class{mbfl_invalid_object_attrib_value_condition}
 
 
 @defop {Constructor} {mbfl_invalid_object_attrib_value_condition_t} mbfl_invalid_object_attrib_value_condition_make @var{CND} @var{WHO} @var{OBJ} @var{ATTRIBUTE_NAME} @var{INVALID_VALUE}
@@ -5169,13 +5169,13 @@ condition is non--continuable by default.
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
 
-@ref{@code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the semantics of the
+@ref{@code{object} of @class{mbfl_invalid_object_attrib_value_condition}} for the semantics of the
 parameter @var{OBJ}.
 
-@ref{@code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the
+@ref{@code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition}} for the
 semantics of the parameter @var{ATTRIBUTE_NAME}.
 
-@ref{@code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the semantics
+@ref{@code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition}} for the semantics
 of the parameter @var{INVALID_VALUE}.
 
 Let's say we have this class definition:
@@ -5215,32 +5215,32 @@ low--level constructor that should not be used only to define high--level constr
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
 
-@ref{@code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the semantics of the
+@ref{@code{object} of @class{mbfl_invalid_object_attrib_value_condition}} for the semantics of the
 parameter @var{OBJ}.
 
-@ref{@code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the
+@ref{@code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition}} for the
 semantics of the parameter @var{ATTRIBUTE_NAME}.
 
-@ref{@code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}} for the semantics
+@ref{@code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition}} for the semantics
 of the parameter @var{INVALID_VALUE}.
 @end defop
 
 @c page
 @node conditions invalid attrib value attributes
-@subsection Attributes of @class{mbfl_invalid_object_attrib_value_condition_t}
+@subsection Attributes of @class{mbfl_invalid_object_attrib_value_condition}
 
 
 @menu
-* conditions invalid attrib value attributes who::           Attribute @code{who} of @class{mbfl_invalid_object_attrib_value_condition_t}.
-* conditions invalid attrib value attributes continuable::   Attribute @code{continuable} of @class{mbfl_invalid_object_attrib_value_condition_t}.
-* conditions invalid attrib value attributes object::        Attribute @code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}.
-* conditions invalid attrib value attributes attrib-name::   Attribute @code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}.
-* conditions invalid attrib value attributes invalid-value:: Attribute @code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}.
+* conditions invalid attrib value attributes who::           Attribute @code{who} of @class{mbfl_invalid_object_attrib_value_condition}.
+* conditions invalid attrib value attributes continuable::   Attribute @code{continuable} of @class{mbfl_invalid_object_attrib_value_condition}.
+* conditions invalid attrib value attributes object::        Attribute @code{object} of @class{mbfl_invalid_object_attrib_value_condition}.
+* conditions invalid attrib value attributes attrib-name::   Attribute @code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition}.
+* conditions invalid attrib value attributes invalid-value:: Attribute @code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition}.
 @end menu
 
 @c page
 @node conditions invalid attrib value attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_invalid_object_attrib_value_condition_t}.
+@subsubsection Attribute @code{who} of @class{mbfl_invalid_object_attrib_value_condition}.
 
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -5253,7 +5253,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid attrib value attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_invalid_object_attrib_value_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_invalid_object_attrib_value_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -5266,10 +5266,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid attrib value attributes object
-@subsubsection Attribute @code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}
+@subsubsection Attribute @code{object} of @class{mbfl_invalid_object_attrib_value_condition}
 
 
-@anchor{@code{object} of @class{mbfl_invalid_object_attrib_value_condition_t}}
+@anchor{@code{object} of @class{mbfl_invalid_object_attrib_value_condition}}
 @defcv {Class Attribute} {mbfl_invalid_object_attrib_value_condition_t} object
 The data variable of the object whose attribute we tried to set to an invalid value.
 @end defcv
@@ -5282,10 +5282,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid attrib value attributes attrib-name
-@subsubsection Attribute @code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}
+@subsubsection Attribute @code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition}
 
 
-@anchor{@code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition_t}}
+@anchor{@code{attrib_name} of @class{mbfl_invalid_object_attrib_value_condition}}
 @defcv {Class Attribute} {mbfl_invalid_object_attrib_value_condition_t} attrib_name
 A string representing the attribute name.
 @end defcv
@@ -5298,10 +5298,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid attrib value attributes invalid-value
-@subsubsection Attribute @code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}
+@subsubsection Attribute @code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition}
 
 
-@anchor{@code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition_t}}
+@anchor{@code{invalid_value} of @class{mbfl_invalid_object_attrib_value_condition}}
 @defcv {Class Attribute} {mbfl_invalid_object_attrib_value_condition_t} invalid_value
 A string representing the invalid value.
 @end defcv
@@ -5333,17 +5333,17 @@ a clean release of all the resources; inform the user; terminate the program wit
 exit status.
 
 @menu
-* conditions location outside class::         Class definition of @class{mbfl_outside_location_condition_t}.
-* conditions location outside constructors::  Class constructors of @class{mbfl_outside_location_condition_t}.
-* conditions location outside attributes::    Attributes of @class{mbfl_outside_location_condition_t}.
+* conditions location outside class::         Class definition of @class{mbfl_outside_location_condition}.
+* conditions location outside constructors::  Class constructors of @class{mbfl_outside_location_condition}.
+* conditions location outside attributes::    Attributes of @class{mbfl_outside_location_condition}.
 @end menu
 
 @c page
 @node conditions location outside class
-@subsection Class definition of @class{mbfl_outside_location_condition_t}
+@subsection Class definition of @class{mbfl_outside_location_condition}
 
 
-@deftp {Class} mbfl_outside_location_condition_t
+@deftp {Class} mbfl_outside_location_condition
 @deftpx {Proxy Variable} mbfl_outside_location_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
@@ -5353,7 +5353,7 @@ class should be non--continuable.
 
 
 @defop {Predicate} {mbfl_outside_location_condition_t} mbfl_outside_location_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_outside_location_condition_t}; otherwise
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_outside_location_condition}; otherwise
 return false.
 
 @example
@@ -5367,7 +5367,7 @@ mbfl_outside_location_condition_p _(CND)
 
 @c page
 @node conditions location outside constructors
-@subsection Class constructors of @class{mbfl_outside_location_condition_t}
+@subsection Class constructors of @class{mbfl_outside_location_condition}
 
 
 @defop {Constructor} {mbfl_outside_location_condition_t} mbfl_outside_location_condition_make @var{CND} @var{WHO} @var{MESSAGE}
@@ -5394,18 +5394,18 @@ to define high--level constructors.
 
 @c page
 @node conditions location outside attributes
-@subsection Attributes of @class{mbfl_outside_location_condition_t}
+@subsection Attributes of @class{mbfl_outside_location_condition}
 
 
 @menu
-* conditions location outside attributes who::           Attribute @code{who} of @class{mbfl_outside_location_condition_t}.
-* conditions location outside attributes message::       Attribute @code{message} of @class{mbfl_outside_location_condition_t}.
-* conditions location outside attributes continuable::   Attribute @code{continuable} of @class{mbfl_outside_location_condition_t}.
+* conditions location outside attributes who::           Attribute @code{who} of @class{mbfl_outside_location_condition}.
+* conditions location outside attributes message::       Attribute @code{message} of @class{mbfl_outside_location_condition}.
+* conditions location outside attributes continuable::   Attribute @code{continuable} of @class{mbfl_outside_location_condition}.
 @end menu
 
 @c page
 @node conditions location outside attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_outside_location_condition_t}
+@subsubsection Attribute @code{who} of @class{mbfl_outside_location_condition}
 
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
@@ -5418,7 +5418,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions location outside attributes message
-@subsubsection Attribute @code{message} of @class{mbfl_outside_location_condition_t}
+@subsubsection Attribute @code{message} of @class{mbfl_outside_location_condition}
 
 
 @RefMessageConditionAttribute{} for the semantics of the parameter @var{MESSAGE}.
@@ -5431,7 +5431,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions location outside attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_outside_location_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_outside_location_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -5489,17 +5489,17 @@ a clean release of all the resources; inform the user; terminate the program wit
 exit status.
 
 @menu
-* conditions wrong parm number class::         Class definition of @class{mbfl_wrong_parameters_number_condition_t}.
-* conditions wrong parm number constructors::  Class constructors of @class{mbfl_wrong_parameters_number_condition_t}.
-* conditions wrong parm number attributes::    Attributes of @class{mbfl_wrong_parameters_number_condition_t}.
+* conditions wrong parm number class::         Class definition of @class{mbfl_wrong_parameters_number_condition}.
+* conditions wrong parm number constructors::  Class constructors of @class{mbfl_wrong_parameters_number_condition}.
+* conditions wrong parm number attributes::    Attributes of @class{mbfl_wrong_parameters_number_condition}.
 @end menu
 
 @c page
 @node conditions wrong parm number class
-@subsection Class definition of @class{mbfl_wrong_parameters_number_condition_t}
+@subsection Class definition of @class{mbfl_wrong_parameters_number_condition}
 
 
-@deftp {Class} mbfl_wrong_parameters_number_condition_t
+@deftp {Class} mbfl_wrong_parameters_number_condition
 @deftpx {Proxy Variable} mbfl_wrong_parameters_number_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
@@ -5508,13 +5508,13 @@ Class describing a programming error.  Instances of this class should be non--co
 
 
 @defop {Predicate} {mbfl_wrong_parameters_number_condition_t} mbfl_wrong_parameters_number_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_wrong_parameters_number_condition_t};
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_wrong_parameters_number_condition};
 otherwise return false.
 @end defop
 
 @c page
 @node conditions wrong parm number constructors
-@subsection Class constructors of @class{mbfl_wrong_parameters_number_condition_t}
+@subsection Class constructors of @class{mbfl_wrong_parameters_number_condition}
 
 
 @defop {Constructor} {mbfl_wrong_parameters_number_condition_t} mbfl_wrong_parameters_number_condition_make @var{CND} @var{FUNCNAME} @var{GIVEN_NUMBER} @var{EXPECTED_MIN_NUMBER}
@@ -5567,21 +5567,21 @@ mbfl_check_mandatory_parameters_number(@var{EXPECTED_MIN_NUMBER}, @var{EXPECTED_
 
 @c page
 @node conditions wrong parm number attributes
-@subsection Attributes of @class{mbfl_wrong_parameters_number_condition_t}
+@subsection Attributes of @class{mbfl_wrong_parameters_number_condition}
 
 
 @menu
-* conditions wrong parm number attributes who::               Attribute @code{who} of @class{mbfl_wrong_parameters_number_condition_t}.
-* conditions wrong parm number attributes message::           Attribute @code{message} of @class{mbfl_wrong_parameters_number_condition_t}.
-* conditions wrong parm number attributes continuable::       Attribute @code{continuable} of @class{mbfl_wrong_parameters_number_condition_t}.
-* conditions wrong parm number attributes expected_min_number:: Attribute @code{expected_min_number} of @class{mbfl_wrong_parameters_number_condition_t}.
-* conditions wrong parm number attributes expected_max_number:: Attribute @code{expected_max_number} of @class{mbfl_wrong_parameters_number_condition_t}.
-* conditions wrong parm number attributes given_number::      Attribute @code{given_number} of @class{mbfl_wrong_parameters_number_condition_t}.
+* conditions wrong parm number attributes who::               Attribute @code{who} of @class{mbfl_wrong_parameters_number_condition}.
+* conditions wrong parm number attributes message::           Attribute @code{message} of @class{mbfl_wrong_parameters_number_condition}.
+* conditions wrong parm number attributes continuable::       Attribute @code{continuable} of @class{mbfl_wrong_parameters_number_condition}.
+* conditions wrong parm number attributes expected_min_number:: Attribute @code{expected_min_number} of @class{mbfl_wrong_parameters_number_condition}.
+* conditions wrong parm number attributes expected_max_number:: Attribute @code{expected_max_number} of @class{mbfl_wrong_parameters_number_condition}.
+* conditions wrong parm number attributes given_number::      Attribute @code{given_number} of @class{mbfl_wrong_parameters_number_condition}.
 @end menu
 
 @c page
 @node conditions wrong parm number attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_wrong_parameters_number_condition_t}
+@subsubsection Attribute @code{who} of @class{mbfl_wrong_parameters_number_condition}
 
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
@@ -5594,7 +5594,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions wrong parm number attributes message
-@subsubsection Attribute @code{message} of @class{mbfl_wrong_parameters_number_condition_t}
+@subsubsection Attribute @code{message} of @class{mbfl_wrong_parameters_number_condition}
 
 
 @RefMessageConditionAttribute{} for the semantics of the parameter @var{MESSAGE}.
@@ -5607,7 +5607,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions wrong parm number attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_wrong_parameters_number_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_wrong_parameters_number_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -5620,10 +5620,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions wrong parm number attributes expected_min_number
-@subsubsection Attribute @code{expected_number} of @class{mbfl_wrong_parameters_number_condition_t}
+@subsubsection Attribute @code{expected_number} of @class{mbfl_wrong_parameters_number_condition}
 
 
-@anchor{@code{expected_min_number} of @class{mbfl_wrong_parameters_number_condition_t}}
+@anchor{@code{expected_min_number} of @class{mbfl_wrong_parameters_number_condition}}
 @defcv {Class Attribute} {mbfl_wrong_parameters_number_condition_t} expected_min_number
 The mandatory number of parameters for a function call.
 @end defcv
@@ -5636,10 +5636,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions wrong parm number attributes expected_max_number
-@subsubsection Attribute @code{expected_number} of @class{mbfl_wrong_parameters_number_condition_t}
+@subsubsection Attribute @code{expected_number} of @class{mbfl_wrong_parameters_number_condition}
 
 
-@anchor{@code{expected_max_number} of @class{mbfl_wrong_parameters_number_condition_t}}
+@anchor{@code{expected_max_number} of @class{mbfl_wrong_parameters_number_condition}}
 @defcv {Class Attribute} {mbfl_wrong_parameters_number_condition_t} expected_max_number
 The mandatory number of parameters for a function call.
 @end defcv
@@ -5652,10 +5652,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions wrong parm number attributes given_number
-@subsubsection Attribute @code{given_number} of @class{mbfl_wrong_parameters_number_condition_t}
+@subsubsection Attribute @code{given_number} of @class{mbfl_wrong_parameters_number_condition}
 
 
-@anchor{@code{given_number} of @class{mbfl_wrong_parameters_number_condition_t}}
+@anchor{@code{given_number} of @class{mbfl_wrong_parameters_number_condition}}
 @defcv {Class Attribute} {mbfl_wrong_parameters_number_condition_t} given_number
 The number of parameters given in a function call.
 @end defcv
@@ -5697,17 +5697,17 @@ a clean release of all the resources; inform the user; terminate the program wit
 exit status.
 
 @menu
-* conditions invalid parameter class::         Class definition of @class{mbfl_invalid_function_parameter_condition_t}.
-* conditions invalid parameter constructors::  Class constructors of @class{mbfl_invalid_function_parameter_condition_t}.
-* conditions invalid parameter attributes::    Attributes of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter class::         Class definition of @class{mbfl_invalid_function_parameter_condition}.
+* conditions invalid parameter constructors::  Class constructors of @class{mbfl_invalid_function_parameter_condition}.
+* conditions invalid parameter attributes::    Attributes of @class{mbfl_invalid_function_parameter_condition}.
 @end menu
 
 @c page
 @node conditions invalid parameter class
-@subsection Class definition of @class{mbfl_invalid_function_parameter_condition_t}
+@subsection Class definition of @class{mbfl_invalid_function_parameter_condition}
 
 
-@deftp {Class} mbfl_invalid_function_parameter_condition_t
+@deftp {Class} mbfl_invalid_function_parameter_condition
 @deftpx {Proxy Variable} mbfl_invalid_function_parameter_condition_t
 @deftpx {Superclass} mbfl_logic_error_condition_t
 @deftpx {Metaclass} mbfl_default_class
@@ -5717,13 +5717,13 @@ class should be non--continuable.
 
 
 @defop {Predicate} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_p @var{DEFOBJ}
-Return true if @var{DEFOBJ} is an instance of @class{mbfl_invalid_function_parameter_condition_t};
+Return true if @var{DEFOBJ} is an instance of @class{mbfl_invalid_function_parameter_condition};
 otherwise return false.
 @end defop
 
 @c page
 @node conditions invalid parameter constructors
-@subsection Class constructors of @class{mbfl_invalid_function_parameter_condition_t}
+@subsection Class constructors of @class{mbfl_invalid_function_parameter_condition}
 
 
 @defop {Constructor} {mbfl_invalid_function_parameter_condition_t} mbfl_invalid_function_parameter_condition_make @var{CND} @var{FUNCNAME} @var{ERROR_DESCRIPTION} @var{PARAMETER_NUMBER} @var{PARAMETER_NAME} @var{PARAMETER_VALUE}
@@ -5745,22 +5745,22 @@ The parameter @var{PARAMETER_VALUE} must be the invalid parameter's value; it ca
 
 @c page
 @node conditions invalid parameter attributes
-@subsection Attributes of @class{mbfl_invalid_function_parameter_condition_t}
+@subsection Attributes of @class{mbfl_invalid_function_parameter_condition}
 
 
 @menu
-* conditions invalid parameter attributes who::               Attribute @code{who} of @class{mbfl_invalid_function_parameter_condition_t}.
-* conditions invalid parameter attributes message::           Attribute @code{message} of @class{mbfl_invalid_function_parameter_condition_t}.
-* conditions invalid parameter attributes continuable::       Attribute @code{continuable} of @class{mbfl_invalid_function_parameter_condition_t}.
-* conditions invalid parameter attributes error_description:: Attribute @code{error_description} of @class{mbfl_invalid_function_parameter_condition_t}.
-* conditions invalid parameter attributes parameter_number::  Attribute @code{parameter_number} of @class{mbfl_invalid_function_parameter_condition_t}.
-* conditions invalid parameter attributes parameter_name::    Attribute @code{parameter_name} of @class{mbfl_invalid_function_parameter_condition_t}.
-* conditions invalid parameter attributes parameter_value::   Attribute @code{parameter_value} of @class{mbfl_invalid_function_parameter_condition_t}.
+* conditions invalid parameter attributes who::               Attribute @code{who} of @class{mbfl_invalid_function_parameter_condition}.
+* conditions invalid parameter attributes message::           Attribute @code{message} of @class{mbfl_invalid_function_parameter_condition}.
+* conditions invalid parameter attributes continuable::       Attribute @code{continuable} of @class{mbfl_invalid_function_parameter_condition}.
+* conditions invalid parameter attributes error_description:: Attribute @code{error_description} of @class{mbfl_invalid_function_parameter_condition}.
+* conditions invalid parameter attributes parameter_number::  Attribute @code{parameter_number} of @class{mbfl_invalid_function_parameter_condition}.
+* conditions invalid parameter attributes parameter_name::    Attribute @code{parameter_name} of @class{mbfl_invalid_function_parameter_condition}.
+* conditions invalid parameter attributes parameter_value::   Attribute @code{parameter_value} of @class{mbfl_invalid_function_parameter_condition}.
 @end menu
 
 @c page
 @node conditions invalid parameter attributes who
-@subsubsection Attribute @code{who} of @class{mbfl_invalid_function_parameter_condition_t}
+@subsubsection Attribute @code{who} of @class{mbfl_invalid_function_parameter_condition}
 
 
 @RefWhoConditionAttribute{} for the semantics of the parameter @var{WHO}.
@@ -5773,7 +5773,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid parameter attributes message
-@subsubsection Attribute @code{message} of @class{mbfl_invalid_function_parameter_condition_t}
+@subsubsection Attribute @code{message} of @class{mbfl_invalid_function_parameter_condition}
 
 
 @RefMessageConditionAttribute{} for the semantics of the parameter @var{MESSAGE}.
@@ -5786,7 +5786,7 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid parameter attributes continuable
-@subsubsection Attribute @code{continuable} of @class{mbfl_invalid_function_parameter_condition_t}
+@subsubsection Attribute @code{continuable} of @class{mbfl_invalid_function_parameter_condition}
 
 
 @RefContinuableConditionAttribute{} for the semantics of the parameter @var{CONTINUABLE}.
@@ -5799,10 +5799,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid parameter attributes error_description
-@subsubsection Attribute @code{error_description} of @class{mbfl_invalid_function_parameter_condition_t}
+@subsubsection Attribute @code{error_description} of @class{mbfl_invalid_function_parameter_condition}
 
 
-@anchor{@code{error_description} of @class{mbfl_invalid_function_parameter_condition_t}}
+@anchor{@code{error_description} of @class{mbfl_invalid_function_parameter_condition}}
 @defcv {Class Attribute} {mbfl_invalid_function_parameter_condition_t} error_description
 A string describing what is wrong with the given parameter to function call.
 @end defcv
@@ -5815,10 +5815,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid parameter attributes parameter_number
-@subsubsection Attribute @code{parameter_number} of @class{mbfl_invalid_function_parameter_condition_t}
+@subsubsection Attribute @code{parameter_number} of @class{mbfl_invalid_function_parameter_condition}
 
 
-@anchor{@code{parameter_number} of @class{mbfl_invalid_function_parameter_condition_t}}
+@anchor{@code{parameter_number} of @class{mbfl_invalid_function_parameter_condition}}
 @defcv {Class Attribute} {mbfl_invalid_function_parameter_condition_t} parameter_number
 The 1--based parameter number.
 @end defcv
@@ -5831,10 +5831,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid parameter attributes parameter_name
-@subsubsection Attribute @code{parameter_name} of @class{mbfl_invalid_function_parameter_condition_t}
+@subsubsection Attribute @code{parameter_name} of @class{mbfl_invalid_function_parameter_condition}
 
 
-@anchor{@code{parameter_name} of @class{mbfl_invalid_function_parameter_condition_t}}
+@anchor{@code{parameter_name} of @class{mbfl_invalid_function_parameter_condition}}
 @defcv {Class Attribute} {mbfl_invalid_function_parameter_condition_t} parameter_name
 A string representing the parameter name.
 @end defcv
@@ -5847,10 +5847,10 @@ Attribute accessor and mutator.
 
 @c page
 @node conditions invalid parameter attributes parameter_value
-@subsubsection Attribute @code{parameter_value} of @class{mbfl_invalid_function_parameter_condition_t}
+@subsubsection Attribute @code{parameter_value} of @class{mbfl_invalid_function_parameter_condition}
 
 
-@anchor{@code{parameter_value} of @class{mbfl_invalid_function_parameter_condition_t}}
+@anchor{@code{parameter_value} of @class{mbfl_invalid_function_parameter_condition}}
 @defcv {Class Attribute} {mbfl_invalid_function_parameter_condition_t} parameter_value
 The string representing the invalid parameter to function call.
 @end defcv
@@ -5905,7 +5905,7 @@ Effective use of @mbfl{}'s exception--handling is intertwined with the location 
 
 Exceptional conditions are described by instances of appropriate exceptional--condition classes,
 @ref{conditions, Exceptional--condition objects}.  It is mandatory to use only
-exceptional--condition objects whose class is a subclass of @class{mbfl_exceptional_condition_t}; no
+exceptional--condition objects whose class is a subclass of @class{mbfl_exceptional_condition}; no
 other Bash value is allowed.
 
 Whenever an exceptional--condition object is ``raised'' an exception--handling function is called to
@@ -6050,7 +6050,7 @@ if it is called, it might terminate the script with a ``uncaught exception'' exi
 
 @defun mbfl_exception_raise @var{CND}
 Raise an exceptional condition represented by @var{CND}, which must be an object whose class is a
-subclass of @class{mbfl_exceptional_condition_t}, @ref{conditions base, Base exceptional--condition
+subclass of @class{mbfl_exceptional_condition}, @ref{conditions base, Base exceptional--condition
 objects}.
 
 Starting from the top of exception--handlers's stack: apply the next handler to @var{CND}.  The
@@ -13078,7 +13078,7 @@ objects module, @ref{objects, Object--oriented programming}.
 @subsection Object classes representing semantic--version specifications
 
 
-We can use objects of class @class{mbfl_semver_spec_t} to build semantic--version representations
+We can use objects of class @class{mbfl_semver_spec} to build semantic--version representations
 from strings as follows:
 
 @example
@@ -13105,7 +13105,7 @@ mbfl_semver_spec_string_var _(STRREP) _(SEMVER_SPEC)
 @end example
 
 
-@deftp {Class} mbfl_semver_spec_t
+@deftp {Class} mbfl_semver_spec
 @deftpx {Superclass} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_class
 Class of objects representing semantic--version specifications.  It is used both to build new string
@@ -13121,7 +13121,7 @@ documentation that parameter is named @var{SEMVER_SPEC}.
 
 
 @defop {Constructor} {mbfl_semver_spec_t} mbfl_semver_spec_make_from_string @var{SEMVER_SPEC} @var{INPUT_STRING}
-Initialise a previously declared object of class @class{mbfl_semver_spec_t} using the string
+Initialise a previously declared object of class @class{mbfl_semver_spec} using the string
 representation @var{INPUT_STRING}.  The string might optionally contain the leading @samp{v}.  When
 successful return true; otherwise return false.
 
@@ -13132,7 +13132,7 @@ semantic--version specification is deleted.
 
 @defop {Constructor} {mbfl_semver_spec_t} mbfl_semver_spec_make_from_components @var{SEMVER_SPEC} @var{MAJOR} @var{MINOR} @var{PATCH_LEVEL}
 @defopx {Constructor} {mbfl_semver_spec_t} mbfl_semver_spec_make_from_components @var{SEMVER_SPEC} @var{MAJOR} @var{MINOR} @var{PATCH_LEVEL} @var{PRERELEASE_VERSION} @var{BUILD_METADATA}
-Initialise a previously declared object of class @class{mbfl_semver_spec_t} using the given
+Initialise a previously declared object of class @class{mbfl_semver_spec} using the given
 parameters.  When successful return true; otherwise return false.
 
 The parameters @var{PRERELEASE_VERSION} and @var{BUILD_METADATA} are optional: when not given, the
@@ -13144,7 +13144,7 @@ semantic--version specification is deleted.
 
 
 @defop {Predicate} {mbfl_semver_spec_t} mbfl_semver_spec_is_a @var{OBJ}
-Return true if @var{OBJ} is the data variable of an object of class @class{mbfl_semver_spec_t};
+Return true if @var{OBJ} is the data variable of an object of class @class{mbfl_semver_spec};
 otherwise return false.
 
 @example
@@ -13257,7 +13257,7 @@ mbfl_semver_spec_string_var _(STRING) _(SEMVER_SPEC)
 @subsection Object classes representing semantic--version parsers
 
 
-Objects of class @class{mbfl_semver_parser_t} represent the configuration and state of the parser
+Objects of class @class{mbfl_semver_parser} represent the configuration and state of the parser
 used to decompose semantic--version specification string--representations into their components.
 
 @example
@@ -13276,7 +13276,7 @@ mbfl_semver_parser_accept_underscore_in_build_metadata_var _(AUIBM) _(SEMVER_PAR
 @end example
 
 
-@deftp {Class} mbfl_semver_parser_t
+@deftp {Class} mbfl_semver_parser
 @deftpx {Superclass} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_class
 Class of objects representing parsers for semantic--version specification string-representations.
@@ -13287,7 +13287,7 @@ documentation that parameter is named @var{SEMVER_PARSER}.
 
 
 @defop {Constructor} {mbfl_semver_parser_t} mbfl_semver_parser_make_default @var{SEMVER_PARSER}
-Initialise an already declared object of class @class{mbfl_semver_parser_t} with the default values
+Initialise an already declared object of class @class{mbfl_semver_parser} with the default values
 for the supported options.
 
 The option @samp{parse_leading_v} is set to @samp{optional}.
@@ -13303,7 +13303,7 @@ options profile is deleted.
 
 
 @defop {Predicate} {mbfl_semver_parser_t} mbfl_semver_parser_is_a @var{OBJ}
-Return true if @var{OBJ} is the data variable of an object of class @class{mbfl_semver_parser_t};
+Return true if @var{OBJ} is the data variable of an object of class @class{mbfl_semver_parser};
 otherwise return false.
 @end defop
 
@@ -13337,7 +13337,7 @@ value is non--empty.  When successful return true; otherwise return false.
 @subsection Object classes representing semantic--version parsers input strings
 
 
-Objects of class @class{mbfl_semver_parser_input_t} are used as ``cursors'' to traverse the
+Objects of class @class{mbfl_semver_parser_input} are used as ``cursors'' to traverse the
 characters of a string while parsing semantic--version specification string-representations.  We
 create objects of this class and then hand them as parameter to @func{mbfl_semver_parse}:
 
@@ -13350,7 +13350,7 @@ mbfl_semver_parse _(SEMVER_SPEC) _(SEMVER_PARSER) _(PARSER_INPUT)
 @end example
 
 
-@deftp {Class} mbfl_semver_parser_input_t
+@deftp {Class} mbfl_semver_parser_input
 @deftpx {Superclass} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_class
 Class of objects representing input strings to be used in parsing semantic--version specifications
@@ -13365,7 +13365,7 @@ documentation that parameter is named @var{PARSER_INPUT}.
 
 
 @defop {Constructor} {mbfl_semver_parser_input_t} mbfl_semver_parser_input_make @var{PARSER_INPUT} @var{INPUT_STRING} @var{START_INDEX}
-Initialise an already declared object of class @class{mbfl_semver_parser_input_t} so that parsing of
+Initialise an already declared object of class @class{mbfl_semver_parser_input} so that parsing of
 @var{INPUT_STRING} will start at @var{START_INDEX}.  It must be:
 
 @example
@@ -13378,7 +13378,7 @@ state of the object is deleted.
 
 
 @defop {Predicate} {mbfl_semver_parser_input_t} mbfl_semver_parser_input_is_a @var{OBJ}
-Return true if @var{OBJ} is the data variable of an object of class @class{mbfl_semver_parser_t};
+Return true if @var{OBJ} is the data variable of an object of class @class{mbfl_semver_parser};
 otherwise return false.
 
 @example
@@ -17228,7 +17228,7 @@ The library @value{LIBMBFLCONTAINERS} implements the traditional stack container
 operations.  Stacks are wrappers for Bash indexed arrays, @bashref{Arrays, Arrays}.
 
 
-@deftp {Class} mbfl_stack_t
+@deftp {Class} mbfl_stack
 @deftpx {Superclass} mbfl_default_object
 @deftpx {Metaclass} mbfl_default_class
 Class of objects representing stacks.
@@ -17242,14 +17242,14 @@ class, the parameter is named @var{STK}.
 
 
 @defop {Constructor} {mbfl_stack_t} mbfl_stack_make @var{STK}
-Build a new object of class @class{mbfl_stack_t} and store it in the already declared variable
+Build a new object of class @class{mbfl_stack} and store it in the already declared variable
 @var{STK}.  Some resources are allocated, so when we do not need @var{STK} anymore: we must apply a
 destructor to it.
 @end defop
 
 
 @defop {Destructor} {mbfl_stack_t} mbfl_stack_unmake @var{STK}
-Destroy an object of class @class{mbfl_stack_t}, releasing its resources.  The variable @var{STK}
+Destroy an object of class @class{mbfl_stack}, releasing its resources.  The variable @var{STK}
 itself is @strong{not} unset.
 
 @example
@@ -17269,7 +17269,7 @@ mbfl_location_leave
 
 
 @defop {Predicate} {mbfl_stack_t} mbfl_stack_is_a @var{OBJ}
-Return true if @var{OBJ} is an object of class @class{mbfl_stack_t}; otherwise return false.
+Return true if @var{OBJ} is an object of class @class{mbfl_stack}; otherwise return false.
 @end defop
 
 
