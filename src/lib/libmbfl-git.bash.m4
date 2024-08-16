@@ -192,7 +192,7 @@ function mbfl_vc_git_config_option_flags_var () {
     mbfl_mandatory_nameref_parameter(FLAGS,	1, reference to output variable)
     mbfl_mandatory_nameref_parameter(CFGOPT,	2, reference to config value struct)
 
-    if ! mbfl_vc_git_config_option_is_a _(CFGOPT)
+    if ! mbfl_vc_git_config_option_p _(CFGOPT)
     then
 	mbfl_message_error_printf 'in call to %s expected object of class mbfl_vc_git_config_option got datavar: "%s"' \
 				  $FUNCNAME _(CFGOPT)
