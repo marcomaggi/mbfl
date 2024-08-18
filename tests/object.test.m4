@@ -925,6 +925,50 @@ function object_method_class_1_1_beta () {
 }
 
 
+#### scope handling
+
+function object-scope-1.1 () {
+    mbfl_declare_varref(DEFCLS)
+    mbfl_declare_varref(DEFOBJ)
+
+    # Define a new class with datavar in the global scope.
+    object_scope_1_1__define_class  _(DEFCLS)
+    # Define a new instance with datavar in the global scope.
+    object_scope_1_1__define_object _(DEFOBJ)
+    # Access the class and the instance at the global scope.
+    object_scope_1_1__inspect_class QQ(DEFCLS) && \
+	object_scope_1_1__inspect_instance QQ(DEFOBJ)
+}
+function object_scope_1_1__define_class () {
+    mbfl_mandatory_nameref_parameter(DEFCLS, 1, class reference)
+    mbfl_default_class_declare_global(object_scope_1_1_class)
+
+    mbfl_default_class_define _(object_scope_1_1_class) _(mbfl_default_object) 'object_scope_1_1_class' one two
+    DEFCLS=_(object_scope_1_1_class)
+}
+function object_scope_1_1__define_object () {
+    mbfl_mandatory_nameref_parameter(DEFOBJ, 1, instance reference)
+    mbfl_default_object_declare_global(object_scope_1_1_object)
+
+    object_scope_1_1_class_define _(object_scope_1_1_object) 123 456
+    DEFOBJ=_(object_scope_1_1_object)
+}
+function object_scope_1_1__inspect_class () {
+    mbfl_mandatory_nameref_parameter(DEFCLS, 1, class reference)
+    mbfl_declare_varref(NAME)
+
+    mbfl_default_class_name_var _(NAME) _(DEFCLS)
+    dotest-equal 'object_scope_1_1_class' "$NAME"
+}
+function object_scope_1_1__inspect_instance () {
+    mbfl_mandatory_nameref_parameter(DEFOBJ, 1, instance reference)
+    mbfl_declare_varref(ONE)
+
+    object_scope_1_1_class_one_var _(ONE) _(DEFOBJ)
+    dotest-equal 123 "$ONE"
+}
+
+
 #### let's go
 
 dotest object-
