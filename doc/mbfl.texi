@@ -5936,7 +5936,7 @@ Attribute accessor and mutator.
 @chapter Raising and handling exceptions
 
 
-Exception handling is a technique to handle exceptional conditions in the execution of a script;
+Exceptions handling is a technique to handle exceptional conditions in the execution of a script;
 errors are a special case of exceptional conditions.  It is useful whenever similar exceptional
 conditions may happen in different portions of a script and similar handling procedures are
 desirable.
