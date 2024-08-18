@@ -801,7 +801,7 @@ function mbfl_p_default_object_slot_accessor () {
 	mbfl_default_class_name_var _(mbfl_REQUIRED_CLASS_NAME) _(mbfl_REQUIRED_CLASS)
 	printf -v mbfl_ERRDESCR 'expected instance parameter of type: "%s"' "$mbfl_REQUIRED_CLASS_NAME"
 
-	mbfl_invalid_function_parameter_condition_make _(CND) $mbfl_CALLER_FUNCNAME "$mbfl_ERRDESCR" 1 'SELF' "$mbfl_SELF"
+	mbfl_invalid_function_parameter_condition_make _(CND) $mbfl_CALLER_FUNCNAME "$mbfl_ERRDESCR" 2 'SELF' "$mbfl_SELF"
 	mbfl_exception_raise_then_return_failure(_(CND))
     fi
 }
