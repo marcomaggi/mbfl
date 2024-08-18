@@ -862,13 +862,8 @@ function mbfl_p_object_make_function () {
 #### predefined constants
 
 mbfl_default_class_declare(mbfl_predefined_constant)
-mbfl_default_class_define _(mbfl_predefined_constant) _(mbfl_default_object) 'mbfl_predefined_constant'
-
 mbfl_default_object_declare(mbfl_unspecified)
 mbfl_default_object_declare(mbfl_undefined)
-
-mbfl_predefined_constant_define _(mbfl_unspecified)
-mbfl_predefined_constant_define _(mbfl_undefined)
 
 function mbfl_the_unspecified_p () {
     mbfl_optional_parameter(mbfl_SELF_DATAVAR, 1)
@@ -877,6 +872,12 @@ function mbfl_the_unspecified_p () {
 function mbfl_the_undefined_p () {
     mbfl_optional_parameter(mbfl_SELF_DATAVAR, 1)
     mbfl_string_not_empty(mbfl_SELF_DATAVAR) && mbfl_string_eq(_(mbfl_undefined),QQ(mbfl_SELF_DATAVAR))
+}
+
+function mbfl_initialise_module_objects () {
+    mbfl_default_class_define _(mbfl_predefined_constant) _(mbfl_default_object) 'mbfl_predefined_constant'
+    mbfl_predefined_constant_define _(mbfl_unspecified)
+    mbfl_predefined_constant_define _(mbfl_undefined)
 }
 
 ### end of file

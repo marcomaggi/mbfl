@@ -1233,8 +1233,8 @@ variable} name by @func{mbfl_variable_alloc}; then the @dfn{data variable} is de
 @dfn{proxy variable} @code{RV} is defined as alias for the @dfn{data variable}.
 
 @quotation
-Remember that when using @code{declare}: if we are at the top level, the variable will be global; if
-we are in a function, the variable will be local.
+Remember that when using @code{declare}: if we are at the top--level, the variable will be global;
+if we are in a function, the variable will be local.
 @end quotation
 
 Given a @dfn{proxy variable} name defined this way: we can retrieve its @dfn{name variable} name
@@ -1339,7 +1339,7 @@ When @var{INIT_VALUE} is @strong{not} empty, it finishes with:
 A @dfn{name variable} @code{mbfl_a_variable_@var{NAME}} is declared and filled with a unique
 @dfn{data variable} name by @func{mbfl_variable_alloc}; then the @dfn{data variable} is declared;
 finally a @dfn{proxy variable} @var{NAME} is defined as alias for the @dfn{data variable}.  If the
-macro is used at top level: the variables are global.
+macro is used at top--level: the variables are global.
 
 We can use the argument @var{DECLARE_OPTIONS} to declare a global data variable:
 
@@ -3372,6 +3372,76 @@ overview objects} for details and examples.
 @node objects default instance scope
 @subsubsection Scope management
 
+
+To keep a code base in good order, new class declarations should be at the top--level scope:
+
+@example
+mbfl_default_class_declare(MY_PERSON)
+
+mbfl_default_class_define _(MY_PERSON) _(mbfl_default_object) 'my_person' name surname
+@end example
+
+@noindent
+no matter where we declare them: new functions will be defined as constructor, predicate, field
+accessors and mutators, and those are at the top--level.  We can declare a class at the top--level
+and define it in a function; @mbfl{} itself puts some class definitions and instances definitions in
+an initialisation function:
+
+@example
+mbfl_default_class_declare(MY_PERSON)
+
+function my_initialise_this_module () @{
+  mbfl_default_class_define _(MY_PERSON) _(mbfl_default_object) 'my_person' name surname
+@}
+@end example
+
+To be used without conflicts: both global class's proxy variables and class identifiers must be
+unique in the whole script.
+
+Non--class instances can be declared and defined both at the top--level scope or in a function
+scope.  Usually we declare and define an instance in the scope of a function:
+
+@example
+function do_something () @{
+  mbfl_default_object_declare(MAINTAINER)
+
+  my_person_define _(MAINTAINER) _(MY_PERSON) 'Marco' 'Maggi'
+  # do something with _(MAINTAINER)
+@}
+@end example
+
+@noindent
+we can declare and define an instance at the top--level scope:
+
+@example
+mbfl_default_object_declare(MY_MAINTAINER)
+
+my_person_define _(MY_MAINTAINER) _(MY_PERSON) 'Marco' 'Maggi'
+
+function do_something () @{
+  # do something with _(MY_MAINTAINER)
+@}
+@end example
+
+@noindent
+and we can declare at the top--level and define all from within a function:
+
+@example
+function do_something () @}
+  mbfl_declare_varref(MAINTAINER)
+
+  build_it_var _(MAINTAINER)
+  # do something with _(MAINTAINER)
+@}
+function built_it_var () @{
+  mbfl_mandatory_nameref_parameter(RV, 1, result variable)
+  mbfl_default_object_declare_global(MAINTAINER)
+
+  my_person_define _(MAINTAINER) _(MY_PERSON) 'Marco' 'Maggi'
+  # do something with _(MAINTAINER)
+  RV=_(MAINTAINER)
+@}
+@end example
 
 @c page
 @node objects default instance predicates
