@@ -865,7 +865,7 @@ Expands into the absolute pathname of the @value{PACKAGE} library file.  For exa
 
 
 We can include in scripts the code needed to source a library at run--time or we can embed a whole
-library itself.
+library itself.  @ref{linker} for details on how to use the linker library to load libraries.
 
 
 @deffn {Preprocessor Macro} mbfl_embed_library
