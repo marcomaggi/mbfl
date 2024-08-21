@@ -14619,7 +14619,8 @@ will do nothing.
 
 @defvr {Environment Variable} MBFL_LIBRARY_PATH
 A Unix--style colon separated list of directories to be searched, left--to--right, for @mbfl{}
-libraries.
+libraries.  This variable's value is parsed at linker library loading--time, it cannot be reset by
+the script itself.
 @end defvr
 
 
