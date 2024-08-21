@@ -14581,8 +14581,8 @@ mbfl_linker_source_library_by_stem(core)
 @end example
 
 @noindent
-the macro @func{mbfl_linker_source_library_by_stem} will search a library whose file name is built
-from the ``stem'' @samp{core} as follows:
+the use of macro @func{mbfl_linker_source_library_by_stem} expands into code that will search a
+library whose file name is built from the ``stem'' @samp{core} as follows:
 
 @example
 printf -v FILENAME 'libmbfl-%s.bash' "$STEM"
@@ -14593,8 +14593,7 @@ in this case the result is @file{libmbfl-core.bash}; if the library is found: it
 @func{mbfl_load_library}; if the library is not found: the script exits with
 @func{exit_because_error_loading_library}.
 
-We can insert as many uses of @func{mbfl_linker_source_library_by_stem} to load all the libraries we
-need:
+We can insert uses of @func{mbfl_linker_source_library_by_stem} to load all the libraries we need:
 
 @example
 mbfl_linker_source_library_by_stem(git)
