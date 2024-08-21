@@ -15515,9 +15515,9 @@ Run the program @git{} with the given arguments; return the exit status of execu
 This section documents a data containers library; the library file is @value{LIBMBFLCONTAINERS},
 @ref{containers loading} for details on how to load it.
 
-Containers are mostly built on top of Bash index arrays (@bashref{Arrays}) and a middle layer of
-@mbfl{} functions that implements core routines (@ref{containers arrays}).  The upper layer is an
-interface built using @mbfl{}'s default objects (@ref{objects}).
+Containers are mostly built on top of Bash indexed arrays (@bashpref{Arrays, Arrays}) and a middle
+layer of @mbfl{} functions that implements core routines (@ref{containers arrays}).  The upper layer
+is an interface built using @mbfl{}'s default objects (@ref{objects}).
 
 @menu
 * containers loading::          Loading the library.
@@ -15563,8 +15563,8 @@ mbfl_linker_source_library_by_stem(containers)
 @appendixsubsec The underscore syntax
 
 
-In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
-underscore syntax}.
+In this documentation module we use the underscore syntax as defined in @ref{objects conventions
+underscore, The underscore syntax}.
 
 @c page
 @node containers arrays

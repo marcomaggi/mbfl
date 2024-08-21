@@ -354,6 +354,10 @@
 @xref{\NODE\,\TITLE\,\TITLE\,bash}
 @end macro
 
+@macro bashpref{NODE, TITLE}
+@pxref{\NODE\,\TITLE\,\TITLE\,bash}
+@end macro
+
 @macro bibref{TAG}
 @code{[\TAG\]}
 @end macro
