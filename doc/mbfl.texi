@@ -15512,8 +15512,27 @@ Run the program @git{} with the given arguments; return the exit status of execu
 @cindex Containers library, @value{LIBMBFLCONTAINERS}
 
 
-This section documents a data containers library; the library file is @value{LIBMBFLCONTAINERS}.  We
-can load this library at run--time with:
+This section documents a data containers library; the library file is @value{LIBMBFLCONTAINERS},
+@ref{containers loading} for details on how to load it.
+
+Containers are mostly built on top of Bash index arrays (@bashref{Arrays}) and a middle layer of
+@mbfl{} functions that implements core routines (@ref{containers arrays}).  The upper layer is an
+interface built using @mbfl{}'s default objects (@ref{objects}).
+
+@menu
+* containers loading::          Loading the library.
+* containers conventions::      Conventions.
+* containers arrays::           Arrays.
+* containers vectors::          Vectors.
+* containers stacks::           Stacks.
+@end menu
+
+@c page
+@node containers loading
+@appendixsec Loading the library
+
+
+We can load this library at run--time with:
 
 @example
 mbfl_load_library(/path/to/@value{LIBMBFLCONTAINERS})
@@ -15524,12 +15543,11 @@ for details @ref{preprocessor loading, Libraries loading and embedding}.  Notice
 preprocessor option @option{--print-libmbfl-containers} will print the file pathname of the
 installed library, @ref{--print-libmbfl-containers, Invoking the preprocessor}.
 
-@menu
-* containers conventions::      Conventions.
-* containers arrays::           Arrays.
-* containers vectors::          Vectors.
-* containers stacks::           Stacks.
-@end menu
+If we use the linker library (@ref{linker} for details) we can do:
+
+@example
+mbfl_linker_source_library_by_stem(containers)
+@end example
 
 @c page
 @node containers conventions
