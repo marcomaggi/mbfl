@@ -12,7 +12,7 @@
 #
 #	that will select these tests.
 #
-# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
+# Copyright (c) 2003, 2004, 2005, 2009, 2013, 2018, 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -663,8 +663,8 @@ if mbfl_file_is_executable "$mbfl_PROGRAM_REALPATH"
 then
 
     function file-realpath-1.1 () {
-	local testpath
-	testpath=$(dotest-mkdir a/b) || exit_because_failure
+	declare TESTPATH
+	TESTPATH=$(dotest-mkdir a/b) || exit_because_failure
 
 	mbfl_file_enable_realpath
 
@@ -672,7 +672,7 @@ then
 	    dotest-cd-tmpdir
 	    mbfl_file_realpath a/b
 	    dotest-clean-files
-	} | dotest-output "$testpath"
+	} | dotest-output "$TESTPATH"
     }
 
     # Try realpath on a file that does not exist.
@@ -685,16 +685,16 @@ then
 ### --------------------------------------------------------------------
 
     function file-realpath-var-1.1 () {
-	local testpath
-	testpath=$(dotest-mkdir a/b) || exit_because_failure
-	local RV
+	declare TESTPATH
+	TESTPATH=$(dotest-mkdir a/b) || exit_because_failure
+	declare RV
 
 	mbfl_file_enable_realpath
 
 	dotest-cd-tmpdir
 	mbfl_file_realpath_var RV a/b
 	dotest-clean-files
-	dotest-equal "$testpath" "$RV"
+	dotest-equal "$TESTPATH" "$RV"
     }
 
 fi

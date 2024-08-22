@@ -10,7 +10,7 @@
 #!	test suite. It must be sources  at the beginning of all the test
 #!	files.
 #!
-#! Copyright (c) 2004-2005, 2009, 2013, 2018, 2020 Marco Maggi
+#! Copyright (c) 2004-2005, 2009, 2013, 2018, 2020, 2024 Marco Maggi
 #! <mrc.mgg@gmail.com>
 #!
 #! This is free software; you  can redistribute it and/or modify it under

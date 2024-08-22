@@ -716,7 +716,7 @@ MBFL_TESTS_ENV		= MBFL_LIBRARY_PATH=$(builddir)/src/lib; export MBFL_LIBRARY_PAT
 # We set TMPDIR  because if the "/tmp"  directory is mounted on  a separate partition
 # with  "noexec"  attribute: tests  for  executability  of  files  will fail  if  the
 # temporary test files are created under "/tmp".
-MBFL_TESTS_ENV		+= TMPDIR=$(PWD)/tmp; export TMPDIR;
+MBFL_TESTS_ENV		+= TMPDIR=$(abs_top_builddir)/tests; export TMPDIR;
 # We need to access some files in the examples dir and the tests dir.
 MBFL_TESTS_ENV		+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_TESTS_ENV		+= examplesdir=$(builddir)/examples; export examplesdir;
