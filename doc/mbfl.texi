@@ -15840,8 +15840,8 @@ command or alias, accepting the following parameters:
 @end example
 
 @noindent
-where @var{VALUE} is a from an array; @var{PRED} is meant to test some condition against @var{VALUE}
-and return true or false.
+where @var{VALUE} is a value from an array; @var{PRED} is meant to test some condition against
+@var{VALUE} and return true or false.
 
 @item ISEQUAL
 @anchor{@var{ISEQUAL} parameter}
@@ -15936,7 +15936,7 @@ if @vari{VALUE} > @varii{VALUE} return 2;
 
 @defun mbfl_array_tabulate @var{ARRY} @var{NUM_OF_SLOTS}
 @defunx mbfl_array_tabulate @var{ARRY} @var{NUM_OF_SLOTS} @var{INITIALISER}
-Given the already declared index array @var{ARRY} fill the slots from index @samp{0} included to
+Given the already declared index array @var{ARRY}, fill the slots from index @samp{0} included to
 index @var{NUM_OF_SLOTS} excluded.
 
 When the parameter @var{INITIALISER} is not given: each slot's value is its index itself.
@@ -15978,7 +15978,7 @@ mbfl_slots_qvalues(ARRY)        @result{} 0 100 200 300 400
 
 @defun mbfl_array_iota @var{ARRY} @var{NUM_OF_SLOTS}
 @defunx mbfl_array_iota @var{ARRY} @var{NUM_OF_SLOTS} @var{START} @var{STEP}
-Given the already declared index array @var{ARRY} fill the slots from index @samp{0} included to
+Given the already declared index array @var{ARRY}, fill the slots from index @samp{0} included to
 index @var{NUM_OF_SLOTS} excluded.  The slots' values are computed with an equivalent of:
 
 @example
