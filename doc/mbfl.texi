@@ -15934,6 +15934,9 @@ if @vari{VALUE} > @varii{VALUE} return 2;
 @appendixsubsec Array constructors
 
 
+@ParameterSemanticsARRY{}
+
+
 @defun mbfl_array_tabulate @var{ARRY} @var{NUM_OF_SLOTS}
 @defunx mbfl_array_tabulate @var{ARRY} @var{NUM_OF_SLOTS} @var{INITIALISER}
 Given the already declared index array @var{ARRY}, fill the slots from index @samp{0} included to
