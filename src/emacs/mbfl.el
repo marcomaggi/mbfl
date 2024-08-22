@@ -544,6 +544,10 @@
        "mbfl_process_sleep"
        ;;
        "mbfl_times_and_dates_enable"
+       "mbfl_exec_date"
+       "mbfl_exec_date_var"
+       "mbfl_exec_date_format"
+       "mbfl_exec_date_format_var"
        "mbfl_date_current_date"
        "mbfl_date_current_day"
        "mbfl_date_current_hour"
@@ -554,6 +558,8 @@
        "mbfl_date_current_year"
        "mbfl_date_email_timestamp"
        "mbfl_date_iso_timestamp"
+       "mbfl_date_to_epoch_var"
+       "mbfl_date_from_epoch_var"
        ;;
        "mbfl_invoke_existent_script_function"
        "mbfl_invoke_script_function"

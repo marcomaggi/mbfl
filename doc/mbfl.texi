@@ -11978,6 +11978,7 @@ The required programs are: @command{date}.
 * times raw::                   Raw call to @command{date}.
 * times current::               Acquire the current time and date.
 * times special::               Special time and date formats.
+* times epoch::                 Converting to and from the Epoch.
 @end menu
 
 @c page
@@ -11986,12 +11987,14 @@ The required programs are: @command{date}.
 
 
 @defun mbfl_exec_date @var{ARG} @dots{}
+@defunx mbfl_exec_date_var @var{RV} @var{ARG} @dots{}
 Execute @command{date} with the optional arguments appended to the command line.
 @ref{mbfl_PROGRAM_DATE, Preselected program pathnames}.
 @end defun
 
 
 @defun mbfl_exec_date_format @var{FORMAT} @var{OPT} @dots{}
+@defunx mbfl_exec_date_format_var @var{RV} @var{FORMAT} @var{OPT} @dots{}
 Execute @command{date} with the mandatory @var{FORMAT} as first argument.  Additional, optional,
 arguments are appended to the command line.
 @end defun
@@ -12074,6 +12077,45 @@ required by @acronym{ISO} 8601 with nanoseconds precision.  Example:
 mbfl_date_iso_timestamp
 @print{} 2018-11-03T07:51:27,564646289+01:00
 @end example
+@end defun
+
+@c page
+@node times epoch
+@section Converting to and from the Epoch
+
+
+We can use the following functions to convert between a timestamp and the number of seconds since
+the Epoch.
+
+@example
+mbfl_declare_varref(SECONDS)
+mbfl_declare_varref(TIMESTAMP)
+
+mbfl_date_to_epoch_var _(SECONDS) '2024-08-22T06:27:24+0200'
+"$SECONDS"      @result{} 1724300844
+
+mbfl_date_from_epoch_var _(TIMESTAMP) '1724300844'
+"$TIMESTAMP"    @result{} 2024-08-22T06:27:24+0200
+@end example
+
+
+@defun mbfl_date_to_epoch_var @var{EPOCH_SECONDS_RV} @var{TIMESTAMP_SPEC}
+Store in the result variable @var{EPOCH_SECONDS_RV} the number of seconds since the Epoch
+representing the timestamp @var{TIMESTAMP_SPEC}, which must be compatible with the option
+@option{--date} of @command{date}.  If successful return true, otherwise return false.
+@end defun
+
+
+@defun mbfl_date_from_epoch_var @var{TIMESTAMP_RV} @var{EPOCH_SECONDS}
+Store in the result variable @var{TIMESTAMP_RV} a timestamp description according to the format:
+
+@example
+%Y-%m-%dT%H:%M:%S%z
+@end example
+
+@noindent
+representing the number of seconds since the Epoch @var{EPOCH_SECONDS}.  If successful return true,
+otherwise return false.
 @end defun
 
 @c page

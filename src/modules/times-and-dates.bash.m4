@@ -9,7 +9,7 @@
 #       This is  a collection of times  and dates functions for  the GNU
 #       BASH shell.
 #
-# Copyright (c) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the
@@ -34,6 +34,9 @@ function mbfl_times_and_dates_enable () {
     :
 }
 
+MBFL_DEFINE_QQ_MACRO()
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS()
+
 function mbfl_exec_date () {
     if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_DATE"
     then mbfl_program_exec "$mbfl_PROGRAM_DATE" "$@"
@@ -42,11 +45,21 @@ function mbfl_exec_date () {
 	return_because_program_not_found
     fi
 }
+function mbfl_exec_date_var () {
+    mbfl_mandatory_nameref_parameter(RV, 1, result variable)
+    shift
+    RV=$(mbfl_exec_date "$@")
+}
 
 function mbfl_exec_date_format () {
     mbfl_mandatory_parameter(FORMAT, 1, date format)
     shift
     mbfl_exec_date "$FORMAT" "$@"
+}
+function mbfl_exec_date_format_var () {
+    mbfl_mandatory_nameref_parameter(RV, 1, result variable)
+    shift
+    RV=$(mbfl_exec_date_format "$@")
 }
 
 
@@ -93,6 +106,24 @@ function mbfl_date_email_timestamp () {
 
 function mbfl_date_iso_timestamp () {
     mbfl_exec_date --iso-8601=ns
+}
+
+
+#### Epoch conversion
+
+function mbfl_date_to_epoch_var () {
+    mbfl_mandatory_nameref_parameter(RV, 1, result variable)
+    mbfl_mandatory_parameter(TIMESTAMP, 2, timestamp in ISO 8601 format)
+
+    mbfl_exec_date_var _(RV) --date=QQ(TIMESTAMP) '+%s'
+}
+function mbfl_date_from_epoch_var () {
+    mbfl_mandatory_nameref_parameter(RV, 1, result variable)
+    mbfl_mandatory_parameter(EPOCH_SECONDS, 2, number of seconds from the Epoch)
+    declare FMT
+
+    printf -v FMT '@%s' QQ(EPOCH_SECONDS)
+    mbfl_exec_date_var _(RV) --date=QQ(FMT) '+%Y-%m-%dT%H:%M:%S%z'
 }
 
 ### end of file

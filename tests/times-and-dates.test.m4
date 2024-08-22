@@ -12,7 +12,7 @@
 #
 #	will select these tests.
 #
-# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -39,6 +39,9 @@
 mbfl_embed_library(__LIBMBFL_LINKER__)
 mbfl_linker_source_library_by_stem(core)
 mbfl_linker_source_library_by_stem(tests)
+
+MBFL_DEFINE_QQ_MACRO
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
 
 mbfl_times_and_dates_enable
 
@@ -86,6 +89,37 @@ function times-and-dates--current-2.1 () {
 
 function times-and-dates--current-2.2 () {
     mbfl_date_iso_timestamp
+}
+
+
+#### Epoch conversion
+
+function times-and-dates--epoch-1.1 () {
+    mbfl_declare_varref(SECONDS)
+
+    mbfl_exec_date_var _(SECONDS) --date='2024-08-22T06:27:24+0200' '+%s'
+    dotest-equal '1724300844' QQ(SECONDS)
+}
+function times-and-dates--epoch-1.2 () {
+    mbfl_declare_varref(TIMESTAMP)
+
+    mbfl_exec_date_var _(TIMESTAMP) --date='@1724300844' '+%Y-%m-%dT%H:%M:%S%z'
+    dotest-equal '2024-08-22T06:27:24+0200' QQ(TIMESTAMP)
+}
+
+### ------------------------------------------------------------------------
+
+function times-and-dates--epoch-2.1 () {
+    mbfl_declare_varref(SECONDS)
+
+    mbfl_date_to_epoch_var _(SECONDS) '2024-08-22T06:27:24+0200'
+    dotest-equal '1724300844' QQ(SECONDS)
+}
+function times-and-dates--epoch-2.2 () {
+    mbfl_declare_varref(TIMESTAMP)
+
+    mbfl_date_from_epoch_var _(TIMESTAMP) '1724300844'
+    dotest-equal '2024-08-22T06:27:24+0200' QQ(TIMESTAMP)
 }
 
 
