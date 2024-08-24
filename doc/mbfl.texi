@@ -9981,14 +9981,14 @@ The programs are: @command{ln}.
 
 
 @defun mbfl_file_symlink @var{ORIGINAL_NAME} @var{SYMLINK_NAME} @var{OPT} @dots{}
-Create a symbolic link from @var{ORIGINAL_NAME} @var{LINK_NAME}.  Insert in the command line of
+Create a symbolic link from @var{ORIGINAL_NAME} to @var{LINK_NAME}.  Insert in the command line of
 @command{ln} the given optional arguments.
 @end defun
 
 
 @defun mbfl_file_link @var{ORIGINAL_NAME} @var{LINK_NAME} @var{OPT} @dots{}
-Create a link from @var{ORIGINAL_NAME} @var{LINK_NAME}.  Insert in the command line of @command{ln}
-the given optional arguments.
+Create a link from @var{ORIGINAL_NAME} to @var{LINK_NAME}.  Insert in the command line of
+@command{ln} the given optional arguments.
 @end defun
 
 
