@@ -144,7 +144,7 @@ function mbfl_location_handler_change_directory () {
 	pushd -n "$mbfl_NEWPWD" &>/dev/null
 	if mbfl_cd "$mbfl_NEWPWD"
 	then
-	    mbfl_location_handler 'popd'
+	    mbfl_location_handler 'popd &>/dev/null'
 	    return_success
 	else return_failure
 	fi
