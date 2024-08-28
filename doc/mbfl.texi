@@ -1907,6 +1907,7 @@ programs}.
 @end defun
 
 
+@anchor{mbfl_location_handler_change_directory}
 @defun mbfl_location_handler_change_directory @var{NEWPWD}
 Do this:
 
@@ -10394,6 +10395,10 @@ Read and print @strong{all} the contents of @var{FILENAME}.
 @cindex Changing directory
 @cindex Directory, changing
 @cindex Files, changing directory
+
+
+@ref{mbfl_location_handler_change_directory} to temporarily change the current directory in the
+context of a location.
 
 
 @defvar mbfl_CHANGE_DIRECTORY_HOOK
