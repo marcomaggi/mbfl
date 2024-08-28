@@ -11682,9 +11682,9 @@ otherwise it is:
 @section Preselected program pathnames
 
 
-@mbfl{} uses some external programs for its inner workings, especially from the @gnu{} Coreutils
-package; the file system pathnames of these programs is selected at package--configuration time and
-hard--coded in library's source code.
+@mbfl{} uses some external programs for its inner workings, especially from the @gnu{} Coreutils and
+@gnu{} Findutils packages; the file system pathnames of these programs is selected at
+package--configuration time and hard--coded in library's source code.
 
 We may want to use these program pathnames, either directly or as argument to other programs, for
 example @command{find}, as in:
@@ -11738,8 +11738,16 @@ The following are the @gnu{} Coreutils.
 @DefineProgramVariable{RMDIR, rmdir}
 @DefineProgramVariable{RM, rm}
 @DefineProgramVariable{SLEEP, sleep}
+@DefineProgramVariable{SORT, sort}
 @DefineProgramVariable{STAT, stat}
 @DefineProgramVariable{WHOAMI, whoami}
+
+The following are the @gnu{} Findutils.
+
+@DefineProgramVariable{FIND, find}
+@DefineProgramVariable{LOCATE, locate}
+@DefineProgramVariable{UPDATEDB, updatedb}
+@DefineProgramVariable{XARGS, xargs}
 
 @c page
 @node process

@@ -8,7 +8,7 @@ AC_INIT([Marcos Bash Functions Library],MMUX_PACKAGE_VERSION,[mrc.mgg@gmail.com]
 MMUX_INIT
 dnl This is the revision number of this configure.ac
 AC_REVISION([0.1])
-AC_COPYRIGHT([Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
+AC_COPYRIGHT([Copyright (c) 2003-2005, 2009-2010, 2012-2014, 2017-2018, 2020, 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 
 This is  free software; you can  redistribute it and/or modify  it under
 the terms of  the GNU Lesser General Public License  as published by the
@@ -63,9 +63,16 @@ AC_PATH_PROG([MBFL_PROGRAM_READLINK],	[readlink])
 AC_PATH_PROG([MBFL_PROGRAM_REALPATH],	[realpath])
 AC_PATH_PROG([MBFL_PROGRAM_RMDIR],	[rmdir])
 AC_PATH_PROG([MBFL_PROGRAM_RM],         [rm])
+AC_PATH_PROG([MBFL_PROGRAM_SORT],	[sort])
 AC_PATH_PROG([MBFL_PROGRAM_SLEEP],	[sleep])
 AC_PATH_PROG([MBFL_PROGRAM_STAT],	[stat])
 AC_PATH_PROG([MBFL_PROGRAM_WHOAMI],	[whoami])
+
+# The following are the GNU Findutils.
+AC_PATH_PROG([MBFL_PROGRAM_FIND],	[find])
+AC_PATH_PROG([MBFL_PROGRAM_LOCATE],	[locate])
+AC_PATH_PROG([MBFL_PROGRAM_UPDATEDB],	[updatedb])
+AC_PATH_PROG([MBFL_PROGRAM_XARGS],	[xargs])
 
 
 #### optional features and scripts
