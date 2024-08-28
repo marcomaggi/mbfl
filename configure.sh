@@ -5,10 +5,11 @@
 set -ex
 
 declare -r FINDUTILS_ROOT=/opt/findutils/4.10.0
-declare -r MBFL_PROGRAM_FIND=${FINDUTILS_ROOT}/find
-declare -r MBFL_PROGRAM_LOCATE=${FINDUTILS_ROOT}/find
-declare -r MBFL_PROGRAM_UPDATEDB=${FINDUTILS_ROOT}/updatedb
-declare -r MBFL_PROGRAM_XARGS=${FINDUTILS_ROOT}/xargs
+declare -r FINDUTILS_BINDIR=${FINDUTILS_ROOT}/bin
+declare -r MBFL_PROGRAM_FIND=${FINDUTILS_BINDIR}/find
+declare -r MBFL_PROGRAM_LOCATE=${FINDUTILS_BINDIR}/find
+declare -r MBFL_PROGRAM_UPDATEDB=${FINDUTILS_BINDIR}/updatedb
+declare -r MBFL_PROGRAM_XARGS=${FINDUTILS_BINDIR}/xargs
 
 prefix=/
 
