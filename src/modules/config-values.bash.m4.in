@@ -26,16 +26,22 @@ declare -r mbfl_PROGRAM_REALPATH='@MBFL_PROGRAM_REALPATH@'
 declare -r mbfl_PROGRAM_RM='@MBFL_PROGRAM_RM@'
 declare -r mbfl_PROGRAM_RMDIR='@MBFL_PROGRAM_RMDIR@'
 declare -r mbfl_PROGRAM_SLEEP='@MBFL_PROGRAM_SLEEP@'
+declare -r mbfl_PROGRAM_SORT='@MBFL_PROGRAM_SORT@'
 declare -r mbfl_PROGRAM_STAT='@MBFL_PROGRAM_STAT@'
 declare -r mbfl_PROGRAM_SUDO='@MBFL_PROGRAM_SUDO@'
 declare -r mbfl_PROGRAM_WHOAMI='@MBFL_PROGRAM_WHOAMI@'
 
+declare -r mbfl_PROGRAM_FIND='@MBFL_PROGRAM_FIND@'
+declare -r mbfl_PROGRAM_LOCATE='@MBFL_PROGRAM_LOCATE@'
+declare -r mbfl_PROGRAM_UPDATEDB='@MBFL_PROGRAM_UPDATEDB@'
+declare -r mbfl_PROGRAM_XARGS='@MBFL_PROGRAM_XARGS@'
+
 function mbfl_p_define_some_configuration_values () {
-    local prefix="@prefix@"
-    local exec_prefix="@exec_prefix@"
-    local bindir="@bindir@"
-    local datarootdir="@datarootdir@"
-    local datadir="@datadir@"
+    declare -r prefix="@prefix@"
+    declare -r exec_prefix="@exec_prefix@"
+    declare -r bindir="@bindir@"
+    declare -r datarootdir="@datarootdir@"
+    declare -r datadir="@datadir@"
 
     declare -g mbfl_INSTDIR_PREFIX=$prefix
     declare -g mbfl_INSTDIR_EXEC_PREFIX=$exec_prefix

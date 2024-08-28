@@ -9303,6 +9303,7 @@ the password.
 * file read and write::         Reading and writing files with privileges.
 * file cd::                     Changing directory.
 * file fifo::                   Named pipes.
+* file findutils::              Interfaces to the @gnu{} Findutils.
 @end menu
 
 @c page
@@ -10627,6 +10628,42 @@ function main () @{
   printf 'ciao parent\n'
 @}
 @end example
+
+@c page
+@node file findutils
+@section Interfaces to the @gnu{} Findutils
+
+
+@defun mbfl_exec_find @var{ARG} @dots{}
+Execute the program @command{find} using the given optional command line arguments.
+
+The pathname of the executable @command{find} is preselected at package--configuration time;
+@ref{mbfl_PROGRAM_FIND} for details.
+@end defun
+
+
+@defun mbfl_exec_locate @var{ARG} @dots{}
+Execute the program @command{locate} using the given optional command line arguments.
+
+The pathname of the executable @command{locate} is preselected at package--configuration time;
+@ref{mbfl_PROGRAM_LOCATE} for details.
+@end defun
+
+
+@defun mbfl_exec_updatedb @var{ARG} @dots{}
+Execute the program @command{updatedb} using the given optional command line arguments.
+
+The pathname of the executable @command{updatedb} is preselected at package--configuration time;
+@ref{mbfl_PROGRAM_UPDATEDB} for details.
+@end defun
+
+
+@defun mbfl_exec_xargs @var{ARG} @dots{}
+Execute the program @command{xargs} using the given optional command line arguments.
+
+The pathname of the executable @command{xargs} is preselected at package--configuration time;
+@ref{mbfl_PROGRAM_XARGS} for details.
+@end defun
 
 @c page
 @node fd

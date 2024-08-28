@@ -1400,6 +1400,41 @@ function mbfl_exec_mkfifo () {
     fi
 }
 
+
+#### GNU Findutils
+
+function mbfl_exec_find () {
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_FIND"
+    then mbfl_program_exec "$mbfl_PROGRAM_FIND" "$@"
+    else
+	mbfl_message_error_printf 'program "find" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_FIND"
+	return_because_program_not_found
+    fi
+}
+function mbfl_exec_locate () {
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_LOCATE"
+    then mbfl_program_exec "$mbfl_PROGRAM_LOCATE" "$@"
+    else
+	mbfl_message_error_printf 'program "locate" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_LOCATE"
+	return_because_program_not_found
+    fi
+}
+function mbfl_exec_updatedb () {
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_UPDATEDB"
+    then mbfl_program_exec "$mbfl_PROGRAM_UPDATEDB" "$@"
+    else
+	mbfl_message_error_printf 'program "updatedb" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_UPDATEDB"
+	return_because_program_not_found
+    fi
+}
+function mbfl_exec_xargs () {
+    if mbfl_file_p_validate_executable_hard_coded_pathname "$mbfl_PROGRAM_XARGS"
+    then mbfl_program_exec "$mbfl_PROGRAM_XARGS" "$@"
+    else
+	mbfl_message_error_printf 'program "xargs" not executable, tested pathname is: "%s"' "$mbfl_PROGRAM_XARGS"
+	return_because_program_not_found
+    fi
+}
 
 
 ### end of file

@@ -80,7 +80,8 @@ changes!
 * Added new library "libmbfl-git.bash" to interface with "git".
 
 * The package configuration allows us to select a hard-coded file system
-  pathnames to the GNU Coreutils programs and the executable "sudo".
+  pathnames  to  the  GNU  Coreutils, GNU  Findutils  programs  and  the
+  executable "sudo".
 
 * Added preprocessor macros to  automatically include the library loader
   and automatically embed  the whole library in the  output script.  The
