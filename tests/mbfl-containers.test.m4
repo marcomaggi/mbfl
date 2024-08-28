@@ -13,7 +13,7 @@
 #
 #	that will select these tests.
 #
-# Copyright (c) 2023 Marco Maggi
+# Copyright (c) 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -47,6 +47,7 @@ mbfl_linker_source_library_by_stem(containers)
 #### macros
 
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
+MBFL_DEFINE_QQ_MACRO
 
 
 #### helpers
@@ -1805,6 +1806,36 @@ function mbfl-containers-array-remove-1.3 () {
 
 ### ------------------------------------------------------------------------
 
+function mbfl-containers-array-remove-2.1 () {
+    #                                                 0 1 2 3 4 5 6 7 8
+    mbfl_declare_index_array_varref(ARRY,            (a b c D e f g h i))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c e f g h i))
+
+    mbfl_array_remove _(ARRY) _(ARRY) 3
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-remove-2.2 () {
+    #                                                 0 1 2 3 4 5 6 7 8
+    mbfl_declare_index_array_varref(ARRY,            (A b c d e f g h i))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (b c d e f g h i))
+
+    mbfl_array_remove _(ARRY) _(ARRY) 0
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-array-remove-2.3 () {
+    #                                                 0 1 2 3 4 5 6 7 8
+    mbfl_declare_index_array_varref(ARRY,            (a b c d e f g h I))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h))
+
+    mbfl_array_remove _(ARRY) _(ARRY) 8
+    #mbfl_array_dump _(ARRY) ARRY
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
 function mbfl-containers-array-delete-1.1 () {
     mbfl_declare_index_array_varref(ARRY, (a b c D e f g h i))
     mbfl_declare_index_array_varref(RESULT)
@@ -3437,6 +3468,191 @@ function mbfl-containers-array-reset-bang-1.1 () {
     mbfl_array_reset_bang _(ARRY)
     #mbfl_array_dump _(RESULT) RESULT
     mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+
+#### single value operations
+
+function mbfl-containers-push-front-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,            ())
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (99))
+
+    mbfl_array_push_front _(ARRY) '99'
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-push-front-1.2 () {
+    mbfl_declare_index_array_varref(ARRY,            (   A))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (99 A))
+
+    mbfl_array_push_front _(ARRY) '99'
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-push-front-1.3 () {
+    mbfl_declare_index_array_varref(ARRY,            (   a b c d e f g h i))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (99 a b c d e f g h i))
+
+    mbfl_array_push_front _(ARRY) '99'
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-push-back-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,            ())
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (99))
+
+    mbfl_array_push_back _(ARRY) '99'
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-push-back-1.2 () {
+    mbfl_declare_index_array_varref(ARRY,            (A))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A 99))
+
+    mbfl_array_push_back _(ARRY) '99'
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-push-back-1.3 () {
+    mbfl_declare_index_array_varref(ARRY,            (a b c d e f g h i))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h i 99))
+
+    mbfl_array_push_back _(ARRY) '99'
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-front-var-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,            (a b c d e f g h i))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h i))
+    mbfl_declare_varref(VALUE)
+
+    mbfl_array_front_var _(VALUE) _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    dotest-equal 'a' QQ(VALUE) && \
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-front-var-1.2 () {
+    mbfl_declare_index_array_varref(ARRY,            (a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a))
+    mbfl_declare_varref(VALUE)
+
+    mbfl_array_front_var _(VALUE) _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    dotest-equal 'a' QQ(VALUE) && \
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-back-var-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,            (a b c d e f g h I))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h I))
+    mbfl_declare_varref(VALUE)
+
+    mbfl_array_back_var _(VALUE) _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    dotest-equal 'I' QQ(VALUE) && \
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-back-var-1.2 () {
+    mbfl_declare_index_array_varref(ARRY,            (A))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (A))
+    mbfl_declare_varref(VALUE)
+
+    mbfl_array_back_var _(VALUE) _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    dotest-equal 'A' QQ(VALUE) && \
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-pop-front-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,            (a b c d e f g h 1))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (  b c d e f g h 1))
+
+    mbfl_array_pop_front _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-pop-front-1.2 () {
+    mbfl_declare_index_array_varref(ARRY,            (a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, ())
+
+    mbfl_array_pop_front _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-pop-back-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,            (a b c d e f g h I))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h))
+
+    mbfl_array_pop_back _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-pop-back-1.2 () {
+    mbfl_declare_index_array_varref(ARRY,            (A))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, ())
+
+    mbfl_array_pop_back _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-pop-front-var-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,            (a b c d e f g h 1))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (  b c d e f g h 1))
+    mbfl_declare_varref(VALUE)
+
+    mbfl_array_pop_front_var _(VALUE) _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    dotest-equal 'a' QQ(VALUE) && \
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-pop-front-var-1.2 () {
+    mbfl_declare_index_array_varref(ARRY,            (a))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, ())
+    mbfl_declare_varref(VALUE)
+
+    mbfl_array_pop_front_var _(VALUE) _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    dotest-equal 'a' QQ(VALUE) && \
+    mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl-containers-pop-back-var-1.1 () {
+    mbfl_declare_index_array_varref(ARRY,            (a b c d e f g h I))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, (a b c d e f g h))
+    mbfl_declare_varref(VALUE)
+
+    mbfl_array_pop_back_var _(VALUE) _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    dotest-equal 'I' QQ(VALUE) && \
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
+}
+function mbfl-containers-pop-back-var-1.2 () {
+    mbfl_declare_index_array_varref(ARRY,            (I))
+    mbfl_declare_index_array_varref(EXPECTED_RESULT, ())
+    mbfl_declare_varref(VALUE)
+
+    mbfl_array_pop_back_var _(VALUE) _(ARRY)
+    #mbfl_array_dump _(ARRY) 'ARRY'
+    dotest-equal 'I' QQ(VALUE) && \
+	mbfl_array_equal _(EXPECTED_RESULT) _(ARRY)
 }
 
 

@@ -33,6 +33,7 @@
 #### macros
 
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+MBFL_DEFINE_QQ_MACRO
 
 # MBFL_ARRAY_SWAP(mbfl_ARRY, mbfl_I, mbfl_J)
 m4_define([[[MBFL_ARRAY_SWAP]]],[[[
@@ -61,6 +62,74 @@ function mbfl_p_multi_array_number_of_slots_var () {
     mbfl_mandatory_nameref_parameter(mbfl_ARRYS,        2, reference to index array of index arrays)
     mbfl_declare_nameref(mbfl_ARRY, mbfl_slot_ref(mbfl_ARRYS, 0))
     mbfl_SLOTS_NUMBER=mbfl_slots_number(mbfl_ARRY)
+}
+
+
+#### inserting single values
+
+function mbfl_array_push_front () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, index array)
+    mbfl_mandatory_parameter(mbfl_OBJ,			2, the object to push on the array)
+
+    mbfl_array_insert_value_bang _(mbfl_ARRY) 0 QQ(mbfl_OBJ)
+}
+function mbfl_array_push_back () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, index array)
+    mbfl_mandatory_parameter(mbfl_OBJ,			2, the object to push on the array)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+
+    mbfl_array_insert_value_bang _(mbfl_ARRY) $mbfl_DIM QQ(mbfl_OBJ)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_array_pop_front_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,		1, result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		2, index array)
+
+    mbfl_RV=mbfl_slot_qref(mbfl_ARRY, 0)
+    mbfl_array_remove _(mbfl_ARRY) _(mbfl_ARRY) 0
+}
+function mbfl_array_pop_back_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,		1, result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		2, index array)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+    declare -i mbfl_LAST=$((mbfl_DIM-1))
+
+    mbfl_RV=mbfl_slot_qref(mbfl_ARRY, $mbfl_LAST)
+    mbfl_array_remove _(mbfl_ARRY) _(mbfl_ARRY) $mbfl_LAST
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_array_front_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,		1, result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		2, index array)
+
+    mbfl_RV=mbfl_slot_qref(mbfl_ARRY, 0)
+}
+function mbfl_array_back_var () {
+    mbfl_mandatory_nameref_parameter(mbfl_RV,		1, result variable)
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		2, index array)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+    declare -i mbfl_LAST=$((mbfl_DIM-1))
+
+    mbfl_RV=mbfl_slot_qref(mbfl_ARRY, $mbfl_LAST)
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_array_pop_front () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, index array)
+
+    mbfl_array_remove _(mbfl_ARRY) _(mbfl_ARRY) 0
+}
+function mbfl_array_pop_back () {
+    mbfl_mandatory_nameref_parameter(mbfl_ARRY,		1, index array)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_ARRY)
+    declare -i mbfl_LAST=$((mbfl_DIM-1))
+
+    mbfl_array_remove _(mbfl_ARRY) _(mbfl_ARRY) $mbfl_LAST
 }
 
 

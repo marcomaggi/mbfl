@@ -15671,6 +15671,7 @@ parameters we should use the vector container, @ref{containers vectors, Vectors}
 * containers arrays conventions::       Conventions.
 * containers arrays makers::            Array constructors.
 * containers arrays inspection::        Inspecting arrays.
+* containers arrays single::            Single values operations.
 * containers arrays selectors::         Selecting values from arrays.
 * containers arrays compar::            Comparing values.
 * containers arrays search::            Searching values.
@@ -16127,6 +16128,210 @@ mbfl_slot_ref(HOMOLOGOUS_VALUES_ARRY, 2)        @result{} q
 @end defun
 
 @c page
+@node containers arrays single
+@appendixsubsec Single values operations
+
+
+@ParameterSemanticsARRY{}
+
+@ref{mbfl_array_insert_value_bang} to insert values in a random position.
+
+@ref{mbfl_array_remove} to remove values in a random position.
+
+
+@defun mbfl_array_push_front @var{ARRY} @var{VALUE}
+Store @var{VALUE} in the leftmost slot of @var{ARRY}; this function mutates @var{ARRY} itself.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, ())
+
+  mbfl_array_push_front _(ARRY) '99'
+  mbfl_slots_qvalues(ARRY)
+@} @result{} 99
+
+@{
+  mbfl_declare_index_array_varref(ARRY, (A))
+
+  mbfl_array_push_front _(ARRY) '99'
+  mbfl_slots_qvalues(ARRY)
+@} @result{} 99 A
+
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+
+  mbfl_array_push_front _(ARRY) '99'
+  mbfl_slots_qvalues(ARRY)
+@} @result{} 99 a b c d e f g h i
+@end example
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_array_push_back @var{ARRY} @var{VALUE}
+Store @var{VALUE} in the rightmost slot of @var{ARRY}; this function mutates @var{ARRY} itself.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, ())
+
+  mbfl_array_push_back _(ARRY) '99'
+  mbfl_slots_qvalues(ARRY)
+@} @result{} 99
+
+@{
+  mbfl_declare_index_array_varref(ARRY, (A))
+
+  mbfl_array_push_back _(ARRY) '99'
+  mbfl_slots_qvalues(ARRY)
+@} @result{} A 99
+
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e f g h i))
+
+  mbfl_array_push_back _(ARRY) '99'
+  mbfl_slots_qvalues(ARRY)
+@} @result{} a b c d e f g h i 99
+@end example
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_array_pop_front_var @var{VALUE_RV} @var{ARRY}
+Store in the variable @var{VALUE_RV} the leftmost value @var{ARRY}, then remove that slot from the
+array; this function mutates @var{ARRY} itself.  If the array is empty: the behaviour of this
+function is undefined.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e))
+  mbfl_declare_varref(VALUE)
+
+  mbfl_array_pop_front_var _(VALUE) _(ARRY)
+  "$VALUE"                      @result{} a
+  mbfl_slots_qvalues(ARRY)      @result{} b c d e
+@}
+
+@{
+  mbfl_declare_index_array_varref(ARRY, ())
+  mbfl_declare_varref(VALUE)
+
+  mbfl_array_pop_front_var _(VALUE) _(ARRY)
+  "$VALUE"                      @result{} a
+  mbfl_slots_qvalues(ARRY)      @result{}
+@}
+@end example
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_array_pop_back_var @var{VALUE_RV} @var{ARRY}
+Store in the variable @var{VALUE_RV} the rightmost value @var{ARRY}, then remove that slot from
+the array; this function mutates @var{ARRY} itself.  If the array is empty: the behaviour of this
+function is undefined.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e))
+  mbfl_declare_varref(VALUE)
+
+  mbfl_array_pop_back_var _(VALUE) _(ARRY)
+  "$VALUE"                      @result{} e
+  mbfl_slots_qvalues(ARRY)      @result{} a b c d
+@}
+
+@{
+  mbfl_declare_index_array_varref(ARRY, ())
+  mbfl_declare_varref(VALUE)
+
+  mbfl_array_pop_back_var _(VALUE) _(ARRY)
+  "$VALUE"                      @result{} a
+  mbfl_slots_qvalues(ARRY)      @result{}
+@}
+@end example
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_array_front_var @var{VALUE_RV} @var{ARRY}
+Store in the variable @var{VALUE_RV} the leftmost value @var{ARRY}.  If the array is empty: the
+behaviour of this function is undefined.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e))
+  mbfl_declare_varref(VALUE)
+
+  mbfl_array_front_var _(VALUE) _(ARRY)
+  "$VALUE"                      @result{} a
+@}
+@end example
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_array_back_var @var{VALUE_RV} @var{ARRY}
+Store in the variable @var{VALUE_RV} the rightmost value @var{ARRY}.  If the array is empty: the
+behaviour of this function is undefined.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e))
+  mbfl_declare_varref(VALUE)
+
+  mbfl_array_back_var _(VALUE) _(ARRY)
+  "$VALUE"                      @result{} e
+@}
+@end example
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_array_pop_front @var{ARRY}
+Remove the leftmost slot from the array; this function mutates @var{ARRY} itself.  If the array is
+empty: the behaviour of this function is undefined.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e))
+
+  mbfl_array_pop_front _(VALUE) _(ARRY)
+  mbfl_slots_qvalues(ARRY)      @result{} b c d e
+@}
+
+@{
+  mbfl_declare_index_array_varref(ARRY, ())
+
+  mbfl_array_pop_front _(VALUE) _(ARRY)
+  mbfl_slots_qvalues(ARRY)      @result{}
+@}
+@end example
+@end defun
+
+@c ------------------------------------------------------------------------
+
+@defun mbfl_array_pop_back @var{VALUE_RV} @var{ARRY}
+Remove the rightmost slot from the array; this function mutates @var{ARRY} itself.  If the array is
+empty: the behaviour of this function is undefined.
+
+@example
+@{
+  mbfl_declare_index_array_varref(ARRY, (a b c d e))
+
+  mbfl_array_pop_back _(VALUE) _(ARRY)
+  mbfl_slots_qvalues(ARRY)      @result{} a b c d
+@}
+
+@{
+  mbfl_declare_index_array_varref(ARRY, ())
+
+  mbfl_array_pop_back _(VALUE) _(ARRY)
+  mbfl_slots_qvalues(ARRY)      @result{}
+@}
+@end example
+@end defun
+
+@c page
 @node containers arrays selectors
 @appendixsubsec Selecting values from arrays
 
@@ -16556,6 +16761,7 @@ Open a slot in @var{ARRY} at @var{IDX} by shifting values to the right; this fun
 @end defun
 
 
+@anchor{mbfl_array_insert_value_bang}
 @defun mbfl_array_insert_value_bang @var{ARRY} @var{IDX} @var{VALUE}
 Open a slot in @var{ARRY} at @var{IDX} by shifting values to the right, then store @var{VALUE} in
 the slot; this function mutates @var{ARRY} itself.
@@ -16753,8 +16959,11 @@ mbfl_slots_qvalues(BAD_ARRY)    @result{} 1 3 5 7 9
 @ParameterSemanticsISEQUAL{}
 
 
+@anchor{mbfl_array_remove}
 @defun mbfl_array_remove @var{DST_ARRY} @var{SRC_ARRY} @var{IDX}
-Copy values from @var{SRC_ARRY} to @var{DST_ARRY} skipping the value at index @var{IDX}.
+Copy values from @var{SRC_ARRY} to @var{DST_ARRY} skipping the value at index @var{IDX}.  The
+parameters @var{DST_ARRY} and @var{SRC_ARRY} can represent the same array, in which case: the array
+is mutated; the slot is removed; the array is one slot shorter.
 
 @example
 mbfl_declare_index_array_varref(ARRY, (a b c D e f g h i))
