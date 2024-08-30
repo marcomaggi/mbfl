@@ -26,6 +26,7 @@
 #### macros
 
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+MBFL_DEFINE_QQ_MACRO
 
 
 #### global variables
@@ -36,6 +37,8 @@ mbfl_declare_index_array(mbfl_location_HOOKS)
 # locations.
 #
 declare mbfl_location_ATEXIT_ID
+
+declare -ga mbfl_location_DIRECTORY_STACK=(QQ(PWD))
 
 
 #### location delimiters
@@ -135,23 +138,6 @@ function mbfl_location_handler_suspend_testing () {
     mbfl_option_test_save
     mbfl_location_handler mbfl_option_test_restore
 }
-function mbfl_location_handler_change_directory () {
-    mbfl_mandatory_parameter(mbfl_NEWPWD, 1, new process working directory)
-
-    if mbfl_directory_is_executable "$mbfl_NEWPWD"
-    then
-	# We do not want "pushd" to change directory itself; we doit later with "mbfl_cd()".
-	pushd -n "$mbfl_NEWPWD" &>/dev/null
-	if mbfl_cd "$mbfl_NEWPWD"
-	then
-	    mbfl_location_handler 'popd &>/dev/null'
-	    return_success
-	else return_failure
-	fi
-    else return_failure
-    fi
-}
-
 function mbfl_location_handler_restore_lastpipe () {
     # Upon exiting the location: restore the previous status of "lastpipe".
     mbfl_location_handler "$(shopt -p lastpipe)"
@@ -159,6 +145,33 @@ function mbfl_location_handler_restore_lastpipe () {
 function mbfl_location_handler_restore_nullglob () {
     # Upon exiting the location: restore the previous status of "nullglob".
     mbfl_location_handler "$(shopt -p nullglob)"
+}
+
+
+#### special location handler: change directory
+
+function mbfl_location_handler_change_directory () {
+    mbfl_mandatory_parameter(mbfl_NEWPWD, 1, new process working directory)
+
+    if mbfl_directory_is_executable QQ(mbfl_NEWPWD)
+    then
+	mbfl_location_DIRECTORY_STACK[mbfl_slots_number(mbfl_location_DIRECTORY_STACK)]=QQ(PWD)
+	mbfl_message_verbose_printf 'entering directory: "%s"\n' QQ(mbfl_NEWPWD)
+	if mbfl_change_directory QQ(mbfl_NEWPWD)
+	then
+	    mbfl_location_handler 'mbfl_p_location_handler_restore_popped_directory'
+	    return_success
+	else return_failure
+	fi
+    else return_failure
+    fi
+}
+function mbfl_p_location_handler_restore_popped_directory () {
+    declare mbfl_NEWDIR=${mbfl_location_DIRECTORY_STACK[-1]}
+    unset mbfl_location_DIRECTORY_STACK[-1]
+    mbfl_message_verbose_printf 'leaving directory: "%s"\n' QQ(PWD)
+    mbfl_change_directory QQ(mbfl_NEWDIR)
+    mbfl_message_verbose_printf 'current directory: "%s"\n' QQ(PWD)
 }
 
 ### end of file

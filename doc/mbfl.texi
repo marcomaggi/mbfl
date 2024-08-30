@@ -1923,16 +1923,17 @@ Check that @var{NEWPWD} is a string representing the file system pathname of an 
 executable directory.
 
 @item
-Push the current working directory to the directories stack (@command{pushd}).
+Push the current working directory on a internal directories stack.
 
 @item
-Change the current working directory to @var{NEWPWD} using @func{mbfl_cd}.
+Change the current working directory to @var{NEWPWD} using @func{mbfl_change_directory}.
 
 @item
-Register a new location handler that pops the top from the directories stack (@command{popd}).
+Register a new location handler that pops the top from the directories stack.
 @end enumerate
 
-When successful return true, otherwise return false.
+When successful return true, otherwise return false.  When verbose mode is enabled: print messages
+describing the entering and leaving of directories.
 @end defun
 
 

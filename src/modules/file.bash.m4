@@ -31,7 +31,8 @@
 
 #### local macros
 
-MBFL_DEFINE_UNDERSCORE_MACRO()
+MBFL_DEFINE_UNDERSCORE_MACRO
+MBFL_DEFINE_QQ_MACRO
 
 
 #### helpers
@@ -103,16 +104,16 @@ mbfl_declare_global_varref(mbfl_CHANGE_DIRECTORY_HOOK)
 mbfl_hook_define _(mbfl_CHANGE_DIRECTORY_HOOK)
 
 function mbfl_cd () {
-    mbfl_mandatory_parameter(DIRECTORY, 1, directory)
+    mbfl_mandatory_parameter(mbfl_DIRECTORY, 1, new directory pathname)
     shift 1
-    mbfl_file_normalise_var DIRECTORY "$DIRECTORY"
-    mbfl_message_verbose "entering directory: '${DIRECTORY}'\n"
-    mbfl_change_directory "$DIRECTORY" "$@"
+    mbfl_file_normalise_var mbfl_DIRECTORY "$mbfl_DIRECTORY"
+    mbfl_message_verbose_printf 'entering directory: "%s"\n' QQ(mbfl_DIRECTORY)
+    mbfl_change_directory "$mbfl_DIRECTORY" "$@"
 }
 function mbfl_change_directory () {
-    mbfl_mandatory_parameter(DIRECTORY, 1, directory)
+    mbfl_mandatory_parameter(mbfl_DIRECTORY, 1, directory)
     shift 1
-    if cd "$@" "$DIRECTORY" &>/dev/null
+    if cd "$@" "$mbfl_DIRECTORY" &>/dev/null
     then
 	mbfl_hook_run _(mbfl_CHANGE_DIRECTORY_HOOK)
 	return_success
