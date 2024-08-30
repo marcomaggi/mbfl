@@ -1878,6 +1878,12 @@ function inner () @{
 @section Special location handlers
 
 
+@cindex nullglob, Shell built--in option
+@cindex lastpipe, Shell built--in option
+@cindex Shell built--in option nullglob
+@cindex Shell built--in option lastpipe
+
+
 @anchor{mbfl_location_enable_cleanup_atexit}
 @defun mbfl_location_enable_cleanup_atexit
 @defunx mbfl_location_disable_cleanup_atexit
@@ -1970,6 +1976,23 @@ shopt -p nullglob
 
 Upon exiting the location: the handler restores the previous status of @code{nullglob}.
 @bashref{The Shopt Builtin, The Shopt Builtin}.
+
+@example
+mbfl_location_enter
+@{
+    mbfl_location_handler_restore_nullglob
+    shopt -s nullglob
+
+    declare MATCH
+
+    # The loop never executes its body if there are no files
+    # matching the pattern.
+    for MATCH in /path/to/*.tex
+    do # do something
+    done
+@}
+mbfl_location_leave
+@end example
 @end defun
 
 @c page
