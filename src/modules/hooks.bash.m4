@@ -28,6 +28,7 @@
 #### local macros
 
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+MBFL_DEFINE_QQ_MACRO
 
 
 #### interface
@@ -64,20 +65,20 @@ function mbfl_hook_add () {
 
     if mbfl_string_not_empty(mbfl_HOOK_COMMAND)
     then
-	mbfl_slot_set(mbfl_HOOK, $mbfl_IDX, "$mbfl_HOOK_COMMAND")
+	mbfl_slot_set(mbfl_HOOK, $mbfl_IDX, QQ(mbfl_HOOK_COMMAND))
 	if mbfl_string_not_empty(mbfl_IDVAR)
 	then
 	    declare -n mbfl_ID_VARREF=$mbfl_IDVAR
 	    mbfl_ID_VARREF=$mbfl_IDX
 	fi
     else
-	mbfl_message_warning_printf 'attempt to register empty string as handler for signal "%s"' "$mbfl_SIGNAME"
+	mbfl_message_warning_printf 'attempt to register empty string as hook command'
 	return_failure
     fi
 }
 function mbfl_hook_remove () {
     mbfl_mandatory_nameref_parameter(mbfl_HOOK,		1, reference to hook variable)
-    mbfl_mandatory_integer_parameter(mbfl_HANDLER_ID,	2, handler id)
+    mbfl_mandatory_parameter(mbfl_COMMAND_ID,		2, command id)
     # We must  NOT unset  this array  key/value pair:  we must really  set it  to the  empty string.
     # If the array is:
     #
@@ -105,11 +106,25 @@ function mbfl_hook_remove () {
     #    for KEY in mbfl_slots_keys(mbfl_HOOK)
     #
     # but I have decided that I like the for-with-counter loop more.  (Marco Maggi; Apr 25, 2023)
-    if test -v mbfl_slot_spec(mbfl_HOOK, $mbfl_HANDLER_ID)
+    if mbfl_string_is_digit QQ(mbfl_COMMAND_ID) && test -v mbfl_slot_spec(mbfl_HOOK, QQ(mbfl_COMMAND_ID))
     then
-	mbfl_slot_set(mbfl_HOOK, $mbfl_HANDLER_ID)
+	mbfl_slot_set(mbfl_HOOK, QQ(mbfl_COMMAND_ID))
 	return_success
     else return_failure
+    fi
+}
+function mbfl_hook_replace () {
+    mbfl_mandatory_nameref_parameter(mbfl_HOOK,		1, reference to hook variable)
+    mbfl_mandatory_parameter(mbfl_COMMAND_ID,		2, command id)
+    mbfl_mandatory_parameter(mbfl_COMMAND,		3, new command)
+    if mbfl_string_is_digit QQ(mbfl_COMMAND_ID) && test -v mbfl_slot_spec(mbfl_HOOK, QQ(mbfl_COMMAND_ID))
+    then
+	#echo "$FUNCNAME : it exists mbfl_slot_spec(mbfl_HOOK, QQ(mbfl_COMMAND_ID))" >&2
+	mbfl_slot_set(mbfl_HOOK, QQ(mbfl_COMMAND_ID), QQ(mbfl_COMMAND))
+	return_success
+    else
+	#echo "$FUNCNAME : it does not exist mbfl_slot_spec(mbfl_HOOK, QQ(mbfl_COMMAND_ID))" >&2
+	return_failure
     fi
 }
 function mbfl_hook_run () {

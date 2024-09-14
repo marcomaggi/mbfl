@@ -12,7 +12,7 @@
 #
 #	will select these tests.
 #
-# Copyright (c) 2023 Marco Maggi
+# Copyright (c) 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
@@ -116,7 +116,7 @@ function hooks-inspect-1.2 () {
 
 function hooks-remove-1.1 () {
     mbfl_hook_declare(HOOKS_REMOVE_1_1)
-    declare RESULT= EXPECTED_RESULT=14
+    declare -i RESULT=0 EXPECTED_RESULT=$((1 + 4))
     mbfl_declare_integer_varref(IDA)
     mbfl_declare_integer_varref(IDB)
 
@@ -134,6 +134,51 @@ function hooks-remove-1.1 () {
     mbfl_hook_run _(HOOKS_REMOVE_1_1)
     dotest-equal "$EXPECTED_RESULT" "$RESULT"
 }
+
+
+#### replacing hooks
+
+function hooks-replace-1.1 () {
+    mbfl_hook_declare(HOOKS_REPLACE_1_1)
+    declare -i RESULT=0 EXPECTED_RESULT=$((1 + 20 + 30 + 4))
+    mbfl_declare_integer_varref(IDA)
+    mbfl_declare_integer_varref(IDB)
+
+    mbfl_hook_define _(HOOKS_REPLACE_1_1)
+    mbfl_hook_add _(HOOKS_REPLACE_1_1) 'RESULT+=1'
+    mbfl_hook_add _(HOOKS_REPLACE_1_1) 'RESULT+=2' _(IDA)
+    mbfl_hook_add _(HOOKS_REPLACE_1_1) 'RESULT+=3' _(IDB)
+    mbfl_hook_add _(HOOKS_REPLACE_1_1) 'RESULT+=4'
+
+    #mbfl_array_dump _(HOOKS_REPLACE_1_1)
+    mbfl_hook_replace _(HOOKS_REPLACE_1_1) $IDA 'RESULT+=20'
+    mbfl_hook_replace _(HOOKS_REPLACE_1_1) $IDB 'RESULT+=30'
+    #mbfl_array_dump _(HOOKS_REPLACE_1_1)
+
+    mbfl_hook_run _(HOOKS_REPLACE_1_1)
+    dotest-equal "$EXPECTED_RESULT" "$RESULT"
+}
+
+# Call the replace function with an invalid hook id.
+#
+function hooks-replace-2.1 () {
+    mbfl_hook_declare(HOOKS_REPLACE_2_1)
+    declare -i RESULT=0 EXPECTED_RESULT=$((1 + 2 + 3 + 4))
+
+    mbfl_hook_define _(HOOKS_REPLACE_2_1)
+    mbfl_hook_add _(HOOKS_REPLACE_2_1) 'RESULT+=1'
+    mbfl_hook_add _(HOOKS_REPLACE_2_1) 'RESULT+=2'
+    mbfl_hook_add _(HOOKS_REPLACE_2_1) 'RESULT+=3'
+    mbfl_hook_add _(HOOKS_REPLACE_2_1) 'RESULT+=4'
+
+    #mbfl_array_dump _(HOOKS_REPLACE_2_1) HOOKS_REPLACE_2_1
+    mbfl_hook_replace _(HOOKS_REPLACE_2_1) 'ciao' 'RESULT+=99'
+    #mbfl_array_dump _(HOOKS_REPLACE_2_1) HOOKS_REPLACE_2_1
+
+    mbfl_hook_run _(HOOKS_REPLACE_2_1)
+    dotest-equal "$EXPECTED_RESULT" "$RESULT"
+}
+
 
 #### let's go
 

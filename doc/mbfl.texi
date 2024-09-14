@@ -2917,8 +2917,16 @@ use such identifier to remove the command with @func{mbfl_hook_remove}.
 
 @defun mbfl_hook_remove @var{HOOK} @var{COMMAND_ID}
 Remove from the @var{HOOK} the command associated to @var{COMMAND_ID}, which must have been obtained
-with a previous call to @func{mbfl_hook_remove}.  When successful: return true.  If @var{COMMAND_ID}
-is not a command's identifier: return false, but nothing else happens.
+with a previous call to @func{mbfl_hook_add}.  When successful: return true.  If @var{COMMAND_ID} is
+not a command's identifier: return false, but nothing else happens.
+@end defun
+
+
+@defun mbfl_hook_replace @var{HOOK} @var{COMMAND_ID} @var{HOOK_COMMAND}
+Replace in @var{HOOK} the command associated to @var{COMMAND_ID}, which must have been obtained with
+a previous call to @func{mbfl_hook_add}, with the new command @var{HOOK_COMMAND}.  When successful:
+return true.  If @var{COMMAND_ID} is not a command's identifier: return false, but nothing else
+happens.
 @end defun
 
 
