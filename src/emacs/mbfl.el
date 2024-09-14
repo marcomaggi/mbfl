@@ -626,6 +626,7 @@
        "mbfl_location_handler_restore_lastpipe"
        "mbfl_location_handler_restore_nullglob"
        "mbfl_location_handler_change_directory"
+       "mbfl_location_remove_handler_by_id"
        "mbfl_location_leave"
        "mbfl_location_run_all"
        "mbfl_location_hook_var"

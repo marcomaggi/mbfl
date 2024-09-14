@@ -8,7 +8,7 @@
 #
 #	Emacs-like hooks implementation.
 #
-# Copyright (c) 2023 Marco Maggi
+# Copyright (c) 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -85,7 +85,7 @@ function mbfl_hook_remove () {
     #    mbfl_HOOK[1]=hook_1
     #    mbfl_HOOK[2]=hook_2
     #
-    # and we unset "mbfl_HOOK[1]" and , the resulting array is:
+    # and we unset "mbfl_HOOK[1]", the resulting array is:
     #
     #    mbfl_HOOK[0]=hook_0
     #    mbfl_HOOK[2]=hook_2
@@ -105,7 +105,12 @@ function mbfl_hook_remove () {
     #    for KEY in mbfl_slots_keys(mbfl_HOOK)
     #
     # but I have decided that I like the for-with-counter loop more.  (Marco Maggi; Apr 25, 2023)
-    mbfl_slot_set(mbfl_HOOK, $mbfl_HANDLER_ID)
+    if test -v mbfl_slot_spec(mbfl_HOOK, $mbfl_HANDLER_ID)
+    then
+	mbfl_slot_set(mbfl_HOOK, $mbfl_HANDLER_ID)
+	return_success
+    else return_failure
+    fi
 }
 function mbfl_hook_run () {
     mbfl_mandatory_nameref_parameter(mbfl_HOOK, 1, reference to hook variable)

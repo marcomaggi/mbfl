@@ -10,7 +10,7 @@
 #
 #		$ make all test file=locations
 #
-# Copyright (c) 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2018, 2020, 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -502,6 +502,147 @@ function locations-maker-handlers-1.2 () {
     handler_append 4
 
     dotest-equal 03214 "$RESULT"
+}
+
+
+#### remobing handlers by id
+
+# Remove nothing.
+#
+function locations-remove-handler-by-id-1.1 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID)
+
+	mbfl_location_handler 'handler_append 1'
+	mbfl_location_handler 'handler_append 2' _(ID)
+	mbfl_location_handler 'handler_append 3'
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 03214 "$RESULT"
+}
+function locations-remove-handler-by-id-1.2 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID)
+
+	mbfl_location_handler 'handler_append 1'
+	mbfl_location_handler 'handler_append 2' _(ID)
+	mbfl_location_handler 'handler_append 3'
+
+	mbfl_location_remove_handler_by_id _(ID)
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 0314 "$RESULT"
+}
+function locations-remove-handler-by-id-1.3 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID1)
+	mbfl_declare_varref(ID2)
+	mbfl_declare_varref(ID3)
+
+	mbfl_location_handler 'handler_append 1' _(ID1)
+	mbfl_location_handler 'handler_append 2' _(ID2)
+	mbfl_location_handler 'handler_append 3' _(ID3)
+
+	mbfl_location_remove_handler_by_id _(ID3)
+	mbfl_location_remove_handler_by_id _(ID2)
+	mbfl_location_remove_handler_by_id _(ID1)
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 04 "$RESULT"
+}
+
+### ------------------------------------------------------------------------
+
+# Remove nothing.
+#
+function locations-remove-handler-by-id-2.1 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID)
+
+	mbfl_location_maker_handler 'handler_append 1'
+	mbfl_location_maker_handler 'handler_append 2' _(ID)
+	mbfl_location_maker_handler 'handler_append 3'
+
+	# By setting  the location  exit status to  1 we tell  "mbfl_location_leave" to  trigger the
+	# execution of the maker handlers.
+	false
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 03214 "$RESULT"
+}
+function locations-remove-handler-by-id-2.2 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID)
+
+	mbfl_location_maker_handler 'handler_append 1'
+	mbfl_location_maker_handler 'handler_append 2' _(ID)
+	mbfl_location_maker_handler 'handler_append 3'
+
+	mbfl_location_remove_handler_by_id _(ID)
+
+	# By setting  the location  exit status to  1 we tell  "mbfl_location_leave" to  trigger the
+	# execution of the maker handlers.
+	false
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 0314 "$RESULT"
+}
+function locations-remove-handler-by-id-2.3 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID1)
+	mbfl_declare_varref(ID2)
+	mbfl_declare_varref(ID3)
+
+	mbfl_location_maker_handler 'handler_append 1' _(ID1)
+	mbfl_location_maker_handler 'handler_append 2' _(ID2)
+	mbfl_location_maker_handler 'handler_append 3' _(ID3)
+
+	mbfl_location_remove_handler_by_id _(ID3)
+	mbfl_location_remove_handler_by_id _(ID2)
+	mbfl_location_remove_handler_by_id _(ID1)
+
+	# By setting  the location  exit status to  1 we tell  "mbfl_location_leave" to  trigger the
+	# execution of the maker handlers.
+	false
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 04 "$RESULT"
 }
 
 

@@ -88,14 +88,18 @@ function mbfl_location_hook_var () {
 #### registering and running handlers
 
 function mbfl_location_handler () {
-    mbfl_mandatory_parameter(mbfl_HANDLER, 1, location handler)
+    mbfl_mandatory_parameter(mbfl_HANDLER,	1, location handler)
+    mbfl_optional_parameter(mbfl_IDVAR,		2)
     declare -i mbfl_DIM=mbfl_slots_number(mbfl_location_HOOKS)
 
     if ((0 < mbfl_DIM)) && mbfl_string_not_empty(mbfl_HANDLER)
     then
 	declare -i mbfl_I=mbfl_DIM-1
 	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
-	mbfl_hook_add _(mbfl_HOOK) "$mbfl_HANDLER"
+	if mbfl_string_not_empty(mbfl_IDVAR)
+	then mbfl_hook_add _(mbfl_HOOK) QQ(mbfl_HANDLER) QQ(mbfl_IDVAR)
+	else mbfl_hook_add _(mbfl_HOOK) QQ(mbfl_HANDLER)
+	fi
     else
 	mbfl_default_object_declare(CND)
 	mbfl_outside_location_condition_make _(CND) $FUNCNAME 'attempt to register a location handler outside any location'
@@ -103,25 +107,27 @@ function mbfl_location_handler () {
     fi
 }
 function mbfl_location_maker_handler () {
-    mbfl_mandatory_parameter(mbfl_HANDLER, 1, location handler)
-    declare -i mbfl_DIM=mbfl_slots_number(mbfl_location_HOOKS)
-
-    if ((0 < mbfl_DIM)) && mbfl_string_not_empty(mbfl_HANDLER)
-    then
-	declare -i mbfl_I=mbfl_DIM-1
-	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
-	mbfl_hook_add _(mbfl_HOOK) "mbfl_p_location_run_maker_handler '$mbfl_HANDLER'"
-    else
-	mbfl_default_object_declare(CND)
-	mbfl_outside_location_condition_make _(CND) $FUNCNAME 'attempt to register a location handler outside any location'
-	mbfl_exception_raise _(CND)
-    fi
+    mbfl_mandatory_parameter(mbfl_HANDLER,	1, location handler)
+    mbfl_optional_parameter(mbfl_IDVAR,		2)
+    declare -r mbfl_WRAPPED_HANDLER="mbfl_p_location_run_maker_handler '$mbfl_HANDLER'"
+    mbfl_location_handler QQ(mbfl_WRAPPED_HANDLER) QQ(mbfl_IDVAR)
 }
 function mbfl_p_location_run_maker_handler () {
     mbfl_mandatory_parameter(mbfl_HANDLER, 1, location handler)
 
     if mbfl_string_not_empty(mbfl_HANDLER) && ((0 != mbfl_LOCATION_LEAVE_RETURN_STATUS))
-    then eval "$mbfl_HANDLER"
+    then eval QQ(mbfl_HANDLER)
+    fi
+}
+function mbfl_location_remove_handler_by_id () {
+    mbfl_mandatory_parameter(mbfl_ID,	1, the handler identifier)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_location_HOOKS)
+
+    if ((0 < mbfl_DIM))
+    then
+	declare -i mbfl_I=mbfl_DIM-1
+	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
+	mbfl_hook_remove _(mbfl_HOOK) QQ(mbfl_ID)
     fi
 }
 

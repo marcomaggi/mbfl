@@ -1783,7 +1783,12 @@ mbfl_location_leave_then_return_failure
 
 @anchor{mbfl_location_handler}
 @defun mbfl_location_handler @var{HANDLER_SCRIPT}
+@defunx mbfl_location_handler @var{HANDLER_SCRIPT} @var{IDVAR}
 Register a new handler in the current location.
+
+If the optional parameter @var{IDVAR} is present: it must be the name of a shell variable; this
+function stores in that variable a string representing the identifier of the newly added handler;
+later, we can use the identifier to remove the handler from the location.
 
 It is an error if this function is called outside a location: an exceptional--condition of class
 @class{mbfl_outside_location_condition} is raised; @ref{conditions location outside, Invalid
@@ -1795,6 +1800,10 @@ operation outside location exceptional--condition objects}.
 @cindex Locations, maker handlers
 @defun mbfl_location_maker_handler @var{HANDLER_SCRIPT}
 Register a new handler in the current location.
+
+If the optional parameter @var{IDVAR} is present: it must be the name of a shell variable; this
+function stores in that variable a string representing the identifier of the newly added handler;
+later, we can use the identifier to remove the handler from the location.
 
 It is an error if this function is called outside a location: an exceptional--condition of class
 @class{mbfl_outside_location_condition} is raised; @ref{conditions location outside, Invalid
@@ -1813,6 +1822,30 @@ the constructor returns, either successfully or because of an error;
 other asynchronous resources ``belong'' to the constructed object and must be released only when the
 constructor fails.
 @end itemize
+
+Usage example:
+
+@example
+mbfl_location_enter
+@{
+    mbfl_location_maker_handler 'do_stuff'
+    do_something
+
+    # By  setting the  location  exit status  to  1 we  tell
+    # "mbfl_location_leave" to trigger  the execution of the
+    # maker handlers.
+    false
+@}
+mbfl_location_leave
+@end example
+@end defun
+
+
+@anchor{mbfl_location_remove_handler_by_id}
+@defun mbfl_location_remove_handler_by_id @var{HANDLER_SCRIPT} @var{HANDLER_ID}
+Remove, from the current location, the previously registered handler whose identifier is
+@var{IDVAR}.  When successful: return true.  If @var{HANDLER_ID} is not a handler's identifier:
+return false, but nothing else happens.
 @end defun
 
 
@@ -2005,6 +2038,7 @@ mbfl_location_leave
 * locations examples 1::        Single location, syntactic scoping.
 * locations examples 2::        Nested locations.
 * locations examples 3::        Nested function calls.
+* locations examples 4::        Removing a handler.
 @end menu
 
 @c page
@@ -2124,6 +2158,25 @@ function sub-sub-func () @{
 
 func
 "$RESULT"       @result{} 0342516
+@end example
+
+@c page
+@node locations examples 4,  , locations examples 3, locations examples
+@subsection Removing a handler
+
+
+@example
+mbfl_location_enter
+@{
+  mbfl_declare_varref(ID)
+
+  mbfl_location_handler 'do_stuff 1'
+  mbfl_location_handler 'do_stuff 2' _(ID)
+  mbfl_location_handler 'do_stuff 3'
+
+  mbfl_location_remove_handler_by_id "$ID"
+@}
+mbfl_location_leave
 @end example
 
 @c page
@@ -2864,7 +2917,8 @@ use such identifier to remove the command with @func{mbfl_hook_remove}.
 
 @defun mbfl_hook_remove @var{HOOK} @var{COMMAND_ID}
 Remove from the @var{HOOK} the command associated to @var{COMMAND_ID}, which must have been obtained
-with a previous call to @func{mbfl_hook_remove}.
+with a previous call to @func{mbfl_hook_remove}.  When successful: return true.  If @var{COMMAND_ID}
+is not a command's identifier: return false, but nothing else happens.
 @end defun
 
 
