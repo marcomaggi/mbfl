@@ -106,11 +106,15 @@ function mbfl_hook_remove () {
     #    for KEY in mbfl_slots_keys(mbfl_HOOK)
     #
     # but I have decided that I like the for-with-counter loop more.  (Marco Maggi; Apr 25, 2023)
+    #mbfl_array_dump mbfl_HOOK mbfl_HOOK
     if mbfl_string_is_digit QQ(mbfl_COMMAND_ID) && test -v mbfl_slot_spec(mbfl_HOOK, QQ(mbfl_COMMAND_ID))
     then
+	#echo "$FUNCNAME : it exists mbfl_slot_spec(mbfl_HOOK, QQ(mbfl_COMMAND_ID))" >&2
 	mbfl_slot_set(mbfl_HOOK, QQ(mbfl_COMMAND_ID))
 	return_success
-    else return_failure
+    else
+	#echo "$FUNCNAME : it does not exist mbfl_slot_spec(mbfl_HOOK, QQ(mbfl_COMMAND_ID))" >&2
+	return_failure
     fi
 }
 function mbfl_hook_replace () {

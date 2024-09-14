@@ -42,6 +42,7 @@ mbfl_linker_source_library_by_stem(tests)
 #### macros
 
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+MBFL_DEFINE_QQ_MACRO
 
 
 #### simple handlers
@@ -538,7 +539,7 @@ function locations-remove-handler-by-id-1.2 () {
 	mbfl_location_handler 'handler_append 2' _(ID)
 	mbfl_location_handler 'handler_append 3'
 
-	mbfl_location_remove_handler_by_id _(ID)
+	mbfl_location_remove_handler_by_id QQ(ID)
     }
     mbfl_location_leave
     handler_append 4
@@ -559,9 +560,9 @@ function locations-remove-handler-by-id-1.3 () {
 	mbfl_location_handler 'handler_append 2' _(ID2)
 	mbfl_location_handler 'handler_append 3' _(ID3)
 
-	mbfl_location_remove_handler_by_id _(ID3)
-	mbfl_location_remove_handler_by_id _(ID2)
-	mbfl_location_remove_handler_by_id _(ID1)
+	mbfl_location_remove_handler_by_id QQ(ID3)
+	mbfl_location_remove_handler_by_id QQ(ID2)
+	mbfl_location_remove_handler_by_id QQ(ID1)
     }
     mbfl_location_leave
     handler_append 4
@@ -606,7 +607,7 @@ function locations-remove-handler-by-id-2.2 () {
 	mbfl_location_maker_handler 'handler_append 2' _(ID)
 	mbfl_location_maker_handler 'handler_append 3'
 
-	mbfl_location_remove_handler_by_id _(ID)
+	mbfl_location_remove_handler_by_id QQ(ID)
 
 	# By setting  the location  exit status to  1 we tell  "mbfl_location_leave" to  trigger the
 	# execution of the maker handlers.
@@ -631,9 +632,9 @@ function locations-remove-handler-by-id-2.3 () {
 	mbfl_location_maker_handler 'handler_append 2' _(ID2)
 	mbfl_location_maker_handler 'handler_append 3' _(ID3)
 
-	mbfl_location_remove_handler_by_id _(ID3)
-	mbfl_location_remove_handler_by_id _(ID2)
-	mbfl_location_remove_handler_by_id _(ID1)
+	mbfl_location_remove_handler_by_id QQ(ID3)
+	mbfl_location_remove_handler_by_id QQ(ID2)
+	mbfl_location_remove_handler_by_id QQ(ID1)
 
 	# By setting  the location  exit status to  1 we tell  "mbfl_location_leave" to  trigger the
 	# execution of the maker handlers.

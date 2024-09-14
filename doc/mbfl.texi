@@ -6829,7 +6829,7 @@ $SPLITCOUNT             @result{} 6
 
 @defun mbfl_string_toupper @var{STRING}
 @defunx mbfl_string_toupper_var @var{_RV} @var{STRING}
-Output @var{STRING} with all the occurrences of lower case @ascii{} characters (no accents) turned
+Output @var{STRING} with all the occurrences of lower case @mmuxascii{} characters (no accents) turned
 into upper case.
 
 @DocVarVariant{}
@@ -6838,7 +6838,7 @@ into upper case.
 
 @defun mbfl_string_tolower @var{STRING}
 @defunx mbfl_string_tolower_var @var{_RV} @var{STRING}
-Output @var{STRING} with all the occurrences of upper case @ascii{} characters (no accents) turned
+Output @var{STRING} with all the occurrences of upper case @mmuxascii{} characters (no accents) turned
 into lower case.
 
 @DocVarVariant{}
@@ -13132,7 +13132,7 @@ and minor version MUST be reset to @samp{0} when major version is incremented.
 
 @item
 A pre--release version MAY be denoted by appending a hyphen and a series of dot separated
-identifiers immediately following the patch version.  Identifiers MUST comprise only @ascii{}
+identifiers immediately following the patch version.  Identifiers MUST comprise only @mmuxascii{}
 alphanumerics and hyphen @samp{[0-9A-Za-z-]}.  Identifiers MUST NOT be empty.  Numeric identifiers
 MUST NOT include leading zeroes.  Pre--release versions have a lower precedence than the associated
 normal version.  A pre--release version indicates that the version is unstable and might not satisfy
@@ -13141,7 +13141,7 @@ the intended compatibility requirements as denoted by its associated normal vers
 
 @item
 Build metadata MAY be denoted by appending a plus sign and a series of dot separated identifiers
-immediately following the patch or pre--release version.  Identifiers MUST comprise only @ascii{}
+immediately following the patch or pre--release version.  Identifiers MUST comprise only @mmuxascii{}
 alphanumerics and hyphen @samp{[0-9A-Za-z-]}.  Identifiers MUST NOT be empty.  Build metadata SHOULD
 be ignored when determining version precedence.  Thus two versions that differ only in the build
 metadata, have the same precedence.  Examples: @samp{1.0.0-alpha+001}, @samp{1.0.0+20130313144700},
@@ -13168,7 +13168,7 @@ precedence than a normal version.  Example:
 Precedence for two pre--release versions with the same @samp{MAJOR}, @samp{MINOR}, and @samp{PATCH}
 version MUST be determined by comparing each dot separated identifier from left to right until a
 difference is found as follows: identifiers consisting of only digits are compared numerically and
-identifiers with letters or hyphens are compared lexically in @ascii{} sort order.  Numeric
+identifiers with letters or hyphens are compared lexically in @mmuxascii{} sort order.  Numeric
 identifiers always have lower precedence than non--numeric identifiers.  A larger set of
 pre--release fields has a higher precedence than a smaller set, if all of the preceding identifiers
 are equal.  Example:
