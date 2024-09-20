@@ -9,7 +9,7 @@ m4_divert(-1)
 #
 #	Library of macros to preprocess BASH scripts using MBFL.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -71,9 +71,13 @@ m4_ifelse([[[$1]]],,,[[[$1]]] [[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))]
 m4_define([[[mbfl_p_qq]]],[[[m4_dnl
 m4_ifelse($#,1,"$$1",[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 1 got $#]]])]]])m4_dnl
 ]]])
+m4_define([[[mbfl_p_ww]]],[[[m4_dnl
+m4_ifelse($#,1,"${$1:?}",[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 1 got $#]]])]]])m4_dnl
+]]])
 
 m4_define([[[MBFL_DEFINE_QQ_MACRO]]],[[[m4_dnl
 m4_define([[[QQ]]],[[[mbfl_p_qq($]]]@[[[)]]])m4_dnl
+m4_define([[[WW]]],[[[mbfl_p_ww($]]]@[[[)]]])m4_dnl
 ]]])
 
 
