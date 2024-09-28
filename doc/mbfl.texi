@@ -1842,10 +1842,18 @@ mbfl_location_leave
 
 
 @anchor{mbfl_location_remove_handler_by_id}
-@defun mbfl_location_remove_handler_by_id @var{HANDLER_SCRIPT} @var{HANDLER_ID}
+@defun mbfl_location_remove_handler_by_id @var{HANDLER_ID}
 Remove, from the current location, the previously registered handler whose identifier is
-@var{IDVAR}.  When successful: return true.  If @var{HANDLER_ID} is not a handler's identifier:
+@var{HANDLER_ID}.  When successful: return true.  If @var{HANDLER_ID} is not a handler's identifier:
 return false, but nothing else happens.
+@end defun
+
+
+@anchor{mbfl_location_replace_handler_by_id}
+@defun mbfl_location_replace_handler_by_id @var{HANDLER_ID} @var{NEW_HANDLER_SCRIPT}
+Replace, in the current location, the previously registered handler whose identifier is
+@var{HANDLER_ID} with the new handler @var{NEW_HANDLER_SCRIPT}.  When successful: return true.  If
+@var{HANDLER_ID} is not a handler's identifier: return false, but nothing else happens.
 @end defun
 
 

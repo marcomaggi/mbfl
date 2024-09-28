@@ -59,13 +59,13 @@ function mbfl_location_leave () {
 	# Pop the last hook from the hooks stack.  Run the hook.
 	declare -i mbfl_I=mbfl_DIM-1
 
-	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
-	mbfl_variable_unset(mbfl_slot_spec(mbfl_location_HOOKS, $mbfl_I))
+	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, WW(mbfl_I)))
+	mbfl_variable_unset(mbfl_slot_spec(mbfl_location_HOOKS, WW(mbfl_I)))
 	mbfl_hook_reverse_run _(mbfl_HOOK)
 	mbfl_hook_undefine _(mbfl_HOOK)
 	mbfl_variable_unset(_(mbfl_HOOK))
     fi
-    return $mbfl_LOCATION_LEAVE_RETURN_STATUS
+    return WW(mbfl_LOCATION_LEAVE_RETURN_STATUS)
 }
 function mbfl_location_run_all () {
     while ((0 < mbfl_slots_number(mbfl_location_HOOKS)))
@@ -78,7 +78,8 @@ function mbfl_location_hook_var () {
 
     if ((0 < mbfl_DIM))
     then
-	mbfl_HOOK=_(mbfl_location_HOOKS, $mbfl_I)
+	declare -i mbfl_I=mbfl_DIM-1
+	mbfl_HOOK=_(mbfl_location_HOOKS, WW(mbfl_I))
 	return_success
     else return_failure
     fi
@@ -95,28 +96,28 @@ function mbfl_location_handler () {
     if ((0 < mbfl_DIM)) && mbfl_string_not_empty(mbfl_HANDLER)
     then
 	declare -i mbfl_I=mbfl_DIM-1
-	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
+	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, WW(mbfl_I)))
 	if mbfl_string_not_empty(mbfl_IDVAR)
-	then mbfl_hook_add _(mbfl_HOOK) QQ(mbfl_HANDLER) QQ(mbfl_IDVAR)
-	else mbfl_hook_add _(mbfl_HOOK) QQ(mbfl_HANDLER)
+	then mbfl_hook_add _(mbfl_HOOK) WW(mbfl_HANDLER) QQ(mbfl_IDVAR)
+	else mbfl_hook_add _(mbfl_HOOK) WW(mbfl_HANDLER)
 	fi
     else
 	mbfl_default_object_declare(CND)
-	mbfl_outside_location_condition_make _(CND) $FUNCNAME 'attempt to register a location handler outside any location'
+	mbfl_outside_location_condition_make _(CND) WW(FUNCNAME) 'attempt to register a location handler outside any location'
 	mbfl_exception_raise _(CND)
     fi
 }
 function mbfl_location_maker_handler () {
     mbfl_mandatory_parameter(mbfl_HANDLER,	1, location handler)
     mbfl_optional_parameter(mbfl_IDVAR,		2)
-    declare -r mbfl_WRAPPED_HANDLER="mbfl_p_location_run_maker_handler '$mbfl_HANDLER'"
-    mbfl_location_handler QQ(mbfl_WRAPPED_HANDLER) QQ(mbfl_IDVAR)
+    declare -r mbfl_WRAPPED_HANDLER="mbfl_p_location_run_maker_handler 'WW(mbfl_HANDLER)'"
+    mbfl_location_handler WW(mbfl_WRAPPED_HANDLER) QQ(mbfl_IDVAR)
 }
 function mbfl_p_location_run_maker_handler () {
     mbfl_mandatory_parameter(mbfl_HANDLER, 1, location handler)
 
     if mbfl_string_not_empty(mbfl_HANDLER) && ((0 != mbfl_LOCATION_LEAVE_RETURN_STATUS))
-    then eval QQ(mbfl_HANDLER)
+    then eval WW(mbfl_HANDLER)
     fi
 }
 function mbfl_location_remove_handler_by_id () {
@@ -126,8 +127,20 @@ function mbfl_location_remove_handler_by_id () {
     if ((0 < mbfl_DIM))
     then
 	declare -i mbfl_I=mbfl_DIM-1
-	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, $mbfl_I))
-	mbfl_hook_remove _(mbfl_HOOK) QQ(mbfl_ID)
+	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, WW(mbfl_I)))
+	mbfl_hook_remove _(mbfl_HOOK) WW(mbfl_ID)
+    fi
+}
+function mbfl_location_replace_handler_by_id () {
+    mbfl_mandatory_parameter(mbfl_ID,		1, the handler identifier)
+    mbfl_mandatory_parameter(mbfl_HANDLER,	2, the new location handler)
+    declare -i mbfl_DIM=mbfl_slots_number(mbfl_location_HOOKS)
+
+    if ((0 < mbfl_DIM))
+    then
+	declare -i mbfl_I=mbfl_DIM-1
+	mbfl_declare_nameref(mbfl_HOOK, _(mbfl_location_HOOKS, WW(mbfl_I)))
+	mbfl_hook_replace _(mbfl_HOOK) WW(mbfl_ID) WW(mbfl_HANDLER)
     fi
 }
 
@@ -138,7 +151,7 @@ function mbfl_location_enable_cleanup_atexit () {
     mbfl_atexit_register mbfl_location_run_all mbfl_location_ATEXIT_ID
 }
 function mbfl_location_disable_cleanup_atexit () {
-    mbfl_atexit_forget $mbfl_location_ATEXIT_ID
+    mbfl_atexit_forget WW(mbfl_location_ATEXIT_ID)
 }
 function mbfl_location_handler_suspend_testing () {
     mbfl_option_test_save
@@ -159,11 +172,11 @@ function mbfl_location_handler_restore_nullglob () {
 function mbfl_location_handler_change_directory () {
     mbfl_mandatory_parameter(mbfl_NEWPWD, 1, new process working directory)
 
-    if mbfl_directory_is_executable QQ(mbfl_NEWPWD)
+    if mbfl_directory_is_executable WW(mbfl_NEWPWD)
     then
-	mbfl_location_DIRECTORY_STACK[mbfl_slots_number(mbfl_location_DIRECTORY_STACK)]=QQ(PWD)
-	mbfl_message_verbose_printf 'entering directory: "%s"\n' QQ(mbfl_NEWPWD)
-	if mbfl_change_directory QQ(mbfl_NEWPWD)
+	mbfl_location_DIRECTORY_STACK[mbfl_slots_number(mbfl_location_DIRECTORY_STACK)]=WW(PWD)
+	mbfl_message_verbose_printf 'entering directory: "%s"\n' WW(mbfl_NEWPWD)
+	if mbfl_change_directory WW(mbfl_NEWPWD)
 	then
 	    mbfl_location_handler 'mbfl_p_location_handler_restore_popped_directory'
 	    return_success
@@ -173,11 +186,11 @@ function mbfl_location_handler_change_directory () {
     fi
 }
 function mbfl_p_location_handler_restore_popped_directory () {
-    declare mbfl_NEWDIR=${mbfl_location_DIRECTORY_STACK[-1]}
+    declare mbfl_NEWDIR=mbfl_slot_ref(mbfl_location_DIRECTORY_STACK,-1)
     unset mbfl_location_DIRECTORY_STACK[-1]
-    mbfl_message_verbose_printf 'leaving directory: "%s"\n' QQ(PWD)
-    mbfl_change_directory QQ(mbfl_NEWDIR)
-    mbfl_message_verbose_printf 'current directory: "%s"\n' QQ(PWD)
+    mbfl_message_verbose_printf 'leaving directory: "%s"\n' WW(PWD)
+    mbfl_change_directory WW(mbfl_NEWDIR)
+    mbfl_message_verbose_printf 'current directory: "%s"\n' WW(PWD)
 }
 
 ### end of file

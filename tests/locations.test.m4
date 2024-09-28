@@ -647,6 +647,147 @@ function locations-remove-handler-by-id-2.3 () {
 }
 
 
+#### remobing handlers by id
+
+# Replace nothing.
+#
+function locations-replace-handler-by-id-1.1 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID)
+
+	mbfl_location_handler 'handler_append 1'
+	mbfl_location_handler 'handler_append 2' _(ID)
+	mbfl_location_handler 'handler_append 3'
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 03214 "$RESULT"
+}
+function locations-replace-handler-by-id-1.2 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID)
+
+	mbfl_location_handler 'handler_append 1'
+	mbfl_location_handler 'handler_append 2' _(ID)
+	mbfl_location_handler 'handler_append 3'
+
+	mbfl_location_replace_handler_by_id WW(ID) 'handler_append 9'
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 03914 "$RESULT"
+}
+function locations-replace-handler-by-id-1.3 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID1)
+	mbfl_declare_varref(ID2)
+	mbfl_declare_varref(ID3)
+
+	mbfl_location_handler 'handler_append 1' _(ID1)
+	mbfl_location_handler 'handler_append 2' _(ID2)
+	mbfl_location_handler 'handler_append 3' _(ID3)
+
+	mbfl_location_replace_handler_by_id WW(ID3) 'handler_append 9'
+	mbfl_location_replace_handler_by_id WW(ID2) 'handler_append 8'
+	mbfl_location_replace_handler_by_id WW(ID1) 'handler_append 7'
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 09874 "$RESULT"
+}
+
+### ------------------------------------------------------------------------
+
+# Replace nothing.
+#
+function locations-replace-handler-by-id-2.1 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID)
+
+	mbfl_location_maker_handler 'handler_append 1'
+	mbfl_location_maker_handler 'handler_append 2' _(ID)
+	mbfl_location_maker_handler 'handler_append 3'
+
+	# By setting  the location  exit status to  1 we tell  "mbfl_location_leave" to  trigger the
+	# execution of the maker handlers.
+	false
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 03214 "$RESULT"
+}
+function locations-replace-handler-by-id-2.2 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID)
+
+	mbfl_location_maker_handler 'handler_append 1'
+	mbfl_location_maker_handler 'handler_append 2' _(ID)
+	mbfl_location_maker_handler 'handler_append 3'
+
+	mbfl_location_replace_handler_by_id WW(ID) 'handler_append 9'
+
+	# By setting  the location  exit status to  1 we tell  "mbfl_location_leave" to  trigger the
+	# execution of the maker handlers.
+	false
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 03914 "$RESULT"
+}
+function locations-replace-handler-by-id-2.3 () {
+    declare RESULT
+
+    handler_append 0
+    mbfl_location_enter
+    {
+	mbfl_declare_varref(ID1)
+	mbfl_declare_varref(ID2)
+	mbfl_declare_varref(ID3)
+
+	mbfl_location_maker_handler 'handler_append 1' _(ID1)
+	mbfl_location_maker_handler 'handler_append 2' _(ID2)
+	mbfl_location_maker_handler 'handler_append 3' _(ID3)
+
+	mbfl_location_replace_handler_by_id WW(ID3) 'handler_append 9'
+	mbfl_location_replace_handler_by_id WW(ID2) 'handler_append 8'
+	mbfl_location_replace_handler_by_id WW(ID1) 'handler_append 7'
+
+	# By setting  the location  exit status to  1 we tell  "mbfl_location_leave" to  trigger the
+	# execution of the maker handlers.
+	false
+    }
+    mbfl_location_leave
+    handler_append 4
+
+    dotest-equal 09874 "$RESULT"
+}
+
+
 #### let's go
 
 dotest locations-
