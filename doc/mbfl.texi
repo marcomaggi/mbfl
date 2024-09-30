@@ -7284,6 +7284,26 @@ mbfl_string_is_floating_point_number '-0xab.cp0'                @result{} 1
 @end defun
 
 
+@defun mbfl_string_is_complex_floating_point_number @var{STRING}
+Return true if @var{STRING} is non--empty and it matches the format of a complex floating--point
+number; otherwise return false.  The string representations of every exact integer number and every
+real floating--point number are also acceptable string representations of complex floating--point
+numbers.
+
+A supported special format is:
+
+@example
+mbfl_string_is_complex_floating_point_number '(1.2)+i*(3.4)'    @result{} 0
+mbfl_string_is_complex_floating_point_number '(+1.2)+i*(-3.4)'  @result{} 0
+@end example
+
+@noindent
+in which both the real and imaginary parts are enclosed in parentheses, to allow for better
+readability; the sign preceding the imaginary unit is always @samp{+}; the characters inside the
+parentheses must match the format of a real floating--point number.
+
+@end defun
+
 @c page
 @node strings comparison
 @section Comparing strings

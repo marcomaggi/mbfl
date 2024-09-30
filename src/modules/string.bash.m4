@@ -539,8 +539,8 @@ function mbfl_p_string_is () {
     mbfl_mandatory_parameter(CHAR_PRED_FUNC, 1, char predicate func)
     # Accept $2  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
-    local STRING=$2
-    local -i i
+    declare STRING=$2
+    declare -i i
     if ((0 < mbfl_string_len(STRING)))
     then
 	for ((i=0; i < mbfl_string_len(STRING); ++i))
@@ -584,7 +584,7 @@ function mbfl_string_is_printable_ascii_noblank	() { mbfl_p_string_is mbfl_strin
 function mbfl_string_is_name () {
     # Accept $1  even if  it is  empty; for  this reason  we do  not use
     # MBFL_MANDATORY_PARAMETER.
-    local STRING=$1
+    declare STRING=$1
     mbfl_string_is_not_empty "$STRING" && \
 	mbfl_p_string_is mbfl_string_is_name_char "$STRING" && \
 	{ ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"; }
@@ -600,7 +600,7 @@ function mbfl_string_is_identifier () {
 }
 function mbfl_string_is_extended_identifier () {
     # Accept $1 even if it is empty; for this reason we do not use MBFL_MANDATORY_PARAMETER.
-    local STRING=$1
+    declare STRING=$1
     mbfl_string_is_not_empty "$STRING" \
 	&&   mbfl_p_string_is mbfl_string_is_extended_identifier_char "$STRING"		\
 	&& ! mbfl_string_is_digit "mbfl_string_idx(STRING, 0)"				\
@@ -608,7 +608,7 @@ function mbfl_string_is_extended_identifier () {
 }
 function mbfl_string_is_username () {
     mbfl_optional_parameter(STRING,1)
-    local -r REX='^(([a-zA-Z0-9_\.\-]+)|(\+[0-9]+))$'
+    declare -r REX='^(([a-zA-Z0-9_\.\-]+)|(\+[0-9]+))$'
 
     if mbfl_string_equal $'\n' "mbfl_string_last_char(STRING)"
     then return_failure
@@ -638,7 +638,7 @@ function mbfl_string_is_network_hostname () {
     #   https://stackoverflow.com/questions/106179/regular-expression-to-match-dns-hostname-or-ip-address
     #
     # answer by Sakari A. Maaranen, last visited Nov 23, 2018.
-    local -r REX="^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$"
+    declare -r REX="^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$"
 
     if ((mbfl_string_len(STRING) <= 255)) && [[ $STRING =~ $REX ]]
     then return 0
@@ -655,7 +655,7 @@ function mbfl_string_is_network_ip_address () {
     #
     # answer by Jorge Ferreira, last visited Nov 23, 2018.
     #
-    local -r REX="^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+    declare -r REX="^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
 
     if ((mbfl_string_len(STRING) <= 255)) && [[ $STRING =~ $REX ]]
     then return 0
@@ -666,7 +666,7 @@ function mbfl_string_is_network_ip_address () {
 function mbfl_string_is_email_address () {
     # We want to accept an empty parameter and return unsuccessfully when given.
     mbfl_optional_parameter(ADDRESS, 1)
-    local -r REX='^[a-zA-Z0-9_.\-]+(@[a-zA-Z0-9_.\-]+)?$'
+    declare -r REX='^[a-zA-Z0-9_.\-]+(@[a-zA-Z0-9_.\-]+)?$'
 
     if [[ $ADDRESS =~ $REX ]]
     then return 0
@@ -678,7 +678,7 @@ function mbfl_string_is_email_address () {
 
 function mbfl_string_is_exact_integer_number () {
     mbfl_optional_parameter(STRING,1)
-    local -r REX='^[+-]?[0-9]+$'
+    declare -r REX='^[+-]?[0-9]+$'
 
     if mbfl_string_equal $'\n' "mbfl_string_last_char(STRING)"
     then return_failure
@@ -712,6 +712,27 @@ function mbfl_string_is_floating_point_number () {
 	    fi
 	done
 	return_failure
+    fi
+}
+function mbfl_string_is_complex_floating_point_number () {
+    mbfl_optional_parameter(STRING,1)
+    declare -r REX='^\(([^\)]+)\)\+i\*\(([^\)]+)\)$'
+
+    if mbfl_string_equal $'\n' "mbfl_string_last_char(STRING)"
+    then return_failure
+    elif [[ "$STRING" =~ $REX ]]
+    then
+	# Calling "mbfl_string_is_floating_point_number()"  will reset the matching  array, so let's
+	# save the groups.
+	declare REP=${BASH_REMATCH[1]} IMP=${BASH_REMATCH[2]}
+	#mbfl_array_dump BASH_REMATCH BASH_REMATCH
+	mbfl_string_is_floating_point_number "$REP" && mbfl_string_is_floating_point_number "$IMP"
+    elif 'i' "mbfl_string_last_char(STRING)"
+    then
+	# FIXME In  future I will implement  the format '1.2+3.4i' but  right now I am  too lazy and
+	# busy with other stuff.  (Marco Maggi; Sep 30, 2024)
+	return_failure
+    else mbfl_string_is_floating_point_number "$STRING"
     fi
 }
 

@@ -964,6 +964,8 @@ function string-is-28.2 () {   mbfl_string_is_mixed_case_alnum_char 'C'; }
 function string-is-28.3 () {   mbfl_string_is_mixed_case_alnum_char '3'; }
 function string-is-28.3 () { ! mbfl_string_is_mixed_case_alnum_char '('; }
 
+### ------------------------------------------------------------------------
+
 function string-is-29.1  () {   mbfl_string_is_exact_integer_number '123'; }
 function string-is-29.2  () {   mbfl_string_is_exact_integer_number '+123'; }
 function string-is-29.3  () {   mbfl_string_is_exact_integer_number '-123'; }
@@ -976,6 +978,8 @@ function string-is-29.9  () { ! mbfl_string_is_exact_integer_number 'ciao'; }
 function string-is-29.10 () { ! mbfl_string_is_exact_integer_number '123ciao'; }
 function string-is-29.11 () { ! mbfl_string_is_exact_integer_number '+123ciao'; }
 function string-is-29.12 () { ! mbfl_string_is_exact_integer_number '-123ciao'; }
+
+### ------------------------------------------------------------------------
 
 function string-is-30.1.1  () {   mbfl_string_is_floating_point_number '123'; }
 function string-is-30.1.2  () {   mbfl_string_is_floating_point_number '+123'; }
@@ -1082,6 +1086,118 @@ function string-is-30.10.11 () {   mbfl_string_is_floating_point_number '-0x1p-2
 # Only one digit before the decimal point.
 function string-is-30.11.1  () { ! mbfl_string_is_floating_point_number '-0xab.cp0'; }
 
+### ------------------------------------------------------------------------
+
+function string-is-31.1.1  () {   mbfl_string_is_complex_floating_point_number '123'; }
+function string-is-31.1.2  () {   mbfl_string_is_complex_floating_point_number '+123'; }
+function string-is-31.1.3  () {   mbfl_string_is_complex_floating_point_number '-123'; }
+function string-is-31.1.4  () {   mbfl_string_is_complex_floating_point_number '0'; }
+function string-is-31.1.5  () {   mbfl_string_is_complex_floating_point_number '+0'; }
+function string-is-31.1.6  () {   mbfl_string_is_complex_floating_point_number '-0'; }
+function string-is-31.1.7  () { ! mbfl_string_is_complex_floating_point_number '+'; }
+function string-is-31.1.8  () { ! mbfl_string_is_complex_floating_point_number '-'; }
+function string-is-31.1.9  () { ! mbfl_string_is_complex_floating_point_number 'ciao'; }
+function string-is-31.1.0 () { ! mbfl_string_is_complex_floating_point_number '123ciao'; }
+function string-is-31.1.1 () { ! mbfl_string_is_complex_floating_point_number '+123ciao'; }
+function string-is-31.1.2 () { ! mbfl_string_is_complex_floating_point_number '-123ciao'; }
+
+function string-is-31.2.1 () {   mbfl_string_is_complex_floating_point_number '123.'; }
+function string-is-31.2.2 () {   mbfl_string_is_complex_floating_point_number '+123.'; }
+function string-is-31.2.3 () {   mbfl_string_is_complex_floating_point_number '-123.'; }
+function string-is-31.2.4 () {   mbfl_string_is_complex_floating_point_number '0.'; }
+function string-is-31.2.5 () {   mbfl_string_is_complex_floating_point_number '+0.'; }
+function string-is-31.2.6 () {   mbfl_string_is_complex_floating_point_number '-0.'; }
+
+function string-is-31.3.1 () {   mbfl_string_is_complex_floating_point_number '123.89'; }
+function string-is-31.3.2 () {   mbfl_string_is_complex_floating_point_number '+123.89'; }
+function string-is-31.3.3 () {   mbfl_string_is_complex_floating_point_number '-123.89'; }
+function string-is-31.3.4 () {   mbfl_string_is_complex_floating_point_number '0.89'; }
+function string-is-31.3.5 () {   mbfl_string_is_complex_floating_point_number '+0.89'; }
+function string-is-31.3.6 () {   mbfl_string_is_complex_floating_point_number '-0.89'; }
+
+function string-is-31.4.1 () {   mbfl_string_is_complex_floating_point_number '123.89e56'; }
+function string-is-31.4.2 () {   mbfl_string_is_complex_floating_point_number '+123.89e56'; }
+function string-is-31.4.3 () {   mbfl_string_is_complex_floating_point_number '-123.89e56'; }
+function string-is-31.4.4 () {   mbfl_string_is_complex_floating_point_number '0.89e56'; }
+function string-is-31.4.5 () {   mbfl_string_is_complex_floating_point_number '+0.89e56'; }
+function string-is-31.4.6 () {   mbfl_string_is_complex_floating_point_number '-0.89e56'; }
+
+function string-is-31.5.1 () {   mbfl_string_is_complex_floating_point_number '123.89e+56'; }
+function string-is-31.5.2 () {   mbfl_string_is_complex_floating_point_number '+123.89e+56'; }
+function string-is-31.5.3 () {   mbfl_string_is_complex_floating_point_number '-123.89e+56'; }
+function string-is-31.5.4 () {   mbfl_string_is_complex_floating_point_number '0.89e+56'; }
+function string-is-31.5.5 () {   mbfl_string_is_complex_floating_point_number '+0.89e+56'; }
+function string-is-31.5.6 () {   mbfl_string_is_complex_floating_point_number '-0.89e+56'; }
+
+function string-is-31.6.1 () {   mbfl_string_is_complex_floating_point_number '123.89e-56'; }
+function string-is-31.6.2 () {   mbfl_string_is_complex_floating_point_number '+123.89e-56'; }
+function string-is-31.6.3 () {   mbfl_string_is_complex_floating_point_number '-123.89e-56'; }
+function string-is-31.6.4 () {   mbfl_string_is_complex_floating_point_number '0.89e-56'; }
+function string-is-31.6.5 () {   mbfl_string_is_complex_floating_point_number '+0.89e-56'; }
+function string-is-31.6.6 () {   mbfl_string_is_complex_floating_point_number '-0.89e-56'; }
+
+function string-is-31.7.1 () {   mbfl_string_is_complex_floating_point_number '.89'; }
+function string-is-31.7.2 () {   mbfl_string_is_complex_floating_point_number '+.89'; }
+function string-is-31.7.3 () {   mbfl_string_is_complex_floating_point_number '-.89'; }
+function string-is-31.7.4 () {   mbfl_string_is_complex_floating_point_number '.89e56'; }
+function string-is-31.7.5 () {   mbfl_string_is_complex_floating_point_number '+.89e56'; }
+function string-is-31.7.6 () {   mbfl_string_is_complex_floating_point_number '-.89e56'; }
+function string-is-31.7.7 () {   mbfl_string_is_complex_floating_point_number '.89e+56'; }
+function string-is-31.7.8 () {   mbfl_string_is_complex_floating_point_number '+.89e+56'; }
+function string-is-31.7.9 () {   mbfl_string_is_complex_floating_point_number '-.89e+56'; }
+function string-is-31.7.10 () {   mbfl_string_is_complex_floating_point_number '.89e-56'; }
+function string-is-31.7.11 () {   mbfl_string_is_complex_floating_point_number '+.89e-56'; }
+function string-is-31.7.12 () {   mbfl_string_is_complex_floating_point_number '-.89e-56'; }
+
+function string-is-31.8.1 () {   mbfl_string_is_complex_floating_point_number '123e-56'; }
+function string-is-31.8.2 () {   mbfl_string_is_complex_floating_point_number '+123e-56'; }
+function string-is-31.8.3 () {   mbfl_string_is_complex_floating_point_number '-123e-56'; }
+function string-is-31.8.4 () {   mbfl_string_is_complex_floating_point_number '0e-56'; }
+function string-is-31.8.5 () {   mbfl_string_is_complex_floating_point_number '+0e-56'; }
+function string-is-31.8.6 () {   mbfl_string_is_complex_floating_point_number '-0e-56'; }
+
+function string-is-31.9.1  () { mbfl_string_is_complex_floating_point_number 'inf'; }
+function string-is-31.9.2  () { mbfl_string_is_complex_floating_point_number '+inf'; }
+function string-is-31.9.3  () { mbfl_string_is_complex_floating_point_number '-inf'; }
+function string-is-31.9.4  () { mbfl_string_is_complex_floating_point_number 'inf.0'; }
+function string-is-31.9.5  () { mbfl_string_is_complex_floating_point_number '+inf.0'; }
+function string-is-31.9.6  () { mbfl_string_is_complex_floating_point_number '-inf.0'; }
+function string-is-31.9.7  () { mbfl_string_is_complex_floating_point_number 'infinity'; }
+function string-is-31.9.8  () { mbfl_string_is_complex_floating_point_number '+infinity'; }
+function string-is-31.9.9  () { mbfl_string_is_complex_floating_point_number '-infinity'; }
+function string-is-31.9.10 () { mbfl_string_is_complex_floating_point_number 'nan'; }
+function string-is-31.9.11 () { mbfl_string_is_complex_floating_point_number '+nan'; }
+function string-is-31.9.12 () { mbfl_string_is_complex_floating_point_number '-nan'; }
+function string-is-31.9.13 () { mbfl_string_is_complex_floating_point_number 'nan.0'; }
+function string-is-31.9.14 () { mbfl_string_is_complex_floating_point_number '+nan.0'; }
+function string-is-31.9.15 () { mbfl_string_is_complex_floating_point_number '-nan.0'; }
+function string-is-31.9.16 () { mbfl_string_is_complex_floating_point_number 'NaN'; }
+function string-is-31.9.17 () { mbfl_string_is_complex_floating_point_number '+NaN'; }
+function string-is-31.9.18 () { mbfl_string_is_complex_floating_point_number '-NaN'; }
+function string-is-31.9.19 () { mbfl_string_is_complex_floating_point_number 'NaN.0'; }
+function string-is-31.9.20 () { mbfl_string_is_complex_floating_point_number '+NaN.0'; }
+function string-is-31.9.21 () { mbfl_string_is_complex_floating_point_number '-NaN.0'; }
+
+function string-is-31.10.1  () {   mbfl_string_is_complex_floating_point_number '0xa.bcp0'; }
+function string-is-31.10.2  () {   mbfl_string_is_complex_floating_point_number '-0xa.bcp0'; }
+function string-is-31.10.3  () {   mbfl_string_is_complex_floating_point_number '-0xa.bcp0'; }
+function string-is-31.10.4  () {   mbfl_string_is_complex_floating_point_number '0xa.bcp-2'; }
+function string-is-31.10.5  () {   mbfl_string_is_complex_floating_point_number '0xA.BCp+2'; }
+function string-is-31.10.6  () {   mbfl_string_is_complex_floating_point_number '0X1.3333333333333P+0'; }
+function string-is-31.10.7  () {   mbfl_string_is_complex_floating_point_number '-0X1.B333333333333P+1'; }
+function string-is-31.10.8  () {   mbfl_string_is_complex_floating_point_number '0x1.ap+1'; }
+function string-is-31.10.9  () {   mbfl_string_is_complex_floating_point_number '-0x1p2'; }
+function string-is-31.10.10 () {   mbfl_string_is_complex_floating_point_number '0x1.ap+1DE'; }
+function string-is-31.10.11 () {   mbfl_string_is_complex_floating_point_number '-0x1p-2AF'; }
+
+# Only one digit before the decimal point.
+function string-is-31.11.1  () { ! mbfl_string_is_complex_floating_point_number '-0xab.cp0'; }
+
+function string-is-31.12.1  () {   mbfl_string_is_complex_floating_point_number '(1.2)+i*(3.4)'; }
+function string-is-31.12.2  () {   mbfl_string_is_complex_floating_point_number '(+1.2)+i*(+3.4)'; }
+function string-is-31.12.3  () {   mbfl_string_is_complex_floating_point_number '(+1.2)+i*(-3.4)'; }
+function string-is-31.12.4  () {   mbfl_string_is_complex_floating_point_number '(-1.2)+i*(+3.4)'; }
+function string-is-31.10.5  () {   mbfl_string_is_complex_floating_point_number '(0xA.BCp+2)+i*(-0X1.B333333333333P+1)'; }
 
 
 #### validating email addresses

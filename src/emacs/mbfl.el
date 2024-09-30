@@ -262,6 +262,9 @@
        "mbfl_string_is_no"
        "mbfl_string_is_true"
        "mbfl_string_is_false"
+       "mbfl_string_is_exact_integer_number"
+       "mbfl_string_is_floating_point_number"
+       "mbfl_string_is_complex_floating_point_number"
        ;;
        "mbfl_sprintf"
        "mbfl_string_chars"
