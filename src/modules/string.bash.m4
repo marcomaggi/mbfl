@@ -674,6 +674,47 @@ function mbfl_string_is_email_address () {
     fi
 }
 
+### ------------------------------------------------------------------------
+
+function mbfl_string_is_exact_integer_number () {
+    mbfl_optional_parameter(STRING,1)
+    local -r REX='^[+-]?[0-9]+$'
+
+    if mbfl_string_equal $'\n' "mbfl_string_last_char(STRING)"
+    then return_failure
+    elif [[ "$STRING" =~ $REX ]]
+    then return_success
+    else return_failure
+    fi
+}
+function mbfl_string_is_floating_point_number () {
+    mbfl_optional_parameter(STRING,1)
+    declare -r REX='^[+-]?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))([eE][+-]?[0-9]+)?$'
+    declare -r REXA='^\-?0[xX][0-9a-fA-F](\.[0-9a-fA-F]+)?[pP][+-]?[0-9a-fA-F]+$'
+
+    if mbfl_string_equal $'\n' "mbfl_string_last_char(STRING)"
+    then return_failure
+    elif [[ "$STRING" =~ $REX ]]
+    then return_success
+    elif [[ "$STRING" =~ $REXA ]]
+    then return_success
+    else
+	declare ITEM
+
+	for ITEM in \
+	    'inf' '+inf' '-inf' 'inf.0' '+inf.0' '-inf.0' \
+		  'infinity' '+infinity' '-infinity' 'Infinity' '+Infinity' '-Infinity' \
+		  'nan' '+nan' '-nan' 'nan.0' '+nan.0' '-nan.0' \
+		  'NaN' '+NaN' '-NaN' 'NaN.0' '+NaN.0' '-NaN.0'
+	do
+	    if mbfl_string_equal "$ITEM" "$STRING"
+	    then return_success
+	    fi
+	done
+	return_failure
+    fi
+}
+
 
 #### case conversion
 

@@ -7222,6 +7222,68 @@ Return true if @var{STRING} is non--empty and it matches the format of an @acron
 otherwise return false.
 @end defun
 
+
+@defun mbfl_string_is_exact_integer_number @var{STRING}
+Return true if @var{STRING} is non--empty and it matches the format of an exact integer number;
+otherwise return false.
+
+@example
+mbfl_string_is_exact_integer_number '123'       @result{} 0
+mbfl_string_is_exact_integer_number '+123'      @result{} 0
+mbfl_string_is_exact_integer_number '-123'      @result{} 0
+@end example
+@end defun
+
+
+@defun mbfl_string_is_floating_point_number @var{STRING}
+Return true if @var{STRING} is non--empty and it matches the format of a floating--point number;
+otherwise return false.  The accepted formats for infinity are:
+
+@example
+inf +inf -inf inf.0 +inf.0 -inf.0
+infinity +infinity -infinity
+Infinity +Infinity -Infinity
+@end example
+
+The accepted formats for not--a--number are:
+
+@example
+nan +nan -nan nan.0 +nan.0 -nan.0
+NaN +NaN -NaN NaN.0 +NaN.0 -NaN.0
+@end example
+
+Some examples:
+
+@example
+mbfl_string_is_floating_point_number '123'              @result{} 0
+mbfl_string_is_floating_point_number '+123'             @result{} 0
+mbfl_string_is_floating_point_number '-123'             @result{} 0
+mbfl_string_is_floating_point_number '123.89'           @result{} 0
+mbfl_string_is_floating_point_number '-123.89e56'       @result{} 0
+mbfl_string_is_floating_point_number '123.89e+56'       @result{} 0
+@end example
+
+The format of the C language output specifications @samp{%a} and @samp{%A} is also supported:
+
+@example
+mbfl_string_is_floating_point_number '0xa.bcp0'                 @result{} 0
+mbfl_string_is_floating_point_number '-0xa.bcp0'                @result{} 0
+mbfl_string_is_floating_point_number '-0xa.bcp0'                @result{} 0
+mbfl_string_is_floating_point_number '0xa.bcp-2'                @result{} 0
+mbfl_string_is_floating_point_number '0xA.BCp+2'                @result{} 0
+mbfl_string_is_floating_point_number '0X1.3333333333333P+0'     @result{} 0
+mbfl_string_is_floating_point_number '-0X1.B333333333333P+1'    @result{} 0
+mbfl_string_is_floating_point_number '0x1.ap+1'                 @result{} 0
+mbfl_string_is_floating_point_number '-0x1p2'                   @result{} 0
+mbfl_string_is_floating_point_number '0x1.ap+1DE'               @result{} 0
+mbfl_string_is_floating_point_number '-0x1p-2AF'                @result{} 0
+
+# Only one digit before the decimal point!
+mbfl_string_is_floating_point_number '-0xab.cp0'                @result{} 1
+@end example
+@end defun
+
+
 @c page
 @node strings comparison
 @section Comparing strings
