@@ -15,9 +15,7 @@
 #
 #	   MBFL_SETUP
 #
-#	In a "Makefile.am" we are interested in the substitution variables "MBFLPP" and "MBFLTEST".
-#
-# Copyright (c) 2009, 2012, 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
+# Copyright (c) 2009, 2012, 2018, 2020, 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #
 # The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 # and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -38,6 +36,40 @@
 # TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
 
+
+dnl MBFL_SETUP --
+dnl
+dnl Synopsis:
+dnl
+dnl     MBFL_SETUP([MBFL_REQUIRED_VERSION])
+dnl
+dnl Parameters:
+dnl
+dnl     $1 - Mandatory semantic version specification requiring a version of MBFL.
+dnl
+dnl Description:
+dnl
+dnl     Setup MBFL.  Search for the preprocessor and the installed libraries.
+dnl
+dnl     Define the GNU Autoconf substitution symbols:
+dnl
+dnl     MBFLPP -                        File pathname of the preprocessor.
+dnl     MBFL_LIBDIR -                   Directory pathname of the installed libraries.
+dnl     MBFL_LIBMBFL -                  File pathname of the core library.
+dnl     MBFL_LIBMBFL_CORE -             File pathname of the core library.
+dnl     MBFL_LIBMBFL_LINKER -           File pathname of the linker library.
+dnl     MBFL_LIBMBFL_TESTS -            File pathname of the tests library.
+dnl     MBFL_LIBMBFL_AT -               File pathname of the at library.
+dnl     MBFL_LIBMBFL_ARCH -             File pathname of the arch library.
+dnl     MBFL_LIBMBFL_UTILS -            File pathname of the utils library.
+dnl     MBFL_LIBMBFL_PASSWORDS -        File pathname of the passwords library.
+dnl     MBFL_LIBMBFL_GIT -              File pathname of the git library.
+dnl     MBFL_LIBMBFL_CONTAINERS -       File pathname of the containers library.
+dnl
+dnl Usage example:
+dnl
+dnl     MBFL_SETUP([v3.0.0])
+dnl
 AC_DEFUN([MBFL_SETUP],
   [AC_PATH_PROG([MBFLPP],[mbflpp.bash],[:])
 
@@ -107,6 +139,36 @@ AC_DEFUN([MBFL_SETUP],
    AC_SUBST(MBFL_LIBMBFL_GIT,           ["$mbfl_cv_pathname_libmbfl_git"])
    AC_SUBST(MBFL_LIBMBFL_CONTAINERS,    ["$mbfl_cv_pathname_libmbfl_containers"])
    ])
+
+
+dnl MBFL_SETUP_FOR_TESTING --
+dnl
+dnl Synopsis:
+dnl
+dnl     MBFL_SETUP_FOR_TESTING([MBFL_REQUIRED_VERSION])
+dnl
+dnl Parameters:
+dnl
+dnl     $1 - Mandatory semantic version specification requiring a version of MBFL.
+dnl
+dnl Description:
+dnl
+dnl     Setup MBFL  only if it  is required by  the testing infrastructure  of the package.   Add to
+dnl     "configure" the  command line option  "--enable-mbfl" to enble  use of the  external package
+dnl     MBFL for testing.  The default is to enable it.
+dnl
+dnl Usage example:
+dnl
+dnl     MBFL_SETUP_FOR_TESTING([v3.0.0])
+dnl
+AC_DEFUN([MBFL_SETUP_FOR_TESTING],
+  [AC_ARG_ENABLE([mbfl],
+     [AS_HELP_STRING([--enable-mbfl],[enable using MBFL for testing (default: yes)])],
+     [AS_VAR_SET([MBFL_TESTING_ENABLED],[$enableval])],
+     [AS_VAR_SET([MBFL_TESTING_ENABLED],[yes])])
+   AS_IF([test "x$MBFL_TESTING_ENABLED" = 'xyes'],
+         [MBFL_SETUP([$1])])
+   AM_CONDITIONAL([WANT_MBFL_TESTING_ENABLED],[test "x$MBFL_TESTING_ENABLED" = 'xyes'])])
 
 ### end of file
 # Local Variables:
