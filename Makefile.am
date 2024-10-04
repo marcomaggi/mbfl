@@ -630,6 +630,7 @@ EXTRA_DIST			+=		\
 	tests/locations.test.m4			\
 	tests/math.test.m4			\
 	tests/message.test.m4			\
+	tests/preprocessor.test.m4		\
 	tests/process.test.m4			\
 	tests/program.test.m4			\
 	tests/script.test.m4			\
@@ -670,6 +671,7 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/locations.test			\
 	tests/math.test				\
 	tests/message.test			\
+	tests/preprocessor.test			\
 	tests/process.test			\
 	tests/program.test			\
 	tests/script.test			\
