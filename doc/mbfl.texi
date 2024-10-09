@@ -14503,6 +14503,12 @@ equivalent to invoking @func{dotest-unset-report-success}.
 @section Validating results by comparing
 
 
+@deffn Alias dotest-skipped
+Causes the enclosing function body to return with an exit status signalling that this test has been
+skipped.
+@end deffn
+
+
 @defun dotest-equal @var{EXPECTED} @var{GOT}
 @defunx dotest-equal @var{EXPECTED} @var{GOT} @var{DESCRIPTION}
 Compare the two parameters and return true if they are equal; return false otherwise.  In the latter

@@ -36,9 +36,10 @@ shopt -s expand_aliases
 
 declare -r mbfl_LOADED_MBFL_TEST='yes'
 
-test -z ${dotest_TEST_NUMBER}        && declare -i dotest_TEST_NUMBER=0
-test -z ${dotest_TEST_FAILED_NUMBER} && declare -i dotest_TEST_FAILED_NUMBER=0
-declare -a dotest_TEST_FAILED
+test -z "${dotest_TEST_NUMBER}"         && declare -i dotest_TEST_NUMBER=0
+test -z "${dotest_TEST_FAILED_NUMBER}"  && declare -i dotest_TEST_FAILED_NUMBER=0
+test -z "${dotest_TEST_SKIPPED_NUMBER}" && declare -i dotest_TEST_SKIPPED_NUMBER=0
+declare -a dotest_TEST_FAILED dotest_TEST_SKIPPED
 
 
 #### output messages
@@ -128,6 +129,11 @@ function dotest () {
 			then echo
 			fi
                     fi
+		elif ((77 == exit_status))
+		then
+		    dotest-echo "${item} -- *** SKIPPED ***\n"
+		    dotest_TEST_SKIPPED+=("$item")
+		    let ++dotest_TEST_SKIPPED_NUMBER
 		else
 		    dotest-echo "${item} -- *** FAILED ***\n"
 		    dotest_TEST_FAILED+=("$item")
@@ -236,6 +242,9 @@ function dotest-equal () {
 	return 1
     fi
 }
+
+# Signal that the current test has been skipped
+alias dotest-skipped='return 77'
 
 
 #### file functions
@@ -388,12 +397,17 @@ function dotest-string-is-not-empty () {
 trap dotest-clean-files EXIT
 
 function dotest-final-report () {
-    if ((0 != dotest_TEST_NUMBER))
+    if test 0 -eq $dotest_TEST_NUMBER -o \( 0 -ne $dotest_TEST_SKIPPED_NUMBER -a 0 -eq $dotest_TEST_FAILED_NUMBER \)
+    then
+	# All the executed tests were skipped.  Return 77 because that is what GNU Automake expects.
+	exit 77
+    elif ((0 != dotest_TEST_NUMBER))
     then
         printf '\n'
         printf 'Test file "%s"\n' "${mbfl_TEST_FILE:-$0}"
         printf '\tNumber of executed tests: %d\n' ${dotest_TEST_NUMBER}
         printf '\tNumber of failed tests:   %d\n' ${dotest_TEST_FAILED_NUMBER}
+        printf '\tNumber of skipped tests:  %d\n' ${dotest_TEST_SKIPPED_NUMBER}
         if ((0 != ${#dotest_TEST_FAILED[@]}))
 	then
 	    local -i i
@@ -404,9 +418,6 @@ function dotest-final-report () {
             done
         fi
         printf '\n'
-    fi
-    if ((0 == dotest_TEST_NUMBER))
-    then exit 77
     elif ((0 == dotest_TEST_FAILED_NUMBER))
     then exit 0
     else exit 1

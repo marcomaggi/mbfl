@@ -1171,7 +1171,8 @@
        "dotest-option-report-success"
        "dotest-debug"
        "dotest-echo"
-       "dotest-printf")
+       "dotest-printf"
+       "dotest-skipped")
      'symbols)))
 
 ;;We perform this  call to `font-lock-add-keywords' at  the top-level, so the  configuration is done
