@@ -397,7 +397,10 @@ function dotest-string-is-not-empty () {
 trap dotest-clean-files EXIT
 
 function dotest-final-report () {
-    if test 0 -eq $dotest_TEST_NUMBER -o \( 0 -ne $dotest_TEST_SKIPPED_NUMBER -a 0 -eq $dotest_TEST_FAILED_NUMBER \)
+    if test 0 -eq $dotest_TEST_NUMBER					\
+	    -o \( 0 -ne $dotest_TEST_SKIPPED_NUMBER			\
+	       -a 0 -eq $dotest_TEST_FAILED_NUMBER			\
+               -a $dotest_TEST_NUMBER -eq $dotest_TEST_SKIPPED_NUMBER \)
     then
 	# All the executed tests were skipped.  Return 77 because that is what GNU Automake expects.
 	exit 77
