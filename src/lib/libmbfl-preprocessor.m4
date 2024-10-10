@@ -74,10 +74,14 @@ m4_ifelse($#,1,"${$1}",$#,2,"${$1[$2]}",[[[MBFL_P_ERRPRINT([[[wrong number of pa
 m4_define([[[mbfl_p_ww]]],[[[m4_dnl
 m4_ifelse($#,1,"${$1:?}",$#,2,"${$1[$2]:?}",[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 1 got $#]]])]]])m4_dnl
 ]]])
+m4_define([[[mbfl_p_rr]]],[[[m4_dnl
+m4_ifelse($#,1,${$1:?},$#,2,${$1[$2]:?},[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 1 got $#]]])]]])m4_dnl
+]]])
 
 m4_define([[[MBFL_DEFINE_QQ_MACRO]]],[[[m4_dnl
 m4_define([[[QQ]]],[[[mbfl_p_qq($]]]@[[[)]]])m4_dnl
 m4_define([[[WW]]],[[[mbfl_p_ww($]]]@[[[)]]])m4_dnl
+m4_define([[[RR]]],[[[mbfl_p_rr($]]]@[[[)]]])m4_dnl
 ]]])
 
 
