@@ -397,7 +397,7 @@ function dotest-string-is-not-empty () {
 trap dotest-clean-files EXIT
 
 function dotest-final-report () {
-    if true
+    if false
     then
 	{
 	    printf 'dotest_TEST_NUMBER=%s\n' "$dotest_TEST_NUMBER"
