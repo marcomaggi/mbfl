@@ -397,14 +397,16 @@ function dotest-string-is-not-empty () {
 trap dotest-clean-files EXIT
 
 function dotest-final-report () {
-    if test 0 -eq $dotest_TEST_NUMBER					\
-	    -o \( 0 -ne $dotest_TEST_SKIPPED_NUMBER			\
-	       -a 0 -eq $dotest_TEST_FAILED_NUMBER			\
-               -a $dotest_TEST_NUMBER -eq $dotest_TEST_SKIPPED_NUMBER \)
+    if true
     then
-	# All the executed tests were skipped.  Return 77 because that is what GNU Automake expects.
-	exit 77
-    elif ((0 != dotest_TEST_NUMBER))
+	{
+	    printf 'dotest_TEST_NUMBER=%s\n' "$dotest_TEST_NUMBER"
+	    printf 'dotest_TEST_FAILED_NUMBER=%s\n' "$dotest_TEST_FAILED_NUMBER"
+	    printf 'dotest_TEST_SKIPPED_NUMBER=%s\n' "$dotest_TEST_SKIPPED_NUMBER"
+	} >&2
+    fi
+
+    if ((0 != dotest_TEST_NUMBER))
     then
         printf '\n'
         printf 'Test file "%s"\n' "${mbfl_TEST_FILE:-$0}"
@@ -421,6 +423,15 @@ function dotest-final-report () {
             done
         fi
         printf '\n'
+    fi
+
+    if (( 0 == dotest_TEST_NUMBER ||
+	      ( 0 == dotest_TEST_FAILED_NUMBER &&
+		    dotest_TEST_NUMBER == dotest_TEST_SKIPPED_NUMBER ) ))
+    then
+	# No tests were executed, or all the  executed tests were skipped (because the test function
+	# returned 77).  Return 77 because that is what GNU Automake expects for all-skipped tests.
+	exit 77
     elif ((0 == dotest_TEST_FAILED_NUMBER))
     then exit 0
     else exit 1
