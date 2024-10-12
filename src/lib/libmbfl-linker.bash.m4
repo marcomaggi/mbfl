@@ -104,33 +104,36 @@ function mbfl_linker_search_by_stem_in_search_path_var () {
     mbfl_mandatory_nameref_parameter(mbfl_RV,		1, result variable)
     mbfl_mandatory_parameter(mbfl_STEM,			2, MBFL library stem)
     mbfl_mandatory_nameref_parameter(mbfl_SEARCH_PATH,	3, MBFL library search path index array)
-    declare -i mbfl_I mbfl_DIM=mbfl_slots_number(mbfl_SEARCH_PATH)
-    declare mbfl_LIBRARY_PATHNAME
+    declare -i mbfl_SEARCH_PATH_IDX mbfl_SEARCH_PATH_DIM=mbfl_slots_number(mbfl_SEARCH_PATH)
+    declare mbfl_LIBRARY_PATHNAME mbfl_LIBRARY_TEMPLATE
 
     #mbfl_array_dump _(mbfl_SEARCH_PATH) mbfl_SEARCH_PATH
 
-    for ((mbfl_I=0; mbfl_I < mbfl_DIM; ++mbfl_I))
+    for mbfl_LIBRARY_TEMPLATE in '%s/libmbfl-%s.bash' '%s/lib%s.bash'
     do
-	printf -v mbfl_LIBRARY_PATHNAME '%s/libmbfl-%s.bash' _(mbfl_SEARCH_PATH, $mbfl_I) QQ(mbfl_STEM)
-	# Make the pathname absolute.
-	if mbfl_string_neq('/', mbfl_string_idx(mbfl_LIBRARY_PATHNAME,0))
-	then printf -v mbfl_LIBRARY_PATHNAME '%s/%s' QQ(PWD) QQ(mbfl_LIBRARY_PATHNAME)
-	fi
-
-	#echo $FUNCNAME searching QQ(mbfl_LIBRARY_PATHNAME)  >&2
-	if test -f QQ(mbfl_LIBRARY_PATHNAME)
-	then
-	    if test -r QQ(mbfl_LIBRARY_PATHNAME)
-	    then
-		mbfl_RV=QQ(mbfl_LIBRARY_PATHNAME)
-		if test -n QQ(MBFL_LINKER_DEBUG) -a QQ(MBFL_LINKER_DEBUG) = 'true'
-		then printf 'libmbfl-linker.bash: found library: "%s"\n' QQ(mbfl_RV) >&2
-		fi
-		return 0
-	    else
-		printf 'libmbfl-linker.bash: library file not readable: "%s"\n' QQ(mbfl_LIBRARY_PATHNAME) >&2
+	for ((mbfl_SEARCH_PATH_IDX=0; mbfl_SEARCH_PATH_IDX < mbfl_SEARCH_PATH_DIM; ++mbfl_SEARCH_PATH_IDX))
+	do
+	    printf -v mbfl_LIBRARY_PATHNAME QQ(mbfl_LIBRARY_TEMPLATE) _(mbfl_SEARCH_PATH, $mbfl_SEARCH_PATH_IDX) QQ(mbfl_STEM)
+	    # Make the pathname absolute.
+	    if mbfl_string_neq('/', mbfl_string_idx(mbfl_LIBRARY_PATHNAME,0))
+	    then printf -v mbfl_LIBRARY_PATHNAME '%s/%s' QQ(PWD) QQ(mbfl_LIBRARY_PATHNAME)
 	    fi
-	fi
+
+	    #echo $FUNCNAME searching QQ(mbfl_LIBRARY_PATHNAME)  >&2
+	    if test -f QQ(mbfl_LIBRARY_PATHNAME)
+	    then
+		if test -r QQ(mbfl_LIBRARY_PATHNAME)
+		then
+		    mbfl_RV=QQ(mbfl_LIBRARY_PATHNAME)
+		    if test -n QQ(MBFL_LINKER_DEBUG) -a QQ(MBFL_LINKER_DEBUG) = 'true'
+		    then printf 'libmbfl-linker.bash: found library: "%s"\n' QQ(mbfl_RV) >&2
+		    fi
+		    return 0
+		else
+		    printf 'libmbfl-linker.bash: library file not readable: "%s"\n' QQ(mbfl_LIBRARY_PATHNAME) >&2
+		fi
+	    fi
+	done
     done
     return 1
 }

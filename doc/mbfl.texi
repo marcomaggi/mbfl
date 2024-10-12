@@ -14867,6 +14867,17 @@ in this case the result is @file{libmbfl-core.bash}; if the library is found: it
 @func{mbfl_load_library}; if the library is not found: the script exits with
 @func{exit_because_error_loading_library}.
 
+If a library with a @mbfl{} stem is not found: the linker traverses again the search path looking
+for a library whose name is built as follows:
+
+@example
+printf -v FILENAME 'lib%s.bash' "$STEM"
+@end example
+
+@noindent
+so library names not prefixed with @samp{libmbfl} are possible, but still a library name has to
+match the pattern @samp{lib%s.bash}.
+
 We can insert uses of @func{mbfl_linker_source_library_by_stem} to load all the libraries we need:
 
 @example
