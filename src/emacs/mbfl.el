@@ -209,6 +209,7 @@
        "QQ"
        "WW"
        "RR"
+       "SS"
        ;;
        "mbfl_exception_raise_then_return_failure"
        "mbfl_location_leave_then_return_failure"
