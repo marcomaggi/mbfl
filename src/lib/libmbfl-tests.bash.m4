@@ -175,7 +175,7 @@ function dotest-p-report-success-from-environment () {
 
 function dotest-output () {
     local expected_output="$1"
-    local description="$3"
+    local description="$2"
     local -i globmode=0 expected_output_len
     local output
 
