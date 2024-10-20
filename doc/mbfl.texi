@@ -1771,10 +1771,14 @@ Before running the handlers the state of the current location is removed from th
 @end defun
 
 
-@deffn {Preprocessor Macro} mbfl_location_leave_then_return_failure
+@deffn {Preprocessor Macro} mbfl_location_leave_then_return_success
+@deffnx {Preprocessor Macro} mbfl_location_leave_then_return_failure
 Expand as follows:
 
 @example
+mbfl_location_leave_then_return_success
+@expansion{} @{ mbfl_location_leave ; return_because_success ; @}
+
 mbfl_location_leave_then_return_failure
 @expansion{} @{ mbfl_location_leave ; return_because_failure ; @}
 @end example

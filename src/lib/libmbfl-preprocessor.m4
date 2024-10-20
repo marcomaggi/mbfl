@@ -343,6 +343,7 @@ m4_define([[[mbfl_default_class_unset]]],          [[[mbfl_default_object_unset(
 #### exceptional-condition objects and exception-handlers
 
 m4_define([[[mbfl_exception_raise_then_return_failure]]],[[[{ mbfl_exception_raise [[[$1]]] ; return_because_failure ; }]]])
+m4_define([[[mbfl_location_leave_then_return_success]]], [[[{ mbfl_location_leave ; return_because_success ; }]]])
 m4_define([[[mbfl_location_leave_then_return_failure]]], [[[{ mbfl_location_leave ; return_because_failure ; }]]])
 
 m4_define([[[mbfl_check_mandatory_parameters_number]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
