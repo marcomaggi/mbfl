@@ -131,7 +131,7 @@ function dotest () {
                     fi
 		elif ((77 == exit_status))
 		then
-		    dotest-echo "${item} -- *** SKIPPED ***\n"
+		    dotest-echo "${item} -- *** SKIPPED ***"
 		    dotest_TEST_SKIPPED+=("$item")
 		    let ++dotest_TEST_SKIPPED_NUMBER
 		else
@@ -235,9 +235,26 @@ function dotest-equal () {
     then return 0
     else
 	{
-	    echo "${FUNCNAME}: result mismatching $3"
+	    echo "${FUNCNAME}: result mismatching ${description}"
 	    echo "   expected: '$expected'"
 	    echo "   got:      '$got'"
+	} >&2
+	return 1
+    fi
+}
+function dotest-predicate () {
+    declare PREDICATE=${1:?"missing mandatory parameter 1 PREDICATE in call to function '$FUNCNAME'"}
+    declare EXPECTED_VALUE=${2:?"missing mandatory parameter 2 EXPECTED_VALUE in call to function '$FUNCNAME'"}
+    declare GOT_VALUE=${3:?"missing mandatory parameter 3 GOT_VALUE in call to function '$FUNCNAME'"}
+    declare DESCRIPTION=$4
+
+    if "$PREDICATE" "$EXPECTED_VALUE" "$GOT_VALUE"
+    then return 0
+    else
+	{
+	    echo "${FUNCNAME}: '${PREDICATE}' result mismatching ${DESCRIPTION}"
+	    echo "   expected: '${EXPECTED_VALUE}'"
+	    echo "   got:      '${GOT_VALUE}'"
 	} >&2
 	return 1
     fi

@@ -14551,6 +14551,19 @@ function mytest-1.1 () @{
 dotest mytest-
 @end example
 
+
+@defun dotest-predicate @var{PREDICATE} @var{EXPECTED} @var{GOT}
+@defunx dotest-predicate @var{PREDICATE} @var{EXPECTED} @var{GOT} @var{DESCRIPTION}
+Like @func{dotest-equal} but use @var{PREDICATE} to compare the values, as in:
+
+@example
+if @var{PREDICATE} @var{EXPECTED} @var{GOT}
+then # test success
+else # test failure
+fi
+@end example
+@end defun
+
 @c page
 @node testing output
 @section Validating results by output

@@ -1145,6 +1145,7 @@
        "dotest-clean-files"
        "dotest-echo-tmpdir"
        "dotest-equal"
+       "dotest-predicate"
        "dotest-final-report"
        "dotest-mkdir"
        "dotest-mkfile"
