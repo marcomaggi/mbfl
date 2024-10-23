@@ -1469,7 +1469,7 @@ Must be a non--empty string representing the name of a shell array variable.
 @end table
 
 
-@deffn {Preprocessor Macro} MBFL_DEFINE_QQ_MACRO
+@deffn {Preprocessor Macro} MBFL_DEFINE_SPECIAL_MACROS
 Define the experimental preprocessor macros documented in this section.
 @end deffn
 
@@ -14582,22 +14582,27 @@ equivalent to invoking @func{dotest-unset-report-success}.
 @section Validating results by comparing
 
 
-@deffn Alias dotest-skipped
-Causes the enclosing function body to return with an exit status signalling that this test has been
-skipped.
-@end deffn
+@cindex How to skip a test function
+@cindex Skipping a test function
+@cindex Test function Skipping
+@cindex Function, skipping a test
+@cindex Testing, skipping a function
 
 
 @defun dotest-equal @var{EXPECTED} @var{GOT}
 @defunx dotest-equal @var{EXPECTED} @var{GOT} @var{DESCRIPTION}
-Compare the two parameters and return true if they are equal; return false otherwise.  In the latter
-case print a message showing the expected value and the wrong one.  Must be used as last command in
-a function, so that its return value is equal to that of the function.
+Compare the two parameters @var{EXPECTED} and @var{GOT}, then return true if they are equal when
+compared as strings; otherwise return false and print a multiline message showing the expected value
+and the wrong one.  A call to this function must be used as last command in a test function, so that
+its return status becomes the return status of the function itself.
 
 The optional argument @var{DESCRIPTION} should be a short, one--line, string describing the expected
-value; it is used in the output text describing the failed comparison.
-@end defun
+value; it is used in the output text describing the failed comparison; it is unused if the test
+succeeds.
 
+When @var{DESCRIPTION} is not present: the description string preselected with
+@func{dotest-with-description} is used as expected value description.  In any case: this function
+consumes and resets to empty the preselected description string.
 
 Example:
 
@@ -14606,7 +14611,7 @@ function my-func () @{
     echo $(($1 + $2))
 @}
 function mytest-1.1 () @{
-    dotest-equal 5 `my-func 2 3`
+    dotest-equal 5 $(my-func 2 3) 'expected the correct sum'
 @}
 dotest mytest-
 @end example
@@ -14619,24 +14624,81 @@ function my-func () @{
     echo $(($1 + $2))
 @}
 function mytest-1.1 () @{
-    dotest-equal 5 `my-func 2 3` && \
-      dotest-equal 5 `my-func 1 4` && \
-      dotest-equal 5 `my-func 3 2` && \
+    dotest-equal   5 `my-func 2 3` &&
+      dotest-equal 5 `my-func 1 4` &&
+      dotest-equal 5 `my-func 3 2`
 @}
 dotest mytest-
 @end example
 
-
-@defun dotest-predicate @var{PREDICATE} @var{EXPECTED} @var{GOT}
-@defunx dotest-predicate @var{PREDICATE} @var{EXPECTED} @var{GOT} @var{DESCRIPTION}
-Like @func{dotest-equal} but use @var{PREDICATE} to compare the values, as in:
+Example with preselected description:
 
 @example
-if @var{PREDICATE} @var{EXPECTED} @var{GOT}
+function my-func () @{
+    echo $(($1 + $2))
+@}
+function mytest-1.1 () @{
+    dotest-with-description 'expected the correct sum'
+    dotest-equal 5 `my-func 2 3`
+@}
+dotest mytest-
+@end example
+@end defun
+
+
+@defun dotest-equal-according-to @var{COMPAR} @var{EXPECTED} @var{GOT}
+@defunx dotest-equal-according-to @var{COMPAR} @var{EXPECTED} @var{GOT} @var{DESCRIPTION}
+Like @func{dotest-equal} but use @var{COMPAR} to compare the values, as in:
+
+@example
+if @var{COMPAR} @var{EXPECTED} @var{GOT}
 then # test success
 else # test failure
 fi
 @end example
+@end defun
+
+
+@defun dotest-predicate @var{PREDICATE} @var{ARG} @dots{}
+Like @func{dotest-equal} but use @var{PREDICATE} and the optional arguments, as in:
+
+@example
+if @var{PREDICATE} @var{ARG} @dots{}
+then # test success
+else # test failure
+fi
+@end example
+
+This function does not accept an expected--result description--string as argument; we can use
+@func{dotest-with-description} to preselect a description.
+
+@example
+dotest-with-description 'expected positive number'
+dotest-predicate is_positive 123
+@end example
+@end defun
+
+
+@deffn Alias dotest-skipped
+Causes the enclosing function body to return with an exit status signalling that this test has been
+skipped.  One way to use this alias is:
+
+@example
+function my-test-1.1 () @{
+    if true_when_spiffy_feature_is_implemented
+    then
+        # test spiffy feature
+    else dotest-skipped
+    fi
+@}
+@end example
+@end deffn
+
+
+@defun dotest-with-description @var{DESCRIPTION}
+Register a string to be consumed by the next @func{dotest-*} comparison functions as expected result
+description.  This function allows to select a description string even when using @func{dotest-*}
+functions that do not accept a description argument, like @func{dotest-predicate}.
 @end defun
 
 @c page

@@ -77,21 +77,29 @@ m4_ifelse($#,1,"${$1:?}",$#,2,"${$1[$2]:?}",[[[MBFL_P_ERRPRINT([[[wrong number o
 m4_define([[[mbfl_p_rr]]],[[[m4_dnl
 m4_ifelse($#,1,${$1:?},$#,2,${$1[$2]:?},[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 1 or 2 got $#]]])]]])m4_dnl
 ]]])
-m4_define([[[mbfl_p_ss]]],[[[m4_dnl
-m4_ifelse($#,2,$1[$2],[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 2 got $#]]])]]])m4_dnl
-]]])
+m4_define([[[mbfl_p_ss]]],[[[m4_ifelse($#,2,$1[$2],
+  [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in ss use ($#): $@
+)m4_m4exit(1)]]])]]])
 
-m4_define([[[MBFL_DEFINE_QQ_MACRO]]],[[[m4_dnl
+m4_define([[[mbfl_p_pp]]],[[[m4_ifelse($#,2,${$1:?"missing parameter $1 $2 in call to ${FUNCNAME}"},
+  [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in pp use ($#): $@
+)]]])]]])
+
+m4_define([[[MBFL_DEFINE_SPECIAL_MACROS]]],[[[m4_dnl
 m4_define([[[QQ]]],[[[mbfl_p_qq($]]]@[[[)]]])m4_dnl
 m4_define([[[WW]]],[[[mbfl_p_ww($]]]@[[[)]]])m4_dnl
 m4_define([[[RR]]],[[[mbfl_p_rr($]]]@[[[)]]])m4_dnl
 m4_define([[[SS]]],[[[mbfl_p_ss($]]]@[[[)]]])m4_dnl
+m4_define([[[PP]]],[[[mbfl_p_pp($]]]@[[[)]]])m4_dnl
 ]]])
+
+m4_dnl NOTE this is deprecated.  (Marco Maggi; Oct 23, 2024)
+m4_define([[[MBFL_DEFINE_QQ_MACRO]]],[[[MBFL_DEFINE_SPECIAL_MACROS]]])
 
 
 #### function parameters handling
 
-m4_define([[[mbfl_mandatory_parameter]]],[[[declare $4 $1=${$2:?"missing $3 parameter to '$FUNCNAME'"}]]])
+m4_define([[[mbfl_mandatory_parameter]]],[[[declare $4 $1=${$2:?"missing parameter $2 m4_ifelse($3,,$1,$3) in call to to '$FUNCNAME'"}]]])
 m4_define([[[mbfl_mandatory_integer_parameter]]],[[[mbfl_mandatory_parameter($1,$2,$3,-i)]]])
 
 m4_define([[[mbfl_optional_parameter]]],[[[declare $4 $1="${$2:-$3}"]]])

@@ -745,10 +745,10 @@ AM_TEST_LOG_FLAGS	= $(MBFLFLAGS)
 ## --------------------------------------------------------------------
 
 tests/%.test: tests/%.test.m4 $(MBFL_TESTS_PREREQUISITES)
-	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) $< >$@
+	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) --output=$@ $<
 
 tests/%.sh: tests/%.sh.m4 $(MBFL_TESTS_PREREQUISITES)
-	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) $< >$@
+	$(MBFL_TESTS_RUN) $(MBFL_TESTS_FLAGS) --output=$@ $<
 
 tests/signal.test:		tests/signaltest.sh
 tests/fifo.test:		tests/fifotest.sh

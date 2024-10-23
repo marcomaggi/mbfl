@@ -29,6 +29,8 @@
 #! USA.
 #!
 
+MBFL_DEFINE_QQ_MACRO
+
 
 #### shell configuration
 
@@ -90,7 +92,7 @@ dotest-p-create-option-functions
 #### test execution
 
 function dotest () {
-    local PATTERN=${1:?"missing test function pattern parameter to '${FUNCNAME}'"}
+    mbfl_mandatory_parameter(PATTERN, 1, pattern)
     local -a FUNCTIONS
     local name item result ORGPWD=$PWD
     local -i exit_status
@@ -179,6 +181,8 @@ function dotest-output () {
     local -i globmode=0 expected_output_len
     local output
 
+    dotest-acquire-then-reset-preselected-description DESCRIPTION
+
     expected_output_len=${#expected_output}
     if test "${expected_output:$((${expected_output_len}-1)):1}" = '*'
     then
@@ -231,6 +235,8 @@ function dotest-equal () {
     local got="$2"
     local description="$3"
 
+    dotest-acquire-then-reset-preselected-description DESCRIPTION
+
     if test "$expected" = "$got"
     then return 0
     else
@@ -242,26 +248,45 @@ function dotest-equal () {
 	return 1
     fi
 }
-function dotest-predicate () {
-    declare PREDICATE=${1:?"missing mandatory parameter 1 PREDICATE in call to function '$FUNCNAME'"}
-    declare EXPECTED_VALUE=${2:?"missing mandatory parameter 2 EXPECTED_VALUE in call to function '$FUNCNAME'"}
-    declare GOT_VALUE=${3:?"missing mandatory parameter 3 GOT_VALUE in call to function '$FUNCNAME'"}
-    declare DESCRIPTION=$4
+function dotest-equal-according-to () {
+    mbfl_mandatory_parameter(COMPAR,		1, COMPAR)
+    mbfl_mandatory_parameter(EXPECTED_VALUE,	2, EXPECTED_VALUE)
+    mbfl_mandatory_parameter(GOT_VALUE,		3, GOT_VALUE)
+    mbfl_optional_parameter(DESCRIPTION,	4)
 
-    if "$PREDICATE" "$EXPECTED_VALUE" "$GOT_VALUE"
+    dotest-acquire-then-reset-preselected-description DESCRIPTION
+
+    if "$COMPAR" "$EXPECTED_VALUE" "$GOT_VALUE"
     then return 0
     else
 	{
-	    echo "${FUNCNAME}: '${PREDICATE}' result mismatching ${DESCRIPTION}"
-	    echo "   expected: '${EXPECTED_VALUE}'"
-	    echo "   got:      '${GOT_VALUE}'"
+	    echo "RR(FUNCNAME): 'RR(COMPAR)' result mismatching QQ(DESCRIPTION)"
+	    echo "   expected: 'RR(EXPECTED_VALUE)'"
+	    echo "   got:      'RR(GOT_VALUE)'"
 	} >&2
-	return 1
+	dotest-return-failure
     fi
 }
+declare MBFL_DOTEST_PRESELECTED_DESCRIPTION
+function dotest-with-description () {
+    mbfl_mandatory_parameter(DESCRIPTION, 1)
+
+    MBFL_DOTEST_PRESELECTED_DESCRIPTION=RR(DESCRIPTION)
+}
+function dotest-acquire-then-reset-preselected-description () {
+    mbfl_mandatory_nameref_parameter(mbfl_p_DESCRIPTION, 1)
+
+    if test -z QQ(mbfl_p_DESCRIPTION)
+    then mbfl_p_DESCRIPTION=QQ(MBFL_DOTEST_PRESELECTED_DESCRIPTION)
+    fi
+    MBFL_DOTEST_PRESELECTED_DESCRIPTION=
+}
+
 
 # Signal that the current test has been skipped
 alias dotest-skipped='return 77'
+alias dotest-return-failure='return 1'
+alias dotest-return-success='return 0'
 
 
 #### file functions

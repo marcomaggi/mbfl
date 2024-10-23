@@ -39,20 +39,28 @@ mbfl_embed_library(__LIBMBFL_LINKER__)
 mbfl_linker_source_library_by_stem(core)
 mbfl_linker_source_library_by_stem(tests)
 
-MBFL_DEFINE_QQ_MACRO
-MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+MBFL_DEFINE_SPECIAL_MACROS
+MBFL_DEFINE_UNDERSCORE_MACRO
 
 
 #### variable reference macros
 
-function preprocessor-macro-qq-1.1		() {	dotest-equal '"${CIAO}"'      'QQ(CIAO)'	;}
-function preprocessor-macro-qq-1.2		() {	dotest-equal '"${CIAO[123]}"' 'QQ(CIAO,123)'	;}
+function preprocessor-macro-qq-1.1		() {	dotest-equal '"${CIAO}"'	'QQ(CIAO)'	;}
+function preprocessor-macro-qq-1.2		() {	dotest-equal '"${CIAO[123]}"'	'QQ(CIAO,123)'	;}
 
 function preprocessor-macro-ww-1.1		() {	dotest-equal '"${CIAO:?}"'      'WW(CIAO)'	;}
 function preprocessor-macro-ww-1.2		() {	dotest-equal '"${CIAO[123]:?}"' 'WW(CIAO,123)'	;}
 
-function preprocessor-macro-underscore-1.1	() {	dotest-equal '$mbfl_a_variable_CIAO'  '_(CIAO)'		;}
-function preprocessor-macro-underscore-1.2	() {	dotest-equal '"${CIAO[123]}"'	      '_(CIAO,123)'	;}
+function preprocessor-macro-rr-1.1		() {	dotest-equal '${CIAO:?}'	'RR(CIAO)'	;}
+function preprocessor-macro-rr-1.2		() {	dotest-equal '${CIAO[123]:?}'	'RR(CIAO,123)'	;}
+
+function preprocessor-macro-ss-1.1		() {	dotest-equal 'CIAO[123]'	'SS(CIAO,123)'	;}
+
+function preprocessor-macro-underscore-1.1	() {	dotest-equal '$mbfl_a_variable_CIAO'  '_(CIAO)'	;}
+
+function preprocessor-macro-pp-1.1 () {
+    dotest-equal "\${7:?\"missing parameter 7 CIAO CIAO in call to \${FUNCNAME}\"}"	'PP(7,CIAO CIAO)'
+}
 
 
 #### let's go
