@@ -727,7 +727,7 @@ function mbfl_string_is_complex_floating_point_number () {
 	declare REP=${BASH_REMATCH[1]} IMP=${BASH_REMATCH[2]}
 	#mbfl_array_dump BASH_REMATCH BASH_REMATCH
 	mbfl_string_is_floating_point_number "$REP" && mbfl_string_is_floating_point_number "$IMP"
-    elif 'i' "mbfl_string_last_char(STRING)"
+    elif test 'i' = "mbfl_string_last_char(STRING)"
     then
 	# FIXME In  future I will implement  the format '1.2+3.4i' but  right now I am  too lazy and
 	# busy with other stuff.  (Marco Maggi; Sep 30, 2024)
