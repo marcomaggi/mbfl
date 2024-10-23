@@ -6,7 +6,7 @@
 #!#
 #!# Abstract
 #!#
-#!#	This library must be  standalone: it must not require any of the  functions in the core MBFL
+#!#	This library must be  standalone: it must not require any of the  functions in  the core MBFL
 #!#	libraries or any other libraries.
 #!#
 #!# Copyright (c) 2023, 2024 Marco Maggi
@@ -28,8 +28,8 @@
 
 #### macros
 
-MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
-MBFL_DEFINE_QQ_MACRO
+MBFL_DEFINE_SPECIAL_MACROS
+MBFL_DEFINE_UNDERSCORE_MACRO
 
 
 #### library initialisation
@@ -44,7 +44,7 @@ function mbfl_module_init_linker () {
     then
 	mbfl_linker_split_search_path QQ(MBFL_LIBRARY_PATH) ':'
 	for ((mbfl_I=0; mbfl_I < SPLITCOUNT; ++mbfl_I))
-	do mbfl_slot_set(MBFL_LINKER_LIBRARY_PATH, $mbfl_I, mbfl_slot_qref(SPLITFIELD, $mbfl_I))
+	do mbfl_slot_set(MBFL_LINKER_LIBRARY_PATH, $mbfl_I, QQ(SPLITFIELD, $mbfl_I))
 	done
     fi
 }

@@ -14982,8 +14982,8 @@ mbflpp.bash --print-libmbfl-linker
 
 
 To source a library at run--time, we have to first embed the linker library; @ref{linker embedding,
-Embedding the linker library}.  The linker library visits the file systems searching for @mbfl{}
-library files in a list of directories.
+Embedding the linker library}.  The linker library visits the file systems searching for @mbfl{} and
+non--@mbfl{} library files in a list of directories.
 
 The linker library defines a default search path containing the following directories:
 
@@ -15058,7 +15058,7 @@ will do nothing.
 
 @defvr {Environment Variable} MBFL_LIBRARY_PATH
 A Unix--style colon separated list of directories to be searched, left--to--right, for @mbfl{}
-libraries.  This variable's value is parsed at linker library loading--time, it cannot be reset by
+libraries.  This variable's value is parsed at linker--library loading--time, it cannot be reset by
 the script itself.
 @end defvr
 
