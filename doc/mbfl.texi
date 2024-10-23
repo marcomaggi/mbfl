@@ -618,6 +618,7 @@ recommended.
 * preprocessor parameters::     Function parameters handling.
 * preprocessor arguments::      Script arguments handling.
 * preprocessor nameref::        Variable name references.
+* preprocessor experimental::   Experimental macros.
 @end menu
 
 @c page
@@ -1450,6 +1451,80 @@ unset -v @var{NAME}
 @end example
 
 Unset the @emph{proxy variable} @var{NAME} and all the variables associated to it.
+@end deffn
+
+@c page
+@node preprocessor experimental
+@section Experimental macros
+
+
+In the following documentation the argument:
+
+@table @var{}
+@item VARNAME
+Must be a non--empty string representing the name of a shell variable.
+
+@item ARRYNAME
+Must be a non--empty string representing the name of a shell array variable.
+@end table
+
+
+@deffn {Preprocessor Macro} MBFL_DEFINE_QQ_MACRO
+Define the experimental preprocessor macros documented in this section.
+@end deffn
+
+
+@deffn {Preprocessor Macro} QQ (@var{VARNAME})
+@deffnx {Preprocessor Macro} QQ (@var{ARRYNAME}, @var{KEY})
+Expand as follows:
+
+@example
+QQ(@var{VARNAME})         @expansion{} "$@{@var{VARNAME}@}"
+QQ(@var{ARRYNAME}, @var{KEY})   @expansion{} "$@{@var{VARNAME}[@var{KEY}]@}"
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} WW (@var{VARNAME})
+@deffnx {Preprocessor Macro} WW (@var{ARRYNAME}, @var{KEY})
+Expand as follows:
+
+@example
+WW(@var{VARNAME})         @expansion{} "$@{@var{VARNAME}:?@}"
+WW(@var{ARRYNAME}, @var{KEY})   @expansion{} "$@{@var{VARNAME}[@var{KEY}]:?@}"
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} RR (@var{VARNAME})
+@deffnx {Preprocessor Macro} RR (@var{ARRYNAME}, @var{KEY})
+Expand as follows:
+
+@example
+RR(@var{VARNAME})         @expansion{} $@{@var{VARNAME}:?@}
+RR(@var{ARRYNAME}, @var{KEY})   @expansion{} $@{@var{VARNAME}[@var{KEY}]:?@}
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} SS (@var{ARRYNAME}, @var{KEY})
+Expand as follows:
+
+@example
+SS(@var{ARRYNAME}, @var{KEY})   @expansion{} @var{ARRYNAME}[@var{KEY}]
+@end example
+@end deffn
+
+
+@deffn {Preprocessor Macro} PP (@var{ARGNUM}, @var{DESCRIPTION})
+Expand as follows:
+
+@example
+PP(@var{ARGNUM}, @var{DESCRIPTION})
+@expansion{} $@{@var{ARGNUM}:?"missing parameter @var{ARGNUM} @var{DESCRIPTION} in call to '$FUNCNAME'"@}
+@end example
+
+The argument @var{DESCRIPTION} can be empty.
 @end deffn
 
 @c page
