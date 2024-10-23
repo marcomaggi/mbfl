@@ -36,12 +36,18 @@ MBFL_DEFINE_QQ_MACRO
 
 shopt -s expand_aliases
 
-declare -r mbfl_LOADED_MBFL_TEST='yes'
+declare -gr mbfl_LOADED_MBFL_TEST='yes'
+declare -g  MBFL_DOTEST_PRESELECTED_DESCRIPTION
 
 test -z "${dotest_TEST_NUMBER}"         && declare -i dotest_TEST_NUMBER=0
 test -z "${dotest_TEST_FAILED_NUMBER}"  && declare -i dotest_TEST_FAILED_NUMBER=0
 test -z "${dotest_TEST_SKIPPED_NUMBER}" && declare -i dotest_TEST_SKIPPED_NUMBER=0
 declare -a dotest_TEST_FAILED dotest_TEST_SKIPPED
+
+# Signal that the current test has been skipped
+alias dotest-skipped='return 77'
+alias dotest-return-failure='return 1'
+alias dotest-return-success='return 0'
 
 
 #### output messages
@@ -230,44 +236,84 @@ function dotest-output () {
     fi
     return 0
 }
-function dotest-equal () {
-    local expected="$1"
-    local got="$2"
-    local description="$3"
 
-    dotest-acquire-then-reset-preselected-description DESCRIPTION
-
-    if test "$expected" = "$got"
-    then return 0
-    else
-	{
-	    echo "${FUNCNAME}: result mismatching ${description}"
-	    echo "   expected: '$expected'"
-	    echo "   got:      '$got'"
-	} >&2
-	return 1
-    fi
-}
-function dotest-equal-according-to () {
-    mbfl_mandatory_parameter(COMPAR,		1, COMPAR)
-    mbfl_mandatory_parameter(EXPECTED_VALUE,	2, EXPECTED_VALUE)
-    mbfl_mandatory_parameter(GOT_VALUE,		3, GOT_VALUE)
+alias dotest-equal='dotest-p-equal ${FUNCNAME}'
+function dotest-p-equal () {
+    mbfl_mandatory_parameter(CALLER_NAME,	1, caller name)
+    mbfl_optional_parameter(EXPECTED_VALUE,	2)
+    mbfl_optional_parameter(GOT_VALUE,		3)
     mbfl_optional_parameter(DESCRIPTION,	4)
 
     dotest-acquire-then-reset-preselected-description DESCRIPTION
 
-    if "$COMPAR" "$EXPECTED_VALUE" "$GOT_VALUE"
-    then return 0
+    if test QQ(EXPECTED_VALUE) = QQ(GOT_VALUE)
+    then dotest-return-success
     else
 	{
-	    echo "RR(FUNCNAME): 'RR(COMPAR)' result mismatching QQ(DESCRIPTION)"
-	    echo "   expected: 'RR(EXPECTED_VALUE)'"
-	    echo "   got:      'RR(GOT_VALUE)'"
+	    printf '%s: result mismatching %s\n' WW(CALLER_NAME) QQ(DESCRIPTION)
+
+	    if test -n QQ(EXPECTED_VALUE)
+	    then printf '   expected: %s\n' WW(EXPECTED_VALUE)
+	    else printf '   expected: ""\n'
+	    fi
+
+	    if test -n QQ(GOT_VALUE)
+	    then printf '   got:      %s\n' WW(GOT_VALUE)
+	    else printf '   got:      ""\n'
+	    fi
 	} >&2
 	dotest-return-failure
     fi
 }
-declare MBFL_DOTEST_PRESELECTED_DESCRIPTION
+
+alias dotest-equal-according-to='dotest-p-equal-according-to ${FUNCNAME}'
+function dotest-p-equal-according-to () {
+    mbfl_mandatory_parameter(CALLER_NAME,	1, caller name)
+    mbfl_mandatory_parameter(COMPAR,		2, COMPAR)
+    mbfl_optional_parameter(EXPECTED_VALUE,	3)
+    mbfl_optional_parameter(GOT_VALUE,		4)
+    mbfl_optional_parameter(DESCRIPTION,	5)
+
+    dotest-acquire-then-reset-preselected-description DESCRIPTION
+
+    if WW(COMPAR) QQ(EXPECTED_VALUE) QQ(GOT_VALUE)
+    then dotest-return-success
+    else
+	{
+	    printf '%s: result mismatching %s\n' WW(CALLER_NAME) QQ(DESCRIPTION)
+
+	    if test -n QQ(EXPECTED_VALUE)
+	    then printf '   expected: %s\n' WW(EXPECTED_VALUE)
+	    else printf '   expected: ""\n'
+	    fi
+
+	    if test -n QQ(GOT_VALUE)
+	    then printf '   got:      %s\n' WW(GOT_VALUE)
+	    else printf '   got:      ""\n'
+	    fi
+	} >&2
+	dotest-return-failure
+    fi
+}
+
+alias dotest-predicate='dotest-p-predicate ${FUNCNAME}'
+function dotest-p-predicate () {
+    mbfl_mandatory_parameter(CALLER_NAME,	1, caller name)
+    mbfl_mandatory_parameter(PREDICATE,		2, predicate)
+    shift 2
+
+    dotest-acquire-then-reset-preselected-description DESCRIPTION
+
+    if WW(PREDICATE) "$@"
+    then dotest-return-success
+    else
+	{
+	    printf '%s: false predicate return status\n' WW(CALLER_NAME) QQ(DESCRIPTION)
+	} >&2
+	dotest-return-failure
+    fi
+}
+
 function dotest-with-description () {
     mbfl_mandatory_parameter(DESCRIPTION, 1)
 
@@ -281,12 +327,6 @@ function dotest-acquire-then-reset-preselected-description () {
     fi
     MBFL_DOTEST_PRESELECTED_DESCRIPTION=
 }
-
-
-# Signal that the current test has been skipped
-alias dotest-skipped='return 77'
-alias dotest-return-failure='return 1'
-alias dotest-return-success='return 0'
 
 
 #### file functions

@@ -1145,7 +1145,7 @@
        "dotest-clean-files"
        "dotest-echo-tmpdir"
        "dotest-equal"
-       "dotest-dotest-equal-according-to"
+       "dotest-equal-according-to"
        "dotest-predicate"
        "dotest-with-description"
        "dotest-acquire-then-reset-preselected-description"
@@ -1178,7 +1178,9 @@
        "dotest-debug"
        "dotest-echo"
        "dotest-printf"
-       "dotest-skipped")
+       "dotest-skipped"
+       "dotest-return-failure"
+       "dotest-return-success")
      'symbols)))
 
 ;;We perform this  call to `font-lock-add-keywords' at  the top-level, so the  configuration is done

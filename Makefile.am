@@ -637,6 +637,7 @@ EXTRA_DIST			+=		\
 	tests/semver.test.m4			\
 	tests/signal.test.m4			\
 	tests/strings.test.m4			\
+	tests/tests.test.m4			\
 	tests/object.test.m4			\
 	tests/system.test.m4			\
 	tests/times-and-dates.test.m4		\
@@ -679,6 +680,7 @@ MBFL_CHECK_BUILT_TESTS		=		\
 	tests/signal.test			\
 	tests/strings.test			\
 	tests/object.test			\
+	tests/tests.test			\
 	tests/system.test			\
 	tests/times-and-dates.test		\
 	tests/variables.test			\

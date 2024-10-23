@@ -42,7 +42,7 @@ m4_define([[[MBFL_SHARP]]],[[[#]]])
 # Print to stderr an error message using the built-in facilities of GNU m4.
 #
 m4_define([[[MBFL_P_ERRPRINT]]],[[[m4_errprint(m4___program__:m4___file__:m4___line__:[[[ $1
-]]])]]])
+]]])m4_m4exit(1)]]])
 
 # Synopsis:
 #
@@ -68,22 +68,36 @@ m4_define([[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST]]],[[[m4_dnl
 m4_ifelse([[[$1]]],,,[[[$1]]] [[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))]]])m4_dnl
 ]]])
 
-m4_define([[[mbfl_p_qq]]],[[[m4_dnl
-m4_ifelse($#,1,"${$1}",$#,2,"${$1[$2]}",[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 1 or 2 got $#]]])]]])m4_dnl
-]]])
-m4_define([[[mbfl_p_ww]]],[[[m4_dnl
-m4_ifelse($#,1,"${$1:?}",$#,2,"${$1[$2]:?}",[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 1 or 2 got $#]]])]]])m4_dnl
-]]])
-m4_define([[[mbfl_p_rr]]],[[[m4_dnl
-m4_ifelse($#,1,${$1:?},$#,2,${$1[$2]:?},[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of QQ: expected 1 or 2 got $#]]])]]])m4_dnl
-]]])
-m4_define([[[mbfl_p_ss]]],[[[m4_ifelse($#,2,$1[$2],
-  [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in ss use ($#): $@
+m4_define([[[mbfl_p_qq]]],
+  [[[m4_ifelse($#,1,"${$1}",
+               $#,2,"${$1[$2]}",
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in qq use ($#): $@
 )m4_m4exit(1)]]])]]])
 
-m4_define([[[mbfl_p_pp]]],[[[m4_ifelse($#,2,${$1:?"missing parameter $1 $2 in call to ${FUNCNAME}"},
-  [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in pp use ($#): $@
-)]]])]]])
+m4_define([[[mbfl_p_ww]]],
+  [[[m4_ifelse($#,1,"${$1:?}",
+               $#,2,"${$1[$2]:?}",
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in ww use ($#): $@
+)m4_m4exit(1)]]])]]])
+
+m4_define([[[mbfl_p_rr]]],
+  [[[m4_ifelse($#,1,${$1:?},
+               $#,2,${$1[$2]:?},
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in rr use ($#): $@
+)m4_m4exit(1)]]])]]])
+
+m4_define([[[mbfl_p_ss]]],
+  [[[m4_ifelse($#,2,$1[$2],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in pp use ($#): $@
+)m4_m4exit(1)]]])]]])
+
+m4_define([[[mbfl_p_pp]]],
+  [[[m4_ifelse($#,1,
+       [[[${$1:?"missing parameter $1 in call to ${FUNCNAME}"}]]],
+       $#,2,
+       [[[${$1:?"missing parameter $1 $2 in call to ${FUNCNAME}"}]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in pp use ($#): $@
+)m4_m4exit(1)]]])]]])
 
 m4_define([[[MBFL_DEFINE_SPECIAL_MACROS]]],[[[m4_dnl
 m4_define([[[QQ]]],[[[mbfl_p_qq($]]]@[[[)]]])m4_dnl
