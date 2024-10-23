@@ -308,7 +308,7 @@ function dotest-p-predicate () {
     then dotest-return-success
     else
 	{
-	    printf '%s: false predicate return status\n' WW(CALLER_NAME) QQ(DESCRIPTION)
+	    printf '%s: false predicate return status %s\n' WW(CALLER_NAME) QQ(DESCRIPTION)
 	} >&2
 	dotest-return-failure
     fi

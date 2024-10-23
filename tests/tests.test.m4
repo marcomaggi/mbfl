@@ -69,6 +69,16 @@ function tests-dotest-equal-according-to-1.2 () {
 }
 
 
+#### dotest-predicate
+
+function tests-dotest-predicate-1.1 () {
+    dotest-predicate true
+}
+function tests-dotest-predicate-1.2 () {
+    ! dotest-predicate false
+}
+
+
 #### let's go
 
 dotest tests-
