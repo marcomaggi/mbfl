@@ -32,6 +32,49 @@ MBFL_DEFINE_SPECIAL_MACROS
 MBFL_DEFINE_UNDERSCORE_MACRO
 
 
+#### messaging facilities
+
+function mbfl_linker_debug_mode_is_enabled () {
+    test QQ(MBFL_LINKER_DEBUG) = 'true'
+}
+function mbfl_linker_debug_printf () {
+    if mbfl_linker_debug_mode_is_enabled
+    then
+        {
+            printf 'libmbfl-linker: debug: '
+            printf "$@"
+            echo
+        } >&2
+    fi
+    return 0
+}
+function mbfl_linker_debug_print_search_path () {
+    if mbfl_linker_debug_mode_is_enabled
+    then
+	mbfl_mandatory_nameref_parameter(mbfl_p_SEARCH_PATH, 1, search path array)
+	declare mbfl_ITEM
+
+	{
+	    for mbfl_ITEM in QQ(mbfl_p_SEARCH_PATH,@)
+	    do printf '\t%s\n' QQ(mbfl_ITEM)
+	    done
+	} >&2
+	return 0
+    fi
+}
+
+### ------------------------------------------------------------------------
+
+function mbfl_linker_printf () {
+    {
+        printf 'libmbfl-linker: '
+        printf "$@"
+        echo
+    } >&2
+    return 0
+}
+
+
 #### library initialisation
 
 function mbfl_module_init_linker () {
@@ -60,11 +103,11 @@ function mbfl_linker_find_library_by_stem () {
 
     if   test -n mbfl_slot_qref(MBFL_LINKER_LOADED_LIBRARIES,"$mbfl_STEM")
     then
-	# The library has already been found and loaded.
+	mbfl_linker_debug_printf 'the library has already been found and loaded'
 	return 1
     elif test -n mbfl_slot_qref(MBFL_LINKER_FOUND_LIBRARIES, "$mbfl_STEM")
     then
-	# The library has already been found but not loaded.
+	mbfl_linker_debug_printf 'the library has already been found but not loaded'
 	return 0
     else
 	declare mbfl_FOUND_LIBRARY_PATHNAME=
@@ -75,7 +118,7 @@ function mbfl_linker_find_library_by_stem () {
 	    return 0
 	else
 	    # Exit with "library not found" status.
-	    printf 'libmbfl-linker: required MBFL library not found in search path: "%s"\n' QQ(mbfl_STEM)
+	    mbfl_linker_printf 'required MBFL library not found in search path: "%s"\n' QQ(mbfl_STEM)
 	    exit_because_error_loading_library
 	fi
     fi
@@ -107,17 +150,22 @@ function mbfl_linker_search_by_stem_in_search_path_var () {
     declare -i mbfl_SEARCH_PATH_IDX mbfl_SEARCH_PATH_DIM=mbfl_slots_number(mbfl_SEARCH_PATH)
     declare mbfl_LIBRARY_PATHNAME mbfl_LIBRARY_TEMPLATE
 
+    mbfl_linker_debug_printf 'searching library by stem: %s' QQ(mbfl_STEM)
+    mbfl_linker_debug_printf 'scanning search path: '
+    mbfl_linker_debug_print_search_path _(mbfl_SEARCH_PATH)
     #mbfl_array_dump _(mbfl_SEARCH_PATH) mbfl_SEARCH_PATH
 
     for mbfl_LIBRARY_TEMPLATE in '%s/libmbfl-%s.bash' '%s/lib%s.bash'
     do
 	for ((mbfl_SEARCH_PATH_IDX=0; mbfl_SEARCH_PATH_IDX < mbfl_SEARCH_PATH_DIM; ++mbfl_SEARCH_PATH_IDX))
 	do
-	    printf -v mbfl_LIBRARY_PATHNAME QQ(mbfl_LIBRARY_TEMPLATE) _(mbfl_SEARCH_PATH, $mbfl_SEARCH_PATH_IDX) QQ(mbfl_STEM)
+	    printf -v mbfl_LIBRARY_PATHNAME QQ(mbfl_LIBRARY_TEMPLATE) QQ(mbfl_SEARCH_PATH, RR(mbfl_SEARCH_PATH_IDX)) QQ(mbfl_STEM)
 	    # Make the pathname absolute.
 	    if mbfl_string_neq('/', mbfl_string_idx(mbfl_LIBRARY_PATHNAME,0))
 	    then printf -v mbfl_LIBRARY_PATHNAME '%s/%s' QQ(PWD) QQ(mbfl_LIBRARY_PATHNAME)
 	    fi
+
+	    mbfl_linker_debug_printf 'checking pathname: "%s"' QQ(mbfl_LIBRARY_PATHNAME)
 
 	    #echo $FUNCNAME searching QQ(mbfl_LIBRARY_PATHNAME)  >&2
 	    if test -f QQ(mbfl_LIBRARY_PATHNAME)
@@ -125,9 +173,7 @@ function mbfl_linker_search_by_stem_in_search_path_var () {
 		if test -r QQ(mbfl_LIBRARY_PATHNAME)
 		then
 		    mbfl_RV=QQ(mbfl_LIBRARY_PATHNAME)
-		    if test -n QQ(MBFL_LINKER_DEBUG) -a QQ(MBFL_LINKER_DEBUG) = 'true'
-		    then printf 'libmbfl-linker.bash: found library: "%s"\n' QQ(mbfl_RV) >&2
-		    fi
+		    mbfl_linker_debug_printf 'found library: "%s"\n' QQ(mbfl_RV)
 		    return 0
 		else
 		    printf 'libmbfl-linker.bash: library file not readable: "%s"\n' QQ(mbfl_LIBRARY_PATHNAME) >&2

@@ -35,6 +35,7 @@
 
 #### setup
 
+MBFL_LINKER_DEBUG=true
 mbfl_embed_library(__LIBMBFL_LINKER__)
 mbfl_linker_source_library_by_stem(core)
 mbfl_linker_source_library_by_stem(tests)
