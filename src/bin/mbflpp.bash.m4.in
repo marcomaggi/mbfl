@@ -5655,7 +5655,6 @@ function script_after_parsing_options () {
 function main () {
     declare M4_FLAGS='--prefix-builtins'
     declare PREPROCESSOR=${pkgdatadir}/libmbfl-preprocessor.m4
-    declare RESULTING_OUTPUT_SCRIPT
 
     M4_FLAGS+=" ${M4_INCLUDE_OPTIONS} ${M4_SYMBOL_DEFINITIONS}"
     if mbfl_string_equal "$script_option_NO_PREPROCESSOR" 'no' && mbfl_file_is_readable "$PREPROCESSOR"
@@ -5664,6 +5663,7 @@ function main () {
     M4_FLAGS+=" ${M4_LIBRARY_OPTIONS}"
 
     set -o pipefail
+    shopt -s lastpipe
 
     if {
 	# If there  are no  arguments on  the command  line: read  input from  stdin.  If  there are
@@ -5679,13 +5679,16 @@ function main () {
 	then program_cat
 	else filter_drop_comments
 	fi
-    } | filter_page_separators | { read_from_input_and_accumulate_in_variable RESULTING_OUTPUT_SCRIPT; }
-    then
+    } | filter_page_separators | {
+	declare RESULTING_OUTPUT_SCRIPT	
+
+	read_from_input_and_accumulate_in_variable RESULTING_OUTPUT_SCRIPT
+	
 	# If we send the output to a "bash" process: there is no need to prepend the shebang line.
         if mbfl_string_equal "$script_option_EVAL" 'yes'
     	then
 	    # Execute bash which will read from stdin.
-	    printf '%s\n' "$RESULTING_OUTPUT_SCRIPT" | exec "$mbfl_PROGRAM_BASH"
+	    printf '%s\n' "$RESULTING_OUTPUT_SCRIPT" | "$mbfl_PROGRAM_BASH"
 	else
 	    {
 		if mbfl_string_equal "$script_option_ADD_BASH" 'yes'
@@ -5701,16 +5704,20 @@ function main () {
 	    printf '%s\n' "$RESULTING_OUTPUT_SCRIPT" >>"$script_option_OUTPUT"
 	    exit_success
         fi
+    }
+    then exit_success
     else exit $?
     fi
 }
 
 function read_from_input_and_accumulate_in_variable () {
     declare -n ACCUMULATOR=${1:?"missing parameter 1 ACCUMULATOR in call to $FUNCNAME"}
-    declare REPLY
+    declare REPLY LINE
 
-    while read
-    do ACCUMULATOR+=$REPLY
+    while read -r
+    do
+	printf -v LINE '%s\n' "$REPLY"
+	ACCUMULATOR+=$LINE
     done
 }
 
