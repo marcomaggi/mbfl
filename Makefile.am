@@ -767,11 +767,15 @@ tests/mbflutils-files.test.m4:	$(builddir)/src/lib/libmbfl-utils.bash
 .PHONY: test test-template test-template-actions test-script-atexit
 
 test: all $(check_SCRIPTS)
-	$(AM_TESTS_ENVIRONMENT)					\
-	shopt -s nullglob					;\
-	for item in $(builddir)/tests/*$(file)*.test		;\
-	do $(MBFL_PROGRAM_BASH) "$$item" $(AM_TEST_LOG_FLAGS)	;\
-	done
+	$(AM_TESTS_ENVIRONMENT) RV=0					;\
+	shopt -s nullglob						;\
+	for item in $(builddir)/tests/*$(file)*.test			;\
+	do echo "running: $$item"					;\
+	   if ! $(MBFL_PROGRAM_BASH) "$$item" $(AM_TEST_LOG_FLAGS)	;\
+	   then RV=$$?; break						;\
+	   fi								;\
+	done								;\
+	if test "$$RV" = 77; then exit 0; else exit $$RV; fi		;
 
 test-template: examples/template.sh src/lib/libmbfl-core.bash
 	$(AM_TESTS_ENVIRONMENT) $(MBFL_PROGRAM_BASH) $(builddir)/examples/template.sh $(MBFLFLAGS)
@@ -791,7 +795,7 @@ test-script-atexit: tests/script-atexit.sh
 # PATH's directories.
 #
 MBFL_ICHECK_ENV	 = PATH=$(DESTDIR)$(bindir):$$PATH; export PATH;
-MBFL_ICHECK_ENV	 = MBFL_LIBRARY_PATH=$(DESTDIR)$(MBFL_LIB_INSTDIR); export MBFL_LIBRARY_PATH;
+MBFL_ICHECK_ENV	+= MBFL_LIBRARY_PATH=$(DESTDIR)$(MBFL_LIB_INSTDIR); export MBFL_LIBRARY_PATH;
 MBFL_ICHECK_ENV	+= TMPDIR=$(PWD)/tmp; export TMPDIR;
 MBFL_ICHECK_ENV	+= testsdir=$(builddir)/tests; export testsdir;
 MBFL_ICHECK_ENV	+= examplesdir=$(builddir)/examples; export examplesdir;
