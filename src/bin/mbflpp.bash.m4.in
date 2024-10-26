@@ -5655,6 +5655,7 @@ function script_after_parsing_options () {
 function main () {
     declare M4_FLAGS='--prefix-builtins'
     declare PREPROCESSOR=${pkgdatadir}/libmbfl-preprocessor.m4
+    declare RESULTING_OUTPUT_SCRIPT
 
     M4_FLAGS+=" ${M4_INCLUDE_OPTIONS} ${M4_SYMBOL_DEFINITIONS}"
     if mbfl_string_equal "$script_option_NO_PREPROCESSOR" 'no' && mbfl_file_is_readable "$PREPROCESSOR"
@@ -5676,14 +5677,13 @@ function main () {
 	fi
     } | {
         if mbfl_string_equal "$script_option_PRESERVE_COMMENTS" 'yes'
-	then program_cat
+	then read_input_write_output
 	else filter_drop_comments
 	fi
     } | filter_page_separators | {
-	declare RESULTING_OUTPUT_SCRIPT	
-
 	read_from_input_and_accumulate_in_variable RESULTING_OUTPUT_SCRIPT
-	
+    }
+    then
 	# If we send the output to a "bash" process: there is no need to prepend the shebang line.
         if mbfl_string_equal "$script_option_EVAL" 'yes'
     	then
@@ -5704,21 +5704,8 @@ function main () {
 	    printf '%s\n' "$RESULTING_OUTPUT_SCRIPT" >>"$script_option_OUTPUT"
 	    exit_success
         fi
-    }
-    then exit_success
     else exit $?
     fi
-}
-
-function read_from_input_and_accumulate_in_variable () {
-    declare -n ACCUMULATOR=${1:?"missing parameter 1 ACCUMULATOR in call to $FUNCNAME"}
-    declare REPLY LINE
-
-    while read -r
-    do
-	printf -v LINE '%s\n' "$REPLY"
-	ACCUMULATOR+=$LINE
-    done
 }
 
 #page
@@ -5735,6 +5722,22 @@ function filter_drop_comments () {
 
 function filter_page_separators () {
     program_grep --invert-match --regexp='^'$'\f''$'
+}
+
+function read_from_input_and_accumulate_in_variable () {
+    declare -n ACCUMULATOR=${1:?"missing parameter 1 ACCUMULATOR in call to $FUNCNAME"}
+    declare REPLY LINE
+
+    while IFS= read -r
+    do
+	printf -v LINE '%s\n' "$REPLY"
+	ACCUMULATOR+=$LINE
+    done
+}
+function read_input_write_output () {
+    while IFS= read -r
+    do printf '%s\n' "$REPLY"
+    done
 }
 
 #page
@@ -5757,16 +5760,6 @@ function program_sed () {
     local SED
     mbfl_program_found_var SED sed || exit?
     mbfl_program_exec "$SED" "$@"
-}
-# function program_cat () {
-#     local CAT
-#     mbfl_program_found_var CAT cat || exit $?
-#     mbfl_program_exec "$CAT" "$@"
-# }
-function program_cat () {
-    while IFS= read -r
-    do printf '%s\n' "$REPLY"
-    done
 }
 
 #page
