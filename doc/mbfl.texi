@@ -1860,6 +1860,16 @@ mbfl_location_leave_then_return_failure
 @end deffn
 
 
+@deffn {Preprocessor Macro} mbfl_location_leave_when_failure (@var{expression})
+Expand as follows:
+
+@example
+mbfl_location_leave_when_failure(@var{expression})
+@expansion{} @{ if ! @{ @var{expression} @} ; then mbfl_location_leave_then_return_failure; fi; @}
+@end example
+@end deffn
+
+
 @anchor{mbfl_location_handler}
 @defun mbfl_location_handler @var{HANDLER_SCRIPT}
 @defunx mbfl_location_handler @var{HANDLER_SCRIPT} @var{IDVAR}

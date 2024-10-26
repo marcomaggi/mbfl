@@ -376,6 +376,8 @@ $#,[[[1]]],m4_dnl
 [[[MBFL_P_ERRPRINT([[[wrong number of parameters]]]) m4_m4exit([[[1]]])]]])m4_dnl
 m4_changecom([[[MBFL_SHARP()]]])]]])
 
+m4_define([[[mbfl_location_leave_when_failure]]],[[[{ if ! { $1 } ; then mbfl_location_leave_then_return_failure; fi; }]]])
+
 
 #### miscellaneous macros
 
