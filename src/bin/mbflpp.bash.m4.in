@@ -5653,9 +5653,9 @@ function script_after_parsing_options () {
 #### main functions
 
 function main () {
-    local M4_FLAGS='--prefix-builtins'
-    local PREPROCESSOR=${pkgdatadir}/libmbfl-preprocessor.m4
-    local OUTPUT
+    declare M4_FLAGS='--prefix-builtins'
+    declare PREPROCESSOR=${pkgdatadir}/libmbfl-preprocessor.m4
+    declare RESULTING_OUTPUT_SCRIPT
 
     M4_FLAGS+=" ${M4_INCLUDE_OPTIONS} ${M4_SYMBOL_DEFINITIONS}"
     if mbfl_string_equal "$script_option_NO_PREPROCESSOR" 'no' && mbfl_file_is_readable "$PREPROCESSOR"
@@ -5679,27 +5679,39 @@ function main () {
 	then program_cat
 	else filter_drop_comments
 	fi
-    } | filter_page_separators | {
-	# If we  send the output to  a "bash" process: there  is no need to  prepend the shebang
-	# line.
+    } | filter_page_separators | { read_from_input_and_accumulate_in_variable RESULTING_OUTPUT_SCRIPT; }
+    then
+	# If we send the output to a "bash" process: there is no need to prepend the shebang line.
         if mbfl_string_equal "$script_option_EVAL" 'yes'
-	   # Execute bash which will read from stdin.
-    	then exec "$mbfl_PROGRAM_BASH"
-        else
+    	then
+	    # Execute bash which will read from stdin.
+	    printf '%s\n' "$RESULTING_OUTPUT_SCRIPT" | exec "$mbfl_PROGRAM_BASH"
+	else
 	    {
 		if mbfl_string_equal "$script_option_ADD_BASH" 'yes'
     		then
 		    mbfl_message_verbose_printf 'adding bash shebang.\n'
-		    printf '#!%s\n' "$script_option_BASH_PROGRAM" >"$script_option_OUTPUT"
-		else printf ''
+		    printf '#!%s\n' "$script_option_BASH_PROGRAM"
+		else
+		    # Let's  make sure  we print  something,  so that:  if the  output file  already
+		    # exists, it is truncated to the beginning.
+		    printf ''
 		fi
 	    } >"$script_option_OUTPUT"
-	    program_cat >>"$script_option_OUTPUT"
+	    printf '%s\n' "$RESULTING_OUTPUT_SCRIPT" >>"$script_option_OUTPUT"
+	    exit_success
         fi
-    }
-    then exit_success
     else exit $?
     fi
+}
+
+function read_from_input_and_accumulate_in_variable () {
+    declare -n ACCUMULATOR=${1:?"missing parameter 1 ACCUMULATOR in call to $FUNCNAME"}
+    declare REPLY
+
+    while read
+    do ACCUMULATOR+=$REPLY
+    done
 }
 
 #page
