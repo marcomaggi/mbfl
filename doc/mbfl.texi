@@ -1865,7 +1865,7 @@ Expand as follows:
 
 @example
 mbfl_location_leave_when_failure(@var{expression})
-@expansion{} @{ if ! @{ @var{expression} @} ; then mbfl_location_leave_then_return_failure; fi; @}
+@expansion{} @{ if ! @{ @var{expression} ; @} ; then mbfl_location_leave_then_return_failure; fi; @}
 @end example
 @end deffn
 

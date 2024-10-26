@@ -63,6 +63,58 @@ function preprocessor-macro-pp-1.1 () {
 }
 
 
+#### leaving locations
+
+function sub-preprocessor-location-leave-when-failure-1.1 () {
+    mbfl_location_enter
+    {
+	RESULT+=1
+	mbfl_location_leave_when_failure( { RESULT+=2; true; } )
+	RESULT+=3
+    }
+    mbfl_location_leave
+}
+function preprocessor-location-leave-when-failure-1.1 () {
+    declare RESULT=0
+    sub-preprocessor-location-leave-when-failure-1.1
+    dotest-equal 0123 WW(RESULT)
+}
+
+### ------------------------------------------------------------------------
+
+function sub-preprocessor-location-leave-when-failure-1.2 () {
+    mbfl_location_enter
+    {
+	RESULT+=1
+	mbfl_location_leave_when_failure(RESULT+=2; true)
+	RESULT+=3
+    }
+    mbfl_location_leave
+}
+function preprocessor-location-leave-when-failure-1.2 () {
+    declare RESULT=0
+    sub-preprocessor-location-leave-when-failure-1.2
+    dotest-equal 0123 WW(RESULT)
+}
+
+### ------------------------------------------------------------------------
+
+function sub-preprocessor-location-leave-when-failure-2.1 () {
+    mbfl_location_enter
+    {
+	RESULT+=1
+	mbfl_location_leave_when_failure( { RESULT+=2 ; false; } )
+	RESULT+=3
+    }
+    mbfl_location_leave
+}
+function preprocessor-location-leave-when-failure-2.1 () {
+    declare RESULT=0
+    sub-preprocessor-location-leave-when-failure-2.1
+    dotest-equal 012 WW(RESULT)
+}
+
+
 #### let's go
 
 dotest preprocessor-
