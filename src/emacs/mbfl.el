@@ -632,6 +632,7 @@
        "mbfl_location_handler_suspend_testing"
        "mbfl_location_handler_restore_lastpipe"
        "mbfl_location_handler_restore_nullglob"
+       "mbfl_location_handler_restore_pipefail"
        "mbfl_location_handler_change_directory"
        "mbfl_location_remove_handler_by_id"
        "mbfl_location_replace_handler_by_id"
