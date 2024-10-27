@@ -2081,13 +2081,13 @@ Using this handler is helpful when the last command of a pipe is executed in the
 rather than a subshell, to store the result of a computation in a shell variable.
 
 @example
-declare RESULT
+declare RESULT REPLY
 
 mbfl_location_enter
 @{
     mbfl_location_handler_restore_lastpipe
     shopt -s lastpipe
-    output_something | while read
+    output_something | while IFS= read -r
     do RESULT+=$REPLY
     done
 @}
@@ -2123,6 +2123,64 @@ mbfl_location_enter
     done
 @}
 mbfl_location_leave
+@end example
+@end defun
+
+
+@defun mbfl_location_handler_restore_pipefail
+When called, save the state of the @code{pipefail} option of @code{shopt} using:
+
+@example
+shopt -o -p pipefail
+@end example
+
+Upon exiting the location: the handler restores the previous status of @code{pipefail}.
+@bashref{The Shopt Builtin, The Shopt Builtin}.
+
+@example
+declare RESULT REPLY
+
+mbfl_location_enter
+@{
+    mbfl_location_handler_restore_pipefail
+    shopt -o -s pipefail
+    output_something | while IFS= read -r
+    do RESULT+=$REPLY
+    done
+@}
+mbfl_location_leave
+
+# use $RESULT
+@end example
+
+We can remember that to act upon the status of @code{pipefail} we have multiple commands; to enable
+this option we can use both:
+
+@example
+set -o pipefail
+shopt -o -s pipefail
+@end example
+
+@noindent
+to disable it we can use both:
+
+@example
+set +o pipefail
+shopt -o -u pipefail
+@end example
+
+@noindent
+to show the current status of the option we can do:
+
+@example
+shopt -o pipefail
+@end example
+
+@noindent
+to retrieve a shell command that would set the option to the current status we can do:
+
+@example
+shopt -o -p pipefail
 @end example
 @end defun
 

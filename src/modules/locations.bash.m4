@@ -165,6 +165,10 @@ function mbfl_location_handler_restore_nullglob () {
     # Upon exiting the location: restore the previous status of "nullglob".
     mbfl_location_handler "$(shopt -p nullglob)"
 }
+function mbfl_location_handler_restore_pipefail () {
+    # Upon exiting the location: restore the previous status of "pipefail".
+    mbfl_location_handler "$(shopt -o -p pipefail)"
+}
 
 
 #### special location handler: change directory
