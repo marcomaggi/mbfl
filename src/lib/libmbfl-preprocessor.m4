@@ -364,7 +364,6 @@ m4_define([[[mbfl_default_class_unset]]],          [[[mbfl_default_object_unset(
 
 #### exceptional-condition objects and exception-handlers
 
-m4_define([[[mbfl_exception_raise_then_return_failure]]],[[[{ mbfl_exception_raise [[[$1]]] ; return_because_failure ; }]]])
 m4_define([[[mbfl_location_leave_then_return_success]]], [[[{ mbfl_location_leave ; return_because_success ; }]]])
 m4_define([[[mbfl_location_leave_then_return_failure]]], [[[{ mbfl_location_leave ; return_because_failure ; }]]])
 
@@ -380,6 +379,20 @@ m4_define([[[mbfl_location_leave_when_failure]]],
   [[[m4_ifelse($#,1,[[[{ if ! { $1 ;} ; then mbfl_location_leave_then_return_failure; fi; }]]],
        [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#:
        [[[mbfl_location_leave_when_failure]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
+
+# --------------------------------------------------------------------
+
+m4_define([[[mbfl_exception_raise_then_return_failure]]],
+  [[[m4_ifelse($#,1,[[[{ mbfl_exception_raise [[[$1]]] ; return_because_failure ; }]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#:
+       [[[mbfl_exception_raise_then_return_failure]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
+
+m4_define([[[mbfl_exception_raise_then_return_result]]],
+  [[[m4_ifelse($#,1,[[[{ mbfl_exception_raise [[[$1]]]; return $[[[]]]? }]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#:
+       [[[mbfl_exception_raise_then_return_result]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 
