@@ -105,6 +105,7 @@ m4_define([[[WW]]],[[[mbfl_p_ww($]]]@[[[)]]])m4_dnl
 m4_define([[[RR]]],[[[mbfl_p_rr($]]]@[[[)]]])m4_dnl
 m4_define([[[SS]]],[[[mbfl_p_ss($]]]@[[[)]]])m4_dnl
 m4_define([[[PP]]],[[[mbfl_p_pp($]]]@[[[)]]])m4_dnl
+m4_define([[[UU]]],[[[mbfl_p_default_object_underscore_macro_for_methods($]]]@[[[)]]])
 ]]])
 
 m4_dnl NOTE this is deprecated.  (Marco Maggi; Oct 23, 2024)

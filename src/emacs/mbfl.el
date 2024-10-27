@@ -210,6 +210,7 @@
        "RR"
        "SS"
        "PP"
+       "UU"
        ;;
        "mbfl_exception_raise_then_return_failure"
        "mbfl_exception_raise_then_return_result"
