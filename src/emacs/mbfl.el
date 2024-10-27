@@ -214,6 +214,7 @@
        ;;
        "mbfl_exception_raise_then_return_failure"
        "mbfl_exception_raise_then_return_result"
+       "mbfl_exception_raise_then_leave_location_and_return_failure"
        "mbfl_location_leave_then_return_failure"
        "mbfl_location_leave_when_failure"
        "mbfl_check_mandatory_parameters_number")

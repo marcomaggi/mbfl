@@ -396,6 +396,12 @@ m4_define([[[mbfl_exception_raise_then_return_result]]],
        [[[mbfl_exception_raise_then_return_result]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
+m4_define([[[mbfl_exception_raise_then_leave_location_and_return_failure]]],
+  [[[m4_ifelse($#,1,[[[{ mbfl_exception_raise [[[$1]]]; mbfl_location_leave_then_return_failure; }]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#:
+       [[[mbfl_exception_raise_then_leave_location_and_return_failure]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
+
 
 #### miscellaneous macros
 

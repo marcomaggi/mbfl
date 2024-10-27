@@ -6426,6 +6426,16 @@ mbfl_exception_raise_then_return_result(@var{CND})
 @end example
 @end deffn
 
+
+@deffn {Preprocessor Macro} mbfl_exception_raise_then_leave_location_and_return_failure (@var{CND})
+Expand as follows:
+
+@example
+mbfl_exception_raise_then_leave_location_and_return_failure(@var{CND})
+@expansion{} @{ mbfl_exception_raise @var{CND} ; mbfl_location_leave_then_return_failure; @}
+@end example
+@end deffn
+
 @c page
 @node exceptions handlers
 @section How to write and set exception--handlers
