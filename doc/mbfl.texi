@@ -6183,6 +6183,12 @@ errors are a special case of exceptional conditions.  It is useful whenever simi
 conditions may happen in different portions of a script and similar handling procedures are
 desirable.
 
+@gnu{} Bash does not offer non--local exits, so it is not possible to automatically rewind the call
+stack of shell functions; still the use of exceptions handlers and exceptional--condition objects
+allows the definition of rich exceptional--condition descriptors, carrying more informations than a
+simple exact integer used as function--call return--status; @ref{conditions, Exceptional--condition
+objects}.
+
 @menu
 * exceptions conventions::      Conventions.
 * exceptions howto::            How to organise code to use @mbfl{} exceptions.
@@ -6217,8 +6223,8 @@ Effective use of @mbfl{}'s exception--handling is intertwined with the location 
 
 Exceptional conditions are described by instances of appropriate exceptional--condition classes,
 @ref{conditions, Exceptional--condition objects}.  It is mandatory to use only
-exceptional--condition objects whose class is a subclass of @class{mbfl_exceptional_condition}; no
-other Bash value is allowed.
+exceptional--condition objects whose class is a subclass of @class{mbfl_exceptional_condition}; if
+other Bash values are used: the behaviour of this module is undefined.
 
 Whenever an exceptional--condition object is ``raised'' an exception--handling function is called to
 react to it; such function is called @dfn{exception--handler}.  To raise an exceptional--condition
