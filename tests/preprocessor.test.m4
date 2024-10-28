@@ -183,6 +183,9 @@ function preprocessor-macro-underscore-for-methods-2.1 () {
     dotest-equal 'mbfl_default_object_call_method ${mbfl_a_variable_CIAO:?} DOIT' \
 		 'mbfl_p_default_object_underscore_macro_for_methods(CIAO,DOIT)'
 }
+# function preprocessor-macro-underscore-for-methods-3.1 () {
+#     dotest-equal '${mbfl_a_variable_CIAO:?}'  'mbfl_p_default_object_underscore_macro_for_methods(ONE,TWO,THREE)'
+# }
 
 function preprocessor-macro-underscore-for-slots-1.1 () {
     dotest-equal '${mbfl_a_variable_CIAO:?}'  'mbfl_p_default_object_underscore_macro_for_slots(CIAO)'

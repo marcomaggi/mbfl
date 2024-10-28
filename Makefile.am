@@ -306,7 +306,7 @@ libmbfl_MODULES_PREREQUISITES	=		\
 	$(builddir)/src/lib/libmbfl-linker.bash
 
 src/modules/%.bash: src/modules/%.bash.m4 $(libmbfl_MODULES_PREREQUISITES)
-	$(libmbfl_MODULES_RUN) $(libmbfl_MODULES_FLAGS) $< >$@
+	$(libmbfl_MODULES_RUN) $(libmbfl_MODULES_FLAGS) --output=$@ $<
 
 ## ------------------------------------------------------------------------
 

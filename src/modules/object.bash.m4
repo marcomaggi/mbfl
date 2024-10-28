@@ -27,8 +27,8 @@
 
 #### local macros
 
-MBFL_DEFINE_QQ_MACRO()
-MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS()
+MBFL_DEFINE_SPECIAL_MACROS
+MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
 
 # An  object whose  class is  a  child of  "mbfl_default_object" is  a  Bash index  array with  the
 # following layout:

@@ -71,32 +71,30 @@ m4_ifelse([[[$1]]],,,[[[$1]]] [[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))]
 m4_define([[[mbfl_p_qq]]],
   [[[m4_ifelse($#,1,"${$1}",
                $#,2,"${$1[$2]}",
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in qq use ($#): $@
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 got $#: [[[QQ]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 m4_define([[[mbfl_p_ww]]],
   [[[m4_ifelse($#,1,"${$1:?}",
                $#,2,"${$1[$2]:?}",
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in ww use ($#): $@
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 got $#: [[[WW]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 m4_define([[[mbfl_p_rr]]],
   [[[m4_ifelse($#,1,${$1:?},
                $#,2,${$1[$2]:?},
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in rr use ($#): $@
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 got $#: [[[RR]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 m4_define([[[mbfl_p_ss]]],
   [[[m4_ifelse($#,2,$1[$2],
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in pp use ($#): $@
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 got $#: [[[SS]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 m4_define([[[mbfl_p_pp]]],
-  [[[m4_ifelse($#,1,
-       [[[${$1:?"missing parameter $1 in call to ${FUNCNAME}"}]]],
-       $#,2,
-       [[[${$1:?"missing parameter $1 $2 in call to ${FUNCNAME}"}]]],
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments in pp use ($#): $@
+  [[[m4_ifelse($#,1,[[[${$1:?"missing parameter $1 in call to ${FUNCNAME}"}]]],
+               $#,2,[[[${$1:?"missing parameter $1 $2 in call to ${FUNCNAME}"}]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 got $#: [[[PP]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 m4_define([[[MBFL_DEFINE_SPECIAL_MACROS]]],[[[m4_dnl
@@ -277,17 +275,28 @@ m4_define([[[mbfl_undeclare_varref]]],[[[m4_dnl
 m4_define([[[mbfl_unset_varref]]],[[[mbfl_undeclare_varref($1)]]])
 
 m4_define([[[mbfl_p_underscore_macro]]],[[[mbfl_datavar($1)]]])
-m4_define([[[mbfl_p_default_object_underscore_macro_for_methods]]],[[[m4_ifelse($#,1, [[[mbfl_datavar([[[$1]]])]]], [[[mbfl_default_object_call_method mbfl_datavar($1) $2]]])]]])
-m4_define([[[mbfl_p_default_object_underscore_macro_for_slots]]],[[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],$#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],$#,3,[[[mbfl_slot_set([[[$1]]],[[[$2]]],[[[$3]]])]]],[[[MBFL_P_ERRPRINT([[[wrong number of parameters in use of underscore macro: expected 1 or 2 got $#]]])]]])]]])
 
-m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO]]],m4_dnl
-[[[m4_define([[[_]]],[[[mbfl_p_underscore_macro($]]]@[[[)]]])]]])
+m4_define([[[mbfl_p_default_object_underscore_macro_for_methods]]],
+  [[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],
+            $#,2,[[[mbfl_default_object_call_method mbfl_datavar($1) $2]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 given $#: [[[mbfl_p_default_object_underscore_macro_for_methods]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
-m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS]]],m4_dnl
-[[[m4_define([[[_]]],[[[mbfl_p_default_object_underscore_macro_for_slots($]]]@[[[)]]])]]])
+m4_define([[[mbfl_p_default_object_underscore_macro_for_slots]]],
+  [[[m4_ifelse($#,1,[[[mbfl_datavar([[[$1]]])]]],
+            $#,2,[[[mbfl_slot_qref([[[$1]]],[[[$2]]])]]],
+	    $#,3,[[[mbfl_slot_set([[[$1]]],[[[$2]]],[[[$3]]])]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 or 3 given $#: [[[mbfl_p_default_object_underscore_macro_for_slots]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
-m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS]]],m4_dnl
-[[[m4_define([[[_]]],[[[mbfl_p_default_object_underscore_macro_for_methods($]]]@[[[)]]])]]])
+m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO]]],
+  [[[m4_define([[[_]]],[[[mbfl_p_underscore_macro($]]]@[[[)]]])]]])
+
+m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS]]],
+  [[[m4_define([[[_]]],[[[mbfl_p_default_object_underscore_macro_for_slots($]]]@[[[)]]])]]])
+
+m4_define([[[MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS]]],
+  [[[m4_define([[[_]]],[[[mbfl_p_default_object_underscore_macro_for_methods($]]]@[[[)]]])]]])
 
 
 #### defining program execution functions
@@ -368,37 +377,32 @@ m4_define([[[mbfl_default_class_unset]]],          [[[mbfl_default_object_unset(
 m4_define([[[mbfl_location_leave_then_return_success]]], [[[{ mbfl_location_leave ; return_because_success ; }]]])
 m4_define([[[mbfl_location_leave_then_return_failure]]], [[[{ mbfl_location_leave ; return_because_failure ; }]]])
 
-m4_define([[[mbfl_check_mandatory_parameters_number]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-  m4_ifelse($#,2,[[[mbfl_p_check_mandatory_parameters_number_2 $[[[]]]{FUNCNAME:?} $[[[]]]# $1 $2 ;]]],
-            $#,1,[[[mbfl_p_check_mandatory_parameters_number_1 $[[[]]]{FUNCNAME:?} $[[[]]]# $1    ;]]],
-            [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 got $#: [[[mbfl_check_mandatory_parameters_number]]]([[[$@]]])
-)m4_m4exit(1)]]])
-m4_changecom([[[MBFL_SHARP()]]])]]])
+m4_define([[[mbfl_check_mandatory_parameters_number]]],
+  [[[m4_ifelse($#,2,[[[mbfl_p_check_mandatory_parameters_number_2 $[[[]]]{FUNCNAME:?} $[[[]]]# $1 $2]]],
+               $#,1,[[[mbfl_p_check_mandatory_parameters_number_1 $[[[]]]{FUNCNAME:?} $[[[]]]# $1]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 got $#: [[[mbfl_check_mandatory_parameters_number]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
 m4_define([[[mbfl_location_leave_when_failure]]],
   [[[m4_ifelse($#,1,[[[{ if ! { $1 ;} ; then mbfl_location_leave_then_return_failure; fi; }]]],
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#:
-       [[[mbfl_location_leave_when_failure]]]([[[$@]]])
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#: [[[mbfl_location_leave_when_failure]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 # --------------------------------------------------------------------
 
 m4_define([[[mbfl_exception_raise_then_return_failure]]],
   [[[m4_ifelse($#,1,[[[{ mbfl_exception_raise [[[$1]]] ; return_because_failure ; }]]],
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#:
-       [[[mbfl_exception_raise_then_return_failure]]]([[[$@]]])
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#: [[[mbfl_exception_raise_then_return_failure]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 m4_define([[[mbfl_exception_raise_then_return_result]]],
   [[[m4_ifelse($#,1,[[[{ mbfl_exception_raise [[[$1]]]; return $[[[]]]? }]]],
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#:
-       [[[mbfl_exception_raise_then_return_result]]]([[[$@]]])
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#: [[[mbfl_exception_raise_then_return_result]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 m4_define([[[mbfl_exception_raise_then_leave_location_and_return_failure]]],
   [[[m4_ifelse($#,1,[[[{ mbfl_exception_raise [[[$1]]]; mbfl_location_leave_then_return_failure; }]]],
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#:
-       [[[mbfl_exception_raise_then_leave_location_and_return_failure]]]([[[$@]]])
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#: [[[mbfl_exception_raise_then_leave_location_and_return_failure]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 
