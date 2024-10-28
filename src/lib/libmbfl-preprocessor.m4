@@ -79,11 +79,33 @@ m4_define([[[MBFL_DEFINE_QQ_MACRO]]],[[[MBFL_DEFINE_SPECIAL_MACROS]]])
 
 #### function parameters handling
 
-m4_define([[[mbfl_mandatory_parameter]]],[[[declare $4 $1=${$2:?"missing parameter $2 m4_ifelse($3,,$1,$3) in call to to '$FUNCNAME'"}]]])
-m4_define([[[mbfl_mandatory_integer_parameter]]],[[[mbfl_mandatory_parameter($1,$2,$3,-i)]]])
+m4_define([[[mbfl_mandatory_parameter]]],
+  [[[m4_ifelse($#,2,[[[declare    $1=${$2:?"missing parameter $2 in call to to '$FUNCNAME'"}]]],
+               $#,3,[[[declare    $1=${$2:?"missing parameter $2 m4_ifelse($3,,$1,$3) in call to to '$FUNCNAME'"}]]],
+               $#,4,[[[declare $4 $1=${$2:?"missing parameter $2 m4_ifelse($3,,$1,$3) in call to to '$FUNCNAME'"}]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 or 3 or 4 got $#: [[[mbfl_mandatory_parameter]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
-m4_define([[[mbfl_optional_parameter]]],[[[declare $4 $1="${$2:-$3}"]]])
-m4_define([[[mbfl_optional_integer_parameter]]],[[[mbfl_optional_parameter($1,$2,$3,-i)]]])
+m4_define([[[mbfl_mandatory_integer_parameter]]],
+  [[[m4_ifelse($#,2,[[[declare -i    $1=${$2:?"missing parameter $2 in call to to '$FUNCNAME'"}]]],
+               $#,3,[[[declare -i    $1=${$2:?"missing parameter $2 m4_ifelse($3,,$1,$3) in call to to '$FUNCNAME'"}]]],
+               $#,4,[[[declare -i $4 $1=${$2:?"missing parameter $2 m4_ifelse($3,,$1,$3) in call to to '$FUNCNAME'"}]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 or 3 or 4 got $#: [[[mbfl_mandatory_integer_parameter]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
+
+m4_define([[[mbfl_optional_parameter]]],
+  [[[m4_ifelse($#,2,[[[declare    $1=${$2}]]],
+               $#,3,[[[declare    $1=${$2:-"$3"}]]],
+               $#,4,[[[declare $4 $1=${$2:-"$3"}]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 or 3 or 4 got $#: [[[mbfl_optional_parameter]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
+
+m4_define([[[mbfl_optional_integer_parameter]]],
+  [[[m4_ifelse($#,2,[[[declare -i    $1=${$2}]]],
+               $#,3,[[[declare -i    $1=${$2:-"$3"}]]],
+               $#,4,[[[declare -i $4 $1=${$2:-"$3"}]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 or 3 or 4 got $#: [[[mbfl_optional_parameter]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
 m4_define([[[mbfl_mandatory_nameref_parameter]]],[[[m4_dnl
 declare mbfl_a_variable_$1=${$2:?"missing $3 parameter to '$FUNCNAME'"}; m4_dnl
