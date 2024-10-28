@@ -107,10 +107,11 @@ m4_define([[[mbfl_optional_integer_parameter]]],
        [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 or 3 or 4 got $#: [[[mbfl_optional_parameter]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
-m4_define([[[mbfl_mandatory_nameref_parameter]]],[[[m4_dnl
-declare mbfl_a_variable_$1=${$2:?"missing $3 parameter to '$FUNCNAME'"}; m4_dnl
-declare -n $1=$[[[]]]mbfl_a_variable_$1 m4_dnl
-]]])
+m4_define([[[mbfl_mandatory_nameref_parameter]]],
+  [[[m4_ifelse($#,2,[[[declare mbfl_a_variable_$1=${$2:?"missing parameter $2 in call to '$FUNCNAME'"}; declare -n $1=$[[[]]]{mbfl_a_variable_$1:?}]]],
+               $#,3,[[[declare mbfl_a_variable_$1=${$2:?"missing parameter $2 m4_ifelse($3,,$1,$3) in call to '$FUNCNAME'"}; declare -n $1=$[[[]]]{mbfl_a_variable_$1:?}]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 or 3 got $#: [[[mbfl_mandatory_nameref_parameter]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
 
 #### script's command line arguments handling
