@@ -30,7 +30,8 @@
 
 #### macros
 
-MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+MBFL_DEFINE_UNDERSCORE_MACRO
+MBFL_DEFINE_SPECIAL_MACROS
 
 
 #### initialisation
@@ -97,7 +98,7 @@ function mbfl_exception_raise () {
     for ((mbfl_I=mbfl_DIM-1; mbfl_I >= 0; --mbfl_I))
     do
 	#echo $FUNCNAME applying the handler $mbfl_I _(mbfl_exception_handlers_STACK, $mbfl_I) "$mbfl_CND" >&2
-	mbfl_HANDLER=_(mbfl_exception_handlers_STACK, $mbfl_I)
+	mbfl_HANDLER=WW(mbfl_exception_handlers_STACK, $mbfl_I)
 	# NOTE If the  handler string contains separators:  we want it to be  expanded into multiple
 	# strings.  At least for now.  (Marco Maggi; May 14, 2023)
 	$mbfl_HANDLER _(mbfl_CND)
@@ -125,6 +126,41 @@ function mbfl_exception_raise () {
 	fi
 	# If we are here: the handler did not handle the exception; try the upper handler.
     done
+}
+
+
+#### helpers for check_mandatory_parameters_number
+
+# This is called when the macro "check_mandatory_parameters_number" is used with 2 arguments.
+#
+function mbfl_p_check_mandatory_parameters_number_2 () {
+    mbfl_mandatory_parameter(CALLER_FUNCNAME,                               1, caller function name)
+    mbfl_mandatory_integer_parameter(NUMBER_OF_ARGUMENTS_IN_FUNCALL,        2, number of arguments in the function call)
+    mbfl_mandatory_integer_parameter(REQUIRED_MINIMUM_NUMBER_OF_PARAMETERS, 3, required mimimum number of arguments in the function call)
+    mbfl_mandatory_integer_parameter(REQUIRED_MAXIMUM_NUMBER_OF_PARAMETERS, 4, required maximum number of arguments in the function call)
+
+    if (( ( WW(NUMBER_OF_ARGUMENTS_IN_FUNCALL) < WW(REQUIRED_MINIMUM_NUMBER_OF_PARAMETERS) ) ||
+	      ( WW(REQUIRED_MAXIMUM_NUMBER_OF_PARAMETERS) < WW(NUMBER_OF_ARGUMENTS_IN_FUNCALL) ) ))
+    then
+	mbfl_default_object_declare(CND)
+
+	mbfl_wrong_parameters_number_condition_make UU(CND) WW(CALLER_FUNCNAME) WW(NUMBER_OF_ARGUMENTS_IN_FUNCALL) \
+						    WW(REQUIRED_MINIMUM_NUMBER_OF_PARAMETERS) \
+						    WW(REQUIRED_MAXIMUM_NUMBER_OF_PARAMETERS)
+	mbfl_exception_raise_then_return_failure(UU(CND))
+    fi
+}
+
+# This is called when the macro "check_mandatory_parameters_number" is used with 1 argument.
+#
+function mbfl_p_check_mandatory_parameters_number_1 () {
+    mbfl_mandatory_parameter(CALLER_FUNCNAME,                               1, caller function name)
+    mbfl_mandatory_integer_parameter(NUMBER_OF_ARGUMENTS_IN_FUNCALL,        2, number of arguments in the function call)
+    mbfl_mandatory_integer_parameter(REQUIRED_MINIMUM_NUMBER_OF_PARAMETERS, 3, required mimimum number of arguments in the function call)
+
+    mbfl_p_check_mandatory_parameters_number_2 WW(CALLER_FUNCNAME) WW(NUMBER_OF_ARGUMENTS_IN_FUNCALL) \
+					       WW(REQUIRED_MINIMUM_NUMBER_OF_PARAMETERS) \
+					       9999
 }
 
 ### end of file

@@ -352,7 +352,7 @@ function mbfl_default_object_make_predicate_mutator_from_mutator () {
 
     declare mbfl_PRED_MUTATOR_NAME=$mbfl_ORIGINAL_MUTATOR_NAME
     declare mbfl_PRED_MUTATOR_BODY="{ "
-    mbfl_PRED_MUTATOR_BODY+="mbfl_check_mandatory_parameters_number(2);"
+    mbfl_PRED_MUTATOR_BODY+="mbfl_p_check_mandatory_parameters_number_2 \$FUNCNAME \$# 2 2;"
     mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_OBJ_DATAVAR=\${1:?\"missing default-object parameter to '\$FUNCNAME'\"};"
     mbfl_PRED_MUTATOR_BODY+="declare -r mbfl_ATTRIB_VALUE=\${2:?\"missing new attribute value parameter to '\$FUNCNAME'\"};"
     mbfl_PRED_MUTATOR_BODY+="mbfl_default_object__predicate_mutator_implementation \"\$mbfl_OBJ_DATAVAR\""
@@ -731,7 +731,7 @@ function mbfl_default_class_define__build_parent_field_accessor () {
     printf -v mbfl_PARENT_ACCESSOR_NAME	MBFL_STDOBJ__FUNCNAME_PATTERN__ACCESSOR "$mbfl_PARENT_CLASS_NAME" "$mbfl_FIELD_NAME"
 
     mbfl_ACCESSOR_BODY='{ '
-    mbfl_ACCESSOR_BODY+="mbfl_check_mandatory_parameters_number(2);"
+    mbfl_ACCESSOR_BODY+="mbfl_p_check_mandatory_parameters_number_2 \$FUNCNAME \$# 2 2;"
     mbfl_ACCESSOR_BODY+="declare mbfl_RV_DATAVAR=\${1:?\"missing result variable datavar parameter to '${mbfl_ACCESSOR_NAME}'\"};"
     mbfl_ACCESSOR_BODY+="declare mbfl_SELF_DATAVAR=\${2:?"
     mbfl_ACCESSOR_BODY+="\"missing reference to object '${mbfl_NEW_CLASS_NAME}' parameter to '${mbfl_ACCESSOR_NAME}'\"};"

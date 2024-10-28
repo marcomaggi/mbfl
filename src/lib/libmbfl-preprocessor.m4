@@ -266,7 +266,7 @@ m4_define([[[mbfl_declare_index_array_varref]]],[[[mbfl_declare_varref($1,m4_ife
 m4_define([[[mbfl_declare_assoc_array_varref]]],[[[mbfl_declare_varref($1,m4_ifelse([[[$2]]],,[[[()]]],[[[$2]]]),-A $3)]]])
 
 m4_define([[[mbfl_namevar]]],[[[mbfl_a_variable_$1]]])
-m4_define([[[mbfl_datavar]]],[[[$[[[]]]mbfl_namevar([[[$1]]])]]])
+m4_define([[[mbfl_datavar]]],[[[${[[[]]]mbfl_namevar([[[$1]]]):?}]]])
 
 m4_define([[[mbfl_undeclare_varref]]],[[[m4_dnl
   unset -v $mbfl_a_variable_$1; m4_dnl
@@ -368,12 +368,21 @@ m4_define([[[mbfl_default_class_unset]]],          [[[mbfl_default_object_unset(
 m4_define([[[mbfl_location_leave_then_return_success]]], [[[{ mbfl_location_leave ; return_because_success ; }]]])
 m4_define([[[mbfl_location_leave_then_return_failure]]], [[[{ mbfl_location_leave ; return_because_failure ; }]]])
 
+# m4_define([[[mbfl_check_mandatory_parameters_number]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
+# m4_ifelse($#,[[[2]]],m4_dnl
+# [[[{ if (( $[[[]]]MBFL_SHARP > $2 || $1 > $[[[]]]MBFL_SHARP )) ; then mbfl_default_object_declare(CND) ; mbfl_wrong_parameters_number_condition_make _(CND) $FUNCNAME $[[[]]]MBFL_SHARP $1 $2 ; mbfl_exception_raise_then_return_failure(_(CND)) ; fi ; } ]]],m4_dnl
+# $#,[[[1]]],m4_dnl
+# [[[{ if (( $1 > $[[[]]]MBFL_SHARP )) ; then mbfl_default_object_declare(CND) ; mbfl_wrong_parameters_number_condition_make _(CND) $FUNCNAME $[[[]]]MBFL_SHARP $1 9999 ; mbfl_exception_raise_then_return_failure(_(CND)) ; fi ; } ]]],m4_dnl
+# [[[MBFL_P_ERRPRINT([[[wrong number of parameters]]]) m4_m4exit([[[1]]])]]])m4_dnl
+# m4_changecom([[[MBFL_SHARP()]]])]]])
+
 m4_define([[[mbfl_check_mandatory_parameters_number]]],[[[m4_changecom([[[mbfl_beg]]],[[[mbfl_end]]])m4_dnl
-m4_ifelse($#,[[[2]]],m4_dnl
-[[[{ if (( $[[[]]]MBFL_SHARP > $2 || $1 > $[[[]]]MBFL_SHARP )) ; then mbfl_default_object_declare(CND) ; mbfl_wrong_parameters_number_condition_make _(CND) $FUNCNAME $[[[]]]MBFL_SHARP $1 $2 ; mbfl_exception_raise_then_return_failure(_(CND)) ; fi ; } ]]],m4_dnl
-$#,[[[1]]],m4_dnl
-[[[{ if (( $1 > $[[[]]]MBFL_SHARP )) ; then mbfl_default_object_declare(CND) ; mbfl_wrong_parameters_number_condition_make _(CND) $FUNCNAME $[[[]]]MBFL_SHARP $1 9999 ; mbfl_exception_raise_then_return_failure(_(CND)) ; fi ; } ]]],m4_dnl
-[[[MBFL_P_ERRPRINT([[[wrong number of parameters]]]) m4_m4exit([[[1]]])]]])m4_dnl
+m4_errprint(number of arguments $#
+)
+  m4_ifelse($#,2,[[[mbfl_p_check_mandatory_parameters_number_2 $[[[]]]{FUNCNAME:?} $[[[]]]# $1 $2 ;]]],
+            $#,1,[[[mbfl_p_check_mandatory_parameters_number_1 $[[[]]]{FUNCNAME:?} $[[[]]]# $1    ;]]],
+            [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 got $#: [[[mbfl_check_mandatory_parameters_number]]]([[[$@]]])
+)m4_m4exit(1)]]])
 m4_changecom([[[MBFL_SHARP()]]])]]])
 
 m4_define([[[mbfl_location_leave_when_failure]]],

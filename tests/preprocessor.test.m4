@@ -56,7 +56,7 @@ function preprocessor-macro-rr-1.2		() {	dotest-equal '${CIAO[123]:?}'	'RR(CIAO,
 
 function preprocessor-macro-ss-1.1		() {	dotest-equal 'CIAO[123]'	'SS(CIAO,123)'	;}
 
-function preprocessor-macro-underscore-1.1	() {	dotest-equal '$mbfl_a_variable_CIAO'  '_(CIAO)'	;}
+function preprocessor-macro-underscore-1.1	() {	dotest-equal '${mbfl_a_variable_CIAO:?}'  '_(CIAO)'	;}
 
 function preprocessor-macro-pp-1.1 () {
     dotest-equal "\${7:?\"missing parameter 7 CIAO CIAO in call to \${FUNCNAME}\"}"	'PP(7,CIAO CIAO)'
@@ -112,6 +112,64 @@ function preprocessor-location-leave-when-failure-2.1 () {
     declare RESULT=0
     sub-preprocessor-location-leave-when-failure-2.1
     dotest-equal 012 WW(RESULT)
+}
+
+
+#### checking number of arguments
+
+function sub-preprocessor-check-number-of-arguments-two () {
+    mbfl_check_mandatory_parameters_number(3,5)
+    return_success
+}
+function preprocessor-check-number-of-arguments-1.1.1 () {
+    # Correct number of arguments.
+    sub-preprocessor-check-number-of-arguments-two 1 2 3
+}
+function preprocessor-check-number-of-arguments-1.1.2 () {
+    # Correct number of arguments.
+    sub-preprocessor-check-number-of-arguments-two 1 2 3 4
+}
+function preprocessor-check-number-of-arguments-1.1.3 () {
+    # Correct number of arguments.
+    sub-preprocessor-check-number-of-arguments-two 1 2 3 4 5
+}
+function preprocessor-check-number-of-arguments-1.2.1 () {
+    mbfl_location_enter
+    {
+	# Not enough parameters.  The  function call is evaluated in a subshell:  we let the default
+	# exception-handler handle the exception and terminate the subshell with exit status false.
+	! (sub-preprocessor-check-number-of-arguments-two 1 2)
+    }
+    mbfl_location_leave
+}
+function preprocessor-check-number-of-arguments-1.2.2 () {
+    mbfl_location_enter
+    {
+	# Too many  parameters.  The function call  is evaluated in  a subshell: we let  the default
+	# exception-handler handle the exception and terminate the subshell with exit status false.
+	! (sub-preprocessor-check-number-of-arguments-two 1 2 3 4 5 6)
+    }
+    mbfl_location_leave
+}
+
+### ------------------------------------------------------------------------
+
+function sub-preprocessor-check-number-of-arguments-one () {
+    mbfl_check_mandatory_parameters_number(3)
+    return_success
+}
+function preprocessor-check-number-of-arguments-2.1.1 () {
+    # Correct number of arguments.
+    sub-preprocessor-check-number-of-arguments-one 1 2 3
+}
+function preprocessor-check-number-of-arguments-2.2.1 () {
+    mbfl_location_enter
+    {
+	# Not enough parameters.  The  function call is evaluated in a subshell:  we let the default
+	# exception-handler handle the exception and terminate the subshell with exit status false.
+	! (sub-preprocessor-check-number-of-arguments-one 1 2)
+    }
+    mbfl_location_leave
 }
 
 

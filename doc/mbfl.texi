@@ -1527,6 +1527,15 @@ PP(@var{ARGNUM}, @var{DESCRIPTION})
 The argument @var{DESCRIPTION} can be empty.
 @end deffn
 
+
+@deffn {Preprocessor Macro} UU (@var{VARNAME})
+Expand as follows:
+
+@example
+UU(@var{VARNAME})   @expansion{} mbfl_datavar(@var{VARNAME})
+@end example
+@end deffn
+
 @c page
 @node base
 @chapter Some base functions and variables
