@@ -56,8 +56,6 @@ function preprocessor-macro-rr-1.2		() {	dotest-equal '${CIAO[123]:?}'	'RR(CIAO,
 
 function preprocessor-macro-ss-1.1		() {	dotest-equal 'CIAO[123]'	'SS(CIAO,123)'	;}
 
-function preprocessor-macro-underscore-1.1	() {	dotest-equal '${mbfl_a_variable_CIAO:?}'  '_(CIAO)'	;}
-
 function preprocessor-macro-pp-1.1 () {
     dotest-equal "\${7:?\"missing parameter 7 CIAO CIAO in call to \${FUNCNAME}\"}"	'PP(7,CIAO CIAO)'
 }
@@ -170,6 +168,28 @@ function preprocessor-check-number-of-arguments-2.2.1 () {
 	! (sub-preprocessor-check-number-of-arguments-one 1 2)
     }
     mbfl_location_leave
+}
+
+
+#### underscore macros
+
+function preprocessor-macro-underscore-1.1	() {	dotest-equal '${mbfl_a_variable_CIAO:?}'  '_(CIAO)'	;}
+function preprocessor-macro-underscore-2.1	() {	dotest-equal '${mbfl_a_variable_CIAO:?}'  'UU(CIAO)'	;}
+
+function preprocessor-macro-underscore-for-methods-1.1 () {
+    dotest-equal '${mbfl_a_variable_CIAO:?}'  'mbfl_p_default_object_underscore_macro_for_methods(CIAO)'
+}
+function preprocessor-macro-underscore-for-methods-2.1 () {
+    dotest-equal 'mbfl_default_object_call_method ${mbfl_a_variable_CIAO:?} DOIT' \
+		 'mbfl_p_default_object_underscore_macro_for_methods(CIAO,DOIT)'
+}
+
+function preprocessor-macro-underscore-for-slots-1.1 () {
+    dotest-equal '${mbfl_a_variable_CIAO:?}'  'mbfl_p_default_object_underscore_macro_for_slots(CIAO)'
+}
+function preprocessor-macro-underscore-for-slots-2.1 () {
+    dotest-equal '"${CIAO[KEY]}"' \
+		 'mbfl_p_default_object_underscore_macro_for_slots(CIAO,KEY)'
 }
 
 

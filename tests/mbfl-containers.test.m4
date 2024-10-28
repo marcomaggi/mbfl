@@ -46,8 +46,8 @@ mbfl_linker_source_library_by_stem(containers)
 
 #### macros
 
+MBFL_DEFINE_SPECIAL_MACROS
 MBFL_DEFINE_UNDERSCORE_MACRO_FOR_METHODS
-MBFL_DEFINE_QQ_MACRO
 
 
 #### helpers
@@ -2306,7 +2306,7 @@ function mbfl-containers-array-map-1.1 () {
     mbfl_declare_index_array_varref(L_EXPECTED_RESULT, (A B C D E))
     mbfl_declare_index_array_varref(R_EXPECTED_RESULT, (A B C D E))
 
-    mbfl_array_left_map   _(L_RESULT)'mbfl_string_toupper_var' _(ARRY)
+    mbfl_array_left_map  _(L_RESULT) 'mbfl_string_toupper_var' _(ARRY)
     mbfl_array_right_map _(R_RESULT) 'mbfl_string_toupper_var' _(ARRY)
 
     mbfl_array_equal _(L_EXPECTED_RESULT) _(L_RESULT) &&
