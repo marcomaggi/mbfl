@@ -30,43 +30,10 @@ m4_divert(-1)
 
 m4_changequote(`[[[', `]]]')
 
-
-#### helper macros
-
 m4_define([[[MBFL_SHARP]]],[[[#]]])
 
-# Synopsis:
-#
-#    MBFL_P_ERRPRINT([[[this is an error message]]])
-#
-# Print to stderr an error message using the built-in facilities of GNU m4.
-#
-m4_define([[[MBFL_P_ERRPRINT]]],[[[m4_errprint(m4___program__:m4___file__:m4___line__:[[[ $1
-]]])m4_m4exit(1)]]])
-
-# Synopsis:
-#
-#    MBFL_P_WRONG_NUM_ARGS(MACRO_NAME, GIVEN_NUM_ARGS, EXPECTED_NUM_ARGS)
-#
-# Check the number of arguments given to a macro use: if it is wrong. print to stderr
-# an error message using the built-in facilities of GNU m4.
-#
-m4_define([[[MBFL_P_WRONG_NUM_ARGS]]],[[[m4_dnl
-m4_ifelse([[[$2]]],[[[$3]]],[[[MBFL_P_ERRPRINT([[[wrong number of parameter in use of $1: expected $3 got $2]]])]]])m4_dnl
-]]])
-
-# Synopsis:
-#
-#    MBFL_P_REMOVE_COMMA_FROM_ARGLIST(1, 2, 3, 4)
-#    --> 1 2 3 4
-#
-# remove the commas from its arguments list.  To use this with "m4_shift()":
-#
-#    MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))
-#
-m4_define([[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST]]],[[[m4_dnl
-m4_ifelse([[[$1]]],,,[[[$1]]] [[[MBFL_P_REMOVE_COMMA_FROM_ARGLIST(m4_shift($@))]]])m4_dnl
-]]])
+
+#### special macros
 
 m4_define([[[mbfl_p_qq]]],
   [[[m4_ifelse($#,1,"${$1}",
@@ -97,16 +64,16 @@ m4_define([[[mbfl_p_pp]]],
        [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 or 2 got $#: [[[PP]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
-m4_define([[[MBFL_DEFINE_SPECIAL_MACROS]]],[[[m4_dnl
-m4_define([[[QQ]]],[[[mbfl_p_qq($]]]@[[[)]]])m4_dnl
+m4_define([[[MBFL_DEFINE_SPECIAL_MACROS]]],
+  [[[m4_define([[[QQ]]],[[[mbfl_p_qq($]]]@[[[)]]])m4_dnl
 m4_define([[[WW]]],[[[mbfl_p_ww($]]]@[[[)]]])m4_dnl
 m4_define([[[RR]]],[[[mbfl_p_rr($]]]@[[[)]]])m4_dnl
 m4_define([[[SS]]],[[[mbfl_p_ss($]]]@[[[)]]])m4_dnl
 m4_define([[[PP]]],[[[mbfl_p_pp($]]]@[[[)]]])m4_dnl
-m4_define([[[UU]]],[[[mbfl_p_default_object_underscore_macro_for_methods($]]]@[[[)]]])
+m4_define([[[UU]]],[[[mbfl_p_default_object_underscore_macro_for_methods($]]]@[[[)]]])m4_dnl
 ]]])
 
-m4_dnl NOTE this is deprecated.  (Marco Maggi; Oct 23, 2024)
+# NOTE this is deprecated.  (Marco Maggi; Oct 23, 2024)
 m4_define([[[MBFL_DEFINE_QQ_MACRO]]],[[[MBFL_DEFINE_SPECIAL_MACROS]]])
 
 
