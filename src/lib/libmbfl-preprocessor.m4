@@ -116,19 +116,17 @@ m4_define([[[mbfl_mandatory_nameref_parameter]]],
 
 #### script's command line arguments handling
 
-# Synopsis:
-#
-#    mbfl_command_line_argument(VARNAME, ARGINDEX)
-#
-# Store in the  variable VARNAME the value  at key ARGINDEX in the  index array ARGV.
-# The first argument has index 0.
-#
-m4_define([[[mbfl_command_line_argument]]],[[[declare $3 $1="${ARGV[$2]}"]]])
+m4_define([[[mbfl_command_line_argument]]],
+  [[[m4_ifelse($#,2,[[[declare $1=${ARGV[$2]}]]],
+               $#,3,[[[declare $3 $1=${ARGV[$2]}]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 or 3 got $#: [[[mbfl_command_line_argument]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
-m4_define([[[mbfl_extract_command_line_argument]]],[[[m4_dnl
-mbfl_command_line_argument($1,$2,$3); m4_dnl
-mbfl_variable_unset(ARGV[$2]) m4_dnl
-]]])
+m4_define([[[mbfl_extract_command_line_argument]]],
+  [[[m4_ifelse($#,2,[[[mbfl_command_line_argument($1,$2);    mbfl_variable_unset(ARGV[$2])]]],
+               $#,3,[[[mbfl_command_line_argument($1,$2,$3); mbfl_variable_unset(ARGV[$2])]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 or 3 got $#: [[[mbfl_extract_command_line_argument]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
 
 #### library loading and embedding
