@@ -7,7 +7,7 @@
 #!
 #!	This script exposes the features of the semver module in "libmbfl.bash".
 #!
-#! Copyright (C) 2023 Marco Maggi <mrc.mgg@gmail.com>
+#! Copyright (C) 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #!
 #! This program is free software: you can redistribute it and/or modify it under the terms of the GNU
 #! General Public  License as  published by  the Free Software  Foundation, either  version 3  of the

@@ -131,18 +131,30 @@ m4_define([[[mbfl_extract_command_line_argument]]],
 
 #### library loading and embedding
 
-m4_define([[[mbfl_library_loader]]],[[[source m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1) || exit 100]]])
-m4_define([[[mbfl_load_library]]],  [[[source m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1) || exit 100]]])
+m4_define([[[mbfl_embed_library]]],
+  [[[m4_ifelse($#,1,[[[m4_undivert(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#: [[[mbfl_embed_library]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
-m4_define([[[mbfl_embed_library]]],[[[m4_undivert(m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1))]]])
+m4_define([[[mbfl_library_loader]]],
+  [[[m4_ifelse($#,1,[[[source m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1) || exit 100]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#: [[[mbfl_library_loader]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
-m4_define([[[mbfl_linker_source_library_by_stem]]],[[[
+m4_define([[[mbfl_load_library]]],
+  [[[m4_ifelse($#,1,[[[source m4_ifelse($1,,__MBFL_LIBMBFL_INSTALLATION_PATHNAME__,$1) || exit 100]]],
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#: [[[mbfl_load_library]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
+
+m4_define([[[mbfl_linker_source_library_by_stem]]],
+  [[[m4_ifelse($#,1,[[[
 if mbfl_linker_find_library_by_stem '$1'
 then
-    mbfl_slot_set(MBFL_LINKER_LOADED_LIBRARIES,$1,true)
-    mbfl_load_library(mbfl_slot_qref(MBFL_LINKER_FOUND_LIBRARIES,$1))
+    mbfl_slot_set(MBFL_LINKER_LOADED_LIBRARIES,'$1',true)
+    mbfl_load_library(mbfl_slot_qref(MBFL_LINKER_FOUND_LIBRARIES,'$1'))
 fi
-]]])
+]]],[[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#: [[[mbfl_linker_source_library_by_stem]]]([[[$@]]])
+)m4_m4exit(1)]]])]]])
 
 
 #### string macros
