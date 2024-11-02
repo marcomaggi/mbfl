@@ -8,7 +8,7 @@
 #!	line actions processing.  This script uses  the "actions" module to configure its behaviour,
 #!	similarly to what "git" does with its subcommands.
 #!
-#! Copyright (c) 2013, 2014, 2018, 2020, 2023 Marco Maggi <mrc.mgg@gmail.com>
+#! Copyright (c) 2013, 2014, 2018, 2020, 2023, 2024 Marco Maggi <mrc.mgg@gmail.com>
 #!
 #! The author hereby  grants permission to use,  copy, modify, distribute, and  license this software
 #! and its documentation  for any purpose, provided  that existing copyright notices  are retained in
@@ -491,12 +491,18 @@ function script_action_HELP_USAGE () {
 ## --------------------------------------------------------------------
 
 function script_before_parsing_options_HELP_PRINT_COMPLETIONS_SCRIPT () {
-    script_PRINT_COMPLETIONS="usage: ${script_PROGNAME} help print-completions-script [options]"
+    script_PRINT_COMPLETIONS="usage: ${script_PROGNAME} help print-completions-script [options] [[--] FILENAME]"
     script_DESCRIPTION='Print the command-line completions script and exit.'
 }
 function script_action_HELP_PRINT_COMPLETIONS_SCRIPT () {
-    if mbfl_wrong_num_args 0 $ARGC
-    then mbfl_actions_completion_print_script "$COMPLETIONS_SCRIPT_NAMESPACE" "$script_PROGNAME"
+    if mbfl_wrong_num_args_range 0 1 $ARGC
+    then
+	if (( 0 == ARGC ))
+	then mbfl_actions_completion_print_script "$COMPLETIONS_SCRIPT_NAMESPACE" "$script_PROGNAME"
+	else
+	    mbfl_command_line_argument(SCRIPT_FILE_PATHNAME, 0, -r)
+	    mbfl_actions_completion_print_script "$COMPLETIONS_SCRIPT_NAMESPACE" "$script_PROGNAME" >"$SCRIPT_FILE_PATHNAME"
+	fi
     else
 	mbfl_main_print_usage_screen_brief
 	exit_because_wrong_num_args
