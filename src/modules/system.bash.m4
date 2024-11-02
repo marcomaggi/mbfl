@@ -8,7 +8,7 @@
 #
 #
 #
-# Copyright (c) 2005, 2009, 2013, 2018, 2020, 2023 Marco Maggi
+# Copyright (c) 2005, 2009, 2013, 2018, 2020, 2023, 2024 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you  can redistribute it and/or modify it under
@@ -58,7 +58,7 @@ function mbfl_system_passwd_read () {
 	local LINE
 
 	if {
-	    while IFS= read LINE
+	    while IFS= read -r LINE
 	    do
 		if [[ $LINE =~ $REX ]]
 		then
@@ -292,7 +292,7 @@ function mbfl_system_group_read () {
 	local LINE
 
 	if {
-	    while IFS= read LINE
+	    while IFS= read -r LINE
 	    do
 		if [[ $LINE =~ $REX ]]
 		then
