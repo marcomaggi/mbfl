@@ -443,8 +443,8 @@ EOF
 }
 
 function mbfl_actions_completion_fake_cat () {
-    while read
-    do echo "$REPLY"
+    while IFS= read -r
+    do printf '%s\n' "$REPLY"
     done
 }
 
