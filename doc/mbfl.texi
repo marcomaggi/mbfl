@@ -6574,6 +6574,7 @@ Exit with code @code{86} by calling @func{mbfl_exit}.
 * strings encoding::            Encoding and decoding strings.
 * strings stripping::           Stripping substrings from strings.
 * strings normalisation::       Normalising strings.
+* strings conversion::          Conversion functions.
 * strings misc::                Miscellaneous functions.
 @end menu
 
@@ -8010,6 +8011,46 @@ eval $NORMAL_RV         @result{} 0
 @end example
 @end defun
 
+@c page
+@node strings conversion
+@section Conversion functions
+
+
+@defun mbfl_string_from_ascii_code_var @var{RV} @var{ASCII_CODE}
+Store in the result variable @var{RV} a string representing the @mmuxascii{} character whose
+numerical code is @var{ASCII_CODE}.
+
+@example
+declare -r ASCII_CODE=65
+mbfl_declare_varref(STRING)
+
+mbfl_string_from_ascii_code_var _(STRING) "$ASCII_CODE"
+$STRING         @result{} A
+@end example
+@end defun
+
+
+@defun mbfl_string_to_ascii_code_var @var{RV} @var{STRING}
+@defunx mbfl_string_to_ascii_code_var @var{RV} @var{STRING} @var{INDEX}
+Store in the result variable @var{RV} the string representation of an exact non--negative integer,
+itself representing the @mmuxascii{} code of the character at @var{INDEX} in @var{STRING}.
+
+The optional parameter @var{INDEX} must be a zero--based, non--negative exact integer; it defaults
+to zero.
+
+The parameter @var{STRING} can be the empty string: in this case the code is zero.
+
+@example
+declare -r STRING='CIAO'
+mbfl_declare_varref(ASCII_CODE)
+
+mbfl_string_to_ascii_code_var _(ASCII_CODE) "$STRING"
+$ASCII_CODE     @result{} 67
+
+mbfl_string_to_ascii_code_var _(ASCII_CODE) "$STRING" 2
+$ASCII_CODE     @result{} 65
+@end example
+@end defun
 
 @c page
 @node strings misc

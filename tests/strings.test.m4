@@ -41,7 +41,8 @@ mbfl_embed_library(__LIBMBFL_LINKER__)
 mbfl_linker_source_library_by_stem(core)
 mbfl_linker_source_library_by_stem(tests)
 
-MBFL_DEFINE_UNDERSCORE_MACRO_FOR_SLOTS
+MBFL_DEFINE_SPECIAL_MACROS
+MBFL_DEFINE_UNDERSCORE_MACRO
 
 
 #### quoted characters
@@ -2141,6 +2142,83 @@ function string-normalisation-boolean-1.4 () {
     mbfl_declare_varref(STR)
 
     ! mbfl_string_normalise_boolean_var _(STR) 'ciao'
+}
+
+
+#### string-from-ascii-code
+
+function string-from-ascii-code-1.1 () {
+    declare -r ASCII_CODE=65
+    mbfl_declare_varref(STRING)
+
+    mbfl_string_from_ascii_code_var UU(STRING) WW(ASCII_CODE)
+    dotest-equal 'A' QQ(STRING)
+}
+
+
+#### string-to-ascii-code
+
+function string-to-ascii-code-1.1.1 () {
+    declare -r STRING='CIAO'
+    mbfl_declare_varref(ASCII_CODE)
+
+    mbfl_string_to_ascii_code_var UU(ASCII_CODE) WW(STRING)
+    dotest-equal '67' QQ(ASCII_CODE)
+}
+function string-to-ascii-code-1.1.2 () {
+    declare -r STRING='CIAO'
+    mbfl_declare_varref(ASCII_CODE)
+
+    mbfl_string_to_ascii_code_var UU(ASCII_CODE) WW(STRING) 0
+    dotest-equal '67' QQ(ASCII_CODE)
+}
+function string-to-ascii-code-1.2 () {
+    declare -r STRING='CIAO'
+    mbfl_declare_varref(ASCII_CODE)
+
+    mbfl_string_to_ascii_code_var UU(ASCII_CODE) WW(STRING) 1
+    dotest-equal '73' QQ(ASCII_CODE)
+}
+function string-to-ascii-code-1.3 () {
+    declare -r STRING='CIAO'
+    mbfl_declare_varref(ASCII_CODE)
+
+    mbfl_string_to_ascii_code_var UU(ASCII_CODE) WW(STRING) 2
+    dotest-equal '65' QQ(ASCII_CODE)
+}
+function string-to-ascii-code-1.4 () {
+    declare -r STRING='CIAO'
+    mbfl_declare_varref(ASCII_CODE)
+
+    mbfl_string_to_ascii_code_var UU(ASCII_CODE) WW(STRING) 3
+    dotest-equal '79' QQ(ASCII_CODE)
+}
+
+### ------------------------------------------------------------------------
+
+function string-to-ascii-code-2.1 () {
+    declare -r STRING=$'\x01'
+    mbfl_declare_varref(ASCII_CODE)
+
+    mbfl_string_to_ascii_code_var UU(ASCII_CODE) WW(STRING)
+    dotest-equal '1' QQ(ASCII_CODE)
+}
+function string-to-ascii-code-2.2 () {
+    declare -r STRING=$'\x02'
+    mbfl_declare_varref(ASCII_CODE)
+
+    mbfl_string_to_ascii_code_var UU(ASCII_CODE) WW(STRING)
+    dotest-equal '2' QQ(ASCII_CODE)
+}
+
+### ------------------------------------------------------------------------
+
+function string-to-ascii-code-3.1 () {
+    declare -r STRING=
+    mbfl_declare_varref(ASCII_CODE)
+
+    mbfl_string_to_ascii_code_var UU(ASCII_CODE) QQ(STRING)
+    dotest-equal '0' QQ(ASCII_CODE)
 }
 
 
