@@ -1826,23 +1826,24 @@ location is left by calling @func{mbfl_location_leave}.  We can nest locations a
 all the handlers registered so far in a stack of locations.  Location handlers are stored in hooks,
 @ref{hooks, Executing commands with event hooks}.
 
+In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
+underscore syntax}.
+
 @menu
-* locations core::              Locations programming interface.
-* locations handlers::          Special location handlers.
+* locations enter::             Entering and leaving locations.
+* locations handlers::          Location handlers.
+* locations hooks::             Location hooks.
+* locations special::           Special location handlers.
 * locations examples::          Locations usage examples.
 @end menu
 
 @c page
-@node locations core
-@section Locations programming interface
-
-
-In this chapter we use the underscore syntax as defined in @ref{objects conventions underscore, The
-underscore syntax}.
+@node locations enter
+@section Entering and leaving locations
 
 
 @defun mbfl_location_enter
-Enter into a new location.  Initialise the internal state.
+Enter a new location.  Initialise the internal state.
 @end defun
 
 
@@ -1877,6 +1878,28 @@ mbfl_location_leave_when_failure(@var{expression})
 @expansion{} @{ if ! @{ @var{expression} ; @} ; then mbfl_location_leave_then_return_failure; fi; @}
 @end example
 @end deffn
+
+
+@deffn {Preprocessor Macro} mbfl_location_compensate (@var{expression}, @var{handler})
+Expand as follows:
+
+@example
+mbfl_location_compensate(@var{expression}, @var{handler})
+@expansion{} @{
+    if @{ @var{expression} ; @} ;
+    then mbfl_location_handler "@var{handler}" ;
+    else mbfl_location_leave_then_return_failure;
+    fi;
+@}
+@end example
+
+@noindent
+we must beware that @var{handler} is enclosed in double--quotes.
+@end deffn
+
+@c page
+@node locations handlers
+@section Location handlers
 
 
 @anchor{mbfl_location_handler}
@@ -1960,6 +1983,10 @@ Run all the handlers unwinding all the locations.  This is useful as atexit hand
 atexit, Running scripts at exit--time}.
 @end defun
 
+@c page
+@node locations hooks
+@section Location hooks
+
 
 @defun mbfl_location_hook_var @var{HOOK_RV}
 When called inside a location: store in the result variable @var{HOOK_RV} the hook associated to the
@@ -2013,7 +2040,7 @@ function inner () @{
 @end defun
 
 @c page
-@node locations handlers
+@node locations special
 @section Special location handlers
 
 
