@@ -393,7 +393,7 @@ m4_define([[[mbfl_location_leave_when_failure]]],
 
 m4_define([[[mbfl_location_compensate]]],
   [[[m4_ifelse($#,2,[[[{ if { $1 ;} ; then mbfl_location_handler "$2" ; else mbfl_location_leave_then_return_failure; fi; }]]],
-       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 1 got $#: [[[mbfl_location_leave_when_failure]]]([[[$@]]])
+       [[[m4_errprint(m4___program__:m4___file__:m4___line__: wrong number of arguments expected 2 got $#: [[[mbfl_location_leave_when_failure]]]([[[$@]]])
 )m4_m4exit(1)]]])]]])
 
 # --------------------------------------------------------------------
