@@ -9,7 +9,7 @@ m4_divert(-1)
 #
 #	Library of macros to preprocess BASH scripts using MBFL.
 #
-# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023, 2024 Marco Maggi
+# Copyright (c) 2003-2005, 2009, 2013, 2018, 2020, 2023, 2024, 2026 Marco Maggi
 # <mrc.mgg@gmail.com>
 #
 # This is free software; you can redistribute it and/or  modify it under the terms of the GNU Lesser
@@ -257,7 +257,7 @@ m4_define([[[mbfl_declare_varref]]],[[[m4_dnl
   mbfl_variable_alloc mbfl_a_variable_$1 $1; m4_dnl
   declare $3 $[[[mbfl_a_variable_$1]]]; m4_dnl
   declare -n $1=$[[[]]]mbfl_a_variable_$1; m4_dnl
-  m4_ifelse([[[$2]]],,[[[$1=]]],[[[$1=$2]]])m4_dnl
+  m4_ifelse([[[$2]]],,[[[$1=]]],[[[$1=$2]]]) m4_dnl
 ]]])
 
 m4_define([[[mbfl_declare_global_varref]]], [[[mbfl_declare_varref($1,$2,-g $3)]]])
