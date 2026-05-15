@@ -50,7 +50,7 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017-2018, 2020, 2022, 2023, 2024
+@set COPYRIGHT_YEARS            2003-2005, 2009-2010, 2012-2015, 2017-2018, 2020, 2022, 2023, 2024, 2026
 
 @c ------------------------------------------------------------------------
 
@@ -3237,6 +3237,11 @@ variable:
 @example
 [[[$_]]]
 @end example
+
+
+@defmac MBFL_DEFINE_UNDERSCORE_MACRO
+Define the underscore macro as documented above.
+@end defmac
 
 @c page
 @node objects conventions parameters
